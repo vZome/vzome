@@ -1,0 +1,124 @@
+
+size -99 purple +0
+
+
+label unit.start
+
+branch {
+
+size -99 purple -0
+scale -6
+
+repeat 2 size 6 purple 0
+size 2 blue -6
+label base.1.narrow.right
+short blue +13
+label base.1.narrow.left
+size 1 red -0
+short blue -10
+label base.1.wide.left
+blue -13
+label base.1.wide.right
+repeat 2 size 6 purple 0
+long blue +5
+label frustum.1.narrow.right
+blue +13
+label frustum.1.narrow.left
+
+scale +6
+}
+
+
+rotate around blue 13
+
+
+branch {
+
+size -99 purple -0
+scale -6
+
+repeat 2 size 6 purple 0
+size 2 blue -6
+label base.2.narrow.right
+short blue +13
+label base.2.narrow.left
+size 1 red -0
+short blue -10
+label base.2.wide.left
+blue -13
+label base.2.wide.right
+repeat 2 size 6 purple 0
+long blue +5
+label frustum.2.narrow.right
+blue +13
+label frustum.2.narrow.left
+
+scale +6
+}
+
+
+
+{  //faces
+
+			label unit.face
+label base.1.narrow.right
+label base.1.narrow.left
+label frustum.1.narrow.left
+label frustum.1.narrow.right
+	
+			label unit.face
+label base.2.narrow.right
+label base.2.narrow.left
+label frustum.2.narrow.left
+label frustum.2.narrow.right
+	
+			label unit.face
+label base.1.wide.left
+label base.1.wide.right
+label frustum.2.narrow.right
+label frustum.2.narrow.left
+	
+			label unit.face
+label base.2.wide.left
+label base.2.wide.right
+label frustum.1.narrow.right
+label frustum.1.narrow.left
+	
+			label unit.face 
+label base.2.narrow.left
+label base.2.wide.left
+label frustum.2.narrow.left
+	
+			label unit.face 
+label base.1.narrow.left
+label base.1.wide.left
+label frustum.1.narrow.left
+	
+			label unit.face 
+label base.1.wide.right
+label base.1.narrow.right
+label frustum.1.narrow.right
+	
+			label unit.face 
+label base.2.wide.right
+label base.2.narrow.right
+label frustum.2.narrow.right
+	
+			label unit.face 
+label base.2.wide.left
+label frustum.1.narrow.left 
+label base.1.wide.left
+label frustum.2.narrow.left
+	
+			label unit.face 
+label frustum.2.narrow.right
+label base.1.wide.right
+label frustum.1.narrow.right
+label base.2.wide.right
+	
+}
+
+label unit.end
+
+}
+

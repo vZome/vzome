@@ -1,0 +1,181 @@
+
+scale -6
+symmetry
+{
+label unit.start
+
+branch{
+	yellow +0
+	red +0
+
+	label inner.long
+
+	branch { yellow +0
+		label yellow.hole.long }
+	branch { red +0
+		label red.hole.long }
+
+	blue +0
+
+	branch { size -1 blue -0
+		label blue.hole.long }
+	branch { size -1 red +4
+		label blue.chamfer.long }
+   
+	size 2 red +4
+	
+	label outer.long
+
+	branch { size 1 purple -35
+		label yellow.chamfer.long }
+	branch { repeat 2 size -1 orange +35
+		label red.chamfer.long }
+}
+
+reflect through +8
+
+branch{
+	yellow +0
+	red +0
+
+	label inner.common
+
+	branch { yellow +0
+		label yellow.hole.common }
+	branch { red +0
+		label red.hole.common }
+
+	blue +0
+
+	branch { size -1 blue -0
+		label blue.hole.common }
+	branch { size -1 red +4
+		label blue.chamfer.common }
+   
+	size 2 red +4
+	
+	label outer.common
+
+	branch { size 1 purple -35
+		label yellow.chamfer.common }
+	branch { repeat 2 size -1 orange +35
+		label red.chamfer.common }
+}
+
+reflect through +14
+
+branch{
+	yellow +0
+	red +0
+
+	label inner.short
+
+	branch { yellow +0
+		label yellow.hole.short }
+	branch { red +0
+		label red.hole.short }
+
+	blue +0
+
+	branch { size -1 blue -0
+		label blue.hole.short }
+	branch { size -1 red +4
+		label blue.chamfer.short }
+   
+	size 2 red +4
+	
+	label outer.short
+
+	branch { size 1 purple -35
+		label yellow.chamfer.short }
+	branch { repeat 2 size -1 orange +35
+		label red.chamfer.short }
+}
+
+   // blue hole short
+							label unit.face
+	label inner.common
+	label blue.hole.common
+	label blue.hole.short
+	label inner.short
+
+   // blue face short
+							label unit.face
+	label outer.common
+	label outer.short
+	label blue.chamfer.short
+	label blue.chamfer.common
+
+   // red hole
+							label unit.face
+	label inner.common
+	label inner.short
+	label red.hole.short
+	label red.hole.common
+
+   // red face
+							label unit.face
+	label outer.common
+	label red.chamfer.common
+	label red.chamfer.short
+	label outer.short
+
+   // blue hole long
+							label unit.face
+	label inner.common
+	label inner.long
+	label blue.hole.long
+	label blue.hole.common
+
+   // blue face long
+							label unit.face
+	label outer.common
+	label blue.chamfer.common
+	label blue.chamfer.long
+	label outer.long
+
+   // yellow hole
+							label unit.face
+	label inner.common
+	label yellow.hole.common
+	label yellow.hole.long
+	label inner.long
+
+   // yellow face
+							label unit.face
+	label outer.common
+	label outer.long
+	label yellow.chamfer.long
+	label yellow.chamfer.common
+
+   // yellow chamfer
+							label unit.face
+	label yellow.hole.common
+	label yellow.chamfer.common
+	label yellow.chamfer.long
+	label yellow.hole.long
+
+   // red chamfer
+							label unit.face
+	label red.hole.short
+	label red.chamfer.short
+	label red.chamfer.common
+	label red.hole.common
+
+   // blue chamfer short
+							label unit.face
+	label blue.hole.common
+	label blue.chamfer.common
+	label blue.chamfer.short
+	label blue.hole.short
+
+   // blue chamfer long
+							label unit.face
+	label blue.chamfer.common
+	label blue.hole.common
+	label blue.hole.long
+	label blue.chamfer.long
+
+
+label unit.end
+}

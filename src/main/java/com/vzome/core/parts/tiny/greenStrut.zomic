@@ -1,0 +1,135 @@
+
+// move to the center of the strut
+from size -99 green +0
+
+// adjust to the parts scale
+scale -5
+
+label unit.start
+
+save all {
+
+branch { 
+
+// move to strut origin
+from save scale { scale +5
+size -99 green -0 }
+
+
+	save all { scale -1 
+
+red 0 label tip_1
+long red 0
+
+    	branch {
+ 	label diamond_1_bottom
+			blue -14 
+ 	label diamond_1_right
+ 			blue +12 
+ 	label diamond_1_top
+ 			blue +14 
+ 	label diamond_1_left
+			blue -12
+		}
+	}
+}
+
+rotate around blue +13
+
+branch { 
+
+// move to strut origin
+from save scale { scale +5
+size -99 green -0 }
+
+
+	save all { scale -1 
+
+red 0 label tip_2
+long red 0
+
+    	branch {
+ 	label diamond_2_bottom
+			blue -14 
+ 	label diamond_2_right
+ 			blue +12 
+ 	label diamond_2_top
+ 			blue +14 
+ 	label diamond_2_left
+			blue -12
+		}
+	}
+}
+
+
+{  //faces
+	
+			label unit.face		// tip 1 top right
+	label diamond_1_top
+	label diamond_1_right
+	label tip_1
+	
+			label unit.face		// tip 1 top left
+	label diamond_1_left
+	label diamond_1_top
+	label tip_1
+	
+			label unit.face		// tip 1 bottom left
+	label diamond_1_bottom
+	label diamond_1_left
+	label tip_1
+	
+			label unit.face		// tip 1 bottom right
+	label diamond_1_right
+	label diamond_1_bottom
+	label tip_1
+
+			label unit.face		// tip 2 top right
+	label diamond_2_top
+	label diamond_2_right
+	label tip_2
+	
+			label unit.face		// tip 2 top left
+	label diamond_2_left
+	label diamond_2_top
+	label tip_2
+	
+			label unit.face		// tip 2 bottom left
+	label diamond_2_bottom
+	label diamond_2_left
+	label tip_2
+	
+			label unit.face		// tip 2 bottom right
+	label diamond_2_right
+	label diamond_2_bottom
+	label tip_2
+
+			label unit.face		// prism left
+	label diamond_1_top
+	label diamond_1_left
+	label diamond_2_left
+	label diamond_2_bottom
+
+			label unit.face		// prism left
+	label diamond_1_left
+	label diamond_1_bottom
+	label diamond_2_top
+	label diamond_2_left
+
+			label unit.face		// prism right
+	label diamond_1_right
+	label diamond_1_top
+	label diamond_2_bottom
+	label diamond_2_right
+
+			label unit.face		// prism right
+	label diamond_1_bottom
+	label diamond_1_right
+	label diamond_2_right
+	label diamond_2_top
+
+	
+}
+
+label unit.end
+}

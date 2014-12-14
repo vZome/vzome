@@ -1,0 +1,165 @@
+
+size -99 green +0
+
+label unit.start
+
+branch {
+size -99 green -0
+scale -5
+
+size 6 green +0
+
+short yellow -0
+	label base.red.1
+branch {
+yellow -7
+	label base.left.1
+blue +13
+	label base.right.1
+}
+
+long red +0
+red +5
+	label top.left.1
+short blue +12
+	label top.yellow.1
+short blue +14
+	label top.right.1
+short blue -12
+	label top.red.1
+
+scale +5
+}
+
+rotate around blue 13
+
+branch {
+size -99 green -0
+scale -5
+
+size 6 green +0
+
+short yellow -0
+	label base.red.2
+branch {
+yellow -7
+	label base.left.2
+blue +13
+	label base.right.2
+}
+
+long red +0
+red +5
+	label top.left.2
+short blue +12
+	label top.yellow.2
+short blue +14
+	label top.right.2
+short blue -12
+	label top.red.2
+
+scale +5
+}
+
+{  //faces
+
+			label unit.face
+	label base.red.1
+	label base.left.1
+	label top.left.1
+	
+			label unit.face
+	label base.red.1
+	label top.right.1
+	label base.right.1
+	
+			label unit.face
+	label base.red.2
+	label base.left.2
+	label top.left.2
+	
+			label unit.face
+	label base.red.2
+	label top.right.2
+	label base.right.2
+	
+			label unit.face
+	label base.left.1
+	label base.right.1
+	label top.yellow.1
+	
+			label unit.face
+	label base.left.2
+	label base.right.2
+	label top.yellow.2
+	
+			label unit.face
+	label top.yellow.1
+	label top.left.1
+	label base.left.1
+	
+			label unit.face
+	label top.yellow.2
+	label top.left.2
+	label base.left.2
+	
+			label unit.face
+	label top.right.1
+	label top.yellow.1
+	label base.right.1
+	
+			label unit.face
+	label top.right.2
+	label top.yellow.2
+	label base.right.2
+	
+			label unit.face
+	label base.red.1
+	label top.left.1
+	label top.red.1
+	
+			label unit.face
+	label base.red.1
+	label top.red.1
+	label top.right.1
+	
+			label unit.face
+	label base.red.2
+	label top.left.2
+	label top.red.2
+	
+			label unit.face
+	label base.red.2
+	label top.red.2
+	label top.right.2
+	
+			label unit.face
+	label top.left.1
+	label top.yellow.1
+	label top.red.2
+	label top.left.2
+	
+			label unit.face
+	label top.left.2
+	label top.yellow.2
+	label top.red.1
+	label top.left.1
+	
+			label unit.face
+	label top.yellow.2
+	label top.right.2
+	label top.right.1
+	label top.red.1
+	
+			label unit.face
+	label top.yellow.1
+	label top.right.1
+	label top.right.2
+	label top.red.2
+	
+}
+
+label unit.end
+
+}
+

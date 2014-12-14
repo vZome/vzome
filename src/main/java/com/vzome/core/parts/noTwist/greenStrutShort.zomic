@@ -1,0 +1,186 @@
+
+{
+  from size -99 green +0
+  scale -6
+  label unit.start
+  save all {
+      branch {
+          from save scale {
+              scale 6
+              size -99 green -0
+            }
+          save all {
+              repeat 2 long green +0
+              short red +3
+              branch {
+                  repeat 2 short orange -35
+                  yellow -1
+                  label base1_wide_left
+                  branch {
+                      short blue -10
+                      size 1 red +0
+                      label base1_narrow_left
+                    }
+                  blue +13
+                  label base1_wide_right
+                  branch {
+                      short blue -11
+                      size 1 red +0
+                      label base1_narrow_right
+                    }
+                }
+              size 7 green +0
+              label frustum1_narrow
+              blue +12
+              label frustum1_right
+              blue -14
+              label frustum1_wide
+              blue -12
+              label frustum1_left
+            }
+        }
+      rotate 1 around blue +13
+      branch {
+          from save scale {
+              scale 6
+              size -99 green -0
+            }
+          save all {
+              repeat 2 long green +0
+              short red +3
+              branch {
+                  repeat 2 short orange -35
+                  yellow -1
+                  label base2_wide_left
+                  branch {
+                      short blue -10
+                      size 1 red +0
+                      label base2_narrow_left
+                    }
+                  blue +13
+                  label base2_wide_right
+                  branch {
+                      short blue -11
+                      size 1 red +0
+                      label base2_narrow_right
+                    }
+                }
+              size 7 green +0
+              label frustum2_narrow
+              blue +12
+              label frustum2_right
+              blue -14
+              label frustum2_wide
+              blue -12
+              label frustum2_left
+            }
+        }
+      {
+        label unit.face
+        label base1_wide_left
+        label base1_wide_right
+        label frustum1_wide
+        
+        label unit.face
+        label base2_wide_left
+        label base2_wide_right
+        label frustum2_wide
+        
+        label unit.face
+        label base1_wide_right
+        label frustum1_right
+        label frustum1_wide
+        
+        label unit.face
+        label base2_wide_right
+        label frustum2_right
+        label frustum2_wide
+        
+        label unit.face
+        label base1_wide_left
+        label frustum1_wide
+        label frustum1_left
+        
+        label unit.face
+        label base2_wide_left
+        label frustum2_wide
+        label frustum2_left
+        
+        label unit.face
+        label base1_narrow_left
+        label base1_wide_left
+        label frustum1_left
+        
+        label unit.face
+        label base2_narrow_left
+        label base2_wide_left
+        label frustum2_left
+        
+        label unit.face
+        label base1_wide_right
+        label base1_narrow_right
+        label frustum1_right
+        
+        label unit.face
+        label base2_wide_right
+        label base2_narrow_right
+        label frustum2_right
+        
+        label unit.face
+        label base1_narrow_right
+        label base1_narrow_left
+        label frustum1_narrow
+        
+        label unit.face
+        label base2_narrow_right
+        label base2_narrow_left
+        label frustum2_narrow
+        
+        label unit.face
+        label base1_narrow_right
+        label frustum1_narrow
+        label frustum1_right
+        
+        label unit.face
+        label base2_narrow_right
+        label frustum2_narrow
+        label frustum2_right
+        
+        label unit.face
+        label base1_narrow_left
+        label frustum1_left
+        label frustum1_narrow
+        
+        label unit.face
+        label base2_narrow_left
+        label frustum2_left
+        label frustum2_narrow
+        
+        label unit.face
+        label frustum2_wide
+        label frustum2_right
+        label frustum1_right
+        label frustum1_narrow
+        
+        label unit.face
+        label frustum1_wide
+        label frustum1_right
+        label frustum2_right
+        label frustum2_narrow
+        
+        label unit.face
+        label frustum1_narrow
+        label frustum1_left
+        label frustum2_left
+        label frustum2_wide
+        
+        label unit.face
+        label frustum2_narrow
+        label frustum2_left
+        label frustum1_left
+        label frustum1_wide
+      }
+      label unit.end
+    }
+}
+

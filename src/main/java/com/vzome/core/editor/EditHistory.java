@@ -1,0 +1,649 @@
+/*
+ * Created on Jul 3, 2004
+ *
+ * To change the template for this generated file go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
+ */
+package com.vzome.core.editor;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import com.vzome.core.commands.Command;
+import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.editor.UndoableEdit.Context;
+import com.vzome.core.math.DomUtils;
+
+public class EditHistory
+{	
+    private List mEdits = new ArrayList();
+    
+    // mEditNumber is the number of "redone" UndoableEdits in mEdits
+    
+    private int mEditNumber = 0;
+    
+    private boolean breakpointHit = false;
+    
+    private final Logger logger = Logger .getLogger( "com.vzome.core.EditHistory" );
+
+    public interface Listener
+    {
+    	void showCommand( Element xml, int editNumber );
+    }
+    
+	public Listener listener;
+	
+	public void setListener( Listener listener )
+	{
+		this .listener = listener;
+	}
+
+    public void addEdit( UndoableEdit edit )
+    {
+        if ( ! edit .isDestructive() )
+        {
+            // just insert at the current point, don't invalidate the redoable edits
+            mEdits .add( mEditNumber, edit );
+            ++ mEditNumber;
+            return;
+        }
+        
+        if ( mEditNumber < mEdits .size() )
+        {
+            boolean makeBranch = false;
+            // first, find the last isSticky() edit in the dead edits being removed.
+            int lastStickyEdit = mEditNumber - 1;
+            int deadEditIndex = mEditNumber;
+            for ( Iterator deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
+                UndoableEdit dead = (UndoableEdit) deadEdits .next();
+                if ( dead .isSticky() )
+                {
+                    makeBranch = true;
+                    lastStickyEdit = deadEditIndex;
+                }
+                ++deadEditIndex;
+            }
+            Branch branch = makeBranch? new Branch() : null;
+            deadEditIndex = mEditNumber;
+            for ( Iterator deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
+                UndoableEdit removed = (UndoableEdit) deadEdits .next();
+                deadEdits .remove();
+                if ( deadEditIndex <= lastStickyEdit )
+                {
+                    // note that lastStickyEdit is initialized with the last edit not discarded,
+                    // so this can only be true if a sticky edit had been found, and the loop
+                    // has not reached it yet
+                    removed .releaseState();
+                    branch .addEdit( removed );
+                }
+                ++deadEditIndex;
+            }
+            if ( makeBranch )
+            {
+                mEdits .add( branch );
+                ++ mEditNumber;
+            }
+        }
+        mEdits .add( edit );
+        ++ mEditNumber;
+    }
+    
+    public UndoableEdit undoAll()
+    {
+        UndoableEdit last = null;
+        do {
+            UndoableEdit edit = undo();
+            if ( edit == null )
+                    break;
+            last = edit;
+        } while ( true );
+        return last;
+    }
+
+    public UndoableEdit undoToBreakpoint()
+    {
+        // always try once, to skip over a breakpoint we might be sitting on
+        UndoableEdit edit = undo();
+        if ( edit == null )
+            return edit;
+        do {
+            edit = undo();
+            if ( edit == null )
+                break;
+            if ( edit instanceof Breakpoint ) {
+                break;
+            }
+        } while ( true );
+        return edit;
+    }
+
+    public UndoableEdit redoToBreakpoint() throws Command.Failure
+    {
+        // always try once, to skip over a breakpoint we might be sitting on
+        UndoableEdit edit = redo();
+        if ( edit == null )
+            return edit;
+        do {
+            edit = redo();
+            if ( edit == null )
+                break;
+            if ( edit instanceof Breakpoint ) {
+                break;
+            }
+        } while ( true );
+        return edit;
+    }
+    
+    public void setBreakpoint()
+    {
+        mEdits .add( mEditNumber++, new Breakpoint() );
+    }
+
+    public UndoableEdit redoAll( int breakpoint ) throws Command.Failure
+    {
+        UndoableEdit last = null;
+        breakpointHit = false;  // different mechanism than the int parameter
+        do {
+            UndoableEdit edit = redo();
+            if ( edit == null )
+                    break;
+            last = edit;
+            if ( breakpointHit )
+            {
+                breakpointHit = false;
+                break;
+            }
+        } while ( breakpoint == -1 || mEditNumber < breakpoint );
+        return last;
+    }
+
+    public void goToEdit( int editNum ) throws Command.Failure
+    {
+        if ( editNum == -1 )
+            // -1 means redoAll
+            editNum = mEdits .size();
+        if ( editNum == mEditNumber )
+            return;
+        // undo() and redo() inlined here to avoid isVisible() and block limitations
+        while ( mEditNumber < editNum )
+        {
+            if ( mEditNumber == mEdits .size() )
+                break;
+            UndoableEdit undoable = (UndoableEdit) mEdits .get( mEditNumber++ );
+            undoable .redo();
+        }
+        while ( mEditNumber > editNum )
+        {
+            if ( mEditNumber == 0 )
+                break;
+            UndoableEdit undoable = (UndoableEdit) mEdits .get( --mEditNumber );
+            undoable .undo();
+        }
+    }
+    
+    public UndoableEdit undo()
+    {
+        if ( mEditNumber == 0 )
+            return null;
+        UndoableEdit undoable = (UndoableEdit) mEdits .get( --mEditNumber );
+        if ( undoable instanceof EndBlock )
+        	return undoBlock();
+        
+    	undoable .undo();
+        logger .fine( "undo: " + undoable .toString() );
+
+        if ( undoable instanceof BeginBlock )
+    		return undoable;
+        if ( ! undoable .isVisible() )
+        	return undo(); // undo another one, until we find one we want to return
+        return undoable;
+    }
+    
+    private UndoableEdit undoBlock()
+    {
+        UndoableEdit undone;
+        do {
+            undone = undo();
+        } while ( ! (undone instanceof BeginBlock) );
+        return undone;
+    }
+
+    public UndoableEdit redo() throws Command.Failure
+    {
+        if ( mEditNumber == mEdits .size() )
+            return null;
+        UndoableEdit undoable = (UndoableEdit) mEdits .get( mEditNumber++ );
+        if ( undoable instanceof BeginBlock )
+            return redoBlock();
+        
+    	try {
+            if ( logger .isLoggable( Level .FINE ) )
+                logger .fine( "redo: " + undoable .toString() );
+            undoable .redo();
+        } catch ( RuntimeException e ) {
+            if ( logger .isLoggable( Level .WARNING ) )
+                logger .warning( "edit number that failed is " + (mEditNumber-1) );
+            throw e;
+        }
+        
+    	if ( undoable instanceof EndBlock )
+    		return undoable;
+        if ( ! undoable .isVisible() )
+        	return redo(); // redo another one, until we find one we want to return
+        return undoable;
+    }
+    
+    private UndoableEdit redoBlock() throws Command.Failure
+    {
+        UndoableEdit redone;
+        do {
+            redone = redo();
+        } while ( ! (redone instanceof EndBlock) );
+        return redone;
+    }
+    
+    public Element getXml( Document doc )
+    {
+        Element result = doc .createElement( "EditHistory" );
+        DomUtils .addAttribute( result, "editNumber", Integer.toString( this .mEditNumber ) );
+        return result;
+        // edits are now serialized in calling EditorController
+        
+//        for ( Iterator it = mEdits .iterator(); it .hasNext(); )
+//        {
+//            UndoableEdit undoable = (UndoableEdit) it .next();
+//            
+//            Context newContext = undoable .getContext();
+//            if ( context != undoable .getContext() )
+//            {
+//            	context = newContext;
+//            	UndoableEdit switchContext = masterContext .createEdit( type, format );
+//                Element switchContext = new Element( "switchContext" );
+//                switchContext .addAttribute( new Attribute( "to", getContextId( context ) ) );
+//            	result .appendChild( switchContext );
+//            }
+//            result .appendChild( undoable .getXml() );
+//        }
+    }
+
+    public void mergeSelectionChanges()
+    {
+        // TODO record the state well enough that it can be recovered
+        
+        int cursor = mEditNumber;
+        
+        if ( cursor == 0 )
+            return;
+        -- cursor;
+        UndoableEdit above = (UndoableEdit) mEdits .get( cursor );
+
+        if ( above instanceof ChangeManifestations )
+            return;
+        if ( ! ( above instanceof ChangeSelection ) )
+            return;
+        // okay, last edit was a selection change, now look if there's another one before it
+
+        if ( cursor == 0 )
+            return;
+        -- cursor;
+        UndoableEdit below = (UndoableEdit) mEdits .get( cursor );
+
+        if ( below instanceof ChangeManifestations )
+            return;
+        
+        // can never merge across contexts
+        if (  above .getContext() != below .getContext() )
+        	return;
+        
+        if ( below instanceof ChangeSelection )
+        {
+            // two in a row, wrap with begin/end pair
+        	UndoableEdit bracket = new BeginBlock();
+        	bracket .setContext( above .getContext() );
+            mEdits .add( cursor, bracket );
+            bracket = new EndBlock();
+        	bracket .setContext( above .getContext() );
+            mEdits .add( bracket );
+            mEditNumber += 2;
+        }
+        else if ( below instanceof EndBlock )
+        {
+            // match BeginBlock unless you find a real edit
+            int scan = cursor - 1;
+            boolean done = false;
+            while ( ! done )
+            {
+                UndoableEdit next = (UndoableEdit) mEdits .get( scan );
+                if ( next instanceof ChangeManifestations )
+                    return;
+                if ( next instanceof ChangeSelection )
+                    --scan; // keep going
+                else if ( next instanceof BeginBlock )
+                {
+                    // merge new selection change into block by swapping with EndBlock
+                    mEdits .remove( above );
+                    mEdits .add( cursor, above );
+                    return;
+                }
+                else
+                    return;
+            }
+        }
+    }
+
+    public void replaceEdit( UndoableEdit oldEdit, UndoableEdit newEdit )
+    {
+        mEdits .set( mEdits .indexOf( oldEdit ), newEdit );
+    }
+
+    /**
+     * This is used during DeferredEdit .redo(), possibly to migrate one UndoableEdit into several.
+     * It must maintain the invariant that the next UndoableEdit is the next DeferredEdit to redo.
+     * @param edit
+     */
+    public void insert( UndoableEdit edit )
+    {
+        mEdits .add( mEditNumber++, edit );
+    }
+    
+    public class Breakpoint implements UndoableEdit
+    {
+        Logger logger = Logger .getLogger( "com.vzome.core.editor.Breakpoint" );
+
+        public Element getXml( Document doc )
+        {
+            return doc .createElement( "Breakpoint" );
+        }
+
+        public boolean isVisible()
+        {
+            return true;
+        }
+
+        public void loadAndPerform( Element xml, XmlSaveFormat format,
+                Context context ) throws Failure
+        {
+        	context .performAndRecord( this );
+        }
+
+        public void perform() throws Failure
+        {
+            logger .info( "hit a Breakpoint at " + mEditNumber );
+            breakpointHit = true;
+        }
+
+        public void redo() throws Failure
+        {
+            perform();
+        }
+
+        public void undo()
+        {}
+
+        private Context context;
+
+		public void setContext( Context context )
+		{
+			this .context = context;
+		}
+
+		public Context getContext()
+		{
+			return this .context;
+		}
+
+        public void releaseState()
+        {
+            setContext( null );
+        }
+
+        public boolean isSticky()
+        {
+            return false;
+        }
+
+        public boolean isDestructive()
+        {
+            return false;
+        }
+    }
+
+    private class DeferredEdit implements UndoableEdit
+    {
+        private final XmlSaveFormat format;
+
+        private final Element xml;
+        
+        private Context context;
+
+        public DeferredEdit( XmlSaveFormat format, Element editElem, Context context )
+        {
+            this.format = format;
+            this.xml = editElem;
+            this.context = context;
+        }
+
+        public Element getXml( Document doc )
+        {
+            return xml;
+        }
+
+        public boolean isVisible()
+        {
+            return true;
+        }
+
+        public boolean isDestructive()
+        {
+            return true;
+        }
+
+        public void redo() throws Command.Failure
+        {
+            /*
+             * The following things need to happen:
+             * 
+             * 1. this DeferredEdit will remove itself from the history
+             * 
+             * 2. a single UndoableEdit is created based on the xml
+             * 
+             * 3. the UndoableEdit may migrate itself, generating
+             */
+        	if ( logger.isLoggable( Level.FINE ) ) // see the logger declaration to enable FINE
+        		logger.fine( "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + DomUtils .getXmlString( xml ) );
+
+        	int num = mEditNumber;
+            mEdits .remove( --mEditNumber );
+
+        	UndoableEdit realized = null;
+        	String cmdName = xml.getLocalName();
+
+        	//                if ( format.actionHistory() ) // never happens, yet
+        	//                    realized = design .createActionEdit( cmdName, null, groupInSelection );
+        	//                else
+        	// opening a file from vZome 2.1 - 4.0 or ...?
+        	if ( cmdName .equals( "Breakpoint" ) )
+        	{
+        		realized = new Breakpoint();
+        		realized .setContext( context );
+        	}
+        	else
+        		realized = context .createEdit( cmdName, format );
+//            System.out.print( "edit: " + cmdName );
+
+        	try {
+				EditHistory .this .listener .showCommand( xml, num );
+        		realized. loadAndPerform( xml, format, new UndoableEdit.Context()
+        		{
+        			public void performAndRecord( UndoableEdit edit )
+        			{
+        				// realized is responsible for inserting itself, or any replacements (migration)
+        				try {
+        					edit .perform();
+        				} catch (Failure e) {
+        					// really hacky tunneling
+        					throw new RuntimeException( e );
+        				}
+        				EditHistory .this .insert( edit );
+        			}
+
+        			public UndoableEdit createEdit( String type, XmlSaveFormat format )
+        			{
+        				return context .createEdit( type, format );
+        			}
+        		} ); // this method needs to have the history, since it may migrate
+//        		System.out.println();
+
+        		// no longer doing redo() and mHistory.replace() here, so each UndoableEdit may
+        		// either migrate itself, or determine whether it requires a redo() after deserialization.
+        	} catch ( RuntimeException e ) {
+        		logger.warning( "failure during initial edit replay:\n" + DomUtils .getXmlString( xml ) );
+        		// errors will be reported by caller!
+        		// mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
+        		throw e; // interrupt the redoing
+        	}
+        }
+
+        public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
+        {
+            throw new IllegalStateException( "should never be called" );
+        }
+
+        public void undo()
+        {
+            // called, but must be a no-op
+        }
+
+        public void perform()
+        {
+            // never called
+        }
+
+		public Context getContext()
+		{
+			return this.context;
+		}
+
+		public void setContext( Context context )
+		{
+            throw new IllegalStateException( "should never happen" );
+		}
+
+        public void releaseState()
+        {
+            setContext( null );
+        }
+
+        public boolean isSticky()
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Redo to greater of lastStickyEdit and lastDoneEdit, undo back to lastDoneEdit.
+     * If there are explicitSnapshots, this is a migration of an old Article, using edit
+     * numbers, and we have to redo as far as the last one, inserting snapshots as we go.
+     * Note that lastStickyEdit and explicitSnapshots are mutually exclusive, after and before
+     * migration, respectively.
+     * 
+     * @param lastDoneEdit
+     * @param lastStickyEdit
+     * @param explicitSnapshots 
+     * @throws Failure
+     */
+	public void synchronize( int lastDoneEdit, int lastStickyEdit, UndoableEdit[] explicitSnapshots ) throws Failure
+	{
+	    int redoThreshold = Math .max( lastDoneEdit, lastStickyEdit );
+	    
+	    if ( explicitSnapshots != null )
+	        redoThreshold = Math .max( redoThreshold, explicitSnapshots .length - 1 );
+	    
+	    mEditNumber = 0;
+	    int targetEdit = 0;
+	    List toRedo = new ArrayList();
+	    // here the edits are all still DeferredEdits
+	    for ( int i = 0; i < redoThreshold; i++ )
+	        if ( i < mEdits .size() )
+                toRedo .add( mEdits .get( i ) );
+	        else
+	            break;
+	    for ( int oldIndex = 0; oldIndex < toRedo .size(); oldIndex++ )
+	    {	            
+	        DeferredEdit edit = (DeferredEdit) toRedo .get( oldIndex );
+	        try {
+                if ( explicitSnapshots != null
+                        && explicitSnapshots .length > oldIndex
+                        && explicitSnapshots[ oldIndex ] != null )
+                {
+                    // a snapshot editNum of 3 means a snapshot *before* edit #3 is redone,
+                    //  so we do this snapshot migration first
+                    UndoableEdit snapshot = explicitSnapshots[ oldIndex ];
+                    mEdits .add( mEditNumber, snapshot );
+                    // keep lastDoneEdit in alignment
+                    if ( mEditNumber <= lastDoneEdit )
+                        ++ lastDoneEdit;
+                    ++ mEditNumber;
+                    snapshot .perform();
+                }
+
+                ++ mEditNumber;  //match the preconditions like this.redo()
+//                System.out.print( "edit number: " + mEditNumber + ";  " );
+	            edit .redo();
+	            // now the edit is realized
+	            
+	            // lastDoneEdit is in terms of the edits in the file, and we need
+	            //  to translate it to match the actual edit numbers, after migration
+	            //  and snapshot creation.  We know this condition will succeed once,
+	            //  since toRedo.size() is at least as big as lastDoneEdit.
+	            if ( oldIndex+1 == lastDoneEdit )
+	            	targetEdit = mEditNumber;
+
+	        } catch ( RuntimeException e ) {
+	            if ( logger.isLoggable( Level.WARNING ) )
+	                logger.warning( "edit number that failed is " + ( this .mEditNumber - 1 ) );
+	            // unwrap
+	            Throwable t = e.getCause();
+	            if ( t instanceof Command.Failure )
+	                throw (Command.Failure) t;
+	            else
+	                throw e;
+	        }
+	    }
+        if ( explicitSnapshots != null
+                && explicitSnapshots .length > redoThreshold
+                && explicitSnapshots[ redoThreshold ] != null )
+        {
+            // a snapshot editNum of 3 means a snapshot *before* edit #3 is redone,
+            //  so we do this snapshot migration first
+            UndoableEdit snapshot = explicitSnapshots[ redoThreshold ];
+            mEdits .add( mEditNumber, snapshot );
+            ++ mEditNumber;
+            snapshot .perform();
+        }
+        goToEdit( targetEdit );
+	}
+
+	public void loadEdit( XmlSaveFormat format, Element editElem, Context context )
+    {
+        DeferredEdit edit = new DeferredEdit( format, editElem, context );
+        this .addEdit( edit );
+    }
+
+    public Iterator iterator()
+    {
+        return this .mEdits .iterator();
+    }
+
+    public int getEditNumber()
+    {
+        return this .mEditNumber;
+    }
+}

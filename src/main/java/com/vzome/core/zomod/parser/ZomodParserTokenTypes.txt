@@ -1,0 +1,17 @@
+// $ANTLR 2.7.2: zomod.g -> ZomodParserTokenTypes.txt$
+ZomodParser    // output token vocab name
+COMMA=4
+BALL=5
+FAST=6
+ORIENT=7
+STEP=8
+SLASH=9
+AXIS=10
+AXISNUM=11
+MOVE_OR_STRUT=12
+LINE=13
+SIZE=14
+DIGIT=15
+WS=16
+SL_COMMENT=17
+ML_COMMENT=18

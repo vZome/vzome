@@ -1,0 +1,52 @@
+scale -5
+
+symmetry through center
+{
+
+
+symmetry around red +0
+branch { 					label unit.start
+
+branch {
+	red +0
+	size 2 yellow +8		label s1
+	size 2 blue +10			label s3
+}
+
+branch {
+	long red +0
+	short yellow +8			label j1
+	branch { repeat 6 size -3 orange 18 		label s2 }
+	short blue +10			label j2
+	branch { repeat 6 size -3 orange 29 		label s4 }
+}
+
+save scale { scale +5
+from size -99 red +0 }
+
+	branch{
+		long red -0
+		short yellow +8		label t1
+		short blue +10		label t2
+	}
+
+	branch{
+		long red +0
+		short yellow -6		label t3
+	}
+							label unit.face
+							label j1
+							label j2
+							label t2
+							label t1
+							label unit.face
+							label t1
+							label t2
+							label t3
+							label unit.end
+}
+
+save scale { scale +5
+repeat 2
+from size -99 red +0 }
+}

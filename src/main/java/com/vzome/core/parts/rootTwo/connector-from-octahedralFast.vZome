@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="rootTwo" version="2.1 Beta 14" xmlns:vzome="http://tns.vorthmann.org/vZome/3.0.0/">
+  <Viewing>
+    <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.08606154830897277" y="0.9950917571102282" z="-0.04884470118587589"/>
+      <LookDirection x="-0.812292483851609" y="-0.04169600759143889" z="0.581757994039717"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" useGraphicalViews="false" renderingStyle="octahedral">
+    <Direction name="blue" available="true" snap="true" build="true" render="true" color="0,118,149">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" build="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" build="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="brown" render="true" color="107,53,26">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="76">
+    <BeginBlock/>
+    <SelectAll/>
+    <EndBlock/>
+    <CommandEdit command="CommandBuildAnchoredSegment">
+      <Axis symm="octahedral" dir="blue" index="7" attrName="axis"/>
+      <IntegralNumber value="8sqrt2" attrName="length"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point y="-8sqrt2" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandBuildAnchoredSegment">
+      <Axis symm="octahedral" dir="blue" index="0" attrName="axis"/>
+      <IntegralNumber value="4sqrt2" attrName="length"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point x="4sqrt2" y="-8sqrt2" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandBuildAnchoredSegment">
+      <Axis symm="octahedral" dir="blue" index="4" attrName="axis"/>
+      <IntegralNumber value="4sqrt2" attrName="length"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point x="4sqrt2" y="-8sqrt2" z="4sqrt2" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandBuildAnchoredSegment">
+      <Axis symm="octahedral" dir="blue" index="7" attrName="axis"/>
+      <IntegralNumber value="4" attrName="length"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandBuildAnchoredSegment">
+      <Axis symm="octahedral" dir="blue" index="7" attrName="axis"/>
+      <IntegralNumber value="8" attrName="length"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <segment attrName="manifestation">
+        <start/>
+        <end y="-8"/>
+      </segment>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point y="-8" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandBuildAnchoredSegment">
+      <Axis symm="octahedral" dir="blue" index="0" attrName="axis"/>
+      <IntegralNumber value="4" attrName="length"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point x="4" y="-8" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandBuildAnchoredSegment">
+      <Axis symm="octahedral" dir="blue" index="4" attrName="axis"/>
+      <IntegralNumber value="4" attrName="length"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point x="4" y="-8" z="4" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandBuildAnchoredSegment">
+      <Axis symm="octahedral" dir="blue" index="7" attrName="axis"/>
+      <IntegralNumber value="2sqrt2" attrName="length"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point x="4" y="-2sqrt2-8" z="4" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandSymmetry">
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point x="-4" y="-4" z="2sqrt2+8" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="4" y="-4" z="2sqrt2+8" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="4" y="4" z="2sqrt2+8" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="-4" y="4" z="2sqrt2+8" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point x="4" y="4" z="2sqrt2+8" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="4" y="2sqrt2+8" z="4" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="-4" y="2sqrt2+8" z="4" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="-4" y="4" z="2sqrt2+8" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point x="4" y="4" z="2sqrt2+8" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="2sqrt2+8" y="4" z="4" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="4" y="2sqrt2+8" z="4" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygon attrName="manifestation">
+        <vertex x="4" y="4" z="2sqrt2+8"/>
+        <vertex x="2sqrt2+8" y="4" z="4"/>
+        <vertex x="4" y="2sqrt2+8" z="4"/>
+      </polygon>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygon attrName="manifestation">
+        <vertex x="4" y="4" z="2sqrt2+8"/>
+        <vertex x="4" y="2sqrt2+8" z="4"/>
+        <vertex x="-4" y="2sqrt2+8" z="4"/>
+        <vertex x="-4" y="4" z="2sqrt2+8"/>
+      </polygon>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygon attrName="manifestation">
+        <vertex x="-4" y="-4" z="2sqrt2+8"/>
+        <vertex x="4" y="-4" z="2sqrt2+8"/>
+        <vertex x="4" y="4" z="2sqrt2+8"/>
+        <vertex x="-4" y="4" z="2sqrt2+8"/>
+      </polygon>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandSymmetry">
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </CommandEdit>
+    <DeselectAll/>
+  </EditHistory>
+</vzome:vZome>

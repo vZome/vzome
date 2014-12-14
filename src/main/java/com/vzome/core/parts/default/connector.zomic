@@ -1,0 +1,49 @@
+scale -5
+
+symmetry
+{
+label unit.start
+
+	from long blue +2
+	from short red +1
+label blue0
+	blue -5
+label blue1
+	short blue -13
+label blue2
+label yellow0
+	blue +5
+label blue3
+label yellow2
+	blue -6
+label yellow1
+label red0
+	short blue -0
+label red1
+	short blue -7
+label red2
+	short blue +5
+label red3
+	short blue +1
+label red4
+
+{
+label unit.face
+		label blue0
+		label blue1
+		label blue2
+		label blue3
+label unit.face
+		label yellow0
+		label yellow1
+		label yellow2
+label unit.face
+		label red0
+		label red1
+		label red2
+		label red3
+		label red4
+}
+
+label unit.end
+}

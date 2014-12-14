@@ -1,0 +1,86 @@
+
+scale -5
+symmetry
+{
+label unit.start
+
+	move
+		repeat 2 long blue +0 short red +4
+	build
+			branch blue -13
+			scale -1
+label green_0
+label purple_0
+label orange_0
+label blue_0
+			red -3
+label blue_1
+label orange_3
+label yellow_0
+			red -4
+label blue_2
+			blue +14
+label blue_3
+			red +3
+label blue_4
+			red +4
+label blue_5
+label purple_1
+			long yellow +8
+label purple_2
+label red_0
+			blue -11
+label red_1
+			blue -13
+label red_2
+			blue +10
+label red_3
+			blue +12
+label red_4
+label purple_3
+label green_1
+			long yellow -7
+label green_2
+label orange_1
+			red -3
+label orange_2
+label yellow_1
+			scale +1
+			blue -8
+label yellow_2
+
+							label unit.face
+	label red_0
+	label red_1
+	label red_2
+	label red_3
+	label red_4
+							label unit.face
+	label yellow_0
+	label yellow_1
+	label yellow_2
+							label unit.face
+	label blue_0
+	label blue_1
+	label blue_2
+	label blue_3
+	label blue_4
+	label blue_5
+							label unit.face
+	label green_0
+	label green_1
+	label green_2
+							label unit.face
+	label orange_0
+	label orange_1
+	label orange_2
+	label orange_3
+							label unit.face
+	label purple_0
+	label purple_1
+	label purple_2
+	label purple_3
+
+
+label unit.end
+}

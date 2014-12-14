@@ -1,0 +1,180 @@
+
+size -99 purple +0
+
+symmetry around blue +13
+branch{
+
+label unit.start
+
+branch {
+
+size -99 purple -0
+scale -5
+yellow +0 red +0
+
+	label pent.top.center
+short blue -12
+	label pent.top.left
+short blue -10
+	label pent.bottom.left
+short blue +13
+	label pent.bottom.right
+short blue +11
+	label pent.top.right
+
+green +3
+	label frustum.top.right
+short blue -13
+	label frustum.top.left
+blue -5
+	label frustum.bottom.left
+short blue +13
+	label frustum.bottom.right
+}
+
+short red +1
+	label joint.top.right
+short blue -13
+	label joint.top.left
+blue -5
+	label joint.bottom.left
+short blue +13
+	label joint.bottom.right
+	
+scale +5
+
+{  //faces
+
+			label unit.face // frustum top left
+	label pent.top.center
+	label frustum.top.left
+	label pent.top.left
+	
+			label unit.face // frustum top center
+	label pent.top.center
+	label frustum.top.right
+	label frustum.top.left
+	
+			label unit.face // frustum top right
+	label pent.top.center
+	label pent.top.right
+	label frustum.top.right
+	
+			label unit.face // frustum bottom
+	label pent.bottom.right
+	label pent.bottom.left
+	label frustum.bottom.left
+	label frustum.bottom.right
+	
+			label unit.face // frustum left side top
+	label pent.top.left
+	label frustum.top.left
+	label frustum.bottom.left
+	
+			label unit.face // frustum left side bottom
+	label pent.top.left
+	label frustum.bottom.left
+	label pent.bottom.left
+	
+			label unit.face // frustum right side top
+	label pent.top.right
+	label frustum.bottom.right
+	label frustum.top.right
+	
+			label unit.face // frustum right side bottom
+	label pent.top.right
+	label pent.bottom.right
+	label frustum.bottom.right
+	
+			label unit.face // rail top
+	label joint.top.right
+	label joint.top.left
+	label frustum.top.left
+	label frustum.top.right
+	
+			label unit.face // rail bottom
+	label joint.bottom.left
+	label joint.bottom.right
+	label frustum.bottom.right
+	label frustum.bottom.left
+	
+			label unit.face // rail right
+	label joint.bottom.right
+	label joint.top.right
+	label frustum.top.right
+	label frustum.bottom.right
+	
+			label unit.face // rail left
+	label joint.top.left
+	label joint.bottom.left
+	label frustum.bottom.left
+	label frustum.top.left
+	
+}
+
+label unit.end
+
+}
+
+//// begin tip
+scale -5
+symmetry through center branch
+{
+
+// move to strut origin
+from save scale { scale +5
+size -99 purple -0 }
+
+branch {
+	red +0
+	size 2 yellow +8		label unit.start
+	size 2 blue +10			label p1
+	rotate around red -0
+	size 2 blue +10			label p2
+	rotate around red -0
+	size 2 blue +10			label p3
+	rotate around red -0
+	size 2 blue +10			label p4
+	rotate around red -0
+	size 2 blue +10			label p5
+	rotate around red -0
+							label unit.face
+							label p5
+							label p4
+							label p3
+							label p2
+							label p1
+							label unit.end
+}
+
+symmetry around red +0
+branch { 					label unit.start
+
+branch {
+	red +0
+	size 2 yellow +8		label s1
+	size 2 blue +10			label s3
+}
+
+branch {
+	long red +0
+	short yellow +8			label j1
+	branch { repeat 6 size -3 orange 18 		label s2 }
+	short blue +10			label j2
+	branch { repeat 6 size -3 orange 29 		label s4 }
+}
+						label unit.face
+							label s1
+							label s3
+							label s4
+							label s2
+							label unit.face
+							label j1
+							label s2
+							label s4
+							label j2
+							label unit.end
+}
+}
+}
+//// end tip

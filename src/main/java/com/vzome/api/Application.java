@@ -1,0 +1,77 @@
+
+//(c) Copyright 2011, Scott Vorthmann.
+
+package com.vzome.api;
+
+import java.io.InputStream;
+import java.net.URL;
+
+import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.commands.Command;
+import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.render.Colors;
+import com.vzome.core.render.Shapes;
+
+public class Application
+{
+	private final com.vzome.core.editor.Application delegate;
+	
+	public Application()
+	{
+		this( new Command.FailureChannel() {
+			
+			public void reportFailure( Failure f )
+			{
+				f .printStackTrace();
+			}
+		} );
+	}
+
+	public Application( Command.FailureChannel failures )
+	{
+	    this .delegate = new com.vzome.core.editor.Application(true, failures, null );
+	}
+
+	public Document loadDocument( InputStream bytes ) throws Exception
+	{
+		DocumentModel docDelegate = this .delegate .loadDocument( bytes, true );
+		docDelegate .loadXml( false, false );
+		return new Document( docDelegate );
+    }
+    
+    public Polyhedron getBallShape()
+    {
+        return getBallShape( "golden", "icosahedral", "default" );
+    }
+    
+    public Polyhedron getBallShape( String fieldName, String symmetryName, String style )
+    {
+		AlgebraicField field = this .delegate .getField( fieldName );
+		Symmetry symm = field .getSymmetry( symmetryName );
+		Shapes shapes = this .delegate .getGeometry( symm, style );
+		return shapes .getConnectorShape();
+	}
+	
+	public Colors getColors()
+	{
+		return this .delegate .getColors();
+	}
+	
+	public static void main( String[] args )
+	{
+		String urlStr = "http://vzome.com/models/2007/07-Jul/affine120-bop/purpleBlueOrange-affine120cell.vZome";
+		if ( args.length > 0 )
+			urlStr = args[ 0 ];
+		Application app = new Application();
+		try {
+			InputStream bytes = new URL( urlStr ) .openStream();
+			app .loadDocument( bytes );
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+			
+	}
+}
