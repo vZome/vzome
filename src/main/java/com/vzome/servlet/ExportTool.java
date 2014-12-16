@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.*;
+
 import com.vzome.api.Application;
 import com.vzome.api.Document;
 import com.vzome.api.Exporter;
@@ -69,5 +72,16 @@ public class ExportTool extends HttpServlet
     public String getServletInfo()
     {
         return "Exports a JSON file from a vZome model, for use in vZome webview";
+    }
+    
+    public static void main(String[] args) throws Exception
+    {
+        Server server = new Server(Integer.valueOf(System.getenv("PORT")));
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
+        server.setHandler(context);
+        context.addServlet(new ServletHolder(new ExportTool()),"/*");
+        server.start();
+        server.join();
     }
 }
