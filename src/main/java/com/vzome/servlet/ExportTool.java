@@ -24,7 +24,6 @@ import com.vzome.api.Exporter;
 
 public class ExportTool extends HttpServlet
 {
-	Properties props;
 	Application app;
 	
     public void init( ServletConfig config )
@@ -41,8 +40,12 @@ public class ExportTool extends HttpServlet
         InputStream bytes = null;
         PrintWriter out = null;
         try {
-            URL vZomeFile = new URL( req .getQueryString() );
-            String format = req .getServletPath() .substring( 1 );
+            String urlStr = req .getQueryString();
+            System .out .println( "URL is = " + urlStr );
+            URL vZomeFile = new URL( urlStr );
+            String format = req .getPathInfo();
+            System .out .println( "format is = " + format );
+            format = format .substring( 1 );
             
             Exporter exporter = this .app .getExporter( format );
 
@@ -53,8 +56,6 @@ public class ExportTool extends HttpServlet
             
             bytes = vZomeFile .openStream();
             
-            props .setProperty( "export.format", format );
-
             Document model = app .loadDocument( bytes );
 	        exporter .doExport( model, out, 1080, 1920 );
 	        

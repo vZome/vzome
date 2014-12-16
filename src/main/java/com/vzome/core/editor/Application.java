@@ -99,7 +99,7 @@ public class Application
 
     private Map exporters = new HashMap();
 
-    private Lights mLights;
+    private Lights mLights = new Lights();
     
     static Logger logger = Logger.getLogger( "com.vzome.core.editor" );
 
