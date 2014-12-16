@@ -1,6 +1,5 @@
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -24,7 +23,7 @@ public class VefExporter extends Exporter3d
 	    super( scene, colors, lights, model );
 	}
 
-	public void doExport( File directory, Writer writer, Dimension screenSize ) throws IOException
+	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    AlgebraicField field = mModel .getField();
         int[] scale = field .createPower( -5 );

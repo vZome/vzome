@@ -1,6 +1,5 @@
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,7 +15,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
@@ -45,7 +43,7 @@ public class SecondLifeExporter extends Exporter3d
         "\n];";
 
 
-	public void doExport( File directory, Writer writer, Dimension screenSize ) throws IOException
+	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
         output = new PrintWriter( writer );
         
@@ -54,7 +52,7 @@ public class SecondLifeExporter extends Exporter3d
         AlgebraicField field = mModel .getField();
         int[] scale = field .createPower( -5 );
         
-        int numBalls = 0, numStruts = 0, numPanels = 0;
+        int numBalls = 0;
         StringBuffer vertices = new StringBuffer();
         Map ballIndices = new HashMap( numBalls );
         boolean first = true;
@@ -81,10 +79,10 @@ public class SecondLifeExporter extends Exporter3d
                 vertices .append( FORMAT.format( rv .z ) );
                 vertices .append( ">" );
             }
-            else if ( man instanceof Strut )
-                ++ numStruts;
-            else if ( man instanceof Panel )
-                ++ numPanels;
+//            else if ( man instanceof Strut )
+//                ++ numStruts;
+//            else if ( man instanceof Panel )
+//                ++ numPanels;
         }
         output .println( VERTEX_PRELUDE );
         output .println( vertices .toString() );

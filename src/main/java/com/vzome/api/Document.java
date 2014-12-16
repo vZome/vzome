@@ -15,6 +15,7 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.render.RenderedModel;
+import com.vzome.core.viewing.ViewModel;
 
 public class Document
 {
@@ -55,6 +56,11 @@ public class Document
 	public RenderedModel getRenderedModel()
 	{
 	    return this .delegate .getRenderedModel();
+	}
+	
+	public ViewModel getViewModel()
+	{
+	    return this .delegate .getViewModel();
 	}
 	
 	public float[][] getOrientations()

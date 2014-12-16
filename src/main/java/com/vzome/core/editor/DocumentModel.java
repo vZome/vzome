@@ -31,8 +31,8 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
@@ -45,6 +45,7 @@ import com.vzome.core.editor.Snapshot.SnapshotAction;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.JsonExporter;
 import com.vzome.core.exporters.LiveGraphicsExporter;
 import com.vzome.core.exporters.OffExporter;
 import com.vzome.core.exporters.OpenGLExporter;
@@ -59,7 +60,6 @@ import com.vzome.core.exporters.SegExporter;
 import com.vzome.core.exporters.StlExporter;
 import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.exporters.VefExporter;
-import com.vzome.core.exporters.Web3dExporter;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
@@ -110,6 +110,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	private final Element mXML;
 	
 	private RenderedModel renderedModel;
+	
+	private ViewModel defaultView;
 
     static Logger logger = Logger .getLogger( "com.vzome.core.editor" );
 
@@ -638,7 +640,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         if ( !asTemplate )
         {
         	Map viewPages = new HashMap();
-        	ViewModel defaultView = new ViewModel();
+            this .defaultView = new ViewModel();
             Element views = (Element) mXML .getElementsByTagName( "Viewing" ) .item( 0 );
             if ( views != null ) {
                 // make a notes page for each saved view
@@ -654,7 +656,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             			if ( ( name == null || name .isEmpty() )
             		    || ( "default" .equals( name ) ) )
             			{
-            				defaultView = view;
+            				this .defaultView = view;
             			}
             			else
             				viewPages .put( name, view ); // named view to migrate to a lesson page
@@ -664,7 +666,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
             Element notesXml = (Element) mXML .getElementsByTagName( "notes" ) .item( 0 );
             if ( notesXml != null ) 
-            	lesson .setXml( notesXml, editNum, defaultView );
+            	lesson .setXml( notesXml, editNum, this .defaultView );
             
             // add migrated views to the end of the lesson
             for (Iterator iterator = viewPages .entrySet() .iterator(); iterator.hasNext();) {
@@ -1001,7 +1003,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         if ( format.equals( "LiveGraphics" ) )
         	return new DaeExporter( view, colors, lights, mRenderedModel );
         else if ( format.equals( "json" ) )
-        	return new Web3dExporter( lights .getBackgroundColor(), mRenderedModel );
+        	return new JsonExporter( view, colors, lights, mRenderedModel );
         else if ( format.equals( "step" ) )
         	return new STEPExporter( view, colors, lights, mRenderedModel );
         else if ( format.equals( "vrml" ) )
@@ -1066,6 +1068,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	public RenderedModel getRenderedModel()
 	{
 		return this .renderedModel;
+	}
+	
+	public ViewModel getViewModel()
+	{
+	    return this .defaultView;
 	}
 
     public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, int[][] edgeScales )

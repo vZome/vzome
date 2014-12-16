@@ -1,6 +1,5 @@
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -33,10 +32,10 @@ public abstract class Exporter3d
 
 	protected transient PrintWriter output;
 	
-	protected final ViewModel mScene;
-	protected final Colors mColors;
-	protected final Lights mLights;
-	protected final RenderedModel mModel;
+	protected transient ViewModel mScene;
+	protected transient Colors mColors;
+	protected transient Lights mLights;
+	protected transient RenderedModel mModel;
 	
 	public Exporter3d( ViewModel scene, Colors colors, Lights lights, RenderedModel model )
 	{
@@ -46,15 +45,26 @@ public abstract class Exporter3d
         mModel = model;
 	}
 
-	public abstract void doExport( File directory, Writer writer, Dimension screenSize ) throws Exception;
-
+	public abstract void doExport( File directory, Writer writer, int height, int width ) throws Exception;
 
     public abstract String getFileExtension();
-
-
-    public void doExport( File file, File parentFile, Writer out, Dimension dimension ) throws Exception
+    
+    public String getContentType()
     {
-        this .doExport( parentFile, out, dimension );
+        return "text/plain";
+    }
+
+    
+    public void doExport( ViewModel scene, RenderedModel model, Writer writer, int height, int width ) throws Exception
+    {
+        mScene = scene;
+        mModel = model;
+        this .doExport( new File( "." ), writer, height, width );
+    }
+
+    public void doExport( File file, File parentFile, Writer out, int height, int width ) throws Exception
+    {
+        this .doExport( parentFile, out, height, width );
     }
     
 }

@@ -15,6 +15,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.vecmath.Vector3f;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -47,6 +48,23 @@ import com.vzome.core.commands.CommandTranslate;
 import com.vzome.core.commands.CommandUniformH4Polytope;
 import com.vzome.core.commands.CommandVanOss600Cell;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.exporters.DaeExporter;
+import com.vzome.core.exporters.DxfExporter;
+import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.JsonExporter;
+import com.vzome.core.exporters.LiveGraphicsExporter;
+import com.vzome.core.exporters.OffExporter;
+import com.vzome.core.exporters.OpenGLExporter;
+import com.vzome.core.exporters.POVRayExporter;
+import com.vzome.core.exporters.PartsListExporter;
+import com.vzome.core.exporters.PdbExporter;
+import com.vzome.core.exporters.RulerExporter;
+import com.vzome.core.exporters.STEPExporter;
+import com.vzome.core.exporters.SecondLifeExporter;
+import com.vzome.core.exporters.SegExporter;
+import com.vzome.core.exporters.StlExporter;
+import com.vzome.core.exporters.VRMLExporter;
+import com.vzome.core.exporters.VefExporter;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -55,11 +73,13 @@ import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.Shapes;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.DodecagonalShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
+import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.OctahedralShapes;
 import com.vzome.core.viewing.ScriptedShapes;
 
@@ -76,6 +96,10 @@ public class Application
     private final Colors mColors;
 
     private final Command.FailureChannel failures;
+
+    private Map exporters = new HashMap();
+
+    private Lights mLights;
     
     static Logger logger = Logger.getLogger( "com.vzome.core.editor" );
 
@@ -89,6 +113,14 @@ public class Application
         }
         mColors = new Colors( props );
         File prefsFolder = new File( System.getProperty( "user.home" ), "vZome-Preferences" );
+
+        for ( int i = 1; i <= 3; i++ ) {
+            Color color = mColors .getColorPref( "light.directional." + i );
+            Vector3f dir = new Vector3f( mColors .getVectorPref( "direction.light." + i ) );
+            mLights.addDirectionLight( color, dir );
+        }
+        mLights .setAmbientColor( mColors .getColorPref( "light.ambient" ) );
+        mLights .setBackgroundColor( mColors .getColor( Colors.BACKGROUND ) );
 
         AbstractShapes defaultShapes = null;
         
@@ -267,6 +299,23 @@ public class Application
         symmetry = new OctahedralSymmetry( field, "blue", "octahedra" );
         mStyles.put( symmetry, new ArrayList<Shapes>() );
         addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
+        
+        this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "dae", new VRMLExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "LiveGraphics", new DaeExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "json", new JsonExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "step", new STEPExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "vrml", new LiveGraphicsExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "off", new OffExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "2life", new SecondLifeExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "vef", new VefExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "partslist", new PartsListExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "size", new RulerExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "stl", new StlExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "dxf", new DxfExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "pdb", new PdbExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "seg", new SegExporter( null, this .mColors, this .mLights, null ) );
     }
 
     private void addStyle( Shapes shapes )
@@ -432,4 +481,9 @@ public class Application
 	{
 		return this .mCommands;
 	}
+
+    public Exporter3d getExporter( String format )
+    {
+        return (Exporter3d) this .exporters .get( format );
+    }
 }

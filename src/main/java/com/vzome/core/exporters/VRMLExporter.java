@@ -1,6 +1,5 @@
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class VRMLExporter extends Exporter3d{
     }
 
 
-    public void doExport( File directory, Writer writer, Dimension screenSize ) throws Exception
+    public void doExport( File directory, Writer writer, int height, int width ) throws Exception
     {
         output = new PrintWriter( writer );
 

@@ -10,6 +10,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
@@ -74,4 +75,10 @@ public class Application
 		}
 			
 	}
+
+    public Exporter getExporter( String format )
+    {
+        Exporter3d privateExp = this .delegate .getExporter( format );
+        return new Exporter( privateExp );
+    }
 }

@@ -1,6 +1,5 @@
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -28,11 +27,13 @@ public class SegExporter extends Exporter3d
 	public SegExporter( ViewModel scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    super( scene, colors, lights, model );
-	    this .field = model .getField();
 	}
 
-	public void doExport( File directory, Writer writer, Dimension screenSize ) throws IOException
+	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
+        this .field = this .mModel .getField();
+        this .vertices = new StringBuffer();
+        this .struts = new StringBuffer();
         if (format instanceof DecimalFormat) {
             ((DecimalFormat) format) .applyPattern( "0.0000" );
         }		
@@ -62,11 +63,11 @@ public class SegExporter extends Exporter3d
 
     private Map vertexData = new HashMap();
     
-    private final StringBuffer vertices = new StringBuffer();
+    private transient StringBuffer vertices;
 
-    private final StringBuffer struts = new StringBuffer();
+    private transient StringBuffer struts;
 
-    protected final AlgebraicField field;
+    protected transient AlgebraicField field;
     
 	private final NumberFormat format = NumberFormat .getNumberInstance( Locale .US );
 

@@ -1,7 +1,6 @@
 
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -19,15 +18,19 @@ import com.vzome.core.viewing.ViewModel;
 
 public class RulerExporter extends Exporter3d
 {
-    double maxX, maxY, maxZ;
-
     public RulerExporter( ViewModel scene, Colors colors,
             Lights lights, RenderedModel model )
     {
         super( scene, colors, lights, model );
-        
-        AlgebraicField field = model .getField();
-        for ( Iterator rms = model .getRenderedManifestations(); rms .hasNext(); )
+    }
+
+    public void doExport( File directory, Writer writer, int height, int width )
+            throws Exception
+    {
+        double maxX = 0, maxY = 0, maxZ = 0;
+
+        AlgebraicField field = this .mModel .getField();
+        for ( Iterator rms = this .mModel .getRenderedManifestations(); rms .hasNext(); )
         {
             RenderedManifestation rm = (RenderedManifestation) rms .next();
             Manifestation man = rm .getManifestation();
@@ -46,11 +49,7 @@ public class RulerExporter extends Exporter3d
                     maxZ = z;
             }
         }
-    }
 
-    public void doExport( File directory, Writer writer, Dimension screenSize )
-            throws Exception
-    {
         PrintWriter pw = new PrintWriter( writer );
         pw .println( "max X = " + maxX );
         pw .println( "max Y = " + maxY );

@@ -1,6 +1,5 @@
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,7 +37,7 @@ public class OpenGLExporter extends Exporter3d
 	}
 
 
-	public void doExport( File directory, Writer writer, Dimension screenSize ) throws IOException
+	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
         AlgebraicField field = mModel .getField();

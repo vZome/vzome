@@ -1,6 +1,5 @@
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -55,7 +54,7 @@ public class POVRayExporter extends Exporter3d
         viewTrans .transform( vector );
     }
 
-	public void doExport( File povFile, File directory, Writer writer, Dimension screenSize ) throws IOException
+	public void doExport( File povFile, File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
 	    
@@ -82,9 +81,9 @@ public class POVRayExporter extends Exporter3d
         output .println();
 		output .println( "#declare      field_of_view = " + mScene .getFieldOfView() + ";" );
         output .println();
-		output .println( "#declare       canvas_width = " + screenSize.width + ";" );
+		output .println( "#declare       canvas_width = " + width + ";" );
         output .println();
-		output .println( "#declare      canvas_height = " + screenSize.height + ";" );
+		output .println( "#declare      canvas_height = " + height + ";" );
         output .println();
         output .println( "#declare      parallel_proj = " + (mScene.isPerspective()?0:1) + ";" );
         output .println();
@@ -321,12 +320,11 @@ public class POVRayExporter extends Exporter3d
     }
 
 
-    public void doExport( File directory, Writer writer, Dimension screenSize )
+    public void doExport( File directory, Writer writer, int height, int width )
             throws Exception
     {
         throw new IllegalStateException( "POV exporter only supports 4-argument doExport()" );
     }
-
 }
 
 

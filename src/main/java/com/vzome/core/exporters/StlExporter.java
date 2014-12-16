@@ -1,6 +1,5 @@
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -29,18 +28,16 @@ import com.vzome.core.viewing.ViewModel;
 public class StlExporter extends Exporter3d
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
-		
-	protected final AlgebraicField field;	
-	
+			
 	public StlExporter( ViewModel scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    super( scene, colors, lights, model );
-	    field = model .getField();
 	}
 
 
-	public void doExport( File directory, Writer writer, Dimension screenSize ) throws IOException
+	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
+	    AlgebraicField field = this .mModel .getField();
         if (FORMAT instanceof DecimalFormat) {
             ((DecimalFormat) FORMAT) .applyPattern( "0.000000E00" );
         }
