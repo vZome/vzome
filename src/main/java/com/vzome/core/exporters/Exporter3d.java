@@ -60,6 +60,8 @@ public abstract class Exporter3d
         mScene = scene;
         mModel = model;
         this .doExport( new File( "." ), writer, height, width );
+        mScene = null;
+        mModel = null;
     }
 
     public void doExport( File file, File parentFile, Writer out, int height, int width ) throws Exception

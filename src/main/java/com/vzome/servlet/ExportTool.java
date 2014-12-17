@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -16,7 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.*;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.vzome.api.Application;
 import com.vzome.api.Document;
@@ -42,6 +42,10 @@ public class ExportTool extends HttpServlet
         try {
             String urlStr = req .getQueryString();
             System .out .println( "URL is = " + urlStr );
+            if ( urlStr == null ) {
+                res .setStatus( 404 );
+                return;
+            }
             URL vZomeFile = new URL( urlStr );
             String format = req .getPathInfo();
             System .out .println( "format is = " + format );
