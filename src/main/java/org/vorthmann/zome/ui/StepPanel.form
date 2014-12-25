@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Form style="Swing" ide="eclipse" builder="jigloo" version="1.0.0">
+	<Component class="javax.swing.JPanel" name="StepPanel">
+		<Constraints>
+			<LayoutConstraint/>
+		</Constraints>
+		<Layout class="Box">
+			<Property name="axis" type="String" value="0"/>
+		</Layout>
+		<Events>
+		</Events>
+		<Properties>
+			<Property name="preferredSize" type="Dimension">
+				<Dimension value="[376, 250]"/>
+			</Property>
+			<Property name="bounds" type="Rectangle">
+				<Rectangle value="[0, 0, 376, 250]"/>
+			</Property>
+		</Properties>
+		<SubComponents>
+			<Component class="javax.swing.JPanel" name="jPanel1">
+				<Constraints>
+					<LayoutConstraint/>
+				</Constraints>
+				<Layout class="Flow">
+					<Property name="vgap" type="int" value="5"/>
+					<Property name="alignment" type="int" value="1"/>
+					<Property name="hgap" type="int" value="5"/>
+				</Layout>
+				<Events>
+				</Events>
+				<Properties>
+					<Property name="visible" type="boolean" value="true"/>
+				</Properties>
+			</Component>
+		</SubComponents>
+	</Component>
+</Form>

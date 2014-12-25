@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Form style="Swing" ide="eclipse" builder="jigloo" version="1.0.0">
+	<Component class="javax.swing.JPanel" name="AxisPanel">
+		<Constraints>
+			<LayoutConstraint/>
+		</Constraints>
+		<Layout class="Flow">
+			<Property name="vgap" type="int" value="0"/>
+			<Property name="alignment" type="int" value="1"/>
+			<Property name="hgap" type="int" value="5"/>
+		</Layout>
+		<Events>
+		</Events>
+		<Properties>
+			<Property name="toolTipText" type="String" value="drag right mouse button in main view"/>
+			<Property name="preferredSize" type="Dimension">
+				<Dimension value="[252, 222]"/>
+			</Property>
+			<Property name="border" class="javax.swing.border.TitledBorder">
+				<Property name="border"/>
+				<Property name="title" type="String" value="Axis"/>
+				<Property name="titleJustification" type="int" value="4"/>
+				<Property name="titlePosition" type="int" value="2"/>
+				<Property name="titleFont" type="Font">
+				<Font name="Dialog" size="12" style="1"/>
+			</Property>
+				<Property name="titleColor" type="Color">
+				<Color red="0" green="0" blue="0"/>
+			</Property>
+			</Property>
+			<Property name="bounds" type="Rectangle">
+				<Rectangle value="[0, 0, 252, 222]"/>
+			</Property>
+		</Properties>
+		<SubComponents>
+			<Component class="javax.swing.JLabel" name="axisNameLabel">
+				<Constraints>
+					<LayoutConstraint/>
+				</Constraints>
+				<Layout class="Absolute">
+				</Layout>
+				<Events>
+				</Events>
+				<Properties>
+					<Property name="text" type="String" value="Red +0"/>
+					<Property name="visible" type="boolean" value="true"/>
+					<Property name="preferredSize" type="Dimension">
+						<Dimension value="[166, 14]"/>
+					</Property>
+					<Property name="bounds" type="Rectangle">
+						<Rectangle value="[43, 23, 166, 14]"/>
+					</Property>
+					<Property name="focusable" type="boolean" value="false"/>
+				</Properties>
+			</Component>
+			<Component class="javax.swing.JPanel" name="axisFilterPanel">
+				<Constraints>
+					<LayoutConstraint/>
+				</Constraints>
+				<Layout class="Box">
+					<Property name="axis" type="String" value="0"/>
+				</Layout>
+				<Events>
+				</Events>
+				<Properties>
+					<Property name="visible" type="boolean" value="true"/>
+				</Properties>
+				<SubComponents>
+					<Component class="javax.swing.JPanel" name="quickSetButtons">
+						<Constraints>
+							<LayoutConstraint/>
+						</Constraints>
+						<Layout class="Box">
+							<Property name="axis" type="String" value="1"/>
+						</Layout>
+						<Events>
+						</Events>
+						<Properties>
+							<Property name="visible" type="boolean" value="true"/>
+							<Property name="focusable" type="boolean" value="false"/>
+						</Properties>
+						<SubComponents>
+							<Component class="javax.swing.JButton" name="allButton">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="allButtonActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="All"/>
+									<Property name="visible" type="boolean" value="true"/>
+									<Property name="preferredSize" type="Dimension">
+										<Dimension value="[48, 34]"/>
+									</Property>
+									<Property name="bounds" type="Rectangle">
+										<Rectangle value="[0, 0, 48, 26]"/>
+									</Property>
+								</Properties>
+							</Component>
+							<Component class="javax.swing.JButton" name="standardButton">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="standardButtonActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Standard"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+							<Component class="javax.swing.JButton" name="noneButton">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="noneButtonActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="None"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+						</SubComponents>
+					</Component>
+					<Component class="javax.swing.JPanel" name="axisMaskCheckboxes">
+						<Constraints>
+							<LayoutConstraint/>
+						</Constraints>
+						<Layout class="Box">
+							<Property name="axis" type="String" value="1"/>
+						</Layout>
+						<Events>
+						</Events>
+						<Properties>
+							<Property name="visible" type="boolean" value="true"/>
+						</Properties>
+						<SubComponents>
+							<Component class="javax.swing.JCheckBox" name="redCheck">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="redCheckActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Red"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+							<Component class="javax.swing.JCheckBox" name="yellowCheck">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="yellowCheckActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Yellow"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+							<Component class="javax.swing.JCheckBox" name="blueCheck">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="blueCheckActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Blue"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+							<Component class="javax.swing.JCheckBox" name="greenCheck">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="greenCheckActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Green"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+							<Component class="javax.swing.JCheckBox" name="orangeCheck">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="orangeCheckActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Orange"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+							<Component class="javax.swing.JCheckBox" name="purpleCheck">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="purpleCheckActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Purple"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+							<Component class="javax.swing.JCheckBox" name="blackCheck">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="blackCheckActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Black"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+						</SubComponents>
+					</Component>
+				</SubComponents>
+			</Component>
+		</SubComponents>
+	</Component>
+</Form>

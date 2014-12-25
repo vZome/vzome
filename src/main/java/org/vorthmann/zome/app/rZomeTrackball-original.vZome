@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" version="3.0 beta 96" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
+  <EditHistory editNumber="167">
+    <RunZomicScript> { label unit.start branch{ yellow +0 red +0 label inner.long branch { yellow +0 label yellow.hole.long
+      } branch { red +0 label red.hole.long } blue +0 branch { size -1 blue -0 label blue.hole.long } branch {
+      size -1 red +4 label blue.chamfer.long } size 2 red +4 label outer.long branch { size 1 purple -35 label
+      yellow.chamfer.long } branch { repeat 2 size -1 orange +35 label red.chamfer.long } } reflect through +8
+      branch{ yellow +0 red +0 label inner.common branch { yellow +0 label yellow.hole.common } branch { red +0
+      label red.hole.common } blue +0 branch { size -1 blue -0 label blue.hole.common } branch { size -1 red +4
+      label blue.chamfer.common } size 2 red +4 label outer.common branch { size 1 purple -35 label yellow.chamfer.common
+      } branch { repeat 2 size -1 orange +35 label red.chamfer.common } } reflect through +14 branch{ yellow +0
+      red +0 label inner.short branch { yellow +0 label yellow.hole.short } branch { red +0 label red.hole.short
+      } blue +0 branch { size -1 blue -0 label blue.hole.short } branch { size -1 red +4 label blue.chamfer.short
+      } size 2 red +4 label outer.short branch { size 1 purple -35 label yellow.chamfer.short } branch { repeat
+      2 size -1 orange +35 label red.chamfer.short } } label unit.face label inner.common label blue.hole.common
+      label blue.hole.short label inner.short label unit.face label outer.common label outer.short label blue.chamfer.short
+      label blue.chamfer.common label unit.face label inner.common label inner.short label red.hole.short label
+      red.hole.common label unit.face label outer.common label red.chamfer.common label red.chamfer.short label
+      outer.short label unit.face label inner.common label inner.long label blue.hole.long label blue.hole.common
+      label unit.face label outer.common label blue.chamfer.common label blue.chamfer.long label outer.long label
+      unit.face label inner.common label yellow.hole.common label yellow.hole.long label inner.long label unit.face
+      label outer.common label outer.long label yellow.chamfer.long label yellow.chamfer.common label unit.face
+      label yellow.hole.common label yellow.chamfer.common label yellow.chamfer.long label yellow.hole.long label
+      unit.face label red.hole.short label red.chamfer.short label red.chamfer.common label red.hole.common label
+      unit.face label blue.hole.common label blue.chamfer.common label blue.chamfer.short label blue.hole.short
+      label unit.face label blue.chamfer.common label blue.hole.common label blue.hole.long label blue.chamfer.long
+      label unit.end } </RunZomicScript>
+    <BeginBlock/>
+    <SelectManifestation point="5 5 8 13 6 8"/>
+    <SelectManifestation point="2 5 8 16 3 5"/>
+    <SelectManifestation point="2 3 10 16 3 5"/>
+    <SelectManifestation point="3 5 8 13 6 10"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="5 5 7 13 3 9"/>
+    <SelectManifestation point="4 4 8 15 1 6"/>
+    <SelectManifestation point="2 5 8 16 3 5"/>
+    <SelectManifestation point="5 5 8 13 6 8"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="5 5 7 13 3 9"/>
+    <SelectManifestation point="7 9 7 13 -1 3"/>
+    <SelectManifestation point="4 4 8 15 1 6"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="7 9 7 13 -1 3"/>
+    <SelectManifestation point="5 11 8 13 0 2"/>
+    <SelectManifestation point="2 5 8 16 3 5"/>
+    <SelectManifestation point="4 4 8 15 1 6"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 3 10 16 3 5"/>
+    <SelectManifestation point="2 5 8 16 3 5"/>
+    <SelectManifestation point="5 11 8 13 0 2"/>
+    <SelectManifestation point="7 11 8 13 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="7 11 8 13 0 0"/>
+    <SelectManifestation point="6 10 9 13 0 0"/>
+    <SelectManifestation point="5/2 7/2 19/2 16 3 7/2"/>
+    <SelectManifestation point="2 3 10 16 3 5"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="6 10 9 13 0 0"/>
+    <SelectManifestation point="5 9 8 13 0 0"/>
+    <SelectManifestation point="2 4 9 15 2 3"/>
+    <SelectManifestation point="5/2 7/2 19/2 16 3 7/2"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 3 10 16 3 5"/>
+    <SelectManifestation point="-1 4 9 16 3 6"/>
+    <SelectManifestation point="4 3 10 12 7 9"/>
+    <SelectManifestation point="3 5 8 13 6 10"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="2 3 10 16 3 5"/>
+      <polygonVertex at="-1 4 9 16 3 6"/>
+      <polygonVertex at="4 3 10 12 7 9"/>
+      <polygonVertex at="3 5 8 13 6 10"/>
+    </SelectManifestation>
+    <SelectManifestation point="-1 4 9 16 3 6"/>
+    <SelectManifestation point="1 2 9 15 4 6"/>
+    <SelectManifestation point="2 3 8 13 6 9"/>
+    <SelectManifestation point="4 3 10 12 7 9"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <SymmetryTool symmetry="icosahedral" name="icosahedral.1/icosahedral.1"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="-1 4 9 16 3 6"/>
+      <polygonVertex at="1 2 9 15 4 6"/>
+      <polygonVertex at="2 3 8 13 6 9"/>
+      <polygonVertex at="4 3 10 12 7 9"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="2 3 10 16 3 5"/>
+      <polygonVertex at="-1 4 9 16 3 6"/>
+      <polygonVertex at="4 3 10 12 7 9"/>
+      <polygonVertex at="3 5 8 13 6 10"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 5 8 13 6 8"/>
+      <polygonVertex at="2 5 8 16 3 5"/>
+      <polygonVertex at="2 3 10 16 3 5"/>
+      <polygonVertex at="3 5 8 13 6 10"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 5 7 13 3 9"/>
+      <polygonVertex at="4 4 8 15 1 6"/>
+      <polygonVertex at="2 5 8 16 3 5"/>
+      <polygonVertex at="5 5 8 13 6 8"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 5 7 13 3 9"/>
+      <polygonVertex at="7 9 7 13 -1 3"/>
+      <polygonVertex at="4 4 8 15 1 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="7 9 7 13 -1 3"/>
+      <polygonVertex at="5 11 8 13 0 2"/>
+      <polygonVertex at="2 5 8 16 3 5"/>
+      <polygonVertex at="4 4 8 15 1 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="2 3 10 16 3 5"/>
+      <polygonVertex at="2 5 8 16 3 5"/>
+      <polygonVertex at="5 11 8 13 0 2"/>
+      <polygonVertex at="7 11 8 13 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="7 11 8 13 0 0"/>
+      <polygonVertex at="6 10 9 13 0 0"/>
+      <polygonVertex at="5/2 7/2 19/2 16 3 7/2"/>
+      <polygonVertex at="2 3 10 16 3 5"/>
+    </SelectManifestation>
+    <InvertSelection/>
+    <SelectManifestation point="2 3 8 13 6 9"/>
+    <SelectManifestation point="1 2 9 15 4 6"/>
+    <SelectManifestation point="5/2 7/2 19/2 16 3 7/2"/>
+    <SelectManifestation point="5/2 7/2 19/2 16 3 7/2"/>
+    <SelectManifestation point="2 4 9 15 2 3"/>
+    <SelectManifestation point="5 9 8 13 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation>
+      <polygonVertex at="6 10 9 13 0 0"/>
+      <polygonVertex at="5 9 8 13 0 0"/>
+      <polygonVertex at="2 4 9 15 2 3"/>
+      <polygonVertex at="5/2 7/2 19/2 16 3 7/2"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="6 10 9 13 0 0"/>
+      <polygonVertex at="5 9 8 13 0 0"/>
+      <polygonVertex at="2 4 9 15 2 3"/>
+      <polygonVertex at="5/2 7/2 19/2 16 3 7/2"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="7 11 8 13 0 0"/>
+      <polygonVertex at="6 10 9 13 0 0"/>
+      <polygonVertex at="5/2 7/2 19/2 16 3 7/2"/>
+      <polygonVertex at="2 3 10 16 3 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="2 3 10 16 3 5"/>
+      <polygonVertex at="2 5 8 16 3 5"/>
+      <polygonVertex at="5 11 8 13 0 2"/>
+      <polygonVertex at="7 11 8 13 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 5 7 13 3 9"/>
+      <polygonVertex at="7 9 7 13 -1 3"/>
+      <polygonVertex at="4 4 8 15 1 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 5 7 13 3 9"/>
+      <polygonVertex at="4 4 8 15 1 6"/>
+      <polygonVertex at="2 5 8 16 3 5"/>
+      <polygonVertex at="5 5 8 13 6 8"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 5 8 13 6 8"/>
+      <polygonVertex at="2 5 8 16 3 5"/>
+      <polygonVertex at="2 3 10 16 3 5"/>
+      <polygonVertex at="3 5 8 13 6 10"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="2 3 10 16 3 5"/>
+      <polygonVertex at="-1 4 9 16 3 6"/>
+      <polygonVertex at="4 3 10 12 7 9"/>
+      <polygonVertex at="3 5 8 13 6 10"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-1 4 9 16 3 6"/>
+      <polygonVertex at="1 2 9 15 4 6"/>
+      <polygonVertex at="2 3 8 13 6 9"/>
+      <polygonVertex at="4 3 10 12 7 9"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="7 9 7 13 -1 3"/>
+      <polygonVertex at="5 11 8 13 0 2"/>
+      <polygonVertex at="2 5 8 16 3 5"/>
+      <polygonVertex at="4 4 8 15 1 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 5 7 13 3 9"/>
+      <polygonVertex at="7 9 7 13 -1 3"/>
+      <polygonVertex at="4 4 8 15 1 6"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ToolApplied name="icosahedral.1/icosahedral.1" selectInputs="true"/>
+    <setItemColor red="240" green="242" blue="244"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="6" len="1 1"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="1" len="1 1"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 1 2 1 1"/>
+    <EndBlock/>
+    <RotationTool symmetry="icosahedral" name="rotation.2/rotation.2"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="1 1 2 3 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <RotationTool symmetry="icosahedral" name="rotation.3/rotation.3"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="5 9 8 13 0 0"/>
+    <EndBlock/>
+    <ToolApplied name="rotation.3/rotation.3"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1 2 9 15 4 6"/>
+    <EndBlock/>
+    <ToolApplied name="rotation.2/rotation.2"/>
+    <ToolApplied name="rotation.2/rotation.2"/>
+    <ToolApplied name="rotation.2/rotation.2"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 3 8 13 6 9"/>
+    <SelectManifestation point="1 2 9 15 4 6"/>
+    <SelectManifestation point="-1 -2 9 15 4 6"/>
+    <SelectManifestation point="-2 -3 8 13 6 9"/>
+    <EndBlock/>
+    <Polygon/>
+    <ToolApplied name="icosahedral.1/icosahedral.1" selectInputs="true"/>
+    <setItemColor red="221" green="96" blue="96"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 4 9 15 2 3"/>
+    <SelectManifestation point="5 9 8 13 0 0"/>
+    <SelectManifestation point="2 4 9 15 -2 -3"/>
+    <EndBlock/>
+    <Polygon/>
+    <ToolApplied name="icosahedral.1/icosahedral.1" selectInputs="true"/>
+    <setItemColor red="252" green="215" blue="67"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 4 9 15 2 3"/>
+    <SelectManifestation point="5 9 8 13 0 0"/>
+    <SelectManifestation point="2 4 9 15 -2 -3"/>
+    <SelectManifestation point="1 2 9 15 4 6"/>
+    <SelectManifestation point="2 3 8 13 6 9"/>
+    <SelectManifestation point="0 0 7 12 7 11"/>
+    <SelectManifestation point="-2 -3 8 13 6 9"/>
+    <SelectManifestation point="-1 -2 9 15 4 6"/>
+    <EndBlock/>
+    <Hide/>
+    <SelectManifestation>
+      <polygonVertex at="5 5 7 13 3 9"/>
+      <polygonVertex at="7 9 7 13 -1 3"/>
+      <polygonVertex at="4 4 8 15 1 6"/>
+    </SelectManifestation>
+    <ToolApplied name="icosahedral.1/icosahedral.1" selectInputs="true"/>
+    <setItemColor red="58" green="196" blue="231"/>
+  </EditHistory>
+</vzome:vZome>
