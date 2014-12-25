@@ -85,7 +85,7 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
         String group = action .substring( 0, delim );
         delim = action .indexOf( "/" );
         String name = action .substring( delim + 1 );
-        String iconPath = "/org/vorthmann/zome/ui/tools/" + group + ".png";
+        String iconPath = "/icons/tools/" + group + ".png";
         JButton button = new JButton();
         java.net.URL imgURL = LessonPanel.class .getResource( iconPath );
         if ( imgURL != null )
