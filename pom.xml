@@ -40,12 +40,11 @@
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
         </dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>7.6.0.v20120127</version>
-		</dependency>
-        
+    	<dependency>
+    	    <groupId>org.eclipse.jetty</groupId>
+    	    <artifactId>jetty-servlet</artifactId>
+    	    <version>7.6.0.v20120127</version>
+    	</dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -67,7 +66,11 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
