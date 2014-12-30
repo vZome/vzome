@@ -24,7 +24,9 @@ The build is implemented using Maven, and most dependencies are captured in the 
 
 You don't really need to use "curl" to download the JARs, of course.  The key step is the "mvn install:install-file" command, which seeds your local Maven repository.
 
-Having done that step, the standard Maven build command should work fine:
+This project also requires a local build of "vzome-core", installed in your local Maven repository.  Make sure you have built that project with Maven, before attempting this build.
+
+Having done those steps, the standard Maven build command should work fine:
 
     mvn clean install
 
