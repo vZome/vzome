@@ -28,6 +28,13 @@ Having done that step, the standard Maven build command should work fine:
 
     mvn clean install
 
+Developing with Eclipse
+-------------
+
+Maven has great support for IDE integration.  I use Eclipse, so the Maven command for generating an Eclipse project is extremely helpful to me:
+
+    mvn eclipse:eclipse
+
 Running vZome from the Command Line
 --------------
 
