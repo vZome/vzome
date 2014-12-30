@@ -34,6 +34,8 @@ Developing with Eclipse
 Maven has great support for IDE integration.  I use Eclipse, so the Maven command for generating an Eclipse project is extremely helpful to me:
 
     mvn eclipse:eclipse
+    
+There is also an Eclipse launch configuration that should be usable from within the generated Eclipse project.
 
 Running vZome from the Command Line
 --------------
