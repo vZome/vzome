@@ -734,7 +734,7 @@ public final class ApplicationUI extends DefaultController implements Platform.U
                 + "Edmund Harriss\n" + "Corrado Falcolini\n" + "Ezra Bradford\n" + "Chris Kling\n" + "Samuel Verbiese\n" + "Walt Venable\n"
                 + "Will Ackel\n" + "Tom Darrow\n" + "Sam Vandervelde\n" + "Henri Picciotto\n" + "Florelia Braschi\n"
                 + "\n" + "Dedicated to Everett Vorthmann,\n" + "who made me an engineer\n" + "\n"
-                + "  Copyright 2011, Scott Vorthmann \n", "About vZome", JOptionPane.PLAIN_MESSAGE );
+                + "  Copyright 2015, Scott Vorthmann \n", "About vZome", JOptionPane.PLAIN_MESSAGE );
     }
     
 //    public void showColorDialog( String colorName, ListSelectionListener listener )

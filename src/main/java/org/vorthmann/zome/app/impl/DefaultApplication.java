@@ -137,7 +137,7 @@ public class DefaultApplication extends DefaultController implements Application
             return "org.vorthmann.zome.ui.DocumentFrame";
 
         if ( "splash.image.resource".equals( string ) )
-            return "org/vorthmann/zome/ui/vZome40Splash.gif";
+            return "org/vorthmann/zome/ui/vZome50Splash.gif";
 
         if ( "version".equals( string ) )
             return Version.label;
