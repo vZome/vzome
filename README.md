@@ -8,7 +8,6 @@ Build instructions
 
 To build the vzome-core library, make sure you have Maven installed, and execute this command:
 
-... bash
-mvn clean install
-...
+    mvn clean install
+
 
