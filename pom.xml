@@ -91,6 +91,7 @@
                     <include>**/*.gif</include>
                     <include>**/*.jpg</include>
                     <include>**/*.png</include>
+                    <include>**/*.pdf</include>
                     <include>**/*.vef</include>
                     <include>**/*.vZome</include>
                     <include>**/*.zomic</include>
