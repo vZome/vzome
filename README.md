@@ -8,7 +8,9 @@ Build Instructions
 
 (These instructions are for Linux or Mac, or any other Unix.  They can be adapted for Windows fairly easily.)
 
-The build is implemented using Maven, and most dependencies are captured in the POM file.  However, vZome still uses Java3d, a somewhat outmoded Java scenegraph technology, and the latest version of Java3d is not available in any Maven repository.  Therefore, you must seed your local Maven repository with the Java3d JAR files before attempting the build, using the following steps:
+The build is implemented using Maven, and most dependencies are captured in the POM file.  Most of the dependencies will be pulled by Maven automatically, but there are two special requirements.  One is the [vzome-core](https://github.com/vorth/vzome-core/) project, which must be built locally, so that the JAR appears in your local Maven repository to satisfy the dependency.
+
+The other special requirement is Java3d, and the latest version of Java3d is not available in any Maven repository.  Therefore, you must seed your local Maven repository with the Java3d JAR files before attempting the build, using the following steps:
 
     curl http://jogamp.org/deployment/java3d/1.6.0-pre11/vecmath.jar > vecmath.jar
     mvn install:install-file -DgroupId=org.jogamp.java3d -Dpackaging=jar -Dversion=1.6.0 -DartifactId=vecmath -Dfile=vecmath.jar
@@ -23,8 +25,6 @@ The build is implemented using Maven, and most dependencies are captured in the 
     rm j3dcore.jar
 
 You don't really need to use "curl" to download the JARs, of course.  The key step is the "mvn install:install-file" command, which seeds your local Maven repository.
-
-This project also requires a local build of [vzome-core](https://github.com/vorth/vzome-core/), installed in your local Maven repository.  Make sure you have built that project with Maven, before attempting this build.
 
 Having done those steps, the standard Maven build command should work fine:
 
