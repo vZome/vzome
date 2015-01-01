@@ -1,7 +1,7 @@
 vzome-desktop
 =============
 
-vZome is a desktop application for creating virtual Zome models.  This project contains the source code for just the controllers and views of the user interface; it requires the [vzome-core](https://github.com/vorth/vzome-core/) library to provide all the models and basic behaviors, including loading and saving files.
+[vZome](http://vzome.com/) is a desktop application for creating virtual Zome models.  This project contains the source code for just the controllers and views of the user interface; it requires the [vzome-core](https://github.com/vorth/vzome-core/) library to provide all the models and basic behaviors, including loading and saving files.
 
 Build Instructions
 -------------
