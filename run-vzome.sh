@@ -6,6 +6,7 @@ java -Xmx3048M -Dapple.laf.useScreenMenuBar=true \
   -entitlement.model.edit true \
   -entitlement.lesson.edit true \
   -entitlement.all.tools true \
-  -licensed.user Anyone
+  -licensed.user Anyone \
+  $*
 
 
