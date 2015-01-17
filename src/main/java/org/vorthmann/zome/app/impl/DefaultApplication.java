@@ -23,6 +23,7 @@ import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.Version;
+import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Strut;
@@ -325,6 +326,11 @@ public class DefaultApplication extends DefaultController implements Application
         return this .modelApp .getColors();
     }
 
+    public Exporter3d getExporter( String format )
+    {
+        return this .modelApp .getExporter( format );
+    }
+
     // public RenderingViewer.Factory getRenderingViewerFactory()
     // {
     // return mRVFactory;
@@ -334,7 +340,7 @@ public class DefaultApplication extends DefaultController implements Application
     {
         return (RenderedModel) mSymmetryModels.get( symm );
     }
-
+    
     public String[] getCommandList( String listName )
     {
         if ( listName.startsWith( "fields." ) ) {

@@ -1113,19 +1113,22 @@ public class EditorController extends DefaultController implements J3dComponentF
 //            } else
             if ( command.startsWith( "export." ) )
             {
-            	String format = command .substring( "export." .length() );
-                Exporter3d exporter = document .getStructuredExporter( format, mViewPlatform .getView(), colors, sceneLighting, mRenderedModel );
-                if ( exporter == null )
-                    exporter = document .getNaiveExporter( format, mViewPlatform .getView(), colors, sceneLighting, currentSnapshot );
-                if ( exporter == null )
-                    return;
                 Writer out = new FileWriter( file );
-                exporter.doExport( file, file.getParentFile(), out, 600, 600 ); // TODO
-                // fix
-                // this
-                // hardcoded
-                // size
-                out.close();
+            	try {
+                    String format = command .substring( "export." .length() );
+                    Exporter3d exporter = document .getNaiveExporter( format, mViewPlatform .getView(), colors, sceneLighting, currentSnapshot );
+                    if ( exporter != null ) {
+                        exporter.doExport( file, file.getParentFile(), out, 600, 600 ); // TODO fix hardcoded size
+                    }
+                    else {
+                        exporter = this .mApp .getExporter( format );
+                        if ( exporter != null )
+                            // this form of doExport will use the document's rendered model
+                            exporter .doExport( document, file, file.getParentFile(), out, 600, 600 ); // TODO fix hardcoded size
+                    }
+                } finally {
+                    out.close();
+                }
                 return;
             }
             if ( command.equals( "import.vef" ) || command.equals( "import.zomod" ) ) {

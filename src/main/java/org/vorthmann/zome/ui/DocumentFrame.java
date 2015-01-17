@@ -703,6 +703,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             submenu .addSeparator();
             submenu.add( createMenuItem( "OpenGL", new ControllerFileAction( new FileDialog( this ), false, "export.opengl", "m", mController ) ) );
             submenu.add( createMenuItem( "LiveGraphics3D", new ControllerFileAction( new FileDialog( this ), false, "export.LiveGraphics", "m", mController ) ) );
+            submenu.add( createMenuItem( "vZome history detail", new ControllerFileAction( new FileDialog( this ), false, "export.history", "history", mController ) ) );
         }
         menu.add( submenu );
         submenu .setEnabled( fullPower && canSave );

@@ -166,7 +166,7 @@ public class Java2dSnapshot extends DefaultController
             try {
                 mPolygons .clear();
                 mLines .clear();
-                this .exporter .doExport( null, null, size.height, size.width );
+                this .exporter .doExport( new File(""), null, size.height, size.width );
                 current = true;
             } catch ( Exception e1 ) {
                 mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e1 } );
