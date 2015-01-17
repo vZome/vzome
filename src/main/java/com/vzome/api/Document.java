@@ -19,7 +19,7 @@ import com.vzome.core.viewing.ViewModel;
 
 public class Document
 {
-	private final DocumentModel delegate;
+	final DocumentModel delegate;
 	private final Set<Ball> balls = new HashSet<Ball>();
 	private final Set<Strut> struts = new HashSet<Strut>();
 

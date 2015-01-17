@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import com.vzome.core.construction.Construction;
 
 /**
@@ -98,4 +101,11 @@ public abstract class Manifestation
 	{
 		return mRendered != null;
 	}
+
+    public Element getXml( Document doc )
+    {
+        Construction repr = (Construction) mManifests .iterator() .next();
+        Element result = repr .getXml( doc );
+        return result;
+    }
 }

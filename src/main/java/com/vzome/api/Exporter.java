@@ -18,7 +18,7 @@ public class Exporter
 
     public void doExport( Document model, Writer out, int height, int width ) throws Exception
     {
-        this .delegate .doExport( model .getViewModel(), model .getRenderedModel(), out, height, width );
+        this .delegate .doExport( model .delegate, null, null, out, height, width );
     }
 
     public String getContentType()

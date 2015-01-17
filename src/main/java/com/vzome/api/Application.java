@@ -4,6 +4,7 @@
 package com.vzome.api;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -63,13 +64,18 @@ public class Application
 	
 	public static void main( String[] args )
 	{
-		String urlStr = "http://vzome.com/models/2007/07-Jul/affine120-bop/purpleBlueOrange-affine120cell.vZome";
-		if ( args.length > 0 )
-			urlStr = args[ 0 ];
+        String format = "pov";
+        if ( args.length > 0 )
+            format = args[ 0 ];
+        String urlStr = "http://vzome.com/models/2007/07-Jul/affine120-bop/purpleBlueOrange-affine120cell.vZome";
+        if ( args.length > 1 )
+            urlStr = args[ 1 ];
 		Application app = new Application();
 		try {
 			InputStream bytes = new URL( urlStr ) .openStream();
-			app .loadDocument( bytes );
+			Document model = app .loadDocument( bytes );
+            Exporter exporter = app .getExporter( format );
+            exporter .doExport( model, new PrintWriter( System.out ), 1080, 1920 );
 		} catch ( Exception e ) {
 			e.printStackTrace();
 		}

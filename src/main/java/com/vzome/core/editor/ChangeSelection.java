@@ -194,5 +194,14 @@ public abstract class ChangeSelection extends SideEffects
                 else
                     mSelection .select( mMan );
         }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            Element result = this .mOn ? doc .createElement( "select" ) : doc .createElement( "deselect" );
+            Element man = mMan .getXml( doc );
+            result .appendChild( man );
+            return result;
+        }
     }
 }

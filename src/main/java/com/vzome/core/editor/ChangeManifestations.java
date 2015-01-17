@@ -6,6 +6,9 @@ package com.vzome.core.editor;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import com.vzome.core.construction.Construction;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -164,6 +167,15 @@ public abstract class ChangeManifestations extends ChangeSelection
                 mManifestation .addConstruction( mConstruction );
             }
         }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            Element result = this .mShowing ? doc .createElement( "mshow" ) : doc .createElement( "mhide" );
+            Element man = mConstruction .getXml( doc );
+            result .appendChild( man );
+            return result;
+        }
     }
     
     private class RenderManifestation implements SideEffect
@@ -194,6 +206,15 @@ public abstract class ChangeManifestations extends ChangeSelection
                 mManifestations .hide( mManifestation );
             else
                 mManifestations .show( mManifestation );
+        }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            Element result = this .mShowing ? doc .createElement( "show" ) : doc .createElement( "hide" );
+            Element man = mManifestation .getXml( doc );
+            result .appendChild( man );
+            return result;
         }
     }
 }

@@ -42,24 +42,11 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentCrossProduct;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
-import com.vzome.core.exporters.DaeExporter;
-import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
-import com.vzome.core.exporters.JsonExporter;
-import com.vzome.core.exporters.LiveGraphicsExporter;
-import com.vzome.core.exporters.OffExporter;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
-import com.vzome.core.exporters.PartsListExporter;
-import com.vzome.core.exporters.PdbExporter;
-import com.vzome.core.exporters.RulerExporter;
-import com.vzome.core.exporters.STEPExporter;
-import com.vzome.core.exporters.SecondLifeExporter;
-import com.vzome.core.exporters.SegExporter;
-import com.vzome.core.exporters.StlExporter;
 import com.vzome.core.exporters.VRMLExporter;
-import com.vzome.core.exporters.VefExporter;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
@@ -725,6 +712,19 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         mEdited = openUndone || mEdited || format.isMigration() || ! implicitSnapshots .isEmpty();
     }
 
+    public Element getDetailsXml( Document doc )
+    {
+        Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
+        vZomeRoot .setAttribute( "xmlns:vzome", XmlSaveFormat.CURRENT_FORMAT );
+        vZomeRoot .setAttribute( "edition", Version.edition );
+        vZomeRoot .setAttribute( "version", Version.label );
+        vZomeRoot .setAttribute( "revision", Integer .toString( Version.SVN_REVISION ) );
+        vZomeRoot .setAttribute( "field", mField.getName() );
+        Element result = mHistory .getDetailXml( doc );
+        vZomeRoot .appendChild( result );
+        return vZomeRoot;
+    }
+
     public Element getSaveXml( Document doc )
     {
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
@@ -1000,34 +1000,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	
 	public Exporter3d getStructuredExporter( String format, ViewModel view, Colors colors, Lights lights, RenderedModel mRenderedModel )
 	{
-        if ( format.equals( "LiveGraphics" ) )
-        	return new DaeExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "json" ) )
-        	return new JsonExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "step" ) )
-        	return new STEPExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "vrml" ) )
-        	return new LiveGraphicsExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "off" ) )
-        	return new OffExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "2life" ) )
-        	return new SecondLifeExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "vef" ) )
-        	return new VefExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "partgeom" ) )
+        if ( format.equals( "partgeom" ) )
         	return new PartGeometryExporter( view, colors, lights, mRenderedModel, mSelection );
-        else if ( format.equals( "partslist" ) )
-        	return new PartsListExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "size" ) )
-        	return new RulerExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "stl" ) )
-        	return new StlExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "dxf" ) )
-        	return new DxfExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "pdb" ) )
-        	return new PdbExporter( view, colors, lights, mRenderedModel );
-        else if ( format.equals( "seg" ) )
-        	return new SegExporter( view, colors, lights, mRenderedModel );
         else
         	return null;
 	}

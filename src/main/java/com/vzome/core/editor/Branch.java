@@ -93,6 +93,17 @@ public class Branch implements UndoableEdit
         return branch;
     }
 
+    @Override
+    public Element getDetailXml( Document doc )
+    {
+        Element branch = doc .createElement( "Branch" );
+        for (Iterator iterator = edits .iterator(); iterator.hasNext(); ) {
+            UndoableEdit edit = (UndoableEdit) iterator.next();
+            branch .appendChild( edit .getDetailXml( doc ) );
+        }
+        return branch;
+    }
+
     public void loadAndPerform( Element xml, XmlSaveFormat format, final Context context ) throws Failure
     {
         this .xml = xml;

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.Writer;
 
+import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
@@ -45,6 +46,9 @@ public abstract class Exporter3d
         mModel = model;
 	}
 
+	/**
+	 * This is what most subclasses override.
+	 */
 	public abstract void doExport( File directory, Writer writer, int height, int width ) throws Exception;
 
     public abstract String getFileExtension();
@@ -54,16 +58,21 @@ public abstract class Exporter3d
         return "text/plain";
     }
 
-    
-    public void doExport( ViewModel scene, RenderedModel model, Writer writer, int height, int width ) throws Exception
+    /**
+     * Subclasses can override this if they need to export history or the lesson model.
+     */
+    public void doExport( DocumentModel doc, File file, File parentFile, Writer writer, int height, int width ) throws Exception
     {
-        mScene = scene;
-        mModel = model;
-        this .doExport( new File( "." ), writer, height, width );
+        mScene = doc .getViewModel();
+        mModel = doc .getRenderedModel();
+        this .doExport( file, parentFile, writer, height, width );
         mScene = null;
         mModel = null;
     }
 
+    /**
+     *  Subclasses can override this if they want to write multiple files into the same directory, using variations on the filename.
+     */
     public void doExport( File file, File parentFile, Writer out, int height, int width ) throws Exception
     {
         this .doExport( parentFile, out, height, width );

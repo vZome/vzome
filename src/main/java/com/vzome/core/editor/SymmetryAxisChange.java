@@ -47,6 +47,12 @@ public class SymmetryAxisChange implements UndoableEdit
         return result;
     }
 
+    @Override
+    public Element getDetailXml( Document doc )
+    {
+        return getXml( doc );
+    }
+
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         if ( format .rationalVectors() )

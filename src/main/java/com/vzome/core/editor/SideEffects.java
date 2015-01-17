@@ -8,10 +8,34 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import com.vzome.core.commands.Command;
 
 public abstract class SideEffects implements UndoableEdit
 {
+    @Override
+    public Element getDetailXml( Document doc )
+    {
+        Element result = this .getXml( doc );
+        Element effects = doc .createElement( "effects" );
+        
+        for ( int i = 0; i < mItems .size(); i++ )
+        {
+            SideEffect se = (SideEffect) mItems .get( i );
+            if ( se != null )
+            {
+                Element effect = se .getXml( doc );
+                if ( effect != null )
+                    effects .appendChild( effect );
+                // else effect was ChangeConstructions.AttachConstruction, which we don't need to serialize
+            }
+        }
+        result .appendChild( effects );
+        return result;
+    }
+
     public boolean isSticky()
     {
         return false;
@@ -50,6 +74,8 @@ public abstract class SideEffects implements UndoableEdit
     {
         public void undo();
         
+        public Element getXml( Document doc );
+
         public void redo();
     }
     

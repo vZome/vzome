@@ -190,6 +190,9 @@ public class POVRayExporter extends Exporter3d
 		output .println( instances .toString() );
 		output .flush();
 		
+		if ( povFile == null )
+		    return;
+		
 		String filename = povFile .getName();
 		int index = filename .lastIndexOf( ".pov" );
 		if ( index > 0 )

@@ -5,10 +5,12 @@ package com.vzome.core.editor;
 
 import java.util.Iterator;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.render.Color;
@@ -85,6 +87,16 @@ public class ColorManifestations extends ChangeManifestations
         public void undo()
         {
             mManifestations .setColorName( mManifestation, oldColorName );
+        }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            Element result = doc .createElement( "color" );
+            DomUtils .addAttribute( result, "rgb", newColorName );
+            Element man = mManifestation .getXml( doc );
+            result .appendChild( man );
+            return result;
         }
     }
 

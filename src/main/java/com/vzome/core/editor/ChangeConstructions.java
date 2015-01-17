@@ -5,6 +5,9 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.model.RealizedModel;
@@ -52,6 +55,12 @@ public abstract class ChangeConstructions extends ChangeManifestations
                 mConstruction .detach();
             else
                 mConstruction .attach();
+        }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            return null;
         }
     }
 

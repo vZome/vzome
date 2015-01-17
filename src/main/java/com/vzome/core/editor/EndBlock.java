@@ -22,7 +22,13 @@ public class EndBlock implements UndoableEdit
     {
         return doc .createElement( "EndBlock" );
     }
-    
+
+    @Override
+    public Element getDetailXml( Document doc )
+    {
+        return getXml( doc );
+    }
+
     public boolean isVisible()
     {
     	return false;

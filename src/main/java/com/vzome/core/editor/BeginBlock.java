@@ -22,7 +22,13 @@ public class BeginBlock implements UndoableEdit
     {
         return doc .createElement( "BeginBlock" );
     }
-    
+
+    @Override
+    public Element getDetailXml( Document doc )
+    {
+        return getXml( doc );
+    }
+
     public boolean isVisible()
     {
     	return false;

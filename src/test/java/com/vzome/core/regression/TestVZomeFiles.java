@@ -24,10 +24,9 @@ import nu.xom.Element;
 import nu.xom.Serializer;
 import nu.xom.Text;
 
+import com.vzome.api.Application;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
-
-import com.vzome.api.Application;
 
 //import org.vorthmann.ui.Controller;
 //import org.vorthmann.zome.app.impl.DefaultApplication;

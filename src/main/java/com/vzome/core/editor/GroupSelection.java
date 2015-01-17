@@ -35,6 +35,12 @@ public class GroupSelection implements UndoableEdit
         return elem;
     }
 
+    @Override
+    public Element getDetailXml( Document doc )
+    {
+        return getXml( doc );
+    }
+
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         String grouping = xml .getAttribute( "grouping" );

@@ -3,6 +3,7 @@ package com.vzome.core.math;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -44,8 +45,8 @@ public class DomUtils {
 		return serializer .writeToString( element );
 	}
 	
-	public static void serialize( Document doc, OutputStream out ) throws UnsupportedEncodingException, TransformerException
-	{		
+    public static void serialize( Document doc, Writer out ) throws UnsupportedEncodingException, TransformerException
+    {       
         TransformerFactory tf = TransformerFactory .newInstance();
         Transformer transformer = tf .newTransformer();
         transformer .setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "no" );
@@ -54,9 +55,13 @@ public class DomUtils {
         transformer .setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
         transformer .setOutputProperty( "{http://xml.apache.org/xslt}indent-amount", "2" );
         
-        transformer.transform( new DOMSource( doc ), 
-             new StreamResult( new OutputStreamWriter( out, "UTF-8" ) ) );
-	}
+        transformer.transform( new DOMSource( doc ), new StreamResult( out ) );
+    }
+    
+    public static void serialize( Document doc, OutputStream out ) throws UnsupportedEncodingException, TransformerException
+    {
+        serialize( doc, new OutputStreamWriter( out, "UTF-8" ) );
+    }
 
 	public static Element getFirstChildElement( Element parent )
 	{

@@ -249,6 +249,27 @@ public class EditHistory
         return redone;
     }
     
+    public Element getDetailXml( Document doc )
+    {
+        Element result = doc .createElement( "EditHistoryDetails" );
+        DomUtils .addAttribute( result, "editNumber", Integer.toString( this .mEditNumber ) );
+        
+        int edits = 0, lastStickyEdit=-1;
+        for ( Iterator it = this .iterator(); it .hasNext(); )
+        {
+            UndoableEdit undoable = (UndoableEdit) it .next();
+            Element edit = undoable .getDetailXml( doc );
+            ++ edits;
+            DomUtils .addAttribute( edit, "editNumber", Integer.toString( edits ) );
+            result .appendChild( edit );
+            if ( undoable .isSticky() )
+                lastStickyEdit = edits;
+        }
+        result .setAttribute( "lastStickyEdit", Integer .toString( lastStickyEdit ) );
+
+        return result;
+    }
+    
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "EditHistory" );
@@ -413,6 +434,12 @@ public class EditHistory
         {
             return false;
         }
+
+        @Override
+        public Element getDetailXml( Document doc )
+        {
+            return getXml( doc );
+        }
     }
 
     private class DeferredEdit implements UndoableEdit
@@ -544,6 +571,12 @@ public class EditHistory
         public boolean isSticky()
         {
             return false;
+        }
+
+        @Override
+        public Element getDetailXml( Document doc )
+        {
+            throw new IllegalStateException( "There should be no deferred edits when exporting details." );
         }
     }
 

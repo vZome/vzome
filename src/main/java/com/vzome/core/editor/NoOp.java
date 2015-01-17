@@ -41,6 +41,12 @@ public class NoOp implements UndoableEdit
         throw new IllegalStateException();
     }
 
+    @Override
+    public Element getDetailXml( Document doc )
+    {
+        return getXml( doc );
+    }
+
     public void loadAndPerform( Element xml, XmlSaveFormat format,
             Context context ) throws Failure
     {

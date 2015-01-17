@@ -52,4 +52,6 @@ public interface UndoableEdit
      * @return
      */
     public boolean isDestructive();
+
+    public Element getDetailXml( Document doc );
 }

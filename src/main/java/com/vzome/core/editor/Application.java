@@ -51,6 +51,7 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.JsonExporter;
 import com.vzome.core.exporters.LiveGraphicsExporter;
 import com.vzome.core.exporters.OffExporter;
@@ -302,11 +303,11 @@ public class Application
         
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "dae", new VRMLExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "LiveGraphics", new DaeExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "LiveGraphics", new LiveGraphicsExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "json", new JsonExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "step", new STEPExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "vrml", new LiveGraphicsExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "vrml", new VRMLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "off", new OffExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "2life", new SecondLifeExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "vef", new VefExporter( null, this .mColors, this .mLights, null ) );
@@ -316,6 +317,8 @@ public class Application
         this .exporters .put( "dxf", new DxfExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "pdb", new PdbExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "seg", new SegExporter( null, this .mColors, this .mLights, null ) );
+        
+        this .exporters .put( "history", new HistoryExporter( null, this .mColors, this .mLights, null ) );
     }
 
     private void addStyle( Shapes shapes )
