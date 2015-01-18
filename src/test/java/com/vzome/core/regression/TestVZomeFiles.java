@@ -2,13 +2,16 @@
 
 package com.vzome.core.regression;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -25,6 +28,7 @@ import nu.xom.Serializer;
 import nu.xom.Text;
 
 import com.vzome.api.Application;
+import com.vzome.api.Exporter;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 
@@ -68,6 +72,8 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
     }
 	
 	private Application app;
+	
+	private Exporter historyExporter;
 	
 	private Path baseFolder;
 
@@ -116,6 +122,7 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
                 testCase .appendChild( failure );
             }
         });
+        historyExporter = app .getExporter( "history" );
 
 		Path root = baseFolder .resolve( testPath );
 		if ( ! Files.exists( root, new LinkOption[]{} ) )
@@ -193,6 +200,36 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
             try {
                 InputStream bytes = new FileInputStream( file );
                 com.vzome.api.Document doc = app .loadDocument( bytes );
+                
+                File goldenHistory = new File( classFolder, testName + ".history" );
+                if ( goldenHistory .getAbsoluteFile() .exists() ) {
+                    File testHistory = new File( classFolder, testName + ".history.test" );
+                    PrintWriter histOut = new PrintWriter( testHistory );
+                    try {
+                        historyExporter .doExport( doc, histOut, 1080, 1920 );
+                    } finally {
+                        histOut .close();
+                    }
+                    Process process = Runtime .getRuntime() .exec( "diff " + goldenHistory .getAbsolutePath() + " " + testHistory .getAbsolutePath() );
+                    // any error message?
+                    StreamGobbler errorGobbler = new 
+                        StreamGobbler( process.getErrorStream(), "ERROR" );            
+                    
+                    // any output?
+                    StreamGobbler outputGobbler = new 
+                        StreamGobbler( process.getInputStream(), "OUTPUT" );
+                        
+                    // kick them off
+                    errorGobbler.start();
+                    outputGobbler.start();
+                                            
+                    // any error???
+                    int exitVal = process.waitFor();
+                    if ( exitVal != 0 )
+                        throw new Exception( "ExitValue: " + exitVal );
+                    else
+                        testHistory .delete();
+                }
             } catch ( Exception e ) {
                 Element error = new Element( "error" );
                 error .addAttribute( new Attribute( "type", "finish.load.exception" ) );
@@ -237,5 +274,32 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 	    //  of other files.  That is a side effect.  The main purpose is to make
 	    //  "testsuite" (the name is the extension) act like links.
 		return ext .equals( "testsuite" ) || ext .equals( "vZome-files" );
+	}
+
+	class StreamGobbler extends Thread
+	{
+	    InputStream is;
+	    String type;
+	    
+	    StreamGobbler(InputStream is, String type)
+	    {
+	        this.is = is;
+	        this.type = type;
+	    }
+	    
+	    public void run()
+	    {
+	        try
+	        {
+	            InputStreamReader isr = new InputStreamReader(is);
+	            BufferedReader br = new BufferedReader(isr);
+	            String line=null;
+	            while ( (line = br.readLine()) != null)
+	                System.out.println(type + ">" + line);    
+	        } catch (IOException ioe)
+	        {
+	            ioe.printStackTrace();  
+	        }
+	    }
 	}
 }

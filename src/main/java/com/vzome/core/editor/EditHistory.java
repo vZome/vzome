@@ -576,7 +576,7 @@ public class EditHistory
         @Override
         public Element getDetailXml( Document doc )
         {
-            throw new IllegalStateException( "There should be no deferred edits when exporting details." );
+            return doc .createElement( "deferredEdit" );
         }
     }
 
