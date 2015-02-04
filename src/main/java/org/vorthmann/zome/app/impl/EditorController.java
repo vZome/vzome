@@ -125,7 +125,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
     private Map<String,SymmetryController> symmetries = new HashMap();
 
-    private boolean mEdited = false, mRequireShift = false, showFrameLabels = false, useWorkingPlane = false;
+    private boolean mRequireShift = false, showFrameLabels = false, useWorkingPlane = false;
 
     private LessonController lessonController;
 
@@ -162,6 +162,8 @@ public class EditorController extends DefaultController implements J3dComponentF
     private MouseTool targetManifestationDrag, selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
 
     private final Controller polytopesController;
+
+    private int changeCount = 0;
     
    /*
      * See the javadoc to control the logging:
@@ -180,6 +182,9 @@ public class EditorController extends DefaultController implements J3dComponentF
 
         this .properties = props;
         this .document = document;
+        
+        if ( document .isMigrated() )
+            this .changeCount = -1; // this will force isEdited() to return true
 
         noRendering = propertyIsTrue( "no.rendering" );  // we'll probably never do this any more, since we create a RenderedModel in the DocumentModel anyway
             // note that noRendering actually breaks things, since the automatic orbit behavior is only in the SymmetryController, not the SymmetrySystem.
@@ -703,6 +708,11 @@ public class EditorController extends DefaultController implements J3dComponentF
             this .syncRendering();
             return;
         }
+        else if ( "reset.change.count" .equals( action ) ) {
+            // just did a save, so lets record the document change count again,
+            //  so isEdited() will return false until more changes occur.
+            this .changeCount  = this .document .getChangeCount();
+        }
 
         mErrors .clearError();
         try {
@@ -777,7 +787,6 @@ public class EditorController extends DefaultController implements J3dComponentF
             else if ( action .equals( "takeSnapshot" ) )
             {
             	document .addSnapshotPage( mViewPlatform .getView() );
-            	this .mEdited = true;
             }
 
             else if ( "nextPage" .equals( action ) )
@@ -1072,7 +1081,6 @@ public class EditorController extends DefaultController implements J3dComponentF
                 FileOutputStream out = new FileOutputStream( file );
                 DomUtils .serialize( doc, out );
                 out.close();
-                setUnedited();
                 return;
             }
             if ( command.startsWith( "capture." ) )
@@ -1203,12 +1211,8 @@ public class EditorController extends DefaultController implements J3dComponentF
 
     public boolean isEdited()
     {
-        return mEdited;
-    }
-
-    public void setUnedited()
-    {
-        mEdited = false;
+        int currentChangeCount = this .document .getChangeCount();
+        return currentChangeCount > this .changeCount;
     }
 
     public void setErrorChannel( ErrorChannel errors )
@@ -1233,7 +1237,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             return Boolean.toString( startReader );
 
         if ( "edited".equals( string ) )
-            return Boolean.toString( mEdited );
+            return Boolean.toString( this .isEdited() );
 
         if ( "symmetry".equals( string ) )
             return symmetryController.getSymmetry().getName();
@@ -1371,11 +1375,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
     public void setProperty( String cmd, Object value )
     {
-        if ( "edited".equals( cmd ) ) {
-            this.mEdited = "true".equals( value );
-            return;
-        }
-        else if ( "useGraphicalViews".equals( cmd ) ) {
+        if ( "useGraphicalViews".equals( cmd ) ) {
             this.useGraphicalViews = "true".equals( value );
             properties().firePropertyChange( cmd, false, this.useGraphicalViews );
             return;

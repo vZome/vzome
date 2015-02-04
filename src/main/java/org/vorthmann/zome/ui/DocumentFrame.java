@@ -604,8 +604,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             {
                 if ( mFile == null )
                     saveAsAction.actionPerformed( e );
-                else
-                    mController.doFileAction( "save", mFile );
+                else {
+                    mController .doFileAction( "save", mFile );
+                    mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "reset.change.count" ) );
+                }
             }
         };
         final ActionListener saveDefault = new ActionListener()
@@ -615,12 +617,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
                 // this is basically "save a copy...", with no choosing
                 String fieldName = mController.getProperty( "field.name" );
                 File prototype = new File( Platform.getPreferencesFolder(), "Prototypes/" + fieldName + ".vZome" );
-                String edited = mController.getProperty( "edited" );
                 mController.doFileAction( "save", prototype );
-                mController.setProperty( "edited", edited ); // just cuz we
-                // saved, doesn't
-                // mean we saved
-                // this file
             }
         };
 
@@ -1287,6 +1284,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             //   see  http://java.sun.com/docs/books/tutorial/uiswing/components/dialog.html
             int response = JOptionPane.showConfirmDialog( DocumentFrame.this, "Do you want to save your changes?",
                     "file is changed", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE );
+            
+            // TODO I seem to get two calls (and thus two dialogs) If I try to quit (as opposed to close the window)
+            lkjlkj;
+            
             if ( response == JOptionPane.CANCEL_OPTION )
                 return false;
             if ( response == JOptionPane.YES_OPTION )
