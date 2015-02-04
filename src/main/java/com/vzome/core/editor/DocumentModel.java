@@ -95,7 +95,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	
 	private Command.FailureChannel failures;
 
-	private boolean mEdited = false;
+	private int changes = 0;
+	
+	private boolean migrated = false;
 
 	private final Element mXML;
 	
@@ -216,9 +218,14 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		} );
 	}
 		
-	public boolean isEdited()
+	public int getChangeCount()
 	{
-		return this .mEdited;
+		return this .changes;
+	}
+	
+	public boolean isMigrated()
+	{
+	    return this .migrated;
 	}
 	
 	public void setRenderedModel( RenderedModel renderedModel )
@@ -541,7 +548,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         {
         	this .failures .reportFailure( failure );
         }
-        this .mEdited  = true;
+        this .changes++;
     }
 
 	public void setParameter( Construction singleConstruction, String paramName ) throws Failure
@@ -714,7 +721,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         	throw new Failure( message, t );
         }
 
-        mEdited = openUndone || mEdited || format.isMigration() || ! implicitSnapshots .isEmpty();
+        this .migrated = openUndone || format.isMigration() || ! implicitSnapshots .isEmpty();
     }
 
     public Element getDetailsXml( Document doc )
