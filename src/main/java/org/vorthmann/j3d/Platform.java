@@ -82,9 +82,19 @@ public class Platform
     public static void setupEventListener( final UI ui )
     {
         if ( isMac )
-            MacAdapter .setupListener( ui );
-//         if ( isWebStart && hasSingleInstanceService  )
-//             JavaWebStart15Adapter .setupListener( ui );
+            try {
+//              MacAdapter .setupListener( ui );
+                Class adapterClass = Class .forName( "org.vorthmann.j3d.MacAdapter" );
+                System .out .println( "found MacAdapter for Finder integration" );
+                Method setupMethod = adapterClass .getDeclaredMethod( "setupListener", UI.class );
+                setupMethod .invoke( adapterClass, ui );
+            } catch ( ClassNotFoundException e ) {
+                Logger .getLogger( "org.vorthmann.vzome" ) .warning( "found no MacAdapter class" );
+            } catch ( NoSuchMethodException e ) {
+                Logger .getLogger( "org.vorthmann.vzome" ) .warning( "found no MacAdapter.setupListener() method" );
+            } catch ( Exception e ) {
+                Logger .getLogger( "org.vorthmann.vzome" ) .warning( "exception trying to call MacAdapter.setupListener() method" );
+            }
     }
     
     public static boolean isMac()
