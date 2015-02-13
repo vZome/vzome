@@ -110,7 +110,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             if ( orbit.dotX > xMax )
                 xMax = orbit.dotX;
         }
-        if ( ! allOrbits .contains( lastOrbit ) )
+        if ( (lastOrbit == null) || (! allOrbits .contains( lastOrbit ) ))
         {
             if ( ! orbits .isEmpty() )
                 lastOrbit = (Direction) orbits .last();
