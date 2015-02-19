@@ -3,7 +3,6 @@ package org.vorthmann.zome.app.impl;
 
 import javax.vecmath.Vector3f;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.OrbitSet;
@@ -24,12 +23,11 @@ public class SymmetrySnapper implements ViewPlatformModel.Snapper
         Axis axis = orbitSet .getAxis( vector );
         if ( axis == null )
             return;
-        AlgebraicField field = axis .getDirection() .getSymmetry() .getField();
-        RealVector rv = field .getRealVector( axis .normal() );
+        RealVector rv = axis .normal() .toRealVector();
         lookDir .set( (float) rv.x, (float) rv.y, (float) rv.z );
         vector = new RealVector( upDir .x, upDir .y, upDir .z );
         axis = orbitSet .getAxis( vector );
-        rv = field .getRealVector( axis .normal() );
+        rv = axis .normal() .toRealVector();
         upDir .set( (float) rv.x, (float) rv.y, (float) rv.z );
         
         Vector3f cross = new Vector3f();

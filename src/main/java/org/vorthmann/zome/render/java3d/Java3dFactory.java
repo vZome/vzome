@@ -21,7 +21,8 @@ import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
 import com.sun.j3d.utils.geometry.Stripifier;
 import com.sun.j3d.utils.universe.SimpleUniverse;
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Colors;
@@ -87,7 +88,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         return makeGeometry( rm .getShape(), rm .getOrientation(), rm .reverseOrder() );
     }
 
-    Geometry makeGeometry( Polyhedron poly, int[][] matrix, boolean reverseFaces )
+    Geometry makeGeometry( Polyhedron poly, AlgebraicMatrix matrix, boolean reverseFaces )
     {
         Map map = (Map) mGeomInfoCache .get( poly );
         if ( map == null ){
@@ -100,15 +101,14 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         if ( gi == null ) {
 
             List vertices = poly .getVertexList();
-            AlgebraicField field = poly .getField();
             Point3d[] coords = new Point3d [ vertices .size() ];
             int i = 0;      
             for ( Iterator it = vertices .iterator(); it .hasNext(); ) {
-                int[] /*AlgebraicVector*/ gv = (int[]) it .next();
+                AlgebraicVector gv = (AlgebraicVector) it .next();
                 Point3d pt = new Point3d();
                 if ( matrix != null )
-                    gv = field .transform( matrix, gv );
-                RealVector v = field .getRealVector( gv );
+                    gv = matrix .timesColumn( gv );
+                RealVector v = gv .toRealVector();
                 pt.x = v.x; pt.y = v.y; pt.z = v.z;
                 coords[i++] = pt;
             }

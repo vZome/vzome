@@ -23,7 +23,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -69,7 +69,6 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         orbits .retainAll( allOrbits );
         
         Symmetry symmetry = allOrbits .getSymmetry();
-        AlgebraicField field = symmetry .getField();
         RealVector test = new RealVector( 0.1d, 0.1d, 1d );
         if ( symmetry instanceof OctahedralSymmetry )
             test = new RealVector( 2d, 1d, 4d );
@@ -90,11 +89,11 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             orbitDots .put( dir, orbit );
 
             Axis axis = dir .getAxis( test );
-            int[] /*AlgebraicVector*/ v = axis .normal();
-            double z = field .evaluateNumber( field .getVectorComponent( v, 2 ) );
-            orbit.dotX = field .evaluateNumber( field .getVectorComponent( v, 0 ) );
+            AlgebraicVector v = axis .normal();
+            double z =  v .getComponent( 2 ) .evaluate();
+            orbit.dotX = v .getComponent( 0 ) .evaluate();
             orbit.dotX = orbit.dotX / z; // intersect with z=0 plane
-            orbit.dotY = field .evaluateNumber( field .getVectorComponent( v, 1 ) );
+            orbit.dotY = v .getComponent( 1 ) .evaluate();
             orbit.dotY = orbit.dotY / z; // intersect with z=0 plane
             
 //            if ( symmetry instanceof IcosahedralSymmetry )

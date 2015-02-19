@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.Polytope4d;
 
@@ -19,7 +20,7 @@ public class PolytopesController extends DefaultController
 
     private boolean[] generateEdge = new boolean[]{ false, false, false, true };
     private boolean[] renderEdge = new boolean[]{ true, true, true, true };
-    private int[][] edgeScales = new int[4][];
+    private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
 
     public PolytopesController( DocumentModel document )
     {

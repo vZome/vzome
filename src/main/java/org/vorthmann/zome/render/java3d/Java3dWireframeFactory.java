@@ -10,6 +10,7 @@ import javax.media.j3d.PointArray;
 import javax.vecmath.Point3d;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -41,19 +42,19 @@ public class Java3dWireframeFactory extends Java3dFactory
         LineArray result = new LineArray( 2, GeometryArray.COORDINATES );
         
         Point3d pt = null;
-        int[] /*AlgebraicVector*/ gv = null;
+        AlgebraicVector gv = null;
         RealVector v = null;
         
         gv = strut .getLocation();
 
-        v = field .getRealVector( gv );
+        v = gv .toRealVector();
         pt = new Point3d();
         pt.x = v.x; pt.y = v.y; pt.z = v.z;
         result .setCoordinate( 0, pt );
         
         gv = strut .getEnd();
 
-        v = field .getRealVector( gv );
+        v = gv .toRealVector();
         pt = new Point3d();
         pt.x = v.x; pt.y = v.y; pt.z = v.z;
         result .setCoordinate( 1, pt );
@@ -66,12 +67,12 @@ public class Java3dWireframeFactory extends Java3dFactory
         PointArray result = new PointArray( 1, GeometryArray.COORDINATES );
         
         Point3d pt = new Point3d();
-        int[] /*AlgebraicVector*/ gv = null;
+        AlgebraicVector gv = null;
         RealVector v = null;
         
         gv = ball .getLocation();
 
-        v = field .getRealVector( gv );
+        v = gv .toRealVector();
         pt.x = v.x; pt.y = v.y; pt.z = v.z;
         result .setCoordinate( 0, pt );
         

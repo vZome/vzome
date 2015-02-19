@@ -50,6 +50,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
@@ -574,7 +576,7 @@ public class EditorController extends DefaultController implements J3dComponentF
                     {
                         mErrors .clearError();
                         Point point = (Point) ((Connector) target) .getConstructions() .next();
-                        int[] workingPlaneNormal = null;
+                        AlgebraicVector workingPlaneNormal = null;
                         if ( useWorkingPlane && (workingPlaneAxis != null ) )
                         	workingPlaneNormal = workingPlaneAxis .getOffset();
                         previewStrut .startRendering( symmetryController, point, workingPlaneNormal );
@@ -901,10 +903,10 @@ public class EditorController extends DefaultController implements J3dComponentF
             else if ( action .equals( "setBuildOrbitAndLength" ) )
             {
                 Strut strut = (Strut) mTargetManifestation;
-                int[] offset = strut .getOffset();
+                AlgebraicVector offset = strut .getOffset();
                 Axis zone = symmetryController .getZone( offset );
                 Direction orbit = zone .getOrbit();
-                int[] length = zone .getLength( offset );
+                AlgebraicNumber length = zone .getLength( offset );
                 symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
                 symmetryController .buildController .doAction( "setSingleDirection." + orbit .getName(), null );
                 LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
@@ -913,13 +915,13 @@ public class EditorController extends DefaultController implements J3dComponentF
             else if ( action .equals( "extractPartModel" ) )
             {
                 Strut strut = (Strut) mTargetManifestation;
-                int[] location = strut .getLocation();
-                int[] offset = strut .getOffset();
+                AlgebraicVector location = strut .getLocation();
+                AlgebraicVector offset = strut .getOffset();
                 RenderedManifestation rm = (RenderedManifestation) strut .getRenderedObject();
                 Polyhedron shape = rm .getShape();
                 AlgebraicField field = shape .getField();
 
-                int[] scale = field .createPower( 0 );
+                AlgebraicNumber scale = field .createPower( 0 );
                 StringWriter writer = new StringWriter();
                 VefModelExporter exporter = new VefModelExporter( writer, field, scale );
                 exporter .exportStrutPolyhedron( shape, rm .getOrientation(), rm .reverseOrder(), offset );
@@ -931,10 +933,10 @@ public class EditorController extends DefaultController implements J3dComponentF
             else if ( action .equals( "selectSimilarSize" ) )
             {
                 Strut strut = (Strut) mTargetManifestation;
-                int[] offset = strut .getOffset();
+                AlgebraicVector offset = strut .getOffset();
                 Axis zone = symmetryController .getZone( offset );
                 Direction orbit = zone .getOrbit();
-                int[] length = zone .getLength( offset );
+                AlgebraicNumber length = zone .getLength( offset );
                 document .selectSimilarStruts( orbit, length ); // does performAndRecord
             }
             else if ( action.startsWith( "newTool/" ) )

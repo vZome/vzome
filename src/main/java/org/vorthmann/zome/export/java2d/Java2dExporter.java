@@ -16,6 +16,8 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -93,17 +95,17 @@ public class Java2dExporter extends Exporter3d
             if ( mSnapshot .isLineDrawing() ) {
                 Manifestation m = rm .getManifestation();
                 if ( m instanceof Strut ) {
-                    int[] start = ((Strut) m) .getLocation();
-                    int[] end = ((Strut) m) .getEnd();
-                    Vector3f v0 = mapCoordinates( field .getRealVector( start ), height, width, field, view );
-                    Vector3f v1 = mapCoordinates( field .getRealVector( end ), height, width, field, view );
+                    AlgebraicVector start = ((Strut) m) .getLocation();
+                    AlgebraicVector end = ((Strut) m) .getEnd();
+                    Vector3f v0 = mapCoordinates( start .toRealVector(), height, width, field, view );
+                    Vector3f v1 = mapCoordinates( end .toRealVector(), height, width, field, view );
                     mSnapshot .addLineSegment( color, v0, v1 );
                 }
                 continue;
             }
             
             List vertices = shape .getVertexList();
-            int[][] partOrientation = rm .getOrientation();
+            AlgebraicMatrix partOrientation = rm .getOrientation();
             RealVector location = rm .getLocation();  // should *2?
             
             if ( location == null )
@@ -113,9 +115,9 @@ public class Java2dExporter extends Exporter3d
             mappedVertices .clear();
             for ( int i = 0; i < vertices .size(); i++ )
             {
-                int[] gv = (int[]) vertices .get( i );
-                gv = field .transform( partOrientation, gv );
-                RealVector rv = location .plus( field .getRealVector( gv ) );
+                AlgebraicVector gv = (AlgebraicVector) vertices .get( i );
+                gv = partOrientation .timesColumn( gv );
+                RealVector rv = location .plus( gv .toRealVector() );
                 Vector3f v = mapCoordinates( rv, height, width, field, view );
                 mappedVertices .add( v );
             }
@@ -159,8 +161,8 @@ public class Java2dExporter extends Exporter3d
                 if ( ! backFacing )
                 {
                     if ( mSnapshot .hasLighting() ) {
-                        int[] faceNormal = field .transform( partOrientation, face .getNormal() );
-                        RealVector normal = field .getRealVector( faceNormal ) .normalize();
+                        AlgebraicVector faceNormal = partOrientation .timesColumn( face .getNormal() );
+                        RealVector normal = faceNormal .toRealVector() .normalize();
                         Vector3f normalV = new Vector3f( (float) normal.x, (float) normal.y, (float) normal.z );
                         this .viewTransform .transform( normalV );
                         

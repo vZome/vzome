@@ -5,6 +5,7 @@ package org.vorthmann.zome.app.impl;
 
 import org.vorthmann.ui.DefaultController;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
@@ -34,7 +35,7 @@ public class PartsController extends DefaultController implements RenderingChang
         this .oldOrbits = this .newOrbits;
     }
 
-    private String getStrutData( Polyhedron poly, int[] length, OrbitSource orbits )
+    private String getStrutData( Polyhedron poly, AlgebraicNumber length, OrbitSource orbits )
     {
         Direction orbit = poly .getOrbit();
         StringBuffer buf = new StringBuffer();
@@ -52,7 +53,7 @@ public class PartsController extends DefaultController implements RenderingChang
         Polyhedron poly = rendered .getShape();
         if ( poly == null )
             return;
-        int[] length = poly .getLength();
+        AlgebraicNumber length = poly .getLength();
         if ( length != null )
             properties() .firePropertyChange( "addStrut-" + getStrutData( poly, length, newOrbits ), null, poly );
         else if ( m instanceof Connector )
@@ -70,7 +71,7 @@ public class PartsController extends DefaultController implements RenderingChang
             if ( poly != null )
             {
                 // now emit prop changes for the BOM table panel
-                int[] length = poly .getLength();
+                AlgebraicNumber length = poly .getLength();
                 if ( length != null )
                     properties() .firePropertyChange( "removeStrut-" + getStrutData( poly, length, oldOrbits ), null, poly );
             }

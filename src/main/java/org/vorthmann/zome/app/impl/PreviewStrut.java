@@ -11,6 +11,7 @@ import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.StrutCreation;
@@ -73,7 +74,7 @@ public class PreviewStrut implements PropertyChangeListener
         };
 }
 
-    public void startRendering( SymmetryController symmetryController, Point point, int[] workingPlaneNormal )
+    public void startRendering( SymmetryController symmetryController, Point point, AlgebraicVector workingPlaneNormal )
     {
         this .point = point;
 
@@ -84,7 +85,7 @@ public class PreviewStrut implements PropertyChangeListener
         {
         	orbits = new PlaneOrbitSet( orbits, workingPlaneNormal );
         	
-        	RealVector normal = this.point .getField() .getRealVector( workingPlaneNormal );
+        	RealVector normal = workingPlaneNormal .toRealVector();
         	RealVector other = new RealVector( 1d, 0d, 0d );
         	RealVector v1 = normal .cross( other );
         	double len = v1 .length();
@@ -99,7 +100,7 @@ public class PreviewStrut implements PropertyChangeListener
         	// but I had to derive the general forms for the products.
         	// This part is just computing the plane trivector, and then its dual vector.
         	
-        	RealVector p = this.point .getField() .getRealVector( this.point.getLocation() );
+        	RealVector p = this.point.getLocation() .toRealVector();
 
         	RealVector q = p .plus( v1 );
         	RealVector r = p .plus( v2 );
@@ -188,7 +189,7 @@ public class PreviewStrut implements PropertyChangeListener
 	{
         if ( point != null && usingWorkingPlane )
         {
-        	RealVector localCenter = this.point .getField() .getRealVector( this.point.getLocation() );
+        	RealVector localCenter = this.point.getLocation() .toRealVector();
         	
         	RealVector s = new RealVector( imagePt.x, imagePt.y, imagePt.z );
         	RealVector q = new RealVector( eyePt.x, eyePt.y, eyePt.z );

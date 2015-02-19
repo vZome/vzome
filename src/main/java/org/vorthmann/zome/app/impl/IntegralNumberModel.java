@@ -7,6 +7,7 @@ import org.vorthmann.ui.DefaultController;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 
 public class IntegralNumberModel extends DefaultController
 {
@@ -33,7 +34,7 @@ public class IntegralNumberModel extends DefaultController
         mDivisorModel = 1;
     }
 
-    public int[] /*AlgebraicNumber*/ getValue( AlgebraicField field )
+    public AlgebraicNumber getValue( AlgebraicField field )
     {
         return field .createAlgebraicNumber( mOnesModel, mTausModel, mDivisorModel, mScaleModel );
     }
