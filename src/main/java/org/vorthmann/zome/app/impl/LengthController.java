@@ -5,6 +5,7 @@ package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
+import java.math.BigInteger;
 import java.util.StringTokenizer;
 
 import org.vorthmann.j3d.MouseTool;
@@ -13,7 +14,8 @@ import org.vorthmann.ui.DefaultController;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.BigRational;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Direction;
 
@@ -194,14 +196,14 @@ public class LengthController extends DefaultController
     /**
      * This is the internal factor applied, determined by the orbit, and fixed.
      */
-    private final int[] fixedFactor;
+    private final AlgebraicNumber fixedFactor;
     
     /**
      * This is the user's basis for scale... when the slider is centered on "unit", this is the length value.
      */
-    private int[] unitFactor;
+    private AlgebraicNumber unitFactor;
     
-    private final int[] standardUnitFactor;
+    private final AlgebraicNumber standardUnitFactor;
     
     private boolean half = false;
         
@@ -279,7 +281,7 @@ public class LengthController extends DefaultController
         else if ( "newZeroScale" .equals( action ) )
         {
             int realScale = currentScale .getScale();
-            unitFactor = field .multiply( unitFactor, field .createPower( realScale ) );
+            unitFactor = unitFactor .times( field .createPower( realScale ) );
             currentScale .setScale( 0 );
         }
         
@@ -309,11 +311,12 @@ public class LengthController extends DefaultController
 
         if ( "values" .equals( listName ) )
         {
-            int[] intsWithDivisor = field .toIntegersWithDivisor( unitFactor );
-            // last value should always be the global divisor
+            BigInteger divisor = unitFactor .getDivisor();
             String[] result = new String[ order + 1 ];
-            for( int i = 0; i <= order; i++ )
-                result[ i ] = Integer .toString( intsWithDivisor[ i ] );
+            result[ order ] = divisor .toString();
+            BigRational[] factors = unitFactor .getFactors();
+            for( int i = 0; i < order; i++ )
+                result[ i ] = factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .toString();
             return result;
         }
 
@@ -337,10 +340,14 @@ public class LengthController extends DefaultController
         else if ( "customUnit" .equals( property ) )
         {
             StringTokenizer values = new StringTokenizer( (String) value );
-            int[] inputs = new int[ field .getOrder() + 1 ]; // divisor will be the last int
+            int[] inputs = new int[ field .getOrder() ]; // divisor will be the last int
+            int divisor = 1;
             for ( int i = 0; values .hasMoreTokens(); i++ )
-                inputs[ i ] = Integer .parseInt( values .nextToken() );
-            unitFactor = field .fromIntegersWithDivisor( inputs );
+                if ( i < inputs.length )
+                    inputs[ i ] = Integer .parseInt( values .nextToken() );
+                else
+                    divisor = Integer .parseInt( values .nextToken() );
+            unitFactor = field .createAlgebraicNumber( inputs ) .dividedBy( field .createRational( divisor ) );
             currentScale .setScale( 0 );
             fireLengthChange();
             return;
@@ -361,13 +368,13 @@ public class LengthController extends DefaultController
             return readable( unitFactor );
 
         if ( "unitIsCustom" .equals( string ) )
-            return Boolean .toString( ! RationalVectors .equals( unitFactor, 0, standardUnitFactor, 0 ) );
+            return Boolean .toString( ! unitFactor .equals( standardUnitFactor ) );
 
         if ( "lengthText" .equals( string ) )
         {
             int realScale = currentScale .getScale();
-            int[] result = this .unitFactor;
-            result = field .multiply( result, field .createPower( realScale ) );
+            AlgebraicNumber result = this .unitFactor;
+            result = result .times( field .createPower( realScale ) );
             return readable( result );
         }
 
@@ -379,10 +386,10 @@ public class LengthController extends DefaultController
         return super.getProperty( string );
     }
     
-    private String readable( int[] value )
+    private String readable( AlgebraicNumber unitFactor2 )
     {
         StringBuffer buf = new StringBuffer();
-        field .getNumberExpression( buf, value, 0, AlgebraicField.DEFAULT_FORMAT );
+        unitFactor2 .getNumberExpression( buf, AlgebraicField.DEFAULT_FORMAT );
         return buf .toString();
     }
 
@@ -390,16 +397,16 @@ public class LengthController extends DefaultController
      * Get the actual length value to use when rendering.  This value will multiply the zone's normal vector,
      * whatever its length is (not necessarily a unit vector).
      */
-    public int[] getValue()
+    public AlgebraicNumber getValue()
     {
         // TODO push part of this into AlgebraicField somehow?
-        int[] result = field .multiply( this .unitFactor, this .fixedFactor );
+        AlgebraicNumber result = this .unitFactor .times( this .fixedFactor );
         if ( half )
-            result = field .multiply( result, field .createRational( new int[]{ 1,2 } ) );
+            result = result .times( field .createRational( new int[]{ 1,2 } ) );
         
         // TODO support more than one scaling, like rho and sigma for heptagons
         int realScale = currentScale .getScale() + SCALE_OFFSET;
-        result = field .multiply( result, field .createPower( realScale ) );
+        result = result .times( field .createPower( realScale ) );
         return result;
     }
 
@@ -412,15 +419,15 @@ public class LengthController extends DefaultController
      * This is basically an inverse of getValue(), but with scale fixed at zero,
      * thus forcing unitFactor to float.
      * 
-     * @param actualLength
+     * @param length
      */
-    public void setActualLength( int[] actualLength )
+    public void setActualLength( AlgebraicNumber length )
     {
         half = false;
         currentScale .setScale( 0 );
 
-        actualLength = field .multiply( actualLength, field .createPower( -SCALE_OFFSET ) );
-        unitFactor = field .divide( actualLength, fixedFactor );
+        length = length .times( field .createPower( -SCALE_OFFSET ) );
+        unitFactor = length .dividedBy( fixedFactor );
         fireLengthChange();
     }
 }

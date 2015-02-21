@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
@@ -279,12 +280,12 @@ public class SymmetryController extends DefaultController implements RenderedMod
     
     // TODO this should take over all functions of symmetry.getAxis()
     
-    public Axis getZone( int[] vector )
+    public Axis getZone( AlgebraicVector offset )
     {
-        return getAxis( vector );
+        return getAxis( offset );
     }
     
-    public Axis getAxis( int[] vector )
+    public Axis getAxis( AlgebraicVector vector )
     {
     	Axis axis = this .symmetrySystem .getAxis( vector );
     	    	
