@@ -7,9 +7,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 
 
@@ -17,16 +18,16 @@ public class WythoffConstruction
 {
     public interface Listener
     {
-        Object addVertex( int[] /**/ v );
+        Object addVertex( AlgebraicVector v );
         
         Object addEdge( Object p1, Object p2 );
         
         Object addFace( Object[] vertices );
     }
     
-    public static void constructPolytope( CoxeterGroup group, int index, int edgesToRender, int[][] edgeScales, CoxeterGroup renderingGroup, Listener listener )
+    public static void constructPolytope( CoxeterGroup group, int index, int edgesToRender, AlgebraicNumber[] edgeScales, CoxeterGroup renderingGroup, Listener listener )
     {
-        int[] /*AlgebraicVector*/[] neighbors = new int[4] /*AlgebraicVector*/[];
+        AlgebraicVector[] neighbors = new AlgebraicVector[4];
         
         // TODO remove; TEMPORARY hack to see chiral stuff
         boolean chiral = false;
@@ -35,21 +36,20 @@ public class WythoffConstruction
             index = edgesToRender = 0xF;
         }
 
-        int[] /*AlgebraicVector*/ origin = group .getOrigin();
-        int[] /*AlgebraicVector*/ model = origin;
-        AlgebraicField field = group .getField();
+        AlgebraicVector origin = group .getOrigin();
+        AlgebraicVector model = origin;
         int bits = index;
         // We always use all the weights indicated by the bits of index, so we create vertices based on that.
         for ( int i = 0; i < 4; i++ ) {
             if ( bits % 2 == 1 )
-                model = field .add( model, field .scaleVector( group .getWeight( i ), edgeScales[ i ] ) );
+                model = model .plus( group .getWeight( i ) .scale( edgeScales[ i ] ) );
             bits >>= 1;
         }
         bits = index;
         // We only create edges based on edgesToRender, so we can select the surtopes we want to render.
         for ( int i = 0; i < 4; i++ ) {
             if ( ( bits % 2 == 1 ) && ( edgesToRender % 2 == 1 ) )
-                neighbors[ i ] = field .subtract( model, field .scaleVector( group .getSimpleRoot( i ), edgeScales[ i ] ) );
+                neighbors[ i ] = model .minus( group .getSimpleRoot( i ) .scale( edgeScales[ i ] ) );
             else
                 neighbors[ i ] = origin;
             bits >>= 1;
@@ -63,15 +63,15 @@ public class WythoffConstruction
         {
             for ( int i = 0; i < order; i++ )
             {
-                int[] /*AlgebraicVector*/ vector = renderingGroup .chiralSubgroupAction( model, i );
+                AlgebraicVector vector = renderingGroup .chiralSubgroupAction( model, i );
                 if ( vector == null )
                     continue;  // must have been an odd number of sign changes
                 for ( int e = 0; e < 4; e++ )
                     for ( int f = e+1; f< 4; f++ )
                     {
-                        int[] /*AlgebraicVector*/ v1 = renderingGroup .chiralSubgroupAction( neighbors[ e ], i );
+                        AlgebraicVector v1 = renderingGroup .chiralSubgroupAction( neighbors[ e ], i );
                         Object p1 = listener .addVertex( v1 );
-                        int[] /*AlgebraicVector*/ v2 = renderingGroup .chiralSubgroupAction( neighbors[ f ], i );
+                        AlgebraicVector v2 = renderingGroup .chiralSubgroupAction( neighbors[ f ], i );
                         Object p2 = listener .addVertex( v2 );
                         listener .addEdge( p1, p2 );
                     }
@@ -80,14 +80,14 @@ public class WythoffConstruction
         else
             for ( int i = 0; i < order; i++ )
             {
-                int[] /*AlgebraicVector*/ vector = renderingGroup .groupAction( model, i );
+                AlgebraicVector vector = renderingGroup .groupAction( model, i );
                 Object p = listener .addVertex( vector );
                 for ( int e = 0; e < 4; e++ )
                 {
-                    if ( Arrays .equals( neighbors[ e ], origin ) )
+                    if ( neighbors[ e ] .equals( origin ) )
                         continue;
-                    int[] /*AlgebraicVector*/ other = renderingGroup .groupAction( neighbors[ e ], i );
-                    if ( ! Arrays .equals( other, vector ) ) {
+                    AlgebraicVector other = renderingGroup .groupAction( neighbors[ e ], i );
+                    if ( ! other .equals( vector ) ) {
                         Object p2 = listener .addVertex( other );
                         listener .addEdge( p, p2 );
                     }
@@ -120,9 +120,9 @@ public class WythoffConstruction
             return null;
         }
 
-        public Object addVertex( int[] /*AlgebraicVector*/ gv )
+        public Object addVertex( AlgebraicVector gv )
         {
-            field .getVectorExpression( vefVertices, gv, AlgebraicField .VEF_FORMAT );  // TODO not finished replacing the lines below
+            gv .getVectorExpression( vefVertices, AlgebraicField .VEF_FORMAT );  // TODO not finished replacing the lines below
             vefVertices .append( "\n" );
             
             return new Integer( numVertices++ );
@@ -152,7 +152,7 @@ public class WythoffConstruction
             group = new F4Group( field );
         int index = Integer .parseInt( args[ 1 ], 2 );
         VefPrinter listener = new VefPrinter( field );
-        int[][] scales = new int[4][];
+        AlgebraicNumber[] scales = new AlgebraicNumber[4];
         for (int i = 0; i < scales.length; i++)
         {
             scales[ i ] = field .createPower( i );

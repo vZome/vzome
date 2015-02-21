@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 
 /**
@@ -36,12 +38,12 @@ public class SegmentCrossProduct extends Segment
     {
         if ( seg1 .isImpossible() || seg2 .isImpossible() )
             return setStateVariables( null, null, true );
-        int[] v1 = seg1 .getOffset();
-        int[] v2 = seg2 .getOffset();
-        v2 = field .cross( v1, v2 );
-        v2 = field .negate( v2 );
-        v2 = field .scaleVector( v2, field .createPower( -4 ) );
-        v2 = field .scaleVector( v2, field .createRational( new int[]{ 1,2 } ) );
+        AlgebraicVector v1 = seg1 .getOffset();
+        AlgebraicVector v2 = seg2 .getOffset();
+        v2 = v1 .cross( v2 );
+        v2 = v2 .negate();
+        v2 = v2 .scale( field .createPower( -4 ) );
+        v2 = v2 .scale( field .createRational( new int[]{ 1,2 } ) );
         return setStateVariables( seg1 .getEnd(), v2, false );
     }
 

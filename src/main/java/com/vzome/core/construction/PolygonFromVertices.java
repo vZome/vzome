@@ -3,6 +3,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 public class PolygonFromVertices extends Polygon
 {
     private final Point[] mVertices;
@@ -31,7 +33,7 @@ public class PolygonFromVertices extends Polygon
         // TODO implement impossibility
 //        if ( mStart .isImpossible() || mEnd .isImpossible() )
 //            return setStateVariables( null, null, true );
-        int[][] locs = new int[ mVertices .length ][];
+        AlgebraicVector[] locs = new AlgebraicVector[ mVertices .length ];
         for ( int i = 0; i < mVertices .length; i++ )
             locs[ i ] = mVertices[ i ] .getLocation();
         return setStateVariable( locs, false );

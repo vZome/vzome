@@ -2,6 +2,7 @@ package com.vzome.core.editor;
 
 import com.vzome.api.Command;
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
@@ -95,14 +96,14 @@ public class ApiEdit extends ChangeConstructions
 		}
 
 		@Override
-		public Connector addBall(int[] loc)
+		public Connector addBall( AlgebraicVector loc )
 		{
 			Point p1 = new FreePoint( loc, this .edit .getRoot() );
 			return (Connector) manifest( p1 );
 		}
 
 		@Override
-		public Strut addStrut( int[] start, int[] end )
+		public Strut addStrut( AlgebraicVector start, AlgebraicVector end )
 		{
 			Point p1 = new FreePoint( start, this .edit .getRoot() );
 			Point p2 = new FreePoint( end, this .edit .getRoot() );
@@ -111,11 +112,11 @@ public class ApiEdit extends ChangeConstructions
 		}
 
 		@Override
-		public Panel addPanel( int[]... vertices )
+		public Panel addPanel( AlgebraicVector... vertices )
 		{
 			Point[] points = new Point[ vertices .length ];
 			int i = 0;
-			for ( int[] vertex : vertices ) {
+			for ( AlgebraicVector vertex : vertices ) {
 				points[ i ] = new FreePoint( vertex, this .edit .getRoot() );
 				++i;
 			}

@@ -4,15 +4,16 @@
 package com.vzome.core.math.symmetry;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 
 public class D4Group implements CoxeterGroup
 {
     private final AlgebraicField field;
     
-    protected final int[] /*AlgebraicVector*/[] ROOTS = new int[4] /*AlgebraicVector*/ [];
+    protected final AlgebraicVector[] ROOTS = new AlgebraicVector[4];
 
-    protected final int[] /*AlgebraicVector*/[] WEIGHTS = new int[4] /*AlgebraicVector*/ [];
+    protected final AlgebraicVector[] WEIGHTS = new AlgebraicVector[4];
 
     private static final int[][] D4_PERMS = new int[][]
     {
@@ -52,32 +53,32 @@ public class D4Group implements CoxeterGroup
     public D4Group( AlgebraicField field )
     {
         this.field = field;
-        int[] /*AlgebraicNumber*/ neg_one = field .createRational( new int[]{ -1, 1 } );
+        AlgebraicNumber neg_one = field .createRational( new int[]{ -1, 1 } );
         
-        ROOTS[ 0 ] = field .basisVector( 4, RationalVectors.X4 ); // ( 0, 1, -1, 0 );
-        field .setVectorComponent( ROOTS[ 0 ], RationalVectors.Y4, neg_one );
-        ROOTS[ 1 ] = field .basisVector( 4, RationalVectors.Y4 ); // ( 0, 0, 1, -1 );
-        field .setVectorComponent( ROOTS[ 1 ], RationalVectors.Z4, neg_one );
-        ROOTS[ 2 ] = field .basisVector( 4, RationalVectors.Z4 ); // ( -1, 0, 0, 1 );
-        field .setVectorComponent( ROOTS[ 2 ], RationalVectors.W4, neg_one );
-        ROOTS[ 3 ] = field .basisVector( 4, RationalVectors.Z4 ); // ( 1, 0, 0, 1 );
-        field .setVectorComponent( ROOTS[ 3 ], RationalVectors.W4, field .createPower( 0 ) );
+        ROOTS[ 0 ] = field .basisVector( 4, AlgebraicVector.X4 ); // ( 0, 1, -1, 0 );
+        ROOTS[ 0 ] .setComponent( AlgebraicVector.Y4, neg_one );
+        ROOTS[ 1 ] = field .basisVector( 4, AlgebraicVector.Y4 ); // ( 0, 0, 1, -1 );
+        ROOTS[ 1 ] .setComponent( AlgebraicVector.Z4, neg_one );
+        ROOTS[ 2 ] = field .basisVector( 4, AlgebraicVector.Z4 ); // ( -1, 0, 0, 1 );
+        ROOTS[ 2 ] .setComponent( AlgebraicVector.W4, neg_one );
+        ROOTS[ 3 ] = field .basisVector( 4, AlgebraicVector.Z4 ); // ( 1, 0, 0, 1 );
+        ROOTS[ 3 ] .setComponent( AlgebraicVector.W4, field .createPower( 0 ) );
 
-        int[] y = field .basisVector( 4, RationalVectors.Y4 );
-        int[] /*AlgebraicNumber*/ half = field .createRational( new int[]{ 1, 2 } );
-        int[] /*AlgebraicNumber*/ neg_half = field .createRational( new int[]{ -1, 2 } );
-        WEIGHTS[ 0 ] = field .basisVector( 4, RationalVectors.X4 ); // ( 0, 1, 0, 0 );
-        WEIGHTS[ 1 ] = field .add( WEIGHTS[ 0 ], y ); // ( 0, 1, 1, 0 );
-        WEIGHTS[ 2 ] = field .basisVector( 4, RationalVectors.X4 ); // ( -1/2, 1/2, 1/2, 1/2 );
-        field .setVectorComponent( WEIGHTS[ 2 ], RationalVectors.X4, half );
-        field .setVectorComponent( WEIGHTS[ 2 ], RationalVectors.Y4, half );
-        field .setVectorComponent( WEIGHTS[ 2 ], RationalVectors.Z4, half );
-        field .setVectorComponent( WEIGHTS[ 2 ], RationalVectors.W4, neg_half );
-        WEIGHTS[ 3 ] = field .basisVector( 4, RationalVectors.X4 ); // ( 1/2, 1/2, 1/2, 1/2 );
-        field .setVectorComponent( WEIGHTS[ 3 ], RationalVectors.X4, half );
-        field .setVectorComponent( WEIGHTS[ 3 ], RationalVectors.Y4, half );
-        field .setVectorComponent( WEIGHTS[ 3 ], RationalVectors.Z4, half );
-        field .setVectorComponent( WEIGHTS[ 3 ], RationalVectors.W4, half );
+        AlgebraicVector y = field .basisVector( 4, AlgebraicVector.Y4 );
+        AlgebraicNumber half = field .createRational( new int[]{ 1, 2 } );
+        AlgebraicNumber neg_half = field .createRational( new int[]{ -1, 2 } );
+        WEIGHTS[ 0 ] = field .basisVector( 4, AlgebraicVector.X4 ); // ( 0, 1, 0, 0 );
+        WEIGHTS[ 1 ] = WEIGHTS[ 0 ] .plus( y ); // ( 0, 1, 1, 0 );
+        WEIGHTS[ 2 ] = field .basisVector( 4, AlgebraicVector.X4 ); // ( -1/2, 1/2, 1/2, 1/2 );
+        WEIGHTS[ 2 ] .setComponent( AlgebraicVector.X4, half );
+        WEIGHTS[ 2 ] .setComponent( AlgebraicVector.Y4, half );
+        WEIGHTS[ 2 ] .setComponent( AlgebraicVector.Z4, half );
+        WEIGHTS[ 2 ] .setComponent( AlgebraicVector.W4, neg_half );
+        WEIGHTS[ 3 ] = field .basisVector( 4, AlgebraicVector.X4 ); // ( 1/2, 1/2, 1/2, 1/2 );
+        WEIGHTS[ 3 ] .setComponent( AlgebraicVector.X4, half );
+        WEIGHTS[ 3 ] .setComponent( AlgebraicVector.Y4, half );
+        WEIGHTS[ 3 ] .setComponent( AlgebraicVector.Z4, half );
+        WEIGHTS[ 3 ] .setComponent( AlgebraicVector.W4, half );
     }
     
     public int getOrder()
@@ -85,42 +86,42 @@ public class D4Group implements CoxeterGroup
         return 24*8;
     }
 
-    public int[] /*AlgebraicVector*/ groupAction( int[] /*AlgebraicVector*/ model, int element )
+    public AlgebraicVector groupAction( AlgebraicVector model, int element )
     {
         // all perms, even sign changes
-        int[] /**/ result = field .basisVector( 4, RationalVectors.X4 );
+        AlgebraicVector result = field .basisVector( 4, AlgebraicVector.X4 );
         int perm = element / 8;
         int signs = element % 8;  // only three bits!
         boolean even = true;
         for ( int c = 0; c < 4; c++ )
         {
-            int[] source = field .getVectorComponent( model, ( D4_PERMS[ perm ][ c ] + 1 ) % 4 );
+            AlgebraicNumber source = model .getComponent( ( D4_PERMS[ perm ][ c ] + 1 ) % 4 );
             if ( c == 3 && !even ) // fourth bit is implied, to come out even
             {
-                source = field .negate( source );
+                source = source .negate();
             }
             else if ( signs%2 != 0 )
             {
                 even = ! even;
-                source = field .negate( source );
+                source = source .negate();
             }
-            field .setVectorComponent( result, (c+1)%4, source );
+            result .setComponent( (c+1)%4, source );
             signs = signs >> 1;
         }
         return result;
     }
 
-    public int[] /*AlgebraicVector*/ getOrigin()
+    public AlgebraicVector getOrigin()
     {
         return this.field .origin( 4 );
     }
 
-    public int[] /*AlgebraicVector*/ getWeight( int i )
+    public AlgebraicVector getWeight( int i )
     {
         return WEIGHTS[ i ];
     }
 
-    public int[] /*AlgebraicVector*/ getSimpleRoot( int i )
+    public AlgebraicVector getSimpleRoot( int i )
     {
         return ROOTS[ i ];
     }
@@ -130,10 +131,10 @@ public class D4Group implements CoxeterGroup
         return field;
     }
 
-    public int[] chiralSubgroupAction( int[] model, int element )
+    public AlgebraicVector chiralSubgroupAction( AlgebraicVector model, int element )
     {
         // even perms, even sign changes
-        int[] /**/ result = field .basisVector( 4, RationalVectors.X4 );
+        AlgebraicVector result = field .basisVector( 4, AlgebraicVector.X4 );
         int perm = element / 8;
         if ( perm >= 12 ) // an odd permutation
             return null;
@@ -141,17 +142,17 @@ public class D4Group implements CoxeterGroup
         boolean even = true;
         for ( int c = 0; c < 4; c++ )
         {
-            int[] source = field .getVectorComponent( model, ( D4_PERMS[ perm ][ c ] + 1 ) % 4 );
+            AlgebraicNumber source = model .getComponent( ( D4_PERMS[ perm ][ c ] + 1 ) % 4 );
             if ( c == 3 && !even ) // fourth bit is implied, to come out even
             {
-                source = field .negate( source );
+                source = source .negate();
             }
             else if ( signs%2 != 0 )
             {
                 even = ! even;
-                source = field .negate( source );
+                source = source .negate();
             }
-            field .setVectorComponent( result, (c+1)%4, source );
+            result .setComponent( (c+1)%4, source );
             signs = signs >> 1;
         }
         return result;

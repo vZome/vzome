@@ -3,10 +3,11 @@
 
 package com.vzome.core.editor;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
@@ -45,26 +46,26 @@ public class AffinePentagon extends ChangeConstructions
         if ( s1 == null || s2 == null )
             fail( "Affine pentagon command requires two selected struts." );
         
-        int[] /*AlgebraicVector*/ offset1 = s1 .getOffset();
-        int[] /*AlgebraicVector*/ offset2 = s2 .getOffset();
+        AlgebraicVector offset1 = s1 .getOffset();
+        AlgebraicVector offset2 = s2 .getOffset();
         // first, find the three vectors: common, p1, p2
-        int[] /*AlgebraicVector*/ v1 = null, v2 = null;
-        int[] /*AlgebraicVector*/ s1s = s1 .getStart();
-        int[] /*AlgebraicVector*/ s1e = s1 .getEnd();
-        int[] /*AlgebraicVector*/ s2s = s2 .getStart();
-        int[] /*AlgebraicVector*/ s2e = s2 .getEnd();
-        if ( Arrays .equals( s1s, s2s ) ) {
+        AlgebraicVector v1 = null, v2 = null;
+        AlgebraicVector s1s = s1 .getStart();
+        AlgebraicVector s1e = s1 .getEnd();
+        AlgebraicVector s2s = s2 .getStart();
+        AlgebraicVector s2e = s2 .getEnd();
+        if ( s1s .equals( s2s ) ) {
             v1 = s1e; v2 = s2e;
-        } else if ( Arrays .equals( s1e, s2s ) ) {
+        } else if ( s1e .equals( s2s ) ) {
             v1 = s1s; v2 = s2e;
-            offset1 = field .negate( offset1 );
-        } else if ( Arrays .equals( s1e, s2e ) ) {
+            offset1 = offset1 .negate();
+        } else if ( s1e .equals( s2e ) ) {
             v1 = s1s; v2 = s2s;
-            offset2 = field .negate( offset2 );
-            offset1 = field .negate( offset1 );
-        } else if ( Arrays .equals( s1s, s2e ) ) {
+            offset2 = offset2 .negate();
+            offset1 = offset1 .negate();
+        } else if ( s1s .equals( s2e ) ) {
             v1 = s1e; v2 = s2s;
-            offset2 = field .negate( offset2 );
+            offset2 = offset2 .negate();
         } else
             fail( "Selected struts must share a vertex." );
 
@@ -74,22 +75,22 @@ public class AffinePentagon extends ChangeConstructions
             Manifestation m = (Manifestation) all .next();
             if ( m instanceof Connector )
             {
-                int[] /*AlgebraicVector*/ loc = ((Connector) m) .getLocation();
-                if ( Arrays .equals( loc, v1 ) )
+                AlgebraicVector loc = ((Connector) m) .getLocation();
+                if ( loc .equals( v1 ) )
                     p1 = (Point) m .getConstructions() .next();
-                else if ( Arrays .equals( loc, v2 ) )
+                else if ( loc .equals( v2 ) )
                     p2 = (Point) m .getConstructions() .next();
             }
         }
 
         // now, construct p3 = p2 + tau*(segment1)
-        int[] scale = field .createPower( 1 );
-        Transformation transform = new Translation( field .scaleVector( offset1, scale ), root );
+        AlgebraicNumber scale = field .createPower( 1 );
+        Transformation transform = new Translation( offset1 .scale( scale ), root );
         Point p3 = new TransformedPoint( transform, p2 );
         addConstruction( p3 );
         manifestConstruction( p3 );
         // now, construct p4 = p1 + tau*(p2-common)
-        transform = new Translation( field .scaleVector( offset2, scale ), root );
+        transform = new Translation( offset2 .scale( scale ), root );
         Point p4 = new TransformedPoint( transform, p1 );
         addConstruction( p4 );
         manifestConstruction( p4 );

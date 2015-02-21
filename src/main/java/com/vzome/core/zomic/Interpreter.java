@@ -1,5 +1,6 @@
 package com.vzome.core.zomic;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.render.ZomicEventHandler;
@@ -29,7 +30,7 @@ public class Interpreter extends Visitor.Default
         mSymmetry = symmetry;
     }
 
-    public void visitMove( Axis axis, int[] /*AlgebraicNumber*/ length )
+    public void visitMove( Axis axis, AlgebraicNumber length )
     {
         mEvents.step( axis, length );
     }
@@ -96,7 +97,7 @@ public class Interpreter extends Visitor.Default
         saveAndNest( stmt, state );
     }
 
-    public void visitScale( int[] /*AlgebraicNumber*/ size )
+    public void visitScale( AlgebraicNumber size )
     {
         mEvents.scale( size );
     }

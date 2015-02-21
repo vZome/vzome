@@ -9,8 +9,8 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.RationalMatrices;
 import com.vzome.core.commands.CommandUniformH4Polytope;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
@@ -43,12 +43,12 @@ public class Polytope4d extends ChangeConstructions
     
     // new controls
     private int edgesToRender = 0xF;
-    private int[][] edgeScales = new int[4][];
+    private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private String renderGroupName;
 
     public Polytope4d( Selection selection, RealizedModel realized, ModelRoot root,
                         Segment symmAxis, int index, String groupName,
-                        int edgesToRender, int[][] edgeScales, String renderGroupName )
+                        int edgesToRender, AlgebraicNumber[] edgeScales, String renderGroupName )
     {
         super( selection, realized, false );
 
@@ -124,8 +124,7 @@ public class Polytope4d extends ChangeConstructions
         if ( symmAxis == null )
             this.proj = new Projection .Default( field );
         else
-            this.proj = new QuaternionProjection( field, null, RationalMatrices .scaleVector( field, symmAxis .getOffset(),
-                    field .createPower( -5 ) ) );
+            this.proj = new QuaternionProjection( field, null, symmAxis .getOffset() .scale( field .createPower( -5 ) ) );
         if ( "H4" .equals( groupName ) )
         {
             QuaternionicSymmetry qsymm = field .getQuaternionSymmetry( "H_4" ); 
@@ -182,22 +181,22 @@ public class Polytope4d extends ChangeConstructions
             return null;
         }
 
-        public Object addVertex( int[] vertex )
+        public Object addVertex( AlgebraicVector vertex )
         {
-            Point p = (Point) vertices .get( new AlgebraicVector( vertex ) );
+            Point p = (Point) vertices .get( vertex );
             if ( p == null )
             {
-                int[] projected = vertex;
+                AlgebraicVector projected = vertex;
                 if ( proj != null )
                     projected = proj .projectImage( vertex, true );
                 
-                projected = RationalMatrices .scaleVector( field, projected, field .createPower( 5 ) );
+                projected = projected .scale( field .createPower( 5 ) );
 
                 p = new FreePoint( projected, root );
                 p .setIndex( numVertices++ );
                 addConstruction( p );
                 manifestConstruction( p );
-                vertices .put( new AlgebraicVector( vertex ), p );
+                vertices .put( vertex, p );
             }
             return p;
         }

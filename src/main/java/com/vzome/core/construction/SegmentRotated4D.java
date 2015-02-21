@@ -2,6 +2,7 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
 
 
@@ -41,17 +42,17 @@ public class SegmentRotated4D extends Segment
     {
         if (  mPrototype .isImpossible() )
             return setStateVariables( null, null, true );
-        int[] /*AlgebraicVector*/ loc = mPrototype .getStart();
-        loc = mPrototype .getField() .inflateTo4d( loc );
+        AlgebraicVector loc = mPrototype .getStart();
+        loc = loc .inflateTo4d( true );
         loc = mRightQuaternion .leftMultiply( loc );
         loc = mLeftQuaternion .rightMultiply( loc );
         loc = field .projectTo3d( loc, true );
-        int[] /*AlgebraicVector*/ end = mPrototype .getEnd();
-        end = mPrototype .getField() .inflateTo4d( end );
+        AlgebraicVector end = mPrototype .getEnd();
+        end = end .inflateTo4d( true );
         end = mRightQuaternion .leftMultiply( end );
         end = mLeftQuaternion .rightMultiply( end );
         end = field .projectTo3d( end, true );
-        return setStateVariables( loc, field .subtract( end, loc ), false );
+        return setStateVariables( loc, end .minus( loc ), false );
     }
 
     

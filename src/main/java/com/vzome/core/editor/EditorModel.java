@@ -1,6 +1,5 @@
 package com.vzome.core.editor;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -156,7 +155,7 @@ public class EditorModel
             if ( newCenter == null )
                 throw new Command.Failure( "Selection is not a single ball." );
         }
-        if ( Arrays .equals( newCenter .getLocation(), mCenterPoint .getLocation() ) )
+        if ( newCenter .getLocation() .equals( mCenterPoint .getLocation() ) )
             return null;
         return new SymmetryCenterChange( this, newCenter );
     }
@@ -174,8 +173,8 @@ public class EditorModel
                 throw new Command.Failure( "Selection is not a single strut." );
         }
         if ( ( mSymmetryAxis != null )
-           && Arrays .equals( newAxis .getStart(), mSymmetryAxis .getStart() )
-           && Arrays .equals( newAxis .getEnd(), mSymmetryAxis .getEnd() ) )
+           && newAxis .getStart() .equals( mSymmetryAxis .getStart() )
+           && newAxis .getEnd() .equals( mSymmetryAxis .getEnd() ) )
                 return null;
         return new SymmetryAxisChange( this, newAxis );
     }

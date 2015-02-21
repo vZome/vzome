@@ -6,7 +6,8 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 
-import com.vzome.core.algebra.RationalNumbers;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.symmetry.Symmetry;
 
 public class GoldenField implements IntegralNumberField
@@ -61,22 +62,18 @@ public class GoldenField implements IntegralNumberField
         return createGoldenVector( x, y, z, w, GoldenNumber.ONE );
     }
     
-    public int[] parseRationalVector( Element elem )
+    public AlgebraicVector parseRationalVector( Element elem )
     {
         GoldenVector gv = parseXml( elem );
-        int[] w = gv .getW() .getAlgebraicNumber();
-        int[] result = new int[ 4 * w.length ];
-        RationalNumbers .copy( w, 0, result, 0 );
-        RationalNumbers .copy( w, 1, result, 1 );
-        int[] x = gv .getX() .getAlgebraicNumber();
-        RationalNumbers .copy( x, 0, result, 2 );
-        RationalNumbers .copy( x, 1, result, 3 );
-        int[] y = gv .getY() .getAlgebraicNumber();
-        RationalNumbers .copy( y, 0, result, 4 );
-        RationalNumbers .copy( y, 1, result, 5 );
-        int[] z = gv .getZ() .getAlgebraicNumber();
-        RationalNumbers .copy( z, 0, result, 6 );
-        RationalNumbers .copy( z, 1, result, 7 );
+        AlgebraicNumber w = gv .getW() .getAlgebraicNumber();
+        AlgebraicVector result = w .getField() .origin( 4 );
+        result .setComponent( 0, w );
+        AlgebraicNumber x = gv .getX() .getAlgebraicNumber();
+        result .setComponent( 1, x );
+        AlgebraicNumber y = gv .getY() .getAlgebraicNumber();
+        result .setComponent( 2, y );
+        AlgebraicNumber z = gv .getZ() .getAlgebraicNumber();
+        result .setComponent( 3, z );
         return result;
     }
     

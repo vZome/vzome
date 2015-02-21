@@ -9,7 +9,7 @@ package com.vzome.core.viewing;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -104,7 +104,7 @@ public abstract class AbstractShapes implements Shapes
      * just described above.
      */
 
-    public Polyhedron getStrutShape( Direction orbit, int[] length )
+    public Polyhedron getStrutShape( Direction orbit, AlgebraicNumber length )
     {
         Map strutShapesByLength = (Map) strutShapesByLengthAndOrbit.get( orbit );
         if ( strutShapesByLength == null ) {
@@ -112,8 +112,7 @@ public abstract class AbstractShapes implements Shapes
             strutShapesByLengthAndOrbit.put( orbit, strutShapesByLength );
         }
 //        int[] normSquared = mSymmetry .getField() .dot( offset, offset );
-        AlgebraicVector lengthKey = new AlgebraicVector( length );
-        Polyhedron lengthShape = (Polyhedron) strutShapesByLength.get( lengthKey );
+        Polyhedron lengthShape = (Polyhedron) strutShapesByLength.get( length );
         if ( lengthShape == null ) {
             StrutGeometry orbitStrutGeometry = (StrutGeometry) strutGeometriesByOrbit.get( orbit );
 
@@ -127,7 +126,7 @@ public abstract class AbstractShapes implements Shapes
                 System .out .println( "\n\n======== " + orbit .getName() );
             }
             lengthShape = orbitStrutGeometry .getStrutPolyhedron( length );
-            strutShapesByLength.put( lengthKey, lengthShape );
+            strutShapesByLength.put( length, lengthShape );
             if ( lengthShape != null ) {
                 lengthShape .setName( orbit .getName() + strutShapesByLength .size() );
                 lengthShape .setOrbit( orbit );

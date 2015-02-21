@@ -4,6 +4,8 @@ package com.vzome.core.editor;
 
 import java.util.Iterator;
 
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.FreePoint;
@@ -28,19 +30,20 @@ public class HeptagonSubdivision extends ChangeConstructions
                 if ( p1 == null )
                     p1 = nextPoint;
                 else {
-                    HeptagonField field = (HeptagonField) p1.getField();
                     Segment segment = new SegmentJoiningPoints( p1, nextPoint );
+                    HeptagonField field = (HeptagonField) segment .getField();
+                    AlgebraicNumber scaleFactor = field .sigmaReciprocal();
                     addConstruction( segment );
-                    int[] offset = segment.getOffset();
-                    int[] off2 = field.scaleVector( offset, HeptagonField.SIGMA_INV );
-                    int[] off1 = field.scaleVector( off2, HeptagonField.SIGMA_INV );
+                    AlgebraicVector offset = segment .getOffset();
+                    AlgebraicVector off2 = offset .scale( scaleFactor );
+                    AlgebraicVector off1 = off2 .scale( scaleFactor );
 
-                    int[] v1 = field.add( p1.getLocation(), off1 );
+                    AlgebraicVector v1 = p1.getLocation() .plus( off1 );
                     Point firstPoint = new FreePoint( v1, this.root );
                     addConstruction( firstPoint );
                     select( manifestConstruction( firstPoint ) );
 
-                    int[] v2 = field.add( v1, off2 ); // note, starting from v1
+                    AlgebraicVector v2 = v1 .plus( off2 ); // note, starting from v1
                     // not p1
                     Point secondPoint = new FreePoint( v2, this.root );
                     addConstruction( secondPoint );

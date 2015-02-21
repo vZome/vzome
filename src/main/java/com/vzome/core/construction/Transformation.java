@@ -2,12 +2,12 @@
 
 package com.vzome.core.construction;
 
-import java.util.Arrays;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 
 /**
  * @author Scott Vorthmann
@@ -42,15 +42,15 @@ public abstract class Transformation extends Construction
     }    
     
     // state variables
-    private int[][] mTransform;
-    protected int[] /*AlgebraicVector*/ mOffset; // this lets us avoid doing matrix arithmetic for the offsets
+    private AlgebraicMatrix mTransform;
+    protected AlgebraicVector mOffset; // this lets us avoid doing matrix arithmetic for the offsets
     
     protected Transformation( AlgebraicField field )
     {
         super( field );
     }
     
-    protected boolean setStateVariables( int[][] transform, int[] /*AlgebraicVector*/ offset, boolean impossible )
+    protected boolean setStateVariables( AlgebraicMatrix transform, AlgebraicVector offset, boolean impossible )
     {
         if ( impossible ) {
             // don't attempt to access other params
@@ -59,8 +59,8 @@ public abstract class Transformation extends Construction
             setImpossible( true );
             return true;
         }
-        if ( Arrays .equals( transform, mTransform )
-        && Arrays .equals( offset, mOffset )
+        if ( transform != null && transform .equals( mTransform )
+        && offset .equals( mOffset )
         && ! isImpossible() )
             return false;
         mTransform = transform;
@@ -74,11 +74,11 @@ public abstract class Transformation extends Construction
         v .visitTransformation( this );
     }
     
-    public int[] /*AlgebraicVector*/ transform( int[] /*AlgebraicVector*/ arg )
+    public AlgebraicVector transform( AlgebraicVector arg )
     {
-        arg = field .subtract( arg, mOffset );
-        arg = field .transform( mTransform, arg );
-        arg = field .add( arg, mOffset );
+        arg = arg .minus( mOffset );
+        arg = mTransform .timesColumn( arg );
+        arg = arg .plus( mOffset );
         return arg;
     }
 

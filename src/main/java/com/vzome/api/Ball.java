@@ -3,18 +3,15 @@
 
 package com.vzome.api;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 
 public class Ball {
 
 	private final Connector manifestation;
-	private final AlgebraicField field;
 
-	public Ball( AlgebraicField field, Connector connector )
+	public Ball( Connector connector )
 	{
-		this .field = field;
 		this .manifestation = connector;
 	}
 	
@@ -25,7 +22,7 @@ public class Ball {
 	
 	public Vector location()
 	{
-		return new Vector( this .field, this .manifestation .getLocation() );
+		return new Vector( this .manifestation .getLocation() );
 	}
 	
 	public boolean equals( Object other )

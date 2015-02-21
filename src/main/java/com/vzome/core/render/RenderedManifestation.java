@@ -2,8 +2,9 @@
 
 package com.vzome.core.render;
 
-import java.util.Arrays;
-
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Direction;
@@ -15,25 +16,13 @@ import com.vzome.core.model.Manifestation;
  */
 public class RenderedManifestation
 {
-    private static int hashCode( int[] array )
-    {
-        int prime = 31;
-        if ( array == null )
-            return 0;
-        int result = 1;
-        for ( int index = 0; index < array.length; index++ ) {
-            result = prime * result + array[index];
-        }
-        return result;
-    }
-
     private Manifestation mManifestation;
     
     private Polyhedron mShape;
     
     private String mColorName;
     
-    private int[][] mOrientation;
+    private AlgebraicMatrix mOrientation;
     
     private float mGlow = 0.0f, mTransparency = 0.0f;
     
@@ -41,11 +30,11 @@ public class RenderedManifestation
     
     private boolean mPickable = true, mMirrored = false;
 
-    private int[] location;
+    private AlgebraicVector location;
 
     private int strutZone = -1;
 
-    private int[] strutLength = null;
+    private AlgebraicNumber strutLength = null;
 
 	private Direction strutOrbit = null;
     
@@ -136,13 +125,13 @@ public class RenderedManifestation
         mColorName = name;
     }
     
-    public void setOrientation( int[][] m, boolean mirrored )
+    public void setOrientation( AlgebraicMatrix m, boolean mirrored )
     {
         mOrientation = m;
         mMirrored = mirrored;
     }
 
-    public int[][] getOrientation()
+    public AlgebraicMatrix getOrientation()
     {
         return mOrientation;
     }
@@ -174,14 +163,14 @@ public class RenderedManifestation
         if ( location == null )
             return new RealVector( 0d, 0d, 0d );
         else
-            return mShape .getField() .getRealVector( location );
+            return location .toRealVector();
     }
 
     public int hashCode()
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + RenderedManifestation.hashCode( location );
+        result = prime * result + ((location == null) ? 0 : location.hashCode());
         result = prime * result + (mMirrored ? 1231 : 1237);
         result = prime * result + ((mShape == null) ? 0 : mShape.hashCode());
         result = prime * result + ((mOrientation == null) ? 0 : mOrientation.hashCode());
@@ -197,11 +186,11 @@ public class RenderedManifestation
         if ( !(obj instanceof RenderedManifestation) )
             return false;
         RenderedManifestation other = (RenderedManifestation) obj;
-        if ( !Arrays.equals( location, other.location ) )
+        if ( ! location .equals( other.location ) )
             return false;
         if ( mMirrored != other.mMirrored )
             return false;
-        if ( !Arrays.equals( mOrientation, other.mOrientation ) )
+        if ( ! mOrientation .equals( other.mOrientation ) )
             return false;
         if ( mShape == null ) {
             if ( other.mShape != null )
@@ -226,7 +215,7 @@ public class RenderedManifestation
         return copy;
     }
 
-    public void setStrut( Direction orbit, int zone, int[] length )
+    public void setStrut( Direction orbit, int zone, AlgebraicNumber length )
     {
 		this .strutOrbit = orbit;
         this .strutZone = zone;
@@ -238,7 +227,7 @@ public class RenderedManifestation
         return this .strutZone;
     }
 
-    public int[] getStrutLength()
+    public AlgebraicNumber getStrutLength()
     {
         return this .strutLength;
     }

@@ -7,6 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.BigRational;
 
 public abstract class VefParser
 {
@@ -22,7 +25,7 @@ public abstract class VefParser
     
     protected abstract void startVertices( int numVertices );
     
-    protected abstract void addVertex( int index, int[] /*AlgebraicVector*/ location );
+    protected abstract void addVertex( int index, AlgebraicVector location );
     
     protected void endVertices() {};
 
@@ -71,7 +74,7 @@ public abstract class VefParser
             throw new IllegalStateException( "VEF format error: no tokens in file data: \"" + vefData + "\"" );
         }
         mVersion = 0;
-        int[] /*AlgebraicNumber*/ scale = field .createAlgebraicNumber( 1, 0, 1, 0 );
+        AlgebraicNumber scale = field .createAlgebraicNumber( 1, 0, 1, 0 );
         if ( token .equals( "vZome" ) ) {
             // format 4, with version number
             try {
@@ -132,14 +135,14 @@ public abstract class VefParser
         startVertices( numVertices );
         for ( int i = 0 ; i < numVertices; i++ )
         {
-            int[] /*AlgebraicVector*/ v = field .origin( 4 );
-            for ( int tokNum = 0, j = 0; tokNum < 4; tokNum ++ ) {
+            AlgebraicVector v = field .origin( 4 );
+            for ( int tokNum = 0; tokNum < 4; tokNum ++ ) {
                 try {
                     token = tokens .nextToken();
                 } catch ( NoSuchElementException e1 ) {
                     throw new IllegalStateException( "VEF format error: not enough vertices in list" );
                 }
-                int[] /**/ coord = field .multiply( parseIntegralNumber( token ), scale );
+                AlgebraicNumber coord = parseIntegralNumber( token ) .times( scale );
                 
                 // I think this is the right way to deal with VERSION_W_FIRST and the concomitant
                 //  "incorrect" quaternion multiplication used for projection.  All that is necessary
@@ -148,8 +151,7 @@ public abstract class VefParser
 //                if ( mVersion < VERSION_W_FIRST )
 //                    field .setVectorComponent( v, (tokNum+1)%4, coord ); // format is X Y Z W
 //                else
-                    field .setVectorComponent( v, tokNum, coord ); // format is W X Y Z
-                ++j;
+                    v .setComponent( tokNum, coord ); // format is W X Y Z
             }
             addVertex( i, v );
         }
@@ -241,11 +243,9 @@ public abstract class VefParser
     {
     }
     
-    private int[] /*AlgebraicNumber*/ parseIntegralNumber( String string )
+    private AlgebraicNumber parseIntegralNumber( String string )
     {
-        boolean rational = field .isRational();
-        int step = rational? 2 : 1;
-        int[] result = field .origin( 1 );
+        BigRational[] factors = new BigRational[ this .field .getOrder() ];
         // strip "(" and ")", tokenize on ","
         StringTokenizer tokens = new StringTokenizer( string .substring( 1, string .length()-1 ), "," );
         for ( int i = subfield .getOrder() - 1; i >= 0; i-- )
@@ -257,29 +257,27 @@ public abstract class VefParser
                 throw new IllegalStateException( "VEF format error: not enough coordinates for field: \"" + string + "\"" );
             }
 
+            int num = 0, denom = 1;
             int slash = coord .indexOf( '/' );
             if ( slash > 0 ) {
-                if ( ! rational )
-                    throw new RuntimeException( "VEF format error: rational value (\"" + coord + "\") not supported in field: " + field .getName() );
                 try {
-                    result[ i * step + 0 ]= Integer .parseInt( coord .substring( 0, slash ) );
+                    num = Integer .parseInt( coord .substring( 0, slash ) );
                 } catch ( NumberFormatException e ) {
                     throw new RuntimeException( "VEF format error: rational numerator (\"" + coord + "\") must be an integer", e );
                 }
                 try {
-                    result[ i * step + 1 ] = Integer .parseInt( coord .substring( slash+1 ) );
+                    denom = Integer .parseInt( coord .substring( slash+1 ) );
                 } catch ( NumberFormatException e ) {
                     throw new RuntimeException( "VEF format error: rational denominator (\"" + coord + "\") must be an integer", e );
                 }
             } else
                 try {
-                    result[ i * step ]= Integer .parseInt( coord );
-                    if ( rational )
-                        result[ i * step + 1 ] = 1;
+                    num = Integer .parseInt( coord );
                 } catch ( NumberFormatException e ) {
                     throw new RuntimeException( "VEF format error: coordinate value (\"" + coord + "\") must be an integer or rational", e );
                 }
+            factors[ i ] = new BigRational( num, denom );
         }
-        return result;
+        return this .field .createAlgebraicNumber( factors );
     }
 }

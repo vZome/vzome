@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 /**
  * @author Scott Vorthmann
@@ -47,10 +49,10 @@ public class PerpendicularLine extends Line
     {
         if ( mLine1 .isImpossible() || mLine2 .isImpossible() || mPoint .isImpossible() )
             return setStateVariables( null, null, true );
-        int[] /*AlgebraicVector*/ norm1 = mLine1 .getDirection();
-        int[] /*AlgebraicVector*/ norm2 = mLine2 .getDirection();
-        int[] /*AlgebraicVector*/ cross = field .cross( norm1, norm2 );
-        return setStateVariables( mPoint .getLocation(), cross, field .isOrigin( cross ) );
+        AlgebraicVector norm1 = mLine1 .getDirection();
+        AlgebraicVector norm2 = mLine2 .getDirection();
+        AlgebraicVector cross = norm1 .cross( norm2 );
+        return setStateVariables( mPoint .getLocation(), cross, cross .isOrigin() );
     }
     
     public void accept( Visitor v )

@@ -14,8 +14,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.RationalNumbers;
 import com.vzome.core.math.Polyhedron;
 
 public class VefModelExporter implements Exporter
@@ -28,7 +29,7 @@ public class VefModelExporter implements Exporter
 
     private final int order;
 
-    private final int[] scale;
+    private final AlgebraicNumber scale;
 
     private final StringBuffer vertices = new StringBuffer();
 
@@ -46,7 +47,7 @@ public class VefModelExporter implements Exporter
 
     private PrintWriter output;
 
-    public VefModelExporter( Writer writer, AlgebraicField field, int[] scale )
+    public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale )
     {
         this .output = new PrintWriter( writer );
         this .field = field;
@@ -63,9 +64,8 @@ public class VefModelExporter implements Exporter
         panels = new StringBuffer();
     }
     
-    public void exportStrutPolyhedron( Polyhedron poly, int[][] rotation, boolean reverseFaces, int[] endpoint )
+    public void exportStrutPolyhedron( Polyhedron poly, AlgebraicMatrix rotation, boolean reverseFaces, AlgebraicVector endpoint )
     {
-        AlgebraicField field = poly .getField();
         // I have a challenge here, since there are apparently some strut models that contain duplicate
         // vertices: same location, several indices.  Since this.vertices wants to have unique locations,
         // (a Map, not a List), I need to make a mapping from polyhedron vertex index to VEF vertex index.
@@ -73,20 +73,20 @@ public class VefModelExporter implements Exporter
         int[] vertexMapping = new int[ poly .getVertexList() .size() ];
         int vertexNum = 0;
         for ( Iterator vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
-            int[] /*AlgebraicVector*/ vertexVector = (int[] /*AlgebraicVector*/) vertices .next();
+            AlgebraicVector vertexVector = (AlgebraicVector) vertices .next();
             if ( reverseFaces )
-                vertexVector = field .negate( vertexVector  );
-            vertexVector = field .transform( rotation, vertexVector );
+                vertexVector = vertexVector .negate();
+            vertexVector = rotation .timesColumn( vertexVector );
             // have to inline getVertexIndex here, so I can create balls.
-            Integer vefIndex = (Integer) vertexData .get( new AlgebraicVector( vertexVector ) );
+            Integer vefIndex = (Integer) vertexData .get( vertexVector );
             if ( vefIndex == null )
             {
-                AlgebraicVector key = new AlgebraicVector( vertexVector );
+                AlgebraicVector key = vertexVector;
                 int index = vertexData .size();
                 vefIndex = new Integer( index );
                 vertexData .put( key, vefIndex );
                 if ( scale != null )
-                    vertexVector = field .scaleVector( vertexVector, scale );            
+                    vertexVector = vertexVector .scale( scale );            
                 appendVector( this.vertices, order, vertexVector );            
                 this.vertices .append( "\n" );
                 ++ numBalls;
@@ -123,7 +123,7 @@ public class VefModelExporter implements Exporter
         if ( man instanceof Connector )
         {
             ++ numBalls;
-            int[] loc = ((Connector) man) .getLocation();
+            AlgebraicVector loc = ((Connector) man) .getLocation();
             balls .append( " " );
             balls .append( getVertexIndex( loc ) );
         }
@@ -141,7 +141,7 @@ public class VefModelExporter implements Exporter
             ++ numPanels;
             List vs = new ArrayList();
             for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
-                vs .add( getVertexIndex( (int[]) verts .next() ));
+                vs .add( getVertexIndex( (AlgebraicVector) verts .next() ));
             panels .append( vs .size() );
             for ( int i = 0; i < vs .size(); i++ )
             {
@@ -161,7 +161,7 @@ public class VefModelExporter implements Exporter
     {
         if ( man instanceof Connector )
         {
-            int[] loc = ((Connector) man) .getLocation();
+            AlgebraicVector loc = ((Connector) man) .getLocation();
             if ( first )
                 output .println( "tip " + getVertexIndex( loc ) );
             else
@@ -169,26 +169,26 @@ public class VefModelExporter implements Exporter
         }
     }
     
-    protected Integer getVertexIndex( int[] vertexVector )
+    protected Integer getVertexIndex( AlgebraicVector vertexVector )
     {
-        Integer obj = (Integer) vertexData .get( new AlgebraicVector( vertexVector ) );
+        Integer obj = (Integer) vertexData .get(vertexVector);
         if ( obj == null )
         {
-            AlgebraicVector key = new AlgebraicVector( vertexVector );
+            AlgebraicVector key = vertexVector;
             int index = vertexData .size();
             obj = new Integer( index );
             vertexData .put( key, obj );
             if ( scale != null )
-                vertexVector = field .scaleVector( vertexVector, scale );            
+                vertexVector = vertexVector .scale( scale );            
             appendVector( vertices, order, vertexVector );            
             vertices .append( "\n" );
         }
         return obj;
     }
 
-    public static void appendVector( StringBuffer buffer, int order, int[] vector )
+    public static void appendVector( StringBuffer buffer, int order, AlgebraicVector vector )
     {
-        int dims = vector .length / (2*order);
+        int dims = vector .dimension();
         if ( dims < 4 )
         {
             buffer .append( "(" );
@@ -196,22 +196,9 @@ public class VefModelExporter implements Exporter
                 buffer .append( "0," );
             buffer .append( "0) " );
         }
-        for ( int i = 0; i < dims; i++ )
-            appendNumber( buffer, vector, i, order );
+        vector .getVectorExpression( buffer, AlgebraicField.VEF_FORMAT );
     }
-    
-    public static void appendNumber( StringBuffer buffer, int[] vector, int startIndex, int order )
-    {
-        buffer .append( " (" );
-        for ( int k = order-1; k > 0; k-- )
-        {
-            buffer .append( RationalNumbers.toString( vector, startIndex*order + k ) );
-            buffer .append( "," );
-        }
-        buffer .append( RationalNumbers.toString( vector, startIndex*order ) );
-        buffer .append( ") " );
-    }
-    
+        
     public void finish()
     {
         // format version 6, with explicit "balls" section, not a ball for every vertex

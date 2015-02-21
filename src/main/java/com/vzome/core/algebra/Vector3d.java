@@ -5,30 +5,27 @@ package com.vzome.core.algebra;
 
 public class Vector3d
 {
-    final int[] a, b, c;
-	private final AlgebraicField field;
+    final AlgebraicNumber a, b, c;
 
-	public Vector3d( int[] a, int[] b, int[] c, AlgebraicField field )
+	public Vector3d( AlgebraicNumber a, AlgebraicNumber b, AlgebraicNumber c )
 	{
 		this .a = a;
 		this .b = b;
 		this .c = c;
-		this .field = field;
 	}
 
-	public Vector3d( int[] v, AlgebraicField field )
+	public Vector3d( AlgebraicVector v )
 	{
-		this .a = field .getVectorComponent( v, 0 );
-		this .b = field .getVectorComponent( v, 1 );
-		this .c = field .getVectorComponent( v, 2 );
-		this .field = field;
+		this .a = v .getComponent( 0 );
+		this .b = v .getComponent( 1 );
+		this .c = v .getComponent( 2 );
 	}
 
 	public Bivector3d outer( Vector3d that )
 	{
-		int[] a = field .subtract( field .multiply( this.a, that.b ), field .multiply( this.b, that.a ) );
-		int[] b = field .subtract( field .multiply( this.b, that.c ), field .multiply( this.c, that.b ) );
-		int[] c = field .subtract( field .multiply( this.c, that.a ), field .multiply( this.a, that.c ) );
-		return new Bivector3d( a, b, c, field );
+	    AlgebraicNumber a = this.a .times( that.b ) .minus( this.b .times( that.a ) );
+	    AlgebraicNumber b = this.b .times( that.c ) .minus( this.c .times( that.b ) );
+	    AlgebraicNumber c = this.c .times( that.a ) .minus( this.a .times( that.c ) );
+		return new Bivector3d( a, b, c );
 	}
 }

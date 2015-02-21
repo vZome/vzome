@@ -4,7 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicVector;
 
 
 /**
@@ -12,14 +12,14 @@ import com.vzome.core.algebra.RationalVectors;
  */
 public abstract class Point extends Construction
 {
-    private int[] /*AlgebraicVector*/ mLocation;
+    private AlgebraicVector mLocation;
 
     protected Point( AlgebraicField field )
     {
         super( field );
     }
     
-    protected boolean setStateVariable( int[] /*AlgebraicVector*/ loc, boolean impossible )
+    protected boolean setStateVariable( AlgebraicVector loc, boolean impossible )
     {
         if ( impossible ) {
             // don't attempt to access other params
@@ -36,7 +36,7 @@ public abstract class Point extends Construction
         return true;
     }
     
-    public int[] /*AlgebraicVector*/ getLocation()
+    public AlgebraicVector getLocation()
     {
         return mLocation;
     }
@@ -50,7 +50,7 @@ public abstract class Point extends Construction
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "point" );
-        result .setAttribute( "at", RationalVectors .toString( getLocation() ) );
+        result .setAttribute( "at", getLocation() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
         return result;
     }
 

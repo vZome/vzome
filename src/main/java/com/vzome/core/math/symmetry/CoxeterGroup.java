@@ -3,6 +3,7 @@
 package com.vzome.core.math.symmetry;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 
 public interface CoxeterGroup
 {
@@ -10,13 +11,13 @@ public interface CoxeterGroup
     
     AlgebraicField getField();
 
-    int[] /*AlgebraicVector*/ groupAction( int[] /*AlgebraicVector*/ model, int element );
+    AlgebraicVector groupAction( AlgebraicVector model, int element );
 
-    int[] /*AlgebraicVector*/ getOrigin();
+    AlgebraicVector getOrigin();
 
-    int[] /*AlgebraicVector*/ getWeight( int i );
+    AlgebraicVector getWeight( int i );
     
-    int[] /*AlgebraicVector*/ getSimpleRoot( int i );
+    AlgebraicVector getSimpleRoot( int i );
 
-    int[] chiralSubgroupAction( int[] model, int i );
+    AlgebraicVector chiralSubgroupAction( AlgebraicVector model, int i );
 }

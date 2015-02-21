@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 /**
  * @author Scott Vorthmann
  */
@@ -12,7 +14,7 @@ public class FreePoint extends Point
     /**
      * @param loc
      */
-    public FreePoint( int[] /*AlgebraicVector*/ loc, ModelRoot root )
+    public FreePoint( AlgebraicVector loc, ModelRoot root )
     {
         super( root.field );
         // the usual pattern is to call mapParamsToState()
@@ -35,7 +37,7 @@ public class FreePoint extends Point
      * distinguished (in concept) from Point's state variable.
      * @param loc
      */
-    public void setLocationAttribute( int[] /*AlgebraicVector*/ loc )
+    public void setLocationAttribute( AlgebraicVector loc )
     {
         // this is the only Construction where we "preempt" paramOrAttrChanged(),
         //   because the location attribute is stored as the state variable

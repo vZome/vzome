@@ -2,12 +2,13 @@
 
 package com.vzome.core.math.symmetry;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 
@@ -24,13 +25,13 @@ public class Direction implements Comparable
     
     private final Symmetry mSymmetryGroup;
     
-    private final int[] mPrototype;
+    private final AlgebraicVector mPrototype;
     
     private boolean mStandard, mAutomatic, hasHalfSizes;
     
     private final String[] scaleNames = new String[]{ "shorter", "short", "medium", "long" };
     
-    private int[] unitLength;
+    private AlgebraicNumber unitLength, unitLengthReciprocal;
     
     public void setAutomatic( boolean auto )
     {
@@ -51,7 +52,7 @@ public class Direction implements Comparable
     
     private final int index;
     
-    public Direction( String name, Symmetry group, int prototype, int rotatedPrototype, int[] vector, boolean isStd )
+    public Direction( String name, Symmetry group, int prototype, int rotatedPrototype, AlgebraicVector vector, boolean isStd )
     {
         this.index = globalIndex++; // we want to just retain the order used to create these
         mStandard = isStd;
@@ -59,15 +60,14 @@ public class Direction implements Comparable
         mSymmetryGroup = group;
         mPrototype = vector;
         mAxes = new Axis[ 2 ][ group .getChiralOrder() ];
-        AlgebraicField field = group .getField();
         for ( int i = 0; i < mAxes[ Symmetry.PLUS ] .length; i++ ) {
-            int[][] transform = group .getMatrix( i );
+            AlgebraicMatrix transform = group .getMatrix( i );
             if ( transform == null )
                 return; // only happens for the "base" direction, like "blue" for icosa
             Permutation perm = group .getPermutation( i );
             int j = perm .mapIndex( prototype );
             int rotated = perm .mapIndex( rotatedPrototype );
-            int[] normal = field .transform( transform, vector );
+            AlgebraicVector normal = transform .timesColumn( vector );
 
 //            if ( ! Arrays.equals( field .dot( normal, normal ), field .dot( vector, vector ) ) )
 //                throw new IllegalStateException( "rotated normal has bad length" );
@@ -90,13 +90,13 @@ public class Direction implements Comparable
      * @param rotation
      * @param vector
      */
-    public Direction( String name, Symmetry group, int orientation, int rotation, int[] vector )
+    public Direction( String name, Symmetry group, int orientation, int rotation, AlgebraicVector vector )
     {
         this( name, group, orientation, rotation, vector, false );
         this .setAutomatic( true );
     }
     
-    public int[] getPrototype()
+    public AlgebraicVector getPrototype()
     {
         return mPrototype;
     }
@@ -126,14 +126,15 @@ public class Direction implements Comparable
      * @param vector
      * @return
      */
-    public Axis getAxis( int[] vector )
+    public Axis getAxis( AlgebraicVector vector )
     {
-        AlgebraicField field = mSymmetryGroup .getField();
         for ( Iterator lines = mVectors .values() .iterator(); lines .hasNext(); ) {
             Axis axis = (Axis) lines .next();
-            if ( axis .isParallel( vector ) ) {
-                int[] dotProd = axis .dotNormal( vector );
-                if ( field .evaluateNumber( dotProd ) > 0 )
+            AlgebraicVector normal = axis .normal();
+            if ( normal .cross( vector ) .isOrigin() ) {
+                // parallel
+                AlgebraicNumber dotProd = normal .dot( vector );
+                if ( dotProd .evaluate() > 0 )
                     return axis;
                 else {
                 	int opp = ( axis .getSense() + 1 ) % 2;
@@ -152,11 +153,10 @@ public class Direction implements Comparable
         // largest cosine means smallest angle
         //  and cosine is (a . b ) / |a| |b|
         double maxCosine = - 1d;
-        AlgebraicField field = mSymmetryGroup .getField();
         Axis closest = null;
         for ( Iterator axes = this .getAxes(); axes .hasNext(); ) {
             Axis axis = (Axis) axes .next();
-            RealVector axisV = field .getRealVector( axis .normal() );
+            RealVector axisV = axis .normal() .toRealVector();
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {
                 maxCosine = cosine;
@@ -173,13 +173,18 @@ public class Direction implements Comparable
         return mAxes[ sense ][ index ];
     }
 
+    public void createAxis( int orientation, int rotation, int[] norm )
+    {
+        AlgebraicVector aNorm = this .mSymmetryGroup .getField() .createVector( norm );
+        this .createAxis( orientation, rotation, aNorm );
+    }
     /**
      * @param orientation the index of this axis (zone) in its Direction (orbit)
      * @param rotation the index of the permutation that is a rotation around this axis, or NO_ROTATION
      */
-    public void createAxis( int orientation, int rotation, int[] norm )
+    public void createAxis( int orientation, int rotation, AlgebraicVector norm )
     {
-        AlgebraicVector key = new AlgebraicVector( norm );
+        AlgebraicVector key = norm;
         Axis axis = (Axis) mVectors .get( key );
         Permutation perm = mSymmetryGroup .getPermutation( rotation );
         if ( axis == null ) {
@@ -188,10 +193,10 @@ public class Direction implements Comparable
         } else if ( axis .getSense() == Symmetry .MINUS )
             axis .rename( Symmetry.PLUS, orientation );
         mAxes[ Symmetry.PLUS ][ orientation ] = axis;
-        norm = mSymmetryGroup .getField() .negate( norm );
+        norm = norm .negate();
         if ( perm != null )
             perm = perm .inverse();
-        key = new AlgebraicVector( norm );
+        key = norm;
         axis = (Axis) mVectors .get( key );
         if ( axis == null ) {
             axis = new Axis( this, orientation, Symmetry.MINUS, rotation, perm, norm );
@@ -231,12 +236,13 @@ public class Direction implements Comparable
             return "scale " + (scale-1);
     }
     
-    public void setUnitLength( int[] unitLength )
+    public void setUnitLength( AlgebraicNumber unitLength )
     {
         this .unitLength = unitLength;
+        this .unitLengthReciprocal = unitLength .reciprocal(); // do the matrix inversion just once
     }
 
-    public int[] getUnitLength()
+    public AlgebraicNumber getUnitLength()
     {
         if ( unitLength == null)
             return mSymmetryGroup .getField() .createPower( 0 );
@@ -246,21 +252,21 @@ public class Direction implements Comparable
     
     public static final int USER_SCALE = 3;
     
-    public final int[][] scales = new int[4][];
+    public final AlgebraicNumber[] scales = new AlgebraicNumber[ 4 ];
 
-    public int[] getLengthInUnits( int[] rawLength )
+    public AlgebraicNumber getLengthInUnits( AlgebraicNumber rawLength )
     {
         // reproduce the calculation in LengthModel .setActualLength()
         // TODO rationalize that
         AlgebraicField field = mSymmetryGroup .getField();
-        int[] scaledLength = field .multiply( rawLength, field .createPower( - USER_SCALE ) );
+        AlgebraicNumber scaledLength = rawLength .times( field .createPower( - USER_SCALE ) );
         if ( unitLength == null)
             return scaledLength;
         else
-            return field .divide( scaledLength, unitLength );
+            return scaledLength .times( unitLengthReciprocal );
     }
 
-    public void getLengthExpression( StringBuffer buf, int[] length )
+    public void getLengthExpression( StringBuffer buf, AlgebraicNumber length )
     {
         AlgebraicField field = mSymmetryGroup .getField();
         if ( scales[ 0 ] == null )
@@ -270,7 +276,7 @@ public class Direction implements Comparable
         }
         for ( int i = 0; i < scales .length; i++ )
         {
-            if ( Arrays .equals( scales[ i ], length ) )
+            if ( scales[ i ] .equals( length ) )
             {
                 buf .append( scaleNames[ i ] );
                 buf .append( ": " );
@@ -279,23 +285,6 @@ public class Direction implements Comparable
         }
         buf .append( scaleNames[ 1 ] );
         buf .append( ":" );
-        field .getNumberExpression( buf, length, 0, AlgebraicField .EXPRESSION_FORMAT );
-    }
-
-    // no provision here yet for misalignment between vZome and rZome unit lengths
-    public String getRZomeLength( int[] length )
-    {
-        AlgebraicField field = mSymmetryGroup .getField();
-        if ( scales[ 0 ] == null )
-        {
-            for ( int i = 0; i < scales .length; i++ )
-                scales[ i ] = field .createPower( i - 1 );
-        }
-        for ( int i = 0; i < scales .length; i++ )
-        {
-            if ( Arrays .equals( scales[ i ], length ) )
-                return Integer .toString( i );
-        }
-        return null;
+        length .getNumberExpression( buf, AlgebraicField .EXPRESSION_FORMAT );
     }
 }

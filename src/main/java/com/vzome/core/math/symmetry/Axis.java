@@ -1,19 +1,18 @@
 package com.vzome.core.math.symmetry;
 
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
-import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalMatrices;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.DomUtils;
 
 
 public class Axis
 {
-    private final Direction mDirection;
+	private final Direction mDirection;
     
     private int orientation;  // how the prototype for this direction maps to this
     
@@ -23,17 +22,11 @@ public class Axis
     
     private Permutation mRotationPerm;
 
-	private final int[] normal;   // not a unit vector
-    
-    private final int[][] dotNormal; // ready-to-use matrix to do v dot normal for any v
-    
-    private final int[][][] timesNormal = new int[3][][]; // multipliers for doing cross-product with normal
-    
-    private final int[][][] divNormal = new int[3][][]; // divisor for finding the length of a parallel vector
-    
+	private final AlgebraicVector normal;   // not a unit vector
+        
     static Logger logger = Logger.getLogger( "com.vzome.core.math" );
 
-	Axis( Direction dir, int index, int sense, int rotation, Permutation rotPerm, int[] normal )
+	Axis( Direction dir, int index, int sense, int rotation, Permutation rotPerm, AlgebraicVector normal )
 	{
 		this.mDirection = dir;
 		this .mRotation = rotation ;
@@ -41,78 +34,63 @@ public class Axis
 		this.orientation = index;
 		this.normal = normal;
 		mSense = sense;
-        
-        AlgebraicField field = dir .getSymmetry() .getField();
-        int order = field .getOrder();
-        dotNormal = new int[ order ][ 3 * 2 * order ];
-        for ( int i = 0; i < 3; i++ ) {
-            field .createRepresentation( normal, i * order, dotNormal, 0, i * order );
-            timesNormal[ i ] = new int[ order ][ 2 * order ];
-            field .createRepresentation( normal, i * order, timesNormal[ i ], 0, 0 );
-            try {
-                divNormal[ i ] = RationalMatrices .invert( timesNormal[ i ] );
-			} catch ( IllegalStateException e ) {
-			    logger .warning( "Problem with direction = " + dir .toString() + ", normal = " + Arrays.toString( normal ) +
-			                        ".  Unable to invert the matrix.  This Axis won't support getLength()." );
-			}
-        }
 	}
 
     /**
      * Return the normal vector for this axis.
      * Note that this vector may not have length=1.0, but it will have length
      * equal to one "unit" for this axis.
-     * @return GoldenVector
+     * @return AlgebraicVector
      */
-    public int[] normal() { return normal; }
-    
-    public final int[] /*AlgebraicNumber*/ dotNormal( int[] /*AlgebraicVector*/ vector )
+    public AlgebraicVector normal() { return normal; }
+            
+    public final AlgebraicNumber getLength( AlgebraicVector vector )
     {
-        return mDirection .getSymmetry() .getField() .transform( dotNormal, vector );
+        return vector .getLength( normal );
     }
     
-    public final boolean isParallel( int[] /*AlgebraicVector*/ vector )
+    public AlgebraicVector scaleNormal( AlgebraicNumber length )
     {
-        AlgebraicField field = mDirection .getSymmetry() .getField();
-        return field .isParallel( vector, normal, timesNormal );
-    }
-    
-    public final int[] /*AlgebraicNumber*/ getLength( int[] /*AlgebraicVector*/ vector )
-    {
-        AlgebraicField field = mDirection .getSymmetry() .getField();
-        return field .getLength( vector, normal, divNormal );
-    }
-    
-
-    public int[] /*AlgebraicVector*/ scaleNormal( int[] length )
-    {
-        AlgebraicField field = mDirection .getSymmetry() .getField();
-        return field .scaleNormal( length, normal, timesNormal );
+        return normal .scale( length );
     }
 
-
-	public boolean equals( Object other )
-	{
-		if (other == null) {
-			return false;
-		}
-		if (other == this) {
-			return true;
-		}
-		try {
-			Axis a = (Axis) other;
-			return mDirection == a.mDirection && Arrays .equals( normal, a.normal );
-		}
-		catch (ClassCastException cce) {
-			return false;
-		}
-	}
-
+    @Override
 	public int hashCode()
-	{
-		return mDirection .hashCode();
+    {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((mDirection == null) ? 0 : mDirection.hashCode());
+		result = prime * result + mSense;
+		result = prime * result + ((normal == null) ? 0 : normal.hashCode());
+		return result;
 	}
-	
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Axis other = (Axis) obj;
+		if (mDirection == null) {
+			if (other.mDirection != null)
+				return false;
+		} else if (!mDirection.equals(other.mDirection))
+			return false;
+		if (mSense != other.mSense)
+			return false;
+		if (normal == null) {
+			if (other.normal != null)
+				return false;
+		} else if (!normal.equals(other.normal))
+			return false;
+		return true;
+	}
+
 	public String toString()
 	{
 		return mDirection .toString() + " " + orientation;

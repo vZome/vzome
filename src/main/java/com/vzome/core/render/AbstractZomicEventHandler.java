@@ -7,7 +7,7 @@
 
 package com.vzome.core.render;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Permutation;
@@ -27,7 +27,7 @@ public abstract class AbstractZomicEventHandler implements ZomicEventHandler
     
     protected int mHandedNess = Symmetry .PLUS;
 
-    protected int[] /*AlgebraicNumber*/ mScale; // one
+    protected AlgebraicNumber mScale; // one
 
     protected int         	   mAction		= BUILD;
     
@@ -72,10 +72,9 @@ public abstract class AbstractZomicEventHandler implements ZomicEventHandler
     	}
 	}
 
-    public void scale( int[] /*AlgebraicNumber*/ scale )
+    public void scale( AlgebraicNumber scale )
     {
-        AlgebraicField f = mSymmetry .getField();
-        mScale = f .multiply( mScale, scale );
+        mScale = mScale .times( scale );
     }
 
     public void action( int action )

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
@@ -42,8 +43,8 @@ public class PdbExporter extends Exporter3d
         {
             Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
             if ( man instanceof Strut ) {
-                AlgebraicVector startLoc = new AlgebraicVector( ((Strut) man) .getLocation() );
-                AlgebraicVector endLoc = new AlgebraicVector( ((Strut) man) .getEnd() );
+                AlgebraicVector startLoc = ((Strut) man) .getLocation();
+                AlgebraicVector endLoc = ((Strut) man) .getEnd();
                 Atom startAtom = (Atom) atoms .get( startLoc );
                 if ( startAtom == null )
                 {
@@ -65,15 +66,15 @@ public class PdbExporter extends Exporter3d
         
         AlgebraicField field = mModel .getField();
         // scale things so that a medium blue strut has length 5.0
-        final int[] scale = field .createAlgebraicNumber( 4, 6, 1, 0 );
-        double scaleFactor = 5.0d / field .evaluateNumber( scale );
+        final AlgebraicNumber scale = field .createAlgebraicNumber( 4, 6, 1, 0 );
+        double scaleFactor = 5.0d / scale .evaluate();
 
         StringBuilder locations = new StringBuilder();
         StringBuilder neighbors = new StringBuilder();
         for (Iterator iterator = atomsList .iterator(); iterator .hasNext(); ) {
             Atom atom = (Atom) iterator .next();
-            RealVector rv = atom .location .toRealVector( field );
-            System .out .println( atom .location .toString( field ) );
+            RealVector rv = atom .location .toRealVector();
+            System .out .println( atom .location .toString() );
             locations .append( String .format( "HETATM%5d He   UNK  0001     %7.3f %7.3f %7.3f\n",
                 new Object[]{ new Integer(atom .index), new Float( rv.x * scaleFactor ), new Float( rv.y * scaleFactor ), new Float( rv.z * scaleFactor ) } ) );
             neighbors .append( String .format( "CONECT%5d", new Object[]{ new Integer( atom .index ) } ) );

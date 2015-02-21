@@ -5,15 +5,13 @@ package com.vzome.core.algebra;
 
 public class Bivector3d
 {
-	private final int[] a, b, c;
-	private final AlgebraicField field;
+	private final AlgebraicNumber a, b, c;
 
-	public Bivector3d( int[] a, int[] b, int[] c, AlgebraicField field )
+	public Bivector3d( AlgebraicNumber a, AlgebraicNumber b, AlgebraicNumber c )
 	{
 		this .a = a;
 		this .b = b;
 		this .c = c;
-		this .field = field;
 	}
 	
 	/**
@@ -21,12 +19,12 @@ public class Bivector3d
 	 * @param v
 	 * @return
 	 */
-	public int[] outer( Vector3d v )
+	public AlgebraicNumber outer( Vector3d v )
 	{
-		int[] a = field .multiply( this.a, v .c );
-		int[] b = field .multiply( this.b, v .a );
-		int[] c = field .multiply( this.c, v .b );
-		return field .add( a, field .add( b, c ) );
+	    AlgebraicNumber a = this.a .times( v .c );
+	    AlgebraicNumber b = this.b .times( v .a );
+	    AlgebraicNumber c = this.c .times( v .b );
+		return a .plus( b ) .plus( c );
 	}
 
 }

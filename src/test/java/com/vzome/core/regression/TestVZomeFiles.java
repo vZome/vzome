@@ -32,11 +32,6 @@ import com.vzome.api.Exporter;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 
-//import org.vorthmann.ui.Controller;
-//import org.vorthmann.zome.app.impl.DefaultApplication;
-//import org.vorthmann.zome.app.impl.EditorController;
-
-
 
 /**
  * 

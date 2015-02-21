@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
@@ -64,14 +65,14 @@ public class StlExporter extends Exporter3d
                     int arity = face .size();
 
                     Integer index = (Integer) face .get( reverseFaces? arity-1 : 0 );
-                    int[] /*AlgebraicVector*/ gv = (int[]) faceVertices .get( index .intValue() );
-                    RealVector vert0 = field .getRealVector( gv );
+                    AlgebraicVector gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                    RealVector vert0 = gv .toRealVector();
                     index = (Integer) face .get( reverseFaces? arity-2 : 1 );
-                    gv = (int[]) faceVertices .get( index .intValue() );
-                    RealVector vert1 = field .getRealVector( gv );
+                    gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                    RealVector vert1 = gv .toRealVector();
                     index = (Integer) face .get( reverseFaces? arity-3 : 2 );
-                    gv = (int[]) faceVertices .get( index .intValue() );
-                    RealVector vert2 = field .getRealVector( gv );
+                    gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                    RealVector vert2 = gv .toRealVector();
                     RealVector edge1 = vert1 .minus( vert0 );
                     RealVector edge2 = vert2 .minus( vert1 );
                     RealVector norm = edge1 .cross( edge2 ) .normalize();
@@ -79,8 +80,8 @@ public class StlExporter extends Exporter3d
                     RealVector v0 = null, v1 = null;
                     for ( int j = 0; j < arity; j++ ){
                         index = (Integer) face .get( reverseFaces? arity-j-1 : j );
-                        gv = (int[]) faceVertices .get( index .intValue() );
-                        RealVector vertex = loc .plus( field .getRealVector( gv ) );
+                        gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                        RealVector vertex = loc .plus( gv .toRealVector() );
                         vertex = vertex .scale( RZOME_INCH_SCALING );
 
                         if ( v0 == null )
@@ -105,11 +106,11 @@ public class StlExporter extends Exporter3d
             else if ( man instanceof Panel )
             {
                 Panel panel = (Panel) man;
-                RealVector norm = field .getRealVector( panel .getNormal( field ) ) .normalize();
+                RealVector norm = panel .getNormal( field ) .toRealVector() .normalize();
                 RealVector v0 = null, v1 = null;
                 for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
                 {
-                    RealVector vertex = field .getRealVector( (int[]) verts .next() );
+                    RealVector vertex = ((AlgebraicVector) verts .next()) .toRealVector();
                     vertex = vertex .scale( VZOME_STRUT_MODEL_INCH_SCALING );
                     if ( v0 == null )
                         v0 = vertex;

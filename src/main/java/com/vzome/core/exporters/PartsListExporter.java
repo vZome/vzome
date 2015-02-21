@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
@@ -37,8 +37,6 @@ public class PartsListExporter extends Exporter3d
 	{
 	    output = new PrintWriter( writer );
 	    
-        AlgebraicField field = mModel .getField();
-        
         int numBalls = 0;
 		Map[] orbits = new Map[]{ new HashMap(), new HashMap() };
 		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
@@ -59,16 +57,15 @@ public class PartsListExporter extends Exporter3d
 		            orbitHistogram = new HashMap();
 		            orbits[ flip?1:0 ] .put( orbit, orbitHistogram );
 		        }
-		        int[] /*AlgebraicNumber*/ len = shape .getLength();
-		        AlgebraicVector key = new AlgebraicVector( len );
-                Integer lengthCount = (Integer) orbitHistogram .get( key );
+		        AlgebraicNumber len = shape .getLength();
+                Integer lengthCount = (Integer) orbitHistogram .get( len );
                 if ( lengthCount == null )
                 {
                     lengthCount = new Integer( 1 );
                 }
                 else
                     lengthCount = new Integer( lengthCount .intValue() + 1 );
-                orbitHistogram .put( key, lengthCount );
+                orbitHistogram .put( len, lengthCount );
 		    }
 		}
         output .println( "balls" );
@@ -84,7 +81,7 @@ public class PartsListExporter extends Exporter3d
                 Map histogram = (Map) orbits[i] .get( orbit );
                 for ( Iterator iterator2 = histogram .keySet().iterator(); iterator2.hasNext(); ) {
                     AlgebraicVector key = (AlgebraicVector) iterator2.next();
-                    output .println( "  " + key .toString( field ) + " : " + (Integer) histogram .get( key ) );
+                    output .println( "  " + key .toString() + " : " + (Integer) histogram .get( key ) );
                 }
             }
         }

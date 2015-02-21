@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 
 /**
@@ -27,7 +30,7 @@ public abstract class AbstractSymmetry implements Symmetry
 
     protected final Permutation[] mOrientations;
     
-    protected final int[][][] mMatrices;
+    protected final AlgebraicMatrix[] mMatrices;
     
     protected final AlgebraicField mField;
     
@@ -41,7 +44,7 @@ public abstract class AbstractSymmetry implements Symmetry
         this .defaultStyle = defaultStyle;
         
         mOrientations = new Permutation[ order ];
-        mMatrices = new int[ order ][][];
+        mMatrices = new AlgebraicMatrix[ order ];
         
         createInitialPermutations();
 
@@ -110,20 +113,44 @@ public abstract class AbstractSymmetry implements Symmetry
     
     public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm )
     {
+        AlgebraicVector aNorm = mField .createVector( norm );
+        return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, false );
+    }
+
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm )
+    {
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, false );
     }
 
     protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard )
+    {
+        AlgebraicVector aNorm = mField .createVector( norm );
+        return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, false );
+    }
+
+    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard )
     {
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, standard, false );
     }
 
     protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard, boolean halfSizes )
     {
-        return createZoneOrbit( name, prototype, rotatedPrototype, norm, standard, false, null );
+        AlgebraicVector aNorm = mField .createVector( norm );
+        return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, false, null );
     }
 
-    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard, boolean halfSizes, int[] unitLength )
+    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard, boolean halfSizes )
+    {
+        return createZoneOrbit( name, prototype, rotatedPrototype, norm, standard, false, mField .one() );
+    }
+
+    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
+    {
+        AlgebraicVector aNorm = mField .createVector( norm );
+        return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, halfSizes, unitLength );
+    }
+
+    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
     {
         Direction dir = new Direction( name, this, prototype, rotatedPrototype, norm, standard );
         if ( halfSizes )
@@ -135,7 +162,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return dir;
     }
     
-    public Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm )
+    public Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm )
     {
         return new Direction( name, this, prototype, rotatedPrototype, norm, false );
     }
@@ -223,9 +250,9 @@ public abstract class AbstractSymmetry implements Symmetry
     
     // TODO this is now partly redundant with SymmetryController .getAxis()
     //
-    public Axis getAxis( int[] vector )
+    public Axis getAxis( AlgebraicVector vector )
     {
-        if ( mField .isOrigin( vector ) ) {
+        if ( vector .isOrigin() ) {
             return null;
         }
         for ( Iterator dirs = mDirectionList .iterator(); dirs .hasNext(); ) {
@@ -265,7 +292,7 @@ public abstract class AbstractSymmetry implements Symmetry
             // now iterate over axes
 			for ( Iterator axes = dir .getAxes(); axes .hasNext(); ) {
 				Axis axis = (Axis) axes .next();
-				RealVector axisV = mField .getRealVector( axis .normal() );
+				RealVector axisV = axis .normal() .toRealVector();
 				double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
 				if ( cosine > maxCosine ) {
 					maxCosine = cosine;
@@ -289,7 +316,7 @@ public abstract class AbstractSymmetry implements Symmetry
     }
 
 
-	public int[][] getMatrix(int i)
+	public AlgebraicMatrix getMatrix(int i)
 	{
 		return mMatrices[ i ];
 	}

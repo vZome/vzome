@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
@@ -65,7 +66,7 @@ public class ModuleTool extends ChangeConstructions implements Tool
         if ( ! ( c instanceof Point ) )
             return;
         Point p = (Point) c;
-        int[] loc = p .getLocation();
+        AlgebraicVector loc = p .getLocation();
         Duplicator duper = new Duplicator( applyTool, root, loc );
         for ( Iterator mans = bookmarkedSelection .iterator(); mans .hasNext(); ) {
             Manifestation man = (Manifestation) mans .next();

@@ -6,7 +6,7 @@ package com.vzome.core.editor;
 import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
@@ -44,7 +44,7 @@ public class MirrorTool extends TransformationTool
         {
             center = originPoint;
             AlgebraicField field = originPoint .getField();
-            int[] xAxis = field .basisVector( 3, RationalVectors .X );
+            AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
             Point p2 = new FreePoint( xAxis, modelRoot );
             axis = new SegmentJoiningPoints( center, p2 );
         }

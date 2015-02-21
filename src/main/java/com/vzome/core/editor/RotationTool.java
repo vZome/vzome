@@ -6,7 +6,8 @@ package com.vzome.core.editor;
 import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Point;
@@ -73,8 +74,8 @@ public class RotationTool extends SymmetryTool
             {
                 center = originPoint;
                 AlgebraicField field = symmetry .getField();
-                int[] zAxis = field .basisVector( 3, RationalVectors .Z );
-                int[] len = field .createPower( 2 );  // does not matter
+                AlgebraicVector zAxis = field .basisVector( 3, AlgebraicVector .Z );
+                AlgebraicNumber len = field .createPower( 2 );  // does not matter
                 axisStrut = new AnchoredSegment( symmetry .getAxis( zAxis ), len, center );
             }
             else
@@ -87,7 +88,7 @@ public class RotationTool extends SymmetryTool
             throw new Command.Failure( "rotation tool requires a single axis strut,\n" +
                                         "and optionally a separate center point" );
 
-        int[] vector = axisStrut .getOffset();
+        AlgebraicVector vector = axisStrut .getOffset();
         vector = axisStrut .getField() .projectTo3d( vector, true );
         Axis axis = symmetry .getAxis( vector );
         int rotation = axis .getRotation();

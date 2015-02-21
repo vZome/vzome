@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
@@ -24,7 +26,7 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
 {
     private final List mListeners = new ArrayList(1);
 
-    private final HashMap mManifestations = new HashMap( 1000 );
+    private final HashMap mManifestations = new LinkedHashMap( 1000 );
     
     private Projection mProjection;
 
@@ -81,8 +83,8 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
         else if ( c instanceof Segment )
         {
             Segment s = (Segment) c;
-            int[] /*AlgebraicVector*/ start = mProjection .projectImage( s .getStart(), true );
-            int[] /*AlgebraicVector*/ end = mProjection .projectImage( s .getEnd(), true );
+            AlgebraicVector start = mProjection .projectImage( s .getStart(), true );
+            AlgebraicVector end = mProjection .projectImage( s .getEnd(), true );
             if ( ! start .equals( end ) )
             {
                 m = new Strut( start, end );
@@ -92,7 +94,7 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
         {
             Polygon p = (Polygon) c;
             List vertices = new ArrayList();
-            int[][] vertexArray = p .getVertices();
+            AlgebraicVector[] vertexArray = p .getVertices();
             for ( int i = 0; i < vertexArray .length; i++ )
                 vertices .add( mProjection .projectImage( vertexArray[ i ], true ) );
         

@@ -3,12 +3,11 @@
 
 package com.vzome.core.math.symmetry;
 
-import java.util.Arrays;
-
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalMatrices;
-import com.vzome.core.algebra.RationalNumbers;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.BigRational;
 import com.vzome.core.algebra.SnubDodecField;
 
 
@@ -56,11 +55,10 @@ public class IcosahedralSymmetry extends AbstractSymmetry
      * Create a collection of blue-axis normals from a prototype,
      * by applying known rotations.
      */
-    private void createBlueAxes( Direction dir, int prototype, int rotated, int[] xyz )
+    private void createBlueAxes( Direction dir, int prototype, int rotated, AlgebraicVector xyz )
     {
     	int orientation = 0;
-    	int order = mField .getOrder();
-        boolean[] reflect = { false, false, false };
+    	boolean[] reflect = { false, false, false };
         for ( int i = 0; i < 3; i++ ){
         	for ( int k = 0; k < 2; k++ ) {
         		for ( int l = 0; l < 2; l++ ) {
@@ -68,16 +66,14 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         			if ( dir .getAxis( PLUS, unit ) == null ) {
         				int rot = mOrientations[ orientation ] .mapIndex( rotated );
         				int rotation = getMapping( unit, rot );
-                        int[] norm = mField .origin( 3 );
+                        AlgebraicVector norm = mField .origin( 3 );
                         for ( int m = 0; m < 3; m++ ) {
-                            int offset = ((m+3-i)%3) * order;
-                            for (int j = 0; j < order; j++) {
-                                if ( reflect[m] ) {
-                                    RationalMatrices .negate( xyz, offset+j, norm, m*order+j );
-                                }
-                                else {
-                                    RationalMatrices .copy( xyz, offset+j, norm, m*order+j );
-                                }
+                            int offset = ((m+3-i)%3);
+                            if ( reflect[m] ) {
+                                norm .setComponent( m, xyz .getComponent( offset ) .negate() );
+                            }
+                            else {
+                                norm .setComponent( m, xyz .getComponent( offset ) );
                             }
                         }
         				dir .createAxis( unit, rotation, norm );
@@ -105,16 +101,19 @@ public class IcosahedralSymmetry extends AbstractSymmetry
      * @param canonical
      * @return
      */
-    private int[] vector( int[] canonical )
+    private AlgebraicVector vector( int[] canonical )
     {
         int order = mField .getOrder();
         if ( order == 2 )
-            return canonical;
-        int[] result = mField .origin( 3 );
+            return mField .createVector( canonical );
+        AlgebraicVector result = mField .origin( 3 );
         for (int i = 0; i < 3; i++)
         {
-            RationalNumbers.copy( canonical, 2*i + 0, result, i * order + 0 );
-            RationalNumbers.copy( canonical, 2*i + 1, result, i * order + 1 );
+            BigRational[] factors = new BigRational[ canonical.length / 6 ];
+            for (int j = 0; j < factors.length; j++) {
+				factors[ j ] = new BigRational( canonical[ i*4 + j*2 + 0 ], canonical[ i*4 + j*2 + 1 ] );
+			}
+            result .setComponent( i, mField .createAlgebraicNumber( factors ) );
         }
         return result;
     }
@@ -124,17 +123,23 @@ public class IcosahedralSymmetry extends AbstractSymmetry
      * @param canonical
      * @return
      */
-    private int[] rationalVector( int[] integers )
+    private AlgebraicVector rationalVector( int[] integers )
     {
-        int[] result = mField .origin( 3 );
-        for (int i = 0; i < 3 * mField.getOrder(); i++)
-            result[ 2*i ] = integers[ i ];
+        AlgebraicVector result = mField .origin( 3 );
+        for (int i = 0; i < 3; i++)
+        {
+            int[] factors = new int[ integers.length / 3 ];
+            for (int j = 0; j < factors.length; j++) {
+				factors[ j ] = integers[ i * factors.length + j ];
+			}
+            result .setComponent( i, mField .createAlgebraicNumber( factors ) );
+        }
         return result;
     }
 
     protected void createFrameOrbit( String frameColor )
     {
-        int[] xAxis = mField .basisVector( 3, RationalVectors .X );
+        AlgebraicVector xAxis = mField .basisVector( 3, AlgebraicVector .X );
         
         Direction dir = createZoneOrbit( frameColor, 0, 15, xAxis, true, true, mField .createRational( new int[]{ 2, 1 } ) );
 //        Direction dir = new Direction( "blue", this, 0, 15, xAxis, true );
@@ -152,14 +157,14 @@ public class IcosahedralSymmetry extends AbstractSymmetry
             int x = mOrientations[ p ] .mapIndex( 0 );
             int y = mOrientations[ p ] .mapIndex( 1 );
             int z = mOrientations[ p ] .mapIndex( 2 );
-            mMatrices[ p ] = mField .createMatrix( new int[][] {
+            mMatrices[ p ] = new AlgebraicMatrix(
                     dir .getAxis( PLUS, x ) .normal(),
                     dir .getAxis( PLUS, y ) .normal(),
-                    dir .getAxis( PLUS, z ) .normal() } );
+                    dir .getAxis( PLUS, z ) .normal() );
             
             Axis axis = dir .getAxis( PLUS, p );
-            int[] norm = mField .transform( mMatrices[ p ], xAxis );
-            if ( ! Arrays.equals( norm, axis .normal() ) )
+            AlgebraicVector norm = mMatrices[ p ] .timesColumn( xAxis );
+            if ( ! norm .equals( axis .normal() ) )
                 throw new IllegalStateException( "matrix wrong: " + p );
         }
     }
@@ -232,7 +237,7 @@ DIAGONAL
 (0,-4,4,0,0,8) (0,0,0,0,-4,0) (0,0,0,0,0,0)
 
  */      
-            int[] scale = mField .createPower( -3 );
+            AlgebraicNumber scale = mField .createPower( -3 );
             createZoneOrbit( "snubPentagon", 0, NO_ROTATION, rationalVector( new int[]{ 4,-4,0,0,-2,2,  -4,0,0,0,2,0,  0,0,0,0,0,2 } ), false, false, scale );
             createZoneOrbit( "snubTriangle", 0, NO_ROTATION, rationalVector( new int[]{ 0,-4,-2,0,0,2,  -4,4,0,-2,2,-2,  -4,0,-2,-2,2,0 } ), false, false, scale );
             createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, rationalVector( new int[]{ 8,0,0,4,-4,0,  0,-4,0,0,0,0,  0,0,0,0,0,0 } ), false, false, scale );

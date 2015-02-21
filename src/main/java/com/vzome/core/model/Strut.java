@@ -1,8 +1,6 @@
 package com.vzome.core.model;
 
-import java.util.Arrays;
-
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicVector;
 
 
 /**
@@ -10,9 +8,9 @@ import com.vzome.core.algebra.RationalVectors;
  */
 public class Strut extends Manifestation
 {
-	private int[] /*AlgebraicVector*/ m_end1, m_end2;
+	private AlgebraicVector m_end1, m_end2;
 
-    public Strut( /*AlgebraicVector*/ int[] end1, /*AlgebraicVector*/ int[] end2 )
+    public Strut( AlgebraicVector end1, AlgebraicVector end2 )
     {
         super();
 
@@ -22,7 +20,8 @@ public class Strut extends Manifestation
 
 	public int hashCode()
 	{
-        return RationalVectors .hashCode( m_end1 ) ^ RationalVectors .hashCode( m_end2 );
+        int result = m_end1 .hashCode() ^ m_end2 .hashCode();
+        return result;
 	}
 
 	public boolean equals( Object other )
@@ -34,35 +33,35 @@ public class Strut extends Manifestation
         if ( ! ( other instanceof Strut ) )
             return false;
         Strut strut = (Strut) other;
-        /*AlgebraicVector*/ int[] otherStart = strut .m_end1;
-        /*AlgebraicVector*/ int[] otherEnd = strut .m_end2;
-        if ( Arrays .equals( otherStart, m_end1 ) ) 
-            return Arrays .equals( otherEnd, m_end2 );
+        AlgebraicVector otherStart = strut .m_end1;
+        AlgebraicVector otherEnd = strut .m_end2;
+        if ( otherStart .equals( m_end1 ) ) 
+            return otherEnd .equals( m_end2 );
         else
-            if ( Arrays .equals( otherEnd, m_end1 ) )
-                return Arrays .equals( otherStart, m_end2 );
+            if ( otherEnd .equals( m_end1 ) )
+                return otherStart .equals( m_end2 );
             else
                 return false;
 	}
 
-    public int[] /*AlgebraicVector*/ getLocation()
+    public AlgebraicVector getLocation()
     {
         return m_end1;
     }
 
-    public int[] /*AlgebraicVector*/ getEnd()
+    public AlgebraicVector getEnd()
     {
         return m_end2;
     }
     
-    public int[] /*AlgebraicVector*/ getOffset()
+    public AlgebraicVector getOffset()
     {
-        return RationalVectors .subtract( m_end2, m_end1 );
+        return m_end2 .minus( m_end1 );
     }
 
     public String toString()
     {
-        return "strut from " + RationalVectors .toString( m_end1 ) + " to " + RationalVectors .toString( m_end2 );
+        return "strut from " + m_end1 .toString() + " to " + m_end2 .toString();
     }
 }
 

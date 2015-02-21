@@ -8,38 +8,153 @@ public class SnubDodecField extends AlgebraicField
 {    
     public SnubDodecField( AlgebraicField pentField )
     {
-        super( "snubDodec", true, pentField );
-        createRepresentation( TAU, 0, TIMES_TAU, 0, 0 );
-        createRepresentation( TAU_INV, 0, DIV_TAU, 0, 0 );
-        createRepresentation( XI, 0, TIMES_XI, 0, 0 );
-        createRepresentation( XI_INV, 0, DIV_XI, 0, 0 );
+        super( "snubDodec", pentField );
+
+        defaultStrutScaling = createAlgebraicNumber( new int[]{ 1, 0, 0, 0, 0, 0 } );
     };
     
-    public static final double TAU_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
+    public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
 
     private static final double XI_VALUE = 1.7155615d;
     
     private static final int A = 0, B = 1, C = 2, D = 3, E = 4, F = 5;
 
-    public static final int[] ZERO = { 0,1,0,1,0,1,0,1,0,1,0,1 };
-    public static final int[] ONE = { 1,1,0,1,0,1,0,1,0,1,0,1 };
-    public static final int[] TAU = { 0,1,1,1,0,1,0,1,0,1,0,1 };
-    public static final int[] TAU_INV = { -1,1,1,1,0,1,0,1,0,1,0,1 };
-    public static final int[] XI = { 0,1,0,1,1,1,0,1,0,1,0,1 };
-    public static final int[] XI_INV = { 2,1,-2,1,0,1,0,1,-1,1,1,1 };
-
-    public static final int[] ALPHA = { -2,1,2,1,1,1,0,1,1,1,-1,1 };
-    public static final int[] BETA = { -1,1,1,1,0,1,1,1,1,1,0,1 };
-
-    public double evaluateNumber( int[] representation )
+    /*
+     * Implemented by applying regex changes to Corrado's Mathematica notebook,
+     * so it should be bulletproof.
+     */
+    @Override
+    public BigRational[] multiply( BigRational[] a, BigRational[] b )
     {
-        double result = 0d;
-        result += RationalNumbers.getReal( representation, A );
-        result += TAU_VALUE * RationalNumbers.getReal( representation, B );
-        result += XI_VALUE * RationalNumbers.getReal( representation, C );
-        result += TAU_VALUE * XI_VALUE * RationalNumbers.getReal( representation, D );
-        result += XI_VALUE * XI_VALUE * RationalNumbers.getReal( representation, E );
-        result += XI_VALUE * XI_VALUE * TAU_VALUE * RationalNumbers.getReal( representation, F );
+        BigRational[] result = new BigRational[ this .getOrder() ];
+
+        BigRational factor = a[ A ] .times( b[ A ] );
+
+        factor = factor .plus( a[ B ] .times( b[ B ] ) );
+        
+        factor = factor .plus( a[ F ] .times( b[ C ] ) );
+        
+        factor = factor .plus( a[ E ] .times( b[ D ] ) );
+        factor = factor .plus( a[ F ] .times( b[ D ] ) );
+        
+        factor = factor .plus( a[ D ] .times( b[ E ] ) );
+        
+        factor = factor .plus( a[ C ] .times( b[ F ] ) );
+        factor = factor .plus( a[ D ] .times( b[ F ] ) );
+        result[ A ] = factor;
+
+        factor = a[ B ] .times( b[ A ] );
+        
+        factor = factor .plus( a[ A ] .times( b[ B ] ) );
+        factor = factor .plus( a[ B ] .times( b[ B ] ) );
+        
+        factor = factor .plus( a[ E ] .times( b[ C ] ) );
+        factor = factor .plus( a[ F ] .times( b[ C ] ) );
+        
+        factor = factor .plus( a[ E ] .times( b[ D ] ) );
+        factor = factor .plus( a[ F ] .times( b[ D ] ) );
+        factor = factor .plus( a[ F ] .times( b[ D ] ) ); // doubling
+        
+        factor = factor .plus( a[ C ] .times( b[ E ] ) );
+        factor = factor .plus( a[ D ] .times( b[ E ] ) );
+        
+        factor = factor .plus( a[ C ] .times( b[ F ] ) );
+        factor = factor .plus( a[ D ] .times( b[ F ] ) );
+        factor = factor .plus( a[ D ] .times( b[ F ] ) ); // doubling
+        result[ B ] = factor;
+
+        
+        factor = a[ C ] .times( b[ A ] );
+        
+        factor = factor .plus( a[ D ] .times( b[ B ] ) );
+        
+        factor = factor .plus( a[ A ] .times( b[ C ] ) );
+        factor = factor .plus( a[ E ] .times( b[ C ] ) );
+        factor = factor .plus( a[ E ] .times( b[ C ] ) );  // doubling
+        
+        factor = factor .plus( a[ B ] .times( b[ D ] ) );
+        factor = factor .plus( a[ F ] .times( b[ D ] ) );
+        factor = factor .plus( a[ F ] .times( b[ D ] ) );  // doubling
+        
+        factor = factor .plus( a[ C ] .times( b[ E ] ) );
+        factor = factor .plus( a[ C ] .times( b[ E ] ) );  // doubling
+        factor = factor .plus( a[ F ] .times( b[ E ] ) );
+        
+        factor = factor .plus( a[ D ] .times( b[ F ] ) );
+        factor = factor .plus( a[ D ] .times( b[ F ] ) );  // doubling
+        factor = factor .plus( a[ E ] .times( b[ F ] ) );
+        factor = factor .plus( a[ F ] .times( b[ F ] ) );
+        result[ C ] = factor;
+
+        factor = a[ D ] .times( b[ A ] );
+        
+        factor = factor .plus( a[ C ] .times( b[ B ] ) );
+        factor = factor .plus( a[ D ] .times( b[ B ] ) );
+        
+        factor = factor .plus( a[ B ] .times( b[ C ] ) );
+        factor = factor .plus( a[ F ] .times( b[ C ] ) );
+        factor = factor .plus( a[ F ] .times( b[ C ] ) );  // doubling
+        
+        factor = factor .plus( a[ A ] .times( b[ D ] ) );
+        factor = factor .plus( a[ B ] .times( b[ D ] ) );
+        factor = factor .plus( a[ E ] .times( b[ D ] ) );
+        factor = factor .plus( a[ E ] .times( b[ D ] ) );  // doubling
+        factor = factor .plus( a[ F ] .times( b[ D ] ) );
+        factor = factor .plus( a[ F ] .times( b[ D ] ) );  // doubling
+        
+        factor = factor .plus( a[ D ] .times( b[ E ] ) );
+        factor = factor .plus( a[ D ] .times( b[ E ] ) );  // doubling
+        factor = factor .plus( a[ E ] .times( b[ E ] ) );
+        factor = factor .plus( a[ F ] .times( b[ E ] ) );
+        
+        factor = factor .plus( a[ C ] .times( b[ F ] ) );
+        factor = factor .plus( a[ C ] .times( b[ F ] ) );  // doubling
+        factor = factor .plus( a[ D ] .times( b[ F ] ) );
+        factor = factor .plus( a[ D ] .times( b[ F ] ) );  // doubling
+        factor = factor .plus( a[ E ] .times( b[ F ] ) );
+        factor = factor .plus( a[ F ] .times( b[ F ] ) );
+        factor = factor .plus( a[ F ] .times( b[ F ] ) );  // doubling
+        result[ D ] = factor;
+
+        factor = a[ E ] .times( b[ A ] );
+        
+        factor = factor .plus( a[ F ] .times( b[ B ] ) );
+        
+        factor = factor .plus( a[ C ] .times( b[ C ] ) );
+        
+        factor = factor .plus( a[ D ] .times( b[ D ] ) );
+        
+        factor = factor .plus( a[ A ] .times( b[ E ] ) );
+        factor = factor .plus( a[ E ] .times( b[ E ] ) );
+        factor = factor .plus( a[ E ] .times( b[ E ] ) );  // doubling
+        
+        factor = factor .plus( a[ B ] .times( b[ F ] ) );
+        factor = factor .plus( a[ F ] .times( b[ F ] ) );
+        factor = factor .plus( a[ F ] .times( b[ F ] ) );  // doubling
+        result[ E ] = factor;
+
+        factor = a[ F ] .times( b[ A ] );
+        
+        factor = factor .plus( a[ E ] .times( b[ B ] ) );
+        factor = factor .plus( a[ F ] .times( b[ B ] ) );
+        
+        factor = factor .plus( a[ D ] .times( b[ C ] ) );
+        
+        factor = factor .plus( a[ C ] .times( b[ D ] ) );
+        factor = factor .plus( a[ D ] .times( b[ D ] ) );
+        
+        factor = factor .plus( a[ B ] .times( b[ E ] ) );
+        factor = factor .plus( a[ F ] .times( b[ E ] ) );
+        factor = factor .plus( a[ F ] .times( b[ E ] ) );  // doubling
+        
+        factor = factor .plus( a[ A ] .times( b[ F ] ) );
+        factor = factor .plus( a[ B ] .times( b[ F ] ) );
+        factor = factor .plus( a[ E ] .times( b[ F ] ) );
+        factor = factor .plus( a[ E ] .times( b[ F ] ) );  // doubling
+        factor = factor .plus( a[ F ] .times( b[ F ] ) );
+        factor = factor .plus( a[ F ] .times( b[ F ] ) );  // doubling
+        result[ F ] = factor;
+        
         return result;
     }
     
@@ -47,358 +162,23 @@ public class SnubDodecField extends AlgebraicField
     {
         if ( i == B )
         {
-            buf .append( "tau = " );
-            buf .append( TAU_VALUE );
+            buf .append( "phi = " );
+            buf .append( PHI_VALUE );
         }
-        if ( i == C )
+        else if ( i == C )
         {
             buf .append( "xi = " );
             buf .append( XI_VALUE );
         }
-        if ( i == D )
+        else
         {
-            buf .append( "tauxi = " );
-            buf .append( TAU_VALUE * XI_VALUE );
-        }
-        if ( i == E )
-        {
-            buf .append( "xixi = " );
-            buf .append( XI_VALUE * XI_VALUE );
-        }
-        if ( i == F )
-        {
-            buf .append( "tauxixi = " );
-            buf .append( XI_VALUE * XI_VALUE * TAU_VALUE );
+            buf .append( "" );
         }
     }
     
-    public void getNumberExpression( StringBuffer buf, int[] vector, int coord, int format )
-    {
-        if ( format == AlgebraicField .ZOMIC_FORMAT )
-        {
-            super .getNumberExpression( buf, vector, coord, format );
-            return;
-        }
-        
-        int order = getOrder();
-        
-        if ( format == AlgebraicField .VEF_FORMAT )
-        {
-            buf .append( "(" );
-            for (int i = F; i >= A; i--)
-            {
-                buf .append( RationalNumbers .toString( vector, coord * order + i ) );
-                if ( i > A )
-                    buf .append( "," );
-            }
-            buf .append( ")" );
-            return;
-        }
-        
-        buf .append( RationalNumbers .toString( vector, coord * order + A ) );
-        buf .append( " + " );
-        if ( format == EXPRESSION_FORMAT )
-            buf .append( "tau*" );
-        buf .append( RationalNumbers .toString( vector, coord * order + B ) );
-        if ( format == DEFAULT_FORMAT )
-            buf .append( " \u03C4" );
-        buf .append( " + " );
-        if ( format == EXPRESSION_FORMAT )
-            buf .append( "xi*" );
-        buf .append( RationalNumbers .toString( vector, coord * order + C ) );
-        if ( format == DEFAULT_FORMAT )
-            buf .append( " \u03BE" );
-        buf .append( " + " );
-        if ( format == EXPRESSION_FORMAT )
-            buf .append( "tau*xi*" );
-        buf .append( RationalNumbers .toString( vector, coord * order + D ) );
-        if ( format == DEFAULT_FORMAT )
-            buf .append( " \u03C4*\u03BE" );
-        buf .append( " + " );
-        if ( format == EXPRESSION_FORMAT )
-            buf .append( "xi^2*" );
-        buf .append( RationalNumbers .toString( vector, coord * order + E ) );
-        if ( format == DEFAULT_FORMAT )
-            buf .append( " \u03BE\u00B2" );
-        buf .append( " + " );
-        if ( format == EXPRESSION_FORMAT )
-            buf .append( "tau*xi^2*" );
-        buf .append( RationalNumbers .toString( vector, coord * order + F ) );
-        if ( format == DEFAULT_FORMAT )
-            buf .append( " \u03C4*\u03BE\u00B2" );
-    }
-
-    /*
-     * Implemented by applying regex changes to Corrado's Mathematica notebook,
-     * so it should be bulletproof.
-     */
-    public int[] multiplyhyy( int[] a, int[] b )
-    {
-        int [] result = this .origin( 1 );
-        int[] prod = new int[]{ 0,1 };
-
-        RationalNumbers .multiply( a, 0, b, 0, prod, 0 );
-        RationalNumbers .add( result, 0, prod, 0, result, 0 );
-        RationalNumbers .multiply( a, 1, b, 1, prod, 0 );
-        RationalNumbers .add( result, 0, prod, 0, result, 0 );
-        RationalNumbers .multiply( a, 5, b, 2, prod, 0 );
-        RationalNumbers .add( result, 0, prod, 0, result, 0 );
-        RationalNumbers .multiply( a, 4, b, 3, prod, 0 );
-        RationalNumbers .add( result, 0, prod, 0, result, 0 );
-        RationalNumbers .multiply( a, 5, b, 3, prod, 0 );
-        RationalNumbers .add( result, 0, prod, 0, result, 0 );
-        RationalNumbers .multiply( a, 3, b, 4, prod, 0 );
-        RationalNumbers .add( result, 0, prod, 0, result, 0 );
-        RationalNumbers .multiply( a, 2, b, 5, prod, 0 );
-        RationalNumbers .add( result, 0, prod, 0, result, 0 );
-        RationalNumbers .multiply( a, 3, b, 5, prod, 0 );
-        RationalNumbers .add( result, 0, prod, 0, result, 0 );
-
-        RationalNumbers .multiply( a, 1, b, 0, prod, 0 );
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        RationalNumbers .multiply( a, 0, b, 1, prod, 0 );
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        RationalNumbers .multiply( a, 1, b, 1, prod, 0 );
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        RationalNumbers .multiply( a, 4, b, 2, prod, 0 );
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        RationalNumbers .multiply( a, 5, b, 2, prod, 0 );
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        RationalNumbers .multiply( a, 4, b, 3, prod, 0 );
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        RationalNumbers .multiply( a, 5, b, 3, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        RationalNumbers .multiply( a, 2, b, 4, prod, 0 );
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        RationalNumbers .multiply( a, 3, b, 4, prod, 0 );
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        RationalNumbers .multiply( a, 2, b, 5, prod, 0 );
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );  
-        RationalNumbers .multiply( a, 3, b, 5, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 1, prod, 0, result, 1 );
-        
-        RationalNumbers .multiply( a, 2, b, 0, prod, 0 );
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 3, b, 1, prod, 0 );
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 0, b, 2, prod, 0 );
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 4, b, 2, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 1, b, 3, prod, 0 );
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 5, b, 3, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 2, b, 4, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 5, b, 4, prod, 0 );
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 3, b, 5, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 4, b, 5, prod, 0 );
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-        RationalNumbers .multiply( a, 5, b, 5, prod, 0 );
-        RationalNumbers .add( result, 2, prod, 0, result, 2 );
-
-        RationalNumbers .multiply( a, 3, b, 0, prod, 0 );
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 2, b, 1, prod, 0 );
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 3, b, 1, prod, 0 );
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 1, b, 2, prod, 0 );
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 5, b, 2, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 0, b, 3, prod, 0 );
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 1, b, 3, prod, 0 );
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 4, b, 3, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 5, b, 3, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 3, b, 4, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 4, b, 4, prod, 0 );
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 5, b, 4, prod, 0 );
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 2, b, 5, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 3, b, 5, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 4, b, 5, prod, 0 );
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-        RationalNumbers .multiply( a, 5, b, 5, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 3, prod, 0, result, 3 );
-
-        RationalNumbers .multiply( a, 4, b, 0, prod, 0 );
-        RationalNumbers .add( result, 4, prod, 0, result, 4 );
-        RationalNumbers .multiply( a, 5, b, 1, prod, 0 );
-        RationalNumbers .add( result, 4, prod, 0, result, 4 );
-        RationalNumbers .multiply( a, 2, b, 2, prod, 0 );
-        RationalNumbers .add( result, 4, prod, 0, result, 4 );
-        RationalNumbers .multiply( a, 3, b, 3, prod, 0 );
-        RationalNumbers .add( result, 4, prod, 0, result, 4 );
-        RationalNumbers .multiply( a, 0, b, 4, prod, 0 );
-        RationalNumbers .add( result, 4, prod, 0, result, 4 );
-        RationalNumbers .multiply( a, 4, b, 4, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 4, prod, 0, result, 4 );
-        RationalNumbers .multiply( a, 1, b, 5, prod, 0 );
-        RationalNumbers .add( result, 4, prod, 0, result, 4 );
-        RationalNumbers .multiply( a, 5, b, 5, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 4, prod, 0, result, 4 );
-
-        RationalNumbers .multiply( a, 5, b, 0, prod, 0 );
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 4, b, 1, prod, 0 );
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 5, b, 1, prod, 0 );
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 3, b, 2, prod, 0 );
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 2, b, 3, prod, 0 );
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 3, b, 3, prod, 0 );
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 1, b, 4, prod, 0 );
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 5, b, 4, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 0, b, 5, prod, 0 );
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 1, b, 5, prod, 0 );
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 4, b, 5, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-        RationalNumbers .multiply( a, 5, b, 5, prod, 0 );
-        RationalNumbers .add( prod, 0, prod, 0, prod, 0 );  // doubling
-        RationalNumbers .add( result, 5, prod, 0, result, 5 );
-
-        return result;
-    }
-
-    private static final String[][] REPRESENTATION_RECIPE =
-    {
-        {
-            "a+",         "b+",         "f+",         "e+f+",       "d+",      "c+d+"
-        },
-        {
-            "b+",         "a+b+",       "e+f+",       "e+f2",       "c+d+",    "c+d2"
-        },
-        {
-            "c+",         "d+",         "a+e2",       "b+f2",       "f+c2",    "d2e+f+"
-        },
-        {
-            "d+",         "c+d+",       "b+f2",       "a+b+e2f2",   "e+f+d2",  "c2d2e+f2"
-        },
-        {
-            "e+",         "f+",         "c+",         "d+",         "a+e2",    "b+f2"
-        },
-        {
-            "f+",         "e+f+",       "d+",         "c+d+",       "b+f2",    "a+b+e2f2"
-        }
-    };
-
-    public void createRepresentation( int[] number, int i, int[][] rep, int j, int k )
-    {
-        for ( int l = 0; l < 6; l++ )
-            for ( int m = 0; m < 6; m++ ) {
-                String expr = REPRESENTATION_RECIPE[l][m];
-                RationalNumbers.copy( RationalNumbers.ZERO, 0, rep[j+l], k+m );
-                int argIndex = - 1;
-                for ( int n = 0; n < expr.length(); n++ ) {
-                    char ch = expr.charAt( n );
-                    switch ( ch ) {
-                    case 'a':
-                        argIndex = A;
-                        break;
-                    case 'b':
-                        argIndex = B;
-                        break;
-                    case 'c':
-                        argIndex = C;
-                        break;
-                    case 'd':
-                        argIndex = D;
-                        break;
-                    case 'e':
-                        argIndex = E;
-                        break;
-                    case 'f':
-                        argIndex = F;
-                        break;
-                    case '+':
-                        RationalNumbers.add( rep[j+l], k+m, number, i + argIndex, rep[j+l], k+m );
-                        break;
-                    case '2':
-                        RationalNumbers.add( rep[j+l], m+k, number, i + argIndex, rep[j+l], m+k );
-                        RationalNumbers.add( rep[j+l], m+k, number, i + argIndex, rep[j+l], m+k );
-                        break;
-                    }
-                }
-            }
-    }
-
     public int getOrder()
     {
         return 6;
-    }
-
-    private static final int[][] TIMES_TAU = new int[6][12], DIV_TAU = new int[6][12];
-
-    private static final int[][] TIMES_XI = new int[6][12], DIV_XI = new int[6][12];
-
-    public int[] createAlgebraicNumber( int ones, int irrat, int denominator, int power )
-    {
-        int[] result =
-            {
-                    ones, 1, irrat, 1, 0, 1, 0, 1, 0, 1, 0, 1
-            };
-        if ( power != 0 ) {
-            int[][] factor = ( power > 0 ) ? TIMES_TAU : DIV_TAU;
-            power = Math.abs( power );
-            for ( int i = 0; i < power; i++ )
-                result = RationalMatrices.transform( factor, result );
-        }
-        if ( denominator != 1 ) {
-            int[] divisor =
-                {
-                        denominator, 1
-                };
-            RationalNumbers.divide( result, A, divisor, 0, result, A );
-            RationalNumbers.divide( result, B, divisor, 0, result, B );
-            RationalNumbers.divide( result, C, divisor, 0, result, C );
-        }
-        return result;
-    }
-
-    private static final int[] DEFAULT_STRUT_SCALING = new int[]
-        {
-                1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1
-        };
-
-    public int[] getDefaultStrutScaling()
-    {
-        return DEFAULT_STRUT_SCALING;
     }
 
     public int getNumIrrationals()
@@ -406,13 +186,131 @@ public class SnubDodecField extends AlgebraicField
         return 3;
     }
 
-    public String getIrrational( int which )
+    private final AlgebraicNumber defaultStrutScaling;
+
+    public AlgebraicNumber getDefaultStrutScaling()
     {
-        if ( which == 0 )
-            return "\u03C4";
-        else if ( which == 1 )
-            return "\u03BE";
+        return defaultStrutScaling;
+    }
+
+    public String getIrrational( int which, int format )
+    {
+        if ( format == DEFAULT_FORMAT )
+        {
+            switch ( which ) {
+            case A:
+                return "";
+
+            case B:
+                return "\u03C4";
+
+            case C:
+                return "\u03BE";
+
+            case D:
+                return "\u03C4\u03BE";
+
+            case E:
+                return "\u03BE\u00B2";
+
+            case F:
+                return "\u03C4\u03BE\u00B2";
+
+            default:
+                throw new IllegalArgumentException( which + " is not a valid irrational in this field" );
+            }
+        }
         else
-            return "\u03BE\u00B2";
+        {
+            switch ( which ) {
+            case B:
+                return "phi";
+
+            case C:
+                return "xi";
+
+            case D:
+                return "phi*xi";
+
+            case E:
+                return "xi^2";
+
+            case F:
+                return "phi*xi^2";
+
+            default:
+                throw new IllegalArgumentException( which + " is not a valid irrational in this field" );
+            }
+        }
+    
+    }
+
+    @Override
+    double evaluateNumber( BigRational[] factors )
+    {
+        double result = 0d;
+        result += factors[ A ] .getReal();
+        result += PHI_VALUE * factors[ B ] .getReal();
+        result += XI_VALUE * factors[ C ] .getReal();
+        result += PHI_VALUE * XI_VALUE * factors[ D ] .getReal();
+        result += XI_VALUE * XI_VALUE * factors[ E ] .getReal();
+        result += XI_VALUE * XI_VALUE * PHI_VALUE * factors[ F ] .getReal();
+        return result;
+    }
+
+//  private static final String[][] REPRESENTATION_RECIPE =
+//  {
+//      {
+//          "a+",         "b+",         "f+",         "e+f+",       "d+",      "c+d+"
+//      },
+//      {
+//          "b+",         "a+b+",       "e+f+",       "e+f2",       "c+d+",    "c+d2"
+//      },
+//      {
+//          "c+",         "d+",         "a+e2",       "b+f2",       "f+c2",    "d2e+f+"
+//      },
+//      {
+//          "d+",         "c+d+",       "b+f2",       "a+b+e2f2",   "e+f+d2",  "c2d2e+f2"
+//      },
+//      {
+//          "e+",         "f+",         "c+",         "d+",         "a+e2",    "b+f2"
+//      },
+//      {
+//          "f+",         "e+f+",       "d+",         "c+d+",       "b+f2",    "a+b+e2f2"
+//      }
+//  };
+
+    @Override
+    BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
+    {
+        switch ( whichIrrational ) {
+        case B:
+            return new BigRational[]{ factors[ B ],
+                                    factors[ A ] .plus( factors[ B ] ),
+                                    factors[ D ],
+                                    factors[ C ] .plus( factors[ D ] ),
+                                    factors[ F ],
+                                    factors[ E ] .plus( factors[ F ] ) };
+
+        case C:
+            return new BigRational[]{ factors[ F ],
+                                    factors[ E ] .plus( factors[ F ] ),
+                                    factors[ A ] .plus( factors[ E ] ) .plus( factors[ E ] ),
+                                    factors[ B ] .plus( factors[ F ] ) .plus( factors[ F ] ),
+                                    factors[ C ],
+                                    factors[ D ] };
+
+        case D:
+            return this .scaleBy( this .scaleBy( factors, B ), C );
+
+        case E:
+            return this .scaleBy( this .scaleBy( factors, C ), C );
+
+        case F:
+            return this .scaleBy( this .scaleBy( factors, D ), C );
+
+        default:
+            throw new IllegalArgumentException( whichIrrational + " is not a valid irrational in this field" );
+        }
     }
 }

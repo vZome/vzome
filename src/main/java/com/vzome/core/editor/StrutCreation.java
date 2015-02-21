@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Point;
@@ -19,9 +20,9 @@ public class StrutCreation extends ChangeConstructions
 {
     private Point mAnchor;
     private Axis mAxis;
-    private int[] /*AlgebraicNumber*/ mLength;
+    private AlgebraicNumber mLength;
     
-    public StrutCreation( Point anchor, Axis axis, int[] /*AlgebraicNumber*/ len, RealizedModel realized )
+    public StrutCreation( Point anchor, Axis axis, AlgebraicNumber len, RealizedModel realized )
     {
         super( null, realized, false );
         
@@ -62,7 +63,7 @@ public class StrutCreation extends ChangeConstructions
             Map attrs = format .loadCommandAttributes( xml, true );
             mAnchor = (Point) attrs .get( "anchor" );
             mAxis = (Axis) attrs .get( "axis" );
-            mLength = (int[] /*AlgebraicNumber*/) attrs .get( "len" );
+            mLength = (AlgebraicNumber) attrs .get( "len" );
         }
     }
 

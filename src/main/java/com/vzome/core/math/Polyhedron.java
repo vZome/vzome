@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.symmetry.Direction;
 
 
@@ -21,14 +23,6 @@ public class Polyhedron {
 	protected final List m_vertexList = new ArrayList();
 
 	protected final Set m_faces = new HashSet();
-
-	/**
-	 * This is the "render-ready" state that is consumed by an OpenGL-based
-	 * renderer.  It will be used on the native side to construct index and vertex arrays
-	 * for use in glMultiDrawArrays.
-	 */
-	protected int[] mIndexArray = null;
-	protected float[] mVertexArray = null;
     
     private final AlgebraicField field;
 
@@ -46,7 +40,7 @@ public class Polyhedron {
 
     private Direction orbit;
 
-    private int[] length;
+    private AlgebraicNumber length;
     
     public void setName( String name )
     {
@@ -58,81 +52,29 @@ public class Polyhedron {
         return name;
     }
 
-/*
-    public int[] getIndexArray()
+	public void addVertex( AlgebraicVector location ) throws Error
 	{
-	    if ( mIndexArray == null )
-	        computeArrays();
-        return mIndexArray;
-    }
-	
-
-	public float[] getVertexArray()
-	{
-	    if ( mIndexArray == null )
-	        computeArrays();
-	    return mVertexArray;
-    }
-	
-
-	private synchronized void computeArrays()
-	{
-	    int numFaces = m_faces .size();
-	    System .out .println( "numFaces " + numFaces );
-        int intsRequired = numFaces * 2 + 2;
-        int numVertices = 0;
-        Iterator faces = m_faces .iterator();
-        while ( faces .hasNext() ) {
-            Face face = (Face) faces .next();
-            numVertices += face .size();
-        }
-        
-        mIndexArray = new int[ intsRequired ];
-        IntBuffer ibuf = IntBuffer .wrap( mIndexArray );
-        mVertexArray = new float[ numVertices * 6 ]; // doubling here for normals
-        FloatBuffer fbuf = FloatBuffer .wrap( mVertexArray );
-
-        ibuf .put( numFaces );
-        ibuf .put( numVertices );
-        faces = m_faces .iterator();
-        int index = numFaces + 2;
-        int first = 0;
-        int count = 0;
-        while ( faces .hasNext() ) {
-            Face face = (Face) faces .next();
-            count = face .size();
-            ibuf .put( first );
-//    	    System .out .println( "first " + first + " count " + count + " index " + index );
-            ibuf .put( index++, count );
-            
-            int[] v0 = (int[]) m_vertexList .get( face .getVertex( 0 ) );
-            int[] v1 = (int[]) m_vertexList .get( face .getVertex( 1 ) );
-            v1 = RationalVectors .subtract( v1, v0 );
-            int[] v2 = (int[]) m_vertexList .get( face .getVertex( 2 ) );
-            v2 = RationalVectors .subtract( v2, v0 );
-            v0 = RationalVectors. cross( v1, v2, null );
-            for ( int i = 0; i < count; i++ ) {
-                int[] vertex = (int[]) m_vertexList .get( face .getVertex( i ) );
-                vertex .write( fbuf );
-                v0 .location() .normalize() .write( fbuf, ( numVertices + first + i ) * 3 );
-            }
-            first += count;
-        }
-        
-        System .out .println( "Polyhedron .computeArrays " + intsRequired + " ints, " + numVertices + " vertices" );
-    }
-	*/
-
-	public Integer addVertex( int[] location ) throws Error
-	{
-		Integer vertexObj = (Integer) m_vertices.get( location );
-		if ( vertexObj == null ) {
-			m_vertexList .add( location );
-			// IMPORTANT: the incremented value is not returned
-			m_vertices .put( location, vertexObj = new Integer( numVertices++ ) );
-		}
-		return vertexObj;
+	    m_vertexList .add( location );
 	}
+
+	/**
+	 * Only used in ZomicPolyhedronModelInterpreter.
+	 * This used to be the implementation of addVertex, but all other callers
+	 * don't use the return value, and have already assigned their own indices,
+	 * so the collisions here are a bad idea.
+	 * @param halfLoc
+	 * @return
+	 */
+    public Integer addIndexedVertex( AlgebraicVector location )
+    {
+        Integer vertexObj = (Integer) m_vertices.get( location );
+        if ( vertexObj == null ) {
+            m_vertexList .add( location );
+            // IMPORTANT: the incremented value is not returned
+            m_vertices .put( location, vertexObj = new Integer( numVertices++ ) );
+        }
+        return vertexObj;
+    }
 
 	public void addFace( Face face )
 	{
@@ -170,7 +112,7 @@ public class Polyhedron {
 
 	public class Face extends ArrayList
     {
-        private int[] mNormal;
+        private AlgebraicVector mNormal;
         
         private Face(){}
 		
@@ -186,12 +128,12 @@ public class Polyhedron {
         
         public void computeNormal( List vertices )
         {
-            int[] v0 = (int[]) vertices .get( getVertex( 0 ) );
-            int[] v1 = (int[]) vertices .get( getVertex( 1 ) );
-            int[] v2 = (int[]) vertices .get( getVertex( 2 ) );
-            v1 = field .subtract( v1, v0 );
-            v2 = field .subtract( v2, v0 );
-            mNormal = field .cross( v1, v2 );
+            AlgebraicVector v0 = (AlgebraicVector) vertices .get( getVertex( 0 ) );
+            AlgebraicVector v1 = (AlgebraicVector) vertices .get( getVertex( 1 ) );
+            AlgebraicVector v2 = (AlgebraicVector) vertices .get( getVertex( 2 ) );
+            v1 = v1 .minus( v0 );
+            v2 = v2 .minus( v0 );
+            mNormal = v1 .cross( v2 );
         }
 		
 		public void canonicallyOrder()
@@ -238,7 +180,7 @@ public class Polyhedron {
 			return true;
 		}
         
-        public int[] getNormal()
+        public AlgebraicVector getNormal()
         {
             return mNormal;
         }
@@ -252,7 +194,7 @@ public class Polyhedron {
         this .orbit = orbit;
     }
 
-    public void setLength( int[] length )
+    public void setLength( AlgebraicNumber length )
     {
         this .length = length;
     }
@@ -262,7 +204,7 @@ public class Polyhedron {
         return this .orbit;
     }
 
-    public int[] getLength()
+    public AlgebraicNumber getLength()
     {
         return this .length;
     }

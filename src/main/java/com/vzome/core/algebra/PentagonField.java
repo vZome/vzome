@@ -7,53 +7,21 @@ public final class PentagonField extends AlgebraicField
     public PentagonField()
     {
         super( "golden" );
-        createRepresentation( new int[] { 0, 1, 1, 1 }, 0, TIMES_TAU, 0, 0 );
-        createRepresentation( new int[] { - 1, 1, 1, 1 }, 0, DIV_TAU, 0, 0 );
 
-        int[] half = new int[] { 1, 2, 0, 1 };
-        half = RationalMatrices.transform( DIV_TAU, half );
-        defaultStrutScaling = RationalMatrices.transform( DIV_TAU, half );
+        defaultStrutScaling = createAlgebraicNumber( -1, 1, 2, 0 );
     };
 
-    public static final double TAU_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
+    public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
     
     // I haven't dug into why this is true, at the moment
     //
-    public static final double B1_LENGTH = 2d * TAU_VALUE * TAU_VALUE * TAU_VALUE;
+    public static final double B1_LENGTH = 2d * PHI_VALUE * PHI_VALUE * PHI_VALUE;
 
-    public void createRepresentation( int[] number, int i, int[][] rep, int j, int k )
+    private static final int ONES_PLACE = 0, PHIS_PLACE = 1;
+    
+    double evaluateNumber( BigRational[] factors )
     {
-        int a = i + 0;
-        int b = i + 1;
-        RationalNumbers.copy( number, a, rep[j + 0], k + 0 );
-        RationalNumbers.copy( number, b, rep[j + 0], k + 1 );
-        RationalNumbers.copy( number, b, rep[j + 1], k + 0 );
-        RationalNumbers .add( number, a, number, b, rep[j + 1], k + 1 );
-    }
-
-    public double evaluateNumber( int[] representation )
-    {
-        return RationalNumbers.getReal( representation, 0 ) + TAU_VALUE * RationalNumbers.getReal( representation, 1 );
-    }
-
-    public void getNumberExpression( StringBuffer buf, int[] vector, int coord, int format )
-    {
-        int order = getOrder();
-        int offset = ( format == VEF_FORMAT ) ? 1 : 0;
-        if ( format == VEF_FORMAT )
-            buf.append( "(" );
-        buf.append( RationalNumbers.toString( vector, coord * order + offset % 2 ) );
-        if ( format == VEF_FORMAT )
-            buf.append( "," );
-        else
-            buf.append( " + " );
-        if ( format == EXPRESSION_FORMAT )
-            buf.append( "tau*" );
-        buf.append( RationalNumbers.toString( vector, coord * order + ( offset + 1 ) % 2 ) );
-        if ( format == DEFAULT_FORMAT )
-            buf.append( " \u03C4" );
-        if ( format == VEF_FORMAT )
-            buf.append( ")" );
+        return factors[ ONES_PLACE ] .getReal() + PHI_VALUE * factors[ PHIS_PLACE ] .getReal();
     }
 
     public int getOrder()
@@ -61,67 +29,79 @@ public final class PentagonField extends AlgebraicField
         return 2;
     }
 
-    private static final int[][] TIMES_TAU = new int[2][4], DIV_TAU = new int[2][4];
-
-    private final int[] defaultStrutScaling;
-
-    public final int[] createAlgebraicNumber( int ones, int taus, int denominator, int scale )
-    {
-        int[] result = { ones, 1, taus, 1 };
-        if ( scale != 0 ) {
-            int[][] factor = ( scale > 0 ) ? TIMES_TAU : DIV_TAU;
-            scale = Math.abs( scale );
-            for ( int i = 0; i < scale; i++ )
-                result = RationalMatrices.transform( factor, result );
-        }
-        if ( denominator != 1 ) {
-            int[] divisor = { denominator, 1 };
-            RationalNumbers.divide( result, 0, divisor, 0, result, 0 );
-            RationalNumbers.divide( result, 1, divisor, 0, result, 1 );
-        }
-        return result;
-    }
+    private final AlgebraicNumber defaultStrutScaling;
     
     public final BigRational[] multiply( BigRational[] v1, BigRational[] v2 )
     {
-    	BigRational phis = v1[1].times(v2[0]) .plus( v1[0].times(v2[1]) ) .plus( v1[1].times(v2[1]) );
-    	BigRational ones = v1[0].times(v2[0]) .plus( v1[1].times(v2[1]) );
+    	BigRational phis = v1[PHIS_PLACE] .times( v2[ONES_PLACE] ) .plus( v1[ONES_PLACE] .times( v2[PHIS_PLACE] ) ) .plus( v1[PHIS_PLACE] .times( v2[PHIS_PLACE] ) );
+    	BigRational ones = v1[ONES_PLACE] .times( v2[ONES_PLACE] ) .plus( v1[PHIS_PLACE] .times( v2[PHIS_PLACE] ) );
     	
     	return new BigRational[]{ ones, phis };
     }
-    
-    public final BigRational[] divide( BigRational[] v1, BigRational[] v2 )
+
+    protected BigRational[] reciprocal( BigRational[] v2 )
     {
-    	BigRational denominator = v2[0].times(v2[0]) .plus( v2[0].times(v2[1]) ) .minus( v2[1].times(v2[1]) );
-    	
-    	BigRational ones = v1[0].times(v2[1]) .plus( v1[0].times(v2[0]) ) .minus( v1[1].times(v2[1]) ) .divides( denominator );
-    	BigRational phis = v2[0].times(v1[1]) .minus( v1[0].times(v2[1]) ) .divides( denominator );
-    	
-    	return new BigRational[]{ ones, phis };
-    }
-    
-    public final int[] divide( int[] v1, int[] v2 )
-    {
-    	BigRational[] v1br = this .makeBigElement( v1 );
-    	BigRational[] v2br = this .makeBigElement( v2 );
-    	
-    	BigRational[] quotient = this .divide( v1br, v2br );
-    	    	
-    	return new int[]{ quotient[0].intNumerator(), quotient[0].intDenominator(), quotient[1].intNumerator(), quotient[1].intDenominator() };
+        BigRational denominator = v2[0].times(v2[0]) .plus( v2[0].times(v2[1]) ) .minus( v2[1].times(v2[1]) );
+        
+        BigRational ones = v2[1] .plus( v2[0] ) .divides( denominator );
+        BigRational phis = v2[1] .negate() .divides( denominator );
+        
+        return new BigRational[]{ ones, phis };
     }
 
-    public void defineMultiplier( StringBuffer buf, int i )
+    public void defineMultiplier( StringBuffer buf, int which )
     {
-        buf.append( "tau = ( 1 + sqrt(5) ) / 2" );
+        buf.append( "phi = ( 1 + sqrt(5) ) / 2" );
     }
 
-    public int[] getDefaultStrutScaling()
+    public AlgebraicNumber getDefaultStrutScaling()
     {
         return defaultStrutScaling;
     }
 
     public String getIrrational( int which )
     {
-        return "\u03C4";
+        return this .getIrrational( which, DEFAULT_FORMAT );
+    }
+
+    @Override
+    BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
+    {
+        if ( whichIrrational == 0 )
+            return factors;
+        else
+            return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 1 ] ) };
+    }
+
+    @Override
+    public String getIrrational( int which, int format )
+    {
+        if ( format == DEFAULT_FORMAT )
+            return "\u03C6";
+        else
+            return "phi";
+    }
+
+    public final AlgebraicVector conjugate( AlgebraicVector v )
+    {
+        int order = getOrder();
+        if ( order != 2 )
+            throw new IllegalArgumentException( "method only supported for order-2 fields" );
+
+        AlgebraicVector result = new AlgebraicVector( this, v .dimension() );
+        for ( int i = 0; i < v .dimension(); i++ ) {
+            result .setComponent( i, this .conjugate( v .getComponent( i ) ) );
+        }
+        return result;
+    }
+
+    private AlgebraicNumber conjugate( AlgebraicNumber component )
+    {
+        // TODO
+//        for ( int i = 0; i < v.length / 2; i += 2 ) {
+//            RationalNumbers.negate( v, i + 1, result, i + 0 );
+//            RationalNumbers.add( v, i + 0, v, i + 1, result, i + 1 );
+//        }
+        return component;
     }
 }

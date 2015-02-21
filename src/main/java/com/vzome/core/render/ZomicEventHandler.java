@@ -6,6 +6,7 @@
  */
 package com.vzome.core.render;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Permutation;
 
@@ -27,7 +28,7 @@ public interface ZomicEventHandler {
 	 */
 	int JUST_MOVE = 0, BUILD = 1, DESTROY = 2;
 
-	void step( Axis axis, int[] /*AlgebraicNumber*/ length );
+	void step( Axis axis, AlgebraicNumber length );
 	
 	/**
 	 * 
@@ -45,7 +46,7 @@ public interface ZomicEventHandler {
 	
 	void permute( Permutation permutation, int sense );
 	
-	void scale( int[] /*AlgebraicNumber*/ scale );
+	void scale( AlgebraicNumber scale );
 	
 	void action( int action );
 	

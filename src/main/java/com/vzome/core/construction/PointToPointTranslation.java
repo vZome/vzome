@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 public class PointToPointTranslation extends Transformation
 {
     private Point p1, p2;
@@ -9,15 +11,14 @@ public class PointToPointTranslation extends Transformation
     public PointToPointTranslation( Point p1, Point p2 )
     {
         super( p1 .field );
-        mOffset = field .projectTo3d( field .subtract( p2 .getLocation(), p1 .getLocation() ), true );
+        mOffset = field .projectTo3d( p2 .getLocation() .minus( p1 .getLocation() ), true );
         this.p1 = p1;
         this.p2 = p2;        
     }
 
-    public int[] /*AlgebraicVector*/ transform( int[] /*AlgebraicVector*/ arg )
+    public AlgebraicVector transform( AlgebraicVector arg )
     {
-        arg = field .add( arg, mOffset );
-        return arg;
+        return arg .plus( mOffset );
     }
 
     public void attach()

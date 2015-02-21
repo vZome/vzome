@@ -3,8 +3,8 @@
 package com.vzome.core.construction;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
-import com.vzome.core.algebra.RationalVectors;
 
 
 /**
@@ -41,8 +41,7 @@ public class PointRotated4D extends Point
             return setStateVariable( null, true );
         
         AlgebraicField field = mPrototype .getField();
-        int[] loc = field .origin( 4 );
-        int order = field .getOrder();
+        AlgebraicVector loc = field .origin( 4 );
         
         // adding a W-value to the starting point makes it work when it is part of an
         //  un-squashed object in the center of the projection
@@ -50,9 +49,9 @@ public class PointRotated4D extends Point
 //        for ( int i = 0; i < wValue.length/2; i ++ )
 //             RationalVectors .copy( wValue, i, loc, i );
         
-        int[] loc3d = mPrototype .getLocation();
-        for ( int i = 0; i < loc3d.length/2; i ++ )
-            RationalVectors .copy( loc3d, i, loc, i+order );
+        AlgebraicVector loc3d = mPrototype .getLocation();
+        for ( int i = 0; i < 3; i ++ )
+            loc .setComponent( i, loc3d .getComponent( i ) );
         loc = mRightQuaternion .leftMultiply( loc );
         loc = mLeftQuaternion .rightMultiply( loc );
         loc = field .projectTo3d( loc, true );

@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
@@ -127,9 +128,9 @@ public class PrintVisitor extends Visitor .Default{
 	}
 
 	public
-	void visitMove( Axis axis, int[] /*AlgebraicNumber*/ length )
+	void visitMove( Axis axis, AlgebraicNumber length )
 	{
-		 println( "// MOVE NOT PRINTED: " + axis.getDirection().getName() + " " + axis.getOrientation() + " : " + length[0] + " " + length[2] );
+		 println( "// MOVE NOT PRINTED: " + axis.getDirection().getName() + " " + axis.getOrientation() + " : " + length.toString() );
 	    // TODO translate to Zomic text
 	}
 

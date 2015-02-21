@@ -7,13 +7,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.DomUtils;
 
 
 public abstract class Polygon extends Construction
 {
-    private int[][] /*AlgebraicVector*/ mVertices;
+    private AlgebraicVector[] mVertices;
     
     public Polygon( AlgebraicField field )
     {
@@ -25,7 +25,7 @@ public abstract class Polygon extends Construction
         v .visitPolygon( this );
     }
 
-    protected boolean setStateVariable( int[][] /*AlgebraicVector*/ vertices, boolean impossible )
+    protected boolean setStateVariable( AlgebraicVector[] vertices, boolean impossible )
     {
         if ( impossible ) {
             // don't attempt to access other params
@@ -55,14 +55,14 @@ public abstract class Polygon extends Construction
     {
         for ( int i = 0; i < mVertices .length; i++ ) {
             Element child = result .getOwnerDocument() .createElement( vertexChildName );
-            DomUtils .addAttribute( child, "at", RationalVectors .toString( mVertices[ i ] ) );
+            DomUtils .addAttribute( child, "at",  mVertices[ i ] .getVectorExpression( AlgebraicField.ZOMIC_FORMAT ) );
             result .appendChild( child );
         }
     }
 
     
-    public int[] /*AlgebraicVector*/[] getVertices()
+    public AlgebraicVector[] getVertices()
     {
-        return (int[] /*AlgebraicVector*/[]) mVertices .clone();
+        return (AlgebraicVector[]) mVertices .clone();
     }
 }

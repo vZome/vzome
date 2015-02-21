@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -38,8 +38,7 @@ public class OffExporter extends Exporter3d
 
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
-        AlgebraicField field = mModel .getField();
-	    output = new PrintWriter( writer );
+        output = new PrintWriter( writer );
         output .println( "OFF" );
 		
 		FORMAT .setMaximumFractionDigits( 16 );
@@ -63,8 +62,8 @@ public class OffExporter extends Exporter3d
         {
             Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
             if ( man instanceof Connector ) {
-                /*AlgebraicVector*/ int[] loc = ((Connector) man) .getLocation();
-                RealVector rv = field .getRealVector( loc );
+                AlgebraicVector loc = ((Connector) man) .getLocation();
+                RealVector rv = loc .toRealVector();
                 output .print( FORMAT.format( rv .x ) + " " );
                 output .print( FORMAT.format( rv .y ) + " " );
                 output .println( FORMAT.format( rv .z ) );

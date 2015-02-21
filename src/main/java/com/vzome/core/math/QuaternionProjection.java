@@ -4,7 +4,7 @@
 package com.vzome.core.math;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalNumbers;
+import com.vzome.core.algebra.AlgebraicVector;
 
 public class QuaternionProjection implements Projection
 {
@@ -17,14 +17,14 @@ public class QuaternionProjection implements Projection
      * @param leftQuat
      * @param rightQuat
      */
-    public QuaternionProjection( AlgebraicField field, int[] leftQuat, int[] rightQuat )
+    public QuaternionProjection( AlgebraicField field, AlgebraicVector leftQuat, AlgebraicVector rightQuat )
     {
         if ( rightQuat == null )
             mRightQuat = null;
         else
         {
-            if ( rightQuat .length / 2 == field .getOrder() * 3 )
-                rightQuat = field .inflateTo4d( rightQuat );
+            if ( rightQuat .dimension() == field .getOrder() * 3 )
+                rightQuat = rightQuat .inflateTo4d( true );
             mRightQuat = new com.vzome.core.algebra.Quaternion( field, rightQuat );
         }
 
@@ -32,21 +32,21 @@ public class QuaternionProjection implements Projection
             mLeftQuat = null;
         else
         {
-            if ( leftQuat .length / 2 == field .getOrder() * 3 )
-                leftQuat = field .inflateTo4d( leftQuat );
+            if ( leftQuat .dimension() == field .getOrder() * 3 )
+                leftQuat = leftQuat .inflateTo4d( true );
             mLeftQuat = new com.vzome.core.algebra.Quaternion( field, leftQuat );
         }
         this.field = field;
     }
 
-    public int[] projectImage( int[] source, boolean wFirst )
+    public AlgebraicVector projectImage( AlgebraicVector source, boolean wFirst )
     {
         if ( mRightQuat != null ) // the correct projection, drop first coordinate
         {
             if ( mLeftQuat != null )
             {
                 source = mLeftQuat .rightMultiply( source ); // s = l * s
-                System .out .println( "left mult: " + RationalNumbers .toString( source ) );
+                System .out .println( "left mult: " + source .toString() );
             }
             source = mRightQuat .leftMultiply( source );     // s = s * r
         }

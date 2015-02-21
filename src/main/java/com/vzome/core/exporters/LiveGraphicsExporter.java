@@ -11,7 +11,8 @@ import java.util.Locale;
 
 import javax.vecmath.Vector3d;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Color;
@@ -48,8 +49,6 @@ public class LiveGraphicsExporter extends Exporter3d
 		
 		FORMAT .setMaximumFractionDigits( 3 );
 		
-        AlgebraicField field = mModel .getField();
-        
 		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
 		{
             output .print( "{FaceForm[" );
@@ -59,8 +58,8 @@ public class LiveGraphicsExporter extends Exporter3d
             
 		    Polyhedron poly = rm .getShape();
 		    boolean reverseFaces = rm .reverseOrder(); // need to reverse face vertex order
-		    int[][] transform = rm .getOrientation();
-            int[] rmLoc = rm .getManifestation() .getLocation();
+		    AlgebraicMatrix transform = rm .getOrientation();
+            AlgebraicVector rmLoc = rm .getManifestation() .getLocation();
 
             List vertices = poly .getVertexList();
             output .println( "{" );
@@ -73,12 +72,12 @@ public class LiveGraphicsExporter extends Exporter3d
                     if ( j > 0 )
                         output .print( ", " );
                     Integer index = (Integer) face .get( reverseFaces? arity-j-1 : j );
-                    int[] loc = (int[]) vertices .get( index .intValue() );
+                    AlgebraicVector loc = (AlgebraicVector) vertices .get( index .intValue() );
                     
                     // TODO need a unit test... don't know if the transform should be right or left
                     //   (migrated to rational vectors, but not tested)
-                    loc = field .add( field .transform( transform, loc ), rmLoc );
-                    RealVector rv = field .getRealVector( loc );
+                    loc = transform .timesColumn( loc ) .plus( rmLoc );
+                    RealVector rv = loc .toRealVector();
                     output .print( "{" );
                     output .print( FORMAT.format( rv .x ) + ", " );
                     output .print( FORMAT.format( rv .y ) + ", " );

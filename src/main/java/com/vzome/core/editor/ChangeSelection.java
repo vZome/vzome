@@ -87,6 +87,22 @@ public abstract class ChangeSelection extends SideEffects
         }
         if ( man == null )
         {
+            // 2015-02-10
+            //
+            // Tonight I printed out enough hashcode() results to know that the defect here
+            //   is a disparity between the manifestations created during initial edit
+            //   and the manifestations created during replay of history on file load.
+            //   The defect could be in any edit.  Some implicit parameter that is not captured
+            //   on serialization?
+            //
+            //  To find the defect, I think I'll have to implement some sort of self-check mode
+            //  that compares the live history as it is replayed on open with a recorded history
+            //  from the initial save.  That still might not catch it, if the disparity is actually
+            //  between the realized model and the in-memory history!  Hmmm... the later disparity
+            //  should show up as unnecessary side-effects that cannot be undone.
+            //  
+            //  The defect is an old one, and it still exists, since even files from 2014 exhibit
+            //  the accommodations.
             logBugAccommodation( "null manifestation" );
             return;
         }

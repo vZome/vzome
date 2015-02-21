@@ -2,6 +2,7 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Trivector3dHomogeneous;
 import com.vzome.core.algebra.Vector3dHomogeneous;
 
@@ -40,16 +41,15 @@ public class PlaneExtensionOfPolygon extends Plane
     {
         if ( mPolygon .isImpossible() )
             return setStateVariables( null, null, true );
-        int[] /*AlgebraicVector*/[] vs = mPolygon .getVertices();
-        int[] v1 = field .subtract( vs[1], vs[0] );
-        int[] v2 = field .subtract( vs[2], vs[0] );
-        return setStateVariables( mPolygon .getVertices() [0],
-                field .cross( v1, v2 ), false );
+        AlgebraicVector[] vs = mPolygon .getVertices();
+        AlgebraicVector v1 = vs[1] .minus( vs[0] );
+        AlgebraicVector v2 = vs[2] .minus( vs[0] );
+        return setStateVariables( mPolygon .getVertices() [0], v1 .cross( v2 ), false );
     }
 
 	public Trivector3dHomogeneous getHomogeneous()
 	{
-        int[] /*AlgebraicVector*/[] vs = mPolygon .getVertices();
+        AlgebraicVector[] vs = mPolygon .getVertices();
 		Vector3dHomogeneous v1 = new Vector3dHomogeneous( vs[ 0 ], this .getField() );
 		Vector3dHomogeneous v2 = new Vector3dHomogeneous( vs[ 1 ], this .getField() );
 		Vector3dHomogeneous v3 = new Vector3dHomogeneous( vs[ 2 ], this .getField() );

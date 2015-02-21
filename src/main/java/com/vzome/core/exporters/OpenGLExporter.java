@@ -12,7 +12,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Color;
@@ -40,8 +41,7 @@ public class OpenGLExporter extends Exporter3d
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
-        AlgebraicField field = mModel .getField();
-	    
+       
 //		Vector3d lookDir = new Vector3d(), upDir = new Vector3d();
 //		mScene .getViewOrientation( lookDir, upDir );
 		FORMAT .setMaximumFractionDigits( 8 );
@@ -80,11 +80,11 @@ public class OpenGLExporter extends Exporter3d
 		            int arity = face .size();
 		            ++numShapes;
 	                shape_indices .append( arity + ",   " );
-		            RealVector normal = field .getRealVector( face .getNormal() );
+		            RealVector normal = face .getNormal() .toRealVector();
 		            for ( int j = 0; j < arity; j++ ){
 		                Integer index = (Integer) face .get( flip? arity-j-1 : j );
-		                int[] /*AlgebraicVector*/ loc = (int[]) vertices .get( index .intValue() );
-		                RealVector vertex = field .getRealVector( loc );
+		                AlgebraicVector loc = (AlgebraicVector) vertices .get( index .intValue() );
+		                RealVector vertex = loc .toRealVector();
                         shape_vertices .append( vertex + ",\n" );
                         shape_normals .append( normal + ",\n" );
                         ++numShapes;
@@ -93,32 +93,29 @@ public class OpenGLExporter extends Exporter3d
                     shape_indices .append( "\n" );
 		        }
 		    }
-		    int[][] transform = rm .getOrientation();
+		    AlgebraicMatrix transform = rm .getOrientation();
 		    Integer transformIndex = (Integer) transforms .get( transform );
 		    if ( transformIndex == null ){
 		        transformIndex = new Integer( numTransforms++ );
 		        transforms .put( transform, transformIndex );
 		        
-	            RealVector[] rows = new RealVector[ 3 ];
-		        for ( int i = 0; i < 3; i++ )
-		            rows[ i ] = field .getRealVector( transform[ 2 * i ] );
-                transformations .append( FORMAT .format( rows[ 0 ] .x ) );
+                transformations .append( FORMAT .format( transform .getElement( 0, 0 ) .evaluate() ) );
                 transformations .append( ", " );
-                transformations .append( FORMAT .format( rows[ 1 ] .x ) );
+                transformations .append( FORMAT .format( transform .getElement( 1, 0 ) .evaluate() ) );
                 transformations .append( ", " );
-                transformations .append( FORMAT .format( rows[ 2 ] .x ) );
+                transformations .append( FORMAT .format( transform .getElement( 2, 0 ) .evaluate() ) );
                 transformations .append( ", 0, " );
-                transformations .append( FORMAT .format( rows[ 0 ] .y ) );
+                transformations .append( FORMAT .format( transform .getElement( 0, 1 ) .evaluate() ) );
                 transformations .append( ", " );
-                transformations .append( FORMAT .format( rows[ 1 ] .y ) );
+                transformations .append( FORMAT .format( transform .getElement( 1, 1 ) .evaluate() ) );
                 transformations .append( ", " );
-                transformations .append( FORMAT .format( rows[ 2 ] .y ) );
+                transformations .append( FORMAT .format( transform .getElement( 2, 1 ) .evaluate() ) );
                 transformations .append( ", 0, " );
-                transformations .append( FORMAT .format( rows[ 0 ] .z ) );
+                transformations .append( FORMAT .format( transform .getElement( 0, 2 ) .evaluate() ) );
                 transformations .append( ", " );
-                transformations .append( FORMAT .format( rows[ 1 ] .z ) );
+                transformations .append( FORMAT .format( transform .getElement( 1, 2 ) .evaluate() ) );
                 transformations .append( ", " );
-                transformations .append( FORMAT .format( rows[ 2 ] .z ) );
+                transformations .append( FORMAT .format( transform .getElement( 2, 2 ) .evaluate() ) );
                 transformations .append( ", 0, 0, 0, 0, 1,\n" );
 		    }
 			
@@ -162,10 +159,9 @@ public class OpenGLExporter extends Exporter3d
     }
     
     
-    protected void appendLocation( int[] /*AlgebraicVector*/ loc, StringBuffer buf )
+    protected void appendLocation( AlgebraicVector loc, StringBuffer buf )
     {
-        AlgebraicField field = mModel .getField();
-        buf .append( field .getRealVector( loc ) );
+        buf .append( loc .toRealVector() );
         buf .append( ",\n" );
     }
 

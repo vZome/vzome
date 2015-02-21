@@ -4,6 +4,7 @@ package com.vzome.core.commands;
 
 import java.util.Map;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -26,7 +27,7 @@ public class CommandTranslate extends CommandTransform
         }
         ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );
         final Construction[] params = parameters .getConstructions();
-        int[] /*AlgebraicVector*/ offset = norm .getField() .projectTo3d( norm .getOffset(), true );
+        AlgebraicVector offset = norm .getField() .projectTo3d( norm .getOffset(), true );
         Transformation transform = new Translation( offset, root );
         return transform( params, transform, effects );
     }

@@ -2,12 +2,11 @@
 
 package com.vzome.core.construction;
 
-import java.util.Arrays;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Bivector3dHomogeneous;
 import com.vzome.core.algebra.Vector3dHomogeneous;
 import com.vzome.core.math.symmetry.Axis;
@@ -19,8 +18,8 @@ import com.vzome.core.math.symmetry.Symmetry;
 public abstract class Line extends Construction
 {
     // state variables
-	private int[] /*AlgebraicVector*/ mDirection; 
-    private int[] /*AlgebraicVector*/ mStart;
+	private AlgebraicVector mDirection; 
+    private AlgebraicVector mStart;
     
     // optimization
 //    private boolean mAxisComputed = false;
@@ -37,7 +36,7 @@ public abstract class Line extends Construction
      * @param norm need not be normalized yet
      * @return
      */
-    protected boolean setStateVariables( int[] /*AlgebraicVector*/ start, int[] /*AlgebraicVector*/ norm, boolean impossible )
+    protected boolean setStateVariables( AlgebraicVector start, AlgebraicVector norm, boolean impossible )
     {
         // TODO here we normalize
 
@@ -48,8 +47,8 @@ public abstract class Line extends Construction
             setImpossible( true );
             return true;
         }
-        if ( Arrays .equals( norm, mDirection )
-        &&   Arrays .equals( start, mStart )
+        if ( norm .equals( mDirection )
+        &&   start .equals( mStart )
         && ! isImpossible() )
             return false;
         
@@ -74,7 +73,7 @@ public abstract class Line extends Construction
         return true;
     }
     
-    public int[] /*AlgebraicVector*/ getStart()
+    public AlgebraicVector getStart()
     {
         return mStart;
     }
@@ -82,7 +81,7 @@ public abstract class Line extends Construction
     /**
      * @return a "unit" vector... always normalized
      */
-    public int[] /*AlgebraicVector*/ getDirection()
+    public AlgebraicVector getDirection()
     {
         return mDirection;
     }
@@ -116,7 +115,7 @@ public abstract class Line extends Construction
 	public Bivector3dHomogeneous getHomogeneous()
 	{
 		Vector3dHomogeneous v1 = new Vector3dHomogeneous( mStart, this .getField() );
-		Vector3dHomogeneous v2 = new Vector3dHomogeneous( field .add( mStart, mDirection ), this .getField() );
+		Vector3dHomogeneous v2 = new Vector3dHomogeneous( mStart .plus( mDirection ), this .getField() );
 		
 		return v1 .outer( v2 );
 	}

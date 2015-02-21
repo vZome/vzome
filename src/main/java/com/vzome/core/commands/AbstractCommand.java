@@ -9,6 +9,7 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
@@ -142,6 +143,6 @@ public abstract class AbstractCommand implements Command
         return true;
     }
 
-    public void setQuaternion( int[] offset )
+    public void setQuaternion( AlgebraicVector offset )
     {}
 }

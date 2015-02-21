@@ -4,6 +4,7 @@ package com.vzome.core.zomic;
 
 import java.util.Stack;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.render.ZomicEventHandler;
@@ -44,7 +45,7 @@ public class Recorder implements ZomicEventHandler
             mOutput .statement( stmt );
     }
     
-    public void step( Axis axis, /*AlgebraicNumber*/ int[] length )
+    public void step( Axis axis, AlgebraicNumber length )
     {
         record( new Move( axis, length ) );
     }
@@ -66,7 +67,7 @@ public class Recorder implements ZomicEventHandler
         record( new Untranslatable( "permutation" ) );
     }
 
-    public void scale( /*AlgebraicNumber*/ int[] scale )
+    public void scale( AlgebraicNumber scale )
     {
         record( new Scale( scale ) );
     }

@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Iterator;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -29,15 +29,14 @@ public class RulerExporter extends Exporter3d
     {
         double maxX = 0, maxY = 0, maxZ = 0;
 
-        AlgebraicField field = this .mModel .getField();
         for ( Iterator rms = this .mModel .getRenderedManifestations(); rms .hasNext(); )
         {
             RenderedManifestation rm = (RenderedManifestation) rms .next();
             Manifestation man = rm .getManifestation();
             if ( man instanceof Connector )
             {
-                int[] loc = ((Connector) man) .getLocation();
-                RealVector rv = field .getRealVector( loc );
+                AlgebraicVector loc = ((Connector) man) .getLocation();
+                RealVector rv = loc .toRealVector();
                 double x = rv .x;
                 if ( x > maxX )
                     maxX = x;

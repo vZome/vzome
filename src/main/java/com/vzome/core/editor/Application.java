@@ -24,7 +24,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.Heptagon6Field;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.RootThreeField;
@@ -204,6 +205,7 @@ public class Application
              * Unlike the golden field, one cannot scale down in this field without using fractions; basically, this
              * field is just the Integers!
              */
+            final AlgebraicField fField = field;
             symmetry = new OctahedralSymmetry( field, "orange", "Synestructics" )
             {
                 public String getName()
@@ -213,11 +215,16 @@ public class Application
 
                 protected void createOtherOrbits()
             	{
-                    createZoneOrbit( "yellow", 0, 4, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1 }, true );
+                    AlgebraicVector v = new AlgebraicVector( fField .one(), fField .one(), fField .one() );
+                    createZoneOrbit( "yellow", 0, 4, v, true );
 
-                    createZoneOrbit( "magenta", 1, 8, new int[] { 0, 1, 1, 2, 0, 1, 1, 2, 0, 1, 0, 1 }, true );
+                    AlgebraicNumber sqrt2 = fField .createPower( 1 );
+                    AlgebraicNumber half = fField .createRational( new int[]{ 1, 2 } );
+                    v = new AlgebraicVector( sqrt2, sqrt2, fField .zero() ) .scale( half );
+                    createZoneOrbit( "magenta", 1, 8, v, true );
 
-                    createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 }, true );
+                    v = new AlgebraicVector( fField .one(), fField .one(), fField .one() .plus( fField .one() ) );
+                    createZoneOrbit( "brown", 0, NO_ROTATION, v, true );
             	}
             };
             symmetries .put( symmetry.getName(), symmetry );
@@ -260,6 +267,7 @@ public class Application
                 mCommands .put( "dodecagonsymm", "dodecagonsymm" );
             }
         }
+        
         field = new SnubDodecField( pentField );
         fields .put( field .getName(), field );
         {
@@ -274,6 +282,7 @@ public class Application
             mCommands .put( "tetrasymm-snubDodec", new CommandTetrahedralSymmetry( symmetry ) );
             mCommands .put( "axialsymm-snubDodec", new CommandAxialSymmetry( symmetry ) );
         }
+
         field = new HeptagonField();
         fields .put( field .getName(), field );
         OctahedralSymmetry symmetry = new OctahedralSymmetry( field, "blue", "octahedra" );
@@ -295,11 +304,11 @@ public class Application
             mCommands .put( "import.vef", new CommandImportVEFData() );
         }
 
-        field = new Heptagon6Field();
-        fields .put( field .getName(), field );
-        symmetry = new OctahedralSymmetry( field, "blue", "octahedra" );
-        mStyles.put( symmetry, new ArrayList<Shapes>() );
-        addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
+//        field = new Heptagon6Field();
+//        fields .put( field .getName(), field );
+//        symmetry = new OctahedralSymmetry( field, "blue", "octahedra" );
+//        mStyles.put( symmetry, new ArrayList<Shapes>() );
+//        addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
         
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
@@ -413,7 +422,7 @@ public class Application
         for (Iterator blues = blue .getAxes(); blues.hasNext(); )
         {
             Axis zone = (Axis) blues .next();
-            RealVector rv = icosa .getField() .getRealVector( zone .normal() ) .normalize();
+            RealVector rv = zone .normal() .toRealVector() .normalize();
             if ( baseRv == null )
             {
                 baseRv = rv;

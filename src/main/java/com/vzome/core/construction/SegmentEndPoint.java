@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 /**
  * @author Scott Vorthmann
@@ -39,7 +41,7 @@ public class SegmentEndPoint extends Point
     {
         if ( mSegment .isImpossible() )
             return setStateVariable( null, true );
-        int[] /*AlgebraicVector*/ loc = mSegment .getEnd();
+        AlgebraicVector loc = mSegment .getEnd();
         return setStateVariable( loc, false );
     }
     

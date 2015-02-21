@@ -71,17 +71,17 @@ public class SegExporter extends Exporter3d
     
 	private final NumberFormat format = NumberFormat .getNumberInstance( Locale .US );
 
-	protected Integer getVertexIndex( int[] vertexVector )
+	protected Integer getVertexIndex( AlgebraicVector vertexVector )
     {
-        Integer obj = (Integer) vertexData .get( new AlgebraicVector( vertexVector ) );
+        Integer obj = (Integer) vertexData .get( vertexVector );
         if ( obj == null )
         {
-            AlgebraicVector key = new AlgebraicVector( vertexVector );
+            AlgebraicVector key = vertexVector;
             int index = vertexData .size();
             obj = new Integer( index );
             vertexData .put( key, obj );
             vertices .append( "v " );
-            RealVector vertex = key .toRealVector( field );
+            RealVector vertex =  vertexVector .toRealVector();
             vertices .append( format .format( vertex.x ) + " " );
             vertices .append( format .format( vertex.y ) + " " );
             vertices .append( format .format( vertex.z ) + " " );

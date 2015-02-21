@@ -6,7 +6,8 @@ package com.vzome.core.editor;
 import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
@@ -60,10 +61,10 @@ public class TranslationTool extends TransformationTool
             {
                 p1 = originPoint;
                 AlgebraicField field = modelRoot .getField();
-                int[] xAxis = field .basisVector( 3, RationalVectors .X );
-                int[] scale = field .createPower( 3 );
-                scale = field .multiply( scale, field .createRational( new int[]{ 2, 1 } ) );
-                xAxis = field .scaleVector( xAxis, scale );
+                AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
+                AlgebraicNumber scale = field .createPower( 3 );
+                scale = scale .times( field .createRational( new int[]{ 2, 1 } ) );
+                xAxis = xAxis .scale( scale );
                 p2 = new FreePoint( xAxis, modelRoot );
             }
             else

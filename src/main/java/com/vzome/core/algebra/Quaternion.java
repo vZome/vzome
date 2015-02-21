@@ -6,100 +6,96 @@ package com.vzome.core.algebra;
 
 public class Quaternion
 {
-    int[][] /*AlgebraicMatrix*/ representation, transpose;
+    AlgebraicMatrix representation, transpose;
     
     private final AlgebraicField field;
     
-    public Quaternion( AlgebraicField field, int[] /*AlgebraicVector*/ vector )
+    public Quaternion( AlgebraicField field, AlgebraicVector vector )
     {
         this.field = field;
-        int order = field .getOrder();
         int w_offset = 0;
-        int[] /*AlgebraicNumber*/ factor = field .createRational( new int[]{ 0,1 } );
-        if ( vector .length > 6 * order ) // a 4D vector
+        AlgebraicNumber factor = field .createRational( new int[]{ 0,1 } );
+        if ( vector .dimension() > 3 ) // a 4D vector
         {
-            factor = field .getVectorComponent( vector, 0 );
+            factor = vector .getComponent( 0 );
             w_offset = 1;
         }
         
-        representation = field .createScalingMatrix( factor, 4 );
-        
-        factor = field .getVectorComponent( vector, 0 + w_offset );
-        field .createRepresentation( factor, 0, representation, 1*order, 0*order );
-        field .createRepresentation( factor, 0, representation, 3*order, 2*order );
-        factor = field .negate( factor );
-        field .createRepresentation( factor, 0, representation, 0*order, 1*order );
-        field .createRepresentation( factor, 0, representation, 2*order, 3*order );
-        
-        factor = field .getVectorComponent( vector, 1 + w_offset );
-        field .createRepresentation( factor, 0, representation, 1*order, 3*order );
-        field .createRepresentation( factor, 0, representation, 2*order, 0*order );
-        factor = field .negate( factor );
-        field .createRepresentation( factor, 0, representation, 3*order, 1*order );
-        field .createRepresentation( factor, 0, representation, 0*order, 2*order );
+        representation = field .identityMatrix( 4 ) .timesScalar( factor );
 
-        factor = field .getVectorComponent( vector, 2 + w_offset );
-        field .createRepresentation( factor, 0, representation, 3*order, 0*order );
-        field .createRepresentation( factor, 0, representation, 2*order, 1*order );
-        factor = field .negate( factor );
-        field .createRepresentation( factor, 0, representation, 1*order, 2*order );
-        field .createRepresentation( factor, 0, representation, 0*order, 3*order );
+        factor = vector .getComponent( 0 + w_offset );
+        representation .setElement( 1, 0, factor );
+        representation .setElement( 3, 2, factor );
+        factor = factor .negate();
+        representation .setElement( 0, 1, factor );
+        representation .setElement( 2, 3, factor );
         
-        // NOTE that transpose is a transpose by field elements (order X order submatrices),
-        //   NOT by rationals
-        
+        factor = vector .getComponent( 1 + w_offset );
+        representation .setElement( 1, 3, factor );
+        representation .setElement( 2, 0, factor );
+        factor = factor .negate();
+        representation .setElement( 3, 1, factor );
+        representation .setElement( 0, 2, factor );
+
+        factor = vector .getComponent( 2 + w_offset );
+        representation .setElement( 3, 0, factor );
+        representation .setElement( 2, 1, factor );
+        factor = factor .negate();
+        representation .setElement( 1, 2, factor );
+        representation .setElement( 0, 3, factor );
+                
         if ( w_offset == 1 ) // a 4D vector
-            factor = field .getVectorComponent( vector, 0 );
+            factor = vector .getComponent( 0 );
         else
             factor = field .createRational( new int[]{ 0,1 } );
 
-        transpose = field .createScalingMatrix( factor, 4 );
+        transpose = field .identityMatrix( 4 ) .timesScalar( factor );
         
-        factor = field .getVectorComponent( vector, 0 + w_offset );
-        field .createRepresentation( factor, 0, transpose, 0*order, 1*order );
-        field .createRepresentation( factor, 0, transpose, 2*order, 3*order );
-        factor = field .negate( factor );
-        field .createRepresentation( factor, 0, transpose, 1*order, 0*order );
-        field .createRepresentation( factor, 0, transpose, 3*order, 2*order );
+        factor = vector .getComponent( 0 + w_offset );
+        transpose .setElement( 0, 1, factor );
+        transpose .setElement( 2, 3, factor );
+        factor = factor .negate();
+        transpose .setElement( 1, 0, factor );
+        transpose .setElement( 3, 2, factor );
         
-        factor = field .getVectorComponent( vector, 1 + w_offset );
-        field .createRepresentation( factor, 0, transpose, 3*order, 1*order );
-        field .createRepresentation( factor, 0, transpose, 0*order, 2*order );
-        factor = field .negate( factor );
-        field .createRepresentation( factor, 0, transpose, 1*order, 3*order );
-        field .createRepresentation( factor, 0, transpose, 2*order, 0*order );
-
-        factor = field .getVectorComponent( vector, 2 + w_offset );
-        field .createRepresentation( factor, 0, transpose, 1*order, 2*order );
-        field .createRepresentation( factor, 0, transpose, 0*order, 3*order );
-        factor = field .negate( factor );
-        field .createRepresentation( factor, 0, transpose, 3*order, 0*order );
-        field .createRepresentation( factor, 0, transpose, 2*order, 1*order );
+        factor = vector .getComponent( 1 + w_offset );
+        transpose .setElement( 3, 1, factor );
+        transpose .setElement( 0, 2, factor );
+        factor = factor .negate();
+        transpose .setElement( 1, 3, factor );
+        transpose .setElement( 2, 0, factor );
+        
+        factor = vector .getComponent( 2 + w_offset );
+        transpose .setElement( 1, 2, factor );
+        transpose .setElement( 0, 3, factor );
+        factor = factor .negate();
+        transpose .setElement( 3, 0, factor );
+        transpose .setElement( 2, 1, factor );
     }
     
-    private int[] /*AlgebraicVector*/ conjugate( int[] /*AlgebraicVector*/ q )
+    private AlgebraicVector conjugate( AlgebraicVector q )
     {
-        int[] result = this.field .origin( 4 );
-        field .setVectorComponent( result, 3, field .negate( field .getVectorComponent( q, 3 ) ) );
-        field .setVectorComponent( result, 1, field .negate( field .getVectorComponent( q, 1 ) ) );
-        field .setVectorComponent( result, 2, field .negate( field .getVectorComponent( q, 2 ) ) );
-        field .setVectorComponent( result, 0, field .getVectorComponent( q, 0 ) );
+        AlgebraicVector result = this.field .origin( 4 );
+        result .setComponent( 3, q .getComponent( 3 ) .negate() );
+        result .setComponent( 1, q .getComponent( 1 ) .negate() );
+        result .setComponent( 2, q .getComponent( 2 ) .negate() );
+        result .setComponent( 0, q .getComponent( 0 ) );
         return result;
     }
     
-    public int[] /*AlgebraicVector*/ reflect( int[] /*AlgebraicVector*/ v )
+    public AlgebraicVector reflect( AlgebraicVector v )
     {
-        int [] reflection = rightMultiply( conjugate( v ) );
+        AlgebraicVector reflection = rightMultiply( conjugate( v ) );
         reflection = leftMultiply( reflection );
-        return field .negate( reflection );
+        return reflection .negate();
     }
     
     /**
      * Compute the product this*q.
      */
-    public int[] /*AlgebraicVector*/ rightMultiply( int[] /*AlgebraicVector*/ q )
+    public AlgebraicVector rightMultiply( AlgebraicVector q )
     {
-        return RationalMatrices .transform( representation, q );
+        return representation .timesColumn( q );
     }
 
     /**
@@ -113,10 +109,10 @@ public class Quaternion
      * @param q
      * @return
      */
-    public int[] /*AlgebraicVector*/ leftMultiply( int[] /*AlgebraicVector*/ q )
+    public AlgebraicVector leftMultiply( AlgebraicVector q )
     {
-        int[] result = conjugate( q );
-        result = RationalMatrices .transform( transpose, result );  // transpose is the same as the conjugate of representation
+        AlgebraicVector result = conjugate( q );
+        result = transpose .timesColumn( result );  // transpose is the same as the conjugate of representation
         return conjugate( result );
     }
 }

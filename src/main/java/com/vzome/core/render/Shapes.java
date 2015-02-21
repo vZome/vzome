@@ -1,5 +1,6 @@
 package com.vzome.core.render;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -14,7 +15,7 @@ public interface Shapes{
 
 	Polyhedron getConnectorShape();
 
-    Polyhedron getStrutShape( Direction dir, int[] length );
+    Polyhedron getStrutShape( Direction dir, AlgebraicNumber length );
     
 	void addListener( Changes change );
 	

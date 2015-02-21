@@ -4,6 +4,8 @@
 package com.vzome.core.viewing;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -15,14 +17,29 @@ public class DodecagonalShapes extends AbstractShapes
     public DodecagonalShapes( String pkgName, String name, String alias, Symmetry symm )
     {
         super( pkgName, name, alias, symm );
+        AlgebraicField field = symm .getField();
+        V0 = field .createVector( new int[]{ 1,1,0,1, 0,1,0,1, 0,1,0,1 } );
+        V1 = field .createVector( new int[]{ 1,2,0,1, 0,1,1,2, 0,1,0,1 } );
+        V2 = field .createVector( new int[]{ -1,2,0,1, 0,1,1,2, 0,1,0,1 } );
+        V3 = field .createVector( new int[]{ -1,1,0,1, 0,1,0,1, 0,1,0,1 } );
+        V4 = field .createVector( new int[]{ -1,2,0,1, 0,1,-1,2, 0,1,0,1 } );
+        V5 = field .createVector( new int[]{ 1,2,0,1, 0,1,-1,2, 0,1,0,1 } );
+        TWO = field .createVector( new int[]{ 2,1,0,1, 0,1,0,1, 0,1,0,1 } );
+        GREEN = field .createVector( new int[]{ 1,1, 1,2, 1,2, 0,1, 0,1, 0,1 } );
+        V6 = field .createVector( new int[]{ 1,1, 0,1, 0,1, 1,3, 0,1, 0,1 } );
+        V7 = field .createVector( new int[]{ 0,1, 2,3, 0,1, 0,1, 0,1, 0,1 } );
     }
 
-    private static final int[] V0 = { 1,1,0,1, 0,1,0,1, 0,1,0,1 };
-    private static final int[] V1 = { 1,2,0,1, 0,1,1,2, 0,1,0,1 };
-    private static final int[] V2 = { -1,2,0,1, 0,1,1,2, 0,1,0,1 };
-    private static final int[] V3 = { -1,1,0,1, 0,1,0,1, 0,1,0,1 };
-    private static final int[] V4 = { -1,2,0,1, 0,1,-1,2, 0,1,0,1 };
-    private static final int[] V5 = { 1,2,0,1, 0,1,-1,2, 0,1,0,1 };
+    private final AlgebraicVector V0;
+    private final AlgebraicVector V1;
+    private final AlgebraicVector V2;
+    private final AlgebraicVector V3;
+    private final AlgebraicVector V4;
+    private final AlgebraicVector V5;
+    private final AlgebraicVector TWO;
+    private final AlgebraicVector GREEN;
+    private final AlgebraicVector V6;
+    private final AlgebraicVector V7;
 
     protected Polyhedron buildConnectorShape( String pkgName )
     {
@@ -64,29 +81,27 @@ public class DodecagonalShapes extends AbstractShapes
     
     private final class NoStrutGeometry implements StrutGeometry
     {
-        public Polyhedron getStrutPolyhedron( int[] length )
+        public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
         {
             // TODO Auto-generated method stub
             return null;
         }
     }
-    
-    private static final int[] THIRD = { 1,3,0,1 };
-    private static final int[] TWO = { 2,1,0,1, 0,1,0,1, 0,1,0,1 };
-    
+        
     private final class BlueStrutGeometry implements StrutGeometry
     {
-        public Polyhedron getStrutPolyhedron( int[] length )
+        public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
         {
             AlgebraicField field = mSymmetry .getField();
             Polyhedron hex = new Polyhedron( field );
-            int[] strut = field .scaleVector( new int[]{ 1,1,0,1, 0,1,0,1, 0,1,0,1 }, length );
-            hex .addVertex( field .add( strut, field .subtract( field .scaleVector( V5, THIRD ), TWO ) ) );
-            hex .addVertex( field .add( strut, field .subtract( field .scaleVector( V0, THIRD ), TWO ) ) );
-            hex .addVertex( field .add( strut, field .subtract( field .scaleVector( V1, THIRD ), TWO ) ) );
-            hex .addVertex( field .add( field .scaleVector( V2, THIRD ), TWO ) );
-            hex .addVertex( field .add( field .scaleVector( V3, THIRD ), TWO ) );
-            hex .addVertex( field .add( field .scaleVector( V4, THIRD ), TWO ) );
+            AlgebraicVector strut = field .basisVector( 3, 0 ) .scale( length );
+            final AlgebraicNumber THIRD = field .createRational( new int[]{ 1, 3 } );
+            hex .addVertex( strut .plus( V5 .scale( THIRD ) .minus( TWO ) ) );
+            hex .addVertex( strut .plus( V0 .scale( THIRD ) .minus( TWO ) ) );
+            hex .addVertex( strut .plus( V1 .scale( THIRD ) .minus( TWO ) ) );
+            hex .addVertex( V2 .scale( THIRD ) .plus( TWO ) );
+            hex .addVertex( V3 .scale( THIRD ) .plus( TWO ) );
+            hex .addVertex( V4 .scale( THIRD ) .plus( TWO ) );
             Polyhedron.Face face = hex .newFace();
             face .add( new Integer( 0 ) );
             face .add( new Integer( 1 ) );
@@ -106,24 +121,20 @@ public class DodecagonalShapes extends AbstractShapes
             return hex;
         }
     }
-
-    private static final int[] GREEN = { 1,1, 1,2, 1,2, 0,1, 0,1, 0,1 };
-    private static final int[] V6 = { 1,1, 0,1, 0,1, 1,3, 0,1, 0,1 };
-    private static final int[] V7 = { 0,1, 2,3, 0,1, 0,1, 0,1, 0,1 };
     
     private final class GreenStrutGeometry implements StrutGeometry
     {
-        public Polyhedron getStrutPolyhedron( int[] length )
+        public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
         {
             AlgebraicField field = mSymmetry .getField();
-            int[] vector = field .scaleVector( GREEN, length );
+            AlgebraicVector vector = GREEN .scale( length );
             Polyhedron hex = new Polyhedron( field );
-            hex .addVertex( field .add( vector, field .negate( field .add( GREEN, V6 ) ) ) );
-            hex .addVertex( field .add( vector, field .negate( GREEN ) ) );
-            hex .addVertex( field .add( vector, field .negate( field .add( GREEN, V7 ) ) ) );
-            hex .addVertex( field .add( V6, GREEN ) );
+            hex .addVertex( vector .plus( GREEN .plus( V6 ) ) .negate() );
+            hex .addVertex( vector .plus( GREEN .negate() ) );
+            hex .addVertex( vector .plus( GREEN .plus( V7 ) .negate() ) );
+            hex .addVertex( V6 .plus( GREEN ) );
             hex .addVertex( GREEN );
-            hex .addVertex( field .add( V7, GREEN ) );
+            hex .addVertex( V7 .plus( GREEN ) );
             Polyhedron.Face face = hex .newFace();
             face .add( new Integer( 0 ) );
             face .add( new Integer( 1 ) );

@@ -14,7 +14,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -38,13 +39,13 @@ public class STEPExporter extends Exporter3d{
 
     private static final PentagonField FIELD = new PentagonField();
 
-    private static final int[] MODEL_BALL_RADIUS = FIELD .createAlgebraicNumber( 1, 0, 1, 0 );
+    private static final AlgebraicNumber MODEL_BALL_RADIUS = FIELD .createAlgebraicNumber( 1, 0, 1, 0 );
     /**
      * This scale factor is appropriate for making true-to-scale STEP renderings of strut models built
      *   in vZome with a model ball radius (blue) of one long blue strut.  In other terms, the edges of the
      *   ball model are short and medium blue struts.
      */
-    private static final double SCALE = 0.350d / FIELD .evaluateNumber( MODEL_BALL_RADIUS );
+    private static final double SCALE = 0.350d / MODEL_BALL_RADIUS .evaluate();
 
     public STEPExporter( ViewModel scene, Colors colors, Lights lights, RenderedModel model )
     {
@@ -110,12 +111,11 @@ public class STEPExporter extends Exporter3d{
 
         // first, produce all the vertices
         ArrayList realVectors = new ArrayList();
-        AlgebraicField field = poly .getField();;
         for ( Iterator vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
-            int[] /*AlgebraicVector*/ gv = (int[] /*AlgebraicVector*/) vertices .next();
+            AlgebraicVector gv = (AlgebraicVector) vertices .next();
             if ( reverseFaces )
-                gv = field .negate( gv  );
-            RealVector v = field .getRealVector( gv ) .scale( SCALE );
+                gv = gv .negate();
+            RealVector v = gv .toRealVector() .scale( SCALE );
             realVectors .add( v );
             
             int cpIndex = ++index;

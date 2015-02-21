@@ -28,6 +28,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
@@ -142,7 +144,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 		this .mField = field;
 		this .mDerivationModel = new ModelRoot( field );
-		int[] /* AlgebraicVector */ origin = field .origin( 3 );
+		AlgebraicVector origin = field .origin( 3 );
 		this .originPoint = new FreePoint( origin, this .mDerivationModel );
 		this .failures = failures;
 		this .mXML = xml;
@@ -553,11 +555,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	public RealVector getLocation( Construction target )
 	{
 		if ( target instanceof Point)
-			return mField .getRealVector( ( (Point) target ).getLocation() );
+			return ( (Point) target ).getLocation() .toRealVector();
 		else if ( target instanceof Segment )
-			return mField .getRealVector( ( (Segment) target ).getStart() );
+			return ( (Segment) target ).getStart() .toRealVector();
 		else if ( target instanceof Polygon )
-			return mField .getRealVector( ( (Polygon) target ).getVertices()[ 0 ] );
+			return ( (Polygon) target ).getVertices()[ 0 ] .toRealVector();
 		else
 			return new RealVector( 0, 0, 0 );
 	}
@@ -567,12 +569,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		if ( "ball" .equals( string ) )
 		{
 	    	Point ball = mEditorModel .getCenterPoint();
-	    	return mField.getRealVector( ( (Point) ball ).getLocation() );
+	    	return ( (Point) ball ).getLocation() .toRealVector();
 		}
 		return new RealVector( 0, 0, 0 );
 	}
 
-    public void selectSimilarStruts( Direction orbit, int[] length )
+    public void selectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
         UndoableEdit edit = new SelectSimilarSizeStruts( orbit, length, mSelection, mRealizedModel, mField );
         this .performAndRecord( edit );
@@ -770,10 +772,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	else if ( command.equals( "import.vef" ) || command.equals( "vef" ) )
     	{
     		Segment symmAxis = mEditorModel .getSymmetrySegment();
-    		int[] quat = ( symmAxis == null ) ? null : symmAxis.getOffset();
+    		AlgebraicVector quat = ( symmAxis == null ) ? null : symmAxis.getOffset();
     		if ( quat != null )
-    			quat = mField .scaleVector( quat, mField .createPower( - 5 ) );
-    		int[] scale = mField .createPower( 5 );
+    			quat = quat .scale( mField .createPower( - 5 ) );
+    		AlgebraicNumber scale = mField .createPower( 5 );
     		edit = new LoadVEF( mSelection, mRealizedModel, script, quat, scale, mDerivationModel );
     		this .performAndRecord( edit );
     	}
@@ -820,46 +822,45 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         if ( man instanceof Connector )
         {
             StringBuffer buf;
-            int[] loc = ((Connector) man) .getLocation();
+            AlgebraicVector loc = ((Connector) man) .getLocation();
 
-            System .out .println( mField .getVectorExpression( loc, AlgebraicField.EXPRESSION_FORMAT ) );
-            System .out .println( mField .getVectorExpression( loc, AlgebraicField.ZOMIC_FORMAT ) );
-            System .out .println( mField .getVectorExpression( loc, AlgebraicField.VEF_FORMAT ) );
+            System .out .println( loc .getVectorExpression( AlgebraicField.EXPRESSION_FORMAT ) );
+            System .out .println( loc .getVectorExpression( AlgebraicField.ZOMIC_FORMAT ) );
+            System .out .println( loc .getVectorExpression( AlgebraicField.VEF_FORMAT ) );
             
             buf = new StringBuffer();
             buf .append( "location: " );
-            mField .getVectorExpression( buf, loc, AlgebraicField.DEFAULT_FORMAT );
+            loc .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
             return buf.toString();
         }
         else if ( man instanceof Strut ) {
             StringBuffer buf = new StringBuffer();
             buf.append( "start: " );
-            mField.getVectorExpression( buf, ( (Strut) man ).getLocation(),
-                    AlgebraicField.DEFAULT_FORMAT );
+            ( (Strut) man ).getLocation() .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
             buf.append( "\n\noffset: " );
-            int[] /* AlgebraicVector */offset = ( (Strut) man ).getOffset();
+            AlgebraicVector offset = ( (Strut) man ).getOffset();
 
-            System .out .println( mField .getVectorExpression( offset, AlgebraicField.EXPRESSION_FORMAT ) );
-            System .out .println( mField .getVectorExpression( offset, AlgebraicField.ZOMIC_FORMAT ) );
-            System .out .println( mField .getVectorExpression( offset, AlgebraicField.VEF_FORMAT ) );
+            System .out .println( offset .getVectorExpression( AlgebraicField.EXPRESSION_FORMAT ) );
+            System .out .println( offset .getVectorExpression( AlgebraicField.ZOMIC_FORMAT ) );
+            System .out .println( offset .getVectorExpression( AlgebraicField.VEF_FORMAT ) );
             
-            mField.getVectorExpression( buf, offset, AlgebraicField.DEFAULT_FORMAT );
+            offset .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
             buf.append( "\n\nnorm squared: " );
-            int[] normSquared = mField.dot( offset, offset );
-            double norm2d = mField .evaluateNumber( normSquared );
-            mField.getNumberExpression( buf, normSquared, 0, AlgebraicField.DEFAULT_FORMAT );
+            AlgebraicNumber normSquared = offset .dot( offset );
+            double norm2d = normSquared .evaluate();
+            normSquared .getNumberExpression( buf, AlgebraicField.DEFAULT_FORMAT );
             buf.append( " = " );
             buf.append( FORMAT.format( norm2d ) );
 
-            if ( mField.isOrigin( offset ) )
+            if ( offset .isOrigin() )
                 return "zero length!";
             Axis zone = symmetry .getAxis( offset );
             
-            int[] /*AlgebraicNumber*/ len = zone .getLength( offset );
+            AlgebraicNumber len = zone .getLength( offset );
             len = zone .getOrbit() .getLengthInUnits( len );
 
             buf.append( "\n\nlength in orbit units: " );
-            mField .getNumberExpression( buf, len, 0, AlgebraicField.DEFAULT_FORMAT );
+            len .getNumberExpression( buf, AlgebraicField.DEFAULT_FORMAT );
 
             if ( mField instanceof PentagonField)
             {
@@ -920,7 +921,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         return mEditorModel .selectManifestation( target, replace );
     }
 
-    public UndoableEdit createStrut( Point point, Axis zone, int[] length )
+    public UndoableEdit createStrut( Point point, Axis zone, AlgebraicNumber length )
     {
         return new StrutCreation( point, zone, length, this .mRealizedModel );
     }
@@ -1049,7 +1050,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	    return this .defaultView;
 	}
 
-    public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, int[][] edgeScales )
+    public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, AlgebraicNumber[] edgeScales )
     {
         UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, mDerivationModel, mEditorModel.getSymmetrySegment(), index, group, edgesToRender, edgeScales, renderGroup );
         this .performAndRecord( edit );
@@ -1062,7 +1063,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	public Segment getPlaneAxis( Polygon panel )
 	{
-		int[][] vertices = panel.getVertices();
+		AlgebraicVector[] vertices = panel.getVertices();
 		FreePoint p0 = new FreePoint( vertices[ 0 ], this.mDerivationModel );
 		FreePoint p1 = new FreePoint( vertices[ 1 ], this.mDerivationModel );
 		FreePoint p2 = new FreePoint( vertices[ 2 ], this.mDerivationModel );

@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.ApiEdit;
 import com.vzome.core.editor.DocumentModel;
@@ -26,14 +28,13 @@ public class Document
 	public Document( DocumentModel delegate ) throws Failure
 	{
 		this .delegate = delegate;		
-		AlgebraicField field = this .delegate .getField();
 		for ( Manifestation manifestation : this .delegate .getRealizedModel() )
 			if ( ! manifestation .isHidden() )
 			{
 				if ( manifestation instanceof Connector )
-					balls .add( new Ball( field, (Connector) manifestation ) );
+					balls .add( new Ball( (Connector) manifestation ) );
 				else if ( manifestation instanceof com.vzome.core.model.Strut )
-					struts .add( new Strut( field, (com.vzome.core.model.Strut) manifestation ) );
+					struts .add( new Strut( (com.vzome.core.model.Strut) manifestation ) );
 			}
 	}
 
@@ -72,12 +73,12 @@ public class Document
 		for ( int orientation = 0; orientation < order; orientation++ )
 		{
 			float[] asFloats = new float[ 16 ];
-			int[][] transform = symmetry .getMatrix( orientation );
+			AlgebraicMatrix transform = symmetry .getMatrix( orientation );
 	        for ( int i = 0; i < 3; i++ )
 	        {
-	            int[] columnSelect = field .basisVector( 3, i );
-	            int[] columnI = field .transform( transform, columnSelect );
-	            RealVector colRV = field .getRealVector( columnI );
+	            AlgebraicVector columnSelect = field .basisVector( 3, i );
+	            AlgebraicVector columnI = transform .timesColumn( columnSelect );
+	            RealVector colRV = columnI .toRealVector();
 	            asFloats[ i*4+0 ] = (float) colRV.x;
 	            asFloats[ i*4+1 ] = (float) colRV.y;
 	            asFloats[ i*4+2 ] = (float) colRV.z;

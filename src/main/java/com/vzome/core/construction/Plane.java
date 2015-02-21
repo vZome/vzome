@@ -2,12 +2,11 @@
 
 package com.vzome.core.construction;
 
-import java.util.Arrays;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Trivector3dHomogeneous;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -17,8 +16,8 @@ import com.vzome.core.math.symmetry.Symmetry;
  */
 public abstract class Plane extends Construction
 {
-    private int[] /*AlgebraicVector*/ mBase;
-    private int[] /*AlgebraicVector*/ mNormal;
+    private AlgebraicVector mBase;
+    private AlgebraicVector mNormal;
     
     protected Plane( AlgebraicField field )
     {
@@ -31,7 +30,7 @@ public abstract class Plane extends Construction
     }
 
 
-    protected final boolean setStateVariables( int[] /*AlgebraicVector*/ base, int[] /*AlgebraicVector*/ normal, boolean impossible )
+    protected final boolean setStateVariables( AlgebraicVector base, AlgebraicVector normal, boolean impossible )
     {
         if ( impossible ) {
             // don't attempt to access other params
@@ -40,9 +39,9 @@ public abstract class Plane extends Construction
             setImpossible( true );
             return true;
         }
-        if ( Arrays .equals( normal, mNormal )
+        if ( normal .equals( mNormal )
         && ! isImpossible()
-        &&  Arrays .equals( base, mBase ) )
+        &&  base .equals( mBase ) )
             return false;
         
         // symm axis is used for the normal, and might be a 4D vector
@@ -67,12 +66,12 @@ public abstract class Plane extends Construction
         return true;
     }
     
-    public int[] /*AlgebraicVector*/ getBase()
+    public AlgebraicVector getBase()
     {
         return mBase;
     }
     
-    public int[] /*AlgebraicVector*/ getNormal()
+    public AlgebraicVector getNormal()
     {
         return mNormal;
     }

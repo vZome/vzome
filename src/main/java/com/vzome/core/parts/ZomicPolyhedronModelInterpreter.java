@@ -3,8 +3,8 @@ package com.vzome.core.parts;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalNumbers;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Permutation;
@@ -12,7 +12,6 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.AbstractZomicEventHandler;
 import com.vzome.core.zomic.Interpreter;
 import com.vzome.core.zomic.program.Anything;
-import com.vzome.core.zomic.program.Move;
 
 /**
  * builds a polyhedron model from a Zomic script.
@@ -27,12 +26,12 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
 
     private static class LocationTracker extends AbstractZomicEventHandler
     {
-        private int[] mLocation;
+        private AlgebraicVector mLocation;
 
-        protected final int[] m_variableLength;
+        protected final AlgebraicNumber m_variableLength;
 
         public LocationTracker( Permutation orientation, int handedness,
-                int[] variableLength, Symmetry symm )
+                AlgebraicNumber variableLength, Symmetry symm )
         {
             super( symm );
             mLocation = symm .getField() .origin( 3 );
@@ -58,19 +57,19 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
             mLocation = ((LocationTracker) changed).mLocation;
         }
 
-        public void step( Axis axis, int[] length )
+        public void step( Axis axis, AlgebraicNumber length )
         {
-            AlgebraicField f = mSymmetry .getField();
             axis = mOrientation.permute( axis, mHandedNess );
-            if ( length == Move.VARIABLE_SIZE )
+            if ( length .isZero() )
+                // see XML2AST.startElement()
                 length = m_variableLength;
             else
-                length = f .multiply( length, mScale );
+                length = length .times( mScale );
 
-            mLocation = f .add( mLocation, f .scaleVector( axis.normal(), length ) );
+            mLocation = mLocation .plus( axis .normal() .scale( length ) );
         }
 
-        public int[] /*AlgebraicVector*/ getLocation()
+        public AlgebraicVector getLocation()
         {
             return mLocation;
         }
@@ -92,7 +91,7 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
      * @param orientation
      */
     public ZomicPolyhedronModelInterpreter( Symmetry symmetry, Anything zomicProgram,
-            int[] /*AlgebraicNumber*/ variableLength, Permutation orientation, int handedness )
+            AlgebraicNumber variableLength, Permutation orientation, int handedness )
     {
         super( new LocationTracker( orientation, handedness, variableLength, symmetry ), symmetry );
 
@@ -116,8 +115,6 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
 
     public static final String STRIP_START = "strip.start",
             STRIP_END = "strip.end";
-
-    private static final int[] TWO = { 2, 1 };
     
     public void visitLabel( String id )
     {
@@ -138,11 +135,9 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
             return;
         }
         if ( m_face == null ) {
-            int[] /*AlgebraicVector*/ loc = ((LocationTracker) mEvents).getLocation();
-            int[] halfLoc = new int[ loc.length ];
-            for ( int i = 0; i < loc.length/2; i++ )
-                RationalNumbers .divide( loc, i, TWO, 0, halfLoc, i );
-            Integer vertexObj = mPolyhedron.addVertex( halfLoc );
+            AlgebraicVector loc = ((LocationTracker) mEvents).getLocation();
+            AlgebraicVector halfLoc = loc .scale( mPolyhedron .getField() .createRational( new int[]{ 1, 2 } ) );
+            Integer vertexObj = mPolyhedron.addIndexedVertex( halfLoc );
             m_labels.put( id, vertexObj );
             // System .out .println ( id + " = " + loc );
         } else {

@@ -9,9 +9,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
-import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.VefToModel;
@@ -23,11 +24,12 @@ import com.vzome.core.model.RealizedModel;
 public class LoadVEF extends ChangeConstructions
 {
     private String vefData;
-    private int[] quaternion, scale;
+    private AlgebraicVector quaternion;
+    private AlgebraicNumber scale;
     private ModelRoot root;
 
 
-    public LoadVEF( Selection selection, RealizedModel realized, String vefData, int[] quaternion, int[] scale, ModelRoot root )
+    public LoadVEF( Selection selection, RealizedModel realized, String vefData, AlgebraicVector quaternion, AlgebraicNumber scale, ModelRoot root )
     {
         super( selection, realized, false );
         this .vefData = vefData;
@@ -44,9 +46,9 @@ public class LoadVEF extends ChangeConstructions
     protected void getXmlAttributes( Element element )
     {
         if ( quaternion != null )
-        	DomUtils .addAttribute( element, "quaternion", RationalVectors .toString( quaternion ) );
+        	DomUtils .addAttribute( element, "quaternion", quaternion .toString() );
         if ( scale != null )
-        	DomUtils .addAttribute( element, "scale", RationalVectors .toString( scale ) );
+        	DomUtils .addAttribute( element, "scale", scale .toString( AlgebraicField.ZOMIC_FORMAT ) );
         Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( vefData ) );
         element .appendChild( textNode );
     }
@@ -55,13 +57,13 @@ public class LoadVEF extends ChangeConstructions
             throws Failure
     {
         quaternion = format .parseRationalVector( xml, "quaternion" );
-        scale = format .parseRationalVector( xml, "scale" );
+        scale = format .parseRationalNumber( xml, "scale" );
         vefData = xml .getTextContent();
     }
 
     public void perform() throws Failure
     {
-        int[] offset = null;
+        AlgebraicVector offset = null;
         boolean pointFound = false;
         for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
             Manifestation man = (Manifestation) mans .next();

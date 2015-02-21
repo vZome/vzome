@@ -6,17 +6,15 @@ package com.vzome.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.model.Manifestation;
 
 public class Panel {
 	
-	private final AlgebraicField field;
 	private final com.vzome.core.model.Panel manifestation;
 	
-	public Panel( AlgebraicField field, com.vzome.core.model.Panel panel )
+	public Panel( com.vzome.core.model.Panel panel )
 	{
-		this .field = field;
 		this .manifestation = panel;
 	}
 	
@@ -27,14 +25,14 @@ public class Panel {
 
 	public Vector location()
 	{
-		return new Vector( this .field, this .manifestation .getLocation() );
+		return new Vector( this .manifestation .getLocation() );
 	}
 
 	public List<Vector> vertices()
 	{
 		ArrayList<Vector> list = new ArrayList<Vector>();
-		for ( int[] intArray : this .manifestation ) {
-			list .add( new Vector( this .field, intArray ) );
+		for ( AlgebraicVector vertex : this .manifestation ) {
+			list .add( new Vector( vertex ) );
 		}
 		return list;
 	}

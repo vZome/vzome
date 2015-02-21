@@ -4,6 +4,7 @@ package com.vzome.core.commands;
 
 import java.util.Map;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.FreePoint;
@@ -33,7 +34,7 @@ public class CommandFreePoint extends AbstractCommand
             ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();
-        int[] /*AlgebraicVector*/ loc = (int[] /*AlgebraicVector*/) attributes .get( "where" );
+        AlgebraicVector loc = (AlgebraicVector) attributes .get( "where" );
         ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );
         
         Point pt2 = new FreePoint( loc, root );

@@ -8,6 +8,8 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
@@ -76,12 +78,11 @@ public class B4Polytope extends ChangeConstructions
             this.proj = new Projection .Default( field );
         else
         {
-            int[] scale = field .createPower( -5 );
-            this.proj = new QuaternionProjection( field, null, field .scaleVector( symmAxis .getOffset(), scale ) );
+            AlgebraicNumber scale = field .createPower( -5 );
+            this.proj = new QuaternionProjection( field, null, symmAxis .getOffset() .scale( scale ) );
         }
         
-        
-        int[][] edgeScales = new int[4][];
+        AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
         for (int i = 0; i < edgeScales .length; i++)
         {
             edgeScales[ i ] = field .createPower( 0 );
@@ -96,12 +97,10 @@ public class B4Polytope extends ChangeConstructions
     private class WythoffListener implements WythoffConstruction.Listener
     {
         private int numVertices = 0;
-        private final AlgebraicField field;
-        private final int[] scale;
+        private final AlgebraicNumber scale;
         
         public WythoffListener( AlgebraicField field )
         {
-            this.field = field;
             this.scale = field .createPower( 5 );
         }
 
@@ -118,14 +117,14 @@ public class B4Polytope extends ChangeConstructions
             return null;
         }
 
-        public Object addVertex( int[] vertex )
+        public Object addVertex( AlgebraicVector vertex )
         {
-            int[] projected = vertex;
+            AlgebraicVector projected = vertex;
             
             if ( proj != null )
                 projected = proj .projectImage( vertex, true );
             
-            Point p = new FreePoint( field .scaleVector( projected, scale ), root );
+            Point p = new FreePoint( projected .scale( scale ), root );
             p .setIndex( numVertices++ );
             addConstruction( p );
             manifestConstruction( p );

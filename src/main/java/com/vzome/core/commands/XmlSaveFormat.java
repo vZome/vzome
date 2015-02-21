@@ -21,10 +21,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.algebra.RationalMatrices;
-import com.vzome.core.algebra.RationalNumbers;
-import com.vzome.core.algebra.RationalVectors;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
@@ -53,7 +52,7 @@ public class XmlSaveFormat
     
     private transient int mScale;
     
-    private transient int[] mMultiplier;
+    private transient AlgebraicNumber mMultiplier;
     
     private transient String writerVersion; // see initialize()
     
@@ -210,23 +209,23 @@ public class XmlSaveFormat
     
     
     
-    protected int[] /*AlgebraicVector*/ parseAlgebraicVector( Element val, boolean threeD )
+    protected AlgebraicVector parseAlgebraicVector( Element val, boolean threeD )
     {
-        int[] value = null;
+        AlgebraicVector value = null;
         if ( mField instanceof PentagonField )
             value = GoldenField.INSTANCE .parseRationalVector( val );
         else
             value = RootTwoField.INSTANCE .parseRationalVector( val );
         
-        if ( threeD && ! mField .isZero( mField .getVectorComponent( value, RationalMatrices .W4 ) )
+        if ( threeD && ! value .getComponent( AlgebraicVector .W4 ) .isZero()
                 && logger .isLoggable( Level.FINE ) )
-            logger .fine( "stripping non-zero W component from " + RationalNumbers .toString( value ) );
+            logger .fine( "stripping non-zero W component from " + value .toString() );
 //            throw new IllegalStateException( "stripping non-zero W component from " + RationalNumbers .toString( value ) );
         
         if ( mProject4d || threeD )
             value = mField .projectTo3d( value, true );
         if ( mMultiplier != null )
-            value = RationalMatrices .scaleVector( mField, value, mMultiplier );
+            value = value .scale( mMultiplier );
         return value;
     }
     
@@ -244,7 +243,7 @@ public class XmlSaveFormat
             String denoms = val .getAttribute( "denoms" );
             StringTokenizer tokens = new StringTokenizer( nums );
             
-            int[] result = mField .origin( 1 );
+            int[] result = new int[]{ 0,1, 0,1, 0,1, 0,1, 0,1, 0,1 };
             for ( int i = 0; i < mField .getOrder(); i++ )
             {
                 String token = tokens .nextToken();
@@ -263,7 +262,7 @@ public class XmlSaveFormat
                     result[ i * 2 + 1 ] = Integer .parseInt( token );
                 }
             }
-            value = result;
+            value = mField .createVector( result );
         }
         else if ( valName .equals( "GoldenVector" ) )
             value = parseAlgebraicVector( val, true ); // TODO this attribute may need to be 4D for some model files
@@ -283,7 +282,7 @@ public class XmlSaveFormat
             else
                 value = RootTwoField.INSTANCE .parseString( gnum ) .getAlgebraicNumber();
             if ( mMultiplier != null )
-                value = mField .multiply( (int[]) value, mMultiplier );
+                value = ((AlgebraicNumber) value) .times( mMultiplier );
         }
         else if ( valName .equals( "Symmetry" ) ) {
             String name = val .getAttribute( "name" );
@@ -326,19 +325,19 @@ public class XmlSaveFormat
     {
         Construction c = null;
         if ( apName .equals( "point" ) ) {
-            int[] loc = parseAlgebraicVector( attrOrParam, threeD );
+            AlgebraicVector loc = parseAlgebraicVector( attrOrParam, threeD );
             c = new FreePoint( loc, mModelRoot );
         } else if ( apName .equals( "segment" ) ) {
             Element start = DomUtils .getFirstChildElement( attrOrParam, "start" );
             Element end = DomUtils .getFirstChildElement( attrOrParam, "end" );
-            int[] sloc = parseAlgebraicVector( start, threeD );
-            int[] eloc = parseAlgebraicVector( end, threeD );
+            AlgebraicVector sloc = parseAlgebraicVector( start, threeD );
+            AlgebraicVector eloc = parseAlgebraicVector( end, threeD );
             c = new SegmentJoiningPoints( new FreePoint( sloc, mModelRoot ), new FreePoint( eloc, mModelRoot ) );
         } else if ( apName .equals( "polygon" ) ) {
         	NodeList kids = attrOrParam .getElementsByTagName( "vertex" );
             Point[] pts = new Point[ kids .getLength() ];
             for ( int k = 0; k < kids .getLength(); k++ ) {
-                int[] loc = parseAlgebraicVector( (Element) kids .item( k ), threeD );
+                AlgebraicVector loc = parseAlgebraicVector( (Element) kids .item( k ), threeD );
                 pts[ k ] = new FreePoint( loc, mModelRoot );
             }
             c = new PolygonFromVertices( pts );
@@ -429,20 +428,20 @@ public class XmlSaveFormat
         return mScale;
     }
     
-    public static final void serializeNumber( Element xml, String attrName, int[] number )
+    public static final void serializeNumber( Element xml, String attrName, AlgebraicNumber number )
     {
-    	DomUtils .addAttribute( xml, attrName, RationalVectors .toString( number ) );
+    	DomUtils .addAttribute( xml, attrName, number .toString( AlgebraicField .ZOMIC_FORMAT ) );
     }
     
     public static final void serializePoint( Element xml, String attrName, Point point )
     {
-    	DomUtils .addAttribute( xml, attrName, RationalVectors .toString( point .getLocation() ) );
+    	DomUtils .addAttribute( xml, attrName, point .getLocation() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
     }
     
     public static final void serializeSegment( Element xml, String startAttrName, String endAttrName, Segment segment )
     {
-    	DomUtils .addAttribute( xml, startAttrName, RationalVectors .toString( segment .getStart() ) );
-    	DomUtils .addAttribute( xml, endAttrName, RationalVectors .toString( segment .getEnd() ) );
+    	DomUtils .addAttribute( xml, startAttrName, segment .getStart() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
+    	DomUtils .addAttribute( xml, endAttrName, segment .getEnd() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
     }
     
     public static final void serializePolygon( Element xml, String vertexChildName, Polygon polygon )
@@ -463,12 +462,21 @@ public class XmlSaveFormat
         	DomUtils .addAttribute( xml, "sense", "minus" );
     }
 
-    public final int[] parseRationalVector( Element xml, String attrName )
+    public final AlgebraicVector parseRationalVector( Element xml, String attrName )
     {
         String nums = xml .getAttribute( attrName );
         if ( nums == null || nums .isEmpty() )
             return null;
-        int[] loc = RationalNumbers .parseRationalVector( nums );
+        AlgebraicVector loc = mField .parseVector( nums );
+        return loc;
+    }
+
+    public final AlgebraicNumber parseRationalNumber( Element xml, String attrName )
+    {
+        String nums = xml .getAttribute( attrName );
+        if ( nums == null || nums .isEmpty() )
+            return null;
+        AlgebraicNumber loc = mField .parseNumber( nums );
         return loc;
     }
 
@@ -477,7 +485,7 @@ public class XmlSaveFormat
         String nums = xml .getAttribute( attrName );
         if ( nums == null || nums .isEmpty() )
             return null;
-        int[] loc = RationalNumbers .parseRationalVector( nums );
+        AlgebraicVector loc = mField .parseVector( nums );
         return new FreePoint( loc, mModelRoot );
     }
 
@@ -486,9 +494,11 @@ public class XmlSaveFormat
         String nums = xml .getAttribute( endAttrName );
         if ( nums == null || nums .isEmpty() )
             return null;
-        int[] eloc = RationalNumbers .parseRationalVector( nums );
+        AlgebraicVector eloc = mField .parseVector( nums );
         nums = xml .getAttribute( startAttrName );
-        int[] sloc = ( nums == null || nums .isEmpty() )? mField .origin( eloc .length / (2 * mField .getOrder() ) ) : RationalNumbers .parseRationalVector( nums );
+        AlgebraicVector sloc = ( nums == null || nums .isEmpty() )?
+                 mField .origin( eloc .dimension() )
+                : mField .parseVector( nums );
         return new SegmentJoiningPoints( new FreePoint( sloc, mModelRoot ), new FreePoint( eloc, mModelRoot ) );
     }
 
@@ -499,7 +509,7 @@ public class XmlSaveFormat
         for ( int k = 0; k < kids .getLength(); k++ )
         {
             String nums = ((Element) kids .item( k )) .getAttribute( "at" );
-            int[] loc = RationalNumbers .parseRationalVector( nums );
+            AlgebraicVector loc = mField .parseVector( nums );
             pts[ k ] = new FreePoint( loc, mModelRoot );
         }
         return new PolygonFromVertices( pts );
@@ -513,7 +523,7 @@ public class XmlSaveFormat
         for ( int k = 0; k < kids .getLength(); k++ )
         {
             String nums = ((Element) kids .item( k )) .getAttribute( "at" );
-            int[] loc = RationalNumbers .parseRationalVector( nums );
+            AlgebraicVector loc = mField .parseVector( nums );
             pts[ kmax - k ] = new FreePoint( loc, mModelRoot );
         }
         return new PolygonFromVertices( pts );
@@ -543,12 +553,12 @@ public class XmlSaveFormat
         return group .getDirection( aname ) .getAxis( sense, index );
     }
 
-    public int[] parseNumber( Element xml, String attrName )
+    public AlgebraicNumber parseNumber( Element xml, String attrName )
     {
         String nums = xml .getAttribute( attrName );
         if ( nums == null || nums .isEmpty() )
             return null;
-        return RationalNumbers .parseRationalVector( nums );
+        return mField .parseNumber( nums );
     }
 
     

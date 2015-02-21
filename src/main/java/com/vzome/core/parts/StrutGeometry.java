@@ -2,6 +2,7 @@
 
 package com.vzome.core.parts;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 
 /**
@@ -10,5 +11,5 @@ import com.vzome.core.math.Polyhedron;
  */
 public interface StrutGeometry
 {
-    public abstract Polyhedron getStrutPolyhedron( int[] length );
+    public abstract Polyhedron getStrutPolyhedron( AlgebraicNumber length );
 }

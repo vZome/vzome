@@ -2,6 +2,9 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 
 /**
@@ -35,15 +38,15 @@ public class SegmentTauDivision extends Point
     public void accept( Visitor v )
     {}
     
-    final int[] shrink;
+    final AlgebraicNumber shrink;
 
     protected boolean mapParamsToState()
     {
         if ( mSegment .isImpossible() )
             return setStateVariable( null, true );
-        int[] /*AlgebraicVector*/ loc = mSegment .getStart();
-        int[] off = field .scaleVector( mSegment .getOffset(), shrink );
-        loc = field .add( loc, off );
+        AlgebraicVector loc = mSegment .getStart();
+        AlgebraicVector off = mSegment .getOffset() .scale( shrink );
+        loc = loc .plus( off );
         return setStateVariable( loc, false );
     }
     

@@ -3,14 +3,15 @@
 
 package com.vzome.core.editor;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -22,12 +23,12 @@ import com.vzome.core.model.Strut;
 public class SelectSimilarSizeStruts extends ChangeSelection
 {
     private Direction orbit;
-    private int[] length;
+    private AlgebraicNumber length;
     private RealizedModel model;
     private Symmetry symmetry;
     private AlgebraicField field;
 
-    public SelectSimilarSizeStruts( Direction orbit, int[] length,
+    public SelectSimilarSizeStruts( Direction orbit, AlgebraicNumber length,
             Selection selection, RealizedModel model, AlgebraicField field )
     {
         super( selection, false );
@@ -46,13 +47,13 @@ public class SelectSimilarSizeStruts extends ChangeSelection
                 continue;  // hidden!
             if ( man instanceof Strut ) {
                 Strut strut = (Strut) man;
-                int[] offset = strut .getOffset();
+                AlgebraicVector offset = strut .getOffset();
                 Axis zone = symmetry .getAxis( offset );
                 Direction orbit = zone .getOrbit();
                 if ( orbit != this .orbit )
                     continue;
-                int[] length = zone .getLength( offset );
-                if ( Arrays .equals( length, this .length ) )
+                AlgebraicNumber length = zone .getLength( offset );
+                if ( this .length .equals( length ) )
                     select( strut );
             }
         }

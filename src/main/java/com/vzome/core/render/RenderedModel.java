@@ -1,7 +1,6 @@
 package com.vzome.core.render;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,8 +10,9 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalMatrices;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -56,7 +56,7 @@ public class RenderedModel implements ManifestationChanges
 
     public interface OrbitSource
     {
-        Axis getAxis( int[] vector );
+        Axis getAxis( AlgebraicVector vector );
         
         Color getColor( Direction orbit );
 
@@ -83,7 +83,7 @@ public class RenderedModel implements ManifestationChanges
 				return new Color( 128, 123, 128 );
 			}
 			
-			public Axis getAxis( int[] vector )
+			public Axis getAxis( AlgebraicVector vector )
 			{
 				return field .getSymmetries() [0] .getAxis( vector );
 			}
@@ -316,14 +316,14 @@ public class RenderedModel implements ManifestationChanges
             Polyhedron shape = makePanelPolyhedron( panel );
             if ( shape == null )
                 return;
-            int[] /*AlgebraicVector*/ normal = panel .getNormal( field );
-            if ( field .isOrigin( normal ) )
+            AlgebraicVector normal = panel .getNormal( field );
+            if ( normal .isOrigin() )
                 return;
             rm .setShape( shape );  
             if ( justShape )
                 return;
 
-            rm .setOrientation( RationalMatrices .identity( normal .length / 2 ), false );
+            rm .setOrientation( field .identityMatrix( 3 ), false );
             rm .setColorName( Colors .getColorName( Color.WHITE ) );
 
             try {
@@ -335,7 +335,7 @@ public class RenderedModel implements ManifestationChanges
                 Color color = orbitSource .getColor( orbit ) .getPastel();
                 rm .setColorName( Colors .getColorName( color ) );
             } catch ( IllegalStateException e ) {
-                logger .warning( "Unable to set color for panel, normal = " + Arrays .toString( normal ) );
+                logger .warning( "Unable to set color for panel, normal = " + normal .toString() );
             }
         }
         else
@@ -346,8 +346,8 @@ public class RenderedModel implements ManifestationChanges
 
 	protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
 	{
-		int[] /*AlgebraicVector*/ offset = strut .getOffset();
-		if ( RationalVectors .isOrigin( offset ) )
+		AlgebraicVector offset = strut .getOffset();
+		if ( offset .isOrigin() )
 		    return; // should catch this earlier
 		Axis axis = orbitSource .getAxis( offset );
 		if ( axis == null )
@@ -356,7 +356,7 @@ public class RenderedModel implements ManifestationChanges
 		
 		// TODO remove this length computation... see the comment on AbstractShapes.getStrutShape()
 		
-		int[] /*AlgebraicNumber*/ len = axis .getLength( offset );
+		AlgebraicNumber len = axis .getLength( offset );
 		
 		Polyhedron prototypeLengthShape = mPolyhedra .getStrutShape( orbit, len );
 		rm .setShape( prototypeLengthShape );
@@ -382,10 +382,10 @@ public class RenderedModel implements ManifestationChanges
 		rm .setColorName( Colors .getColorName( color ) );
 
 		int orn = axis .getOrientation();
-		int[][] orientation = mPolyhedra .getSymmetry() .getMatrix( orn );
+		AlgebraicMatrix orientation = mPolyhedra .getSymmetry() .getMatrix( orn );
 		boolean mirrored = false;
 		if ( axis .getSense() == Symmetry .MINUS ) {
-		    orientation = RationalMatrices .negate( orientation  );
+		    orientation = orientation .negate();
 		    mirrored = true;
 		}
 		rm .setStrut( orbit, orn, len );
@@ -399,7 +399,7 @@ public class RenderedModel implements ManifestationChanges
 		if ( justShape )
 		    return;
 		rm .setColorName( Colors .CONNECTOR );
-		rm .setOrientation( RationalMatrices .identity( m .getLocation() .length / 2 ), false );
+		rm .setOrientation( field .identityMatrix( 3 ), false );
 	}
 
     private Polyhedron makePanelPolyhedron( Panel panel )
@@ -408,7 +408,7 @@ public class RenderedModel implements ManifestationChanges
         Iterator vertices = panel .getVertices();
         int arity = 0;
         while ( vertices .hasNext() ) {
-            int[] /*AlgebraicVector*/ gv = (int[] /*AlgebraicVector*/) vertices .next();
+            AlgebraicVector gv = (AlgebraicVector) vertices .next();
             arity++;
             poly .addVertex( gv );            
         }

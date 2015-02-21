@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 
 public class ZomeCADImporter
@@ -68,19 +70,19 @@ public class ZomeCADImporter
         
         void beginEdit();
         
-        void addBall( int[] /*AlgebraicVector*/ location );
+        void addBall( AlgebraicVector location );
         
-        void removeBall( int[] /*AlgebraicVector*/ location );
+        void removeBall( AlgebraicVector location );
         
-        void addStrut( int[] /*AlgebraicVector*/ location, int orbit, int zone, int size );
+        void addStrut( AlgebraicVector location, int orbit, int zone, int size );
         
-        void removeStrut( int[] /*AlgebraicVector*/ location, int orbit, int zone, int size );
+        void removeStrut( AlgebraicVector location, int orbit, int zone, int size );
         
-        void tesselate( int[] /*AlgebraicVector*/ from, int[] /*AlgebraicVector*/ to, boolean add );
+        void tesselate( AlgebraicVector from, AlgebraicVector to, boolean add );
         
-        void reflect( int[] /*AlgebraicVector*/ center, int zone, boolean add );
+        void reflect( AlgebraicVector center, int zone, boolean add );
         
-        void rotate( int[] /*AlgebraicVector*/ center, int orbit, int zone, boolean add );
+        void rotate( AlgebraicVector center, int orbit, int zone, boolean add );
         
         void unknown( int type, int[] params );
         
@@ -114,7 +116,7 @@ public class ZomeCADImporter
         data = new DataInputStream( bytes );
         this.events = events;
         this.field = field;
-        SCALE = ((float) field .evaluateNumber( field .createPower( 3 ) ) / 37.21721f) * 0.5f;
+        SCALE = ((float) field .createPower( 3 ) .evaluate() / 37.21721f) * 0.5f;
     }
 
     private void parseStreamInternal() throws IOException
@@ -131,7 +133,8 @@ public class ZomeCADImporter
             long packetSize = readLong() - 6;
             int packetType = readInt();
             float x = 0, y = 0, z = 0;
-            int[] /*AlgebraicVector*/ start = null, end = null;
+            AlgebraicVector start = null;
+            AlgebraicVector end = null;
             int orbit = 0, zone = 0, size = 0;
 
             // --------- 1. the orbit is encoded in the packet type
@@ -330,33 +333,33 @@ public class ZomeCADImporter
 
     private static final float EPSILON = 0.001f;
 
-    public int[] inferVector( float x, float y, float z )
+    public AlgebraicVector inferVector( float x, float y, float z )
     {
-        int[] result = new int[ 12 ];
-        field .setVectorComponent( result, 0, inferNumber( x ) );
-        field .setVectorComponent( result, 1, inferNumber( y ) );
-        field .setVectorComponent( result, 2, inferNumber( z ) );
+        AlgebraicVector result = field .origin( 3 );
+        result .setComponent( 0, inferNumber( x ) );
+        result .setComponent( 1, inferNumber( y ) );
+        result .setComponent( 2, inferNumber( z ) );
         return result;
     }
     
-    public int[] inferNumber( float value )
+    public AlgebraicNumber inferNumber( float value )
     {
         if ( value - 0f < EPSILON )
-            return new int[]{ 0,1,0,1 };
+            return this .field .zero();
 
-        int[] result = null;
+        AlgebraicNumber result = null;
         boolean negate = value < 0f;
         value = Math .abs( value );
         if ( Math .abs( value - 1f ) < EPSILON )
-            result = new int[]{ 1,1,0,1 };
+            result = this .field .one();
         else if ( Math .abs( value - 0.5f ) < EPSILON )
-            result = new int[]{ 1,2,0,1 };
+            result = this .field .createRational( new int[]{ 1, 2 } );
         else {
             int sign = Float .compare( value, 1f );
             for ( int i = 1; i < 13; i++ )
             {
-                int[] candidate = field .createPower( sign * i );
-                double real = field .evaluateNumber( candidate );
+                AlgebraicNumber candidate = field .createPower( sign * i );
+                double real = candidate .evaluate();
                 if ( Math .abs( value - real ) < EPSILON )
                 {
                     result = candidate;
@@ -373,9 +376,9 @@ public class ZomeCADImporter
             int sign = Float .compare( value, 0.5f );
             for ( int i = 1; i < 13; i++ )
             {
-                int[] candidate = field .createPower( sign * i );
-                candidate = field .multiply( candidate, field .createRational( new int[]{ 1,2 } ) );
-                double real = field .evaluateNumber( candidate );
+                AlgebraicNumber candidate = field .createPower( sign * i );
+                candidate = candidate .times( field .createRational( new int[]{ 1,2 } ) );
+                double real = candidate .evaluate();
                 if ( Math .abs( value - real ) < EPSILON )
                 {
                     result = candidate;
@@ -392,9 +395,9 @@ public class ZomeCADImporter
             int sign = Float .compare( value, 0.25f );
             for ( int i = 1; i < 13; i++ )
             {
-                int[] candidate = field .createPower( sign * i );
-                candidate = field .multiply( candidate, field .createRational( new int[]{ 1,4 } ) );
-                double real = field .evaluateNumber( candidate );
+                AlgebraicNumber candidate = field .createPower( sign * i );
+                candidate = candidate .times( field .createRational( new int[]{ 1,4 } ) );
+                double real = candidate .evaluate();
                 if ( Math .abs( value - real ) < EPSILON )
                 {
                     result = candidate;
@@ -407,7 +410,7 @@ public class ZomeCADImporter
             }
         }
         if ( negate & (result != null) )
-            return field .negate( result );
+            return result .negate();
 
         return result;
     }
@@ -456,7 +459,7 @@ public class ZomeCADImporter
                 out = new PrintWriter( new FileOutputStream( string ) );
         }
 
-        public void addBall( int[] /*AlgebraicVector*/ location )
+        public void addBall( AlgebraicVector location )
         {
             out .println( "  add ball  " + location );
             out .flush();
@@ -484,7 +487,7 @@ public class ZomeCADImporter
             return color + "  " + Integer .toString( zone );
         }
 
-        public void addStrut( int[] /*AlgebraicVector*/ location, int orbit, int zone, int size )
+        public void addStrut( AlgebraicVector location, int orbit, int zone, int size )
         {
             out .println( "  add strut  " + location + "  " + zone( orbit, zone ) + "  " + size );
             out .flush();
@@ -511,33 +514,33 @@ public class ZomeCADImporter
             out .flush();
         }
 
-        public void reflect( int[] /*AlgebraicVector*/ center, int zone, boolean add )
+        public void reflect( AlgebraicVector center, int zone, boolean add )
         {
             out .println( "  reflect  " + zone( 99, zone ) + "  " + (add?"union":"intersection") );
             out .flush();
         }
 
-        public void removeBall( int[] /*AlgebraicVector*/ location )
+        public void removeBall( AlgebraicVector location )
         {
             out .println( "remove ball  " + location );
             out .flush();
         }
 
-        public void removeStrut( int[] /*AlgebraicVector*/ location, int orbit, int zone,
+        public void removeStrut( AlgebraicVector location, int orbit, int zone,
                 int size )
         {
             out .println( "  remove strut  " + location + "  " + zone( orbit, zone ) + "  " + size );
             out .flush();
         }
 
-        public void rotate( int[] /*AlgebraicVector*/ center, int orbit, int zone,
+        public void rotate( AlgebraicVector center, int orbit, int zone,
                 boolean add )
         {
             out .println( "  rotate  " + zone( orbit, zone ) + "  " + (add?"union":"intersection") );
             out .flush();
         }
 
-        public void tesselate( int[] /*AlgebraicVector*/ from, int[] /*AlgebraicVector*/ to, boolean add )
+        public void tesselate( AlgebraicVector from, AlgebraicVector to, boolean add )
         {
             out .println( "  tesselate  " + from + " -> " + to + "  " + (add?"union":"intersection") );
             out .flush();

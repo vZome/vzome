@@ -2,6 +2,7 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
 
 
@@ -41,9 +42,9 @@ public class PolygonRotated4D extends Polygon
     {
         if (  mPrototype .isImpossible() )
             return setStateVariable( null, true );
-        int[] /*AlgebraicVector*/[] vertices = mPrototype .getVertices();
+        AlgebraicVector[] vertices = mPrototype .getVertices();
         for ( int i = 0; i < vertices.length; i++ ) {
-            int[] /*AlgebraicVector*/ loc = mRightQuaternion .leftMultiply( vertices[i] );
+            AlgebraicVector loc = mRightQuaternion .leftMultiply( vertices[i] );
             loc = mLeftQuaternion .rightMultiply( loc );
             vertices[i] = field .projectTo3d( loc, true );
         }

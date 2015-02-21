@@ -13,6 +13,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Color;
@@ -76,7 +78,7 @@ public class JsonExporter extends Exporter3d
                 shapes[ flip?1:0 ] .put( shape, shapeNum );
                 exportShape( shapeNum, shape, flip );
             }
-            int[][] transform = rm .getOrientation();
+            AlgebraicMatrix transform = rm .getOrientation();
             Integer transformNum = (transform==null)? new Integer(0) : (Integer) transforms .get( transform );
             if ( transformNum == null ){
                 if ( numTransforms > 0 )
@@ -121,16 +123,16 @@ public class JsonExporter extends Exporter3d
 	}
 
 
-    private void exportTransform( Integer num, int[][] transform, StringBuffer buf )
+    private void exportTransform( Integer num, AlgebraicMatrix transform, StringBuffer buf )
     {
         AlgebraicField field = mModel .getField();
         // Now we generate the transpose of the transform matrix... I don't recall why.
         //  Perhaps something to do with POV-Ray's left-handed coordinate system.
         for ( int i = 0; i < 3; i++ )
         {
-            int[] columnSelect = field .basisVector( 3, i );
-            int[] columnI = field .transform( transform, columnSelect );
-            RealVector colRV = field .getRealVector( columnI );
+            AlgebraicVector columnSelect = field .basisVector( 3, i );
+            AlgebraicVector columnI = transform .timesColumn( columnSelect );
+            RealVector colRV = columnI .toRealVector();
             if ( i > 0 )
                 buf .append( ", " );
             buf .append( FORMAT .format( colRV.x ) );
@@ -161,14 +163,14 @@ public class JsonExporter extends Exporter3d
             int arity = face .size();
 
             Integer index = (Integer) face .get( reverseFaces? arity-1 : 0 );
-            int[] /*AlgebraicVector*/ gv = (int[]) faceVertices .get( index .intValue() );
-            RealVector vert0 = field .getRealVector( gv );
+            AlgebraicVector gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+            RealVector vert0 = gv .toRealVector();
             index = (Integer) face .get( reverseFaces? arity-2 : 1 );
-            gv = (int[]) faceVertices .get( index .intValue() );
-            RealVector vert1 = field .getRealVector( gv );
+            gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+            RealVector vert1 = gv .toRealVector( );
             index = (Integer) face .get( reverseFaces? arity-3 : 2 );
-            gv = (int[]) faceVertices .get( index .intValue() );
-            RealVector vert2 = field .getRealVector( gv );
+            gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+            RealVector vert2 = gv .toRealVector( );
             RealVector edge1 = vert1 .minus( vert0 );
             RealVector edge2 = vert2 .minus( vert1 );
             RealVector norm = edge1 .cross( edge2 ) .normalize();
@@ -176,8 +178,8 @@ public class JsonExporter extends Exporter3d
             int v0 = -1, v1 = -1;
             for ( int j = 0; j < arity; j++ ){
                 index = (Integer) face .get( reverseFaces? arity-j-1 : j );
-                gv = (int[]) faceVertices .get( index .intValue() );
-                RealVector vertex = field .getRealVector( gv );
+                gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                RealVector vertex = gv .toRealVector( );
 
                 if ( v0 == -1 )
                     v0 = vertexCount;

@@ -2,10 +2,9 @@
 
 package com.vzome.core.construction;
 
-import java.util.Arrays;
-
-import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalMatrices;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 
 
 
@@ -17,7 +16,7 @@ public class ChangeOfBasis extends Transformation
     // parameters
     private final Segment[] mOld, mNew;
     private final Point mKernel;
-    private final int[] scale;
+    private final AlgebraicNumber scale;
 
     /**
      * This assumes that the starting basis is the usual X,Y,Z basis
@@ -33,7 +32,7 @@ public class ChangeOfBasis extends Transformation
         if ( originalScaling )
             this .scale = field .createPower( -5 );
         else
-            this .scale = field .multiply( field .createRational( new int[]{ 1,2 } ), field .createPower( -3 ) );
+            this .scale = field .createRational( new int[]{ 1,2 } ) .times( field .createPower( -3 ) );
         mapParamsToState();
     }
 
@@ -43,7 +42,7 @@ public class ChangeOfBasis extends Transformation
         mOld = oldBasis;
         mNew = newBasis;
         mKernel = kernel;
-        this .scale = field .multiply( field .createRational( new int[]{ 2,1 } ), field .createPower( -7 ) );
+        this .scale = field .createRational( new int[]{ 2,1 } ) .times( field .createPower( -7 ) );
         mapParamsToState();
     }
 
@@ -80,64 +79,59 @@ public class ChangeOfBasis extends Transformation
         if ( 3d == Math.PI /* TODO test orthogonality */ )
             setStateVariables( null, null, true );
 
-        int[] /*AlgebraicVector*/ loc = mKernel .getLocation();
+        AlgebraicVector loc = mKernel .getLocation();
         
         if ( mOld != null ) // new, six-segment form
         {
             // first, find the common vertex of each basis
-            int[] oldCommon = findCommonVertex( mOld );
+            AlgebraicVector oldCommon = findCommonVertex( mOld );
             // now, orient each offset
-            int[][] offsets = new int[3][];
+            AlgebraicVector[] offsets = new AlgebraicVector[3];
             for ( int i = 0; i < offsets.length; i++ ) {
-                offsets[ i ] = field .scaleVector( mOld[ i ] .getOffset(), scale );
-                if ( Arrays .equals( oldCommon, mOld[ i ] .getEnd() ) )
-                    offsets[ i ] = field .negate( offsets[ i ] );
+                offsets[ i ] = mOld[ i ] .getOffset() .scale( scale );
+                if ( oldCommon .equals( mOld[ i ] .getEnd() ) )
+                    offsets[ i ] = offsets[ i ] .negate();
             }
-            int[][] oldMatrix = field .createMatrix( offsets );
+            AlgebraicMatrix oldMatrix = new AlgebraicMatrix( offsets );
 
-            int[] newCommon = findCommonVertex( mNew );
+            AlgebraicVector newCommon = findCommonVertex( mNew );
             for ( int i = 0; i < offsets.length; i++ ) {
-                offsets[ i ] = field .scaleVector( mNew[ i ] .getOffset(), scale );
-                if ( Arrays .equals( newCommon, mNew[ i ] .getEnd() ) )
-                    offsets[ i ] = field .negate( offsets[ i ] );
+                offsets[ i ] = mNew[ i ] .getOffset() .scale( scale );
+                if ( newCommon .equals( mNew[ i ] .getEnd() ) )
+                    offsets[ i ] = offsets[ i ] .negate();
             }
-            int[][] transform = field .createMatrix( offsets );
+            AlgebraicMatrix transform = new AlgebraicMatrix( offsets );
 
-            RationalMatrices .gaussJordanReduction( oldMatrix, transform );
-            // now transform has the transition matrix, and oldMatrix is the identity
-            for ( int i = 0; i < oldMatrix.length; i++ ) {
-                StringBuffer buf = new StringBuffer();
-                field .getVectorExpression( buf, oldMatrix[ i ], AlgebraicField.DEFAULT_FORMAT );
-                System .out .println( buf );
-            }
-            for ( int i = 0; i < transform.length; i++ ) {
-                StringBuffer buf = new StringBuffer();
-                field .getVectorExpression( buf, transform[ i ], AlgebraicField.DEFAULT_FORMAT );
-                System .out .println( buf );
-            }
+            // TODO
+//            transform = oldMatrix .gaussJordanReduction( transform );
+            if ( 1 != 0 )
+                throw new IllegalStateException( "six-vector change-of-basis is not working right now" );
+            
+            // now transform has the transition matrix
+            System .out .println( transform .toString() );
             return setStateVariables( transform, loc, false );
         }
         else
         {
-            int[][] transform = field .createMatrix( new int[][]{
-                    field .scaleVector( mNew[0] .getOffset(), scale ),
-                    field .scaleVector( mNew[1] .getOffset(), scale ),
-                    field .scaleVector( mNew[2] .getOffset(), scale ) } );
+            AlgebraicMatrix transform = new AlgebraicMatrix(
+                    mNew[0] .getOffset() .scale( scale ),
+                    mNew[1] .getOffset() .scale( scale ),
+                    mNew[2] .getOffset() .scale( scale ) );
             return setStateVariables( transform, loc, false );
         }
     }
     
-    private static int[] findCommonVertex( Segment[] basis )
+    private static AlgebraicVector findCommonVertex( Segment[] basis )
     {
-        int[] common = basis[0] .getStart();
-        if ( Arrays.equals( common, basis[1] .getStart() )
-        ||   Arrays.equals( common, basis[1] .getEnd() ) )
+        AlgebraicVector common = basis[0] .getStart();
+        if ( common .equals( basis[1] .getStart() )
+        ||   common .equals( basis[1] .getEnd() ) )
             return common;
         else
         {
             common = basis[0] .getEnd();
-            if ( Arrays.equals( common, basis[1] .getStart() )
-            ||   Arrays.equals( common, basis[1] .getEnd() ) )
+            if ( common .equals( basis[1] .getStart() )
+            ||   common .equals( basis[1] .getEnd() ) )
                 return common;
             else
                 return null;

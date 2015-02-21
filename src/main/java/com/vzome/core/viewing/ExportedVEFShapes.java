@@ -18,7 +18,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
@@ -156,7 +157,7 @@ public class ExportedVEFShapes extends AbstractShapes
         
         private List faces = new ArrayList();
         
-        public StrutGeometry getStrutGeometry( int[] prototype )
+        public StrutGeometry getStrutGeometry( AlgebraicVector prototype )
         {
             return new ExportedVEFStrutGeometry( vertices, faces, prototype, stretchVertexIndices, mSymmetry .getField() );
         }
@@ -166,7 +167,7 @@ public class ExportedVEFShapes extends AbstractShapes
             Polyhedron result = new Polyhedron( mSymmetry .getField() );
             for ( int i = 0; i < vertices .size(); i ++ )
             {
-                int[] vertex = (int[]) vertices .get( i );
+                AlgebraicVector vertex = (AlgebraicVector) vertices .get( i );
                 result .addVertex( vertex );
             }
             for ( int j = 0; j < faces .size(); j ++ )
@@ -189,9 +190,9 @@ public class ExportedVEFShapes extends AbstractShapes
             faces .add( face );
         }
 
-        protected void addVertex( int index, int[] location )
+        protected void addVertex( int index, AlgebraicVector location )
         {
-            int[] vertex = mSymmetry .getField() .projectTo3d( location, wFirst() );
+            AlgebraicVector vertex = mSymmetry .getField() .projectTo3d( location, wFirst() );
             vertices .add( vertex );
         }
 
@@ -220,9 +221,7 @@ public class ExportedVEFShapes extends AbstractShapes
                 throw new RuntimeException( "VEF format error: strut tip vertex index (\"" + token + "\") must be an integer", e );
             }
             
-            AlgebraicField field = mSymmetry .getField();
-            
-            int[] tipVertex = (int[]) vertices .get( tipIndex );
+            AlgebraicVector tipVertex = (AlgebraicVector) vertices .get( tipIndex );
 
             // next, get the arbitrary axis that the strut model lies along
             Axis tipAxis = mSymmetry .getAxis( tipVertex );
@@ -231,18 +230,18 @@ public class ExportedVEFShapes extends AbstractShapes
             // find the orientation index, and invert it...
             int orientation = mSymmetry .inverse( tipAxis .getOrientation() );
             // ... so we can get the inverse matrix without recomputing it
-            int[][] adjustment = mSymmetry .getMatrix( orientation );
+            AlgebraicMatrix adjustment = mSymmetry .getMatrix( orientation );
             
             // now, adjust the vertex data
             List newVertices = new ArrayList();
             for ( int i = 0; i < vertices .size(); i++ )
             {
-                int[] originalVertex = (int[]) vertices .get( i );
+                AlgebraicVector originalVertex = (AlgebraicVector) vertices .get( i );
                 // first, subtract the tipVertex if appropriate
                 if ( stretchVertexIndices .contains( new Integer( i ) ) )
-                    originalVertex = field .subtract( originalVertex, tipVertex );
+                    originalVertex = originalVertex .minus( tipVertex );
                 // then, rotate to align with the 0-index zone for this orbit
-                int[] adjustedVertex = field .transform( adjustment, originalVertex );
+                AlgebraicVector adjustedVertex = adjustment .timesColumn( originalVertex );
                 newVertices .add( adjustedVertex );
             }
             vertices = newVertices;

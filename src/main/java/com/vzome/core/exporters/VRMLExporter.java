@@ -11,8 +11,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.algebra.RationalVectors;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Color;
@@ -32,13 +34,13 @@ public class VRMLExporter extends Exporter3d{
 	
 	private static final PentagonField FIELD = new PentagonField();
 
-    private static final int[] MODEL_BALL_RADIUS = FIELD .createAlgebraicNumber( 6, 10, 1, 0 );
+    private static final AlgebraicNumber MODEL_BALL_RADIUS = FIELD .createAlgebraicNumber( 6, 10, 1, 0 );
     /**
      * This scale factor is appropriate for making true-to-scale VRML renderings of strut models built
      *   in vZome with a model ball radius (blue) of one long blue strut.  In other terms, the edges of the
      *   ball model are short and medium blue struts.
      */
-    private static final double SCALE = 0.350d / FIELD .evaluateNumber( MODEL_BALL_RADIUS );
+    private static final double SCALE = 0.350d / MODEL_BALL_RADIUS .evaluate();
 
     public VRMLExporter( ViewModel scene, Colors colors, Lights lights, RenderedModel model )
     {
@@ -101,7 +103,7 @@ public class VRMLExporter extends Exporter3d{
                 shapes[ flip?1:0 ] .put( shape, shapeName );
                 exportShape( shapeName, shape, flip );
             }
-            int[][] transform = rm .getOrientation();
+            AlgebraicMatrix transform = rm .getOrientation();
             
             // note... this code still does not work for half of the black directions... uncomment next two statements?
             // Seems wrong, would give an improper rotation (determinant = -1)
@@ -110,9 +112,9 @@ public class VRMLExporter extends Exporter3d{
 //                transform = transform .neg();
             
             // TODO this is a pretty clumsy way to get the rows of the matrix out
-            RealVector mx = field .getRealVector( field .transform( field .basisVector( 3, RationalVectors.X ), transform ) );
-            RealVector my = field .getRealVector( field .transform( field .basisVector( 3, RationalVectors.Y ), transform ) );
-            RealVector mz = field .getRealVector( field .transform( field .basisVector( 3, RationalVectors.Z ), transform ) );
+            RealVector mx = transform .timesRow( field .basisVector( 3, AlgebraicVector.X ) ) .toRealVector();
+            RealVector my = transform .timesRow( field .basisVector( 3, AlgebraicVector.Y ) ) .toRealVector();
+            RealVector mz = transform .timesRow( field .basisVector( 3, AlgebraicVector.Z ) ) .toRealVector();
             
             // All this was first from Java3d's AxisAngle4f and Matrix3f, but that proved to be
             // inadequate, not handling rotation of Pi radians.
@@ -164,12 +166,11 @@ public class VRMLExporter extends Exporter3d{
         output .println( "PROTO " + shapeName + " [] { IndexedFaceSet{ solid FALSE convex FALSE colorPerVertex FALSE" );
         output .println( "   coord Coordinate{ point [" );
         
-        AlgebraicField field = poly .getField();;
         for ( Iterator vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
-            int[] /*AlgebraicVector*/ gv = (int[] /*AlgebraicVector*/) vertices .next();
+            AlgebraicVector gv = (AlgebraicVector) vertices .next();
             if ( reverseFaces )
-                gv = field .negate( gv  );
-            RealVector v = field .getRealVector( gv );
+                gv = gv  .negate();
+            RealVector v = gv .toRealVector();
             output .println( v .scale( SCALE ) .spacedString() + "," );
         }
         output .println( "] } coordIndex [" );

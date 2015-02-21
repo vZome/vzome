@@ -2,7 +2,8 @@
 
 package com.vzome.core.construction;
 
-import java.util.Arrays;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 
 
 public class LineLineIntersectionPoint extends Point
@@ -59,27 +60,27 @@ public class LineLineIntersectionPoint extends Point
 //        if ( line1 .isImpossible() || line2 .isImpossible() )
 //            return setStateVariable( null, true );
 //        
-//        int[] /*AlgebraicVector*/ o1 = line1 .getStart();
-//        int[] /*AlgebraicVector*/ d1 = line1 .getDirection();
-//        int[] /*AlgebraicVector*/ o2 = line2 .getStart();
-//        int[] /*AlgebraicVector*/ d2 = line2 .getDirection();
-//        int[] /*AlgebraicVector*/ o2_o1 = o2 .minus( o1 );
+//        AlgebraicVector o1 = line1 .getStart();
+//        AlgebraicVector d1 = line1 .getDirection();
+//        AlgebraicVector o2 = line2 .getStart();
+//        AlgebraicVector d2 = line2 .getDirection();
+//        AlgebraicVector o2_o1 = o2 .minus( o1 );
 //        
-//        int[] /*AlgebraicVector*/ d1xd2 = d1 .cross( d2 );
+//        AlgebraicVector d1xd2 = d1 .cross( d2 );
 //        
 //        IntegralNumber denom = d1xd2 .dot( d1xd2 );
 //        if ( denom .isZero() )
 //            return setStateVariable( null, true );
 //
 //        IntegralNumberField field = (IntegralNumberField) o1 .getFactory();
-//        int[] /*AlgebraicVector*/ w = field .getAxis( GoldenVector .W_AXIS );
+//        AlgebraicVector w = field .getAxis( GoldenVector .W_AXIS );
 //        GoldenMatrix m = field .createGoldenMatrix( o2_o1, d2, d1xd2, w );
 //        IntegralNumber t1 = m .determinant() .div( denom );
 //        m = field .createGoldenMatrix( o2_o1, d1, d1xd2, w );
 //        IntegralNumber t2 = m .determinant() .div( denom );
 //
-//        int[] /*AlgebraicVector*/ p1 = o1 .plus( d1 .times( t1 ) );
-//        int[] /*AlgebraicVector*/ p2 = o2 .plus( d2 .times( t2 ) );
+//        AlgebraicVector p1 = o1 .plus( d1 .times( t1 ) );
+//        AlgebraicVector p2 = o2 .plus( d2 .times( t2 ) );
 //        if ( ! p1 .equals( p2 ) )
 //            return setStateVariable( null, true );
 //        
@@ -147,44 +148,44 @@ public class LineLineIntersectionPoint extends Point
 //    */
     protected boolean mapParamsToState()
     {
-        int[] /*AlgebraicVector*/ p1 = line1 .getStart();
-        int[] /*AlgebraicVector*/ p21 = line1 .getDirection();
-        int[] /*AlgebraicVector*/ p3 = line2 .getStart();
-        int[] /*AlgebraicVector*/ p43 = line2 .getDirection();
+        AlgebraicVector p1 = line1 .getStart();
+        AlgebraicVector p21 = line1 .getDirection();
+        AlgebraicVector p3 = line2 .getStart();
+        AlgebraicVector p43 = line2 .getDirection();
         
         // check the degenerate cases, avoid the expensive and ill-conditioned computation
-        if ( Arrays .equals( p1, p3 ) )
+        if ( p1 .equals( p3 ) )
             return setStateVariable( p1, false );
-        int[] p2 = field .add( p1, p21 );
-        if ( Arrays .equals( p2, p3 ) )
+        AlgebraicVector p2 = p1 .plus( p21 );
+        if ( p2 .equals( p3 ) )
             return setStateVariable( p2, false );
-        int[] p4 = field .add( p3, p43 );
-        if ( Arrays .equals( p1, p4 ) )
+        AlgebraicVector p4 = p3 .plus( p43 );
+        if ( p1 .equals( p4 ) )
             return setStateVariable( p1, false );
-        if ( Arrays .equals( p2, p4 ) )
+        if ( p2 .equals( p4 ) )
             return setStateVariable( p2, false );
         
-        int[] /*AlgebraicVector*/ p13 = field .subtract( p1, p3 );
+        AlgebraicVector p13 = p1 .minus( p3 );
 
-        int[] /*AlgebraicNumber*/ d1343 = field .dot( p13, p43 );
-        int[] /*AlgebraicNumber*/ d4321 = field .dot( p43, p21 );
-        int[] /*AlgebraicNumber*/ d1321 = field .dot( p13, p21 );
-        int[] /*AlgebraicNumber*/ d4343 = field .dot( p43, p43 );
-        int[] /*AlgebraicNumber*/ d2121 = field .dot( p21, p21 );
+        AlgebraicNumber d1343 = p13 .dot( p43 );
+        AlgebraicNumber d4321 = p43 .dot( p21 );
+        AlgebraicNumber d1321 = p13 .dot( p21 );
+        AlgebraicNumber d4343 = p43 .dot( p43 );
+        AlgebraicNumber d2121 = p21 .dot( p21 );
         
-        int[] /*AlgebraicNumber*/ denom = field .subtract( field .multiply( d2121, d4343 ), field .multiply( d4321, d4321 ) );
-        if ( field .isZero( denom ) )
+        AlgebraicNumber denom = d2121 .times( d4343 ) .minus( d4321 .times( d4321 ) );
+        if ( denom .isZero() )
             return setStateVariable( null, true );
 
-        int[] /*AlgebraicNumber*/ numer = field .subtract( field .multiply( d1343, d4321 ), field .multiply( d1321, d4343 ) );
+        AlgebraicNumber numer = d1343 .times( d4321 ) .minus( d1321 .times( d4343 ) );
         
-        int[] /*AlgebraicNumber*/ mua = field .divide( numer, denom );
-        int[] /*AlgebraicNumber*/ mub = field .divide( field .add( d1343, field .multiply( d4321, mua ) ), d4343 );
+        AlgebraicNumber mua = numer .dividedBy( denom );
+        AlgebraicNumber mub = d1343 .plus( d4321 .times( mua ) ) .dividedBy( d4343 );
 
-        int[] /*AlgebraicVector*/ pa = field .add( p1, field .scaleVector( p21, mua ) );
-        int[] /*AlgebraicVector*/ pb = field .add( p3, field .scaleVector( p43, mub ) );
+        AlgebraicVector pa = p1 .plus( p21 .scale( mua ) );
+        AlgebraicVector pb = p3 .plus( p43 .scale( mub ) );
 
-        if ( ! Arrays .equals( pa, pb ) )
+        if ( ! pa .equals( pb ) )
             return setStateVariable( null, true );
         
         return setStateVariable( pb, false );
@@ -193,10 +194,10 @@ public class LineLineIntersectionPoint extends Point
     // now, a version using Geometric Algebra
 //    protected boolean mapParamsToStateGA()
 //    {
-//        int[] /*AlgebraicVector*/ p1 = line1 .getStart();
-//        int[] /*AlgebraicVector*/ p21 = line1 .getDirection();
-//        int[] /*AlgebraicVector*/ p3 = line2 .getStart();
-//        int[] /*AlgebraicVector*/ p43 = line2 .getDirection();
+//        AlgebraicVector p1 = line1 .getStart();
+//        AlgebraicVector p21 = line1 .getDirection();
+//        AlgebraicVector p3 = line2 .getStart();
+//        AlgebraicVector p43 = line2 .getDirection();
 //        
 //        AlgebraicField field = line1 .getField();
 //        BladeListMultivector pt1 = BladeListMultivector .newProjectivePoint3D( p1, field );

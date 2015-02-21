@@ -4,6 +4,7 @@ package com.vzome.core.commands;
 
 import java.util.Map;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -30,7 +31,7 @@ public class CommandRotate extends CommandSymmetry
         final Construction[] params = parameters .getConstructions();
         final ConstructionList output = new ConstructionList();
 
-        int[] vector = norm .getOffset();
+        AlgebraicVector vector = norm .getOffset();
         vector = norm .getField() .projectTo3d( vector, true );
         Axis axis = mSymmetry .getAxis( vector );
         int rotation = axis .getRotation();

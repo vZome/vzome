@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 
 /**
@@ -48,8 +50,8 @@ public class SegmentJoiningPoints extends Segment
     {
         if ( mStart .isImpossible() || mEnd .isImpossible() )
             return setStateVariables( null, null, true );
-        int[] gv = mStart .getLocation();
-        int[] offset = field .subtract( mEnd .getLocation(), gv );
+        AlgebraicVector gv = mStart .getLocation();
+        AlgebraicVector offset = mEnd .getLocation() .minus( gv );
         return setStateVariables( gv, offset, false );
     }
 

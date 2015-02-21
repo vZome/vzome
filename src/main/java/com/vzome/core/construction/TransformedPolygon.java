@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 /**
  * @author Scott Vorthmann
@@ -38,8 +40,8 @@ public class TransformedPolygon extends Polygon
         // TODO implement impossibility
 //      if ( mStart .isImpossible() || mEnd .isImpossible() )
 //          return setStateVariables( null, null, true );
-        int[] /*AlgebraicVector*/ [] protoLocs = mPrototype .getVertices();
-        int[] /*AlgebraicVector*/ [] locs = new int[ protoLocs .length ][];
+        AlgebraicVector [] protoLocs = mPrototype .getVertices();
+        AlgebraicVector [] locs = new AlgebraicVector[ protoLocs .length ];
         for ( int i = 0; i < locs .length; i++ )
             locs[ i ] = mTransform .transform( protoLocs[ i ] );
         return setStateVariable( locs, false );

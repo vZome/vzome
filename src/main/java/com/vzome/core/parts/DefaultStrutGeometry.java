@@ -6,7 +6,8 @@ package com.vzome.core.parts;
 import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -18,7 +19,7 @@ import com.vzome.core.math.symmetry.Symmetry;
  */
 public class DefaultStrutGeometry implements StrutGeometry
 {
-    private final int[]/*AlgebraicVector*/[] mCorners = new int[4]/*AlgebraicVector*/[];
+    private final AlgebraicVector[] mCorners = new AlgebraicVector[4];
     
     private final Axis mAxis;
     
@@ -26,46 +27,46 @@ public class DefaultStrutGeometry implements StrutGeometry
     {
         AlgebraicField field = dir .getSymmetry() .getField();
         mAxis = dir .getAxis( Symmetry.PLUS, 0 );
-        final int[]/*AlgebraicVector*/ normal = mAxis .normal();
-        int[]/*AlgebraicVector*/ unitNormal = unitVector( field, normal );
+        final AlgebraicVector normal = mAxis .normal();
+        AlgebraicVector unitNormal = unitVector( field, normal );
 
         // now find the direction most orthogonal to unitNormal, call it x
         Symmetry symm = dir .getSymmetry();
-        int[] /*AlgebraicVector*/ x = unitVector( field, field .basisVector( 3, RationalVectors.Z ) );  // just a default
+        AlgebraicVector x = unitVector( field, field .basisVector( 3, AlgebraicVector.Z ) );  // just a default
         double minDot = 99d;
         for ( Iterator orbits = symm .getDirections(); orbits .hasNext(); )
         {
             dir = (Direction) orbits .next();
             for ( Iterator blues = dir .getAxes(); blues .hasNext(); ) {
                 Axis ortho = (Axis) blues .next();
-                int[]/*AlgebraicNumber*/ dot = ortho .dotNormal( unitNormal );
-                double dotVal = Math .abs( field .evaluateNumber( dot ) );
+                AlgebraicNumber dot = ortho .normal() .dot( unitNormal );
+                double dotVal = Math .abs( dot .evaluate() );
                 if ( dotVal < minDot ) {
                     minDot = dotVal;
                     x = unitVector( field, ortho .normal() );
                 }
             }
         }
-        int[]/*AlgebraicVector*/ y = field .cross( x, unitNormal );
-        int[] scaleFactor = field .createAlgebraicNumber( 1, 0, 2, -2 );
-        x = field .scaleVector( x, scaleFactor );
-        y = field .scaleVector( y, scaleFactor );
-        mCorners[0] = field .add( x, y );
-        mCorners[1] = field .subtract( y, x );
-        mCorners[2] = field .negate( mCorners[ 0 ] );
-        mCorners[3] = field .negate( mCorners[ 1 ] );
+        AlgebraicVector y = x .cross( unitNormal );
+        AlgebraicNumber scaleFactor = field .createAlgebraicNumber( 1, 0, 2, -2 );
+        x = x .scale( scaleFactor );
+        y = y .scale( scaleFactor );
+        mCorners[0] = x .plus( y );
+        mCorners[1] = y .minus( x );
+        mCorners[2] = mCorners[ 0 ] .negate();
+        mCorners[3] = mCorners[ 1 ] .negate();
     }
     
-    private static int[] unitVector( AlgebraicField field, int[] vector )
+    private static AlgebraicVector unitVector( AlgebraicField field, AlgebraicVector vector )
     {
-        int[]/*AlgebraicVector*/ unitNormal = vector;
-        int[] fieldLen = field .dot( vector, vector );
-        double length = Math .sqrt( field .evaluateNumber( fieldLen ));
+        AlgebraicVector unitNormal = vector;
+        AlgebraicNumber fieldLen = vector .dot( vector );
+        double length = Math .sqrt( fieldLen .evaluate());
         int len = (int) Math .floor( length );
         if ( len >= 1 )
         {
-            int[] fraction = field .createRational( new int[]{ 1, len } );
-            unitNormal = field .scaleVector( vector, fraction );
+            AlgebraicNumber fraction = field .createRational( new int[]{ 1, len } );
+            unitNormal = vector .scale( fraction );
         }
         return unitNormal;
     }
@@ -73,7 +74,7 @@ public class DefaultStrutGeometry implements StrutGeometry
     /* (non-Javadoc)
      * @see com.vzome.core.parts.StrutGeometry#getStrutPolyhedron(com.vzome.core.math.AlgebraicNumber)
      */
-    public Polyhedron getStrutPolyhedron( int[]/*AlgebraicNumber*/ length )
+    public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
     {
         AlgebraicField field = mAxis .getDirection() .getSymmetry() .getField();
         Polyhedron poly = new Polyhedron( field );
@@ -91,7 +92,7 @@ public class DefaultStrutGeometry implements StrutGeometry
         //
         for ( int i = 0; i < 4; i++ ) {
             poly .addVertex( mCorners[i] );
-            poly .addVertex( field .add( mCorners[i], mAxis .scaleNormal( length ) ) );
+            poly .addVertex( mCorners[i] .plus( mAxis .scaleNormal( length ) ) );
         }
         // two loops so normal computation works in addFace
 

@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,9 +13,9 @@ import java.util.logging.Logger;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
-import com.vzome.core.algebra.RationalVectors;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -61,11 +60,11 @@ public class CommandUniformH4Polytope extends CommandTransform
 
     public static class H4Symmetry
     {
-        private final /*AlgebraicVector*/ int[][] mPrototypes = new /*AlgebraicVector*/ int[15][];
+        private final AlgebraicVector[] mPrototypes = new AlgebraicVector[15];
 
         private final Quaternion[] mMirrors = new Quaternion[4];
         
-        private final int[][] coRoots = new int[4][];
+        private final AlgebraicVector[] coRoots = new AlgebraicVector[4];
 
         public H4Symmetry( AlgebraicField field )
         {
@@ -83,51 +82,52 @@ public class CommandUniformH4Polytope extends CommandTransform
         coRoots[ 0 ] = new GoldenNumberVector( B, ONE, ZERO, A.neg() );
              */
 
-            final /*AlgebraicNumber*/ int[] ONE = field .createRational( new int[]{ 1,1 } );
-            final /*AlgebraicNumber*/ int[] TWO = field .createRational( new int[]{ 2,1 } );
-            final /*AlgebraicNumber*/ int[] A = field .createAlgebraicNumber( 1, -1, 1, 0 );
-            final /*AlgebraicNumber*/ int[] B = field .createAlgebraicNumber( 0, 1, 1, 0 );
+            final AlgebraicNumber ONE = field .createRational( new int[]{ 1,1 } );
+            final AlgebraicNumber NEG_ONE = field .createRational( new int[]{ -1,1 } );
+            final AlgebraicNumber TWO = field .createRational( new int[]{ 2,1 } );
+            final AlgebraicNumber A = field .createAlgebraicNumber( 1, -1, 1, 0 );
+            final AlgebraicNumber B = field .createAlgebraicNumber( 0, 1, 1, 0 );
 
-            int[] temp = field .origin( 4 );
-            field .setVectorComponent( temp, 1, field .divide( A, TWO ) );
-            field .setVectorComponent( temp, 2, field .divide( ONE, TWO ) );
-            field .setVectorComponent( temp, 3, field .divide( B, TWO ) );
+            AlgebraicVector temp = field .origin( 4 );
+            temp .setComponent( 1, A .dividedBy( TWO ) );
+            temp .setComponent( 2, ONE .dividedBy( TWO ) );
+            temp .setComponent( 3, B .dividedBy( TWO ) );
             mMirrors[ 3 ] = new Quaternion( field, temp );
 
             temp = field .origin( 4 );
-            field .setVectorComponent( temp, 3, field .negate( ONE ) );
+            temp .setComponent( 3, NEG_ONE );
             mMirrors[ 2 ] = new Quaternion( field, temp );
 
             temp = field .origin( 4 );
-            field .setVectorComponent( temp, 1, field .divide( ONE, TWO ) );
-            field .setVectorComponent( temp, 2, field .divide( field .negate( ONE ), TWO ) );
-            field .setVectorComponent( temp, 3, field .divide( ONE, TWO ) );
-            field .setVectorComponent( temp, 0, field .divide( field .negate( ONE ), TWO ) );
+            temp .setComponent( 1, ONE .dividedBy( TWO ) );
+            temp .setComponent( 2, NEG_ONE .dividedBy( TWO ) );
+            temp .setComponent( 3, ONE .dividedBy( TWO ) );
+            temp .setComponent( 0, NEG_ONE .dividedBy( TWO ) );
             mMirrors[ 1 ] = new Quaternion( field, temp );
 
             temp = field .origin( 4 );
-            field .setVectorComponent( temp, 0, ONE );
+            temp .setComponent( 0, ONE );
             mMirrors[ 0 ] = new Quaternion( field, temp );
 
-            final /*AlgebraicNumber*/ int[] B2 = field .createAlgebraicNumber( 0, 2, 1, 0 );
+            final AlgebraicNumber B2 = field .createAlgebraicNumber( 0, 2, 1, 0 );
 
             coRoots[ 3 ] = field .origin( 4 );
-            field .setVectorComponent( coRoots[ 3 ], 1, B2 );
-            field .setVectorComponent( coRoots[ 3 ], 2, B2 );
+            coRoots[ 3 ] .setComponent( 1, B2 );
+            coRoots[ 3 ] .setComponent( 2, B2 );
 
             coRoots[ 2 ] = field .origin( 4 );
-            field .setVectorComponent( coRoots[ 2 ], 1, field .add( B2, ONE ) );
-            field .setVectorComponent( coRoots[ 2 ], 2, field .add( B, TWO ) );
-            field .setVectorComponent( coRoots[ 2 ], 3, A );
+            coRoots[ 2 ] .setComponent( 1, B2 .plus( ONE ) );
+            coRoots[ 2 ] .setComponent( 2, B .plus( TWO ) );
+            coRoots[ 2 ] .setComponent( 3, A );
 
             coRoots[ 1 ] = field .origin( 4 );
-            field .setVectorComponent( coRoots[ 1 ], 1, B2 );
-            field .setVectorComponent( coRoots[ 1 ], 2, TWO );
+            coRoots[ 1 ] .setComponent( 1, B2 );
+            coRoots[ 1 ] .setComponent( 2, TWO );
 
             coRoots[ 0 ] = field .origin( 4 );
-            field .setVectorComponent( coRoots[ 0 ], 1, B );
-            field .setVectorComponent( coRoots[ 0 ], 2, ONE );
-            field .setVectorComponent( coRoots[ 0 ], 0, field .negate( A ) );
+            coRoots[ 0 ] .setComponent( 1, B );
+            coRoots[ 0 ] .setComponent( 2, ONE );
+            coRoots[ 0 ] .setComponent( 0, A .negate() );
             
 //            coRoots[ 0 ] = field .scaleVector( coRoots[ 0 ], field .createPower( 3 ) );
 
@@ -135,21 +135,21 @@ public class CommandUniformH4Polytope extends CommandTransform
                 for ( int i = 0; i < 4; i++ )
                 {
                     StringBuffer buf = new StringBuffer();
-                    field .getVectorExpression( buf, coRoots[ i ], AlgebraicField .DEFAULT_FORMAT );
+                    coRoots[ i ] .getVectorExpression( buf, AlgebraicField .DEFAULT_FORMAT );
                     logger .fine( buf .toString() );
                 }
 
             // Leaving this here, but when I use edgeScales, I'll recompute the prototype each time.
-            /*AlgebraicVector*/ int[] origin = field .origin( 4 );
+            AlgebraicVector origin = field .origin( 4 );
             for ( int index = 1; index <= 15; index++ ){
 //                int len = 0;
-                /*AlgebraicVector*/ int[] vertex = origin;
+                AlgebraicVector vertex = origin;
                 for ( int b = 0; b < 4; b++ ) {
                     int mask = 1 << b;
                     int test = index & mask;
                     if ( test != 0 ) {
 //                        ++len;
-                        vertex = field .add( vertex, coRoots[ b ] );
+                        vertex = vertex .plus( coRoots[ b ] );
                     }
                 }
                 //          vertex = vertex .div( len );
@@ -158,17 +158,17 @@ public class CommandUniformH4Polytope extends CommandTransform
             }
         }
         
-        public int[] getPrototype( int index )
+        public AlgebraicVector getPrototype( int index )
         {
             return mPrototypes[ index-1 ];
         }
 
-        public int[] reflect( int mirror, int[] prototype )
+        public AlgebraicVector reflect( int mirror, AlgebraicVector prototype )
         {
             return mMirrors[ mirror ] .reflect( prototype );
         }
         
-        public int[] getCoRoot( int i )
+        public AlgebraicVector getCoRoot( int i )
         {
             return this .coRoots[ i ];
         }
@@ -197,12 +197,12 @@ public class CommandUniformH4Polytope extends CommandTransform
     /*
      * Currently, there is no way to set this via the UI... only reading it from XML
      */
-    private int[] quaternionVector = null;
+    private AlgebraicVector quaternionVector = null;
 
     /**
      * Only called when migrating a 2.0 model file.
      */
-    public void setQuaternion( int[] offset )
+    public void setQuaternion( AlgebraicVector offset )
     {
         quaternionVector = offset;
     }
@@ -222,7 +222,7 @@ public class CommandUniformH4Polytope extends CommandTransform
     public void getXml( Element result, Map attributes )
     {
         if ( quaternionVector != null )
-        	DomUtils .addAttribute( result, "quaternion", RationalVectors .toString( quaternionVector ) );        
+        	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );        
         super .getXml( result, attributes );
     }
 
@@ -241,10 +241,10 @@ public class CommandUniformH4Polytope extends CommandTransform
     
     public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
     {
-        int[] /*AlgebraicNumber*/ SCALE_DOWN_5 = field .createPower( -5 );
+        AlgebraicNumber SCALE_DOWN_5 = field .createPower( -5 );
         
         Projection proj = new Projection .Default( field );
-        /*AlgebraicVector*/ int[] leftQuat = null, rightQuat = null;
+        AlgebraicVector leftQuat = null, rightQuat = null;
         if ( parameters .size() == 0 )
         {        
             rightQuat = quaternionVector;
@@ -254,7 +254,7 @@ public class CommandUniformH4Polytope extends CommandTransform
                 rightQuat = (symmAxis==null)? null : symmAxis .getOffset();
             
             if ( rightQuat != null )
-                rightQuat = field .scaleVector( rightQuat, SCALE_DOWN_5 );
+                rightQuat = rightQuat .scale( SCALE_DOWN_5 );
         }
         else
         {
@@ -264,9 +264,9 @@ public class CommandUniformH4Polytope extends CommandTransform
                 if ( cons instanceof Segment ) {
                     Segment seg = (Segment) cons;
                     if ( ++numSegs == 1 )
-                        rightQuat = field .scaleVector( seg .getOffset(), SCALE_DOWN_5 );
+                        rightQuat = seg .getOffset() .scale( SCALE_DOWN_5 );
                     else if ( numSegs == 2 )
-                        leftQuat = field .scaleVector( seg .getOffset(), SCALE_DOWN_5 );
+                        leftQuat = seg .getOffset() .scale( SCALE_DOWN_5 );
                     else
                         throw new Command.Failure( "Too many struts to specify quaternion multiplication." );
                 }
@@ -299,12 +299,12 @@ public class CommandUniformH4Polytope extends CommandTransform
         return new ConstructionList();
     }
     
-    public void generate( Projection proj, int index, int renderEdges, int[][] edgeScales, ModelRoot root, ConstructionChanges effects )
+    public void generate( Projection proj, int index, int renderEdges, AlgebraicNumber[] edgeScales, ModelRoot root, ConstructionChanges effects )
     {   
-        int[] /*AlgebraicNumber*/ SCALE_UP_5 = field .createPower( 5 );
+        AlgebraicNumber SCALE_UP_5 = field .createPower( 5 );
 
-        /*AlgebraicVector*/ int[][] reflections = new /*AlgebraicVector*/ int[4][];
-        /*AlgebraicVector*/ int[] prototype = symm .getPrototype( index );
+        AlgebraicVector[] reflections = new AlgebraicVector[4];
+        AlgebraicVector prototype = symm .getPrototype( index );
 
         if ( edgeScales != null )  // ignore the prebuilt prototype
         {
@@ -313,8 +313,8 @@ public class CommandUniformH4Polytope extends CommandTransform
                 int mask = 1 << b;
                 int test = index & mask;
                 if ( test != 0 ) {
-                    int[] contribution = field .scaleVector( symm .getCoRoot( b ), edgeScales[ b ] );
-                    prototype = field .add( prototype, contribution );
+                    AlgebraicVector contribution = symm .getCoRoot( b ) .scale( edgeScales[ b ] );
+                    prototype = prototype .plus( contribution );
                 }
             }
         }
@@ -330,13 +330,13 @@ public class CommandUniformH4Polytope extends CommandTransform
         for ( int i = 0; i < mRoots.length; i++ ) 
             for ( int j = 0; j < mRoots.length; j++ )
             {
-                /*AlgebraicVector*/ int[] vertex = mRoots[ i ] .rightMultiply( prototype );
+                AlgebraicVector vertex = mRoots[ i ] .rightMultiply( prototype );
                 vertex = mRoots[ j ] .leftMultiply( vertex );
-                AlgebraicVector key = new AlgebraicVector( vertex );
+                AlgebraicVector key = vertex;
                 Point p = (Point) vertices .get( key );
                 boolean newVertex = p == null;
                 if ( newVertex ) {
-                    /*AlgebraicVector*/ int[] projected = vertex;
+                    AlgebraicVector projected = vertex;
                     
                     logger .finer( "before   : " );
                     printGoldenVector( projected, vefVertices );
@@ -347,7 +347,7 @@ public class CommandUniformH4Polytope extends CommandTransform
                     logger .finer( "projected: " );
                     printGoldenVector( projected, vefVertices );
 
-                    projected = field .scaleVector( projected, SCALE_UP_5 );
+                    projected = projected .scale( SCALE_UP_5 );
 
                     logger .finer( "scaled   : " );
                     printGoldenVector( projected, vefVertices );
@@ -362,14 +362,14 @@ public class CommandUniformH4Polytope extends CommandTransform
                 for ( int mirror = 0; mirror < 4; mirror++ )
                     if ( reflections[ mirror ] != null )
                     {
-                        /*AlgebraicVector*/ int[] other = mRoots[ i ] .rightMultiply( reflections[ mirror ] );
+                        AlgebraicVector other = mRoots[ i ] .rightMultiply( reflections[ mirror ] );
                         other = mRoots[ j ] .leftMultiply( other );
-                        key = new AlgebraicVector( other );
-                        if ( ! Arrays.equals( other, vertex ) )
+                        key = other;
+                        if ( ! other .equals( vertex ) )
                         {
                             Point p2 = (Point) vertices .get( key );
                             if ( p2 == null ) {
-                                /*AlgebraicVector*/ int[] projected = other;
+                                AlgebraicVector projected = other;
                                 
                                 logger .finer( "before   : " );
                                 printGoldenVector( projected, vefVertices );
@@ -380,7 +380,7 @@ public class CommandUniformH4Polytope extends CommandTransform
                                 logger .finer( "projected: " );
                                 printGoldenVector( projected, vefVertices );
 
-                                projected = field .scaleVector( projected, SCALE_UP_5 );
+                                projected = projected .scale( SCALE_UP_5 );
 
                                 logger .finer( "scaled   : " );
                                 printGoldenVector( projected, vefVertices );
@@ -417,7 +417,7 @@ public class CommandUniformH4Polytope extends CommandTransform
 //        }
     }
 
-    private void printGoldenVector( /*AlgebraicVector*/ int[] gv, StringBuffer vefVertices )
+    private void printGoldenVector( AlgebraicVector gv, StringBuffer vefVertices )
     {
 //        vefVertices .append( gv .getX() .toString( IntegralNumber.VEF_FORMAT ) );
 //        vefVertices .append( "\t" );
@@ -431,7 +431,7 @@ public class CommandUniformH4Polytope extends CommandTransform
         if ( logger .isLoggable( Level .FINER ) )
         {
             StringBuffer buf = new StringBuffer();
-            field .getVectorExpression( buf, gv, AlgebraicField .DEFAULT_FORMAT );
+            gv .getVectorExpression( buf, AlgebraicField .DEFAULT_FORMAT );
             logger .finer( buf .toString() );
         }
     }

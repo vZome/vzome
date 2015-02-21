@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import junit.framework.TestCase;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.model.Panel;
 
 public class TestPanelEquality extends TestCase
 {
@@ -17,10 +17,10 @@ public class TestPanelEquality extends TestCase
     public void testEqualsObject()
     {
         AlgebraicField field = new PentagonField();
-        int [] a = field .createRational( new int[]{ 0,1 } );
-        int [] b = field .createRational( new int[]{ 1,1 } );
-        int [] c = field .createRational( new int[]{ 2,1 } );
-        int [] d = field .createRational( new int[]{ 3,1 } );
+        AlgebraicNumber a = field .createRational( new int[]{ 0,1 } );
+        AlgebraicNumber b = field .createRational( new int[]{ 1,1 } );
+        AlgebraicNumber c = field .createRational( new int[]{ 2,1 } );
+        AlgebraicNumber d = field .createRational( new int[]{ 3,1 } );
         ArrayList list = new ArrayList();
         list .add( a );
         list .add( b );

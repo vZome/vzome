@@ -6,7 +6,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicVector;
 
 
 /**
@@ -15,16 +15,16 @@ import com.vzome.core.algebra.RationalVectors;
 public abstract class Segment extends Construction
 {
     // state variables
-	private int[] /*AlgebraicVector*/ mStart, mOffset;
+	private AlgebraicVector mStart, mOffset;
     
-    private transient int[] /*AlgebraicVector*/ mEnd;
+    private transient AlgebraicVector mEnd;
     
     protected Segment( AlgebraicField field )
     {
         super( field );
     }
     
-    protected final boolean setStateVariables( int[] /*AlgebraicVector*/ start, int[] /*AlgebraicVector*/ offset, boolean impossible )
+    protected final boolean setStateVariables( AlgebraicVector start, AlgebraicVector offset, boolean impossible )
     {
         if ( impossible ) {
             // don't attempt to access other params
@@ -44,19 +44,19 @@ public abstract class Segment extends Construction
         return true;
     }
     
-    public int[] /*AlgebraicVector*/ getStart()
+    public AlgebraicVector getStart()
     {
         return mStart;
     }
     
-    public int[] /*AlgebraicVector*/ getEnd()
+    public AlgebraicVector getEnd()
     {
         if ( mEnd == null )
-            mEnd = field .add( mStart, mOffset );
+            mEnd = mStart .plus( mOffset );
         return mEnd;
     }
     
-    public int[] /*AlgebraicVector*/ getOffset()
+    public AlgebraicVector getOffset()
     {
         return mOffset;
     }
@@ -83,8 +83,8 @@ public abstract class Segment extends Construction
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "segment" );
-        result .setAttribute( "start", RationalVectors .toString( mStart ) );
-        result .setAttribute( "end", RationalVectors .toString( getEnd() ) );
+        result .setAttribute( "start", mStart .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
+        result .setAttribute( "end", getEnd() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
         return result;
     }
 

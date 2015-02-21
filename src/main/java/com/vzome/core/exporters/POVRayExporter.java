@@ -20,6 +20,8 @@ import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
@@ -161,7 +163,7 @@ public class POVRayExporter extends Exporter3d
 		        shapes[ flip?1:0 ] .put( shape, shapeName );
 		        exportShape( shapeName, shape, flip );
 		    }
-		    int[][] transform = rm .getOrientation();
+		    AlgebraicMatrix transform = rm .getOrientation();
 		    String transformName = (String) transforms .get( transform );
 		    if ( transformName == null ){
 		        transformName = "trans" + numTransforms++;
@@ -173,7 +175,7 @@ public class POVRayExporter extends Exporter3d
             Manifestation man = rm .getManifestation();
             if ( man != null )
             {
-                int[] loc = man .getLocation();
+                AlgebraicVector loc = man .getLocation();
                 if ( loc == null )
                     loc = rm .getShape() .getField() .origin( 3 );
                 appendLocation( loc, instances );
@@ -248,14 +250,13 @@ public class POVRayExporter extends Exporter3d
     /*
      * writes out a AlgebraicVector as (<1/2,1/2,0>*tau+<-3/2,0/2,0>)
      */
-	protected void appendLocation( int[] /*AlgebraicVector*/ loc, StringBuffer buf )
+	protected void appendLocation( AlgebraicVector loc, StringBuffer buf )
 	{
-        AlgebraicField field = mModel .getField();
-        field .getNumberExpression( buf, loc, 0, AlgebraicField.EXPRESSION_FORMAT );
+        loc .getComponent( 0 ) .getNumberExpression( buf, AlgebraicField.EXPRESSION_FORMAT );
         buf .append( ", " );
-        field .getNumberExpression( buf, loc, 1, AlgebraicField.EXPRESSION_FORMAT );
+        loc .getComponent( 1 ) .getNumberExpression( buf, AlgebraicField.EXPRESSION_FORMAT );
         buf .append( ", " );
-        field .getNumberExpression( buf, loc, 2, AlgebraicField.EXPRESSION_FORMAT );
+        loc .getComponent( 2 ) .getNumberExpression( buf, AlgebraicField.EXPRESSION_FORMAT );
 	}
  
     private void appendLocation( RealVector location, StringBuffer buf )
@@ -283,7 +284,7 @@ public class POVRayExporter extends Exporter3d
                 // POV-Ray requires that you explicitly repeat the first vertex to close the polygon
                 int m = j % arity;
                 Integer index = (Integer) face .get( reverseFaces? arity-m-1 : m );
-                int[] /*AlgebraicVector*/ loc = (int[]) vertices .get( index .intValue() );
+                AlgebraicVector loc = (AlgebraicVector) vertices .get( index .intValue() );
                 StringBuffer buf = new StringBuffer();
                 buf .append( "(<" );
                 appendLocation( loc, buf );
@@ -297,7 +298,7 @@ public class POVRayExporter extends Exporter3d
     }
 
     
-    private void exportTransform( String name, int[][] transform )
+    private void exportTransform( String name, AlgebraicMatrix transform )
     {
         AlgebraicField field = mModel .getField();
         output .print( "#declare " + name + " = transform { matrix < " );
@@ -306,8 +307,8 @@ public class POVRayExporter extends Exporter3d
         //  Perhaps something to do with POV-Ray's left-handed coordinate system.
         for ( int i = 0; i < 3; i++ )
         {
-            int[] columnSelect = field .basisVector( 3, i );
-            int[] columnI = field .transform( transform, columnSelect );
+            AlgebraicVector columnSelect = field .basisVector( 3, i );
+            AlgebraicVector columnI = transform .timesColumn( columnSelect );
             appendLocation( columnI, buf );
             buf .append( ", " );
         }

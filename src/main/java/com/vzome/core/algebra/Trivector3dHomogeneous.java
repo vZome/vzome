@@ -5,10 +5,10 @@ package com.vzome.core.algebra;
 
 public class Trivector3dHomogeneous
 {
-    final BigRational[] e123, e310, e320, e120;
+    final AlgebraicNumber e123, e310, e320, e120;
 	private final AlgebraicField field;
 
-	public Trivector3dHomogeneous( BigRational[] e123, BigRational[] e310, BigRational[] e320, BigRational[] e120, AlgebraicField field )
+	public Trivector3dHomogeneous( AlgebraicNumber e123, AlgebraicNumber e310, AlgebraicNumber e320, AlgebraicNumber e120, AlgebraicField field )
 	{
 		this.e123 = e123;
 		this.e310 = e310;
@@ -19,7 +19,7 @@ public class Trivector3dHomogeneous
 	
 	public Vector3dHomogeneous dual()
 	{
-		return new Vector3dHomogeneous( field .negate( e320 ), e310, e120, field .negate( e123 ), field );
+		return new Vector3dHomogeneous( e320 .negate(), e310, e120, e123 .negate(), field );
 	}
 
 }

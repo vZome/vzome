@@ -8,15 +8,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.VefParser;
 
 public class VefToModel extends VefParser
 {
-    protected final int[] mQuaternion;
+    protected final AlgebraicVector mQuaternion, offset;
     
-    protected final int[] scale, offset;
+    protected final AlgebraicNumber scale;
 
     protected final AlgebraicField field;
     
@@ -33,7 +35,7 @@ public class VefToModel extends VefParser
     static Logger logger = Logger .getLogger( "com.vzome.core.construction.VefToModel" );
 
     
-    public VefToModel( int[] quaternion, ModelRoot root, ConstructionChanges effects, int[] scale, int[] offset )
+    public VefToModel( AlgebraicVector quaternion, ModelRoot root, ConstructionChanges effects, AlgebraicNumber scale, AlgebraicVector offset )
     {
         mQuaternion = quaternion;
         mRoot = root;
@@ -43,7 +45,7 @@ public class VefToModel extends VefParser
         this.offset = offset;
 
         if ( quaternion != null && logger .isLoggable( Level .FINEST ) )
-            logger .finest( "quaternion = " + field .getVectorExpression( quaternion, AlgebraicField .VEF_FORMAT ) );
+            logger .finest( "quaternion = " + quaternion .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
     }
 
     protected void startVertices( int numVertices )
@@ -53,28 +55,26 @@ public class VefToModel extends VefParser
             mProjection = new Projection.Default( field );
         else
         {
-            int[] quat = field .inflateTo4d( mQuaternion );
-            if ( !wFirst() )
-                field .shiftXtoW( quat );
-                // this is to match the projection, which will discard Z rather than W
+            AlgebraicVector quat = mQuaternion .inflateTo4d( wFirst() );
+                // wFirst() is to match the projection, which will discard Z rather than W
             mProjection = new QuaternionProjection( field, null, quat );
         }
     }
 
-    protected void addVertex( int index, int[] location )
+    protected void addVertex( int index, AlgebraicVector location )
     {
-        logger .finest( "addVertex location = " + field .getVectorExpression( location, AlgebraicField .VEF_FORMAT ) );
+        logger .finest( "addVertex location = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
         if ( scale != null )
         {
-            location = field .scaleVector( location, scale );
-            logger .finest( "scaled = " + field .getVectorExpression( location, AlgebraicField .VEF_FORMAT ) );
+            location = location .scale( scale );
+            logger .finest( "scaled = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
         }
         location = mProjection .projectImage( location, wFirst() );
-        logger .finest( "projected = " + field .getVectorExpression( location, AlgebraicField .VEF_FORMAT ) );
+        logger .finest( "projected = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
         if ( offset != null )
         {
-            location = field .add( location, offset );
-            logger .finest( "translated = " + field .getVectorExpression( location, AlgebraicField .VEF_FORMAT ) );
+            location = location .plus( offset );
+            logger .finest( "translated = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
         }
 
         mVertices[ index ] = new FreePoint( location, mRoot );

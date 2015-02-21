@@ -5,6 +5,7 @@ package com.vzome.core.commands;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -38,7 +39,7 @@ public class CommandAxialSymmetry extends CommandSymmetry
         }
         ConstructionList output = new ConstructionList();
         
-        int[] vector = norm .getOffset();
+        AlgebraicVector vector = norm .getOffset();
         vector = norm .getField() .projectTo3d( vector, true );
 
         Axis axis = mSymmetry .getAxis( vector );

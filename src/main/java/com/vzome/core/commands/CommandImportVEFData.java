@@ -3,7 +3,6 @@
 package com.vzome.core.commands;
 
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.logging.Logger;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -68,12 +67,12 @@ public class CommandImportVEFData extends AbstractCommand
     /*
      * Currently, there is no way to set this via the UI... only reading it from XML
      */
-    private int[] quaternionVector = null;
+    private AlgebraicVector quaternionVector = null;
 
     /**
      * Only called when migrating a 2.0 model file.
      */
-    public void setQuaternion( int[] offset )
+    public void setQuaternion( AlgebraicVector offset )
     {
         quaternionVector = offset;
     }
@@ -93,7 +92,7 @@ public class CommandImportVEFData extends AbstractCommand
     public void getXml( Element result, Map attributes )
     {
         if ( quaternionVector != null )
-        	DomUtils .addAttribute( result, "quaternion", RationalVectors .toString( quaternionVector ) );
+        	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );
         
         super .getXml( result, attributes );
     }
@@ -119,13 +118,13 @@ public class CommandImportVEFData extends AbstractCommand
         String vefData = (String) attributes .get( VEF_STRING_ATTR_NAME );
         Boolean noInversion = (Boolean) attributes .get( NO_INVERSION_ATTR_NAME );
         
-        int[] quaternion = quaternionVector;
+        AlgebraicVector quaternion = quaternionVector;
         
         if ( quaternion == null )
             quaternion = (symmAxis==null)? null : symmAxis .getOffset();  // will get inflated to 4D when we know wFirst()
         
         if ( quaternion != null )
-            quaternion = field .scaleVector( quaternion, field .createPower( -5 ) );
+            quaternion = quaternion .scale( field .createPower( -5 ) );
         
         if ( noInversion != null && noInversion .booleanValue() )
             new VefToModelNoInversion( quaternion, root, effects ) .parseVEF( vefData, field );
@@ -138,18 +137,18 @@ public class CommandImportVEFData extends AbstractCommand
     
     private class VefToModelNoInversion extends VefToModel
     {
-        protected int[][][] mProjected;
+        protected AlgebraicVector[][] mProjected;
         
         protected final Set mUsedPoints = new HashSet();
         
-        public VefToModelNoInversion( int[] quaternion, ModelRoot root, ConstructionChanges effects )
+        public VefToModelNoInversion( AlgebraicVector quaternion, ModelRoot root, ConstructionChanges effects )
         {
             super( quaternion, root, effects, root .getField() .createPower( 5 ), null );
         }
 
-        protected void addVertex( int index, int[] location )
+        protected void addVertex( int index, AlgebraicVector location )
         {
-            location = field .scaleVector( location, scale );
+            location = location .scale( scale );
             if ( mProjection != null )
                 location = mProjection .projectImage( location, wFirst() );
             mVertices[ index ] = new FreePoint( location, mRoot );
@@ -158,7 +157,7 @@ public class CommandImportVEFData extends AbstractCommand
 
         protected void startEdges( int numEdges )
         {
-            mProjected = new int[ numEdges ][ 2 ][];
+            mProjected = new AlgebraicVector[ numEdges ][ 2 ];
         }
 
         protected void addEdge( int index, int v1, int v2 )
@@ -167,17 +166,17 @@ public class CommandImportVEFData extends AbstractCommand
             if ( p1 == null || p2 == null ) return;
             Segment seg = new SegmentJoiningPoints( p1, p2 );
             
-            int[] pr1 = field .negate( field .projectTo3d( p1 .getLocation(), wFirst() ) ); // p1 .getLocation() .projectTo3D() .neg();
-            int[] pr2 = field .negate( field .projectTo3d( p2 .getLocation(), wFirst() ) ); // p2 .getLocation() .projectTo3D() .neg();
+            AlgebraicVector pr1 = p1 .getLocation() .projectTo3d( wFirst() ) .negate();
+            AlgebraicVector pr2 = p2 .getLocation() .projectTo3d( wFirst() ) .negate();
             
             for ( int i = 0; i < index; i++ ) {
-                if ( Arrays .equals( pr1, mProjected[ i ][ 0 ] ) && Arrays .equals( pr2, mProjected[ i ][ 1 ] ) )
+                if ( pr1 .equals( mProjected[ i ][ 0 ] ) && pr2 .equals( mProjected[ i ][ 1 ] ) )
                     return;
-                if ( Arrays .equals( pr2, mProjected[ i ][ 0 ] ) && Arrays .equals( pr1, mProjected[ i ][ 1 ] ) )
+                if ( pr2 .equals( mProjected[ i ][ 0 ] ) && pr1 .equals( mProjected[ i ][ 1 ] ) )
                     return;
             }
-            mProjected[ index ][ 0 ] = field .negate( pr1 );
-            mProjected[ index ][ 1 ] = field .negate( pr2 );
+            mProjected[ index ][ 0 ] = pr1 .negate();
+            mProjected[ index ][ 1 ] = pr2 .negate();
             
             mEffects .constructionAdded( seg );
             mUsedPoints .add( p1 );

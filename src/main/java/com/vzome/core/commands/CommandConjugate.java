@@ -4,7 +4,9 @@ package com.vzome.core.commands;
 
 import java.util.Map;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -38,24 +40,23 @@ public class CommandConjugate extends AbstractCommand
         final Construction[] params = parameters .getConstructions();
         ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );
         ConstructionList results = new ConstructionList();
-        AlgebraicField field = root .getField();
-        int[] up = field .createPower( 5 );
-        int[] down = field .createPower( -5 );
+        PentagonField field = (PentagonField) root .getField();
+        AlgebraicNumber up = field .createPower( 5 );
         
         for ( int j = 0; j < params .length; j++ ){
             Construction conjugate = null;
             if ( params[ j ] instanceof Point ) {
-                int[] loc = ((Point) params[ j ]) .getLocation();
+                AlgebraicVector loc = ((Point) params[ j ]) .getLocation();
                 loc = field .conjugate( loc );
-                conjugate = new FreePoint( field .scaleVector( loc, up ), root );
+                conjugate = new FreePoint( loc .scale( up ), root );
             }
             else if ( params[ j ] instanceof Segment ) {
-                int[] loc = ((Segment) params[ j ]) .getStart();
+                AlgebraicVector loc = ((Segment) params[ j ]) .getStart();
                 loc = field .conjugate( loc );
-                Point p1 = new FreePoint( field .scaleVector( loc, up ), root );
+                Point p1 = new FreePoint( loc .scale( up ), root );
                 loc = ((Segment) params[ j ]) .getEnd();
                 loc = field .conjugate( loc );
-                Point p2 = new FreePoint( field .scaleVector( loc, up ), root );
+                Point p2 = new FreePoint( loc .scale( up ), root );
                 conjugate = new SegmentJoiningPoints( p1, p2 );
             }
             if ( conjugate != null ) {

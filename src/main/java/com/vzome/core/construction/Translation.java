@@ -2,23 +2,25 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 
 public class Translation extends Transformation
 {
-    private int[] /*AlgebraicVector*/ mOffset;
+    private AlgebraicVector mOffset;
     private ModelRoot mRoot;
 
-    public Translation( int[] /*AlgebraicVector*/ offset, ModelRoot root )
+    public Translation( AlgebraicVector offset, ModelRoot root )
     {
         super( root .field );
         mOffset = offset;
         mRoot = root;        
     }
 
-    public int[] /*AlgebraicVector*/ transform( int[] /*AlgebraicVector*/ arg )
+    public AlgebraicVector transform( AlgebraicVector arg )
     {
-        arg = field .add( arg, mOffset );
+        arg = arg .plus( mOffset );
         return arg;
     }
 

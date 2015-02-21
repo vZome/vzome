@@ -15,7 +15,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalNumbers;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -24,8 +25,8 @@ import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.Shapes;
 import com.vzome.core.render.RenderedModel.OrbitSource;
+import com.vzome.core.render.Shapes;
 
 public class SymmetrySystem implements OrbitSource
 {
@@ -79,7 +80,7 @@ public class SymmetrySystem implements OrbitSource
 					String nums = dirElem .getAttribute( "prototype" );
 					if ( nums != null && ! nums .isEmpty() )
 					{
-						int[] prototype = RationalNumbers .parseRationalVector( nums );
+						AlgebraicVector prototype = symmetry .getField() .parseVector( nums );
 						try {
 						    dir = symmetry .createNewZoneOrbit( name, 0, Symmetry.NO_ROTATION, prototype );
 						} catch ( IllegalStateException e )
@@ -120,11 +121,9 @@ public class SymmetrySystem implements OrbitSource
 	}
 
 	@Override
-	public Axis getAxis( int[] vector )
+	public Axis getAxis( AlgebraicVector vector )
 	{
-        Symmetry symmetry = orbits .getSymmetry();
-        AlgebraicField field = symmetry .getField();
-        if ( field .isOrigin( vector ) ) {
+        if ( vector .isOrigin() ) {
             return null;
         }
         if ( ! this .noKnownDirections )
@@ -140,16 +139,16 @@ public class SymmetrySystem implements OrbitSource
         return dir .getAxis( Symmetry.PLUS, 0 );
 	}
 	
-	public Direction createAnonymousOrbit( int[] vector )
+	public Direction createAnonymousOrbit( AlgebraicVector vector )
 	{
         Symmetry symmetry = orbits .getSymmetry();
         AlgebraicField field = symmetry .getField();
-        int[] longer = field .createPower( 1 );
-        int[] shorter = field .createPower( -1 );
+        AlgebraicNumber longer = field .createPower( 1 );
+        AlgebraicNumber shorter = field .createPower( -1 );
                 
         // first, find a good "scale 0" length
-        RealVector rv = field .getRealVector( vector );
-        int[] longVector = vector, shortVector = vector;
+        RealVector rv =  vector .toRealVector();
+        AlgebraicVector longVector = vector, shortVector = vector;
         double longLen = 2d, shortLen = 2d, len = rv .length();
         if ( len > 2d )
         {
@@ -157,8 +156,8 @@ public class SymmetrySystem implements OrbitSource
             longVector = vector;
             while ( longLen > 2d )
             {
-                shortVector = field .scaleVector( longVector, shorter );
-                shortLen = field .getRealVector( shortVector ) .length();
+                shortVector = longVector .scale( shorter );
+                shortLen =  shortVector  .toRealVector() .length();
                 if ( shortLen <= 2d )
                     break;
                 longLen = shortLen;
@@ -171,8 +170,8 @@ public class SymmetrySystem implements OrbitSource
             shortVector = vector;
             while ( shortLen <= 2d )
             {
-                longVector = field .scaleVector( shortVector, longer );
-                longLen = field .getRealVector( longVector ) .length();
+                longVector = shortVector .scale( longer );
+                longLen = longVector .toRealVector() .length();
                 if ( longLen > 2d )
                     break;
                 shortLen = longLen;
@@ -230,7 +229,7 @@ public class SymmetrySystem implements OrbitSource
             Direction dir = (Direction) dirs .next();
             Element dirElem = doc .createElement( "Direction" );
             if ( dir .isAutomatic() )
-                DomUtils .addAttribute( dirElem, "prototype", RationalNumbers .toString( dir .getPrototype() ) );
+                DomUtils .addAttribute( dirElem, "prototype", dir .getPrototype() .toString() );
                 DomUtils .addAttribute( dirElem, "name", dir .getName() );
             {
                 Color color = getColor( dir );

@@ -8,7 +8,7 @@ package com.vzome.core.parts;
 
 import java.io.InputStream;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -38,13 +38,12 @@ public class ZomicStrutGeometry implements StrutGeometry
     private final Symmetry mSymmetry;
 
     public ZomicStrutGeometry( String geom, Direction dir,
-            int[] /*AlgebraicNumber*/ noStrutSize, int[] /*AlgebraicNumber*/ normalStrutSize, Symmetry symmetry )
+            AlgebraicNumber noStrutSize, AlgebraicNumber normalStrutSize, Symmetry symmetry )
             throws IllegalStateException
     {
         mSymmetry = symmetry;
-        AlgebraicField field = mSymmetry .getField();
-        mNoStrutSize = field .evaluateNumber( noStrutSize );
-        mNormalStrutSize = field .evaluateNumber( normalStrutSize );
+        mNoStrutSize = noStrutSize .evaluate();
+        mNormalStrutSize = normalStrutSize .evaluate();
         ZomicNamingConvention convention = new ZomicNamingConvention( (IcosahedralSymmetry) symmetry );
 
         Axis prototype = convention .getAxis( dir .getName(), "+0" );
@@ -94,10 +93,9 @@ public class ZomicStrutGeometry implements StrutGeometry
         this( geom, dir, symmetry .getField() .createPower( 0 ), symmetry .getField() .createPower( 1 ), symmetry );
     }
 
-    public Polyhedron getStrutPolyhedron( int[] /*AlgebraicNumber*/ length )
+    public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
     {
-        AlgebraicField field = mSymmetry .getField();
-        double len = field .evaluateNumber( length );
+        double len = length .evaluate();
         if ( len < mNoStrutSize )
             return null;
         Anything program = len < mNormalStrutSize ? mShortStrutProgram : mStrutProgram;

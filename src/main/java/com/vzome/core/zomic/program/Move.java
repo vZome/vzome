@@ -1,18 +1,17 @@
 
 package com.vzome.core.zomic.program;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.zomic.ZomicException;
 
 public class Move extends Anything
 {
-    public final static int[] VARIABLE_SIZE = { 99,0, 0,0 };  // zero divisors to make sure it is never used
-
 	protected Axis axis;
 	
-	protected int[] /*AlgebraicNumber*/ length;
+	protected AlgebraicNumber length;
 
-	public Move( Axis axis, int[] /*AlgebraicNumber*/ len )
+	public Move( Axis axis, AlgebraicNumber len )
 	{
 		super();
 
@@ -28,7 +27,7 @@ public class Move extends Anything
     /**
      * @return
      */
-    public int[] /*AlgebraicNumber*/ getLength()
+    public AlgebraicNumber getLength()
     {
         return length;
     }
@@ -44,7 +43,7 @@ public class Move extends Anything
      * @param axis2
      * @param len
      */
-    public void reset( Axis axis, int[] /*AlgebraicNumber*/ len )
+    public void reset( Axis axis, AlgebraicNumber len )
     {
         this .axis = axis;
         this .length = len;

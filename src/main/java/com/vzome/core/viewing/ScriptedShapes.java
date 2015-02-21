@@ -9,6 +9,7 @@ package com.vzome.core.viewing;
 import java.io.File;
 import java.io.InputStream;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
@@ -63,8 +64,9 @@ public class ScriptedShapes extends AbstractShapes
             throw new IllegalStateException( "missing script: " + prefix
                     + NODE_SCRIPT );
         Anything connScript = Parser.parse( nodeScript, (IcosahedralSymmetry) mSymmetry );
+        AlgebraicNumber zero = mSymmetry .getField() .zero();
         ZomicPolyhedronModelInterpreter zpmi = new ZomicPolyhedronModelInterpreter( mSymmetry,
-                connScript, new int[]{ 0,1,0,1 }, mSymmetry.getPermutation( 0 ),
+                connScript, zero, mSymmetry.getPermutation( 0 ),
                 Symmetry.PLUS );
         return zpmi.getPolyhedron();
     }

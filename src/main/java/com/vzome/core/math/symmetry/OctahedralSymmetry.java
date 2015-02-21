@@ -2,12 +2,10 @@
 
 package com.vzome.core.math.symmetry;
 
-import java.util.Arrays;
-
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.algebra.RationalMatrices;
-import com.vzome.core.algebra.RationalVectors;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 
@@ -104,21 +102,21 @@ public class OctahedralSymmetry extends AbstractSymmetry
         }
         else
         {
-            int[] xAxis = mField.basisVector( 3, RationalVectors.X );
-            int[] yAxis = mField.basisVector( 3, RationalVectors.Y );
-            int[] zAxis = mField.basisVector( 3, RationalVectors.Z );
-            int[] green = mField.add( xAxis, yAxis );
+            AlgebraicVector xAxis = mField.basisVector( 3, AlgebraicVector.X );
+            AlgebraicVector yAxis = mField.basisVector( 3, AlgebraicVector.Y );
+            AlgebraicVector zAxis = mField.basisVector( 3, AlgebraicVector.Z );
+            AlgebraicVector green = xAxis .plus( yAxis );
             createZoneOrbit( "green", 1, 8, green, true );
-            int[] yellow = mField.add( green, zAxis );
+            AlgebraicVector yellow = green .plus( zAxis );
             createZoneOrbit( "yellow", 0, 4, yellow, true );
         }
     }
 
     protected void createFrameOrbit( String frameColor )
     {
-        int[] xAxis = mField.basisVector( 3, RationalVectors.X );
-        int[] yAxis = mField.basisVector( 3, RationalVectors.Y );
-        int[] zAxis = mField.basisVector( 3, RationalVectors.Z );
+        AlgebraicVector xAxis = mField.basisVector( 3, AlgebraicVector.X );
+        AlgebraicVector yAxis = mField.basisVector( 3, AlgebraicVector.Y );
+        AlgebraicVector zAxis = mField.basisVector( 3, AlgebraicVector.Z );
         Direction dir;
         if ( mField instanceof PentagonField )
             dir = createZoneOrbit( frameColor, 0, 1, xAxis, true, true, mField .createRational( new int[] { 2, 1 } ) );
@@ -126,26 +124,26 @@ public class OctahedralSymmetry extends AbstractSymmetry
             dir = createZoneOrbit( frameColor, 0, 1, xAxis, true );
 
         createBasisAxes( dir, xAxis, 0 );
-        createBasisAxes( dir, mField.negate( xAxis ), 12 );
+        createBasisAxes( dir, xAxis .negate(), 12 );
         createBasisAxes( dir, yAxis, 5 );
-        createBasisAxes( dir, mField.negate( yAxis ), 7 );
+        createBasisAxes( dir, yAxis .negate(), 7 );
         createBasisAxes( dir, zAxis, 4 );
-        createBasisAxes( dir, mField.negate( zAxis ), 6 );
+        createBasisAxes( dir, zAxis .negate(), 6 );
         for ( int p = 0; p < ORDER; p++ ) {
             int x = mOrientations[p].mapIndex( 0 );
             int y = mOrientations[p].mapIndex( 8 );
             int z = mOrientations[p].mapIndex( 4 );
-            mMatrices[p] = mField.createMatrix( new int[][] { dir.getAxis( PLUS, x ).normal(), dir.getAxis( PLUS, y ).normal(),
-                    dir.getAxis( PLUS, z ).normal() } );
+            mMatrices[p] = new AlgebraicMatrix( dir.getAxis( PLUS, x ).normal(), dir.getAxis( PLUS, y ).normal(),
+                    dir.getAxis( PLUS, z ).normal() );
 
             Axis axis = dir.getAxis( PLUS, p );
-            int[] norm = RationalMatrices.transform( mMatrices[p], xAxis );
-            if ( ! Arrays.equals( norm, axis.normal() ) )
+            AlgebraicVector norm = mMatrices[p] .timesColumn( xAxis );
+            if ( ! norm .equals( axis.normal() ) )
                 throw new IllegalStateException( "matrix wrong: " + p );
         }
     }
 
-    private void createBasisAxes( Direction dir, int[] norm, int orientation )
+    private void createBasisAxes( Direction dir, AlgebraicVector norm, int orientation )
     {
         for ( int i = 0; i < 4; i++ ) {
             int prototype = mOrientations[orientation].mapIndex( i );

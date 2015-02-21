@@ -3,6 +3,7 @@ package com.vzome.core.zomic.program;
 
 import java.util.Iterator;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.zomic.ZomicException;
 
@@ -20,11 +21,11 @@ public interface Visitor{
 
 	void visitReflect( Axis blueAxis ) throws ZomicException ;
 
-	void visitMove( Axis axis, int[] /*AlgebraicNumber*/ length ) throws ZomicException ;
+	void visitMove( Axis axis, AlgebraicNumber length ) throws ZomicException ;
 
 	void visitSymmetry( final Symmetry model, Permute permute ) throws ZomicException ;
 
-    void visitScale( int[] /*AlgebraicNumber*/ size ) throws ZomicException ;
+    void visitScale( AlgebraicNumber size ) throws ZomicException ;
 
     void visitSave( Save body, int state ) throws ZomicException ;
 
@@ -60,7 +61,7 @@ public interface Visitor{
 		void visitReflect( Axis blueAxis ) {}
 
 		public 
-		void visitMove( Axis axis, int[] /*AlgebraicNumber*/ length ) throws ZomicException {}
+		void visitMove( Axis axis, AlgebraicNumber length ) throws ZomicException {}
 
 		public 
 		void visitSymmetry( final Symmetry model, Permute permute ) throws ZomicException {
@@ -73,7 +74,7 @@ public interface Visitor{
 		}
 
         public 
-        void visitScale( int[] /*AlgebraicNumber*/ size ) {}
+        void visitScale( AlgebraicNumber size ) {}
 
         public 
         void visitBuild( boolean build, boolean destroy ) {}

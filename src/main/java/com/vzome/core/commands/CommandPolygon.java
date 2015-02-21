@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -33,14 +34,13 @@ public class CommandPolygon extends AbstractCommand
     
     public ConstructionList apply( ConstructionList parameters, Map attrs, ConstructionChanges effects ) throws Failure
     {
-        AlgebraicField field = (AlgebraicField) attrs .get( FIELD_ATTR_NAME );
         Boolean loadingFile = ((Boolean) attrs .get( Command .LOADING_FROM_FILE ) );
         boolean failed = false;
         ConstructionList result = new ConstructionList();
         final Construction[] params = parameters .getConstructions();
         List verticesList = new ArrayList();
         
-        int[] /*AlgebraicVector*/ normal = null, base = null;
+        AlgebraicVector normal = null, base = null;
         int numPoints = 0;
         for ( int j = 0; j < params .length; j++ ){
             if ( params[j] instanceof Point ) {
@@ -50,18 +50,18 @@ public class CommandPolygon extends AbstractCommand
                     base = ((Point) verticesList .get( 0 ) ) .getLocation();
                 } else if ( numPoints == 3 ) {
                     
-                    int[] /*AlgebraicVector*/ v1 = field .subtract( ((Point) verticesList .get( 1 ) ) .getLocation(), base );
-                    int[] /*AlgebraicVector*/ v2 = field .subtract( ((Point) params[j] ) .getLocation(), base );
-                    normal = field .cross( v1, v2 );
-                    if ( field .isOrigin( normal ) )
+                    AlgebraicVector v1 = ((Point) verticesList .get( 1 ) ) .getLocation() .minus( base );
+                    AlgebraicVector v2 = ((Point) params[j] ) .getLocation() .minus( base );
+                    normal = v1 .cross( v2 );
+                    if ( normal .isOrigin() )
                         if ( loadingFile != null )
                             failed = true;
                         else
                             throw new Failure( "points are colinear" );
                 } else if ( numPoints > 3 ) {
-                    int[] /*AlgebraicVector*/ loc = field .subtract ( ((Point) params[j] ) .getLocation(),base );
-                    int[] /*AlgebraicNumber*/ dotProd = field .dot( loc, normal );
-                    if ( ! field .isZero( dotProd ) )
+                    AlgebraicVector loc = ((Point) params[j] ) .getLocation() .minus( base );
+                    AlgebraicNumber dotProd = loc .dot( normal );
+                    if ( ! dotProd .isZero() )
                         if ( loadingFile != null )
                             failed = true;
                         else

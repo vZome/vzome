@@ -3,6 +3,8 @@
 package com.vzome.core.construction;
 
 
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.symmetry.Symmetry;
 
 /**
@@ -44,8 +46,8 @@ public class SymmetryTransformation extends Transformation
         if ( mCenter .isImpossible() )
             return setStateVariables( null, null, true );
         
-        int[] /*AlgebraicVector*/ loc = mCenter .getLocation();
-        int[][] matrix = mSymmetry .getMatrix( mOrientation );
+        AlgebraicVector loc = mCenter .getLocation();
+        AlgebraicMatrix matrix = mSymmetry .getMatrix( mOrientation );
         return setStateVariables( matrix, loc, false );
     }
     

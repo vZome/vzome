@@ -2,7 +2,9 @@
 
 package com.vzome.core.construction;
 
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -46,14 +48,14 @@ public class Scaling extends Transformation
         if ( orbit != zone2 .getDirection() )
             return setStateVariables( null, null, true );
         
-        int[] len1 = zone1 .getLength( s1 .getOffset() );
-        int[] len2 = zone2 .getLength( s2 .getOffset() );
-        int[] scale = field .divide( len2, len1 );
+        AlgebraicNumber len1 = zone1 .getLength( s1 .getOffset() );
+        AlgebraicNumber len2 = zone2 .getLength( s2 .getOffset() );
+        AlgebraicNumber scale = len2 .dividedBy( len1 );
 //        scale = field .multiply( scale, field .createPower( -5 ) );
-        int[][] transform = field .createMatrix( new int[][]{
-                field .scaleVector( field .basisVector( 3, RationalVectors.X ), scale ),
-                field .scaleVector( field .basisVector( 3, RationalVectors.Y ), scale ),
-                field .scaleVector( field .basisVector( 3, RationalVectors.Z ), scale ) } );
+        AlgebraicMatrix transform = new AlgebraicMatrix(
+                field .basisVector( 3, AlgebraicVector.X ) .scale( scale ),
+                field .basisVector( 3, AlgebraicVector.Y ) .scale( scale ),
+                field .basisVector( 3, AlgebraicVector.Z ) .scale( scale ) );
         return setStateVariables( transform, center .getLocation(), false );
     }
 

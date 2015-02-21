@@ -3,8 +3,6 @@ package com.vzome.core.algebra;
 
 
 /*************************************************************************
- *  Compilation:  javac BigRational.java
- *  Execution:    java BigRational
  *
  *  Immutable ADT for arbitrarily large Rational numbers. 
  * 
@@ -30,42 +28,83 @@ package com.vzome.core.algebra;
 
 import java.math.BigInteger;
 
-public class BigRational implements Comparable<BigRational> {
+public class BigRational implements Comparable<BigRational>, Fields.Element {
 
     public final static BigRational ZERO = new BigRational(0);
+    public final static BigRational ONE = new BigRational(1);
 
-    private BigInteger num;   // the numerator
-    private BigInteger den;   // the denominator
+    private BigInteger bigNum;   // the numerator
+    private BigInteger bigDen;   // the denominator
 
+    // INVARIANT: either the BigIntegers are null, and the longs are the truth,
+    //   or the longs are both == 0, and the BigIntegers are the truth.
+    
+    private long num;
+    private long den;
 
     // create and initialize a new BigRational object
-    public BigRational(int numerator, int denominator) {
-        this(new BigInteger("" + numerator), new BigInteger("" + denominator));
+    public BigRational( long numerator, long denominator )
+    {
+        init( numerator, denominator );
     }
 
     // create and initialize a new BigRational object
-    public BigRational(int numerator) {
-        this(numerator, 1);
+    public BigRational( long numerator )
+    {
+        this .num = numerator;
+        this .den = 1l;
     }
 
     // create and initialize a new BigRational object from a string, e.g., "-343/1273"
-    public BigRational(String s) {
+    public BigRational( String s )
+    {
         String[] tokens = s.split("/");
-        if (tokens.length == 2)
-            init(new BigInteger(tokens[0]), new BigInteger(tokens[1]));
-        else if (tokens.length == 1)
-            init(new BigInteger(tokens[0]), BigInteger.ONE);
-        else
-            throw new RuntimeException("Parse error in BigRational");
+        try {
+            if (tokens.length == 2)
+                init( Long.parseLong( tokens[0] ), Long.parseLong( tokens[1] ) );
+            else if (tokens.length == 1)
+                init( Long.parseLong( tokens[0] ), 1l );
+            else
+                throw new RuntimeException("Parse error in BigRational");
+        }
+        catch ( NumberFormatException e )
+        {
+            if (tokens.length == 2)
+                init(new BigInteger(tokens[0]), new BigInteger(tokens[1]));
+            else if (tokens.length == 1)
+                init(new BigInteger(tokens[0]), BigInteger.ONE);
+            else
+                throw new RuntimeException("Parse error in BigRational");
+        }
     }
 
     // create and initialize a new BigRational object
-    public BigRational(BigInteger numerator, BigInteger denominator) {
-        init(numerator, denominator);
+    public BigRational( BigInteger numerator, BigInteger denominator )
+    {
+        init( numerator, denominator );
     }
 
-    private void init(BigInteger numerator, BigInteger denominator) {
+    private void init( long numerator, long denominator ) {
 
+        // deal with x / 0
+        if ( denominator == 0l ) {
+           throw new RuntimeException("Denominator is zero");
+        }
+
+        // reduce fraction
+        long g = gcd( numerator, denominator );
+        this .num = numerator / g;
+        this .den = denominator / g;
+
+        // to ensure invariant that denominator is positive
+        if ( this .den < 0l ) {
+            this .den = - this .den;
+            this .num = - this .num;
+        }
+    }
+
+    private void init( BigInteger numerator, BigInteger denominator )
+    {
         // deal with x / 0
         if (denominator.equals(BigInteger.ZERO)) {
            throw new RuntimeException("Denominator is zero");
@@ -73,42 +112,85 @@ public class BigRational implements Comparable<BigRational> {
 
         // reduce fraction
         BigInteger g = numerator.gcd(denominator);
-        num = numerator.divide(g);
-        den = denominator.divide(g);
+        bigNum = numerator.divide(g);
+        bigDen = denominator.divide(g);
 
         // to ensure invariant that denominator is positive
-        if (den.compareTo(BigInteger.ZERO) < 0) {
-            den = den.negate();
-            num = num.negate();
+        if (bigDen.compareTo(BigInteger.ZERO) < 0) {
+            bigDen = bigDen.negate();
+            bigNum = bigNum.negate();
         }
     }
     
-    private static final BigInteger BIG_MAX_INT = BigInteger.valueOf( Integer.MAX_VALUE );
+    private final static long gcd( long u, long v )
+    {
+        // TODO implement faster binary GCD, ala Knuth 4.5.2 (see the BigInteger implementation)
+        u = Math.abs( u );
+        v = Math.abs( v );
+        while ( v != 0 )
+        {
+            long r = u % v;
+            u = v;
+            v = r;
+        }
+        return u;
+    }
     
-    public int intDenominator()
-    {
-    	if ( den .compareTo( BIG_MAX_INT ) >= 0 )
-            throw new IllegalStateException( "BigRational integer overflow" );
-    	return den .intValue();
-    }
-
-    public int intNumerator()
-    {
-    	if ( num .compareTo( BIG_MAX_INT ) >= 0 )
-            throw new IllegalStateException( "BigRational integer overflow" );
-    	return num .intValue();
-    }
-
     // return string representation of (this)
-    public String toString() { 
-        if (den.equals(BigInteger.ONE)) return num + "";
-        else                            return num + "/" + den;
+    public String toString()
+    {
+        if ( this.bigNum == null )
+        {
+            if ( this .den == 1l )
+                return this .num + "";
+            else
+                return this .num + "/" + this .den;
+        }
+        else
+        {
+            if ( this .bigDen .equals( BigInteger.ONE ) )
+                return bigNum + "";
+            else
+                return bigNum + "/" + bigDen;
+        }
+    }
+    
+    private static final boolean multOverflow( long a, long b )
+    {
+        return false; // TODO check for overflow and throw an exception
     }
 
     // return { -1, 0, + 1 } if a < b, a = b, or a > b
-    public int compareTo(BigRational b) {
+    public int compareTo( BigRational b )
+    {
         BigRational a = this;
-        return a.num.multiply(b.den).compareTo(a.den.multiply(b.num));
+        if ( a .bigNum == null && b .bigNum == null )
+        {
+            if ( multOverflow( a.num, b.den ) || multOverflow( a.den, b.num ) )
+                return a .big() .compareTo( b .big() );
+            else
+                return Long .compare( a.num * b.den, a.den * b.num );
+        }
+        else
+        {
+            // either one may be non-big
+            a = a .big();
+            b = b .big();
+            return a .bigNum .multiply( b.bigDen ) .compareTo( a.bigDen .multiply( b.bigNum ) );
+        }
+    }
+
+    /**
+     * Convert to BigInteger form, if necessary.
+     * @return
+     */
+    private BigRational big()
+    {
+        if ( this .bigNum == null )
+            // this is expensive, but should be necessary only very rarely
+            return new BigRational( new BigInteger( Long .toString( this .num ) ), new BigInteger( Long .toString( this .den ) ) );
+        else
+            return this;
     }
 
     // is this BigRational negative, zero, or positive?
@@ -116,62 +198,149 @@ public class BigRational implements Comparable<BigRational> {
     public boolean isPositive() { return compareTo(ZERO)  > 0; }
     public boolean isNegative() { return compareTo(ZERO)  < 0; }
 
+    public boolean isOne() { return compareTo(ONE) == 0; }
+
     // is this Rational object equal to y?
-    public boolean equals(Object y) {
-        if (y == this) return true;
-        if (y == null) return false;  
-        if (y.getClass() != this.getClass()) return false;
+    public boolean equals( Object y )
+    {
+        if ( y == this ) return true;
+        if ( y == null ) return false;  
+        if ( y .getClass() != this .getClass() ) return false;
         BigRational b = (BigRational) y;
-        return compareTo(b) == 0;
+        return this .compareTo( b ) == 0;
     }
         
     // hashCode consistent with equals() and compareTo()
-    public int hashCode() {
-        return this.toString().hashCode();
+    public int hashCode()
+    {
+        return this .toString() .hashCode();
     }
-    
+
+    public double getReal()
+    {
+        if ( this.bigNum == null )
+            return ((double) this .num) / ((double) this .den);
+        else
+            return this .bigNum .doubleValue() / this .bigDen .doubleValue();
+    }
 
     // return a * b
-    public BigRational times(BigRational b) {
+    public BigRational times( BigRational b )
+    {
+        if ( b .equals( ZERO ) )
+            return ZERO;
+        if ( b .equals( ONE ) )
+            return this;
         BigRational a = this;
-        return new BigRational(a.num.multiply(b.num), a.den.multiply(b.den));
+        if ( a .bigNum == null && b .bigNum == null )
+        {
+            if ( multOverflow( a.num, b.num ) || multOverflow( a.den, b.den ) )
+                return a .big() .times( b .big() );
+            else
+                return new BigRational( a.num * b.num, a.den * b.den );
+        }
+        else
+        {
+            // either one may be non-big
+            a = a .big();
+            b = b .big();
+            return new BigRational( a .bigNum .multiply( b .bigNum ), a .bigDen .multiply( b .bigDen ) );
+        }
     }
 
     // return a + b
-    public BigRational plus(BigRational b) {
+    public BigRational plus( BigRational b )
+    {
+        if ( b .equals( ZERO ) )
+            return this;
         BigRational a = this;
-        BigInteger numerator   = a.num.multiply(b.den).add(b.num.multiply(a.den));
-        BigInteger denominator = a.den.multiply(b.den);
-        return new BigRational(numerator, denominator);
+        if ( a .bigNum == null && b .bigNum == null )
+        {
+            if ( multOverflow( a.num, b.den ) || multOverflow( a.den, b.num ) || multOverflow( a.den, b.den ) )
+                return a .big() .plus( b .big() );
+            else
+                return new BigRational( a.num * b.den + a.den * b.num, a.den * b.den );
+        }
+        else
+        {
+            // either one may be non-big
+            a = a .big();
+            b = b .big();
+            BigInteger numerator   = a .bigNum .multiply( b .bigDen ) .add( b .bigNum .multiply( a .bigDen ) );
+            BigInteger denominator = a .bigDen .multiply( b .bigDen );
+            return new BigRational( numerator, denominator );
+        }
     }
 
+    public BigInteger getNumerator()
+    {
+        if ( this.bigNum == null )
+            return new BigInteger( this .num + "" );
+        else
+            return this .bigNum;
+    }
+    
+    public BigInteger getDenominator()
+    {
+        if ( this.bigNum == null )
+            return new BigInteger( this .den + "" );
+        else
+            return this .bigDen;
+    }
+    
     // return -a
-    public BigRational negate() {
-        return new BigRational(num.negate(), den);
+    public BigRational negate()
+    {
+        if ( this .equals( ZERO ) )
+            return this;
+        if ( this.bigNum == null )
+        {
+            return new BigRational( - this.num, this.den );
+        }
+        else
+        {
+            return new BigRational( bigNum .negate(), bigDen );
+        }
     }
 
     // return a - b
-    public BigRational minus(BigRational b) {
+    public BigRational minus( BigRational b )
+    {
+        if ( b .equals( ZERO ) )
+            return this;
         BigRational a = this;
-        return a.plus(b.negate());
+        return a .plus( b. negate() );
     }
 
     // return 1 / a
-    public BigRational reciprocal() {
-        return new BigRational(den, num);
+    public BigRational reciprocal()
+    {
+        if ( this .equals( ONE ) )
+            return this;
+        if ( this.bigNum == null )
+        {
+            return new BigRational( this.den, this.num );
+        }
+        else
+        {
+            return new BigRational( bigDen, bigNum );
+        }
     }
 
     // return a / b
-    public BigRational divides(BigRational b) {
+    public BigRational divides( BigRational b )
+    {
+        if ( b .equals( ONE ) )
+            return this;
         BigRational a = this;
-        return a.times(b.reciprocal());
+        return a .times( b .reciprocal() );
     }
 
-
     // test client
-    public static void main(String[] args) {
+    public static void main( String[] args )
+    {
         BigRational x, y, z;
-
+        
         // 1/2 + 1/3 = 5/6
         x = new BigRational(1, 2);
         y = new BigRational(1, 3);
@@ -220,12 +389,22 @@ public class BigRational implements Comparable<BigRational> {
         System.out.println(x.plus(x).compareTo(x) == 0);
         /// System.out.println(x.reciprocal());   // divide-by-zero
 
-        // -1/200000000 + 1/300000000 = 1/120000000
+        // -1/200000000 + 1/300000000 = -1/600000000
         x = new BigRational(-1, 200000000);
         y = new BigRational(1, 300000000);
         z = x.plus(y);
         System.out.println(z);
-
     }
 
+    @Override
+    public Fields.Element times( Fields.Element that )
+    {
+        return this .times( (BigRational) that );
+    }
+
+    @Override
+    public Fields.Element plus( Fields.Element that )
+    {
+        return this .plus( (BigRational) that );
+    }
 }

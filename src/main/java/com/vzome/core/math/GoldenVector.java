@@ -6,6 +6,8 @@ import java.nio.IntBuffer;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 abstract class GoldenVector
 {
     public interface Factory extends IntegralNumber.Factory
@@ -18,7 +20,7 @@ abstract class GoldenVector
         
         GoldenVector parseXml( Element elem );
         
-        int[] parseRationalVector( Element elem );
+        AlgebraicVector parseRationalVector( Element elem );
     }
     
     public static final int W_AXIS = 0, X_AXIS = 1, Y_AXIS = 2, Z_AXIS = 3;

@@ -8,11 +8,13 @@ import java.util.Iterator;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Bivector3d;
 import com.vzome.core.algebra.Vector3d;
 import com.vzome.core.commands.Command;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -25,12 +27,10 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
     
     private Bivector3d plane;
     
-    private int[] anchor;
+    private AlgebraicVector anchor;
         
     private Tool.Registry tools;
 
-	private final AlgebraicField field;
-	
 	private boolean halfSpace = true;
 	private boolean boundaryOpen = false;
 	private boolean above = true;
@@ -44,7 +44,6 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         super( selection, false );
         this .name = name;
         this .tools = tools;
-        this .field = field;
     }
 
 	public boolean isSticky()
@@ -54,7 +53,7 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
 
     public void perform() throws Failure
     {
-        int[] p1 = null, p2 = null, p3 = null;
+        AlgebraicVector p1 = null, p2 = null, p3 = null;
         for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
             Manifestation man = (Manifestation) mans .next();
             unselect( man );
@@ -85,8 +84,8 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         if ( p3 == null )
         	throw new Command.Failure( "half-space selection tool requires exactly three balls" );
 
-        Vector3d v1 = new Vector3d( field .subtract( p2, p1 ), field );
-        Vector3d v2 = new Vector3d( field .subtract( p3, p1 ), field );
+        Vector3d v1 = new Vector3d( p2 .minus( p1 ) );
+        Vector3d v2 = new Vector3d( p3 .minus( p1 ) );
         plane = v1 .outer( v2 );
         anchor = p1;
 
@@ -170,16 +169,16 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         applyTool .redo();
 	};
 	
-	private int orient( int[] point )
+	private int orient( AlgebraicVector point )
 	{
-		int[] diff = field .subtract( point, anchor );
-		Vector3d v = new Vector3d( diff, field );
-		int[] volume = plane .outer( v );
-		if ( field .isZero( volume ) )
+	    AlgebraicVector diff = point .minus( anchor );
+		Vector3d v = new Vector3d( diff );
+		AlgebraicNumber volume = plane .outer( v );
+		if ( volume .isZero() )
 			return 0;
 		else
 		{
-			double volD = field .evaluateNumber( volume );
+			double volD = volume .evaluate();
 			return (volD > 0d)? 1 : -1;
 		}
 	}

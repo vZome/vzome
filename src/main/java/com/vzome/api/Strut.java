@@ -3,24 +3,21 @@
 
 package com.vzome.api;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.model.Manifestation;
 
 public class Strut {
 	
-	private final AlgebraicField field;
 	private final com.vzome.core.model.Strut manifestation;
 	private int zone = 0;
 	
-	public Strut( AlgebraicField field, com.vzome.core.model.Strut strut )
+	public Strut( com.vzome.core.model.Strut strut )
 	{
-		this .field = field;
 		this .manifestation = strut;
 	}
 	
-	public Strut( AlgebraicField field, com.vzome.core.model.Strut strut, int zone )
+	public Strut( com.vzome.core.model.Strut strut, int zone )
 	{
-		this( field, strut );
+		this( strut );
 		this .zone = zone;
 	}
 	
@@ -31,12 +28,12 @@ public class Strut {
 
 	public Vector location()
 	{
-		return new Vector( this .field, this .manifestation .getLocation() );
+		return new Vector( this .manifestation .getLocation() );
 	}
 
 	public Vector offset()
 	{
-		return new Vector( this .field, this .manifestation .getOffset() );
+		return new Vector( this .manifestation .getOffset() );
 	}
 	
 	public boolean equals( Object other )

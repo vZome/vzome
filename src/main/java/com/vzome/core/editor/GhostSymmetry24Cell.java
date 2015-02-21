@@ -6,7 +6,7 @@ package com.vzome.core.editor;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalMatrices;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
@@ -59,8 +59,7 @@ public class GhostSymmetry24Cell extends ChangeConstructions
         if ( symmAxis == null )
             this.proj = new Projection.Default( field );
         else
-            this.proj = new QuaternionProjection( field, null, RationalMatrices .scaleVector( field, symmAxis .getOffset(),
-                    field .createPower( -5 ) ) );
+            this.proj = new QuaternionProjection( field, null, symmAxis .getOffset() .scale( field .createPower( -5 ) ) );
 
         Direction blue = symm .getDirection( "blue" );
         Direction green = symm .getDirection( "green" );
@@ -89,35 +88,35 @@ four real coordinates to obtain a model of the 24-cell with 12-fold ghost symmet
          */
         for ( int k = 0; k < 12; k++ )
         {
-            int[] A1 = blue .getAxis( Symmetry.PLUS, (k+2) % 12 ) .normal();
-            int[] A2 = green .getAxis( Symmetry.PLUS, (5*k+2) % 12 ) .normal();
-            int[] B1 = green .getAxis( Symmetry.PLUS, (k+2) % 12 ) .normal();
-            int[] B2 = blue .getAxis( Symmetry.PLUS, (5*k+5) % 12 ) .normal();
+            AlgebraicVector A1 = blue .getAxis( Symmetry.PLUS, (k+2) % 12 ) .normal();
+            AlgebraicVector A2 = green .getAxis( Symmetry.PLUS, (5*k+2) % 12 ) .normal();
+            AlgebraicVector B1 = green .getAxis( Symmetry.PLUS, (k+2) % 12 ) .normal();
+            AlgebraicVector B2 = blue .getAxis( Symmetry.PLUS, (5*k+5) % 12 ) .normal();
             
-            int[] projected = new int[ 16 ];
-            field .setVectorComponent( projected, 0, field .getVectorComponent( A2, 0 ) );
-            field .setVectorComponent( projected, 1, field .getVectorComponent( A2, 1 ) );
-            field .setVectorComponent( projected, 2, field .getVectorComponent( A1, 0 ) );
-            field .setVectorComponent( projected, 3, field .getVectorComponent( A1, 1 ) );
+            AlgebraicVector projected = symm .getField() .origin( 4 );
+            projected .setComponent( 0, A2 .getComponent( 0 ) );
+            projected .setComponent( 1, A2 .getComponent( 1 ) );
+            projected .setComponent( 2, A1 .getComponent( 0 ) );
+            projected .setComponent( 3, A1 .getComponent( 1 ) );
             
             if ( proj != null )
                 projected = proj .projectImage( projected, true );
             
-            Point p = new FreePoint( RationalMatrices .scaleVector( field, projected, field .createPower( 5 ) ), root );
+            Point p = new FreePoint( projected .scale( field .createPower( 5 ) ), root );
             p .setIndex( k );
             addConstruction( p );
             manifestConstruction( p );
 
-            projected = new int[ 16 ];
-            field .setVectorComponent( projected, 0, field .getVectorComponent( B2, 0 ) );
-            field .setVectorComponent( projected, 1, field .getVectorComponent( B2, 1 ) );
-            field .setVectorComponent( projected, 2, field .getVectorComponent( B1, 0 ) );
-            field .setVectorComponent( projected, 3, field .getVectorComponent( B1, 1 ) );
+            projected = symm .getField() .origin( 4 );
+            projected .setComponent( 0, B2 .getComponent( 0 ) );
+            projected .setComponent( 1, B2 .getComponent( 1 ) );
+            projected .setComponent( 2, B1 .getComponent( 0 ) );
+            projected .setComponent( 3, B1 .getComponent( 1 ) );
             
             if ( proj != null )
                 projected = proj .projectImage( projected, true );
             
-            p = new FreePoint( RationalMatrices .scaleVector( field, projected, field .createPower( 5 ) ), root );
+            p = new FreePoint( projected .scale( field .createPower( 5 ) ), root );
             p .setIndex( 12 + k );
             addConstruction( p );
             manifestConstruction( p );

@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -56,11 +57,11 @@ public class DaeExporter extends Exporter3d
             if ( man instanceof Panel )
             {
                 Panel panel = (Panel) man;
-                RealVector norm = field .getRealVector( panel .getNormal( field ) ) .normalize();
+                RealVector norm = panel .getNormal( field ) .toRealVector() .normalize();
                 int v0 = -1, v1 = -1, n0 = -1, n1 = -1;
                 for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
                 {
-                    RealVector vertex = field .getRealVector( (int[]) verts .next() );
+                    RealVector vertex = ((AlgebraicVector) verts .next()) .toRealVector();
                     // This scale factor corresponds to a vZome model that uses a long blue as the radius of a ball.
                     //  norm squared of diameter in vZome: 1967.87  => diameter == 44.36
                     //  nominal ball diameter in rZome: .700 in
@@ -112,7 +113,7 @@ public class DaeExporter extends Exporter3d
                     int v0 = vertexCount++;
                     if ( vertexCount % 20 == 0 )
                         vertices .append( "\n" );
-                    RealVector vertex = field .getRealVector( strut .getLocation() );
+                    RealVector vertex = strut .getLocation() .toRealVector();
                     vertices .append( FORMAT .format( vertex.x ) + " " );
                     vertices .append( FORMAT .format( vertex.y ) + " " );
                     vertices .append( FORMAT .format( vertex.z ) + " " );
@@ -120,7 +121,7 @@ public class DaeExporter extends Exporter3d
                     int v1 = vertexCount++;
                     if ( vertexCount % 20 == 0 )
                         vertices .append( "\n" );
-                    vertex = field .getRealVector( strut .getEnd() );
+                    vertex = strut .getEnd() .toRealVector();
                     vertices .append( FORMAT .format( vertex.x ) + " " );
                     vertices .append( FORMAT .format( vertex.y ) + " " );
                     vertices .append( FORMAT .format( vertex.z ) + " " );

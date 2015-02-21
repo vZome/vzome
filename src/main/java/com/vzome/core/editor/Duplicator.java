@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
@@ -27,9 +26,9 @@ public class Duplicator
     private Map vertexData = new HashMap();
     private final ModelRoot root;
     private final ChangeConstructions edit;
-    private final int[] offset;
+    private final AlgebraicVector offset;
 
-    public Duplicator( ChangeConstructions edit, ModelRoot root, int[] offset )
+    public Duplicator( ChangeConstructions edit, ModelRoot root, AlgebraicVector offset )
     {
         this .edit = edit;
         this .root = root;
@@ -48,7 +47,7 @@ public class Duplicator
     {
         if ( man instanceof Connector )
         {
-            int[] vector = ((Connector) man) .getLocation();
+            AlgebraicVector vector = ((Connector) man) .getLocation();
             return getVertex( vector );
         }
         else if ( man instanceof Strut )
@@ -62,21 +61,20 @@ public class Duplicator
         {
             List vs = new ArrayList();
             for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
-                vs .add( getVertex( (int[]) verts .next() ));
+                vs .add( getVertex( (AlgebraicVector) verts .next() ));
             return new PolygonFromVertices( (Point[]) vs .toArray( new Point[0] ) );
         }
         return null;
     }
         
-    protected Point getVertex( int[] vertexVector )
+    protected Point getVertex( AlgebraicVector vertexVector )
     {
-        Point result = (Point) vertexData .get( new AlgebraicVector( vertexVector ) );
+        Point result = (Point) vertexData .get( vertexVector);
         if ( result == null )
         {
-            AlgebraicVector key = new AlgebraicVector( vertexVector );
-            AlgebraicField field = root .getField();
+            AlgebraicVector key = vertexVector;
             if ( this .offset != null )
-                vertexVector = field .add( vertexVector, this.offset );
+                vertexVector = vertexVector .plus( this.offset );
             result = new FreePoint( vertexVector, root );
             vertexData .put( key, result );
         }

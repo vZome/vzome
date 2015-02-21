@@ -9,6 +9,7 @@ import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 
 /**
@@ -78,7 +79,7 @@ public abstract class Manifestation
         return this .hidden;
     }
     
-    public abstract int[] /*AlgebraicVector*/ getLocation();
+    public abstract AlgebraicVector getLocation();
     
     private Group mContainer;
     

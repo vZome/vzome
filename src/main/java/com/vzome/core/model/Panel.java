@@ -2,14 +2,13 @@
 
 package com.vzome.core.model;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalVectors;
+import com.vzome.core.algebra.AlgebraicVector;
 
-public class Panel extends Manifestation implements Iterable<int[]>
+public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 {
     List mVertices;
 
@@ -23,7 +22,7 @@ public class Panel extends Manifestation implements Iterable<int[]>
         mVertices = vertices;
     }
 
-    public int[] /* AlgebraicVector */ getLocation()
+    public AlgebraicVector getLocation()
     {
         return null;
     }
@@ -38,9 +37,9 @@ public class Panel extends Manifestation implements Iterable<int[]>
         int len = mVertices.size();
         if ( len == 0 )
         	return 0;
-        int val = RationalVectors.hashCode( (int[]) mVertices.get( 0 ) );
+        int val = ( (AlgebraicVector) mVertices.get( 0 ) ) .hashCode();
         for ( int i = 1; i < len; i++ )
-            val ^= RationalVectors.hashCode( (int[]) mVertices.get( i ) );
+            val ^= ( (AlgebraicVector) mVertices.get( i ) ) .hashCode();
         return val;
     }
 
@@ -88,7 +87,7 @@ public class Panel extends Manifestation implements Iterable<int[]>
             for ( int j = 0; j < size; j++ ) {
                 if ( found[j] )
                     continue;
-                if ( Arrays.equals( (int[]) mVertices.get( j ), (int[]) panel.mVertices.get( i ) ) ) {
+                if ( mVertices.get( j ) .equals( panel.mVertices.get( i ) ) ) {
                     found[j] = true;
                     found_i = true;
                     break;
@@ -103,22 +102,22 @@ public class Panel extends Manifestation implements Iterable<int[]>
         return true;
     }
 
-    public int[] /* AlgebraicVector */getNormal( AlgebraicField field )
+    public AlgebraicVector getNormal( AlgebraicField field )
     {
-        int[] /* AlgebraicVector */v0 = (int[] /* AlgebraicVector */) mVertices.get( 0 );
-        int[] /* AlgebraicVector */v1 = (int[] /* AlgebraicVector */) mVertices.get( 1 );
-        int[] /* AlgebraicVector */v2 = (int[] /* AlgebraicVector */) mVertices.get( 2 );
-        v1 = field.subtract( v1, v0 );
-        v2 = field.subtract( v2, v0 );
-        return field.cross( v1, v2 );
+        AlgebraicVector v0 = (AlgebraicVector) mVertices.get( 0 );
+        AlgebraicVector v1 = (AlgebraicVector) mVertices.get( 1 );
+        AlgebraicVector v2 = (AlgebraicVector) mVertices.get( 2 );
+        v1 = v1 .minus( v0 );
+        v2 = v2 .minus( v0 );
+        return v1 .cross( v2 );
     }
 
     public String toString()
     {
         StringBuffer buf = new StringBuffer( "panel: " );
         for ( Iterator iterator = mVertices.iterator(); iterator.hasNext(); ) {
-            int[] vertex = (int[]) iterator.next();
-            buf.append( RationalVectors.toString( vertex ) );
+            AlgebraicVector vertex = (AlgebraicVector) iterator.next();
+            buf.append( vertex .toString() );
             buf.append( ", " );
 
         }
@@ -126,7 +125,7 @@ public class Panel extends Manifestation implements Iterable<int[]>
     }
 
 	@Override
-	public Iterator<int[]> iterator()
+	public Iterator<AlgebraicVector> iterator()
 	{
 		return this.getVertices();
 	}

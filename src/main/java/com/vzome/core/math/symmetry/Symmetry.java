@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 
 /**
@@ -28,7 +30,7 @@ public interface Symmetry
     
     String getName();
 
-    Axis getAxis( int[] vector );
+    Axis getAxis( AlgebraicVector vector );
 
     Axis getAxis( RealVector vector, Set filter );
     
@@ -44,7 +46,7 @@ public interface Symmetry
      * @param i
      * @return
      */
-    int[][] getMatrix( int i );
+    AlgebraicMatrix getMatrix( int i );
 
 	/**
 	 * @param rotation
@@ -66,7 +68,7 @@ public interface Symmetry
     
     int[] subgroup( String name );
     
-    Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm );
+    Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector vector );
 
     String getDefaultStyle();
 }

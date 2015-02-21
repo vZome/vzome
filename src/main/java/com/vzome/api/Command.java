@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -20,11 +21,11 @@ public class Command {
 		
 		Selection getInputs();
 		
-		com.vzome.core.model.Connector addBall( int[] loc );
+		com.vzome.core.model.Connector addBall( AlgebraicVector loc );
 		
-		com.vzome.core.model.Strut addStrut( int[] start, int[] end );
+		com.vzome.core.model.Strut addStrut( AlgebraicVector start, AlgebraicVector end );
 		
-		com.vzome.core.model.Panel addPanel( int[]... vertices );
+		com.vzome.core.model.Panel addPanel( AlgebraicVector... vertices );
 		
 		void select( Manifestation man );
 	}
@@ -40,16 +41,16 @@ public class Command {
             Manifestation man = (Manifestation) mans .next();
             if ( man instanceof Connector )
             {
-                this .selection .add( new Ball( delegate .getField(), (Connector) man ) );
+                this .selection .add( new Ball( (Connector) man ) );
                
             }
             else if ( man instanceof com.vzome.core.model.Strut )
             {
-                this .selection .add( new Strut( delegate .getField(), (com.vzome.core.model.Strut) man ) );
+                this .selection .add( new Strut( (com.vzome.core.model.Strut) man ) );
             }
             else if ( man instanceof com.vzome.core.model.Panel )
             {
-                this .selection .add( new Panel( delegate .getField(), (com.vzome.core.model.Panel) man ) );
+                this .selection .add( new Panel( (com.vzome.core.model.Panel) man ) );
             }
         }
 	}
@@ -79,20 +80,20 @@ public class Command {
 	
 	public Ball addBall( Vector loc )
 	{
-		return new Ball( this.delegate .getField(), this .delegate .addBall( loc .getIntArray() ) );
+		return new Ball( this .delegate .addBall( loc .getAlgebraicVector() ) );
 	}
 	
 	public Strut addStrut( Vector start, Vector end )
 	{
-		return new Strut( this.delegate .getField(), this .delegate .addStrut( start .getIntArray(), end .getIntArray() ) );
+		return new Strut( this .delegate .addStrut( start .getAlgebraicVector(), end .getAlgebraicVector() ) );
 	}
 	
 	public Panel addPanel( Vector... vertices )
 	{
-		int[][] vertexInts = new int[ vertices .length ][];
+	    AlgebraicVector[] vertexInts = new AlgebraicVector[ vertices .length ];
 		for ( int i = 0; i < vertices.length; i++) {
-			vertexInts[ i ] = vertices[ i ] .getIntArray();
+			vertexInts[ i ] = vertices[ i ] .getAlgebraicVector();
 		}
-		return new Panel( this .delegate .getField(), this .delegate .addPanel( vertexInts ) );
+		return new Panel( this .delegate .addPanel( vertexInts ) );
 	}
 }

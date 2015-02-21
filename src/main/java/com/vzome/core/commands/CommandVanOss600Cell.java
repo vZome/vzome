@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.construction.ConstructionChanges;
@@ -62,7 +64,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
         
         protected final ConstructionChanges mEffects;
         
-        protected int[][] mLocations;
+        protected AlgebraicVector[] mLocations;
         
         public VefToModel( Quaternion quaternion, ModelRoot root, ConstructionChanges effects )
         {
@@ -75,11 +77,11 @@ public class CommandVanOss600Cell extends CommandImportVEFData
         protected void startVertices( int numVertices )
         {
             mVertices = new Point[ numVertices ];
-            mLocations = new int[ numVertices ][];
+            mLocations = new AlgebraicVector[ numVertices ];
             mProjection = null;
         }
 
-        protected void addVertex( int index, int[] location )
+        protected void addVertex( int index, AlgebraicVector location )
         {
             mLocations[ index ] = location;
         }
@@ -88,23 +90,22 @@ public class CommandVanOss600Cell extends CommandImportVEFData
         {
             AlgebraicField field = getField();
 
-            int[] half = field .createRational( new int[]{ 1,2 } );
-            int[] quarter = field .createRational( new int[]{ 1,4 } );
+            AlgebraicNumber half = field .createRational( new int[]{ 1,2 } );
+            AlgebraicNumber quarter = field .createRational( new int[]{ 1,4 } );
 
-            int[] centroid = field .scaleVector( field .add( field .add( mLocations[0], mLocations[48] ),
-                                            field .add( mLocations[50], mLocations[64] ) ), quarter );
-            int[] edgeCenter = field .scaleVector( field .add( mLocations[0], mLocations[48] ), half );  // center of one edge
-            int[] vertex = mLocations[50];
+            AlgebraicVector centroid = mLocations[0] .plus( mLocations[48] ) .plus( mLocations[50] ) .plus( mLocations[64] ) .scale( quarter );
+            AlgebraicVector edgeCenter = mLocations[0] .plus( mLocations[48] ) .scale( half );  // center of one edge
+            AlgebraicVector vertex = mLocations[50];
 
-            int[] edgeToVertex = field .subtract( vertex, edgeCenter );
-            int[] edgeToCenter = field .subtract( centroid, edgeCenter );
+            AlgebraicVector edgeToVertex = vertex .minus( edgeCenter );
+            AlgebraicVector edgeToCenter = centroid .minus( edgeCenter );
 
-            int[] symmCenter1 = field .add( edgeCenter, field .scaleVector( edgeToCenter, field .createAlgebraicNumber( 0,3,5,0 ) ) );
-            int[] symmCenter2 = field .add( edgeCenter, field .scaleVector( edgeToVertex, field .createAlgebraicNumber( 0,2,5,0 ) ) );
+            AlgebraicVector symmCenter1 = edgeCenter .plus( edgeToCenter .scale( field .createAlgebraicNumber( 0,3,5,0 ) ) );
+            AlgebraicVector symmCenter2 = edgeCenter .plus( edgeToVertex .scale( field .createAlgebraicNumber( 0,2,5,0 ) ) );
 
-            int[] direction = field .subtract( symmCenter2, symmCenter1 );
+            AlgebraicVector direction = symmCenter2 .minus( symmCenter1 );
             
-            int[] target = field .add( symmCenter1, field .scaleVector( direction, field .createAlgebraicNumber( 0,1,1,0 ) ) );
+            AlgebraicVector target = symmCenter1 .plus( direction .scale( field .createAlgebraicNumber( 0,1,1,0 ) ) );
             
 //            // c0 is now the centroid of a tetrahedron
 //
@@ -130,10 +131,10 @@ public class CommandVanOss600Cell extends CommandImportVEFData
 //            GoldenVector projQ = new GoldenNumberVector( ZERO, y, ONE, w );
                         
             mProjection = new QuaternionProjection( field, null, target );
-            int[] power5 = field .createPower( 5 );
+            AlgebraicNumber power5 = field .createPower( 5 );
 
             for ( int i = 0; i < mLocations.length; i++ ) {
-                int[] location = field .scaleVector( mLocations[i], power5 );
+                AlgebraicVector location = mLocations[i] .scale( power5 );
                 location = mProjection .projectImage( location, wFirst() );
                 mVertices[ i ] = new FreePoint( location, mRoot );
                 mEffects .constructionAdded( mVertices[ i ] );

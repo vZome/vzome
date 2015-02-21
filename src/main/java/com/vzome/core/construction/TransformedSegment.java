@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 
 /**
@@ -41,9 +43,9 @@ public class TransformedSegment extends Segment
     {
         if ( mTransform .isImpossible() || mPrototype .isImpossible() )
             return setStateVariables( null, null, true );
-        int[] /*AlgebraicVector*/ loc = mTransform .transform( mPrototype .getStart() );
-        int[] /*AlgebraicVector*/ end = mTransform .transform( mPrototype .getEnd() );
-        return setStateVariables( loc, field .subtract( end, loc ), false );
+        AlgebraicVector loc = mTransform .transform( mPrototype .getStart() );
+        AlgebraicVector end = mTransform .transform( mPrototype .getEnd() );
+        return setStateVariables( loc, end .minus( loc ), false );
     }
 
     

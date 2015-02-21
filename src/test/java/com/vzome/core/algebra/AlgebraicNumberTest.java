@@ -2,196 +2,114 @@
 
 package com.vzome.core.algebra;
 
-import java.util.Arrays;
-
-import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.Heptagon6Field;
-import com.vzome.core.algebra.HeptagonField;
-import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.algebra.Quaternion;
-import com.vzome.core.algebra.RationalNumbers;
-import com.vzome.core.algebra.RootThreeField;
-import com.vzome.core.algebra.RootTwoField;
-import com.vzome.core.algebra.SnubDodecField;
-
 import junit.framework.TestCase;
 
 public class AlgebraicNumberTest extends TestCase
 {
-    public void notestSnubDodecField()
-    {
-        AlgebraicField field = new SnubDodecField( new PentagonField() );
-
-        int[] tau_xi2_inv =
-            {
-               -12, 1, 8, 1, 2, 1, -1, 1, 6, 1, -4, 1
-            };
-
-        writeNumber( "tau_xi2_inv", tau_xi2_inv, field );
-        
-        int[] result = field .multiply( SnubDodecField.TAU, SnubDodecField .ONE );
-        assertTrue( Arrays .equals( result, SnubDodecField.TAU ) );
-
-        result = field .multiply( SnubDodecField.ONE, SnubDodecField .TAU );
-        assertTrue( Arrays .equals( result, SnubDodecField.TAU ) );
-
-        result = field .multiply( SnubDodecField.TAU, SnubDodecField .TAU );
-        assertTrue( Arrays .equals( result, field .add( SnubDodecField.TAU, SnubDodecField .ONE ) ) );
-
-        writeNumber( "1/tau", SnubDodecField.TAU_INV, field );
-
-        writeNumber( "tau", SnubDodecField.TAU, field );
-
-        writeNumber( "1/xi", SnubDodecField.XI_INV, field );
-
-        writeNumber( "xi", SnubDodecField.XI, field );
-
-        writeNumber( "alpha", SnubDodecField.ALPHA, field );
-
-        writeNumber( "beta", SnubDodecField.BETA, field );
-
-        result = field.multiply( SnubDodecField.TAU, SnubDodecField.ALPHA );
-        writeNumber( "alpha*tau", result, field );
-
-        result = field.multiply( SnubDodecField.TAU_INV, SnubDodecField.ALPHA );
-        writeNumber( "alpha/tau", result, field );
-
-        result = field.multiply( SnubDodecField.TAU, SnubDodecField.BETA );
-        writeNumber( "beta*tau", result, field );
-
-        result = field.multiply( SnubDodecField.TAU_INV, SnubDodecField.BETA );
-        writeNumber( "beta/tau", result, field );
-
-        result = field.multiply( SnubDodecField.XI_INV, SnubDodecField.XI );
-        writeNumber( "xi * 1/xi", result, field );
-        assertTrue( Arrays .equals( result, SnubDodecField.ONE ) );
-        
-        result = field.multiply( SnubDodecField.XI_INV, SnubDodecField.TAU_INV );
-        writeNumber( "1 / tau*xi", result, field );
-        
-        result = field.multiply( result, SnubDodecField.XI_INV );
-        writeNumber( "1 / tau*xi^2", result, field );
-        
-        assertTrue( Arrays.equals( result, tau_xi2_inv ) );
-        
-        result = field.divide( SnubDodecField.XI, SnubDodecField.XI );
-        writeNumber( "xi / xi", result, field );
-        assertTrue( Arrays .equals( result, SnubDodecField.ONE ) );
-        
-        int[][] repr = new int[6][12];
-        field.createRepresentation( SnubDodecField.XI, 0, repr, 0, 0 );
-        int[][] inverse = field.invert( repr );
-        result = field.transform( inverse, SnubDodecField.ONE );
-        assertTrue( Arrays.equals( SnubDodecField.XI_INV, result ) );
-
-    }
-
-    private void writeNumber( String name, int[] number, AlgebraicField field )
-    {
-        StringBuffer buf = new StringBuffer( name + " is " );
-        field .getNumberExpression( buf, number, 0, AlgebraicField.VEF_FORMAT );
-        System.out.println( buf );
-        System.out.println();
-    }
-    
-    public void testHeptagonField()
-    {
-        AlgebraicField field = new HeptagonField();
-
-        int[] one =
-            {
-                    1, 1, 0, 1, 0, 1
-            };
-        int[] rho =
-            {
-                    0, 1, 1, 1, 0, 1
-            };
-        int[] sigma =
-            {
-                    0, 1, 0, 1, 1, 1
-            };
-        int[] sigma_5 =
-            {
-                    6, 1, 11, 1, 14, 1
-            };
-
-        writeNumber( "sigma_5", sigma_5, field );
-
-        assertTrue( Arrays.equals( field.add( rho, sigma ), field.multiply( rho, sigma ) ) );
-        assertTrue( Arrays.equals( field.add( one, sigma ), field.multiply( rho, rho ) ) );
-        assertTrue( Arrays.equals( field.add( rho, field.add( one, sigma ) ), field.multiply( sigma, sigma ) ) );
-        assertTrue( Arrays.equals( field.multiply( sigma, field.multiply( sigma, field.multiply( sigma, field.multiply( sigma,
-                sigma ) ) ) ), sigma_5 ) );
-    }
-
-    public void testHeptagon6Field()
-    {
-        AlgebraicField field = new Heptagon6Field();
-
-        int[] one =
-            {
-                    1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1
-            };
-        int[] rho =
-            {
-                    0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1
-            };
-        int[] sigma =
-            {
-                    0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1
-            };
-        int[] sigma_5 =
-            {
-                    6, 1, 11, 1, 14, 1, 0, 1, 0, 1, 0, 1
-            };
-
-        writeNumber( "sigma_5", sigma_5, field );
-
-        assertTrue( Arrays.equals( field.add( rho, sigma ), field.multiply( rho, sigma ) ) );
-        assertTrue( Arrays.equals( field.add( one, sigma ), field.multiply( rho, rho ) ) );
-        assertTrue( Arrays.equals( field.add( rho, field.add( one, sigma ) ), field.multiply( sigma, sigma ) ) );
-        assertTrue( Arrays.equals( field.multiply( sigma, field.multiply( sigma, field.multiply( sigma, field.multiply( sigma,
-                sigma ) ) ) ), sigma_5 ) );
-
-        assertTrue( Arrays.equals( Heptagon6Field .MU_2, field .multiply( Heptagon6Field.MU, Heptagon6Field.MU ) ) );
-    }
-
     public void testPentagonField()
     {
         AlgebraicField field = new PentagonField();
 
-        int[] one =
-            {
-                    1, 1, 0, 1
-            };
-        int[] tau =
-            {
-                    0, 1, 1, 1
-            };
-        int[] tau_5 =
-            {
-                    3, 1, 5, 1
-            };
-        int[] tau_9 =
-            {
-                    21, 1, 34, 1
-            };
-        int[] tau_minus5 =
-            {
-                    - 8, 1, 5, 1
-            };
+        AlgebraicNumber one = field .one();
+        AlgebraicNumber tau = field .createAlgebraicNumber( new int[]{ 0, 1 } );
+        AlgebraicNumber tau_5 = field .createAlgebraicNumber( new int[]{ 3, 5 } );
+        AlgebraicNumber tau_9 = field .createAlgebraicNumber( new int[]{ 21, 34 } );
+        AlgebraicNumber tau_minus5 = field .createAlgebraicNumber( new int[]{ -8, 5 } );
 
-        int[] result = field.multiply( tau, tau );
-        assertTrue( Arrays.equals( result, field.add( tau, one ) ) );
-        result = field.divide( result, tau );
-        assertTrue( Arrays.equals( result, tau ) );
-        assertTrue( Arrays.equals(
-                field.multiply( tau, field.multiply( tau, field.multiply( tau, field.multiply( tau, tau ) ) ) ), tau_5 ) );
-        assertTrue( Arrays.equals( field
-                .multiply( tau_5, field.multiply( tau, field.multiply( tau, field.multiply( tau, tau ) ) ) ), tau_9 ) );
-        assertTrue( Arrays.equals( field.createPower( 5 ), tau_5 ) );
-        assertTrue( Arrays.equals( field.createPower( 9 ), tau_9 ) );
-        assertTrue( Arrays.equals( field.createPower( - 5 ), tau_minus5 ) );
+        AlgebraicNumber result = tau .times( tau );
+        assertTrue( result .equals( tau .plus( one ) ) );
+        result = result .dividedBy( tau );
+        assertTrue( result .equals( tau ) );
+        assertTrue( tau_5 .equals( tau .times( tau .times( tau .times( tau .times( tau ) ) ) ) ) );
+        assertTrue( tau_9 .equals( tau_5 .times( tau .times( tau .times( tau .times( tau ) ) ) ) ) );
+        assertTrue( tau_5 .equals( field.createPower( 5 ) ) );
+        assertTrue( tau_9 .equals( field.createPower( 9 ) ) );
+        assertTrue( tau_minus5 .equals( field.createPower( -5 ) ) );
+    }
+
+    public void testRootTwoField()
+    {
+        AlgebraicField field = new RootTwoField();
+
+        AlgebraicNumber two = field .createAlgebraicNumber( new int[]{ 2, 0 } );
+        AlgebraicNumber sqrt2 = field .createAlgebraicNumber( new int[]{ 0, 1 } );
+        AlgebraicNumber eight = field .createAlgebraicNumber( new int[]{ 8, 0 } );
+        AlgebraicNumber powerNeg5 = field .createAlgebraicNumber( 0, 1, 8, 0 );
+
+        assertTrue( two .equals( sqrt2 .times( sqrt2 ) ) );
+        assertTrue( eight .equals( two .times( sqrt2 .times( sqrt2.times( two ) ) ) ) );
+        assertTrue( powerNeg5 .equals( field.createPower( -5 ) ) );
+    }
+
+    public void testRootThreeField()
+    {
+        AlgebraicField field = new RootThreeField();
+
+        AlgebraicNumber three = field .createAlgebraicNumber( 3, 0, 1, 0 );
+        AlgebraicNumber nine = field .createAlgebraicNumber( 9, 0, 1, 0 );
+        AlgebraicNumber sqrt3 = field .createAlgebraicNumber( 0, 1, 1, 0 );
+        AlgebraicNumber powerNeg3 = field .createAlgebraicNumber( 0, 1, 9, 0 );
+        AlgebraicNumber r1, r2;
+
+        assertTrue( three.equals( sqrt3 .times( sqrt3 ) ) );
+        r1 = sqrt3 .times( three );
+        r2 = sqrt3 .times( r1 );
+        assertTrue( nine .equals( r2 ) );
+        assertTrue( powerNeg3 .equals( field.createPower( - 3 ) ) );
+    }
+
+    public void testHeptagonField()
+    {
+        AlgebraicField field = new HeptagonField();
+
+        AlgebraicNumber rho = field .createAlgebraicNumber( new int[]{ 0, 1, 0 } );
+        AlgebraicNumber sigma = field .createAlgebraicNumber( new int[]{ 0, 0, 1 } );
+        AlgebraicNumber sigma_5 = field .createAlgebraicNumber( new int[]{ 6, 11, 14 } );
+
+        assertEquals( rho .plus( sigma ), rho .times( sigma ) );
+        assertEquals( field .one() .plus( sigma ), rho .times( rho ) );
+        assertEquals( field .one() .plus( rho ) .plus( sigma ), sigma .times( sigma ) );
+        assertEquals( sigma .times( sigma ) .times( sigma ) .times( sigma ) .times( sigma ), sigma_5 );
+    }
+
+    public void testSnubDodecField()
+    {
+        AlgebraicField field = new SnubDodecField( new PentagonField() );
+
+        AlgebraicNumber phi_xi2_inv = field .createAlgebraicNumber( new int[]{ -12, 8, 2, -1, 6, -4 } );
+
+        writeNumber( "phi_xi2_inv", phi_xi2_inv, field );
+        
+        AlgebraicNumber phi = field .createPower( 1 );
+        
+        AlgebraicNumber result = phi .times( field .one() );
+        assertEquals( result, phi );
+
+        result = field .one() .times( phi );
+        assertEquals( result, phi );
+
+        result = phi .times( phi );
+        assertEquals( result, phi .plus( field .one() ) );
+
+        AlgebraicNumber phi_inv = field .createPower( 1 ) .reciprocal();
+        result = phi .times( phi_inv );
+        assertEquals( result, field .one() );
+        
+        AlgebraicNumber xi = field .createAlgebraicNumber( new int[]{ 0, 0, 1, 0, 0, 0 } );
+
+        result = xi .dividedBy( xi );
+        writeNumber( "xi / xi", result, field );
+        assertEquals( result, field .one() );
+        
+        result = phi .times( xi ) .times( xi ) .reciprocal();
+        assertEquals( result, phi_xi2_inv );
+    }
+
+    private void writeNumber( String string, AlgebraicNumber phi_xi2_inv,
+            AlgebraicField field )
+    {
+        // TODO Auto-generated method stub
+        
     }
 
     // public void testBasisMatrix()
@@ -225,80 +143,58 @@ public class AlgebraicNumberTest extends TestCase
     {
         AlgebraicField field = new PentagonField();
 
-        int[] v1 =
+        AlgebraicVector v1 = field .createVector( new int[]
             {
-                    0, 1, 1, 1, 1, 1, 0, 1
-            };
-        int[] v2 =
+                1, 1, 0, 1, 0, 1, 1, 1
+            } );
+        AlgebraicVector v2 = field .createVector( new int[]
             {
-                    0, 1, - 5, 1, 5, 1, 0, 1
-            };
+                0, 1, -5, 1, 5, 1, 0, 1
+            } );
 
-        int[][] dotV1 = new int[2][8];
-        field.createRepresentation( v1, 0, dotV1, 0, 0 );
-        field.createRepresentation( v1, 2, dotV1, 0, 2 );
-
-        int[] dot = field.transform( dotV1, v2 );
-        assertTrue( RationalNumbers.isZero( dot, 0 ) );
+        AlgebraicNumber dot = v1 .dot( v2 );
+        assertTrue( dot .isZero() );
     }
 
     public void testMatrixInverse()
     {
         AlgebraicField field = new PentagonField();
 
-        int[] tau_5 =
-            {
-                    3, 1, 5, 1
-            };
-        int[] one =
-            {
-                    1, 1, 0, 1
-            };
-        int[] tau_minus5 =
-            {
-                    - 8, 1, 5, 1
-            };
+        AlgebraicVector c0 = new AlgebraicVector( field.one(), field.zero(), field .createAlgebraicNumber( 5 ) );
+        AlgebraicVector c1 = new AlgebraicVector( field.one(), field.createAlgebraicNumber( 2 ), field .createAlgebraicNumber( 5 ) );
+        AlgebraicVector c2 = new AlgebraicVector( field.one(), field.createAlgebraicNumber( 3 ), field .one() );
+        AlgebraicMatrix m = new AlgebraicMatrix( c0, c1, c2 );
+        AlgebraicVector in = new AlgebraicVector( field.zero(), field.zero(), field .createAlgebraicNumber( 8 ) );
+        AlgebraicVector out = new AlgebraicVector( field.createAlgebraicNumber( 8 ), field.createAlgebraicNumber( 24 ), field .createAlgebraicNumber( 8 ) );
 
-        int[][] repr = new int[2][4];
-        field.createRepresentation( tau_5, 0, repr, 0, 0 );
-        int[][] inverse = field.invert( repr );
-        assertTrue( Arrays.equals( tau_minus5, field.transform( inverse, one ) ) );
+        assertEquals( m .timesColumn( in ), out );
+        assertEquals( m .transpose() .timesRow( in ), out );
     }
 
     public void testQuaternions3D()
     {
         AlgebraicField field = new PentagonField();
 
-        int[] left3 =
+        AlgebraicVector left3 = field .createVector( new int[]
             {
                     1, 1, 0, 1, 2, 1, 0, 1, 3, 1, 0, 1
-            }; // same as below,
-        // but just
-        // imaginary parts
-        int[] right3 =
+            } ); // same as below, but just imaginary parts
+        AlgebraicVector right3 = field .createVector( new int[]
             {
                     0, 1, 0, 1, 5, 1, 0, 1, 1, 1, 0, 1
-            };
-        int[] left =
+            } );
+        AlgebraicVector left = field .createVector( new int[]
             {
                     0, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1, 3, 1, 0, 1
-            }; // i +
-        // 2j +
-        // 3k
-        int[] right =
+            } ); // i + 2j + 3k
+        AlgebraicVector right = field .createVector( new int[]
             {
                     0, 1, 0, 1, 0, 1, 0, 1, 5, 1, 0, 1, 1, 1, 0, 1
-            }; // 5j
-        // + k
-        int[] expected =
+            } ); // 5j + k
+        AlgebraicVector expected = field .createVector( new int[]
             {
                     - 13, 1, 0, 1, - 13, 1, 0, 1, - 1, 1, 0, 1, 5, 1, 0, 1
-            }; // -13
-        // -
-        // 13i
-        // -j
-        // +
-        // 5k
+            } ); // -13 - 13i -j + 5k
 
         // = (i + 2j + 3k) * 5j + (i + 2j + 3k) * k
         // = 5ij + 10jj + 15kj + ik + 2jk + 3kk
@@ -306,41 +202,30 @@ public class AlgebraicNumberTest extends TestCase
         // = -13 - 13i -j + 5k
 
         Quaternion q = new Quaternion( field, left3 );
-        int[] result = q.rightMultiply( right );
-        assertTrue( Arrays.equals( expected, result ) );
+        AlgebraicVector result = q.rightMultiply( right );
+        assertEquals( expected, result );
 
         q = new Quaternion( field, right3 );
         result = q.leftMultiply( left );
-        assertTrue( Arrays.equals( expected, result ) );
+        assertEquals( expected, result );
     }
 
     public void testQuaternions()
     {
         AlgebraicField field = new PentagonField();
 
-        int[] left =
+        AlgebraicVector left = field .createVector( new int[]
             {
                     1, 1, 0, 1, 2, 1, 0, 1, 3, 1, 0, 1, 1, 1, 0, 1
-            }; // 1 +
-        // 2i +
-        // 3j +
-        // k
-        int[] right =
+            } ); // 1 + 2i + 3j + k
+        AlgebraicVector right = field .createVector( new int[]
             {
                     2, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1
-            }; // 2 +
-        // j +
-        // k
-        int[] expected =
+            } ); // 2 + j + k
+        AlgebraicVector expected = field .createVector( new int[]
             {
                     - 2, 1, 0, 1, 6, 1, 0, 1, 5, 1, 0, 1, 5, 1, 0, 1
-            }; // -2
-        // +
-        // 6i
-        // +
-        // 5j
-        // +
-        // 5k
+            } ); // -2 + 6i + 5j + 5k
 
         // = (2 + j + k) + (4i + 2ij + 2ik) + (6j + 3jj + 3jk) + (2k + kj + kk)
         // = 2 + j + k + 4i + 2k - 2j + 6j - 3 + 3i + 2k - i - 1
@@ -348,66 +233,11 @@ public class AlgebraicNumberTest extends TestCase
         // = -2 + 6i + 5j + 5k
 
         Quaternion q = new Quaternion( field, left );
-        int[] result = q.rightMultiply( right );
-        assertTrue( Arrays.equals( expected, result ) );
+        AlgebraicVector result = q.rightMultiply( right );
+        assertEquals( expected, result );
 
         q = new Quaternion( field, right );
-        result = q.leftMultiply( left );
-        assertTrue( Arrays.equals( expected, result ) );
-    }
-
-    public void testRootTwoField()
-    {
-        AlgebraicField field = new RootTwoField();
-
-        int[] two =
-            {
-                    2, 1, 0, 1
-            };
-        int[] sqrt2 =
-            {
-                    0, 1, 1, 1
-            };
-        int[] eight =
-            {
-                    8, 1, 0, 1
-            };
-        int[] powerNeg5 =
-            {
-                    0, 1, 1, 8
-            };
-
-        assertTrue( Arrays.equals( two, field.multiply( sqrt2, sqrt2 ) ) );
-        assertTrue( Arrays.equals( eight, field.multiply( two, field.multiply( sqrt2, field.multiply( sqrt2, two ) ) ) ) );
-        assertTrue( Arrays.equals( powerNeg5, field.createPower( - 5 ) ) );
-    }
-
-    public void testRootThreeField()
-    {
-        AlgebraicField field = new RootThreeField();
-
-        int[] three =
-            {
-                    3, 1, 0, 1
-            };
-        int[] nine =
-            {
-                    9, 1, 0, 1
-            };
-        int[] sqrt3 =
-            {
-                    0, 1, 1, 1
-            };
-        int[] powerNeg3 =
-            {
-                    0, 1, 1, 9
-            };
-        int[] r1, r2, r3;
-
-        assertTrue( Arrays.equals( three, field.multiply( sqrt3, sqrt3 ) ) );
-        r1 = field.multiply( sqrt3, three );
-        r2 = field.multiply( sqrt3, r1 );
-        assertTrue( Arrays.equals( nine, r2 ) );
-        assertTrue( Arrays.equals( powerNeg3, field.createPower( - 3 ) ) );
+        result = q .leftMultiply( left );
+        assertEquals( expected, result );
     }
 }

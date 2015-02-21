@@ -2,6 +2,9 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 /**
  * @author Scott Vorthmann
@@ -10,8 +13,8 @@ public class PlaneReflection extends Transformation
 {
     // parameters
     private final Plane mMirror;
-    private final int[] /*AlgebraicVector*/ mNormal, mBase;
-    private final int[] /*AlgebraicNumber*/ mNormDot;
+    private final AlgebraicVector mNormal, mBase;
+    private final AlgebraicNumber mNormDotReciprocal;
 
     /**
      * @param prototype
@@ -22,7 +25,7 @@ public class PlaneReflection extends Transformation
         mMirror = mirror;
         mNormal = mirror .getNormal();
         mBase = mirror .getBase();
-        mNormDot = field .dot( mNormal, mNormal );
+        mNormDotReciprocal = mNormal .dot( mNormal ) .reciprocal(); // do the matrix inversion just once
         
         mapParamsToState();
     }
@@ -42,7 +45,7 @@ public class PlaneReflection extends Transformation
         if ( mMirror .isImpossible() )
             setStateVariables( null, null, true );
         
-        int[] /*AlgebraicVector*/ loc = mMirror .getBase();
+        AlgebraicVector loc = mMirror .getBase();
         
         return setStateVariables( null /*or field identity*/, loc, false );
     }
@@ -53,14 +56,14 @@ public class PlaneReflection extends Transformation
         v .visitPlaneReflection( this );
     }
 
-    public int[] /*AlgebraicVector*/ transform( int[] /*AlgebraicVector*/ arg )
+    public AlgebraicVector transform( AlgebraicVector arg )
     {
-        arg = field .subtract( arg, mBase );
+        arg = arg .minus( mBase );
         // x' = x - 2 ((x.y)/(y.y)) y
-        int[] /*AlgebraicNumber*/ xy = field .dot( arg, mNormal );
-        xy = field .multiply( xy, field .createRational( new int[]{ 2,1 } ) );
-        arg = field .subtract( arg, field .scaleVector( mNormal, field .divide( xy, mNormDot ) ) );
-        return field .add( arg, mBase );
+        AlgebraicNumber xy = arg .dot( mNormal );
+        xy = xy .times( field .createRational( new int[]{ 2,1 } ) );
+        arg = arg .minus( mNormal .scale( xy .times( mNormDotReciprocal ) ) );
+        return arg .plus( mBase );
     }
 
 }

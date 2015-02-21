@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 /**
  * @author Scott Vorthmann
@@ -42,7 +44,7 @@ public class TransformedPoint extends Point
     {
         if ( mTransform .isImpossible() || mPrototype .isImpossible() )
             return setStateVariable( null, true );
-        int[] loc = mTransform .transform( mPrototype .getLocation() );
+        AlgebraicVector loc = mTransform .transform( mPrototype .getLocation() );
         return setStateVariable( loc, false );
     }
 

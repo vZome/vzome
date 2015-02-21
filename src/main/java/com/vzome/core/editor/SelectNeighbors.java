@@ -3,11 +3,11 @@
 
 package com.vzome.core.editor;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -39,22 +39,22 @@ public class SelectNeighbors extends ChangeSelection
         }
         for ( Iterator bs = balls .iterator(); bs .hasNext(); ) {
             Connector ball = (Connector) bs .next();
-            int[] /*AlgebraicVector*/ loc = ball .getLocation();
+            AlgebraicVector loc = ball .getLocation();
             for ( Iterator ms = model .getAllManifestations(); ms .hasNext(); ) {
                 Manifestation man = (Manifestation) ms .next();
                 if ( man .getRenderedObject() == null )
                     continue;  // hidden!
                 if ( man instanceof Strut && ! struts .contains( man ) ) {
                     Strut strut = (Strut) man;
-                    if ( Arrays .equals( strut .getLocation(), loc ) 
-                            || Arrays .equals( strut .getEnd(), loc ) )
+                    if ( loc .equals( strut .getLocation() ) 
+                            || loc .equals( strut .getEnd() ) )
                     	select( strut );
                 }
                 else if ( withPanels && ( man instanceof Panel ) && ! panels .contains( man ) ) {
                     Panel panel = (Panel) man;
                     for (Iterator iterator = panel .getVertices(); iterator.hasNext(); ) {
                         int[] vertex = (int[]) iterator.next();
-                        if ( Arrays .equals( vertex, loc ) )
+                        if ( loc .equals( vertex ) )
                             select( panel );
                     }
                 }
@@ -62,15 +62,15 @@ public class SelectNeighbors extends ChangeSelection
         }
         for ( Iterator ss = struts .iterator(); ss .hasNext(); ) {
             Strut strut = (Strut) ss .next();
-            int[] /*AlgebraicVector*/ loc = strut .getLocation();
-            int[] /*AlgebraicVector*/ end = strut .getEnd();
+            AlgebraicVector loc = strut .getLocation();
+            AlgebraicVector end = strut .getEnd();
             for ( Iterator ms = model .getAllManifestations(); ms .hasNext(); ) {
                 Manifestation man = (Manifestation) ms .next();
                 if ( man .getRenderedObject() == null )
                     continue;  // hidden!
                 if ( man instanceof Connector && ! balls .contains( man ) ) {
-                    int[] /*AlgebraicVector*/ bloc = man .getLocation();
-                    if ( Arrays .equals( loc, bloc ) || Arrays .equals( end, bloc ) )
+                    AlgebraicVector bloc = man .getLocation();
+                    if ( bloc .equals( loc ) || bloc .equals( end ) )
                     	select( man );
                 }
             }
@@ -85,8 +85,8 @@ public class SelectNeighbors extends ChangeSelection
                         if ( man .getRenderedObject() == null )
                             continue;  // hidden!
                         if ( man instanceof Connector && ! balls .contains( man ) ) {
-                            int[] /*AlgebraicVector*/ bloc = man .getLocation();
-                            if ( Arrays .equals( loc, bloc ) )
+                            AlgebraicVector bloc = man .getLocation();
+                            if ( bloc .equals( loc ) )
                                 select( man );
                         }
                     }

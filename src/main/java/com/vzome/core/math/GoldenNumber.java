@@ -4,6 +4,7 @@ package com.vzome.core.math;
 
 import java.nio.IntBuffer;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
 
 /**
@@ -66,7 +67,7 @@ class GoldenNumber implements IntegralNumber
 	    this.field = new PentagonField();
 	}
     
-    public int[] getAlgebraicNumber()
+    public AlgebraicNumber getAlgebraicNumber()
     {
         return field .createAlgebraicNumber( ones, phis, divisor, power );
     }

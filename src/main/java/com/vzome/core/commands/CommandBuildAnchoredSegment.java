@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -22,7 +23,7 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
     public void getXml( Element xml, Map attributes )
     {
         XmlSaveFormat .serializeAxis( xml, "symm", "dir", "index", "sense", (Axis) attributes .get( "axis" ) );
-        XmlSaveFormat .serializeNumber( xml, "len", (int[]) attributes .get( "length" ) );
+        XmlSaveFormat .serializeNumber( xml, "len", (AlgebraicNumber) attributes .get( "length" ) );
     }
 
     public Map setXml( Element xml, XmlSaveFormat format )
@@ -67,7 +68,7 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
             throw new Failure( "start parameter must be a single point" );
         Point pt1 = (Point) c;
         Axis axis = (Axis) attrs .get( AXIS_ATTR );
-        int[] len = (int[] /*AlgebraicNumber*/) attrs .get( LENGTH_ATTR );
+        AlgebraicNumber len = (AlgebraicNumber) attrs .get( LENGTH_ATTR );
         
         Segment segment = new AnchoredSegment( axis, len, pt1 );
         effects .constructionAdded( segment );

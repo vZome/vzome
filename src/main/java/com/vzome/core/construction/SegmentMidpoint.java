@@ -2,6 +2,9 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 
 /**
@@ -40,9 +43,9 @@ public class SegmentMidpoint extends Point
     {
         if ( mSegment .isImpossible() )
             return setStateVariable( null, true );
-        int[] /**/ half = field .createRational( new int[]{ 1,2 } );
-        int[] /*AlgebraicVector*/ loc = mSegment .getStart();
-        loc = field .add( loc, field .scaleVector( mSegment .getOffset(), half ) );
+        AlgebraicNumber half = field .createRational( new int[]{ 1,2 } );
+        AlgebraicVector loc = mSegment .getStart();
+        loc = loc .plus( mSegment .getOffset() .scale( half ) );
         return setStateVariable( loc, false );
     }
     

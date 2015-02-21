@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandHide;
@@ -243,7 +244,7 @@ public class CommandEdit extends ChangeConstructions
                             }
                             if ( ! mCommand .attributeIs3D( attrName ) )
                             {
-                                int[] vector = ((Segment) value) .getOffset();
+                                AlgebraicVector vector = ((Segment) value) .getOffset();
                                 // Assume this axis is used as a quaternion.
                                 //  Note, in format .selectionsNotSaved() (which this is),
                                 //  (w,x,y,z) meant x + yi + zj + wk, whereas the Quaternion class

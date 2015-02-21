@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Bivector3dHomogeneous;
 import com.vzome.core.algebra.Trivector3dHomogeneous;
 import com.vzome.core.algebra.Vector3dHomogeneous;
@@ -82,20 +84,20 @@ public class LinePlaneIntersectionPoint extends Point
     {
         if ( mPlane .isImpossible() || mLine .isImpossible() )
             return setStateVariable( null, true );
-        int[] /*AlgebraicVector*/ p1 = mLine .getStart();
-        int[] /*AlgebraicVector*/ p1p2 = mLine .getDirection();
-        int[] /*AlgebraicVector*/ n = mPlane .getNormal();
-        int[] /*AlgebraicVector*/ p3 = mPlane .getBase();
+        AlgebraicVector p1 = mLine .getStart();
+        AlgebraicVector p1p2 = mLine .getDirection();
+        AlgebraicVector n = mPlane .getNormal();
+        AlgebraicVector p3 = mPlane .getBase();
         
-        int[] /*AlgebraicNumber*/ denom = field .dot( n, p1p2 );
-        if ( field .isZero( denom ) )
+        AlgebraicNumber denom = n .dot( p1p2 );
+        if ( denom .isZero() )
             return setStateVariable( null, true );
 
         // TODO
-        int[] /*AlgebraicVector*/ p1p3 = field .subtract( p3, p1 );
-        int[] /*AlgebraicNumber*/ numerator = field .dot( n, p1p3 );
-        int[] /*AlgebraicNumber*/ u = field .divide( numerator, denom );
-        int[] /*AlgebraicVector*/ p = field .add( p1, field .scaleVector( p1p2, u ) );
+        AlgebraicVector p1p3 = p3 .minus( p1 );
+        AlgebraicNumber numerator = n .dot( p1p3 );
+        AlgebraicNumber u = numerator .dividedBy( denom );
+        AlgebraicVector p = p1 .plus( p1p2 .scale( u ) );
         
         return setStateVariable( p, false );
     }

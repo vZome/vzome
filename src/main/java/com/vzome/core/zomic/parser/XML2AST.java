@@ -7,6 +7,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.render.ZomicEventHandler;
@@ -97,9 +98,10 @@ public class XML2AST extends DefaultHandler
 				return ;
 			}
 			// if we get here, it is a "strut" statement
-            int[] len = { 1,1,0,1 };
+            AlgebraicNumber len = this .symm .getField() .one();
 			if ( scale == -99 ) {
-			    len = Move.VARIABLE_SIZE;
+			    // will use as a marker to indicate variability, see ZomicPolyhedronModelInterpreter.LocationTracker.step()
+			    len = this .symm .getField() .zero();
 			}
             else {
                 if ( "blue" .equals( localName ) || "green" .equals( localName ) ) {
@@ -144,7 +146,7 @@ public class XML2AST extends DefaultHandler
                 int ones = size == null? 1 : parseInt( size );
                 size = atts .getValue( "lengthPhis" );
                 int phis = size == null? 0 : parseInt( size );
-                int[] /*AlgebraicNumber*/ length = symm .getField() .createAlgebraicNumber( ones, phis, 1, scale );
+                AlgebraicNumber length = symm .getField() .createAlgebraicNumber( ones, phis, 1, scale );
 				newStmt = new Scale( length );
 				break;
 			}

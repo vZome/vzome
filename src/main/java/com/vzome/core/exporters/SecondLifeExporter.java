@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
@@ -50,7 +51,7 @@ public class SecondLifeExporter extends Exporter3d
         FORMAT .setMaximumFractionDigits( 6 );
 
         AlgebraicField field = mModel .getField();
-        int[] scale = field .createPower( -5 );
+        AlgebraicNumber scale = field .createPower( -5 );
         
         int numBalls = 0;
         StringBuffer vertices = new StringBuffer();
@@ -61,12 +62,12 @@ public class SecondLifeExporter extends Exporter3d
             Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
             if ( man instanceof Connector )
             {
-                int[] loc = ((Connector) man) .getLocation();
+                AlgebraicVector loc = ((Connector) man) .getLocation();
                 if ( ballIndices .containsKey( loc ) )
                     continue;
-                ballIndices .put( new AlgebraicVector( loc ), new Integer( numBalls++ ) );
-                loc = field .scaleVector( loc, scale );
-                RealVector rv = field .getRealVector( loc );
+                ballIndices .put( loc, new Integer( numBalls++ ) );
+                loc = loc .scale( scale );
+                RealVector rv = loc .toRealVector();
                 if ( first )
                     first = false;
                 else
@@ -100,8 +101,8 @@ public class SecondLifeExporter extends Exporter3d
                     first = false;
                 else
                     output .println( "," );
-                output .print( ballIndices .get( new AlgebraicVector( strut .getLocation() ) ) + "," );
-                output .print( ballIndices .get( new AlgebraicVector( strut .getEnd() ) ) );
+                output .print( ballIndices .get( strut .getLocation() ) + "," );
+                output .print( ballIndices .get( strut .getEnd() ) );
             }
         }
 //        

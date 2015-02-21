@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 
 /**
@@ -36,14 +38,14 @@ public class PointReflection extends Transformation
     {
         if ( mCenter .isImpossible() )
             setStateVariables( null, null, true );
-        int[] /*AlgebraicVector*/ loc = mCenter .getLocation();
+        AlgebraicVector loc = mCenter .getLocation();
         return setStateVariables( null, loc, false );
     }
     
-    public int[] /*AlgebraicVector*/ transform( int[] /*AlgebraicVector*/ arg )
+    public AlgebraicVector transform( AlgebraicVector arg )
     {
-        arg = field .subtract( arg, mOffset );
-        arg = field .subtract( mOffset, arg );
+        arg = arg .minus( mOffset );
+        arg = mOffset .minus( arg );
         return arg;
     }
     

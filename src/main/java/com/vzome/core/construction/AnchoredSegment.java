@@ -2,7 +2,8 @@
 
 package com.vzome.core.construction;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.symmetry.Axis;
 
 /**
@@ -15,13 +16,13 @@ public class AnchoredSegment extends Segment
     
     // attributes
 	public Axis mAxis;
-	public int[] /*AlgebraicNumber*/ mLength;
+	public AlgebraicNumber mLength;
 
     /**
      * @param step
      * @param start
      */
-    public AnchoredSegment( Axis axis, int[] /*AlgebraicNumber*/ length, Point start )
+    public AnchoredSegment( Axis axis, AlgebraicNumber length, Point start )
     {
         super( start .field );
         mAnchor = start;
@@ -42,11 +43,10 @@ public class AnchoredSegment extends Segment
     
     protected boolean mapParamsToState()
     {
-        if ( mAnchor .isImpossible() || field .isOrigin( mLength ) )
+        if ( mAnchor .isImpossible() || mLength .isZero() )
             return setStateVariables( null, null, true );
-        int[] /*AlgebraicVector*/ gv = mAnchor .getLocation();
-        AlgebraicField field = mAxis .getDirection() .getSymmetry() .getField();
-        int[] /*AlgebraicVector*/ offset = field .scaleVector( mAxis .normal(), mLength );
+        AlgebraicVector gv = mAnchor .getLocation();
+        AlgebraicVector offset = mAxis .normal() .scale( mLength );
         return setStateVariables( gv, offset, false );
     }
 
@@ -64,7 +64,7 @@ public class AnchoredSegment extends Segment
         paramOrAttrChanged();
     }
     
-    public void setLength( int[] /*AlgebraicNumber*/ len )
+    public void setLength( AlgebraicNumber len )
     {
         mLength = len;
         paramOrAttrChanged();
@@ -75,12 +75,12 @@ public class AnchoredSegment extends Segment
         return mAxis;
     }
     
-    public int[] /*AlgebraicNumber*/ getLength()
+    public AlgebraicNumber getLength()
     {
         return mLength;
     }
 
-    public int[] /*AlgebraicVector*/ getUnitVector()
+    public AlgebraicVector getUnitVector()
     {
         return mAxis .normal();
     }

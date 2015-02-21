@@ -4,6 +4,8 @@ package com.vzome.core.math;
 
 import java.nio.IntBuffer;
 
+import com.vzome.core.algebra.AlgebraicNumber;
+
 public interface IntegralNumber
 {
     void write( IntBuffer buf );
@@ -44,7 +46,7 @@ public interface IntegralNumber
     
     int getDivisor();
     
-    int[] getAlgebraicNumber();
+    AlgebraicNumber getAlgebraicNumber();
 
     IntegralNumber inverse();
 

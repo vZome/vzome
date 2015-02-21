@@ -503,7 +503,7 @@ public class EditHistory
         	}
         	else
         		realized = context .createEdit( cmdName, format );
-//            System.out.print( "edit: " + cmdName );
+//            System.out.println( "edit: " + num + " " + cmdName );
 
         	try {
 				EditHistory .this .listener .showCommand( xml, num );
@@ -628,7 +628,6 @@ public class EditHistory
                 }
 
                 ++ mEditNumber;  //match the preconditions like this.redo()
-//                System.out.print( "edit number: " + mEditNumber + ";  " );
 	            edit .redo();
 	            // now the edit is realized
 	            

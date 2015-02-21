@@ -3,9 +3,9 @@
 
 package com.vzome.core.math.symmetry;
 
-import java.util.Arrays;
-
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 
 /**
  * @author Scott Vorthmann
@@ -35,7 +35,7 @@ public class DodecagonalSymmetry extends AbstractSymmetry
     
     protected void createFrameOrbit( String frameColor )
     {
-        int[] xAxis = new int[]{ 1,1,0,1, 0,1,0,1, 0,1,0,1 };
+        AlgebraicVector xAxis = this .mField .createVector( new int[]{ 1,1,0,1, 0,1,0,1, 0,1,0,1 } );
         Direction dir = createZoneOrbit( frameColor, 0, 15, xAxis, true );
 
         dir .createAxis( 0, NO_ROTATION, xAxis );
@@ -51,19 +51,19 @@ public class DodecagonalSymmetry extends AbstractSymmetry
         dir .createAxis( 10, NO_ROTATION, new int[]{ 1,2,0,1, 0,1,-1,2, 0,1,0,1 } );
         dir .createAxis( 11, NO_ROTATION, new int[]{ 0,1,1,2, -1,2,0,1, 0,1,0,1 } );
 
-        int[] zAxis = new int[]{ 0,1,0,1, 0,1,0,1, 1,1,0,1 };
+        AlgebraicVector zAxis = this .mField .createVector( new int[]{ 0,1,0,1, 0,1,0,1, 1,1,0,1 } );
         for ( int p = 0; p < ORDER; p++ ) {
             int x = mOrientations[ p ] .mapIndex( 0 );
             int y = mOrientations[ p ] .mapIndex( 3 );
-            mMatrices[ p ] = mField .createMatrix( new int[][]{
+            mMatrices[ p ] = new AlgebraicMatrix(
                     dir .getAxis( PLUS, x ) .normal(),
                     dir .getAxis( PLUS, y ) .normal(),
-                    zAxis } );
+                    zAxis );
             
             Axis axis = dir .getAxis( PLUS, p );
-            int[] norm = mField .transform( mMatrices[ p ], xAxis );  // I don't know why this has to be left-multiplication
+            AlgebraicVector norm = mMatrices[ p ] .timesColumn( xAxis );  // I don't know why this has to be left-multiplication
                                          // here, but not for OctahedralSymmetry
-            if ( ! Arrays.equals( norm, axis .normal() ) )
+            if ( ! norm .equals( axis .normal() ) )
                 throw new IllegalStateException( "matrix wrong: " + p );
         }
     }

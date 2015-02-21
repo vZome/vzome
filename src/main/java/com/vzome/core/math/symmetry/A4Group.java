@@ -4,7 +4,8 @@
 package com.vzome.core.math.symmetry;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.RationalMatrices;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 
 /*
  ******* from private email from Brian Hall, Notre Dame, May 5, 2007
@@ -79,11 +80,11 @@ public class A4Group implements CoxeterGroup
 {
     private final AlgebraicField field;
    
-    private final int[] /*AlgebraicVector*/ [] ROOTS = new int[4] /*AlgebraicVector*/[];
+    private final AlgebraicVector [] ROOTS = new AlgebraicVector[4];
 
-    private final int[] /*AlgebraicVector*/[] WEIGHTS = new int[4] /*AlgebraicVector*/[];
+    private final AlgebraicVector[] WEIGHTS = new AlgebraicVector[4];
 
-    private final int[] /*AlgebraicVector*/[] ROOTS_R4 = new int[4] /*AlgebraicVector*/[];
+    private final AlgebraicVector[] ROOTS_R4 = new AlgebraicVector[4];
 
     private static final int[][] S5_PERMS = new int[][]{
 
@@ -138,7 +139,7 @@ public class A4Group implements CoxeterGroup
         {4,2,3,1,0}, {4,3,1,2,0}, {4,3,2,0,1}, {0,1,4,3,2}, {4,3,0,1,2}
     };
     
-    private final int[] /*AlgebraicNumber*/ ONE_FIFTH , TWO_FIFTHS , THREE_FIFTHS, FOUR_FIFTHS;
+    private final AlgebraicNumber ONE_FIFTH , TWO_FIFTHS , THREE_FIFTHS, FOUR_FIFTHS;
 
     public A4Group( AlgebraicField field )
     {
@@ -149,68 +150,68 @@ public class A4Group implements CoxeterGroup
         THREE_FIFTHS = field .createRational( new int[]{ 3,5 } );
         FOUR_FIFTHS = field .createRational( new int[]{ 4,5 } );
 
-        int[] /*AlgebraicNumber*/ neg_one = field .createRational( new int[]{ -1, 1 } );
+        AlgebraicNumber neg_one = field .createRational( new int[]{ -1, 1 } );
 
         ROOTS[ 0 ] = field .basisVector( 5, 0 ); // ( 1, -1, 0, 0, 0 );
-        field .setVectorComponent( ROOTS[ 0 ], 1, neg_one );
+        ROOTS[ 0 ] .setComponent( 1, neg_one );
 
         ROOTS[ 1 ] = field .basisVector( 5, 1 ); // ( 0, 1, -1, 0, 0 );
-        field .setVectorComponent( ROOTS[ 1 ], 2, neg_one );
+        ROOTS[ 1 ] .setComponent( 2, neg_one );
 
         ROOTS[ 2 ] = field .basisVector( 5, 2 ); // ( 0, 0, 1, -1, 0 );
-        field .setVectorComponent( ROOTS[ 2 ], 3, neg_one );
+        ROOTS[ 2 ] .setComponent( 3, neg_one );
 
         ROOTS[ 3 ] = field .basisVector( 5, 3 ); // ( 0, 0, 0, 1, -1 );
-        field .setVectorComponent( ROOTS[ 3 ], 4, neg_one );
+        ROOTS[ 3 ] .setComponent( 4, neg_one );
 
         WEIGHTS[ 0 ] = field .basisVector( 5, 0 );
-        field .setVectorComponent( WEIGHTS[ 0 ], 0, FOUR_FIFTHS );
-        field .setVectorComponent( WEIGHTS[ 0 ], 1, field .negate( ONE_FIFTH ) );
-        field .setVectorComponent( WEIGHTS[ 0 ], 2, field .negate( ONE_FIFTH ) );
-        field .setVectorComponent( WEIGHTS[ 0 ], 3, field .negate( ONE_FIFTH ) );
-        field .setVectorComponent( WEIGHTS[ 0 ], 4, field .negate( ONE_FIFTH ) );
+        WEIGHTS[ 0 ] .setComponent( 0, FOUR_FIFTHS );
+        WEIGHTS[ 0 ] .setComponent( 1, ONE_FIFTH .negate() );
+        WEIGHTS[ 0 ] .setComponent( 2, ONE_FIFTH .negate() );
+        WEIGHTS[ 0 ] .setComponent( 3, ONE_FIFTH .negate() );
+        WEIGHTS[ 0 ] .setComponent( 4, ONE_FIFTH .negate() );
 
         WEIGHTS[ 1 ] = field .basisVector( 5, 0 );
-        field .setVectorComponent( WEIGHTS[ 1 ], 0, THREE_FIFTHS );
-        field .setVectorComponent( WEIGHTS[ 1 ], 1, THREE_FIFTHS );
-        field .setVectorComponent( WEIGHTS[ 1 ], 2, field .negate( TWO_FIFTHS ) );
-        field .setVectorComponent( WEIGHTS[ 1 ], 3, field .negate( TWO_FIFTHS ) );
-        field .setVectorComponent( WEIGHTS[ 1 ], 4, field .negate( TWO_FIFTHS ) );
+        WEIGHTS[ 1 ] .setComponent( 0, THREE_FIFTHS );
+        WEIGHTS[ 1 ] .setComponent( 1, THREE_FIFTHS );
+        WEIGHTS[ 1 ] .setComponent( 2, TWO_FIFTHS .negate() );
+        WEIGHTS[ 1 ] .setComponent( 3, TWO_FIFTHS .negate() );
+        WEIGHTS[ 1 ] .setComponent( 4, TWO_FIFTHS .negate() );
 
         WEIGHTS[ 2 ] = field .basisVector( 5, 0 );
-        field .setVectorComponent( WEIGHTS[ 2 ], 0, TWO_FIFTHS );
-        field .setVectorComponent( WEIGHTS[ 2 ], 1, TWO_FIFTHS );
-        field .setVectorComponent( WEIGHTS[ 2 ], 2, TWO_FIFTHS );
-        field .setVectorComponent( WEIGHTS[ 2 ], 3, field .negate( THREE_FIFTHS ) );
-        field .setVectorComponent( WEIGHTS[ 2 ], 4, field .negate( THREE_FIFTHS ) );
+        WEIGHTS[ 2 ] .setComponent( 0, TWO_FIFTHS );
+        WEIGHTS[ 2 ] .setComponent( 1, TWO_FIFTHS );
+        WEIGHTS[ 2 ] .setComponent( 2, TWO_FIFTHS );
+        WEIGHTS[ 2 ] .setComponent( 3, THREE_FIFTHS .negate() );
+        WEIGHTS[ 2 ] .setComponent( 4, THREE_FIFTHS .negate() );
 
         WEIGHTS[ 3 ] = field .basisVector( 5, 0 );
-        field .setVectorComponent( WEIGHTS[ 3 ], 0, ONE_FIFTH );
-        field .setVectorComponent( WEIGHTS[ 3 ], 1, ONE_FIFTH );
-        field .setVectorComponent( WEIGHTS[ 3 ], 2, ONE_FIFTH );
-        field .setVectorComponent( WEIGHTS[ 3 ], 3, ONE_FIFTH );
-        field .setVectorComponent( WEIGHTS[ 3 ], 4, field .negate( FOUR_FIFTHS ) );
+        WEIGHTS[ 3 ] .setComponent( 0, ONE_FIFTH );
+        WEIGHTS[ 3 ] .setComponent( 1, ONE_FIFTH );
+        WEIGHTS[ 3 ] .setComponent( 2, ONE_FIFTH );
+        WEIGHTS[ 3 ] .setComponent( 3, ONE_FIFTH );
+        WEIGHTS[ 3 ] .setComponent( 4, FOUR_FIFTHS .negate() );
 
-        int[] two = field .createRational( new int[]{ 2, 1 } );
-        int[] two_neg = field .createRational( new int[]{ -2, 1 } );
+        AlgebraicNumber two = field .createRational( new int[]{ 2, 1 } );
+        AlgebraicNumber two_neg = field .createRational( new int[]{ -2, 1 } );
         
         ROOTS_R4[ 0 ] = field .basisVector( 4, 1 );
-        field .setVectorComponent( ROOTS_R4[ 0 ], 1, two );
-        field .setVectorComponent( ROOTS_R4[ 0 ], 2, two_neg );
+        ROOTS_R4[ 0 ] .setComponent( 1, two );
+        ROOTS_R4[ 0 ] .setComponent( 2, two_neg );
         
         ROOTS_R4[ 1 ] = field .basisVector( 4, 1 );
-        field .setVectorComponent( ROOTS_R4[ 1 ], 3, two_neg );
-        field .setVectorComponent( ROOTS_R4[ 1 ], 1, two_neg );
+        ROOTS_R4[ 1 ] .setComponent( 3, two_neg );
+        ROOTS_R4[ 1 ] .setComponent( 1, two_neg );
         
         ROOTS_R4[ 2 ] = field .basisVector( 4, 1 );
-        field .setVectorComponent( ROOTS_R4[ 2 ], 1, two );
-        field .setVectorComponent( ROOTS_R4[ 2 ], 2, two );
+        ROOTS_R4[ 2 ] .setComponent( 1, two );
+        ROOTS_R4[ 2 ] .setComponent( 2, two );
         
         ROOTS_R4[ 3 ] = field .basisVector( 4, 3 );
-        int[] root5 = field .createAlgebraicNumber( -1, 2, 1, 0 );
-        field .setVectorComponent( ROOTS_R4[ 3 ], 1, neg_one );
-        field .setVectorComponent( ROOTS_R4[ 3 ], 2, neg_one );
-        field .setVectorComponent( ROOTS_R4[ 3 ], 0, root5 );
+        AlgebraicNumber root5 = field .createAlgebraicNumber( -1, 2, 1, 0 );
+        ROOTS_R4[ 3 ] .setComponent( 1, neg_one );
+        ROOTS_R4[ 3 ] .setComponent( 2, neg_one );
+        ROOTS_R4[ 3 ] .setComponent( 0, root5 );
         
 //        for ( int i = 0; i < ROOTS_R4.length; i++ ) {
 //            System .out .println( RationalNumbers .toString( ROOTS_R4[ i ] ) );
@@ -223,30 +224,30 @@ public class A4Group implements CoxeterGroup
         return S5_PERMS.length;
     }
 
-    public int[] /*AlgebraicVector*/ groupAction( int[] /*AlgebraicVector*/ model, int element )
+    public AlgebraicVector groupAction( AlgebraicVector model, int element )
     {
-        int[] /**/ result = field .origin( 4 );
-        int[] /*AlgebraicNumber*/ sum = field .createRational( new int[]{ 0, 1 } );
+        AlgebraicVector result = field .origin( 4 );
+        AlgebraicNumber sum = field .createRational( new int[]{ 0, 1 } );
         for ( int c = 0; c < 4; c++ ) {
-            int[] source = field .getVectorComponent( model, S5_PERMS[ element ][ c ] );
-            sum = field .add( sum, source );
-            int[] /*AlgebraicVector*/ scaled = field .scaleVector( ROOTS_R4[ c ], sum );
-            result = field .add( result, scaled );
+            AlgebraicNumber source = model .getComponent( S5_PERMS[ element ][ c ] );
+            sum = sum .plus( source );
+            AlgebraicVector scaled = ROOTS_R4[ c ] .scale( sum );
+            result = result .plus( scaled );
         }
-        return RationalMatrices .scaleVector( field, result, field .createPower( -1 ) );
+        return result .scale( field .createPower( -1 ) );
     }
 
-    public int[] /*AlgebraicVector*/ getOrigin()
+    public AlgebraicVector getOrigin()
     {
         return field .origin( 5 );
     }
 
-    public int[] /*AlgebraicVector*/ getWeight( int i )
+    public AlgebraicVector getWeight( int i )
     {
         return WEIGHTS[ i ];
     }
 
-    public int[] /*AlgebraicVector*/ getSimpleRoot( int i )
+    public AlgebraicVector getSimpleRoot( int i )
     {
         return ROOTS[ i ];
     }
@@ -256,18 +257,18 @@ public class A4Group implements CoxeterGroup
         return field;
     }
 
-    public int[] chiralSubgroupAction( int[] model, int element )
+    public AlgebraicVector chiralSubgroupAction( AlgebraicVector model, int element )
     {
         if ( element >= 60 )
             return null;
-        int[] /**/ result = field .origin( 4 );
-        int[] /*AlgebraicNumber*/ sum = field .createRational( new int[]{ 0, 1 } );
+        AlgebraicVector result = field .origin( 4 );
+        AlgebraicNumber sum = field .createRational( new int[]{ 0, 1 } );
         for ( int c = 0; c < 4; c++ ) {
-            int[] source = field .getVectorComponent( model, S5_PERMS[ element ][ c ] );
-            sum = field .add( sum, source );
-            int[] /*AlgebraicVector*/ scaled = field .scaleVector( ROOTS_R4[ c ], sum );
-            result = field .add( result, scaled );
+            AlgebraicNumber source = model .getComponent( S5_PERMS[ element ][ c ] );
+            sum = sum .plus( source );
+            AlgebraicVector scaled = ROOTS_R4[ c ] .scale( sum );
+            result = result .plus( scaled );
         }
-        return RationalMatrices .scaleVector( field, result, field .createPower( -1 ) );
+        return result .scale( field .createPower( -1 ) );
     }
 }

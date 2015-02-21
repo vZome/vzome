@@ -2,6 +2,8 @@
 
 package com.vzome.core.construction;
 
+import com.vzome.core.algebra.AlgebraicVector;
+
 
 
 
@@ -37,13 +39,13 @@ public class CentroidPoint extends Point
 //        if ( mStart .isImpossible() || mEnd .isImpossible() )
 //            return setStateVariables( null, null, true );
 
-        /*AlgebraicVector*/ int[] centroid = mPoints[0] .getLocation();
+        AlgebraicVector centroid = mPoints[0] .getLocation();
         int num = 1;
         for ( int i = 1; i < mPoints .length; i++ ) {
-            centroid = field .add( centroid,  mPoints[i] .getLocation() );
+            centroid = centroid .plus( mPoints[i] .getLocation() );
             num++;
         }
-        centroid = field .scaleVector( centroid, field .createRational( new int[]{ 1, num } ) );
+        centroid = centroid .scale( field .createRational( new int[]{ 1, num } ) );
         
         return setStateVariable( centroid, false );
     }

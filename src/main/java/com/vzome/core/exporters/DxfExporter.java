@@ -8,7 +8,7 @@ import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.Locale;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
@@ -29,8 +29,7 @@ public class DxfExporter extends Exporter3d
 
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
-        AlgebraicField field = mModel .getField();
-	    output = new PrintWriter( writer );
+        output = new PrintWriter( writer );
         output .println( "0" );
         output .println( "SECTION" );
         output .println( "2" );
@@ -47,9 +46,9 @@ public class DxfExporter extends Exporter3d
                 output .println( "LINE" );
                 output .println( "8" );
                 output .println( "vZome" ); // this is the "layer" the line appears in; it need not be predefined
-                /*AlgebraicVector*/ int[] start = ((Strut) man) .getLocation();
-                /*AlgebraicVector*/ int[] end = ((Strut) man) .getEnd();
-                RealVector rv = field .getRealVector( start );
+                AlgebraicVector start = ((Strut) man) .getLocation();
+                AlgebraicVector end = ((Strut) man) .getEnd();
+                RealVector rv = start .toRealVector();
                 rv = rv .scale( RZOME_INCH_SCALING );
                 output .println( "10" );
                 output .println( format.format( rv .x ) );
@@ -57,7 +56,7 @@ public class DxfExporter extends Exporter3d
                 output .println( format.format( rv .y ) );
                 output .println( "30" );
                 output .println( format.format( rv .z ) );
-                rv = field .getRealVector( end );
+                rv = end .toRealVector();
                 rv = rv .scale( RZOME_INCH_SCALING );
                 output .println( "11" );
                 output .println( format.format( rv .x ) );

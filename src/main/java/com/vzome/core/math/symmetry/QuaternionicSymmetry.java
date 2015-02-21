@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.StringTokenizer;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.math.VefParser;
 
@@ -21,15 +23,15 @@ public class QuaternionicSymmetry
 //    private static final IntegralNumber ONE = GoldenNumber.ONE, SIGMA = GoldenNumber.TAU_INV.neg(),
 //                            TAU = GoldenNumber.TAU, ZERO = GoldenNumber.ZERO, HALF = GoldenNumber.HALF;
     
-//    public static final int[] /*AlgebraicVector*/ I_GENERATOR = new GoldenNumberVector( ONE, SIGMA, TAU, ZERO, HALF );
+//    public static final AlgebraicVector I_GENERATOR = new GoldenNumberVector( ONE, SIGMA, TAU, ZERO, HALF );
 //    
-//    public static final int[] /*AlgebraicVector*/ T_GENERATOR = new GoldenNumberVector( ONE, ZERO, ZERO, ZERO );
+//    public static final AlgebraicVector T_GENERATOR = new GoldenNumberVector( ONE, ZERO, ZERO, ZERO );
     
-//    public static final int[] /*AlgebraicVector*/ OMEGA = new GoldenNumberVector( ONE, ONE, ONE, ONE.neg(), HALF );
+//    public static final AlgebraicVector OMEGA = new GoldenNumberVector( ONE, ONE, ONE, ONE.neg(), HALF );
     
 //    public static final QuaternionicSymmetry IxT = new QuaternionicSymmetry( 
-//                                                         new int[] /*AlgebraicVector*/[]{ I_GENERATOR, OMEGA }, 
-//                                                         new int[] /*AlgebraicVector*/[]{ T_GENERATOR, OMEGA } );
+//                                                         new AlgebraicVector[]{ I_GENERATOR, OMEGA }, 
+//                                                         new AlgebraicVector[]{ T_GENERATOR, OMEGA } );
     
     private Quaternion[] mRoots;
     
@@ -56,7 +58,7 @@ public class QuaternionicSymmetry
         }
     }
 
-//    private QuaternionicSymmetry( int[] /*AlgebraicVector*/[] leftGens, int[] /*AlgebraicVector*/[] rightGens )
+//    private QuaternionicSymmetry( AlgebraicVector[] leftGens, AlgebraicVector[] rightGens )
 //    {
 //        // TODO Auto-generated constructor stub
 //        mName = "whatever";
@@ -89,11 +91,11 @@ public class QuaternionicSymmetry
             return mRoots;
         }
 
-        private final int[] HALF;
+        private final AlgebraicNumber HALF;
         
-        protected void addVertex( int index, int[] /*AlgebraicVector*/ location )
+        protected void addVertex( int index, AlgebraicVector location )
         {
-            mRoots[ index ] = new Quaternion( field, field .scaleVector( location, HALF ) );
+            mRoots[ index ] = new Quaternion( field, location .scale( HALF ) );
         }
 
         protected void startEdges( int numEdges )

@@ -5,10 +5,10 @@ package com.vzome.core.algebra;
 
 public class Vector3dHomogeneous
 {
-    final BigRational[] e1, e2, e3, e0;
+    final AlgebraicNumber e1, e2, e3, e0;
 	private final AlgebraicField field;
 
-	public Vector3dHomogeneous( BigRational[] e1, BigRational[] e2, BigRational[] e3, BigRational[] e0, AlgebraicField field )
+	public Vector3dHomogeneous( AlgebraicNumber e1, AlgebraicNumber e2, AlgebraicNumber e3, AlgebraicNumber e0, AlgebraicField field )
 	{
 		this .e1 = e1;
 		this .e2 = e2;
@@ -17,49 +17,44 @@ public class Vector3dHomogeneous
 		this .field = field;
 	}
 
-	public Vector3dHomogeneous( int[] e1, int[] e2, int[] e3, AlgebraicField field )
+	public Vector3dHomogeneous( AlgebraicNumber e1, AlgebraicNumber e2, AlgebraicNumber e3, AlgebraicField field )
 	{
-		this( field .makeBigElement( e1 ), field .makeBigElement( e1 ), field .makeBigElement( e1 ),
-				field .makeBigElement( field .createPower( 0 ) ), field );
+		this( e1, e1, e1, field .createPower( 0 ), field );
 	}
 
-	public Vector3dHomogeneous( int[] v, AlgebraicField field )
+	public Vector3dHomogeneous( AlgebraicVector v, AlgebraicField field )
 	{
-		this( field .getVectorComponent( v, 0 ), field .getVectorComponent( v, 1 ), field .getVectorComponent( v, 2 ), field );
+		this( v .getComponent( 0 ), v .getComponent( 1 ), v .getComponent( 2 ), field );
 	}
 
 	public Bivector3dHomogeneous outer( Vector3dHomogeneous that )
 	{
-		BigRational[] e12 = field .subtract( field .multiply( this.e1, that.e2 ), field .multiply( this.e2, that.e1 ) );
-		BigRational[] e23 = field .subtract( field .multiply( this.e2, that.e3 ), field .multiply( this.e3, that.e2 ) );
-		BigRational[] e31 = field .subtract( field .multiply( this.e3, that.e1 ), field .multiply( this.e1, that.e3 ) );
-		BigRational[] e10 = field .subtract( field .multiply( this.e1, that.e0 ), field .multiply( this.e0, that.e1 ) );
-		BigRational[] e20 = field .subtract( field .multiply( this.e2, that.e0 ), field .multiply( this.e0, that.e2 ) );
-		BigRational[] e30 = field .subtract( field .multiply( this.e3, that.e0 ), field .multiply( this.e0, that.e3 ) );
+		AlgebraicNumber e12 = this.e1 .times( that.e2 ) .minus( this.e2 .times( that.e1 ) );
+		AlgebraicNumber e23 = this.e2 .times( that.e3 ) .minus( this.e3 .times( that.e2 ) );
+		AlgebraicNumber e31 = this.e3 .times( that.e1 ) .minus( this.e1 .times( that.e3 ) );
+		AlgebraicNumber e10 = this.e1 .times( that.e0 ) .minus( this.e0 .times( that.e1 ) );
+		AlgebraicNumber e20 = this.e2 .times( that.e0 ) .minus( this.e0 .times( that.e2 ) );
+		AlgebraicNumber e30 = this.e3 .times( that.e0 ) .minus( this.e0 .times( that.e3 ) );
 		return new Bivector3dHomogeneous( e12, e23, e31, e10, e20, e30, field );
 	}
 	
-	public int[] getVector()
+	public AlgebraicVector getVector()
 	{
-		int[] result = field .origin( 3 );
-		field .setVectorComponent( result, 0, field .makeIntElement( field .divide( this.e1, this.e0 ) ) );
-		field .setVectorComponent( result, 1, field .makeIntElement( field .divide( this.e2, this.e0 ) ) );
-		field .setVectorComponent( result, 2, field .makeIntElement( field .divide( this.e3, this.e0 ) ) );
-		return result;
+	    return new AlgebraicVector( this.e1 .dividedBy( this.e0 ), this.e2 .dividedBy( this.e0 ), this.e3 .dividedBy( this.e0 ) );
 	}
 
 	public Vector3dHomogeneous dot( Bivector3dHomogeneous v )
 	{
 		// we keep only the grade-1 results
-		BigRational[] e1 = field .subtract( field .subtract( field .multiply( this.e3, v.e31 ), field .multiply( this.e2, v.e12 ) ), field .multiply( this.e0, v.e10 ) );
-		BigRational[] e2 = field .subtract( field .subtract( field .multiply( this.e1, v.e12 ), field .multiply( this.e3, v.e23 ) ), field .multiply( this.e0, v.e20 ) );
-		BigRational[] e3 = field .subtract( field .subtract( field .multiply( this.e2, v.e23 ), field .multiply( this.e1, v.e31 ) ), field .multiply( this.e0, v.e30 ) );
-		BigRational[] e0 = field .add( field .add( field .multiply( this.e1, v.e10 ), field .multiply( this.e2, v.e20 ) ), field .multiply( this.e3, v.e30 ) );
+		AlgebraicNumber e1 = this.e3 .times( v.e31 ) .minus( this.e2 .times( v.e12 ) ) .minus( this.e0 .times( v.e10 ) );
+		AlgebraicNumber e2 = this.e1 .times( v.e12 ) .minus( this.e3 .times( v.e23 ) ) .minus( this.e0 .times( v.e20 ) );
+		AlgebraicNumber e3 = this.e2 .times( v.e23 ) .minus( this.e1 .times( v.e31 ) ) .minus( this.e0 .times( v.e30 ) );
+		AlgebraicNumber e0 = this.e1 .times( v.e10 ) .plus( this.e2 .times( v.e20 ) ) .plus( this.e3 .times( v.e30 ) );
 		return new Vector3dHomogeneous( e1, e2, e3, e0, field );
 	}
 
 	public boolean exists()
 	{
-		return ! field .isZero( e0 );
+		return ! e0 .isZero();
 	}
 }

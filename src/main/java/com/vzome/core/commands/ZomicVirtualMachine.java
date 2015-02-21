@@ -3,7 +3,8 @@
 
 package com.vzome.core.commands;
 
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
@@ -21,7 +22,7 @@ public class ZomicVirtualMachine extends AbstractZomicEventHandler
     
     private final ConstructionChanges mEffects;
 
-    public int[] getLocation()
+    public AlgebraicVector getLocation()
     {
         return mLocation .getLocation();
     }
@@ -34,11 +35,10 @@ public class ZomicVirtualMachine extends AbstractZomicEventHandler
         return mLocation;
     }
 
-    public void step( Axis axis, int[] length )
+    public void step( Axis axis, AlgebraicNumber length )
     {
-        AlgebraicField f = mSymmetry .getField();
         axis = mOrientation .permute( axis, mHandedNess );
-        length = f .multiply( length, mScale );
+        length = length .times( mScale );
         
         Segment segment = new AnchoredSegment( axis, length, mLocation );
         Point pt2 = new SegmentEndPoint( segment );
