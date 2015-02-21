@@ -274,10 +274,6 @@ public class DefaultApplication extends DefaultController implements Application
             field = modelApp .getField( "heptagon" );
             symmetry = field .getSymmetry( "octahedral" );
             mSymmetryModels.put( symmetry, model );
-
-            field = modelApp .getField( "heptagon6" );
-            symmetry = field .getSymmetry( "octahedral" );
-            mSymmetryModels.put( symmetry, model );
         }
 
         long endtime = System.currentTimeMillis();

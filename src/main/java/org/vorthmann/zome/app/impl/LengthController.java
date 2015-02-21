@@ -5,6 +5,7 @@ package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
+import java.math.BigInteger;
 import java.util.StringTokenizer;
 
 import org.vorthmann.j3d.MouseTool;
@@ -14,6 +15,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.BigRational;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Direction;
 
@@ -309,11 +311,12 @@ public class LengthController extends DefaultController
 
         if ( "values" .equals( listName ) )
         {
-            int[] intsWithDivisor = field .toIntegersWithDivisor( unitFactor );
-            // last value should always be the global divisor
+            BigInteger divisor = unitFactor .getDivisor();
             String[] result = new String[ order + 1 ];
-            for( int i = 0; i <= order; i++ )
-                result[ i ] = Integer .toString( intsWithDivisor[ i ] );
+            result[ order ] = divisor .toString();
+            BigRational[] factors = unitFactor .getFactors();
+            for( int i = 0; i < order; i++ )
+                result[ i ] = factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .toString();
             return result;
         }
 
@@ -337,10 +340,14 @@ public class LengthController extends DefaultController
         else if ( "customUnit" .equals( property ) )
         {
             StringTokenizer values = new StringTokenizer( (String) value );
-            int[] inputs = new int[ field .getOrder() + 1 ]; // divisor will be the last int
+            int[] inputs = new int[ field .getOrder() ]; // divisor will be the last int
+            int divisor = 1;
             for ( int i = 0; values .hasMoreTokens(); i++ )
-                inputs[ i ] = Integer .parseInt( values .nextToken() );
-            unitFactor = field .fromIntegersWithDivisor( inputs );
+                if ( i < inputs.length )
+                    inputs[ i ] = Integer .parseInt( values .nextToken() );
+                else
+                    divisor = Integer .parseInt( values .nextToken() );
+            unitFactor = field .createAlgebraicNumber( inputs ) .dividedBy( field .createRational( divisor ) );
             currentScale .setScale( 0 );
             fireLengthChange();
             return;
