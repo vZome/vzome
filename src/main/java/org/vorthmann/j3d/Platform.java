@@ -9,9 +9,11 @@ package org.vorthmann.j3d;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.AccessControlException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -20,17 +22,6 @@ import java.util.logging.Logger;
  */
 public class Platform
 {
-    public interface UI
-    {
-        void openFile( File file );
-        
-        void newActivation( String[] args, URL codebase );
-        
-        void about();
-        
-        boolean quit();
-    }
-	
 	static boolean isJFreeD = false;
 	
 	static boolean isMac = false;
@@ -79,22 +70,36 @@ public class Platform
         }
     }
 
-    public static void setupEventListener( final UI ui )
+    public static void setupEventListener( final org.vorthmann.interfaces.IHookMacFinderUI ui )
     {
         if ( isMac )
             try {
-//              MacAdapter .setupListener( ui );
-                Class adapterClass = Class .forName( "org.vorthmann.j3d.MacAdapter" );
+                // org.vorthmann.extensions.MacAdapter.setupListener( ui );
+                Class adapterClass = Class .forName( "org.vorthmann.extensions.MacAdapter" );
+                Class iHookMacFinderUIClass = org.vorthmann.interfaces.IHookMacFinderUI.class;
                 System .out .println( "found MacAdapter for Finder integration" );
-                Method setupMethod = adapterClass .getDeclaredMethod( "setupListener", UI.class );
+                Method setupMethod = adapterClass .getDeclaredMethod( "setupListener", iHookMacFinderUIClass );
+                System .out .println( "found MacAdapter.setupListener method" );
                 setupMethod .invoke( adapterClass, ui );
+                System .out .println( "invoked MacAdapter.setupListener() via reflection" );
             } catch ( ClassNotFoundException e ) {
-                Logger .getLogger( "org.vorthmann.vzome" ) .warning( "found no MacAdapter class" );
+                Log( e, "found no MacAdapter class" );
             } catch ( NoSuchMethodException e ) {
-                Logger .getLogger( "org.vorthmann.vzome" ) .warning( "found no MacAdapter.setupListener() method" );
+                Log( e, "found no MacAdapter.setupListener() method" );
+            } catch ( IllegalAccessException | SecurityException | IllegalArgumentException | InvocationTargetException e ) {
+                Log( e, "exception invoking MacAdapter.setupListener() method" );
             } catch ( Exception e ) {
-                Logger .getLogger( "org.vorthmann.vzome" ) .warning( "exception trying to call MacAdapter.setupListener() method" );
+                Log( e, "unexpected exception invoking MacAdapter.setupListener() method" );
             }
+    }
+    
+     private static void Log(Exception ex, String msg)
+    {
+        ex.printStackTrace();
+        Logger.getLogger( "org.vorthmann.vzome" ).log(Level.WARNING, "{0}\nStack Trace sent to stderr.\n{1}]n", ex.toString());
+        if(msg != null) {
+            Logger.getLogger( "org.vorthmann.vzome" ).log(Level.WARNING, msg);
+        }
     }
     
     public static boolean isMac()

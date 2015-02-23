@@ -1,18 +1,19 @@
+// main project
 apply plugin: 'java'
 apply plugin: 'maven'
 
 group = 'com.vzome'
-version = '5.0'
+version = '5.0-SNAPSHOT'
 
-description = """vzome-desktop"""
+description = 'vzome-desktop'
 
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+//sourceCompatibility = 1.5
+//targetCompatibility = 1.5
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url "http://repository.springsource.com/maven/bundles/external" }
+    maven { url 'http://repository.springsource.com/maven/bundles/external' }
 }
 
 dependencies {
@@ -20,8 +21,8 @@ dependencies {
     compile group: 'org.jogamp.java3d', name: 'j3dcore', version:'1.6.0'
     compile group: 'org.jogamp.java3d', name: 'j3dutils', version:'1.6.0'
     compile group: 'org.jogamp.java3d', name: 'vecmath', version:'1.6.0'
-//     compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version:'2.2.4'
-//     compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version:'2.2.4'
+    compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version:'2.2.4'
+    compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version:'2.2.4'
     compile group: 'javax.media.jai', name: 'com.springsource.javax.media.jai.core', version:'1.1.3'
     testCompile group: 'junit', name: 'junit', version:'3.8.1'
 }
@@ -29,13 +30,79 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDir 'src/main/java'
-            exclude 'org/vorthmann/zome/render/jogl/**'  // initial framework for a pure JOGL renderer is not ready for use
-            def plat = System.properties['os.name'].toLowerCase()
-            if ( ! plat.contains('mac') ) {
-                println "excluding MacAdapter on platform " + plat
-                exclude 'org/vorthmann/j3d/MacAdapter.java'
-            }
-       }
-   }
+			// The convention-based default built-in srcDir is 'src/main/java' 
+			// Append any additional SrcDir entries here...
+			srcDir 'platform/shared/src/main/java'
+			
+			// DJH - The following snippet may make the separate mac project unnecessary
+			// but it may cause problems packaging OS specific builds.
+			// I'll leave it in here for now, but it may need to come out later.
+			def plat = System.properties['os.name']
+			if ( plat.toLowerCase().contains('mac') ) {
+				println '*\tProject [' + project.name + '] includes Mac extensions when built on ' + plat + ' platform.'
+				srcDir 'platform/mac/src/main/java'
+			}
+
+			// Uncomment the following line to list them all
+			// println project.name + ' java.srcDirs = ' + srcDirs + '\n'
+			
+			exclude 'org/vorthmann/zome/render/jogl/**'  // initial framework for a pure JOGL renderer is not ready for use
+		}
+		resources {
+			// The convention-based default built-in srcDir is 'src/main/resources' 
+			// Append any additional SrcDir entries here...
+			srcDir 'src/main/java' 
+			// Uncomment to list them all
+			// println project.name + ' resources.srcDirs = ' + srcDirs + '\n'
+			
+			include '**/*.gif'
+			include '**/*.properties'
+			include '**/*.py'
+			include '**/*.gif'
+			include '**/*.jpg'
+			include '**/*.png'
+			include '**/*.pdf'
+			include '**/*.vef'
+			include '**/*.vZome'
+			include '**/*.zomic'
+        }
+    }
+}
+
+// The mainClass property is needed to run a Gradle project from the Netbeans IDE (and maybe others too).
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'org.vorthmann.zome.ui.ApplicationUI'
+}
+
+// This task is used to run vzome-desktop as a Gradle task from the command line(e.g. ./gradlew run).
+task run(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = mainClass
+    args('-entitlement.model.edit', 'true'
+        ,'-entitlement.lesson.edit', 'true'
+        ,'-entitlement.all.tools', 'true'
+        ,'-licensed.user', System.getProperty('user.name')
+		)
+    jvmArgs('-Xmx3048M'
+			,'-Dapple.laf.useScreenMenuBar=true'
+			,'-Dapple.awt.antialiasing=true'
+			,'-Djava.util.logging.config.file=logging.properties'
+			)
+}
+
+
+// This task may someday be useful in packaging distribution zip files
+// It's also used by run-vzome.bat to populate all of the project dependencies before starting the jvm
+task copyDependencies(type: Copy) {
+   from configurations.compile
+   into buildDir.toString() + '\\dependencies'
+}
+
+
+// Specify common settings for all subprojects
+subprojects {
+	buildDir	= rootProject.buildDir
+	group		= rootProject.group
+	version		= rootProject.version
+	description = rootProject.name + '-' + project.name
 }
