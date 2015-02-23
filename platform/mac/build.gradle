@@ -1,0 +1,21 @@
+apply plugin: 'java'
+
+sourceSets {
+	main {
+		java {
+			// The convention-based default built-in srcDir is 'src/main/java' 
+			// Append any additional SrcDir entries here...
+			srcDir '../shared/src/main/java'
+			// Uncomment the following line to list them all
+			// println project.name + ' java srcDirs = ' + srcDirs + '\n'
+			
+			def osName = System.properties['os.name']
+			if ( ! osName.toLowerCase().contains('mac') ) {
+				println '*****************************************************************************************************************'
+				println '*\tWARNING: Project [' + project.name + '] intentionally excludes Mac extensions when built on ' + osName + ' platform.'
+				println '*****************************************************************************************************************\n'
+				exclude 'org/vorthmann/extensions/**'
+			}
+		}
+	}
+}
