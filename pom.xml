@@ -13,7 +13,7 @@
         <dependency>
             <groupId>com.vzome.core</groupId>
             <artifactId>vzome-core</artifactId>
-            <version>5.0-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
 		<dependency>
 			<groupId>org.jogamp.java3d</groupId>
