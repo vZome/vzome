@@ -23,7 +23,6 @@ import org.w3c.dom.NodeList;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
@@ -33,8 +32,8 @@ import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.DomUtils;
-import com.vzome.core.math.GoldenField;
-import com.vzome.core.math.RootTwoField;
+//import com.vzome.core.math.GoldenField;
+//import com.vzome.core.math.RootTwoField;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
@@ -209,13 +208,18 @@ public class XmlSaveFormat
     
     
     
-    protected AlgebraicVector parseAlgebraicVector( Element val, boolean threeD )
-    {
-        AlgebraicVector value = null;
-        if ( mField instanceof PentagonField )
-            value = GoldenField.INSTANCE .parseRationalVector( val );
-        else
-            value = RootTwoField.INSTANCE .parseRationalVector( val );
+    protected AlgebraicVector parseAlgebraicVector( Element elem, boolean threeD )
+    {        
+        String val = elem .getAttribute( "x" );
+        AlgebraicNumber x = (val==null || val .isEmpty() )? mField .zero() : mField .parseLegacyNumber( val );
+        val = elem .getAttribute( "y" );
+        AlgebraicNumber y = (val==null || val .isEmpty() )? mField .zero() : mField .parseLegacyNumber( val );
+        val = elem .getAttribute( "z" );
+        AlgebraicNumber z = (val==null || val .isEmpty() )? mField .zero() : mField .parseLegacyNumber( val );
+        val = elem .getAttribute( "w" );
+        AlgebraicNumber w = (val==null || val .isEmpty() )? mField .zero() : mField .parseLegacyNumber( val );
+
+        AlgebraicVector value = new AlgebraicVector( x, y, z, w );
         
         if ( threeD && ! value .getComponent( AlgebraicVector .W4 ) .isZero()
                 && logger .isLoggable( Level.FINE ) )
@@ -277,10 +281,7 @@ public class XmlSaveFormat
         else if ( valName .equals( "GoldenNumber" )
                 || valName .equals( "IntegralNumber" ) ) {
             String gnum = val .getAttribute( "value" );
-            if ( mField instanceof PentagonField )
-                value = GoldenField.INSTANCE .parseString( gnum ) .getAlgebraicNumber();
-            else
-                value = RootTwoField.INSTANCE .parseString( gnum ) .getAlgebraicNumber();
+            value = mField .parseLegacyNumber( gnum );
             if ( mMultiplier != null )
                 value = ((AlgebraicNumber) value) .times( mMultiplier );
         }

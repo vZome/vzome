@@ -5,10 +5,11 @@ package com.vzome.core.math;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.Quaternion;
 
 public class QuaternionProjection implements Projection
 {
-    protected final com.vzome.core.algebra.Quaternion mRightQuat, mLeftQuat;
+    protected final Quaternion mRightQuat, mLeftQuat;
     
     private final AlgebraicField field;
     
@@ -25,7 +26,7 @@ public class QuaternionProjection implements Projection
         {
             if ( rightQuat .dimension() == field .getOrder() * 3 )
                 rightQuat = rightQuat .inflateTo4d( true );
-            mRightQuat = new com.vzome.core.algebra.Quaternion( field, rightQuat );
+            mRightQuat = new Quaternion( field, rightQuat );
         }
 
         if ( leftQuat == null )
@@ -34,7 +35,7 @@ public class QuaternionProjection implements Projection
         {
             if ( leftQuat .dimension() == field .getOrder() * 3 )
                 leftQuat = leftQuat .inflateTo4d( true );
-            mLeftQuat = new com.vzome.core.algebra.Quaternion( field, leftQuat );
+            mLeftQuat = new Quaternion( field, leftQuat );
         }
         this.field = field;
     }

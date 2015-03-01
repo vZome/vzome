@@ -54,4 +54,9 @@ public abstract class Point extends Construction
         return result;
     }
 
+    @Override
+    public String toString()
+    {
+        return "point at " + mLocation;
+    }
 }

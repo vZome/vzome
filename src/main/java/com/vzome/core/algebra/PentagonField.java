@@ -104,4 +104,37 @@ public final class PentagonField extends AlgebraicField
 //        }
         return component;
     }
+
+    public AlgebraicNumber parseLegacyNumber( String string )
+    {
+        int div = 1;
+        if ( string .startsWith( "(" ) ) {
+            int closeParen = string .indexOf( ")" );
+            div = Integer .parseInt( string .substring( closeParen+2 ) );
+            string = string .substring( 1, closeParen );
+        }
+        
+        int phis = 0;
+        int phiIndex = string .indexOf( "phi" );
+        if ( phiIndex >= 0 ) {
+            String part = string .substring( 0, phiIndex );
+            if ( part .length() == 0 )
+                phis = 1;
+            else if ( part .equals( "-" ) )
+                phis = -1;
+            else
+                phis = Integer .parseInt( part );
+            string = string .substring( phiIndex+3 );
+        }
+        
+        int ones;
+        if ( string .length() == 0 )
+            ones = 0;
+        else {
+            if ( string .startsWith( "+" ) )
+                string = string .substring( 1 );
+            ones = Integer .parseInt( string );
+        }
+        return createAlgebraicNumber( phis, ones, div, 0 );
+    }
 }

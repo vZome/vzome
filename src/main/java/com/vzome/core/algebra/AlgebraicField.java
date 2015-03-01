@@ -369,6 +369,11 @@ public abstract class AlgebraicField
         }
     }
 
+    public AlgebraicNumber parseLegacyNumber( String val )
+    {
+        throw new IllegalStateException( "This field does not support vZome 2.x files." );
+    }
+
     public AlgebraicNumber parseNumber( String nums )
     {
         StringTokenizer tokens = new StringTokenizer( nums, " " );

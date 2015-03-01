@@ -88,5 +88,9 @@ public abstract class Segment extends Construction
         return result;
     }
 
-
+    @Override
+    public String toString()
+    {
+        return "segment from " + mStart + " to " + getEnd();
+    }
 }

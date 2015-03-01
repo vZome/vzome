@@ -67,4 +67,35 @@ public class RootTwoField extends AlgebraicField
         else
             return new BigRational[]{ factors[ 1 ] .plus( factors[ 1 ] ), factors[ 0 ] };
     }
+    
+    public AlgebraicNumber parseLegacyNumber( String string )
+    {
+        int div = 1;
+        boolean hasDiv = string .startsWith( "(" );
+        if ( hasDiv )
+            string = string .substring( 1 );
+        int phiIndex = string .indexOf( "sqrt2" );
+        int phis = 0;
+        if ( phiIndex >= 0 ) {
+            String part = string .substring( 0, phiIndex );
+            if ( part .length() == 0 )
+                part = "1";
+            else if ( part .equals( "-" ) )
+                part = "-1";
+            phis = Integer .parseInt( part );
+            string = string .substring( phiIndex+5 );
+        }
+        if ( hasDiv ) {
+            int closeParen = string .indexOf( ")" );
+            String part = string .substring( closeParen+2 );
+            string = string .substring( 0, closeParen );
+            div = Integer .parseInt( part );
+        }
+        if ( string .length() == 0 )
+            string = "0";
+        else if ( string .startsWith( "+" ) )
+            string = string .substring( 1 );
+        int ones = Integer .parseInt( string );
+        return createAlgebraicNumber( phis, ones, div, 0 );
+    }
 }
