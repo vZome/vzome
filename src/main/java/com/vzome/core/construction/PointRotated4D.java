@@ -50,8 +50,7 @@ public class PointRotated4D extends Point
 //             RationalVectors .copy( wValue, i, loc, i );
         
         AlgebraicVector loc3d = mPrototype .getLocation();
-        for ( int i = 0; i < 3; i ++ )
-            loc .setComponent( i, loc3d .getComponent( i ) );
+        loc = loc3d .inflateTo4d( true );
         loc = mRightQuaternion .leftMultiply( loc );
         loc = mLeftQuaternion .rightMultiply( loc );
         loc = field .projectTo3d( loc, true );
