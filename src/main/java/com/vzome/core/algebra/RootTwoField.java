@@ -75,14 +75,14 @@ public class RootTwoField extends AlgebraicField
         if ( hasDiv )
             string = string .substring( 1 );
         int phiIndex = string .indexOf( "sqrt2" );
-        int phis = 0;
+        int sqrt2s = 0;
         if ( phiIndex >= 0 ) {
             String part = string .substring( 0, phiIndex );
             if ( part .length() == 0 )
                 part = "1";
             else if ( part .equals( "-" ) )
                 part = "-1";
-            phis = Integer .parseInt( part );
+            sqrt2s = Integer .parseInt( part );
             string = string .substring( phiIndex+5 );
         }
         if ( hasDiv ) {
@@ -96,6 +96,6 @@ public class RootTwoField extends AlgebraicField
         else if ( string .startsWith( "+" ) )
             string = string .substring( 1 );
         int ones = Integer .parseInt( string );
-        return createAlgebraicNumber( phis, ones, div, 0 );
+        return createAlgebraicNumber( ones, sqrt2s, div, 0 );
     }
 }

@@ -135,6 +135,6 @@ public final class PentagonField extends AlgebraicField
                 string = string .substring( 1 );
             ones = Integer .parseInt( string );
         }
-        return createAlgebraicNumber( phis, ones, div, 0 );
+        return createAlgebraicNumber( ones, phis, div, 0 );
     }
 }
