@@ -219,7 +219,7 @@ public class XmlSaveFormat
         val = elem .getAttribute( "w" );
         AlgebraicNumber w = (val==null || val .isEmpty() )? mField .zero() : mField .parseLegacyNumber( val );
 
-        AlgebraicVector value = new AlgebraicVector( x, y, z, w );
+        AlgebraicVector value = new AlgebraicVector( w, x, y, z );
         
         if ( threeD && ! value .getComponent( AlgebraicVector .W4 ) .isZero()
                 && logger .isLoggable( Level.FINE ) )
