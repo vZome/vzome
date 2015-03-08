@@ -324,7 +324,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new SelectNeighbors( this.mSelection, this.mRealizedModel, groupInSelection );
 
 		else if ( "SelectSimilarSize".equals( name ) )
-			edit = new SelectSimilarSizeStruts( null, null, this .mSelection, this .mRealizedModel, this .mField );
+			edit = new SelectSimilarSizeStruts( this.symmetrySystem, null, null, this .mSelection, this .mRealizedModel, this .mField );
 
 		else if ( "ValidateSelection".equals( name ) )
 			edit = new ValidateSelection( this.mSelection );
@@ -577,7 +577,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
     public void selectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
-        UndoableEdit edit = new SelectSimilarSizeStruts( orbit, length, mSelection, mRealizedModel, mField );
+        UndoableEdit edit = new SelectSimilarSizeStruts( this.symmetrySystem, orbit, length, mSelection, mRealizedModel, mField );
         this .performAndRecord( edit );
     }
     

@@ -229,7 +229,7 @@ public class SymmetrySystem implements OrbitSource
             Direction dir = (Direction) dirs .next();
             Element dirElem = doc .createElement( "Direction" );
             if ( dir .isAutomatic() )
-                DomUtils .addAttribute( dirElem, "prototype", dir .getPrototype() .toString() );
+                DomUtils .addAttribute( dirElem, "prototype", dir .getPrototype() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
                 DomUtils .addAttribute( dirElem, "name", dir .getName() );
             {
                 Color color = getColor( dir );

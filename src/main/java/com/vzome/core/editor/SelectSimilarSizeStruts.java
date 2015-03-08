@@ -15,26 +15,26 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
+import com.vzome.core.render.RenderedModel.OrbitSource;
 
 public class SelectSimilarSizeStruts extends ChangeSelection
 {
     private Direction orbit;
     private AlgebraicNumber length;
     private RealizedModel model;
-    private Symmetry symmetry;
+    private OrbitSource orbits;
     private AlgebraicField field;
 
-    public SelectSimilarSizeStruts( Direction orbit, AlgebraicNumber length,
+    public SelectSimilarSizeStruts( OrbitSource orbits, Direction orbit, AlgebraicNumber length,
             Selection selection, RealizedModel model, AlgebraicField field )
     {
         super( selection, false );
+        this.orbits = orbits;
         this .field = field;
         this .model = model;
-        this .symmetry = (orbit==null)? null : orbit .getSymmetry();
         this .orbit = orbit;
         this .length = length;
     }
@@ -48,7 +48,7 @@ public class SelectSimilarSizeStruts extends ChangeSelection
             if ( man instanceof Strut ) {
                 Strut strut = (Strut) man;
                 AlgebraicVector offset = strut .getOffset();
-                Axis zone = symmetry .getAxis( offset );
+                Axis zone = orbits .getAxis( offset );
                 Direction orbit = zone .getOrbit();
                 if ( orbit != this .orbit )
                     continue;
@@ -67,8 +67,8 @@ public class SelectSimilarSizeStruts extends ChangeSelection
 
     protected void getXmlAttributes( Element element )
     {
-        if ( symmetry != null )
-            DomUtils .addAttribute( element, "symmetry", symmetry .getName() );
+        if ( orbits != null )
+            DomUtils .addAttribute( element, "symmetry", orbit .getSymmetry() .getName() );
         if ( orbit != null )
         	DomUtils .addAttribute( element, "orbit", orbit .getName() );
         if ( length != null )
@@ -79,7 +79,7 @@ public class SelectSimilarSizeStruts extends ChangeSelection
             throws Failure
     {
         length = format .parseNumber( xml, "length" );
-        symmetry = this .field .getSymmetry( xml .getAttribute( "symmetry" ) );
-        orbit = symmetry .getDirection( xml .getAttribute( "orbit" ) );
+//        orbits = this .field .getSymmetry( xml .getAttribute( "symmetry" ) );
+        orbit = orbits .getOrbits() .getDirection( xml .getAttribute( "orbit" ) );
     }
 }
