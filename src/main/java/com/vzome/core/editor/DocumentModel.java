@@ -157,7 +157,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         for ( int i = 0; i < symms .length; i++ ) {
             SymmetrySystem osm = new SymmetrySystem( null, symms[i], app .getColors(), app .getGeometries( symms[i] ), true );
             // one of these will be overwritten below, if we are loading from a file that has it set
-            this .symmetrySystems .put( symms[i] .getName(), osm );
+            this .symmetrySystems .put( osm .getName(), osm );
         }
 
 		if ( xml != null ) {
@@ -233,10 +233,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .mRealizedModel .show( m );
 	}
 
-	public UndoableEdit createEdit( String name, XmlSaveFormat format )
+	public UndoableEdit createEdit( Element xml, boolean groupInSelection )
 	{
 		UndoableEdit edit = null;
-		boolean groupInSelection = format .groupingDoneInSelection(); // loading pre-2.1.2
+		String name = xml .getLocalName();
 
 		if ( "Snapshot" .equals( name ) )
 			edit = new Snapshot( -1, this );
@@ -324,8 +324,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new SelectNeighbors( this.mSelection, this.mRealizedModel, groupInSelection );
 
 		else if ( "SelectSimilarSize".equals( name ) )
-			edit = new SelectSimilarSizeStruts( this.symmetrySystem, null, null, this .mSelection, this .mRealizedModel, this .mField );
-
+		{
+		    SymmetrySystem symmetry = (SymmetrySystem) this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
+            edit = new SelectSimilarSizeStruts( symmetry, null, null, this .mSelection, this .mRealizedModel );
+		}
 		else if ( "ValidateSelection".equals( name ) )
 			edit = new ValidateSelection( this.mSelection );
 
@@ -577,7 +579,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
     public void selectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
-        UndoableEdit edit = new SelectSimilarSizeStruts( this.symmetrySystem, orbit, length, mSelection, mRealizedModel, mField );
+        UndoableEdit edit = new SelectSimilarSizeStruts( this.symmetrySystem, orbit, length, mSelection, mRealizedModel );
         this .performAndRecord( edit );
     }
     

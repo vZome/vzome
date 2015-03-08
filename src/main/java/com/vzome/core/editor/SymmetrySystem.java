@@ -119,6 +119,11 @@ public class SymmetrySystem implements OrbitSource
 		}
         this .shapes = this .styles .get( styleName );
 	}
+	
+	public String getName()
+	{
+	    return this .symmetry .getName();
+	}
 
 	@Override
 	public Axis getAxis( AlgebraicVector vector )

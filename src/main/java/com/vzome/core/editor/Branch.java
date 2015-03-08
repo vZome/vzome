@@ -44,7 +44,7 @@ public class Branch implements UndoableEdit
 
                 // the remainder is essentially identical to DeferredEdit .redo()
 
-                UndoableEdit edit = context .createEdit( editElem .getLocalName(), format );
+                UndoableEdit edit = context .createEdit( xml, format .groupingDoneInSelection() );
                 addEdit( edit );
                 edit. loadAndPerform( editElem, format, new UndoableEdit.Context()
                 {
@@ -60,9 +60,9 @@ public class Branch implements UndoableEdit
                         toUndo .push( edit );
                     }
 
-                    public UndoableEdit createEdit( String type, XmlSaveFormat format )
+                    public UndoableEdit createEdit( Element xml, boolean groupInSelection )
                     {
-                        return context .createEdit( type, format );
+                        return context .createEdit( xml, groupInSelection );
                     }
                 } );
             }
