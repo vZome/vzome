@@ -38,7 +38,7 @@ import org.vorthmann.ui.LoggingErrorChannel;
 import org.vorthmann.ui.SplashScreen;
 
 
-public final class ApplicationUI extends DefaultController implements Platform.UI 
+public final class ApplicationUI extends DefaultController implements Platform.MacFinderHooks
 {
     public boolean userHasEntitlement( String propName )
     {

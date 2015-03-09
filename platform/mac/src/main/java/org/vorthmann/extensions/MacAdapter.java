@@ -20,7 +20,7 @@ import com.apple.eawt.AppEvent.QuitEvent;
  */
 public class MacAdapter
 {
-    static void setupListener( final Platform.UI ui )
+    static void setupListener( final org.vorthmann.interfaces.IHookMacFinderUI ui )
     {
         com.apple.eawt.Application appl = com.apple.eawt.Application .getApplication();
         

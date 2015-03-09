@@ -16,5 +16,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.vorthmann.zome.ui.ApplicationUI"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-entitlement.model.edit true -entitlement.lesson.edit true -entitlement.all.tools true -licensed.user Nobody"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="vzome-desktop"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx3048M -Xdock:name=&quot;vZome 5.0 licensed&quot; -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true -Djava.util.logging.config.file=logging.properties"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx3048M -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true -Djava.util.logging.config.file=logging.properties"/>
 </launchConfiguration>
