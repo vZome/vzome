@@ -915,7 +915,6 @@ public class EditorController extends DefaultController implements J3dComponentF
             else if ( action .equals( "extractPartModel" ) )
             {
                 Strut strut = (Strut) mTargetManifestation;
-                AlgebraicVector location = strut .getLocation();
                 AlgebraicVector offset = strut .getOffset();
                 RenderedManifestation rm = (RenderedManifestation) strut .getRenderedObject();
                 Polyhedron shape = rm .getShape();
@@ -1283,7 +1282,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             // TODO support group/ungroup: mTargetManifestation may be many
             // Manifestations
             if ( mTargetManifestation != null ) {
-            	return this .document .getManifestationProperties( mTargetManifestation, symmetryController .getSymmetry() );
+            	return this .document .getManifestationProperties( mTargetManifestation, symmetryController .getOrbitSource() );
             }
             mTargetManifestation = null;
             return "no object";

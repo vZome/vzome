@@ -26,6 +26,7 @@ import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedModel;
+import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.Shapes;
 import com.vzome.desktop.controller.ViewPlatformModel;
 
@@ -276,6 +277,11 @@ public class SymmetryController extends DefaultController implements RenderedMod
     public OrbitSet getOrbits()
     {
         return this .symmetrySystem .getOrbits();
+    }
+    
+    public OrbitSource getOrbitSource()
+    {
+        return this .symmetrySystem;
     }
     
     // TODO this should take over all functions of symmetry.getAxis()
