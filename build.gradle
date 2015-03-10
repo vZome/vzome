@@ -1,0 +1,51 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+//apply plugin: 'antlr4'
+
+group = 'com.vzome.core'
+version = '0.1'
+
+description = """vzome-core"""
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+
+    ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for java3d/vecmath
+        url "http://jogamp.org/deployment"
+        layout "pattern", {
+            artifact "[organization]/[revision]/[artifact].[ext]"
+        }
+    }
+}
+
+dependencies {
+    compile     group: 'antlr',             name: 'antlr',             version:'2.7.7'
+    compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre11'
+    compile     group: 'org.python',        name: 'jython-standalone', version:'2.5.2'
+    compile     group: 'javax.servlet',     name: 'servlet-api',       version:'2.5'
+    compile     group: 'org.eclipse.jetty', name: 'jetty-servlet',     version:'7.6.0.v20120127'
+
+    testCompile group: 'junit',             name: 'junit',             version:'3.8.1'
+    testCompile group: 'xom',               name: 'xom',               version:'1.2.5'
+
+//  antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.5'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'vzome-core',
+                   'Implementation-Version': version
+    }
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
