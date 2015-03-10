@@ -8,61 +8,28 @@ Build Instructions
 
 (These instructions are primarily for Linux or Mac, or any other Unix, but some basic functionality has also been adapted for Windows.)
 
-The build was originally implemented using Maven but now uses Gradle with a local Maven repository. Most of the dependencies will be pulled from the Maven repositories automatically, but there are two special requirements.
+The build was originally implemented using Maven but now uses Gradle with a local Maven repository.  Most of the dependencies will be pulled from the Maven repositories automatically, but there is one special requirement: the [vzome-core](https://github.com/vorth/vzome-core/) project must be built locally, so that the JAR appears in your local Maven repository to satisfy the dependency.
 
-First is the [vzome-core](https://github.com/vorth/vzome-core/) project, which must be built locally, so that the JAR appears in your local Maven repository to satisfy the dependency.
+Having built vzome-core initially, the standard Gradle Wrapper build command should work fine. For Mac or Unix:
 
-The second special requirement is Java3d, and the latest version of Java3d is not available in any Maven repository.  Therefore, you must seed your local Maven repository with the Java3d JAR files before attempting the build, using the following steps:
-
-    curl http://jogamp.org/deployment/java3d/1.6.0-pre11/vecmath.jar > vecmath.jar
-    mvn install:install-file -DgroupId=org.jogamp.java3d -Dpackaging=jar -Dversion=1.6.0 -DartifactId=vecmath -Dfile=vecmath.jar
-    rm vecmath.jar
-
-    curl http://jogamp.org/deployment/java3d/1.6.0-pre11/j3dutils.jar > j3dutils.jar
-    mvn install:install-file -DgroupId=org.jogamp.java3d -Dpackaging=jar -Dversion=1.6.0 -DartifactId=j3dutils -Dfile=j3dutils.jar
-    rm j3dutils.jar
-
-    curl http://jogamp.org/deployment/java3d/1.6.0-pre11/j3dcore.jar > j3dcore.jar
-    mvn install:install-file -DgroupId=org.jogamp.java3d -Dpackaging=jar -Dversion=1.6.0 -DartifactId=j3dcore -Dfile=j3dcore.jar
-    rm j3dcore.jar
-
-You don't really need to use "curl" to download the JARs, of course. The jar files can also be downloaded interactively from a browser. The key step is the "mvn install:install-file" command, which seeds your local Maven repository.
-
-Having done those steps, the standard Gradle build command should work fine. For Mac or Unix:
-
-    gradle clean build
+    gradlew clean build
 	
 ... or in Windows PowerShell:
 
 	./gradlew clean build
-	
-Note that vzome-core is not yet converted to use Gradle, so it must be built using Maven:
 
-	mvn clean install
-
-Building with Gradle
--------------
-
-Gradle is a command line build tool. After the Maven repositories have been seeded as described above, Gradle can be installed in a Windows environment by running 
-
-	.\gradlew.bat. 
-	
-Thereafter, vzome-desktop can be built by running the following command from within the vzome-desktop directory:
-
-	.\gradlew build
+Note that the Gradle Wrapper installs Gradle itself, the first time you run one of these commands.	
 
 Developing with Eclipse
 -------------
 
-Maven has great support for IDE integration.  I use Eclipse, so the Maven command for generating an Eclipse project is extremely helpful to me:
+Gradle has support for IDE integration.  I use Eclipse, so the Gradle command for generating an Eclipse project is extremely helpful to me:
 
-    mvn eclipse:eclipse
+    ./gradlew eclipse
 
 This command must be executed twice. Once from within the vzome-core folder and again in the vzome-desktop folder before the two projects can be opened by Eclipse. An Eclipse launch configuration file (vzome-desktop.launch) is included. It will be used in the generated Eclipse project for vzome-desktop.
 
-Existing projects are opened in Eclipse by using "File | Import... | Existing Projects into Workspace" and selecting the folder where the mvn command was executed (vzome-core and/or vzome-desktop).
-
-TODO: When the two projects are fully moved to Gradle, update these build instructions for Eclipse.
+Existing projects are opened in Eclipse by using "File | Import... | Existing Projects into Workspace" and selecting the folder where the build command was executed (vzome-core and/or vzome-desktop).
 
 Developing with NetBeans IDE
 -------------
@@ -79,7 +46,7 @@ Once you have successfully built vZome, you can run it using "run-vzome.sh".  Yo
 
 It can also be run as a Gradle task using the command:
 
-	gradle run
+	gradlew run
 	
 ... or in Windows PowerShell:
 

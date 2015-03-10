@@ -14,14 +14,23 @@ description = 'vzome-desktop'
 repositories {
     mavenLocal()
     mavenCentral()
+    
+    // this one is for javax.media.jai
     maven { url 'http://repository.springsource.com/maven/bundles/external' }
+
+    ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for java3d/*
+        url "http://jogamp.org/deployment"
+        layout "pattern", {
+            artifact "[organization]/[revision]/[artifact].[ext]"
+        }
+    }
 }
 
 dependencies {
     compile group: 'com.vzome.core', name: 'vzome-core', version:'0.1'
-    compile group: 'org.jogamp.java3d', name: 'j3dcore', version:'1.6.0'
-    compile group: 'org.jogamp.java3d', name: 'j3dutils', version:'1.6.0'
-    compile group: 'org.jogamp.java3d', name: 'vecmath', version:'1.6.0'
+    compile group: 'java3d', name: 'j3dcore', version:'1.6.0-pre11'
+    compile group: 'java3d', name: 'j3dutils', version:'1.6.0-pre11'
+    compile group: 'java3d', name: 'vecmath', version:'1.6.0-pre11'
     compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version:'2.2.4'
     compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version:'2.2.4'
     compile group: 'javax.media.jai', name: 'com.springsource.javax.media.jai.core', version:'1.1.3'
