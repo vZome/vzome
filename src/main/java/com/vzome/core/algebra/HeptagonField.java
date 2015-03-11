@@ -77,12 +77,12 @@ public class HeptagonField extends AlgebraicField
     public String getIrrational( int which, int format )
     {
         if ( format == DEFAULT_FORMAT )
-            if ( which == 0 )
+            if ( which == B )
                 return "\u03C1";
             else
                 return "\u03C3";
         else
-            if ( which == 0 )
+            if ( which == B )
                 return "rho";
             else
                 return "sigma";

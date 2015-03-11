@@ -26,6 +26,33 @@ public class AlgebraicNumberTest extends TestCase
         assertTrue( tau_9 .equals( field.createPower( 9 ) ) );
         assertTrue( tau_minus5 .equals( field.createPower( -5 ) ) );
     }
+    
+    public void testToString()
+    {
+        AlgebraicField field = new PentagonField();
+        AlgebraicNumber number = field .createAlgebraicNumber( 22, 15, 6, 0 );
+        
+        assertEquals( "11/3 + 5/2\u03C6", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
+        assertEquals( "11/3 + 5/2*phi", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "11/3 5/2", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
+        assertEquals( "(5/2,11/3)", number.toString( AlgebraicField.VEF_FORMAT ) );
+
+        field = new HeptagonField();
+        number = field .createAlgebraicNumber( new int[]{ 6, 11, 14 } );
+        
+        assertEquals( "6 + 11\u03C1 + 14\u03C3", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
+        assertEquals( "6 + 11*rho + 14*sigma", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "6 11 14", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
+        assertEquals( "(14,11,6)", number.toString( AlgebraicField.VEF_FORMAT ) );
+        
+        field = new SnubDodecField( new PentagonField() );
+        number = field .createAlgebraicNumber( new int[]{ -12, 8, 2, -1, 6, -4 } );
+        
+        assertEquals( "-12 + 8\u03C6 + 2\u03BE - \u03C6\u03BE + 6\u03BE\u00B2 - 4\u03C6\u03BE\u00B2", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
+        assertEquals( "-12 + 8*phi + 2*xi - phi*xi + 6*xi^2 - 4*phi*xi^2", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "-12 8 2 -1 6 -4", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
+        assertEquals( "(-4,6,-1,2,8,-12)", number.toString( AlgebraicField.VEF_FORMAT ) );
+}
 
     public void testRootTwoField()
     {

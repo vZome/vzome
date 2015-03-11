@@ -202,19 +202,19 @@ public class SnubDodecField extends AlgebraicField
                 return "";
 
             case B:
-                return "\u03C4";
+                return "\u03C6";
 
             case C:
                 return "\u03BE";
 
             case D:
-                return "\u03C4\u03BE";
+                return "\u03C6\u03BE";
 
             case E:
                 return "\u03BE\u00B2";
 
             case F:
-                return "\u03C4\u03BE\u00B2";
+                return "\u03C6\u03BE\u00B2";
 
             default:
                 throw new IllegalArgumentException( which + " is not a valid irrational in this field" );

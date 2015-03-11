@@ -344,10 +344,9 @@ public abstract class AlgebraicField
 
         case VEF_FORMAT:
             buf.append( "(" );
-            for ( int i = factors.length; i > 0; i-- )
-            { // note that we go backwards!
+            for ( int i = factors.length; i > 0; i-- ) { // note that we go backwards!
                 buf .append( factors[ i - 1 ] .toString() );
-                if ( i == 1 )
+                if ( i > 1 )
                     buf.append( "," );
             }
             buf.append( ")" );
@@ -356,14 +355,29 @@ public abstract class AlgebraicField
         default:
             for ( int i = 0; i < factors.length; i++ )
             {
-                String multiplier = this .getIrrational( i, format );
-                if ( i > 0 )
-                    buf .append( " + " );
-                if ( i > 0 && format == EXPRESSION_FORMAT )
-                    buf .append( multiplier + "*" );
-                buf .append( factors[ i ] .toString() );
-                if ( i > 0 && format == DEFAULT_FORMAT )
-                    buf .append( " " + multiplier );
+                BigRational factor = factors[ i ];
+                if ( i == 0 )
+                {
+                    buf .append( factor .toString() );
+                }
+                else
+                {
+                    if ( factor .isNegative() )
+                    {
+                        factor = factor .negate();
+                        buf .append( " - " );
+                    } else {
+                        buf .append( " + " );
+                    }
+                    if ( ! factor .isOne() )
+                    {
+                        buf .append( factor .toString() );
+                        if ( format == EXPRESSION_FORMAT )
+                            buf .append( "*" );
+                    }
+                    String multiplier = this .getIrrational( i, format );
+                    buf .append(  multiplier );
+                }
             }
             break;
         }
