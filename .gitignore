@@ -1,5 +1,18 @@
-.DS_Store
+// folders
+.gradle/
+.nb-gradle/
+.settings/
+bin/
+build/
+gradle/
+repos/
+target/
+temp/
+
+// files
+*.unused
 .classpath
+.DS_Store
 .project
-.settings
-target
+gradle-app.setting
+Thumbs.db
