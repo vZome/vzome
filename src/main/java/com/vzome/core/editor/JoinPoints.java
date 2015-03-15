@@ -33,7 +33,7 @@ public class JoinPoints extends ChangeConstructions
     protected void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Failure
     {
         String attr = xml .getAttribute( "closedLoop" );
-        if ( attr != null )
+        if ( attr != null && ! attr.isEmpty() )
             closedLoop = Boolean .valueOf( attr ) .booleanValue();
     }
 
