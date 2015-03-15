@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="rootThree" version="3.0 alpha 1" xmlns:vzome="http://tns.vorthmann.org/vZome/4.0.0/">
+  <Viewing>
+    <ViewModel near="0.4854955364092519" far="388.3964233398438" width="87.38919525146484" distance="194.19821166992188"
+    stereoAngle="0.0" parallel="true">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+    <ViewModel near="0.4854955364092519" far="388.3964233398438" width="87.38919525146484" distance="194.19821166992188"
+    stereoAngle="0.0" parallel="true" name="ghost4">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+    <ViewModel near="0.49530327581321115" far="396.24261474609386" width="89.1545883178711" distance="198.12130737304688"
+    stereoAngle="0.0" parallel="true" name="ghost3">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.4082482904638631" y="0.8164965809277261" z="0.4082482904638631"/>
+      <LookDirection x="-0.5773502691896258" y="0.5773502691896258" z="-0.5773502691896258"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" renderingStyle="small connectors">
+    <Direction name="blue" available="true" snap="true" build="true" render="true" color="0,118,149">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" render="true" color="175,0,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="brown" render="true" color="107,53,26">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="unnamed_8"/>
+    <Direction name="unnamed_9"/>
+    <Direction name="unnamed_10"/>
+    <Direction name="unnamed_11"/>
+    <Direction name="unnamed_12"/>
+    <Direction name="unnamed_13"/>
+    <Direction name="unnamed_14"/>
+    <Direction name="unnamed_15"/>
+  </SymmetrySystem>
+  <EditHistory editNumber="137">
+    <GhostSymmetry24Cell/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <CommandEdit command="CommandHide"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 9/2 27/2 9 0 9/2 27/2 0"/>
+    <SelectManifestation point="0 -9/2 27/2 9 -27/2 0 0 -9/2"/>
+    <SelectManifestation point="-27/2 -9/2 27/2 9/2 0 9 0 0"/>
+    <SelectManifestation point="-27/2 -9 0 9/2 -27/2 0 0 9/2"/>
+    <SelectManifestation point="-27/2 -9 0 -9/2 0 9/2 -27/2 0"/>
+    <SelectManifestation point="-27/2 -9/2 -27/2 -9/2 0 0 0 9"/>
+    <SelectManifestation point="0 -9/2 -27/2 -9 0 -9/2 -27/2 0"/>
+    <SelectManifestation point="0 9/2 -27/2 -9 27/2 0 0 9/2"/>
+    <SelectManifestation point="27/2 9/2 -27/2 -9/2 0 -9 0 0"/>
+    <SelectManifestation point="27/2 9 0 -9/2 27/2 0 0 -9/2"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 -9/2 27/2 0"/>
+    <SelectManifestation point="27/2 9/2 27/2 9/2 0 0 0 -9"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 9 -27/2 -9/2 27/2 9/2"/>
+    <SelectManifestation point="0 -9/2 -27/2 0 -27/2 -9 0 9/2"/>
+    <SelectManifestation point="27/2 0 0 9/2 -27/2 -9 0 -9/2"/>
+    <SelectManifestation point="0 -9 0 0 -27/2 -9/2 -27/2 -9/2"/>
+    <SelectManifestation point="27/2 0 0 -9/2 0 -9/2 -27/2 -9"/>
+    <SelectManifestation point="0 -9/2 27/2 0 0 9/2 -27/2 -9"/>
+    <SelectManifestation point="0 0 0 -9 27/2 9/2 -27/2 -9/2"/>
+    <SelectManifestation point="0 9/2 27/2 0 27/2 9 0 -9/2"/>
+    <SelectManifestation point="-27/2 0 0 -9/2 27/2 9 0 9/2"/>
+    <SelectManifestation point="0 9 0 0 27/2 9/2 27/2 9/2"/>
+    <SelectManifestation point="-27/2 0 0 9/2 0 9/2 27/2 9"/>
+    <SelectManifestation point="0 9/2 -27/2 0 0 -9/2 27/2 9"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 9/2 27/2 9 0 9/2 27/2 0"/>
+    <SelectManifestation point="0 0 0 9 -27/2 -9/2 27/2 9/2"/>
+    <SelectManifestation point="0 -9/2 27/2 9 -27/2 0 0 -9/2"/>
+    <SelectManifestation point="0 -9/2 27/2 0 0 9/2 -27/2 -9"/>
+    <SelectManifestation point="-27/2 -9/2 27/2 9/2 0 9 0 0"/>
+    <SelectManifestation point="-27/2 0 0 9/2 0 9/2 27/2 9"/>
+    <SelectManifestation point="-27/2 -9 0 9/2 -27/2 0 0 9/2"/>
+    <SelectManifestation point="0 -9 0 0 -27/2 -9/2 -27/2 -9/2"/>
+    <SelectManifestation point="-27/2 -9 0 -9/2 0 9/2 -27/2 0"/>
+    <SelectManifestation point="-27/2 0 0 -9/2 27/2 9 0 9/2"/>
+    <SelectManifestation point="-27/2 -9/2 -27/2 -9/2 0 0 0 9"/>
+    <SelectManifestation point="0 -9/2 -27/2 0 -27/2 -9 0 9/2"/>
+    <SelectManifestation point="0 -9/2 -27/2 -9 0 -9/2 -27/2 0"/>
+    <SelectManifestation point="0 0 0 -9 27/2 9/2 -27/2 -9/2"/>
+    <SelectManifestation point="0 9/2 -27/2 -9 27/2 0 0 9/2"/>
+    <SelectManifestation point="0 9/2 -27/2 0 0 -9/2 27/2 9"/>
+    <SelectManifestation point="27/2 9/2 -27/2 -9/2 0 -9 0 0"/>
+    <SelectManifestation point="27/2 0 0 -9/2 0 -9/2 -27/2 -9"/>
+    <SelectManifestation point="27/2 9 0 -9/2 27/2 0 0 -9/2"/>
+    <SelectManifestation point="0 9 0 0 27/2 9/2 27/2 9/2"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 -9/2 27/2 0"/>
+    <SelectManifestation point="27/2 0 0 9/2 -27/2 -9 0 -9/2"/>
+    <SelectManifestation point="27/2 9/2 27/2 9/2 0 0 0 -9"/>
+    <SelectManifestation point="0 9/2 27/2 0 27/2 9 0 -9/2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 9/2 27/2 9 0 9/2 27/2 0"/>
+    <SelectManifestation point="-27/2 0 0 9/2 0 9/2 27/2 9"/>
+    <SelectManifestation point="-27/2 -9/2 -27/2 -9/2 0 0 0 9"/>
+    <SelectManifestation point="0 9/2 -27/2 0 0 -9/2 27/2 9"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 -9/2 27/2 0"/>
+    <SelectManifestation point="0 0 0 9 -27/2 -9/2 27/2 9/2"/>
+    <SelectManifestation point="-27/2 -9 0 9/2 -27/2 0 0 9/2"/>
+    <SelectManifestation point="0 -9/2 -27/2 0 -27/2 -9 0 9/2"/>
+    <SelectManifestation point="27/2 9/2 -27/2 -9/2 0 -9 0 0"/>
+    <SelectManifestation point="27/2 0 0 9/2 -27/2 -9 0 -9/2"/>
+    <SelectManifestation point="0 -9/2 27/2 9 -27/2 0 0 -9/2"/>
+    <SelectManifestation point="0 -9 0 0 -27/2 -9/2 -27/2 -9/2"/>
+    <SelectManifestation point="0 -9/2 -27/2 -9 0 -9/2 -27/2 0"/>
+    <SelectManifestation point="27/2 0 0 -9/2 0 -9/2 -27/2 -9"/>
+    <SelectManifestation point="27/2 9/2 27/2 9/2 0 0 0 -9"/>
+    <SelectManifestation point="0 -9/2 27/2 0 0 9/2 -27/2 -9"/>
+    <SelectManifestation point="-27/2 -9 0 -9/2 0 9/2 -27/2 0"/>
+    <SelectManifestation point="0 0 0 -9 27/2 9/2 -27/2 -9/2"/>
+    <SelectManifestation point="27/2 9 0 -9/2 27/2 0 0 -9/2"/>
+    <SelectManifestation point="0 9/2 27/2 0 27/2 9 0 -9/2"/>
+    <SelectManifestation point="-27/2 -9/2 27/2 9/2 0 9 0 0"/>
+    <SelectManifestation point="-27/2 0 0 -9/2 27/2 9 0 9/2"/>
+    <SelectManifestation point="0 9/2 -27/2 -9 27/2 0 0 9/2"/>
+    <SelectManifestation point="0 9 0 0 27/2 9/2 27/2 9/2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 -9/2 27/2 0 0 9/2 -27/2 -9"/>
+    <SelectManifestation point="0 -9 0 0 -27/2 -9/2 -27/2 -9/2"/>
+    <SelectManifestation point="0 -9/2 -27/2 0 -27/2 -9 0 9/2"/>
+    <SelectManifestation point="0 9/2 -27/2 0 0 -9/2 27/2 9"/>
+    <SelectManifestation point="0 9 0 0 27/2 9/2 27/2 9/2"/>
+    <SelectManifestation point="0 9/2 27/2 0 27/2 9 0 -9/2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 9 -27/2 -9/2 27/2 9/2"/>
+    <SelectManifestation point="-27/2 0 0 9/2 0 9/2 27/2 9"/>
+    <SelectManifestation point="-27/2 0 0 -9/2 27/2 9 0 9/2"/>
+    <SelectManifestation point="0 0 0 -9 27/2 9/2 -27/2 -9/2"/>
+    <SelectManifestation point="27/2 0 0 -9/2 0 -9/2 -27/2 -9"/>
+    <SelectManifestation point="27/2 0 0 9/2 -27/2 -9 0 -9/2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 -9/2 27/2 9 -27/2 0 0 -9/2"/>
+    <SelectManifestation point="-27/2 -9 0 9/2 -27/2 0 0 9/2"/>
+    <SelectManifestation point="-27/2 -9/2 -27/2 -9/2 0 0 0 9"/>
+    <SelectManifestation point="0 9/2 -27/2 -9 27/2 0 0 9/2"/>
+    <SelectManifestation point="27/2 9 0 -9/2 27/2 0 0 -9/2"/>
+    <SelectManifestation point="27/2 9/2 27/2 9/2 0 0 0 -9"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-27/2 -9/2 27/2 9/2 0 9 0 0"/>
+    <SelectManifestation point="-27/2 -9 0 -9/2 0 9/2 -27/2 0"/>
+    <SelectManifestation point="0 -9/2 -27/2 -9 0 -9/2 -27/2 0"/>
+    <SelectManifestation point="27/2 9/2 -27/2 -9/2 0 -9 0 0"/>
+    <SelectManifestation startSegment="27/2 9 0 -9/2 27/2 0 0 -9/2" endSegment="27/2 9 0 9/2 0 -9/2 27/2 0"/>
+    <SelectManifestation startSegment="27/2 9 0 -9/2 27/2 0 0 -9/2" endSegment="27/2 9 0 9/2 0 -9/2 27/2 0"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 -9/2 27/2 0"/>
+    <SelectManifestation point="0 9/2 27/2 9 0 9/2 27/2 0"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-27/2 -9/2 27/2 9/2 0 9 0 0"/>
+    <EndBlock/>
+    <DeselectAll/>
+  </EditHistory>
+</vzome:vZome>

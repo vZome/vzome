@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" version="3.0 beta 1" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
+  <Viewing>
+    <ViewModel near="1.6119020320758437" far="1289.5216064453023" width="290.1423614501943" distance="644.7608032226562"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="49.75125624968516" y="-87.75783405843337" z="-49.75125624968516"/>
+      <UpDirection x="-0.5959857311645418" y="0.691380269669991" z="-0.4084046167212368"/>
+      <LookDirection x="-0.13171437353219137" y="-0.5858835191583168" z="-0.7996198007700674"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction name="blue" available="true" snap="true" build="true" render="true" color="0,118,149">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" render="true" color="175,0,0">
+      <LengthModel scale="5" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" build="true" render="true" color="240,160,0">
+      <LengthModel scale="2" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="orange" available="true" snap="true" render="true" color="220,76,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="purple" available="true" snap="true" render="true" color="108,0,198">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="black" render="true" color="30,30,30">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="lavender" render="true" color="175,135,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="olive" render="true" color="100,113,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="maroon" render="true" color="117,0,50">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="rose" render="true" color="255,51,143">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="navy" render="true" color="0,0,153">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="turquoise" render="true" color="18,205,148">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="coral" render="true" color="255,126,106">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sulfur" render="true" color="230,245,62">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sand" render="true" color="154,117,74">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="apple" render="true" color="116,195,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="cinnamon" render="true" color="136,37,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="spruce" render="true" color="18,73,48">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="162">
+    <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="15" len="1 2"/>
+    <StrutCreation anchor="2 3 -1 -2 0 0" index="7" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="2 3 -1 -2 0 0" endSegment="1 2 0 0 2 3"/>
+    <SelectManifestation point="1 2 0 0 2 3"/>
+    <EndBlock/>
+    <Symmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 3 -1 -2 0 0"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <SymmetryAxisChange start="0 0 0 0 0 0" end="2 3 -1 -2 0 0"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="0 0 -2 -3 -1 -2" endSegment="0 0 -2 -3 1 2"/>
+    <SelectManifestation point="0 0 -2 -3 1 2"/>
+    <SelectManifestation startSegment="0 0 -2 -3 1 2" endSegment="1 2 0 0 2 3"/>
+    <SelectManifestation point="1 2 0 0 2 3"/>
+    <SelectManifestation startSegment="2 3 1 2 0 0" endSegment="1 2 0 0 2 3"/>
+    <SelectManifestation point="1 2 0 0 2 3"/>
+    <SelectManifestation point="0 0 -2 -3 1 2"/>
+    <SelectManifestation startSegment="2 3 -1 -2 0 0" endSegment="0 0 -2 -3 1 2"/>
+    <SelectManifestation startSegment="2 3 -1 -2 0 0" endSegment="1 2 0 0 2 3"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <Hide/>
+    <StrutCreation anchor="1 2 0 0 2 3" dir="red" index="17" len="0 1"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="1 2 0 0 2 3" endSegment="1 3 0 0 1 2"/>
+    <SelectManifestation point="1 3 0 0 1 2"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="1 2 0 0 -2 -3" dir="red" index="2" len="1 1"/>
+    <StrutCreation anchor="2 3 -1 -2 0 0" dir="red" index="46" len="1 1"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="2 3 -1 -2 0 0" endSegment="2 3 0 0 -1 -1"/>
+    <SelectManifestation startSegment="1 2 0 0 -2 -3" endSegment="2 3 0 0 -1 -1"/>
+    <SelectManifestation point="2 3 0 0 -1 -1"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="1 2 -1 -1 -2 -2" dir="red" index="15" len="3 5"/>
+    <StrutCreation anchor="2 3 0 1 0 -1" dir="red" index="15" len="3 5"/>
+    <StrutCreation anchor="1 3 0 0 1 2" dir="red" index="15" len="3 5"/>
+    <StrutCreation anchor="2 3 -1 -2 0 0" dir="red" index="15" len="1 1"/>
+    <StrutCreation anchor="3 5 -2 -3 0 0" dir="red" index="15" len="1 2"/>
+    <StrutCreation anchor="5 8 -3 -5 0 0" dir="red" index="15" len="1 1"/>
+    <StrutCreation anchor="6 10 -4 -6 0 0" dir="red" index="15" len="3 5"/>
+    <StrutCreation anchor="11 18 -7 -11 0 0" dir="red" index="15" len="3 5"/>
+    <StrutCreation anchor="16 26 -10 -16 0 0" dir="red" index="15" len="1 2"/>
+    <SelectManifestation startSegment="16 26 -10 -16 0 0" endSegment="18 29 -11 -18 0 0"/>
+    <Midpoint/>
+    <setItemColor red="153" green="153" blue="255"/>
+    <SymmetryCenterChange new="17 55/2 -21/2 -17 0 0"/>
+    <StrutCreation anchor="6 10 -4 -6 -2 -2" dir="red" index="15" len="3 5"/>
+    <StrutCreation anchor="11 18 -7 -11 -2 -2" dir="red" index="15" len="3 5"/>
+    <BeginBlock/>
+    <SelectManifestation point="16 26 -10 -16 -2 -2"/>
+    <SelectManifestation startSegment="11 18 -7 -11 -2 -2" endSegment="16 26 -10 -16 -2 -2"/>
+    <SelectManifestation point="11 18 -7 -11 -2 -2"/>
+    <SelectManifestation startSegment="6 10 -4 -6 -2 -2" endSegment="11 18 -7 -11 -2 -2"/>
+    <SelectManifestation point="6 10 -4 -6 -2 -2"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="1 2 -1 -1 -2 -2" endSegment="6 10 -4 -6 -2 -2"/>
+    <SelectManifestation point="6 10 -4 -6 -2 -2"/>
+    <SelectManifestation startSegment="6 10 -4 -6 -2 -2" endSegment="11 18 -7 -11 -2 -2"/>
+    <SelectManifestation startSegment="11 18 -7 -11 -2 -2" endSegment="16 26 -10 -16 -2 -2"/>
+    <SelectManifestation point="11 18 -7 -11 -2 -2"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <SelectManifestation point="16 26 -10 -16 -2 -2"/>
+    <AxialSymmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectAll/>
+    <EndBlock/>
+    <MirrorSymmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="17 27 -9 -14 0 -1"/>
+    <SelectManifestation point="19 30 -10 -16 0 -1"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <AxialSymmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="34 55 -21 -34 0 0"/>
+    <EndBlock/>
+    <SymmetryCenterChange new="34 55 -21 -34 0 0"/>
+    <AxialSymmetry/>
+    <SelectManifestation startSegment="173/5 279/5 -111/5 -178/5 -2 -3" endSegment="36 58 -22 -36 0 0"/>
+    <AxialSymmetry/>
+    <SelectManifestation startSegment="162/5 261/5 -109/5 -177/5 -1 -2" endSegment="168/5 274/5 -116/5 -188/5 0
+    0"/>
+    <AxialSymmetry/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="178/5 289/5 -101/5 -163/5 -1 -2" endSegment="173/5 279/5 -111/5 -178/5 -2
+    -3"/>
+    <SelectManifestation point="173/5 279/5 -111/5 -178/5 -2 -3"/>
+    <EndBlock/>
+    <Symmetry/>
+    <Hide/>
+    <SelectManifestation startSegment="178/5 289/5 -101/5 -163/5 -1 -2" endSegment="167/5 271/5 -99/5 -162/5 -2
+    -3"/>
+    <Symmetry/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="167/5 271/5 -99/5 -162/5 -2 -3" endSegment="166/5 268/5 -97/5 -156/5 -1
+    -1"/>
+    <SelectManifestation startSegment="167/5 271/5 -99/5 -162/5 -2 -3" endSegment="33 53 -20 -33 -2 -2"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <SelectManifestation startSegment="32 52 -20 -32 0 0" endSegment="166/5 268/5 -97/5 -156/5 -1 -1"/>
+    <AxialSymmetry/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation point="36 58 -22 -36 0 0"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="34 54 -19 -31 0 -1" dir="red" index="32" len="1 0"/>
+    <SelectManifestation point="166/5 268/5 -97/5 -156/5 -1 -1"/>
+    <AxialSymmetry/>
+    <Hide/>
+    <SelectManifestation point="33 54 -19 -31 0 0"/>
+    <AxialSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="33 54 -19 -31 0 0" dir="red" index="32" len="0 1"/>
+    <BeginBlock/>
+    <SelectManifestation point="33 54 -19 -31 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="33 54 -19 -31 0 0"/>
+    <SelectManifestation startSegment="33 54 -19 -31 0 0" endSegment="33 53 -19 -31 1 1"/>
+    <SelectManifestation point="33 53 -19 -31 1 1"/>
+    <SelectManifestation point="36 58 -22 -36 0 0"/>
+    <SelectManifestation point="33 54 -19 -32 1 2"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <Hide/>
+    <SelectManifestation startSegment="34 54 -19 -31 0 -1" endSegment="33 54 -19 -31 0 0"/>
+    <Hide/>
+    <SelectManifestation startSegment="34 55 -21 -34 0 0" endSegment="32 52 -20 -32 0 0"/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="-2 -3 -1 -2 0 0" endSegment="-2 -3 1 2 0 0"/>
+    <SelectManifestation point="-2 -3 -1 -2 0 0"/>
+    <SelectManifestation startSegment="-1 -2 0 0 -2 -3" endSegment="-2 -3 -1 -2 0 0"/>
+    <SelectManifestation startSegment="0 0 -2 -3 -1 -2" endSegment="-2 -3 -1 -2 0 0"/>
+    <SelectManifestation point="0 0 -2 -3 -1 -2"/>
+    <SelectManifestation startSegment="2 3 -1 -2 0 0" endSegment="1 2 -1 -2 1 2"/>
+    <SelectManifestation point="1 2 -1 -2 1 2"/>
+    <SelectManifestation point="1 1 -2 -2 1 2"/>
+    <SelectManifestation startSegment="0 0 -2 -3 1 2" endSegment="1 1 -2 -2 1 2"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <SelectManifestation startSegment="-2 -3 -1 -2 0 0" endSegment="0 0 -2 -3 1 2"/>
+    <AxialSymmetry/>
+    <SelectManifestation startSegment="0 0 -2 -3 -1 -2" endSegment="1 2 -1 -2 -1 -2"/>
+    <AxialSymmetry/>
+    <SymmetryCenterChange new="17 55/2 -21/2 -17 0 0"/>
+    <CentralSymmetry/>
+    <SelectManifestation point="-2 -3 1 2 0 0"/>
+    <CentralSymmetry/>
+    <BeginBlock/>
+    <SelectManifestation point="33 53 -20 -33 2 2"/>
+    <SelectManifestation startSegment="33 53 -21 -34 2 3" endSegment="33 53 -20 -33 2 2"/>
+  </EditHistory>
+  <notes>
+    <page title="How to save notes">
+      <ViewModel near="1.6119020320758437" far="1289.5216064453023" width="290.1423614501943" distance="644.7608032226562"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="49.75125624968516" y="-87.75783405843337" z="-49.75125624968516"/>
+        <UpDirection x="-0.7580181565637047" y="0.6515144469717034" z="0.030616983960245613"/>
+        <LookDirection x="0.5224017780069669" y="0.6345659485563768" z="-0.5695809330268876"/>
+      </ViewModel>
+      <content xml:space="preserve">You can create as many pages as you like, using the '+' buttons in either direction.
+
+For now, only the text and the view of the model are different from one page to the next.  In the next update, each page will allow a different model entirely.
+
+Eventually there will be a 'vZome Player' application that will display the pages.
+</content>
+    </page>
+  </notes>
+</vzome:vZome>

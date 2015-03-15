@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="rootTwo" version="2.1 Beta 14" xmlns:vzome="http://tns.vorthmann.org/vZome/3.0.0/">
+  <Viewing>
+    <ViewModel near="0.266445640719617" far="213.15650939941426" width="47.96021461486819" distance="106.57825469970703"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.8164965809277261" y="-0.4082482904638631" z="-0.4082482904638631"/>
+      <LookDirection x="0.5773502691896258" y="-0.5773502691896258" z="-0.5773502691896258"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" useGraphicalViews="false" renderingStyle="small connectors">
+    <Direction name="blue" available="true" snap="true" render="true" color="0,118,149">
+      <LengthModel scale="5" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" build="true" render="true" color="0,141,54">
+      <LengthModel scale="2" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="brown" render="true" color="107,53,26">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="37">
+    <StrutCreation>
+      <point attrName="anchor"/>
+      <Axis symm="octahedral" dir="blue" index="0" attrName="axis"/>
+      <IntegralNumber value="8sqrt2" attrName="len"/>
+    </StrutCreation>
+    <StrutCreation>
+      <point attrName="anchor"/>
+      <Axis symm="octahedral" dir="blue" index="6" attrName="axis"/>
+      <IntegralNumber value="8sqrt2" attrName="len"/>
+    </StrutCreation>
+    <StrutCreation>
+      <point attrName="anchor"/>
+      <Axis symm="octahedral" dir="green" index="2" attrName="axis"/>
+      <IntegralNumber value="8sqrt2" attrName="len"/>
+    </StrutCreation>
+    <StrutCreation>
+      <point x="(-8)/-1" z="(8)/-1" attrName="anchor"/>
+      <Axis symm="octahedral" dir="blue" index="5" attrName="axis"/>
+      <IntegralNumber value="8sqrt2" attrName="len"/>
+    </StrutCreation>
+    <StrutCreation>
+      <point x="(-8)/-1" y="8sqrt2" z="(8)/-1" attrName="anchor"/>
+      <Axis symm="octahedral" dir="green" index="14" attrName="axis"/>
+      <IntegralNumber value="8sqrt2" attrName="len"/>
+    </StrutCreation>
+    <SelectManifestation>
+      <point y="8sqrt2" z="(16)/-1" attrName="manifestation"/>
+    </SelectManifestation>
+    <CommandEdit command="CommandSymmetry">
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point y="8sqrt2" z="(16)/-1" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="(-16)/-1" y="8sqrt2" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandJoinPoints"/>
+    <CommandEdit command="CommandSymmetry">
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <point x="(-16)/-1" y="8sqrt2" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="(-16)/-1" y="-8sqrt2" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandJoinPoints"/>
+    <CommandEdit command="CommandSymmetry">
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <segment attrName="manifestation">
+        <start x="(-8)/-1" z="(8)/-1"/>
+        <end x="(-8)/-1" y="8sqrt2" z="(8)/-1"/>
+      </segment>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="(-8)/-1" y="8sqrt2" z="(8)/-1" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <segment attrName="manifestation">
+        <start/>
+        <end x="(-8)/-1" z="(8)/-1"/>
+      </segment>
+    </SelectManifestation>
+    <SelectManifestation>
+      <segment attrName="manifestation">
+        <start/>
+        <end z="-8sqrt2"/>
+      </segment>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point z="-8sqrt2" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="(-8)/-1" z="(8)/-1" attrName="manifestation"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <point x="8sqrt2" attrName="manifestation"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandHide"/>
+    <SelectManifestation>
+      <segment attrName="manifestation">
+        <start/>
+        <end x="8sqrt2"/>
+      </segment>
+    </SelectManifestation>
+    <CommandEdit command="CommandHide"/>
+    <SelectManifestation>
+      <point x="(16)/-1" y="-8sqrt2" attrName="manifestation"/>
+    </SelectManifestation>
+    <DeselectAll/>
+  </EditHistory>
+</vzome:vZome>

@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" xmlns:vzome="http://tns.vorthmann.org/vZome/2.1.0/">
+   <EditHistory editNumber="52">
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="7"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="54"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="0"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="16"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="0"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="54"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="43"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="5phi+3" y="2phi+1" z="(phi)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="54"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="phi" y="5phi+3" z="(2phi+1)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="54"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-3phi-3" y="8phi+5" z="(3phi+2)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="43"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-4phi-3" y="3phi+2" z="(phi+1)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="43"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(5phi+3)/-1" y="-2phi-1" z="(-phi)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="43"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(6phi+3)/-1" y="-7phi-4" z="(-3phi-1)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="0"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(phi)/-1" y="-5phi-3" z="(-2phi-1)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="0"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(-4phi-3)/-1" y="-3phi-2" z="(-phi-1)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="0"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(-9phi-6)/-1" y="-phi-1" z="(-1)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="54"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="27"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="56"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="32"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-2phi-1" y="phi" z="5phi+3" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="56"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-5phi-3" y="2phi+1" z="phi" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="56"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-8phi-5" y="3phi+2" z="-3phi-3" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="27"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-3phi-2" y="phi+1" z="-4phi-3" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="27"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="2phi+1" y="-phi" z="(5phi+3)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="27"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="7phi+4" y="-3phi-1" z="(6phi+3)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="32"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="5phi+3" y="-2phi-1" z="(phi)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="32"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="3phi+2" y="-phi-1" z="(-4phi-3)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="32"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="phi+1" y="-1" z="(-9phi-6)/-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="56"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="14"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="52"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="16"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="2phi+1" y="phi" z="5phi+3" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="16"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(-phi-1)/-1" y="-4phi-3" z="3phi+2" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="16"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(-1)/-1" y="-9phi-6" z="phi+1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="55"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(phi)/-1" y="-5phi-3" z="-2phi-1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="55"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(2phi+1)/-1" y="-phi" z="-5phi-3" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="55"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(3phi+2)/-1" y="3phi+3" z="-8phi-5" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="14"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(phi+1)/-1" y="4phi+3" z="-3phi-2" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="14"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(-phi)/-1" y="5phi+3" z="2phi+1" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="14"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(-3phi-1)/-1" y="6phi+3" z="7phi+4" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="16"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="36"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="23"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="7"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="4phi+2" z="4phi+2" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="23"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="4phi+2" y="4phi+2" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="23"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="8phi+4" y="4phi+2" z="-4phi-2" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="36"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="4phi+2" y="0" z="-4phi-2" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="36"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="-4phi-2" z="-4phi-2" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="36"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-4phi-2" y="-8phi-4" z="-4phi-2" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="7"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-4phi-2" y="-4phi-2" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="7"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-4phi-2" y="0" z="4phi+2" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="7"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-4phi-2" y="4phi+2" z="8phi+4" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="23"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+   </EditHistory>
+</vzome:vZome>

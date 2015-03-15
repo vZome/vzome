@@ -1,0 +1,98 @@
+
+# The format of this file is understood by the TestVZomeFiles class, as a list of
+# links to other files and folders.  Each ".vZome" file will be opened as a Document.
+# Each ".vZome-files" file will be interpreted like this one, as more paths
+# to traverse.  I believe folder paths would be supported as well.
+
+# The files themselves are models designed by a number of vZome users:
+#  Scott Vorthmann
+#  Brian Hall
+#  David Richter
+#  Edmund Harriss
+#  Pierre Etevenon
+#  Brendo Anderson
+#  Sam Verbiese
+#  George Hart
+
+# format 2.0.2
+2005/09-Sept/04-unsent/snub24cell-RYB.vZome
+2005/09-Sept/18-Scott/3_21_tetra_cubes.vZome
+2005/10-Oct/22-Scott/faceRegularChiralIcosahedral.vZome
+2005/11-Nov/04-Scott/120cell-orangeQuaternion.vZome
+2005/11-Nov/30-David/starpolychoronii113005.vZome
+2006/10-Oct/31-David/great120cell082505.vZome
+
+# format 2.0.3
+2007/10-Oct/14-SamVe-stuff/metaAtomiumPanelsDiaghole.vZome
+2007/02-Feb/01-Scott/testOctaSymmMigrate.vZome
+2007/01-Jan/23-Scott/rZomeBorromeanIcosahedronScaffolding.vZome
+2006/11-Nov/13-Brian/blue_fans8.vZome
+2006/10-Oct/31-David/sixcubewithfalsevertices103106.vZome
+2006/10-Oct/25-Edmund/Ammann-Beenker_tiling.vZome
+2006/10-Oct/14-Brian/10prisms.vZome
+2006/10-Oct/03-Brian/kiss1-scaffolding.vZome
+2006/09-Sep/27-Scott/oliveLavenderZonoBig.vZome
+2006/09-Sep/03-David/dodecahedron_on_hyperboloid_090306.tex.vZome
+2006/08-Aug/29-Scott/squashed-snubDodec2.vZome
+2006/06-Jun/05-Brian/noTwistIcosidodec2.vZome
+2006/05-May/12-Brian/fakeOrange14.vZome
+2006/04-Apr/17-Scott/h3-symmetry-picker-perfect.vZome
+2006/04-Apr/01-Brian/diploid_green.vZome
+
+# format 2.1.0
+format-2.1.0-models.vZome-files
+
+# format 3.0.0
+2008/08-Aug/11-Brian-foam/weairePhelanPyritohedron.vZome
+2008/10-Oct/05-Scott-affines/briansTangle-red01.vZome
+# below has unnamed orbits stored, without prototype vectors
+2008/07-Jul/14-Sam-labyrinth/laby3Dfullcube3Dmembranes.vZome
+2008/06-Jun/07-Scott-withMichael/k4Red-double-racemic-quarterYellow.vZome
+2008/05-May/09-Scott-pyritoDodecs/bluePurpleWhite-pyritoDodec.vZome
+2008/05-May/08-Brian-K8/k8_4.vZome
+2008/04-Apr/27-Scott-k4/paneled-k4-one-piece.vZome
+2008/01-Jan/09-Brendo-nonagons/tiled 2U regular nonagon.vZome
+2008/01-Jan/02-Scott-forSteveG/perspective24cell.vZome
+2007/12-Dec/15-Scott-tetraThingy/steveRogersInspiration.vZome
+2007/10-Oct/19-Brian-reusedBalls/orange_pent_green_tri2.vZome
+2007/10-Oct/10-Brian-allOrange/c140planar2.vZome
+2007/09-Sept-Macbook/11-Brian-240hedron/240yellow_red_red.vZome
+2007/07-Jul-iMac/05-Scott-affine120cell/yellowStretch-120cell.vZome
+2007/07-Jul/19-Scott-triality/A4/a/A4-8-a.vZome
+2007/06-Jun-Macbook/16-Brian-toruses/torus_bagel3.vZome
+2007/05-May/24-Scott-affine120cell/sulfurNavyRose-affine120cell.vZome
+2006/11-Nov/26-Scott/grandAntiprism-green2.vZome
+2006/11-Nov/04-Pierre/PE9_lanterne_japonaise_pleine.vZome
+
+# uses rootTwo "small connectors" style
+2007/04-Apr/21-Brian/3_cubes_root2.vZome
+
+# uses rootThree "small connectors" style
+2008/01-Jan/05-Scott-firstDodecagon/24-cell-3D.vZome
+
+
+# format 4.0.0
+#format-4.0.0-models.vZome-files
+
+# format 5.0.0
+2008/08-Aug/07-Scott-pinwheel/dodecagonPhyllotaxisBlue.vZome
+2008/08-Aug/31-Scott-4_21/600-vanOss-A.vZome
+2008/09-Sep/20-Scott-green120cell/greenBlue-osculatingStarTangle-withStand.vZome
+2008/10-Oct/18-Scott-affine120s/sandPents-redStretch-affine120.vZome
+2008/10-Oct/16-Scott-orangeAffines/orangePentagons-affine120cell.vZome
+2008/08-Aug/03-Brendo-bugReport2/convertedTo300.vZome
+2008/08-Aug/03-Brendo-bugReport2/3.0 improper redraw.vZome
+2008/08-Aug/29-Brendo-bridge/rZome Cantilever RR bridge for HO scale.vZome
+
+# has joinPoints using an automatic orbit
+2008/08-Aug/11-Brian-foam/weairePhelan5.vZome
+
+# uses new tools
+2010/04-Apr/17-Scott-shapeways/orange-short.vZome
+
+# has some very bad anonymous orbits, with large prototypes that causes overflow;
+#  also has panels with anonymous orbits
+2010/05-May/21-Scott-octaZome/ballCandidate3-goodLengths.vZome
+
+# has struts built using anonymous orbits
+2011/12-Dec/07-Scott-F4-F-symm/07-Scott-F4Fsymm.vZome

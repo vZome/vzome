@@ -49,16 +49,18 @@ dependencies {
     regressionRuntime configurations.testRuntime
 }
 
-
-// This task is used to run the vZome regression test suite
+// These tasks are used to run the vZome regression test suite
+def regressionOutputDir = new File('build/test-results/regression')
+task makeRegressionOutput << {
+    regressionOutputDir.mkdirs()
+}
 task regression(type: JavaExec, dependsOn: check) {
-    def resultDir = new File('build/test-results/regression')
-    resultDir.mkdirs()
     classpath = sourceSets.regression.runtimeClasspath
     main = 'com.vzome.core.regression.TestVZomeFiles'
-    args( '/Users/vorth/vZome/attachments', 'sniff-test.vZome-files', 'build/test-results/regression/TEST-output.xml' )
+    args( 'src/regression/files', 'sniff-test.vZome-files', 'build/test-results/regression/TEST-output.xml' )
     jvmArgs( '-Xmx3048M' )
 }
+regression.dependsOn makeRegressionOutput
 
 
 jar {

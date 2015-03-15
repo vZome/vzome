@@ -1,0 +1,928 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" xmlns:vzome="http://tns.vorthmann.org/vZome/2.0.3/">
+   <editHistory editNumber="18">
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="black" index="7" sense="minus"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandCentralSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+      </CommandCentralSymmetry>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/-2" y="(13phi+8)/2" z="(15phi+9)/2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/-2" y="(13phi+8)/2" z="(15phi+9)/2" w="0"/>
+         <point x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="black" index="55"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="(19phi+12)/-2" y="(5phi+3)/-2" z="(2phi+1)/2" w="0"/>
+         <point x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="black" index="55"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <segment>
+            <start x="(19phi+12)/-2" y="(5phi+3)/-2" z="(2phi+1)/2" w="0"/>
+            <end x="(24phi+15)/-2" y="(9phi+6)/2" z="(11phi+7)/-2" w="0"/>
+         </segment>
+         <point x="(24phi+15)/-2" y="(9phi+6)/2" z="(11phi+7)/-2" w="0"/>
+         <segment>
+            <start x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+            <end x="(3phi+2)/-2" y="(phi+1)/2" z="(28phi+17)/-2" w="0"/>
+         </segment>
+         <point x="(3phi+2)/-2" y="(phi+1)/2" z="(28phi+17)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="(19phi+12)/-2" y="(5phi+3)/-2" z="(2phi+1)/2" w="0"/>
+            <end x="(24phi+15)/-2" y="(9phi+6)/2" z="(11phi+7)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="(24phi+15)/-2" y="(9phi+6)/2" z="(11phi+7)/-2" w="0"/>
+            <end x="(29phi+18)/-2" y="(23phi+15)/2" z="(24phi+15)/-2" w="0"/>
+         </segment>
+         <point x="(29phi+18)/-2" y="(23phi+15)/2" z="(24phi+15)/-2" w="0"/>
+         <segment>
+            <start x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+            <end x="(3phi+2)/-2" y="(phi+1)/2" z="(28phi+17)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="(3phi+2)/-2" y="(phi+1)/2" z="(28phi+17)/-2" w="0"/>
+            <end x="(8phi+5)/-2" y="(15phi+10)/2" z="(41phi+25)/-2" w="0"/>
+         </segment>
+         <point x="(8phi+5)/-2" y="(15phi+10)/2" z="(41phi+25)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+            <end x="-5phi-3" y="14phi+9" z="-13phi-8" w="0"/>
+         </segment>
+         <point x="-5phi-3" y="14phi+9" z="-13phi-8" w="0"/>
+      </CommandPolygon>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(19phi+12)/-2" y="(5phi+3)/2" z="(2phi+1)/-2" w="0"/>
+         </segment>
+         <point x="(19phi+12)/-2" y="(5phi+3)/2" z="(2phi+1)/-2" w="0"/>
+         <segment>
+            <start x="(19phi+12)/-2" y="(5phi+3)/-2" z="(2phi+1)/2" w="0"/>
+            <end x="(24phi+15)/-2" y="(9phi+6)/2" z="(11phi+7)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/-2" y="(15phi+9)/-2" z="(2phi+1)/2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/-2" y="(15phi+9)/-2" z="(2phi+1)/2" w="0"/>
+         <point x="(19phi+12)/-2" y="(5phi+3)/-2" z="(2phi+1)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(19phi+12)/-2" y="(5phi+3)/-2" z="(2phi+1)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(19phi+12)/2" y="(5phi+3)/2" z="(2phi+1)/2" w="0"/>
+         </segment>
+         <point x="(19phi+12)/2" y="(5phi+3)/2" z="(2phi+1)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/-2" y="(13phi+8)/2" z="(15phi+9)/-2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/-2" y="(13phi+8)/2" z="(15phi+9)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(14phi+9)/-2" y="(13phi+8)/-2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <point x="(14phi+9)/-2" y="(13phi+8)/-2" z="(5phi+3)/-2" w="0"/>
+         <point x="(15phi+9)/2" y="(2phi+1)/2" z="(13phi+8)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(15phi+9)/2" y="(2phi+1)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="8phi+5" y="5phi+3" z="3phi+2" w="0"/>
+         </segment>
+         <point x="8phi+5" y="5phi+3" z="3phi+2" w="0"/>
+         <point x="(5phi+3)/2" y="(18phi+11)/2" z="(7phi+4)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(18phi+11)/2" z="(7phi+4)/2" w="0"/>
+         </segment>
+         <point x="8phi+5" y="5phi+3" z="-3phi-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="8phi+5" y="5phi+3" z="-3phi-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="(24phi+15)/-2" y="(9phi+6)/2" z="(11phi+7)/-2" w="0"/>
+            <end x="(29phi+18)/-2" y="(23phi+15)/2" z="(24phi+15)/-2" w="0"/>
+         </segment>
+         <point x="-5phi-3" y="3phi+2" z="8phi+5" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-5phi-3" y="3phi+2" z="8phi+5" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(19phi+12)/2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/2" y="(19phi+12)/2" z="(5phi+3)/2" w="0"/>
+         <point x="(13phi+8)/-2" y="(5phi+3)/-2" z="(14phi+9)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/-2" y="(5phi+3)/-2" z="(14phi+9)/2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(14phi+9)/-2" y="(13phi+8)/2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(14phi+9)/-2" y="(13phi+8)/2" z="(5phi+3)/2" w="0"/>
+         <point x="(18phi+11)/2" y="(7phi+4)/-2" z="(5phi+3)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(18phi+11)/2" y="(7phi+4)/-2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(14phi+9)/2" y="(13phi+8)/-2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(14phi+9)/2" y="(13phi+8)/-2" z="(5phi+3)/2" w="0"/>
+         <segment>
+            <start x="(3phi+2)/-2" y="(phi+1)/2" z="(28phi+17)/-2" w="0"/>
+            <end x="(8phi+5)/-2" y="(15phi+10)/2" z="(41phi+25)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(7phi+4)/2" y="(5phi+3)/2" z="(18phi+11)/-2" w="0"/>
+         </segment>
+         <point x="(7phi+4)/2" y="(5phi+3)/2" z="(18phi+11)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(18phi+11)/-2" y="(7phi+4)/2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(18phi+11)/-2" y="(7phi+4)/2" z="(5phi+3)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/-2" y="(5phi+3)/-2" z="(14phi+9)/-2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/-2" y="(5phi+3)/-2" z="(14phi+9)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(18phi+11)/-2" z="(7phi+4)/-2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(18phi+11)/-2" z="(7phi+4)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(15phi+9)/2" y="(2phi+1)/-2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <point x="(15phi+9)/2" y="(2phi+1)/-2" z="(13phi+8)/-2" w="0"/>
+         <point x="(5phi+3)/2" y="(2phi+1)/-2" z="(19phi+12)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(2phi+1)/-2" z="(19phi+12)/2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(15phi+9)/-2" y="(2phi+1)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <point x="(15phi+9)/-2" y="(2phi+1)/2" z="(13phi+8)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-5phi-3" y="3phi+2" z="-8phi-5" w="0"/>
+         </segment>
+         <point x="-5phi-3" y="3phi+2" z="-8phi-5" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(2phi+1)/-2" z="(19phi+12)/2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(2phi+1)/-2" z="(19phi+12)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(14phi+9)/2" y="(13phi+8)/2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <point x="(14phi+9)/2" y="(13phi+8)/2" z="(5phi+3)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(7phi+4)/-2" y="(5phi+3)/-2" z="(18phi+11)/-2" w="0"/>
+         </segment>
+         <point x="(7phi+4)/-2" y="(5phi+3)/-2" z="(18phi+11)/-2" w="0"/>
+         <point x="(5phi+3)/2" y="(14phi+9)/-2" z="(13phi+8)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(14phi+9)/-2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-8phi-5" y="5phi+3" z="-3phi-2" w="0"/>
+         </segment>
+         <point x="-8phi-5" y="5phi+3" z="-3phi-2" w="0"/>
+         <point x="-8phi-5" y="5phi+3" z="3phi+2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-8phi-5" y="5phi+3" z="3phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(7phi+4)/2" y="(5phi+3)/-2" z="(18phi+11)/2" w="0"/>
+         </segment>
+         <point x="(7phi+4)/2" y="(5phi+3)/-2" z="(18phi+11)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(14phi+9)/-2" z="(13phi+8)/2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/2" y="(14phi+9)/-2" z="(13phi+8)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(19phi+12)/-2" y="(5phi+3)/-2" z="(2phi+1)/2" w="0"/>
+         </segment>
+         <point x="(19phi+12)/-2" y="(5phi+3)/-2" z="(2phi+1)/2" w="0"/>
+         <point x="(7phi+4)/2" y="(5phi+3)/-2" z="(18phi+11)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(7phi+4)/2" y="(5phi+3)/-2" z="(18phi+11)/-2" w="0"/>
+         </segment>
+         <point x="(3phi+2)/-2" y="(phi+1)/2" z="(28phi+17)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(7phi+4)/-2" y="(5phi+3)/2" z="(18phi+11)/2" w="0"/>
+         </segment>
+         <point x="(7phi+4)/-2" y="(5phi+3)/2" z="(18phi+11)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(13phi+8)/2" z="(15phi+9)/2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/2" y="(13phi+8)/2" z="(15phi+9)/2" w="0"/>
+         <point x="(2phi+1)/2" y="(19phi+12)/2" z="(5phi+3)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(19phi+12)/2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/-2" y="(15phi+9)/2" z="(2phi+1)/-2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/-2" y="(15phi+9)/2" z="(2phi+1)/-2" w="0"/>
+         <segment>
+            <start x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+            <end x="-5phi-3" y="14phi+9" z="-13phi-8" w="0"/>
+         </segment>
+         <point x="(7phi+4)/-2" y="(5phi+3)/2" z="(18phi+11)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(7phi+4)/-2" y="(5phi+3)/2" z="(18phi+11)/-2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/-2" y="(13phi+8)/2" z="(15phi+9)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/-2" y="(13phi+8)/2" z="(15phi+9)/2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="5phi+3" y="-3phi-2" z="-8phi-5" w="0"/>
+         </segment>
+         <point x="5phi+3" y="-3phi-2" z="-8phi-5" w="0"/>
+         <point x="(24phi+15)/-2" y="(9phi+6)/2" z="(11phi+7)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="3phi+2" y="8phi+5" z="5phi+3" w="0"/>
+         </segment>
+         <point x="3phi+2" y="8phi+5" z="5phi+3" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="3phi+2" y="-8phi-5" z="-5phi-3" w="0"/>
+         </segment>
+         <point x="3phi+2" y="-8phi-5" z="-5phi-3" w="0"/>
+         <point x="(2phi+1)/-2" y="(19phi+12)/-2" z="(5phi+3)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/-2" y="(19phi+12)/-2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(19phi+12)/-2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/2" y="(19phi+12)/-2" z="(5phi+3)/-2" w="0"/>
+         <point x="(13phi+8)/2" y="(5phi+3)/2" z="(14phi+9)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/2" y="(5phi+3)/2" z="(14phi+9)/2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(18phi+11)/-2" y="(7phi+4)/-2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <point x="(18phi+11)/-2" y="(7phi+4)/-2" z="(5phi+3)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/2" y="(5phi+3)/-2" z="(14phi+9)/2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/2" y="(5phi+3)/-2" z="(14phi+9)/2" w="0"/>
+         <point x="(15phi+9)/-2" y="(2phi+1)/2" z="(13phi+8)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(15phi+9)/-2" y="(2phi+1)/2" z="(13phi+8)/2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(19phi+12)/2" y="(5phi+3)/-2" z="(2phi+1)/-2" w="0"/>
+         </segment>
+         <point x="(19phi+12)/2" y="(5phi+3)/-2" z="(2phi+1)/-2" w="0"/>
+         <point x="3phi+2" y="-8phi-5" z="5phi+3" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="3phi+2" y="-8phi-5" z="5phi+3" w="0"/>
+         </segment>
+         <point x="(13phi+8)/2" y="(5phi+3)/-2" z="(14phi+9)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/2" y="(5phi+3)/-2" z="(14phi+9)/-2" w="0"/>
+         </segment>
+         <point x="(14phi+9)/-2" y="(13phi+8)/-2" z="(5phi+3)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(14phi+9)/-2" y="(13phi+8)/-2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/-2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/-2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+         </segment>
+         <point x="(15phi+9)/2" y="(2phi+1)/-2" z="(13phi+8)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(15phi+9)/2" y="(2phi+1)/-2" z="(13phi+8)/2" w="0"/>
+         </segment>
+         <point x="(7phi+4)/-2" y="(5phi+3)/-2" z="(18phi+11)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(7phi+4)/-2" y="(5phi+3)/-2" z="(18phi+11)/2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-3phi-2" y="-8phi-5" z="5phi+3" w="0"/>
+         </segment>
+         <point x="-3phi-2" y="-8phi-5" z="5phi+3" w="0"/>
+         <point x="(7phi+4)/2" y="(5phi+3)/2" z="(18phi+11)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(7phi+4)/2" y="(5phi+3)/2" z="(18phi+11)/2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/2" y="(15phi+9)/-2" z="(2phi+1)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/2" y="(15phi+9)/-2" z="(2phi+1)/2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(14phi+9)/-2" z="(13phi+8)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/-2" z="(13phi+8)/2" w="0"/>
+         </segment>
+         <point x="(19phi+12)/2" y="(5phi+3)/2" z="(2phi+1)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(19phi+12)/2" y="(5phi+3)/2" z="(2phi+1)/-2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/-2" y="(5phi+3)/2" z="(14phi+9)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/-2" y="(5phi+3)/2" z="(14phi+9)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/2" y="(15phi+9)/2" z="(2phi+1)/2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/2" y="(15phi+9)/2" z="(2phi+1)/2" w="0"/>
+         <segment>
+            <start x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+            <end x="(3phi+2)/-2" y="(phi+1)/2" z="(28phi+17)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(18phi+11)/2" y="(7phi+4)/2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <point x="(18phi+11)/2" y="(7phi+4)/2" z="(5phi+3)/-2" w="0"/>
+         <point x="8phi+5" y="-5phi-3" z="3phi+2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="8phi+5" y="-5phi-3" z="3phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(2phi+1)/-2" z="(19phi+12)/-2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/2" y="(2phi+1)/-2" z="(19phi+12)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/-2" y="(19phi+12)/-2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/-2" y="(19phi+12)/-2" z="(5phi+3)/2" w="0"/>
+         <point x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/-2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(2phi+1)/-2" z="(19phi+12)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(2phi+1)/-2" z="(19phi+12)/-2" w="0"/>
+         </segment>
+         <point x="(19phi+12)/2" y="(5phi+3)/-2" z="(2phi+1)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(19phi+12)/2" y="(5phi+3)/-2" z="(2phi+1)/2" w="0"/>
+         </segment>
+         <point x="-3phi-2" y="-8phi-5" z="-5phi-3" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-3phi-2" y="-8phi-5" z="-5phi-3" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(18phi+11)/2" z="(7phi+4)/-2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/2" y="(18phi+11)/2" z="(7phi+4)/-2" w="0"/>
+         <point x="-3phi-2" y="8phi+5" z="5phi+3" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-3phi-2" y="8phi+5" z="5phi+3" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/-2" y="(5phi+3)/2" z="(14phi+9)/2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/-2" y="(5phi+3)/2" z="(14phi+9)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/-2" y="(19phi+12)/2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/-2" y="(19phi+12)/2" z="(5phi+3)/-2" w="0"/>
+         <point x="(2phi+1)/-2" y="(19phi+12)/2" z="(5phi+3)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/-2" y="(19phi+12)/2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-3phi-2" y="8phi+5" z="-5phi-3" w="0"/>
+         </segment>
+         <point x="-3phi-2" y="8phi+5" z="-5phi-3" w="0"/>
+         <point x="(5phi+3)/-2" y="(18phi+11)/2" z="(7phi+4)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(18phi+11)/2" z="(7phi+4)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/2" y="(15phi+9)/-2" z="(2phi+1)/-2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/2" y="(15phi+9)/-2" z="(2phi+1)/-2" w="0"/>
+         <point x="(5phi+3)/-2" y="(18phi+11)/-2" z="(7phi+4)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(18phi+11)/-2" z="(7phi+4)/2" w="0"/>
+         </segment>
+         <point x="(14phi+9)/-2" y="(13phi+8)/2" z="(5phi+3)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(14phi+9)/-2" y="(13phi+8)/2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(18phi+11)/-2" z="(7phi+4)/2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/2" y="(18phi+11)/-2" z="(7phi+4)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/-2" y="(13phi+8)/-2" z="(15phi+9)/2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/-2" y="(13phi+8)/-2" z="(15phi+9)/2" w="0"/>
+         <point x="(5phi+3)/2" y="(2phi+1)/2" z="(19phi+12)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(2phi+1)/2" z="(19phi+12)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(15phi+9)/2" y="(2phi+1)/2" z="(13phi+8)/2" w="0"/>
+         </segment>
+         <point x="(15phi+9)/2" y="(2phi+1)/2" z="(13phi+8)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-5phi-3" y="-3phi-2" z="8phi+5" w="0"/>
+         </segment>
+         <point x="-5phi-3" y="-3phi-2" z="8phi+5" w="0"/>
+         <point x="(5phi+3)/2" y="(14phi+9)/2" z="(13phi+8)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(14phi+9)/2" z="(13phi+8)/2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/-2" y="(15phi+9)/-2" z="(2phi+1)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/-2" y="(15phi+9)/-2" z="(2phi+1)/-2" w="0"/>
+         </segment>
+         <point x="-5phi-3" y="-3phi-2" z="-8phi-5" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-5phi-3" y="-3phi-2" z="-8phi-5" w="0"/>
+         </segment>
+         <point x="(14phi+9)/2" y="(13phi+8)/-2" z="(5phi+3)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(14phi+9)/2" y="(13phi+8)/-2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/2" y="(15phi+9)/2" z="(2phi+1)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/2" y="(15phi+9)/2" z="(2phi+1)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/2" y="(5phi+3)/2" z="(14phi+9)/-2" w="0"/>
+         </segment>
+         <point x="(13phi+8)/2" y="(5phi+3)/2" z="(14phi+9)/-2" w="0"/>
+         <point x="(5phi+3)/2" y="(18phi+11)/-2" z="(7phi+4)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(18phi+11)/-2" z="(7phi+4)/-2" w="0"/>
+         </segment>
+         <point x="-8phi-5" y="-5phi-3" z="-3phi-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-8phi-5" y="-5phi-3" z="-3phi-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/2" y="(2phi+1)/2" z="(19phi+12)/2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/2" y="(2phi+1)/2" z="(19phi+12)/2" w="0"/>
+         <point x="3phi+2" y="8phi+5" z="-5phi-3" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="3phi+2" y="8phi+5" z="-5phi-3" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(2phi+1)/2" z="(19phi+12)/-2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(2phi+1)/2" z="(19phi+12)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(15phi+9)/-2" y="(2phi+1)/-2" z="(13phi+8)/2" w="0"/>
+         </segment>
+         <point x="(15phi+9)/-2" y="(2phi+1)/-2" z="(13phi+8)/2" w="0"/>
+         <point x="(14phi+9)/2" y="(13phi+8)/2" z="(5phi+3)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(14phi+9)/2" y="(13phi+8)/2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(18phi+11)/-2" y="(7phi+4)/2" z="(5phi+3)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(18phi+11)/-2" y="(7phi+4)/2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-8phi-5" y="-5phi-3" z="3phi+2" w="0"/>
+         </segment>
+         <point x="-8phi-5" y="-5phi-3" z="3phi+2" w="0"/>
+         <point x="(2phi+1)/2" y="(19phi+12)/-2" z="(5phi+3)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(19phi+12)/-2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(18phi+11)/2" y="(7phi+4)/2" z="(5phi+3)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(18phi+11)/2" y="(7phi+4)/2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(19phi+12)/-2" y="(5phi+3)/2" z="(2phi+1)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(19phi+12)/-2" y="(5phi+3)/2" z="(2phi+1)/2" w="0"/>
+         </segment>
+         <point x="(18phi+11)/-2" y="(7phi+4)/-2" z="(5phi+3)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(18phi+11)/-2" y="(7phi+4)/-2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="5phi+3" y="-3phi-2" z="8phi+5" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="5phi+3" y="-3phi-2" z="8phi+5" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(2phi+1)/2" z="(19phi+12)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(2phi+1)/2" z="(19phi+12)/2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(18phi+11)/2" z="(7phi+4)/2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(18phi+11)/2" z="(7phi+4)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/-2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <point x="(5phi+3)/-2" y="(14phi+9)/-2" z="(13phi+8)/-2" w="0"/>
+         <point x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(13phi+8)/-2" z="(15phi+9)/2" w="0"/>
+         </segment>
+         <point x="5phi+3" y="3phi+2" z="-8phi-5" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="5phi+3" y="3phi+2" z="-8phi-5" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(18phi+11)/2" y="(7phi+4)/-2" z="(5phi+3)/2" w="0"/>
+         </segment>
+         <point x="(18phi+11)/2" y="(7phi+4)/-2" z="(5phi+3)/2" w="0"/>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         <point x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(5phi+3)/-2" y="(14phi+9)/2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="8phi+5" y="-5phi-3" z="-3phi-2" w="0"/>
+         </segment>
+         <point x="8phi+5" y="-5phi-3" z="-3phi-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="5phi+3" y="3phi+2" z="8phi+5" w="0"/>
+         </segment>
+         <point x="5phi+3" y="3phi+2" z="8phi+5" w="0"/>
+         <point x="(13phi+8)/-2" y="(15phi+9)/2" z="(2phi+1)/2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(13phi+8)/-2" y="(15phi+9)/2" z="(2phi+1)/2" w="0"/>
+         </segment>
+         <point x="(2phi+1)/2" y="(13phi+8)/2" z="(15phi+9)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(2phi+1)/2" y="(13phi+8)/2" z="(15phi+9)/-2" w="0"/>
+         </segment>
+         <point x="(15phi+9)/-2" y="(2phi+1)/-2" z="(13phi+8)/-2" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(15phi+9)/-2" y="(2phi+1)/-2" z="(13phi+8)/-2" w="0"/>
+         </segment>
+         <point x="(8phi+5)/-2" y="(15phi+10)/2" z="(41phi+25)/-2" w="0"/>
+         <point x="-5phi-3" y="14phi+9" z="-13phi-8" w="0"/>
+         <point x="(29phi+18)/-2" y="(23phi+15)/2" z="(24phi+15)/-2" w="0"/>
+      </CommandHide>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="55"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="26phi+16"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="54"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="8phi+5"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="17"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="8phi+5"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="46"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="13phi+8"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandLinePlaneIntersect>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-13phi-8" y="13phi+8" z="-13phi-8" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="(29phi+18)/-2" y="(23phi+15)/2" z="(24phi+15)/-2"
+            w="0"/>
+            <vertex x="(8phi+5)/-2" y="(15phi+10)/2" z="(41phi+25)/-2"
+            w="0"/>
+            <vertex x="-5phi-3" y="14phi+9" z="-13phi-8" w="0"/>
+         </polygon>
+      </CommandLinePlaneIntersect>
+      <CommandLinePlaneIntersect>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="(29phi+18)/-2" y="(23phi+15)/2" z="(24phi+15)/-2"
+            w="0"/>
+            <vertex x="(8phi+5)/-2" y="(15phi+10)/2" z="(41phi+25)/-2"
+            w="0"/>
+            <vertex x="-5phi-3" y="14phi+9" z="-13phi-8" w="0"/>
+         </polygon>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-8phi-5" y="13phi+8" z="-21phi-13" w="0"/>
+         </segment>
+      </CommandLinePlaneIntersect>
+      <CommandLinePlaneIntersect>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="(29phi+18)/-2" y="(23phi+15)/2" z="(24phi+15)/-2"
+            w="0"/>
+            <vertex x="(8phi+5)/-2" y="(15phi+10)/2" z="(41phi+25)/-2"
+            w="0"/>
+            <vertex x="-5phi-3" y="14phi+9" z="-13phi-8" w="0"/>
+         </polygon>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="0" y="21phi+13" z="-13phi-8" w="0"/>
+         </segment>
+      </CommandLinePlaneIntersect>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="(72phi+40)/-11" y="(112phi+72)/11" z="(-184phi-112)/11"
+         w="0"/>
+         <point x="0" y="(88phi+56)/5" z="(56phi+32)/-5" w="0"/>
+         <point x="-12phi-8" y="12phi+8" z="-12phi-8" w="0"/>
+      </CommandPolygon>
+      <CommandCentralSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="(72phi+40)/-11" y="(112phi+72)/11" z="(-184phi-112)/11"
+            w="0"/>
+            <vertex x="0" y="(88phi+56)/5" z="(56phi+32)/-5" w="0"/>
+            <vertex x="-12phi-8" y="12phi+8" z="-12phi-8" w="0"/>
+         </polygon>
+      </CommandCentralSymmetry>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-12phi-8" y="12phi+8" z="-12phi-8" w="0"/>
+         <point x="-13phi-8" y="13phi+8" z="-13phi-8" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-13phi-8" y="13phi+8" z="-13phi-8" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="(29phi+18)/-2" y="(23phi+15)/2" z="(24phi+15)/-2"
+            w="0"/>
+            <vertex x="(8phi+5)/-2" y="(15phi+10)/2" z="(41phi+25)/-2"
+            w="0"/>
+            <vertex x="-5phi-3" y="14phi+9" z="-13phi-8" w="0"/>
+         </polygon>
+         <point x="0" y="0" z="0" w="0"/>
+         <point x="0" y="(88phi+56)/5" z="(56phi+32)/-5" w="0"/>
+         <point x="0" y="21phi+13" z="-13phi-8" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="0" y="21phi+13" z="-13phi-8" w="0"/>
+         </segment>
+         <point x="0" y="8phi+5" z="-21phi-13" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="0" y="8phi+5" z="-21phi-13" w="0"/>
+         </segment>
+         <point x="-8phi-5" y="13phi+8" z="-21phi-13" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-8phi-5" y="13phi+8" z="-21phi-13" w="0"/>
+         </segment>
+         <point x="(72phi+40)/-11" y="(112phi+72)/11" z="(-184phi-112)/11"
+         w="0"/>
+      </CommandHide>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="(72phi+40)/-11" y="(112phi+72)/11" z="(-184phi-112)/11"
+            w="0"/>
+            <vertex x="0" y="(88phi+56)/5" z="(56phi+32)/-5" w="0"/>
+            <vertex x="-12phi-8" y="12phi+8" z="-12phi-8" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="(72phi+40)/11" y="(-112phi-72)/11" z="(184phi+112)/11"
+            w="0"/>
+            <vertex x="0" y="(88phi+56)/-5" z="(56phi+32)/5" w="0"/>
+            <vertex x="12phi+8" y="-12phi-8" z="12phi+8" w="0"/>
+         </polygon>
+      </CommandSymmetry>
+   </editHistory>
+</vzome:vZome>

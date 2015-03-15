@@ -1,0 +1,2175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" xmlns:vzome="http://tns.vorthmann.org/vZome/2.0.3/">
+   <editHistory editNumber="100">
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="rose" index="41"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+1"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="rose" index="41"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+1"/>
+         </attr>
+         <point x="phi" y="2phi+1" z="4phi+2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="2phi" y="4phi+2" z="8phi+4" w="0"/>
+      </CommandSymmetry>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="phi" y="2phi+1" z="4phi+2" w="0"/>
+         </segment>
+         <point x="phi" y="2phi+1" z="4phi+2" w="0"/>
+         <segment>
+            <start x="phi" y="2phi+1" z="4phi+2" w="0"/>
+            <end x="2phi" y="4phi+2" z="8phi+4" w="0"/>
+         </segment>
+      </CommandHide>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+         <point x="-4phi-4" y="6phi+4" z="-4phi-2" w="0"/>
+      </CommandJoinPoints>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+            <end x="-4phi-4" y="6phi+4" z="-4phi-2" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="39"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="7"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="10phi+6"/>
+         </attr>
+         <point x="-10phi-5" y="-phi-2" z="-3phi-1" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="6"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="10phi+6"/>
+         </attr>
+         <segment>
+            <start x="-10phi-5" y="-phi-2" z="-3phi-1" w="0"/>
+            <end x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+         </segment>
+         <point x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="25"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="10phi+6"/>
+         </attr>
+         <segment>
+            <start x="-10phi-5" y="-phi-2" z="-3phi-1" w="0"/>
+            <end x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+         </segment>
+         <segment>
+            <start x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+            <end x="-8phi-4" y="12phi+6" z="2phi+2" w="0"/>
+         </segment>
+         <point x="-8phi-4" y="12phi+6" z="2phi+2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="25"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="10phi+6"/>
+         </attr>
+         <segment>
+            <start x="-10phi-5" y="-phi-2" z="-3phi-1" w="0"/>
+            <end x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+         </segment>
+         <segment>
+            <start x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+            <end x="-8phi-4" y="12phi+6" z="2phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="-8phi-4" y="12phi+6" z="2phi+2" w="0"/>
+            <end x="-5phi-2" y="7phi+3" z="-6phi-3" w="0"/>
+         </segment>
+         <point x="-5phi-2" y="7phi+3" z="-6phi-3" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="39"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="10phi+6"/>
+         </attr>
+         <point x="-2phi" y="2phi" z="-14phi-8" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+         <point x="-7phi-3" y="-6phi-5" z="-11phi-6" w="0"/>
+         <point x="-2phi" y="2phi" z="-14phi-8" w="0"/>
+         <point x="-8phi-4" y="12phi+6" z="2phi+2" w="0"/>
+      </CommandPolygon>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="20"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="45"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+1"/>
+         </attr>
+         <segment>
+            <start x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+            <end x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+         </segment>
+         <point x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+            <end x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+         </segment>
+         <segment>
+            <start x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+            <end x="-8phi-4" y="5phi+2" z="-8phi-5" w="0"/>
+         </segment>
+         <point x="-8phi-4" y="5phi+2" z="-8phi-5" w="0"/>
+         <point x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+         <point x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+      </CommandPolygon>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="47"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+1"/>
+         </attr>
+         <point x="(6phi+4)/-1" y="4phi+2" z="-4phi-4" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandLinePlaneIntersect>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="(6phi+4)/-1" y="4phi+2" z="-4phi-4" w="0"/>
+            <end x="(8phi+5)/-1" y="4phi+2" z="-7phi-6" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="-8phi-4" y="5phi+2" z="-8phi-5" w="0"/>
+            <vertex x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+            <vertex x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+         </polygon>
+      </CommandLinePlaneIntersect>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="8phi+4" y="-2phi" z="-4phi-2" w="0"/>
+            <end x="4phi+4" y="-6phi-4" z="-4phi-2" w="0"/>
+         </segment>
+         <point x="-8phi-4" y="-2phi" z="4phi+2" w="0"/>
+         <point x="0" y="(-2phi)/-1" z="8phi+6" w="0"/>
+         <segment>
+            <start x="(6phi+4)/-1" y="(4phi+2)/-1" z="4phi+4" w="0"/>
+            <end x="(8phi+4)/-1" y="(-2phi)/-1" z="4phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="-5phi-2" y="7phi+3" z="-6phi-3" w="0"/>
+            <end x="-2phi" y="2phi" z="-14phi-8" w="0"/>
+         </segment>
+         <segment>
+            <start x="(2phi)/-1" y="(-4phi-2)/-1" z="8phi+4" w="0"/>
+            <end x="(4phi+4)/-1" y="(-6phi-4)/-1" z="4phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-4phi-4)/-1" y="6phi+4" z="-4phi-2" w="0"/>
+            <end x="(-2phi)/-1" y="8phi+6" z="0" w="0"/>
+         </segment>
+         <segment>
+            <start x="8phi+6" y="0" z="(-2phi)/-1" w="0"/>
+            <end x="8phi+4" y="-2phi" z="(4phi+2)/-1" w="0"/>
+         </segment>
+         <point x="-4phi-2" y="(-4phi-4)/-1" z="6phi+4" w="0"/>
+         <segment>
+            <start x="0" y="-2phi" z="8phi+6" w="0"/>
+            <end x="2phi" y="4phi+2" z="8phi+4" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-4phi-2)/-1" y="-8phi-4" z="2phi" w="0"/>
+            <end x="(-6phi-4)/-1" y="-4phi-2" z="4phi+4" w="0"/>
+         </segment>
+         <point x="-5phi-2" y="7phi+3" z="-6phi-3" w="0"/>
+         <point x="-2phi" y="-8phi-6" z="0" w="0"/>
+         <point x="4phi+2" y="(-4phi-4)/-1" z="(6phi+4)/-1" w="0"/>
+         <point x="2phi" y="-4phi-2" z="-8phi-4" w="0"/>
+         <segment>
+            <start x="0" y="-2phi" z="-8phi-6" w="0"/>
+            <end x="-2phi" y="4phi+2" z="-8phi-4" w="0"/>
+         </segment>
+         <point x="-8phi-4" y="12phi+6" z="2phi+2" w="0"/>
+         <segment>
+            <start x="-2phi" y="2phi" z="-14phi-8" w="0"/>
+            <end x="-7phi-3" y="-6phi-5" z="-11phi-6" w="0"/>
+         </segment>
+         <segment>
+            <start x="-8phi-4" y="-2phi" z="4phi+2" w="0"/>
+            <end x="-4phi-4" y="-6phi-4" z="4phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-4phi-2)/-1" y="8phi+4" z="(2phi)/-1" w="0"/>
+            <end x="(-6phi-4)/-1" y="4phi+2" z="(4phi+4)/-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi" y="(-4phi-2)/-1" z="-8phi-4" w="0"/>
+            <end x="4phi+4" y="(-6phi-4)/-1" z="-4phi-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="-8phi-6" y="0" z="-2phi" w="0"/>
+            <end x="-8phi-4" y="-2phi" z="4phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="-8phi-6" y="0" z="(-2phi)/-1" w="0"/>
+            <end x="-8phi-4" y="2phi" z="(4phi+2)/-1" w="0"/>
+         </segment>
+         <point x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+         <segment>
+            <start x="4phi+2" y="(-4phi-4)/-1" z="(6phi+4)/-1" w="0"/>
+            <end x="0" y="(-2phi)/-1" z="(8phi+6)/-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+            <end x="-4phi-4" y="6phi+4" z="-4phi-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="-4phi-2" y="(-4phi-4)/-1" z="6phi+4" w="0"/>
+            <end x="0" y="(-2phi)/-1" z="8phi+6" w="0"/>
+         </segment>
+         <point x="-4phi-4" y="6phi+4" z="-4phi-2" w="0"/>
+         <point x="-8phi-4" y="(2phi)/-1" z="-4phi-2" w="0"/>
+         <point x="4phi+4" y="(6phi+4)/-1" z="-4phi-2" w="0"/>
+         <point x="6phi+4" y="4phi+2" z="-4phi-4" w="0"/>
+         <segment>
+            <start x="-4phi-4" y="6phi+4" z="(4phi+2)/-1" w="0"/>
+            <end x="-4phi-2" y="8phi+4" z="(-2phi)/-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi" y="4phi+2" z="8phi+4" w="0"/>
+            <end x="6phi+4" y="4phi+2" z="4phi+4" w="0"/>
+         </segment>
+         <segment>
+            <start x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+            <end x="-8phi-4" y="5phi+2" z="-8phi-5" w="0"/>
+         </segment>
+         <segment>
+            <start x="4phi+2" y="8phi+4" z="2phi" w="0"/>
+            <end x="4phi+2" y="4phi+4" z="6phi+4" w="0"/>
+         </segment>
+         <point x="(6phi+4)/-1" y="4phi+2" z="-4phi-4" w="0"/>
+         <segment>
+            <start x="8phi+4" y="2phi" z="(4phi+2)/-1" w="0"/>
+            <end x="4phi+2" y="4phi+4" z="(6phi+4)/-1" w="0"/>
+         </segment>
+         <point x="-4phi-2" y="-8phi-4" z="(2phi)/-1" w="0"/>
+         <point x="-2phi" y="4phi+2" z="-8phi-4" w="0"/>
+         <point x="0" y="0" z="0" w="0"/>
+         <segment>
+            <start x="-2phi" y="-8phi-6" z="0" w="0"/>
+            <end x="4phi+2" y="-8phi-4" z="-2phi" w="0"/>
+         </segment>
+         <segment>
+            <start x="-4phi-4" y="(6phi+4)/-1" z="(-4phi-2)/-1" w="0"/>
+            <end x="-4phi-2" y="(8phi+4)/-1" z="(2phi)/-1" w="0"/>
+         </segment>
+         <point x="-4phi-2" y="-8phi-4" z="2phi" w="0"/>
+         <segment>
+            <start x="-8phi-4" y="(2phi)/-1" z="(4phi+2)/-1" w="0"/>
+            <end x="-4phi-2" y="(4phi+4)/-1" z="(6phi+4)/-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-10phi-5" y="-phi-2" z="-3phi-1" w="0"/>
+            <end x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+         </segment>
+         <point x="-2phi" y="8phi+6" z="0" w="0"/>
+         <point x="0" y="-2phi" z="-8phi-6" w="0"/>
+         <point x="-4phi-2" y="4phi+4" z="(6phi+4)/-1" w="0"/>
+         <segment>
+            <start x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+            <end x="-8phi-4" y="12phi+6" z="2phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+            <end x="-10phi-5" y="-phi-2" z="-3phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-2phi)/-1" y="-8phi-6" z="0" w="0"/>
+            <end x="(4phi+2)/-1" y="-8phi-4" z="2phi" w="0"/>
+         </segment>
+         <point x="4phi+2" y="-8phi-4" z="-2phi" w="0"/>
+         <segment>
+            <start x="-2phi" y="4phi+2" z="-8phi-4" w="0"/>
+            <end x="-6phi-4" y="4phi+2" z="-4phi-4" w="0"/>
+         </segment>
+         <segment>
+            <start x="(4phi+2)/-1" y="4phi+4" z="(6phi+4)/-1" w="0"/>
+            <end x="(-2phi)/-1" y="4phi+2" z="(8phi+4)/-1" w="0"/>
+         </segment>
+         <point x="-4phi-4" y="(6phi+4)/-1" z="4phi+2" w="0"/>
+         <segment>
+            <start x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+            <end x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+         </segment>
+         <point x="2phi" y="-4phi-2" z="8phi+4" w="0"/>
+         <segment>
+            <start x="6phi+4" y="-4phi-2" z="(-4phi-4)/-1" w="0"/>
+            <end x="8phi+6" y="0" z="(-2phi)/-1" w="0"/>
+         </segment>
+         <point x="(-4phi-4)/-1" y="(6phi+4)/-1" z="4phi+2" w="0"/>
+         <segment>
+            <start x="8phi+6" y="0" z="-2phi" w="0"/>
+            <end x="8phi+4" y="2phi" z="4phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="4phi+2" y="-8phi-4" z="-2phi" w="0"/>
+            <end x="4phi+2" y="-4phi-4" z="-6phi-4" w="0"/>
+         </segment>
+         <segment>
+            <start x="6phi+4" y="(4phi+2)/-1" z="-4phi-4" w="0"/>
+            <end x="8phi+4" y="(-2phi)/-1" z="-4phi-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="(-2phi)/-1" z="8phi+6" w="0"/>
+            <end x="-2phi" y="(4phi+2)/-1" z="8phi+4" w="0"/>
+         </segment>
+         <point x="4phi+2" y="4phi+4" z="6phi+4" w="0"/>
+         <point x="0" y="-2phi" z="8phi+6" w="0"/>
+         <segment>
+            <start x="-8phi-4" y="2phi" z="(-4phi-2)/-1" w="0"/>
+            <end x="-4phi-2" y="4phi+4" z="(-6phi-4)/-1" w="0"/>
+         </segment>
+         <point x="(-2phi)/-1" y="-8phi-6" z="0" w="0"/>
+         <point x="-4phi-4" y="6phi+4" z="4phi+2" w="0"/>
+         <segment>
+            <start x="(4phi+2)/-1" y="8phi+4" z="2phi" w="0"/>
+            <end x="(6phi+4)/-1" y="4phi+2" z="4phi+4" w="0"/>
+         </segment>
+         <point x="-4phi-2" y="8phi+4" z="-2phi" w="0"/>
+         <point x="8phi+4" y="2phi" z="4phi+2" w="0"/>
+         <segment>
+            <start x="-4phi-4" y="(6phi+4)/-1" z="-4phi-2" w="0"/>
+            <end x="-2phi" y="(8phi+6)/-1" z="0" w="0"/>
+         </segment>
+         <segment>
+            <start x="6phi+4" y="4phi+2" z="-4phi-4" w="0"/>
+            <end x="8phi+6" y="0" z="-2phi" w="0"/>
+         </segment>
+         <point x="4phi+2" y="8phi+4" z="2phi" w="0"/>
+         <segment>
+            <start x="4phi+4" y="6phi+4" z="(-4phi-2)/-1" w="0"/>
+            <end x="4phi+2" y="8phi+4" z="(2phi)/-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="(2phi)/-1" y="(4phi+2)/-1" z="-8phi-4" w="0"/>
+            <end x="(4phi+4)/-1" y="(6phi+4)/-1" z="-4phi-2" w="0"/>
+         </segment>
+         <point x="-8phi-4" y="2phi" z="4phi+2" w="0"/>
+         <point x="4phi+2" y="-4phi-4" z="6phi+4" w="0"/>
+         <segment>
+            <start x="-4phi-4" y="6phi+4" z="4phi+2" w="0"/>
+            <end x="-2phi" y="8phi+6" z="0" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi" y="-4phi-2" z="8phi+4" w="0"/>
+            <end x="-6phi-4" y="-4phi-2" z="4phi+4" w="0"/>
+         </segment>
+         <point x="4phi+2" y="8phi+4" z="(2phi)/-1" w="0"/>
+         <point x="6phi+4" y="4phi+2" z="4phi+4" w="0"/>
+         <point x="6phi+4" y="-4phi-2" z="-4phi-4" w="0"/>
+         <point x="8phi+6" y="0" z="(-2phi)/-1" w="0"/>
+         <segment>
+            <start x="(-4phi-2)/-1" y="4phi+4" z="6phi+4" w="0"/>
+            <end x="(2phi)/-1" y="4phi+2" z="8phi+4" w="0"/>
+         </segment>
+         <point x="-10phi-5" y="-phi-2" z="-3phi-1" w="0"/>
+         <point x="(-4phi-4)/-1" y="6phi+4" z="-4phi-2" w="0"/>
+         <point x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+         <point x="-8phi-4" y="5phi+2" z="-8phi-5" w="0"/>
+         <point x="-4phi-2" y="-4phi-4" z="(6phi+4)/-1" w="0"/>
+         <segment>
+            <start x="-2phi" y="8phi+6" z="0" w="0"/>
+            <end x="4phi+2" y="8phi+4" z="2phi" w="0"/>
+         </segment>
+         <point x="2phi" y="4phi+2" z="8phi+4" w="0"/>
+         <segment>
+            <start x="8phi+4" y="(2phi)/-1" z="(-4phi-2)/-1" w="0"/>
+            <end x="4phi+2" y="(4phi+4)/-1" z="(-6phi-4)/-1" w="0"/>
+         </segment>
+         <point x="8phi+6" y="0" z="-2phi" w="0"/>
+         <point x="4phi+4" y="6phi+4" z="4phi+2" w="0"/>
+         <point x="(-2phi)/-1" y="8phi+6" z="0" w="0"/>
+         <point x="0" y="(-2phi)/-1" z="-8phi-6" w="0"/>
+         <segment>
+            <start x="-4phi-2" y="-4phi-4" z="(6phi+4)/-1" w="0"/>
+            <end x="0" y="-2phi" z="(8phi+6)/-1" w="0"/>
+         </segment>
+         <point x="4phi+2" y="-8phi-4" z="2phi" w="0"/>
+         <point x="(8phi+5)/-1" y="4phi+2" z="-7phi-6" w="0"/>
+         <segment>
+            <start x="(6phi+4)/-1" y="-4phi-2" z="-4phi-4" w="0"/>
+            <end x="(8phi+6)/-1" y="0" z="-2phi" w="0"/>
+         </segment>
+         <point x="-7phi-3" y="-6phi-5" z="-11phi-6" w="0"/>
+         <segment>
+            <start x="2phi" y="-4phi-2" z="-8phi-4" w="0"/>
+            <end x="6phi+4" y="-4phi-2" z="-4phi-4" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="-13phi-7" y="4phi+1" z="5phi+4" w="0"/>
+            <vertex x="-7phi-3" y="-6phi-5" z="-11phi-6" w="0"/>
+            <vertex x="-2phi" y="2phi" z="-14phi-8" w="0"/>
+            <vertex x="-8phi-4" y="12phi+6" z="2phi+2" w="0"/>
+         </polygon>
+         <point x="2phi" y="4phi+2" z="-8phi-4" w="0"/>
+         <segment>
+            <start x="(4phi+2)/-1" y="-4phi-4" z="6phi+4" w="0"/>
+            <end x="(-2phi)/-1" y="-4phi-2" z="8phi+4" w="0"/>
+         </segment>
+         <point x="-2phi" y="-4phi-2" z="8phi+4" w="0"/>
+         <point x="-4phi-2" y="-4phi-4" z="6phi+4" w="0"/>
+         <segment>
+            <start x="2phi" y="(4phi+2)/-1" z="8phi+4" w="0"/>
+            <end x="4phi+4" y="(6phi+4)/-1" z="4phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="(4phi+2)/-1" y="-8phi-4" z="(2phi)/-1" w="0"/>
+            <end x="(6phi+4)/-1" y="-4phi-2" z="(4phi+4)/-1" w="0"/>
+         </segment>
+         <point x="8phi+4" y="2phi" z="-4phi-2" w="0"/>
+         <point x="4phi+2" y="-4phi-4" z="(6phi+4)/-1" w="0"/>
+         <segment>
+            <start x="(-4phi-2)/-1" y="-4phi-4" z="(6phi+4)/-1" w="0"/>
+            <end x="(2phi)/-1" y="-4phi-2" z="(8phi+4)/-1" w="0"/>
+         </segment>
+         <point x="8phi+4" y="-2phi" z="-4phi-2" w="0"/>
+         <segment>
+            <start x="(-2phi)/-1" y="8phi+6" z="0" w="0"/>
+            <end x="(4phi+2)/-1" y="8phi+4" z="-2phi" w="0"/>
+         </segment>
+         <point x="(6phi+4)/-1" y="-4phi-2" z="-4phi-4" w="0"/>
+         <polygon>
+            <vertex x="-8phi-4" y="5phi+2" z="-8phi-5" w="0"/>
+            <vertex x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+            <vertex x="-8phi-4" y="2phi" z="-4phi-2" w="0"/>
+         </polygon>
+         <point x="(6phi+4)/-1" y="4phi+2" z="(-4phi-4)/-1" w="0"/>
+         <segment>
+            <start x="-4phi-2" y="-8phi-4" z="2phi" w="0"/>
+            <end x="-4phi-2" y="-4phi-4" z="6phi+4" w="0"/>
+         </segment>
+         <segment>
+            <start x="6phi+4" y="(-4phi-2)/-1" z="4phi+4" w="0"/>
+            <end x="8phi+4" y="(2phi)/-1" z="4phi+2" w="0"/>
+         </segment>
+         <point x="-5phi-2" y="3phi+1" z="-8phi-5" w="0"/>
+         <segment>
+            <start x="4phi+2" y="-4phi-4" z="6phi+4" w="0"/>
+            <end x="0" y="-2phi" z="8phi+6" w="0"/>
+         </segment>
+         <point x="-8phi-6" y="0" z="-2phi" w="0"/>
+         <segment>
+            <start x="(6phi+4)/-1" y="(-4phi-2)/-1" z="-4phi-4" w="0"/>
+            <end x="(8phi+4)/-1" y="(2phi)/-1" z="-4phi-2" w="0"/>
+         </segment>
+         <point x="(2phi)/-1" y="4phi+2" z="8phi+4" w="0"/>
+         <segment>
+            <start x="8phi+4" y="2phi" z="4phi+2" w="0"/>
+            <end x="4phi+4" y="6phi+4" z="4phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="-8phi-4" y="12phi+6" z="2phi+2" w="0"/>
+            <end x="-5phi-2" y="7phi+3" z="-6phi-3" w="0"/>
+         </segment>
+         <segment>
+            <start x="-4phi-2" y="8phi+4" z="-2phi" w="0"/>
+            <end x="-4phi-2" y="4phi+4" z="-6phi-4" w="0"/>
+         </segment>
+         <point x="(2phi)/-1" y="-4phi-2" z="-8phi-4" w="0"/>
+         <point x="-4phi-2" y="8phi+4" z="2phi" w="0"/>
+         <point x="8phi+4" y="(2phi)/-1" z="4phi+2" w="0"/>
+         <point x="-2phi" y="2phi" z="-14phi-8" w="0"/>
+         <segment>
+            <start x="0" y="(-2phi)/-1" z="-8phi-6" w="0"/>
+            <end x="2phi" y="(4phi+2)/-1" z="-8phi-4" w="0"/>
+         </segment>
+         <point x="-8phi-6" y="0" z="(-2phi)/-1" w="0"/>
+         <point x="-4phi-4" y="(6phi+4)/-1" z="-4phi-2" w="0"/>
+         <point x="(6phi+4)/-1" y="-4phi-2" z="4phi+4" w="0"/>
+         <segment>
+            <start x="4phi+4" y="(6phi+4)/-1" z="(4phi+2)/-1" w="0"/>
+            <end x="4phi+2" y="(8phi+4)/-1" z="(-2phi)/-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="(6phi+4)/-1" y="4phi+2" z="(-4phi-4)/-1" w="0"/>
+            <end x="(8phi+6)/-1" y="0" z="(-2phi)/-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="(6phi+4)/-1" y="4phi+2" z="-4phi-4" w="0"/>
+            <end x="(8phi+5)/-1" y="4phi+2" z="-7phi-6" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-4phi-4)/-1" y="(6phi+4)/-1" z="4phi+2" w="0"/>
+            <end x="(-2phi)/-1" y="(8phi+6)/-1" z="0" w="0"/>
+         </segment>
+         <point x="6phi+4" y="-4phi-2" z="(-4phi-4)/-1" w="0"/>
+      </CommandHide>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <point x="(8phi+4)/-1" y="4phi+2" z="-6phi-6" w="0"/>
+      </CommandSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <point x="(8phi+4)/-1" y="4phi+2" z="-6phi-6" w="0"/>
+         <point x="-4phi-2" y="6phi+6" z="(8phi+4)/-1" w="0"/>
+      </CommandJoinPoints>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="(8phi+4)/-1" y="4phi+2" z="-6phi-6" w="0"/>
+            <end x="(4phi+2)/-1" y="6phi+6" z="(8phi+4)/-1" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <point x="-10phi-6" y="4phi" z="(4phi+2)/-1" w="0"/>
+         <point x="(8phi+4)/-1" y="4phi+2" z="-6phi-6" w="0"/>
+      </CommandJoinPoints>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="-10phi-6" y="4phi" z="(4phi+2)/-1" w="0"/>
+            <end x="(8phi+4)/-1" y="4phi+2" z="(6phi+6)/-1" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <point x="(8phi+4)/-1" y="4phi+2" z="-6phi-6" w="0"/>
+         <point x="-10phi-4" y="-2phi" z="-6phi-4" w="0"/>
+      </CommandJoinPoints>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(6phi+6)/-1" y="4phi+2" z="-6phi-4" w="0"/>
+               <end x="(8phi+7)/-1" y="6phi+3" z="-8phi-5" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="(8phi+4)/-1" y="4phi+2" z="-6phi-6" w="0"/>
+            <end x="(10phi+4)/-1" y="-2phi" z="-6phi-4" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="2"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="13phi+8"/>
+         </attr>
+         <point x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+            <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+         </segment>
+         <point x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+      </CommandHide>
+      <CommandTranslate>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="4phi" y="4phi+2" z="10phi+6" w="0"/>
+         <segment>
+            <start x="4phi" y="4phi+2" z="10phi+6" w="0"/>
+            <end x="8phi+4" y="4phi+2" z="(-6phi-6)/-1" w="0"/>
+         </segment>
+         <point x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+         <segment>
+            <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+            <end x="(-10phi-4)/-1" y="-2phi" z="6phi+4" w="0"/>
+         </segment>
+         <point x="10phi+4" y="-2phi" z="6phi+4" w="0"/>
+         <segment>
+            <start x="10phi+4" y="-2phi" z="6phi+4" w="0"/>
+            <end x="(-6phi-2)/-1" y="-4phi-4" z="8phi+6" w="0"/>
+         </segment>
+         <point x="6phi+2" y="-4phi-4" z="(-8phi-6)/-1" w="0"/>
+         <segment>
+            <start x="6phi+2" y="-4phi-4" z="(-8phi-6)/-1" w="0"/>
+            <end x="(-2phi)/-1" y="-2phi" z="(-10phi-8)/-1" w="0"/>
+         </segment>
+         <point x="2phi" y="-2phi" z="10phi+8" w="0"/>
+         <segment>
+            <start x="2phi" y="-2phi" z="10phi+8" w="0"/>
+            <end x="4phi" y="4phi+2" z="10phi+6" w="0"/>
+         </segment>
+      </CommandTranslate>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="2"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="13phi+8"/>
+         </attr>
+         <point x="-2phi" y="6phi+4" z="10phi+4" w="0"/>
+         <point x="4phi+2" y="6phi+6" z="(-8phi-4)/-1" w="0"/>
+         <point x="4phi+2" y="10phi+6" z="4phi" w="0"/>
+         <point x="-2phi" y="10phi+8" z="2phi" w="0"/>
+         <point x="-4phi-4" y="(-8phi-6)/-1" z="6phi+2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="2"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="13phi+8"/>
+         </attr>
+         <point x="9phi+4" y="(-8phi-6)/-1" z="27phi+15" w="0"/>
+         <point x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+         <point x="11phi+8" y="10phi+8" z="23phi+13" w="0"/>
+         <point x="17phi+10" y="10phi+6" z="25phi+13" w="0"/>
+         <point x="17phi+10" y="6phi+6" z="(-29phi-17)/-1" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="rose" index="21"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+2"/>
+         </attr>
+         <point x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="54"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi"/>
+         </attr>
+         <point x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="rose" index="58"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+         <point x="9phi+8" y="8phi+6" z="31phi+15" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="rose" index="58"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+         <segment>
+            <start x="9phi+8" y="8phi+6" z="31phi+15" w="0"/>
+            <end x="11phi+9" y="9phi+7" z="29phi+15" w="0"/>
+         </segment>
+         <point x="11phi+9" y="9phi+7" z="29phi+15" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="lavender" index="17"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+         <point x="13phi+10" y="10phi+8" z="27phi+15" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="lavender" index="17"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+         <segment>
+            <start x="13phi+10" y="10phi+8" z="27phi+15" w="0"/>
+            <end x="15phi+11" y="10phi+7" z="27phi+14" w="0"/>
+         </segment>
+         <point x="15phi+11" y="10phi+7" z="27phi+14" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+         <point x="17phi+12" y="10phi+6" z="27phi+13" w="0"/>
+      </CommandJoinPoints>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="maroon" index="0"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+         <point x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="maroon" index="0"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+         <segment>
+            <start x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+            <end x="(-18phi-8)/-1" y="5phi+4" z="30phi+19" w="0"/>
+         </segment>
+         <point x="(-18phi-8)/-1" y="5phi+4" z="30phi+19" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="(-18phi-8)/-1" y="5phi+4" z="30phi+19" w="0"/>
+         <segment>
+            <start x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+            <end x="(-18phi-8)/-1" y="5phi+4" z="30phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-18phi-8)/-1" y="5phi+4" z="30phi+19" w="0"/>
+            <end x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+         </segment>
+      </CommandHide>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+         <point x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+            <end x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+      </CommandAxialSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+         <point x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+            <end x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+10" y="6phi+6" z="(-29phi-17)/-1" w="0"/>
+            <end x="30phi+18" y="6phi+6" z="(-50phi-30)/-1" w="0"/>
+         </segment>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="17phi+10" y="6phi+6" z="(-29phi-17)/-1" w="0"/>
+      </CommandHide>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="(-8phi-4)/-1" y="4phi+2" z="6phi+6" w="0"/>
+               <end x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+         <point x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandTranslate>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="13phi+10" y="10phi+8" z="27phi+15" w="0"/>
+         <segment>
+            <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+            <end x="17phi+12" y="10phi+6" z="27phi+13" w="0"/>
+         </segment>
+         <point x="17phi+12" y="10phi+6" z="27phi+13" w="0"/>
+         <point x="9phi+8" y="8phi+6" z="31phi+15" w="0"/>
+         <point x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+         <segment>
+            <start x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+            <end x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+            <end x="9phi+8" y="8phi+6" z="31phi+15" w="0"/>
+         </segment>
+      </CommandTranslate>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+            <end x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+      </CommandAxialSymmetry>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+            <end x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+         <segment>
+            <start x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+            <end x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+         </segment>
+         <point x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+         <segment>
+            <start x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+            <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+         <segment>
+            <start x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            <end x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="11phi+4" y="4phi+4" z="31phi+23" w="0"/>
+         <point x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+      </CommandJoinPoints>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="11phi+4" y="4phi+4" z="31phi+23" w="0"/>
+            <end x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+         <point x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+            <end x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+         <point x="13phi+6" y="2phi" z="31phi+23" w="0"/>
+      </CommandJoinPoints>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+            <end x="(-13phi-6)/-1" y="2phi" z="31phi+23" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="13phi+6" y="2phi" z="31phi+23" w="0"/>
+         <point x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+      </CommandJoinPoints>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="13phi+6" y="2phi" z="31phi+23" w="0"/>
+            <end x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="9phi+8" y="8phi+6" z="31phi+15" w="0"/>
+         <point x="13phi+10" y="10phi+8" z="27phi+15" w="0"/>
+         <point x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+         <point x="17phi+12" y="10phi+6" z="27phi+13" w="0"/>
+         <point x="11phi+9" y="9phi+7" z="29phi+15" w="0"/>
+         <point x="15phi+11" y="10phi+7" z="27phi+14" w="0"/>
+         <point x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+         <segment>
+            <start x="9phi+8" y="8phi+6" z="31phi+15" w="0"/>
+            <end x="11phi+9" y="9phi+7" z="29phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+            <end x="9phi+8" y="8phi+6" z="31phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+11" y="10phi+7" z="27phi+14" w="0"/>
+            <end x="17phi+12" y="10phi+6" z="27phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+            <end x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+            <end x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+            <end x="24phi+16" y="6phi+4" z="52phi+30" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi+10" y="10phi+8" z="27phi+15" w="0"/>
+            <end x="15phi+11" y="10phi+7" z="27phi+14" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi" y="6phi+4" z="10phi+4" w="0"/>
+            <end x="11phi+8" y="6phi+4" z="31phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi+9" y="9phi+7" z="29phi+15" w="0"/>
+            <end x="13phi+10" y="10phi+8" z="27phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+            <end x="17phi+12" y="10phi+6" z="27phi+13" w="0"/>
+         </segment>
+         <point x="24phi+16" y="6phi+4" z="52phi+30" w="0"/>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="30phi+18" y="6phi+6" z="(-50phi-30)/-1" w="0"/>
+         <point x="22phi+12" y="(-8phi-6)/-1" z="48phi+28" w="0"/>
+         <point x="11phi+8" y="10phi+8" z="23phi+13" w="0"/>
+         <point x="24phi+16" y="10phi+8" z="44phi+26" w="0"/>
+         <point x="9phi+4" y="(-8phi-6)/-1" z="27phi+15" w="0"/>
+         <point x="17phi+10" y="10phi+6" z="25phi+13" w="0"/>
+         <point x="30phi+18" y="10phi+6" z="46phi+26" w="0"/>
+         <segment>
+            <start x="4phi+2" y="10phi+6" z="4phi" w="0"/>
+            <end x="17phi+10" y="10phi+6" z="25phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi" y="10phi+8" z="2phi" w="0"/>
+            <end x="11phi+8" y="10phi+8" z="23phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+10" y="10phi+6" z="25phi+13" w="0"/>
+            <end x="30phi+18" y="10phi+6" z="46phi+26" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+4" y="(-8phi-6)/-1" z="27phi+15" w="0"/>
+            <end x="22phi+12" y="(-8phi-6)/-1" z="48phi+28" w="0"/>
+         </segment>
+         <segment>
+            <start x="-4phi-4" y="(-8phi-6)/-1" z="6phi+2" w="0"/>
+            <end x="9phi+4" y="(-8phi-6)/-1" z="27phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi+8" y="10phi+8" z="23phi+13" w="0"/>
+            <end x="24phi+16" y="10phi+8" z="44phi+26" w="0"/>
+         </segment>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="15phi+12" y="6phi+6" z="29phi+15" w="0"/>
+               <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="4phi+2" y="6phi+6" z="(-8phi-4)/-1" w="0"/>
+            <end x="17phi+10" y="6phi+6" z="(-29phi-17)/-1" w="0"/>
+         </segment>
+      </CommandHide>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+         <point x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+      </CommandJoinPoints>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="2"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+1"/>
+         </attr>
+         <point x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+            <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+         </segment>
+         <point x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+      </CommandHide>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+            <end x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="maroon" index="56"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+1"/>
+         </attr>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="maroon" index="56"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+1"/>
+         </attr>
+         <segment>
+            <start x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+            <end x="17phi+7" y="10phi+8" z="24phi+17" w="0"/>
+         </segment>
+         <point x="17phi+7" y="10phi+8" z="24phi+17" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="rose" index="17"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+1"/>
+         </attr>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="17phi+8" y="10phi+8" z="21phi+15" w="0"/>
+         <point x="21phi+9" y="10phi+8" z="26phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="23"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi"/>
+         </attr>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="23"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi"/>
+         </attr>
+         <segment>
+            <start x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+            <end x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </segment>
+         <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         <segment>
+            <start x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+            <end x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+            <end x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+8" y="10phi+8" z="21phi+15" w="0"/>
+            <end x="21phi+9" y="10phi+8" z="26phi+19" w="0"/>
+         </segment>
+         <point x="21phi+9" y="10phi+8" z="26phi+19" w="0"/>
+         <segment>
+            <start x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+            <end x="21phi+9" y="10phi+8" z="26phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+            <end x="17phi+7" y="10phi+8" z="24phi+17" w="0"/>
+         </segment>
+         <point x="17phi+7" y="10phi+8" z="24phi+17" w="0"/>
+         <point x="17phi+8" y="10phi+8" z="21phi+15" w="0"/>
+         <segment>
+            <start x="17phi+7" y="10phi+8" z="24phi+17" w="0"/>
+            <end x="17phi+8" y="10phi+8" z="21phi+15" w="0"/>
+         </segment>
+      </CommandHide>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+         <point x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+         <point x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+         <point x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+      </CommandJoinPoints>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+         <segment>
+            <start x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+            <end x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+            <end x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+            <end x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="maroon" index="16"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="phi"/>
+         </attr>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="maroon" index="16"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="phi"/>
+         </attr>
+         <segment>
+            <start x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+            <end x="17phi+5" y="10phi+7" z="25phi+20" w="0"/>
+         </segment>
+         <point x="17phi+5" y="10phi+7" z="25phi+20" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="17phi+5" y="10phi+7" z="25phi+20" w="0"/>
+         <segment>
+            <start x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+            <end x="17phi+5" y="10phi+7" z="25phi+20" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+5" y="10phi+7" z="25phi+20" w="0"/>
+            <end x="17phi+4" y="10phi+6" z="23phi+21" w="0"/>
+         </segment>
+      </CommandHide>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="17phi+4" y="10phi+6" z="23phi+21" w="0"/>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="17phi+4" y="10phi+6" z="23phi+21" w="0"/>
+            <end x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="17phi+4" y="10phi+6" z="23phi+21" w="0"/>
+      </CommandAxialSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="23phi+8" y="-10phi-6" z="21phi+19" w="0"/>
+         <point x="25phi+8" y="-6phi-6" z="19phi+17" w="0"/>
+      </CommandJoinPoints>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="23phi+8" y="-10phi-6" z="21phi+19" w="0"/>
+            <end x="25phi+8" y="-6phi-6" z="19phi+17" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandCentroid>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+               <end x="25phi+11" y="8phi+4" z="28phi+21" w="0"/>
+            </segment>
+         </attr>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+         <point x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+      </CommandCentroid>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="1"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi"/>
+         </attr>
+         <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+               <end x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+            <end x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+         </segment>
+         <point x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+      </CommandHide>
+      <CommandAxialSymmetry>
+         <attr name="symmetry.center">
+            <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+               <end x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="23phi+12" y="-6phi-2" z="25phi+19" w="0"/>
+         <point x="21phi+8" y="-8phi-6" z="27phi+19" w="0"/>
+         <point x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+         <point x="13phi" y="-8phi-4" z="29phi+21" w="0"/>
+         <point x="9phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+         <point x="27phi+8" y="4phi+4" z="19phi+15" w="0"/>
+         <point x="13phi+4" y="-6phi-6" z="31phi+21" w="0"/>
+         <point x="27phi+12" y="6phi+2" z="21phi+15" w="0"/>
+         <point x="9phi+2" y="2phi" z="31phi+23" w="0"/>
+         <point x="13phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+         <point x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+         <point x="15phi+2" y="-10phi-4" z="25phi+21" w="0"/>
+         <point x="(-19phi-10)/-1" y="-4phi-4" z="(-29phi-19)/-1" w="0"/>
+         <point x="11phi-2" y="2phi" z="29phi+21" w="0"/>
+         <point x="11phi" y="6phi+2" z="29phi+23" w="0"/>
+         <point x="11phi+4" y="4phi+4" z="31phi+23" w="0"/>
+         <point x="15phi+4" y="-10phi-6" z="29phi+19" w="0"/>
+         <point x="25phi+12" y="4phi" z="25phi+17" w="0"/>
+         <point x="23phi+8" y="-10phi-6" z="21phi+19" w="0"/>
+         <point x="13phi+6" y="2phi" z="31phi+23" w="0"/>
+         <point x="(-23phi-12)/-1" y="-2phi" z="27phi+17" w="0"/>
+         <point x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+         <point x="27phi+14" y="-4phi" z="21phi+15" w="0"/>
+         <point x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+         <point x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+         <point x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+         <point x="29phi+10" y="2phi" z="19phi+15" w="0"/>
+         <point x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+         <point x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+         <point x="23phi+10" y="-10phi-4" z="25phi+17" w="0"/>
+         <point x="17phi+6" y="-6phi-4" z="31phi+19" w="0"/>
+         <point x="17phi+4" y="10phi+6" z="23phi+21" w="0"/>
+         <point x="19phi+8" y="-10phi-8" z="27phi+17" w="0"/>
+         <point x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+         <point x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+         <point x="25phi+12" y="-8phi-4" z="21phi+17" w="0"/>
+         <point x="25phi+8" y="-6phi-6" z="19phi+17" w="0"/>
+         <point x="27phi+12" y="-2phi" z="23phi+17" w="0"/>
+         <point x="(-15phi-8)/-1" y="-2phi" z="31phi+21" w="0"/>
+         <point x="27phi+14" y="2phi" z="21phi+17" w="0"/>
+         <segment>
+            <start x="13phi+4" y="-6phi-6" z="31phi+21" w="0"/>
+            <end x="15phi+4" y="-10phi-6" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+            <end x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+8" y="-10phi-6" z="21phi+19" w="0"/>
+            <end x="23phi+10" y="-10phi-4" z="25phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="29phi+10" y="2phi" z="19phi+15" w="0"/>
+            <end x="27phi+8" y="4phi+4" z="19phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi+4" y="4phi+4" z="31phi+23" w="0"/>
+            <end x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi" y="6phi+2" z="29phi+23" w="0"/>
+            <end x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi" y="-8phi-4" z="29phi+21" w="0"/>
+            <end x="9phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="25phi+12" y="-8phi-4" z="21phi+17" w="0"/>
+            <end x="23phi+8" y="-10phi-6" z="21phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi+4" y="-6phi-6" z="31phi+21" w="0"/>
+            <end x="9phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+            <end x="13phi+6" y="2phi" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="25phi+12" y="4phi" z="25phi+17" w="0"/>
+            <end x="27phi+12" y="-2phi" z="23phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="27phi+14" y="2phi" z="21phi+17" w="0"/>
+            <end x="27phi+14" y="-4phi" z="21phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+2" y="2phi" z="31phi+23" w="0"/>
+            <end x="11phi" y="6phi+2" z="29phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+            <end x="17phi+4" y="10phi+6" z="23phi+21" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+12" y="-6phi-2" z="25phi+19" w="0"/>
+            <end x="23phi+10" y="-10phi-4" z="25phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+            <end x="(-13phi-6)/-1" y="2phi" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+4" y="10phi+6" z="23phi+21" w="0"/>
+            <end x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="27phi+14" y="2phi" z="21phi+17" w="0"/>
+            <end x="27phi+12" y="-2phi" z="23phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="27phi+14" y="2phi" z="21phi+17" w="0"/>
+            <end x="27phi+12" y="6phi+2" z="21phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+            <end x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+            <end x="9phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+            <end x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-21phi-12)/-1" y="4phi+2" z="27phi+19" w="0"/>
+            <end x="(-23phi-12)/-1" y="-2phi" z="27phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+            <end x="21phi+12" y="4phi+2" z="27phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-15phi-8)/-1" y="-2phi" z="31phi+21" w="0"/>
+            <end x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-19phi-10)/-1" y="-4phi-4" z="(-29phi-19)/-1" w="0"/>
+            <end x="(-15phi-8)/-1" y="-2phi" z="(-31phi-21)/-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="19phi+10" y="-4phi-4" z="29phi+19" w="0"/>
+            <end x="23phi+12" y="-6phi-2" z="25phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi" y="6phi+2" z="29phi+23" w="0"/>
+            <end x="11phi-2" y="2phi" z="29phi+21" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+12" y="-6phi-2" z="25phi+19" w="0"/>
+            <end x="21phi+8" y="-8phi-6" z="27phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+8" y="-8phi-6" z="27phi+19" w="0"/>
+            <end x="17phi+6" y="-6phi-4" z="31phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi+4" y="4phi+4" z="31phi+23" w="0"/>
+            <end x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+12" y="-2phi" z="27phi+17" w="0"/>
+            <end x="23phi+12" y="-6phi-2" z="25phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+            <end x="15phi+8" y="-2phi" z="31phi+21" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+6" y="10phi+8" z="23phi+19" w="0"/>
+            <end x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="27phi+12" y="-2phi" z="23phi+17" w="0"/>
+            <end x="27phi+14" y="-4phi" z="21phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="29phi+10" y="2phi" z="19phi+15" w="0"/>
+            <end x="27phi+14" y="2phi" z="21phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi+4" y="4phi+4" z="31phi+23" w="0"/>
+            <end x="9phi+2" y="2phi" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            <end x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+            <end x="(-21phi-12)/-1" y="4phi+2" z="(-27phi-19)/-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="27phi+8" y="4phi+4" z="19phi+15" w="0"/>
+            <end x="27phi+12" y="6phi+2" z="21phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+            <end x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="27phi+12" y="-2phi" z="23phi+17" w="0"/>
+            <end x="23phi+12" y="-2phi" z="27phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+10" y="-10phi-4" z="25phi+17" w="0"/>
+            <end x="19phi+8" y="-10phi-8" z="27phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi+6" y="2phi" z="31phi+23" w="0"/>
+            <end x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+            <end x="(-19phi-8)/-1" y="6phi+6" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+            <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+            <end x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi" y="-8phi-4" z="29phi+21" w="0"/>
+            <end x="15phi+2" y="-10phi-4" z="25phi+21" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+            <end x="17phi+6" y="10phi+8" z="27phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+10" y="-10phi-4" z="25phi+17" w="0"/>
+            <end x="25phi+12" y="-8phi-4" z="21phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+4" y="-10phi-6" z="29phi+19" w="0"/>
+            <end x="13phi" y="-8phi-4" z="29phi+21" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+            <end x="9phi+2" y="2phi" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+12" y="4phi+2" z="27phi+19" w="0"/>
+            <end x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi" y="-8phi-4" z="29phi+21" w="0"/>
+            <end x="13phi+4" y="-6phi-6" z="31phi+21" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+            <end x="25phi+12" y="4phi" z="25phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="19phi+10" y="-4phi-4" z="29phi+19" w="0"/>
+            <end x="17phi+6" y="-6phi-4" z="31phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+6" y="-6phi-4" z="31phi+19" w="0"/>
+            <end x="13phi+4" y="-6phi-6" z="31phi+21" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+2" y="-10phi-4" z="25phi+21" w="0"/>
+            <end x="15phi+4" y="-10phi-6" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+4" y="6phi+4" z="31phi+21" w="0"/>
+            <end x="(-17phi-8)/-1" y="4phi+2" z="31phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi+4" y="-6phi-6" z="31phi+21" w="0"/>
+            <end x="13phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="19phi+8" y="6phi+6" z="29phi+19" w="0"/>
+            <end x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="(-23phi-12)/-1" y="-2phi" z="27phi+17" w="0"/>
+            <end x="(-19phi-10)/-1" y="-4phi-4" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+8" y="10phi+6" z="27phi+17" w="0"/>
+            <end x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="17phi+6" y="-6phi-4" z="31phi+19" w="0"/>
+            <end x="13phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="27phi+12" y="6phi+2" z="21phi+15" w="0"/>
+            <end x="29phi+10" y="2phi" z="19phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi" y="6phi+2" z="29phi+23" w="0"/>
+            <end x="11phi+4" y="4phi+4" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+8" y="-10phi-6" z="21phi+19" w="0"/>
+            <end x="19phi+8" y="-10phi-8" z="27phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+8" y="-8phi-6" z="27phi+19" w="0"/>
+            <end x="19phi+8" y="-10phi-8" z="27phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+8" y="-10phi-6" z="21phi+19" w="0"/>
+            <end x="25phi+8" y="-6phi-6" z="19phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="25phi+12" y="4phi" z="25phi+17" w="0"/>
+            <end x="27phi+14" y="2phi" z="21phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="19phi+8" y="-10phi-8" z="27phi+17" w="0"/>
+            <end x="15phi+4" y="-10phi-6" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="27phi+12" y="-2phi" z="23phi+17" w="0"/>
+            <end x="23phi+12" y="-6phi-2" z="25phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="27phi+14" y="-4phi" z="21phi+15" w="0"/>
+            <end x="25phi+12" y="-8phi-4" z="21phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+8" y="-8phi-6" z="27phi+19" w="0"/>
+            <end x="19phi+10" y="-4phi-4" z="29phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+8" y="-2phi" z="31phi+21" w="0"/>
+            <end x="13phi+6" y="2phi" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="13phi+6" y="2phi" z="31phi+23" w="0"/>
+            <end x="11phi+4" y="4phi+4" z="31phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+10" y="-10phi-4" z="25phi+17" w="0"/>
+            <end x="21phi+8" y="-8phi-6" z="27phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="15phi+8" y="-2phi" z="31phi+21" w="0"/>
+            <end x="17phi+6" y="-6phi-4" z="31phi+19" w="0"/>
+         </segment>
+         <segment>
+            <start x="29phi+10" y="2phi" z="19phi+15" w="0"/>
+            <end x="27phi+14" y="-4phi" z="21phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+            <end x="27phi+12" y="6phi+2" z="21phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+12" y="-2phi" z="27phi+17" w="0"/>
+            <end x="25phi+12" y="4phi" z="25phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="25phi+8" y="-6phi-6" z="19phi+17" w="0"/>
+            <end x="25phi+12" y="-8phi-4" z="21phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="21phi+12" y="4phi+2" z="27phi+19" w="0"/>
+            <end x="25phi+12" y="4phi" z="25phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="23phi+10" y="8phi+4" z="25phi+19" w="0"/>
+            <end x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="11phi-2" y="2phi" z="29phi+21" w="0"/>
+            <end x="9phi+2" y="2phi" z="31phi+23" w="0"/>
+         </segment>
+      </CommandAxialSymmetry>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+               <end x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+      </CommandHide>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+               <end x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="23phi+12" y="10phi+4" z="23phi+17" w="0"/>
+         <point x="25phi+8" y="8phi+6" z="19phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+               <end x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="9phi+4" y="-4phi-2" z="31phi+23" w="0"/>
+         <point x="11phi-2" y="-4phi" z="29phi+23" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+               <end x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="15phi" y="10phi+4" z="27phi+21" w="0"/>
+         <point x="13phi+4" y="8phi+6" z="31phi+19" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+               <end x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="27phi+14" y="-4phi" z="21phi+15" w="0"/>
+         <point x="29phi+8" y="-4phi-2" z="19phi+15" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="19phi+6" y="10phi+8" z="25phi+19" w="0"/>
+               <end x="19phi+6" y="12phi+8" z="25phi+19" w="0"/>
+            </segment>
+         </attr>
+         <point x="19phi+8" y="-10phi-8" z="27phi+17" w="0"/>
+         <point x="19phi+4" y="-10phi-8" z="23phi+21" w="0"/>
+      </CommandJoinPoints>
+   </editHistory>
+</vzome:vZome>

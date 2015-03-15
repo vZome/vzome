@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" version="3.0 beta 2" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
+  <Viewing>
+    <ViewModel near="0.38961933716564406" far="311.6954650878914" width="70.13147964477547" distance="155.8477325439453"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.5298670399567341" y="-0.6173193595975041" z="-0.5815133087330265"/>
+      <LookDirection x="-0.6845605209879921" y="-0.09342889172102162" z="0.722943936482272"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction name="blue" available="true" snap="true" build="true" render="true" color="0,118,149">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" render="true" color="175,0,0">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="orange" available="true" render="true" color="220,76,0">
+      <LengthModel scale="2" taus="0" ones="2" divisor="1"/>
+    </Direction>
+    <Direction name="purple" available="true" render="true" color="108,0,198">
+      <LengthModel scale="7" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="black" render="true" color="30,30,30">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="lavender" render="true" color="175,135,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="olive" render="true" color="100,113,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="maroon" render="true" color="117,0,50">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="rose" render="true" color="255,51,143">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="navy" available="true" render="true" color="0,0,153">
+      <LengthModel scale="2" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="turquoise" render="true" color="18,205,148">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="coral" render="true" color="255,126,106">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sulfur" render="true" color="230,245,62">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sand" render="true" color="154,117,74">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="apple" render="true" color="116,195,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="cinnamon" render="true" color="136,37,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="spruce" render="true" color="18,73,48">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="132">
+    <StrutCreation anchor="0 0 0 0 0 0" index="39" len="2 4"/>
+    <SelectManifestation point="-1 -2 -2 -3 1 1"/>
+    <Symmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-1 -2 -2 -3 1 1"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Hide/>
+    <StrutCreation anchor="-1 -1 -1 -2 2 3" dir="green" index="35" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="-1 -1 -1 -2 2 3" endSegment="-3 -4 0 -1 5 7"/>
+    <SelectManifestation point="-3 -4 0 -1 5 7"/>
+    <EndBlock/>
+    <Symmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="-2 -3 1 1 1 2" index="39" len="2 4"/>
+    <SelectManifestation startSegment="-2 -3 1 1 1 2" endSegment="-3 -5 -1 -2 2 3"/>
+    <Symmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-3 -5 -1 -2 2 3"/>
+    <EndBlock/>
+    <Symmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="2 4 0 0 4 8" dir="yellow" index="9" len="0 1"/>
+    <ShowPoint point="0 0 0 0 0 0"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="2" len="2 3"/>
+    <SymmetryAxisChange start="0 0 0 0 0 0" end="2 3 0 0 3 5"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 3 0 0 3 5"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 3 0 0 3 5"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation point="3 5 1 1 5 9"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="2 4 0 0 4 8" endSegment="3 5 1 1 5 9"/>
+    <SelectManifestation point="3 5 1 1 5 9"/>
+    <EndBlock/>
+    <Hide/>
+    <StrutCreation anchor="2 4 0 0 4 8" index="2" len="2 2"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 4 0 0 6 10"/>
+    <SelectManifestation startSegment="2 4 0 0 4 8" endSegment="2 4 0 0 6 10"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="2 4 0 0 6 10" index="6" len="2 2"/>
+    <SelectManifestation startSegment="2 4 0 0 6 10" endSegment="3 5 1 2 6 9"/>
+    <AxialSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="4 7 -1 -1 5 8" index="16" len="2 4"/>
+    <StrutCreation anchor="3 5 -1 -2 6 9" index="24" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="3 5 -1 -2 6 9" endSegment="4 7 -3 -5 5 8"/>
+    <SelectManifestation startSegment="4 7 -1 -1 5 8" endSegment="4 7 -3 -5 5 8"/>
+    <SelectManifestation point="4 7 -3 -5 5 8"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="1 2 -2 -3 7 11" index="26" len="4 6"/>
+    <SelectManifestation startSegment="1 2 -2 -3 7 11" endSegment="4 7 -3 -5 5 8"/>
+    <AxialSymmetry/>
+    <DeselectAll/>
+    <ShowPoint point="0 0 0 0 0 0"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="9" len="1 1"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 2 1 2 1 2"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <SymmetryAxisChange start="0 0 0 0 0 0" end="1 2 1 2 1 2"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 2 1 2 1 2"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="1 2 1 2 1 2"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation point="3 5 1 2 6 9"/>
+    <SelectManifestation startSegment="3 5 1 2 6 9" endSegment="4 7 1 1 5 8"/>
+    <SelectManifestation point="4 7 1 1 5 8"/>
+    <SelectManifestation startSegment="4 7 1 1 5 8" endSegment="4 7 3 5 5 8"/>
+    <SelectManifestation startSegment="3 5 1 2 6 9" endSegment="4 7 3 5 5 8"/>
+    <SelectManifestation startSegment="3 5 1 2 6 9" endSegment="4 7 3 5 5 8"/>
+    <SelectManifestation startSegment="4 7 1 1 5 8" endSegment="4 7 3 5 5 8"/>
+    <SelectManifestation startSegment="3 5 1 2 6 9" endSegment="1 2 2 3 7 11"/>
+    <SelectManifestation startSegment="4 7 1 1 5 8" endSegment="6 10 0 0 4 6"/>
+    <SelectManifestation startSegment="4 7 -1 -1 5 8" endSegment="6 10 0 0 4 6"/>
+    <SelectManifestation point="4 7 -1 -1 5 8"/>
+    <SelectManifestation point="6 10 0 0 4 6"/>
+    <SelectManifestation startSegment="4 7 1 1 5 8" endSegment="4 7 -1 -1 5 8"/>
+    <SelectManifestation startSegment="3 5 -1 0 4 7" endSegment="4 7 -1 -1 5 8"/>
+    <SelectManifestation startSegment="2 4 0 0 6 10" endSegment="3 5 1 2 6 9"/>
+    <SelectManifestation startSegment="3 4 0 1 5 7" endSegment="3 5 1 2 6 9"/>
+    <SelectManifestation startSegment="3 5 1 0 4 7" endSegment="4 7 1 1 5 8"/>
+    <SelectManifestation startSegment="2 4 0 0 6 10" endSegment="1 2 2 3 7 11"/>
+    <SelectManifestation point="1 2 2 3 7 11"/>
+    <SelectManifestation startSegment="3 5 -1 -2 6 9" endSegment="2 4 0 0 6 10"/>
+    <SelectManifestation startSegment="3 4 0 -1 5 7" endSegment="3 5 -1 -2 6 9"/>
+    <SelectManifestation point="3 5 -1 -2 6 9"/>
+    <SelectManifestation startSegment="4 7 -1 -1 5 8" endSegment="3 5 -1 -2 6 9"/>
+    <SelectManifestation point="2 4 0 0 6 10"/>
+    <SelectManifestation startSegment="2 4 0 0 4 8" endSegment="2 4 0 0 6 10"/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="4 7 3 5 5 8"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation point="1 2 -2 -3 7 11"/>
+    <SelectManifestation point="4 7 -3 -5 5 8"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Hide/>
+    <StrutCreation anchor="3 5 -1 -2 6 9" index="37" len="4 6"/>
+    <StrutCreation anchor="1 2 2 3 7 11" index="21" len="6 10"/>
+    <StrutCreation anchor="6 10 0 0 4 6" index="40" len="6 10"/>
+    <BeginBlock/>
+    <SelectManifestation point="4 7 -3 -5 9 14"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <AxialSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="7 11 1 2 2 3" index="40" len="2 4"/>
+    <SelectManifestation startSegment="7 11 1 2 2 3" endSegment="6 10 0 0 4 6"/>
+    <AxialSymmetry/>
+    <DeselectAll/>
+  </EditHistory>
+  <notes>
+    <page title="osculating star tangle">
+      <ViewModel near="0.3320117236973602" far="265.609375" width="59.76210937500001" distance="132.8046875" stereoAngle="0.0"
+      parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.22589579896995018" y="-0.050625498675346964" z="0.9728351077606107"/>
+        <LookDirection x="-0.9628129917545997" y="-0.16352623014707343" z="0.21505886394762086"/>
+      </ViewModel>
+      <content xml:space="preserve">This model is connected only by the osculating pentagons at the tips of the green struts; it is actually six unconnected blue pentagrams, each with its attendant green antennae.
+
+I believe the green parts of the model are  a subset of a connected model that Brian Hall has already discovered.</content>
+    </page>
+  </notes>
+</vzome:vZome>

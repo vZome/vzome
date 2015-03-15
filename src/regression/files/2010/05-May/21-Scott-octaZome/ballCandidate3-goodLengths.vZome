@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" version="3.0 beta 76" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
+  <Viewing>
+    <ViewModel near="0.2886370892619652" far="230.9096679687501" width="51.95467529296877" distance="115.454833984375"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.5960311460386343" y="-0.34317420174512037" z="0.7259327380746076"/>
+      <LookDirection x="-0.37290677903367403" y="-0.9189628290951564" z="-0.12824918281281406"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors" single="true">
+    <Direction name="blue" available="true" snap="true" render="true" color="0,160,228">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" render="true" color="175,0,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="orange" render="true" color="220,76,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="purple" render="true" color="108,0,198">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="black" render="true" color="30,30,30">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="lavender" render="true" color="175,135,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="olive" render="true" color="100,113,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="maroon" render="true" color="117,0,50">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="rose" render="true" color="255,51,143">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="navy" available="true" build="true" render="true" color="0,0,153">
+      <LengthModel scale="5" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="turquoise" render="true" color="18,205,148">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="coral" render="true" color="255,126,106">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sulfur" render="true" color="230,245,62">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sand" render="true" color="154,117,74">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="apple" render="true" color="116,195,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="cinnamon" render="true" color="136,37,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="spruce" render="true" color="18,73,48">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="12 -8 -2 2 -2 2" name="43" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="40 -24 -20 12 -20 12" name="44" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-12 8 4 -2 4 -2" name="45" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="6 -4 260 -160 -6 4" name="46" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-15 10 1 0 15 -10" name="47" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 810 -500 -38 24" name="48" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 -38 24 -810 500" name="49" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-970 600 -970 600 924 -572" name="50" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="7396 -4572 7424 -4588 -35372/5 21864/5" name="51" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="7396 -4572 -35372/5 21864/5 -7424 4588" name="52" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-3878 2396 -3468 2144 16426/5 -10152/5" name="53" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-3878 2396 16426/5 -10152/5 3468 -2144" name="54" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="31680 -19580 31680 -19580 -151176/5 93432/5" name="55" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-12958 8008 -12958 8008 57948/5 -35816/5" name="56" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-2200 1360 -2200 1360 10504/5 -6488/5" name="57" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-46 28 0 0 -34 22" name="58" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-6 3 2 -1 6 -3" name="59" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-44/361 2640/2527 -102/19 382/133 -102/19 382/133" name="60" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="165">
+    <BeginBlock/>
+    <SelectAll/>
+    <EndBlock/>
+    <BuildAnchoredSegment index="2" len="2 4"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <BuildAnchoredSegment index="0" len="2 4"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="yellow" index="9" len="1 1"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="yellow" index="5" len="1 1"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 4 0 0 0 0"/>
+    <SelectManifestation point="1 2 1 2 1 2"/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <SelectManifestation point="1 2 -1 -2 1 2"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="green" index="8" len="2 4"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="4 8 0 0 2 4"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="green" index="23" len="4 -2"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 4 0 0 4 8"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="green" index="38" len="4 -2"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-2 6 0 0 8 6"/>
+    <SelectManifestation point="8 6 0 0 -2 6"/>
+    <SelectManifestation point="3 6 -1 -2 3 6"/>
+    <SelectManifestation point="3 6 1 2 3 6"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </TetrahedralSymmetry>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="navy" index="2" len="2 3"/>
+    <SelectManifestation point="5 8 0 0 4 7"/>
+    <Symmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-2 6 0 0 8 6"/>
+    <SelectManifestation point="0 0 -2 6 8 6"/>
+    <SelectManifestation point="0 0 -2 6 8 6"/>
+    <DeselectAll/>
+    <SelectManifestation point="-2 6 0 0 8 6"/>
+    <SelectManifestation point="0 0 -2 6 8 6"/>
+    <SelectManifestation point="0 0 -2 6 8 6"/>
+    <SelectManifestation point="0 0 -2 6 8 6"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <Symmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 -2 6 8 6"/>
+    <SelectManifestation point="1 2 3 6 3 6"/>
+    <DeselectAll/>
+    <SelectManifestation point="-1 -2 3 6 3 6"/>
+    <SelectManifestation point="-3 -6 3 6 1 2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <Symmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation point="2 -6 0 0 8 6"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="1 2 -1 -2 1 2" endSegment="3 6 -1 -2 3 6"/>
+    <DeselectAll/>
+    <SelectManifestation point="2 3 -1 -2 6 10"/>
+    <SelectManifestation point="2 3 1 2 6 10"/>
+    <SelectManifestation point="-2 -3 1 2 6 10"/>
+    <SelectManifestation point="-2 -3 -1 -2 6 10"/>
+    <SelectManifestation point="-2 -3 -1 -2 6 10"/>
+    <EndBlock/>
+    <Polygon/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 -6 0 0 8 6"/>
+    <LinePlaneIntersect/>
+    <Symmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Symmetry>
+    <GroupSelection/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 54/19 80/19 6 10"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation point="-3 -6 1 2 3 6"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-2 -3 5 8 4 6"/>
+    <SelectManifestation point="-5 -8 4 6 2 3"/>
+    <SelectManifestation point="-4 -6 2 3 5 8"/>
+    <EndBlock/>
+    <Polygon/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-3 -6 1 2 3 6"/>
+    <LinePlaneIntersect/>
+    <Symmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Symmetry>
+    <GroupSelection/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-11/7 -17/7 33/7 51/7 33/7 51/7"/>
+    <EndBlock/>
+    <GroupSelection grouping="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-11/7 -17/7 33/7 51/7 33/7 51/7"/>
+    <SelectManifestation point="-33/7 -51/7 33/7 51/7 11/7 17/7"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <Symmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-6 -10 54/19 80/19 0 0"/>
+    <EndBlock/>
+    <GroupSelection grouping="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-6 -10 54/19 80/19 0 0"/>
+    <SelectManifestation point="-6 -10 0 0 54/19 80/19"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <Symmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-33/7 -51/7 33/7 51/7 11/7 17/7"/>
+    <SelectManifestation point="-6 -10 54/19 80/19 0 0"/>
+    <SelectManifestation point="-6 -10 0 0 54/19 80/19"/>
+    <SelectManifestation point="-33/7 -51/7 11/7 17/7 33/7 51/7"/>
+    <EndBlock/>
+    <Polygon/>
+    <Symmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1 2 6 10 2 3"/>
+    <SelectManifestation point="1 2 6 10 -2 -3"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="54/19 80/19 6 10 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="54/19 80/19 6 10 0 0" endSegment="0 0 6 10 54/19 80/19"/>
+    <SelectManifestation startSegment="54/19 80/19 6 10 0 0" endSegment="0 0 6 10 54/19 80/19"/>
+    <SelectManifestation point="1 2 6 10 2 3"/>
+    <EndBlock/>
+    <Symmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-1 -2 6 10 2 3"/>
+    <EndBlock/>
+    <Symmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Symmetry>
+    <DeselectAll/>
+  </EditHistory>
+  <notes>
+    <page title="How to save notes">
+      <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">You can create as many pages as you like, using the '+' buttons in either direction.
+
+For now, only the text and the view of the model are different from one page to the next.  In the next update, each page will allow a different model entirely.
+
+Eventually there will be a 'vZome Player' application that will display the pages.
+</content>
+    </page>
+  </notes>
+</vzome:vZome>

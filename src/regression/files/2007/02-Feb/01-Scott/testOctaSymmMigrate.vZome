@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" xmlns:vzome="http://tns.vorthmann.org/vZome/2.0.3/">
+   <editHistory editNumber="2">
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="8"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.group">
+            <Symmetry name="octahedral"/>
+         </attr>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="3phi+2" y="(phi+1)/-1" z="2phi+1" w="0"/>
+         </segment>
+         <point x="3phi+2" y="(phi+1)/-1" z="2phi+1" w="0"/>
+      </CommandSymmetry>
+   </editHistory>
+</vzome:vZome>

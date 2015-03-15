@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" edition="vZome" version="4.0 beta 83" revision="863" xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/">
+  <sceneModel ambientLight="45,45,45" background="12,14,5">
+    <directionalLight x="1.0" y="-1.0" z="-1.0" color="236,236,236"/>
+    <directionalLight x="-1.0" y="0.0" z="0.0" color="236,236,236"/>
+    <directionalLight x="0.0" y="0.0" z="-1.0" color="30,30,30"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel near="0.4305959765701886" far="344.476776123047" width="77.5072746276856" distance="172.23838806152344"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.14019238854008534" y="-0.14161397404721587" z="0.9799446803518821"/>
+      <LookDirection x="0.9500538589241219" y="0.2979512574314904" z="-0.09285856631660051"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors" single="true">
+    <Direction name="blue" available="true" snap="true" render="true" color="0,160,228">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" render="true" color="175,0,0">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="orange" available="true" render="true" color="220,76,0">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="purple" render="true" color="108,0,198">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="black" render="true" color="30,30,30">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="lavender" render="true" color="175,135,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="olive" render="true" color="100,113,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="maroon" render="true" color="117,0,50">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="rose" render="true" color="255,51,143">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="navy" render="true" color="0,0,153">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="turquoise" render="true" color="18,205,148">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="coral" render="true" color="255,126,106">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sulfur" render="true" color="230,245,62">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sand" render="true" color="154,117,74">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="apple" render="true" color="116,195,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="cinnamon" render="true" color="136,37,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="spruce" render="true" color="18,73,48">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-19 11 17 -10 -28 17" name="0" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-22 14 942 -582 40 -24" name="1" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="22 -14 -40 24 942 -582" name="2" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-19 11 17 -10 -28 17" name="0" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-22 14 942 -582 40 -24" name="1" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="22 -14 -40 24 942 -582" name="2" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-286 176 286 -176 208 -128" name="9" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="104 -64 -390 240 182 -112" name="10" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-104 64 104 -64 -286 176" name="11" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="247 -152 143 -88 143 -88" name="12" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="24 -15 -88 55 -152 95" name="13" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="104 -64 182 -112 390 -240" name="14" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-152 95 88 -55 -24 15" name="15" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="24 -15 88 -55 -88 55" name="16" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-104 64 -390 240 -104 64" name="17" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="64 -40 -112 70 -64 40" name="18" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 -286 176 -104 64" name="19" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="208 -128 0 0 286 -176" name="20" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 208 -128 -286 176" name="21" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-286 176 0 0 104 -64" name="22" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 4 -2 -8 4" name="33" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="2 -1 -6 3 6 -3" name="34" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="12 -8 18 -12 6 -4" name="35" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="18 -12 12 -8 6 -4" name="36" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="9 -6 15 -10 3 -2" name="37" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="15 -10 9 -6 3 -2" name="38" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-19 11 17 -10 -28 17" name="0" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-22 14 942 -582 40 -24" name="1" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="22 -14 -40 24 942 -582" name="2" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-1632 1008 1224 -756 1224 -756" name="42" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="816 -504 -2040 1260 816 -504" name="43" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="378 -234 -378 234 882 -546" name="44" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-756 468 -504 312 -504 312" name="45" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1224 -756 1632 -1008 0 0" name="46" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="126 -78 -378 234 -882 546" name="47" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="408 -252 816 -504 2040 -1260" name="48" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-882 546 378 -234 -126 78" name="49" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="504 -312 -756 468 0 0" name="50" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-504 312 0 0 756 -468" name="51" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-408 252 -2040 1260 -816 504" name="52" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="504 -312 -504 312 -252 156" name="53" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1224 -756 0 0 1632 -1008" name="54" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-5 4 -1 0 4 -2" name="65" available="true" build="true" render="true" color="255,255,255">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1 0 5 -4 -4 2" name="66" available="true" render="true" color="255,255,255">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="84">
+    <StrutCreation anchor="0 0 0 0 0 0" index="0" len="2 3"/>
+    <StrutCreation anchor="2 3 0 0 0 0" index="16" len="2 3"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 3 0 0 0 0"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Hide/>
+    <StrutCreation anchor="2 3 -2 -3 0 0" index="1" len="4 6"/>
+    <StrutCreation anchor="2 3 2 3 0 0" index="45" len="4 6"/>
+    <StrutCreation anchor="-2 -3 2 3 0 0" index="16" len="4 6"/>
+    <StrutCreation anchor="-2 -3 -2 -3 0 0" index="0" len="4 6"/>
+    <StrutCreation anchor="2 3 2 3 0 0" dir="red" index="2" len="2 3"/>
+    <StrutCreation anchor="2 3 -2 -3 0 0" dir="red" index="2" len="2 3"/>
+    <StrutCreation anchor="-2 -3 -2 -3 0 0" dir="red" index="32" len="2 3"/>
+    <StrutCreation anchor="-2 -3 2 3 0 0" dir="red" index="32" len="2 3"/>
+    <StrutCreation anchor="4 6 2 3 3 5" index="16" len="4 6"/>
+    <StrutCreation anchor="-4 -6 2 3 3 5" index="16" len="4 6"/>
+    <StrutCreation anchor="-4 -6 2 3 3 5" dir="red" index="2" len="2 3"/>
+    <StrutCreation anchor="-2 -3 2 3 6 10" index="0" len="4 6"/>
+    <StrutCreation anchor="4 6 2 3 3 5" dir="red" index="32" len="2 3"/>
+    <StrutCreation anchor="2 3 2 3 6 10" index="16" len="4 6"/>
+    <StrutCreation anchor="4 6 -2 -3 3 5" dir="red" index="32" len="2 3"/>
+    <StrutCreation anchor="-4 -6 -2 -3 3 5" dir="red" index="2" len="2 3"/>
+    <StrutCreation anchor="-2 -3 -2 -3 6 10" index="0" len="4 6"/>
+    <StrutCreation anchor="-2 -3 2 3 6 10" index="16" len="4 6"/>
+    <StrutCreation anchor="-2 -3 2 3 0 0" dir="orange" index="52" len="2 3"/>
+    <StrutCreation anchor="2 3 2 3 0 0" dir="orange" index="52" len="2 3"/>
+    <StrutCreation anchor="2 3 4 6 -3 -5" dir="orange" index="22" len="2 3"/>
+    <StrutCreation anchor="-2 -3 4 6 -3 -5" dir="orange" index="22" len="2 3"/>
+    <StrutCreation anchor="-2 -3 -2 -3 0 0" dir="orange" index="22" len="2 3"/>
+    <StrutCreation anchor="2 3 -2 -3 0 0" dir="orange" index="22" len="2 3"/>
+    <StrutCreation anchor="2 3 -4 -6 -3 -5" dir="orange" index="52" len="2 3"/>
+    <StrutCreation anchor="-2 -3 -4 -6 -3 -5" dir="orange" index="52" len="2 3"/>
+    <StrutCreation anchor="-2 -3 4 6 -3 -5" index="0" len="4 6"/>
+    <StrutCreation anchor="-2 -3 2 3 -6 -10" index="0" len="4 6"/>
+    <StrutCreation anchor="-2 -3 2 3 -6 -10" index="16" len="4 6"/>
+    <StrutCreation anchor="-2 -3 -2 -3 -6 -10" index="0" len="4 6"/>
+    <StrutCreation anchor="2 3 2 3 -6 -10" index="16" len="4 6"/>
+    <StrutCreation anchor="2 3 -4 -6 -3 -5" index="45" len="4 6"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 3 -4 -6 -3 -5"/>
+    <SelectManifestation point="2 3 -2 -3 0 0"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="2 3 -4 -6 -3 -5" dir="red" index="2" len="5 8"/>
+    <StrutCreation anchor="2 3 -4 -6 -3 -5" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="3 5 -4 -6 -1 -2" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="4 7 -4 -6 1 1" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="5 9 -4 -6 3 4" dir="red" index="2" len="1 2"/>
+    <BeginBlock/>
+    <SelectManifestation point="7 11 -4 -6 5 8"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation point="4 6 -2 -3 3 5"/>
+    <SelectManifestation point="6 11 -4 -6 5 7"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <DeselectAll/>
+    <StrutCreation anchor="4 6 -2 -3 3 5" dir="orange" index="22" len="1 2"/>
+    <StrutCreation anchor="4 6 -3 -5 1 2" dir="orange" index="22" len="1 2"/>
+    <StrutCreation anchor="4 6 -4 -7 -1 -1" dir="orange" index="22" len="1 2"/>
+    <StrutCreation anchor="4 6 -5 -9 -3 -4" dir="orange" index="22" len="1 2"/>
+    <BeginBlock/>
+    <SelectManifestation point="6 11 -4 -6 5 7"/>
+    <SelectManifestation point="4 6 -6 -11 -5 -7"/>
+    <SelectManifestation point="2 3 -4 -6 -3 -5"/>
+    <SelectManifestation point="2 3 -2 -3 0 0"/>
+    <SelectManifestation point="4 6 -2 -3 3 5"/>
+    <DeselectAll/>
+    <SelectManifestation point="2 3 -4 -6 -3 -5"/>
+    <SelectManifestation point="4 6 -6 -11 -5 -7"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <DeselectAll/>
+    <StrutCreation anchor="4 6 -6 -11 -5 -7" dir="65" index="0" len="2 3"/>
+    <StrutCreation anchor="6 11 -4 -6 5 7" dir="66" index="0" len="2 3"/>
+    <StrutCreation anchor="6 11 -8 -14 -3 -5" dir="red" index="2" len="2 3"/>
+    <StrutCreation anchor="8 14 -6 -11 3 5" dir="orange" index="22" len="2 3"/>
+    <StrutCreation anchor="4 6 2 3 3 5" dir="65" index="49" len="2 3"/>
+    <StrutCreation anchor="6 11 -4 -6 5 7" dir="65" index="49" len="2 3"/>
+    <StrutCreation anchor="17/2 15 -1 -5/2 11/2 19/2" index="1" len="4 6"/>
+    <StrutCreation anchor="17/2 15 3 7/2 11/2 19/2" dir="65" index="0" sense="minus" len="2 3"/>
+  </EditHistory>
+  <notes/>
+</vzome:vZome>

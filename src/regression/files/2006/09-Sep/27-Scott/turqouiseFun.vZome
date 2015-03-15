@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" xmlns:vzome="http://tns.vorthmann.org/vZome/2.1.0/">
+   <EditHistory editNumber="19">
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="8"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+      </StrutCreation>
+      <SymmetryAxisChange>
+         <attr name="old"/>
+         <attr name="new">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+      </SymmetryAxisChange>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="3phi+2" y="0" z="phi+1" w="0"/>
+         </segment>
+         <point x="3phi+2" y="0" z="phi+1" w="0"/>
+      </CommandHide>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="8"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="6phi+4"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="6phi+4" y="0" z="6phi+4" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="turquoise" index="44" sense="minus"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+      </StrutCreation>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <point x="6phi+4" y="0" z="6phi+4" w="0"/>
+         <point x="11phi+7" y="4phi+2" z="-2phi-1" w="0"/>
+         <segment>
+            <start x="6phi+4" y="0" z="6phi+4" w="0"/>
+            <end x="11phi+7" y="4phi+2" z="-2phi-1" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <point x="-phi-1" y="8phi+5" z="-3phi-2" w="0"/>
+         <point x="-2phi-1" y="11phi+7" z="-4phi-2" w="0"/>
+      </CommandJoinPoints>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="-phi-1" y="8phi+5" z="-3phi-2" w="0"/>
+            <end x="-2phi-1" y="11phi+7" z="-4phi-2" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <point x="-phi-1" y="8phi+5" z="-3phi-2" w="0"/>
+         <point x="phi+1" y="8phi+5" z="-3phi-2" w="0"/>
+      </CommandJoinPoints>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="-phi-1" y="8phi+5" z="-3phi-2" w="0"/>
+            <end x="phi+1" y="8phi+5" z="-3phi-2" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <point x="-2phi-1" y="11phi+7" z="-4phi-2" w="0"/>
+         <point x="2phi+1" y="11phi+7" z="-4phi-2" w="0"/>
+      </CommandJoinPoints>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="-2phi-1" y="11phi+7" z="-4phi-2" w="0"/>
+            <end x="2phi+1" y="11phi+7" z="-4phi-2" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <point x="-2phi-1" y="7phi+4" z="-5phi-3" w="0"/>
+         <point x="-phi-1" y="8phi+5" z="-3phi-2" w="0"/>
+         <point x="phi+1" y="8phi+5" z="-3phi-2" w="0"/>
+         <point x="2phi+1" y="7phi+4" z="-5phi-3" w="0"/>
+         <point x="0" y="6phi+4" z="-6phi-4" w="0"/>
+      </CommandPolygon>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <polygon>
+            <vertex x="-2phi-1" y="7phi+4" z="-5phi-3" w="0"/>
+            <vertex x="-phi-1" y="8phi+5" z="-3phi-2" w="0"/>
+            <vertex x="phi+1" y="8phi+5" z="-3phi-2" w="0"/>
+            <vertex x="2phi+1" y="7phi+4" z="-5phi-3" w="0"/>
+            <vertex x="0" y="6phi+4" z="-6phi-4" w="0"/>
+         </polygon>
+      </CommandSymmetry>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <point x="-3phi-2" y="9phi+6" z="-7phi-4" w="0"/>
+         <point x="-2phi-1" y="11phi+7" z="-4phi-2" w="0"/>
+         <point x="2phi+1" y="11phi+7" z="-4phi-2" w="0"/>
+         <point x="3phi+2" y="9phi+6" z="-7phi-4" w="0"/>
+         <point x="0" y="8phi+5" z="-9phi-5" w="0"/>
+      </CommandPolygon>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <polygon>
+            <vertex x="-3phi-2" y="9phi+6" z="-7phi-4" w="0"/>
+            <vertex x="-2phi-1" y="11phi+7" z="-4phi-2" w="0"/>
+            <vertex x="2phi+1" y="11phi+7" z="-4phi-2" w="0"/>
+            <vertex x="3phi+2" y="9phi+6" z="-7phi-4" w="0"/>
+            <vertex x="0" y="8phi+5" z="-9phi-5" w="0"/>
+         </polygon>
+      </CommandSymmetry>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <point x="-9phi-6" y="7phi+4" z="-3phi-2" w="0"/>
+         <point x="-7phi-4" y="5phi+3" z="-2phi-1" w="0"/>
+         <point x="-6phi-4" y="6phi+4" z="0" w="0"/>
+         <point x="-8phi-5" y="9phi+5" z="0" w="0"/>
+      </CommandPolygon>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <polygon>
+            <vertex x="-9phi-6" y="7phi+4" z="-3phi-2" w="0"/>
+            <vertex x="-7phi-4" y="5phi+3" z="-2phi-1" w="0"/>
+            <vertex x="-6phi-4" y="6phi+4" z="0" w="0"/>
+            <vertex x="-8phi-5" y="9phi+5" z="0" w="0"/>
+         </polygon>
+      </CommandSymmetry>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="3phi+2" y="0" z="phi+1" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="6phi+4" y="0" z="6phi+4" w="0"/>
+         </segment>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandHide>
+   </EditHistory>
+</vzome:vZome>

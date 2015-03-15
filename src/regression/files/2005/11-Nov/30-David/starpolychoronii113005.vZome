@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome xmlns:vzome="http://tns.vorthmann.org/vZome/2.0.2/">
+   <editHistory editNumber="6">
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="11"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="10phi+6"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="11"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="6phi+4"/>
+         </attr>
+         <point x="8phi+5" y="3phi+2" z="5phi+3" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="11"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="10phi+6"/>
+         </attr>
+         <point x="13phi+8" y="5phi+3" z="8phi+5" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandQuaternionSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="right.symmetry.group">
+            <QuaternionicSymmetry name="H_4"/>
+         </attr>
+         <attr name="symmetry.group">
+            <QuaternionicSymmetry name="H_4"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="21phi+13" z="-3phi-2" w="8phi+5"/>
+               <end x="0" y="21phi+13" z="3phi+2" w="-8phi-5"/>
+            </segment>
+         </attr>
+         <point x="21phi+13" y="8phi+5" z="13phi+8" w="0"/>
+      </CommandQuaternionSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="21phi+13" z="-3phi-2" w="8phi+5"/>
+               <end x="0" y="21phi+13" z="3phi+2" w="-8phi-5"/>
+            </segment>
+         </attr>
+         <point x="21phi+13" y="-8phi-5" z="-13phi-8" w="0"/>
+         <point x="0" y="26phi+16" z="0" w="0"/>
+      </CommandJoinPoints>
+      <CommandQuaternionSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="right.symmetry.group">
+            <QuaternionicSymmetry name="H_4"/>
+         </attr>
+         <attr name="symmetry.group">
+            <QuaternionicSymmetry name="H_4"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="21phi+13" z="-3phi-2" w="8phi+5"/>
+               <end x="0" y="21phi+13" z="3phi+2" w="-8phi-5"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="21phi+13" y="-8phi-5" z="-13phi-8" w="0"/>
+            <end x="0" y="26phi+16" z="0" w="0"/>
+         </segment>
+      </CommandQuaternionSymmetry>
+   </editHistory>
+</vzome:vZome>

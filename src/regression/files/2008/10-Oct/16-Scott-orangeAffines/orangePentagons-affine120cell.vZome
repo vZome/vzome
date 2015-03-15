@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" version="3.0 beta 2" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
+  <Viewing>
+    <ViewModel near="0.43059597657018944" far="344.47677612304767" width="77.50727462768555" distance="172.23838806152344"
+    stereoAngle="0.0" parallel="true">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.8235357808097064" y="-0.26139402322164235" z="-0.5034500793029583"/>
+      <LookDirection x="0.5638433872951244" y="0.2798728570654067" z="0.7770146835688604"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction name="blue" available="true" snap="true" render="true" color="0,118,149">
+      <LengthModel scale="4" taus="0" ones="1" divisor="2"/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" render="true" color="175,0,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="4" taus="0" ones="1" divisor="2"/>
+    </Direction>
+    <Direction name="orange" available="true" render="true" color="220,76,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="purple" available="true" build="true" render="true" color="108,0,198">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="black" available="true" render="true" color="30,30,30">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="lavender" available="true" render="true" color="175,135,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="olive" available="true" render="true" color="100,113,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="maroon" available="true" render="true" color="117,0,50">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="rose" available="true" render="true" color="255,51,143">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="navy" available="true" render="true" color="0,0,153">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="turquoise" available="true" render="true" color="18,205,148">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="coral" available="true" render="true" color="255,126,106">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sulfur" available="true" render="true" color="230,245,62">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sand" available="true" render="true" color="154,117,74">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="apple" available="true" render="true" color="116,195,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="cinnamon" available="true" render="true" color="136,37,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="spruce" available="true" render="true" color="18,73,48">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="411">
+    <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="orange" index="23" len="1 2"/>
+    <StrutCreation anchor="2 3 0 0 -1 -2" dir="orange" index="28" len="1 2"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="orange" index="43" len="1 2"/>
+    <StrutCreation anchor="-1/2 -1 -2 -7/2 1/2 1/2" dir="orange" index="24" len="1 2"/>
+    <StrutCreation anchor="1 3/2 -7/2 -11/2 -1/2 -1" dir="orange" index="3" len="1 2"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 2 0 0 2 3"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="1 2 0 0 2 3"/>
+    <EndBlock/>
+    <Hide/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="2" len="2 3"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 0 2 3"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-1/2 -1 -2 -7/2 1/2 1/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="-1/2 -1 -2 -7/2 1/2 1/2" endSegment="1 3/2 -7/2 -11/2 -1/2 -1"/>
+    <SelectManifestation startSegment="-1/2 -1 -2 -7/2 1/2 1/2" endSegment="-1 -3/2 -7/2 -11/2 5/2 4"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 0 2 3"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 3 0 0 -1 -2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="0 0 0 0 2 3" endSegment="2 3 0 0 2 3"/>
+    <SelectManifestation startSegment="0 0 0 0 2 3" endSegment="-1/2 -1 -2 -7/2 7/2 11/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="-1/2 -1 -2 -7/2 7/2 11/2" endSegment="1 3/2 -7/2 -11/2 9/2 7"/>
+    <SelectManifestation startSegment="-1/2 -1 -2 -7/2 7/2 11/2" endSegment="-1 -3/2 -7/2 -11/2 5/2 4"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="5/2 4 -2 -7/2 7/2 11/2" endSegment="1 3/2 -7/2 -11/2 9/2 7"/>
+    <SelectManifestation startSegment="1 3/2 -7/2 -11/2 9/2 7" endSegment="3/2 5/2 -11/2 -9 4 13/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="2 3 0 0 2 3" endSegment="3 5 0 0 0 0"/>
+    <SelectManifestation startSegment="2 3 0 0 2 3" endSegment="5/2 4 -2 -7/2 7/2 11/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="5/2 4 -2 -7/2 7/2 11/2" endSegment="4 13/2 -7/2 -11/2 5/2 4"/>
+    <SelectManifestation startSegment="5/2 4 -2 -7/2 7/2 11/2" endSegment="1 3/2 -7/2 -11/2 9/2 7"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="3/2 5/2 -11/2 -9 4 13/2" endSegment="1/2 1/2 -11/2 -9 3 9/2"/>
+    <SelectManifestation startSegment="3/2 5/2 -11/2 -9 1 3/2" endSegment="1/2 1/2 -11/2 -9 3 9/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="9/2 7 -2 -7/2 1/2 1/2" endSegment="4 13/2 -7/2 -11/2 5/2 4"/>
+    <SelectManifestation startSegment="4 13/2 -7/2 -11/2 5/2 4" endSegment="7/2 11/2 -11/2 -9 3 9/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <StrutCreation anchor="7/2 11/2 -11/2 -9 3 9/2" index="47" len="2 3"/>
+    <StrutCreation anchor="7/2 11/2 -11/2 -9 1 3/2" index="45" len="2 3"/>
+    <StrutCreation anchor="9/2 7 -2 -7/2 1/2 1/2" dir="green" index="19" len="1 2"/>
+    <StrutCreation anchor="5/2 4 -2 -7/2 -3/2 -5/2" dir="orange" index="18" len="1 2"/>
+    <StrutCreation anchor="4 13/2 -7/2 -11/2 -1/2 -1" dir="green" index="40" len="2 3"/>
+    <StrutCreation anchor="-1/2 -1 -2 -7/2 1/2 1/2" index="56" len="2 3"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="-1/2 -1 -2 -7/2 1/2 1/2" endSegment="-2 -7/2 -3/2 -5/2 -1/2 -1"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-1/2 -1 -2 -7/2 1/2 1/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="-1/2 -1 -2 -7/2 1/2 1/2" endSegment="-2 -7/2 -3/2 -5/2 -1/2 -1"/>
+    <SelectManifestation startSegment="-1/2 -1 -2 -7/2 1/2 1/2" endSegment="1 3/2 -7/2 -11/2 -1/2 -1"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="-2 -7/2 -3/2 -5/2 -1/2 -1" endSegment="-3/2 -5/2 -5/2 -4 -2 -7/2"/>
+    <SelectManifestation startSegment="-2 -7/2 -3/2 -5/2 -1/2 -1" endSegment="-5/2 -4 1 3/2 -3/2 -5/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <DeselectAll/>
+    <StrutCreation anchor="-2 -7/2 3/2 5/2 -7/2 -6" dir="orange" index="3" len="1 2"/>
+    <StrutCreation anchor="-1/2 -1 3 9/2 -9/2 -15/2" dir="orange" index="24" len="1 2"/>
+    <StrutCreation anchor="-3/2 -5/2 -1/2 -1 -4 -13/2" dir="orange" index="23" len="1 2"/>
+    <StrutCreation anchor="1/2 1/2 -1/2 -1 -5 -17/2" dir="orange" index="46" len="1 2"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="-5/2 -4 1 3/2 -3/2 -5/2" endSegment="-2 -7/2 3/2 5/2 -7/2 -6"/>
+    <SelectManifestation startSegment="-2 -7/2 3/2 5/2 -7/2 -6" endSegment="-1/2 -1 3 9/2 -9/2 -15/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="-5/2 -4 1 3/2 -3/2 -5/2" endSegment="-1 -2 2 3 -1 -2"/>
+    <SelectManifestation startSegment="-5/2 -4 1 3/2 -3/2 -5/2" endSegment="-2 -7/2 3/2 5/2 -7/2 -6"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="-1 -2 2 3 -1 -2" endSegment="0 0 3 5 -3 -5"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-1 -2 2 3 -1 -2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 3 0 0 -1 -2"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-1 -2 2 3 -1 -2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="0 0 3 5 -3 -5" endSegment="-1/2 -1 3 9/2 -9/2 -15/2"/>
+    <SelectManifestation startSegment="2 3 2 3 -3 -5" endSegment="0 0 3 5 -3 -5"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="2 3 2 3 -3 -5" endSegment="0 0 3 5 -3 -5"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="2 3 2 3 -3 -5" endSegment="0 0 3 5 -3 -5"/>
+    <SelectManifestation startSegment="0 0 3 5 -3 -5" endSegment="-1/2 -1 3 9/2 -9/2 -15/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="-1/2 -1 3 9/2 -9/2 -15/2" endSegment="1 3/2 3/2 5/2 -11/2 -9"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="0 0 3 5 -3 -5" endSegment="-1/2 -1 3 9/2 -9/2 -15/2"/>
+    <SelectManifestation startSegment="-1/2 -1 3 9/2 -9/2 -15/2" endSegment="1 3/2 3/2 5/2 -11/2 -9"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="-3/2 -5/2 -5/2 -4 -2 -7/2" endSegment="-3/2 -5/2 -1/2 -1 -4 -13/2"/>
+    <SelectManifestation startSegment="-3/2 -5/2 -5/2 -4 -2 -7/2" endSegment="1/2 1/2 -7/2 -6 -2 -7/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="1/2 1/2 -7/2 -6 -2 -7/2" endSegment="3/2 5/2 -5/2 -4 -4 -13/2"/>
+    <SelectManifestation startSegment="1 3/2 -7/2 -11/2 -1/2 -1" endSegment="1/2 1/2 -7/2 -6 -2 -7/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="1/2 1/2 -1/2 -1 -5 -17/2" endSegment="3/2 5/2 -5/2 -4 -4 -13/2"/>
+    <SelectManifestation startSegment="1/2 1/2 -1/2 -1 -5 -17/2" endSegment="1 3/2 3/2 5/2 -11/2 -9"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <StrutCreation anchor="2 3 2 3 -3 -5" index="25" len="2 3"/>
+    <StrutCreation anchor="5/2 4 1 3/2 -9/2 -15/2" dir="green" index="31" len="2 3"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 3/2 3/2 5/2 -11/2 -9"/>
+    <SelectManifestation point="5/2 4 1 3/2 -9/2 -15/2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="3 9/2 -3/2 -5/2 -7/2 -6"/>
+    <SelectManifestation point="3/2 5/2 -5/2 -4 -4 -13/2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="3 9/2 -3/2 -5/2 -7/2 -6"/>
+    <SelectManifestation point="5/2 4 -2 -7/2 -3/2 -5/2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="5/2 4 -2 -7/2 -3/2 -5/2" endSegment="4 13/2 -7/2 -11/2 -1/2 -1"/>
+    <SelectManifestation startSegment="3 9/2 -3/2 -5/2 -7/2 -6" endSegment="5/2 4 -2 -7/2 -3/2 -5/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation point="3 9/2 -3/2 -5/2 -7/2 -6"/>
+    <SelectManifestation point="4 13/2 -7/2 -11/2 -1/2 -1"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="3 9/2 -3/2 -5/2 -7/2 -6" dir="orange" index="18" len="2 3"/>
+    <StrutCreation anchor="4 13/2 -7/2 -11/2 -1/2 -1" dir="orange" index="17" len="2 3"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="4 13/2 -7/2 -11/2 -1/2 -1" endSegment="9/2 15/2 -5/2 -4 -4 -13/2"/>
+    <SelectManifestation startSegment="3 9/2 -3/2 -5/2 -7/2 -6" endSegment="11/2 17/2 -7/2 -6 -2 -7/2"/>
+    <EndBlock/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation point="5/2 4 -2 -7/2 -3/2 -5/2"/>
+    <SelectManifestation point="4 13/2 -7/2 -11/2 -1/2 -1"/>
+    <SelectManifestation point="11/2 17/2 -7/2 -6 -2 -7/2"/>
+    <SelectManifestation point="9/2 15/2 -5/2 -4 -4 -13/2"/>
+    <SelectManifestation point="3 9/2 -3/2 -5/2 -7/2 -6"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="9/2 7 -2 -7/2 1/2 1/2" endSegment="4 13/2 -7/2 -11/2 -1/2 -1"/>
+    <SelectManifestation startSegment="4 13/2 -7/2 -11/2 -1/2 -1" endSegment="11/2 17/2 -7/2 -6 -2 -7/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="9/2 7 -2 -7/2 1/2 1/2" endSegment="6 19/2 -3/2 -5/2 -1/2 -1"/>
+    <SelectManifestation startSegment="3 5 0 0 0 0" endSegment="9/2 7 -2 -7/2 1/2 1/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="2 3 0 0 -1 -2" endSegment="3 5 0 0 0 0"/>
+    <SelectManifestation startSegment="2 3 0 0 -1 -2" endSegment="2 3 2 3 -3 -5"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="3 5 0 0 0 0" endSegment="4 6 2 3 -1 -2"/>
+    <SelectManifestation startSegment="3 5 0 0 0 0" endSegment="9/2 7 -2 -7/2 1/2 1/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="4 6 2 3 -1 -2" endSegment="11/2 9 1 3/2 -3/2 -5/2"/>
+    <SelectManifestation startSegment="4 6 2 3 -1 -2" endSegment="3 5 3 5 -3 -5"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="2 3 2 3 -3 -5" endSegment="5/2 4 1 3/2 -9/2 -15/2"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="3 5 3 5 -3 -5" endSegment="9/2 7 3 9/2 -9/2 -15/2"/>
+    <SelectManifestation startSegment="2 3 2 3 -3 -5" endSegment="3 5 3 5 -3 -5"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="2 3 2 3 -3 -5" endSegment="5/2 4 1 3/2 -9/2 -15/2"/>
+    <SelectManifestation startSegment="2 3 2 3 -3 -5" endSegment="3 5 3 5 -3 -5"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="6 19/2 3/2 5/2 -7/2 -6" endSegment="9/2 7 3 9/2 -9/2 -15/2"/>
+    <SelectManifestation startSegment="4 13/2 3/2 5/2 -11/2 -9" endSegment="9/2 7 3 9/2 -9/2 -15/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="5/2 4 1 3/2 -9/2 -15/2" endSegment="4 13/2 3/2 5/2 -11/2 -9"/>
+    <SelectManifestation startSegment="5/2 4 1 3/2 -9/2 -15/2" endSegment="3 9/2 -3/2 -5/2 -7/2 -6"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="11/2 17/2 -1/2 -1 -5 -17/2" endSegment="9/2 15/2 -5/2 -4 -4 -13/2"/>
+    <SelectManifestation startSegment="11/2 17/2 -7/2 -6 -2 -7/2" endSegment="9/2 15/2 -5/2 -4 -4 -13/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="11/2 17/2 -7/2 -6 -2 -7/2" endSegment="13/2 21/2 -5/2 -4 -2 -7/2"/>
+    <SelectManifestation startSegment="11/2 17/2 -7/2 -6 -2 -7/2" endSegment="9/2 15/2 -5/2 -4 -4 -13/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="13/2 21/2 -1/2 -1 -4 -13/2"/>
+    <SelectManifestation point="6 19/2 3/2 5/2 -7/2 -6"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="9/2 7 -2 -7/2 1/2 1/2" endSegment="6 19/2 -3/2 -5/2 -1/2 -1"/>
+    <SelectManifestation startSegment="9/2 7 -2 -7/2 1/2 1/2" endSegment="4 13/2 -7/2 -11/2 5/2 4"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="5/2 4 -2 -7/2 7/2 11/2" endSegment="4 13/2 -7/2 -11/2 5/2 4"/>
+    <SelectManifestation startSegment="4 13/2 -7/2 -11/2 5/2 4" endSegment="11/2 17/2 -7/2 -6 3 9/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="4 13/2 -7/2 -11/2 5/2 4" endSegment="7/2 11/2 -11/2 -9 3 9/2"/>
+    <SelectManifestation startSegment="4 13/2 -7/2 -11/2 5/2 4" endSegment="11/2 17/2 -7/2 -6 3 9/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="7/2 11/2 -11/2 -9 3 9/2" endSegment="3/2 5/2 -11/2 -9 4 13/2"/>
+    <SelectManifestation startSegment="7/2 11/2 -11/2 -9 3 9/2" endSegment="9/2 7 -7 -23/2 7/2 11/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="9/2 7 -7 -23/2 7/2 11/2"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="9/2 7 -7 -23/2 7/2 11/2" endSegment="3 5 -8 -13 5 8"/>
+    <SelectManifestation startSegment="9/2 7 -7 -23/2 7/2 11/2" endSegment="11/2 9 -6 -19/2 7/2 11/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="11/2 9 -6 -19/2 7/2 11/2" endSegment="5 8 -6 -10 5 8"/>
+    <SelectManifestation startSegment="11/2 17/2 -7/2 -6 3 9/2" endSegment="11/2 9 -6 -19/2 7/2 11/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="3/2 2 -7 -23/2 11/2 17/2" endSegment="3 5 -8 -13 5 8"/>
+    <SelectManifestation startSegment="3 5 -8 -13 5 8" endSegment="7/2 11/2 -15/2 -12 6 19/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <StrutCreation anchor="5 8 -6 -10 5 8" dir="orange" index="1" len="1 2"/>
+    <StrutCreation anchor="7/2 11/2 -15/2 -12 6 19/2" dir="orange" index="48" len="1 2"/>
+    <StrutCreation anchor="2 3 -6 -10 7 11" dir="orange" index="46" len="1 2"/>
+    <StrutCreation anchor="9/2 7 -4 -13/2 11/2 17/2" dir="orange" index="38" len="1 2"/>
+    <BeginBlock/>
+    <SelectManifestation point="5/2 4 -4 -13/2 13/2 21/2"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="9/2 7 -4 -13/2 11/2 17/2" dir="purple" index="52" len="1 1"/>
+    <StrutCreation anchor="9/2 15/2 -5/2 -4 4 13/2" dir="purple" index="48" len="1 1"/>
+    <BeginBlock/>
+    <SelectManifestation point="9/2 15/2 -5/2 -4 4 13/2"/>
+    <SelectManifestation point="11/2 17/2 -7/2 -6 3 9/2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="3 9/2 -3/2 -5/2 9/2 7"/>
+    <SelectManifestation point="5/2 4 -2 -7/2 7/2 11/2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="1 3/2 -7/2 -11/2 9/2 7" endSegment="3/2 5/2 -11/2 -9 4 13/2"/>
+    <SelectManifestation startSegment="3/2 5/2 -11/2 -9 4 13/2" endSegment="3/2 2 -7 -23/2 11/2 17/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="3 5 -8 -13 5 8" endSegment="7/2 11/2 -15/2 -12 6 19/2"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="3/2 2 -7 -23/2 11/2 17/2" endSegment="3 5 -8 -13 5 8"/>
+    <SelectManifestation startSegment="3 5 -8 -13 5 8" endSegment="7/2 11/2 -15/2 -12 6 19/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="3 5 -8 -13 5 8" endSegment="7/2 11/2 -15/2 -12 6 19/2"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="7/2 11/2 -15/2 -12 6 19/2" endSegment="2 3 -6 -10 7 11"/>
+    <SelectManifestation startSegment="3 5 -8 -13 5 8" endSegment="7/2 11/2 -15/2 -12 6 19/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="3 5 -8 -13 5 8" endSegment="7/2 11/2 -15/2 -12 6 19/2"/>
+    <SelectManifestation startSegment="7/2 11/2 -15/2 -12 6 19/2" endSegment="2 3 -6 -10 7 11"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="3 9/2 -3/2 -5/2 9/2 7" endSegment="5/2 4 -2 -7/2 7/2 11/2"/>
+    <SelectManifestation startSegment="5/2 4 -2 -7/2 7/2 11/2" endSegment="1 3/2 -7/2 -11/2 9/2 7"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="13/2 21/2 -5/2 -4 1 3/2" endSegment="11/2 17/2 -7/2 -6 3 9/2"/>
+    <SelectManifestation startSegment="11/2 17/2 -7/2 -6 3 9/2" endSegment="11/2 9 -6 -19/2 7/2 11/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="9/2 15/2 -5/2 -4 4 13/2" endSegment="11/2 17/2 -7/2 -6 3 9/2"/>
+    <SelectManifestation startSegment="13/2 21/2 -5/2 -4 1 3/2" endSegment="11/2 17/2 -7/2 -6 3 9/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="9/2 15/2 -5/2 -4 4 13/2" endSegment="11/2 17/2 -7/2 -6 3 9/2"/>
+    <SelectManifestation startSegment="13/2 21/2 -5/2 -4 1 3/2" endSegment="11/2 17/2 -7/2 -6 3 9/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="4 13/2 -7/2 -11/2 -1/2 -1" endSegment="11/2 17/2 -7/2 -6 -2 -7/2"/>
+    <SelectManifestation startSegment="4 13/2 -7/2 -11/2 -1/2 -1" endSegment="7/2 11/2 -11/2 -9 1 3/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="11/2 17/2 -7/2 -6 -2 -7/2" endSegment="9/2 15/2 -5/2 -4 -4 -13/2"/>
+    <SelectManifestation startSegment="11/2 17/2 -7/2 -6 -2 -7/2" endSegment="11/2 9 -6 -19/2 -3/2 -5/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="9/2 15/2 -5/2 -4 -4 -13/2" endSegment="3 9/2 -3/2 -5/2 -7/2 -6"/>
+    <SelectManifestation startSegment="9/2 15/2 -5/2 -4 -4 -13/2" endSegment="9/2 7 -4 -13/2 -9/2 -15/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="1/2 1/2 -7/2 -6 -2 -7/2" endSegment="3/2 5/2 -5/2 -4 -4 -13/2"/>
+    <SelectManifestation startSegment="3/2 5/2 -5/2 -4 -4 -13/2" endSegment="5/2 4 -4 -13/2 -9/2 -15/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="9/2 7 -4 -13/2 -9/2 -15/2" endSegment="5 8 -6 -10 -3 -5"/>
+    <SelectManifestation startSegment="9/2 7 -4 -13/2 -9/2 -15/2" endSegment="5/2 4 -4 -13/2 -9/2 -15/2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="7/2 11/2 -15/2 -12 -2 -7/2" endSegment="2 3 -6 -10 -3 -5"/>
+    <SelectManifestation startSegment="11/2 9 -6 -19/2 -3/2 -5/2" endSegment="5 8 -6 -10 -3 -5"/>
+    <EndBlock/>
+    <AffinePentagon/>
+  </EditHistory>
+  <notes>
+    <page title="How to save notes">
+      <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">You can create as many pages as you like, using the '+' buttons in either direction.
+
+For now, only the text and the view of the model are different from one page to the next.  In the next update, each page will allow a different model entirely.
+
+Eventually there will be a 'vZome Player' application that will display the pages.
+</content>
+    </page>
+  </notes>
+</vzome:vZome>

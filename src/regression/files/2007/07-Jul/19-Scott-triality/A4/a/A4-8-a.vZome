@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" scale="3" version="2.1 Beta 17" xmlns:vzome="http://tns.vorthmann.org/vZome/3.0.0/">
+  <EditHistory editNumber="1">
+    <Polytope4d group="A4" wythoff="1000">
+      <segment attrName="rotation">
+        <start/>
+        <end  x="-phi-1" y="-phi+1" z="-phi+1" w="-phi+1" />
+      </segment>
+    </Polytope4d>
+  </EditHistory>
+</vzome:vZome>

@@ -12,6 +12,13 @@ To build the vzome-core library, execute this command:
     
 This uses the Gradle Wrapper to install Gradle, then builds the project and installs the JAR artifact into your local Maven repository, for subsequent use in downstream projects like vzome-desktop.
 
+Regression testing
+----------
+
+There is a "regression" task that is not automatically triggered, since it takes a little while to run.  It validates that the build can open a few dozen existing vZome files.
+
+    ./gradlew regression
+
 Eclipse integration
 -----------
 

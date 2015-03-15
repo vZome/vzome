@@ -1,0 +1,3132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" xmlns:vzome="http://tns.vorthmann.org/vZome/2.0.3/">
+   <editHistory editNumber="70">
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="0"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="green" index="0"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="6"/>
+         </attr>
+         <point x="4phi+2" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="green" index="3"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="6"/>
+         </attr>
+         <point x="4phi+8" y="0" z="6" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="green" index="14"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="6"/>
+         </attr>
+         <point x="4phi+14" y="-6" z="6" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="blue" index="4"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="4phi+8" y="0" z="6" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandCentroid>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="4phi+2" y="0" z="0" w="0"/>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandCentroid>
+      <CommandCentroid>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="4phi+8" y="0" z="6" w="0"/>
+         <point x="4phi+8" y="0" z="4phi+8" w="0"/>
+      </CommandCentroid>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="blue" index="4"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="2phi+1" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="blue" index="5"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="2phi+1" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="2phi+1" y="0" z="0" w="0"/>
+            <end x="2phi+1" y="4phi+2" z="0" w="0"/>
+         </segment>
+         <point x="2phi+1" y="4phi+2" z="0" w="0"/>
+         <point x="2phi+1" y="0" z="0" w="0"/>
+         <point x="2phi+1" y="0" z="4phi+2" w="0"/>
+      </CommandPolygon>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="blue" index="12"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="4phi+8" y="0" z="2phi+7" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandLinePlaneIntersect>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="4phi+8" y="0" z="2phi+7" w="0"/>
+            <end x="6" y="0" z="2phi+7" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="2phi+1" y="4phi+2" z="0" w="0"/>
+            <vertex x="2phi+1" y="0" z="0" w="0"/>
+            <vertex x="2phi+1" y="0" z="4phi+2" w="0"/>
+         </polygon>
+      </CommandLinePlaneIntersect>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="blue" index="7"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="2phi+1" y="0" z="2phi+7" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="yellow" index="12"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="phi+1"/>
+         </attr>
+         <point x="4phi+8" y="-6" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <segment>
+            <start x="4phi+8" y="-6" z="0" w="0"/>
+            <end x="2phi+7" y="-2phi-7" z="2phi+1" w="0"/>
+         </segment>
+         <point x="2phi+7" y="-2phi-7" z="2phi+1" w="0"/>
+         <point x="4phi+8" y="-6" z="0" w="0"/>
+         <point x="4phi+8" y="0" z="6" w="0"/>
+      </CommandPolygon>
+      <CommandLinePlaneIntersect>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="2phi+7" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="4phi+8" y="-6" z="0" w="0"/>
+            <vertex x="4phi+8" y="0" z="6" w="0"/>
+         </polygon>
+         <segment>
+            <start x="2phi+1" y="0" z="2phi+7" w="0"/>
+            <end x="2phi+1" y="-4phi-2" z="2phi+7" w="0"/>
+         </segment>
+      </CommandLinePlaneIntersect>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandJoinPoints>
+      <CommandTranslate>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+               <end x="0" y="0" z="0" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="4phi+2" y="0" z="0" w="0"/>
+         </segment>
+         <point x="4phi+2" y="0" z="0" w="0"/>
+         <segment>
+            <start x="4phi+2" y="0" z="0" w="0"/>
+            <end x="4phi+8" y="0" z="6" w="0"/>
+         </segment>
+         <point x="4phi+8" y="0" z="6" w="0"/>
+      </CommandTranslate>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+               <end x="0" y="0" z="0" w="0"/>
+            </segment>
+         </attr>
+         <point x="4phi+14" y="-6" z="6" w="0"/>
+         <point x="2phi+1" y="0" z="0" w="0"/>
+         <point x="2phi+7" y="-2phi-7" z="2phi+1" w="0"/>
+         <segment>
+            <start x="2phi+1" y="0" z="0" w="0"/>
+            <end x="2phi+1" y="0" z="4phi+2" w="0"/>
+         </segment>
+         <segment>
+            <start x="4phi+14" y="-6" z="6" w="0"/>
+            <end x="4phi+8" y="-6" z="0" w="0"/>
+         </segment>
+         <point x="4phi+8" y="0" z="4phi+8" w="0"/>
+         <segment>
+            <start x="4phi+8" y="-6" z="0" w="0"/>
+            <end x="2phi+7" y="-2phi-7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+            <end x="0" y="0" z="0" w="0"/>
+         </segment>
+         <point x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="4phi+2" y="0" z="0" w="0"/>
+         </segment>
+         <point x="4phi+2" y="0" z="0" w="0"/>
+         <segment>
+            <start x="4phi+8" y="0" z="6" w="0"/>
+            <end x="4phi+8" y="0" z="4phi+8" w="0"/>
+         </segment>
+         <segment>
+            <start x="4phi+2" y="0" z="0" w="0"/>
+            <end x="4phi+8" y="0" z="6" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="2phi+1" y="4phi+2" z="0" w="0"/>
+            <vertex x="2phi+1" y="0" z="0" w="0"/>
+            <vertex x="2phi+1" y="0" z="4phi+2" w="0"/>
+         </polygon>
+         <point x="4phi+8" y="0" z="2phi+7" w="0"/>
+         <point x="6" y="0" z="2phi+7" w="0"/>
+         <point x="2phi+1" y="0" z="4phi+2" w="0"/>
+         <segment>
+            <start x="4phi+8" y="0" z="6" w="0"/>
+            <end x="4phi+14" y="-6" z="6" w="0"/>
+         </segment>
+         <point x="2phi+1" y="0" z="2phi+7" w="0"/>
+         <segment>
+            <start x="2phi+1" y="0" z="2phi+7" w="0"/>
+            <end x="2phi+1" y="-4phi-2" z="2phi+7" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="2phi+7" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="4phi+8" y="-6" z="0" w="0"/>
+            <vertex x="4phi+8" y="0" z="6" w="0"/>
+         </polygon>
+         <segment>
+            <start x="2phi+1" y="0" z="0" w="0"/>
+            <end x="2phi+1" y="4phi+2" z="0" w="0"/>
+         </segment>
+         <segment>
+            <start x="4phi+8" y="0" z="2phi+7" w="0"/>
+            <end x="6" y="0" z="2phi+7" w="0"/>
+         </segment>
+         <point x="2phi+1" y="4phi+2" z="0" w="0"/>
+         <point x="4phi+8" y="-6" z="0" w="0"/>
+         <point x="2phi+1" y="-4phi-2" z="2phi+7" w="0"/>
+         <point x="4phi+8" y="0" z="6" w="0"/>
+      </CommandHide>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.group">
+            <Symmetry name="octahedral"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+               <end x="0" y="0" z="0" w="0"/>
+            </segment>
+         </attr>
+         <point x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         <segment>
+            <start x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <end x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <end x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         </segment>
+         <point x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+      </CommandSymmetry>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+               <end x="0" y="0" z="0" w="0"/>
+            </segment>
+         </attr>
+         <point x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+         <point x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+      </CommandJoinPoints>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.group">
+            <Symmetry name="octahedral"/>
+         </attr>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+               <end x="0" y="0" z="0" w="0"/>
+            </segment>
+         </attr>
+         <segment>
+            <start x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <end x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         <point x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+         <point x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         <point x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+         <point x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         <point x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+         <point x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         <point x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         <point x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+         <point x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         <point x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+      </CommandPolygon>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.group">
+            <Symmetry name="octahedral"/>
+         </attr>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+         </polygon>
+      </CommandSymmetry>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         <point x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         <point x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         <point x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         <point x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         <point x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+      </CommandPolygon>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.group">
+            <Symmetry name="octahedral"/>
+         </attr>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </polygon>
+      </CommandSymmetry>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </polygon>
+      </CommandHide>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="9"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="2phi+1"/>
+         </attr>
+         <point x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         <point x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         <point x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         <point x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         <point x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         <point x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         <point x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         <point x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+         <point x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+         <point x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+         <point x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         <point x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+         <point x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         <point x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         <point x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+         <point x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+         <point x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         <point x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+         <point x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         <point x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         <point x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+         <point x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+         <point x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         <point x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+      </CommandPolygon>
+      <CommandCentroid>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         <point x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+      </CommandCentroid>
+      <CommandCentralSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+      </CommandCentralSymmetry>
+      <CommandCentralSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+      </CommandCentralSymmetry>
+      <CommandCentralSymmetry>
+         <attr name="symmetry.center">
+            <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+         </attr>
+         <segment>
+            <start x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+            <end x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <end x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <end x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <end x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+         </polygon>
+         <point x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+         <point x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+         <segment>
+            <start x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <end x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+         </segment>
+         <point x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+         <point x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         </polygon>
+         <point x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+         <segment>
+            <start x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <end x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+         </polygon>
+         <point x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+         <segment>
+            <start x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <end x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <end x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <end x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <end x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <end x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <end x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <end x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <end x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <end x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+            <end x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <end x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+            <end x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </polygon>
+         <segment>
+            <start x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <end x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <end x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <end x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+            <end x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <end x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+         </segment>
+         <point x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+         <point x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         <segment>
+            <start x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+            <end x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+         </segment>
+         <point x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+         <point x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+         <segment>
+            <start x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <end x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+            <end x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+         </segment>
+         <point x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+         <point x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+         <point x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         <polygon>
+            <vertex x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+         </polygon>
+         <point x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+         <point x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+            <vertex x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+         </polygon>
+         <point x="0" y="0" z="0" w="0"/>
+         <point x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+         <polygon>
+            <vertex x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+         </polygon>
+         <point x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         <segment>
+            <start x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <end x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <end x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         </segment>
+         <point x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         <point x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+         <point x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+         <segment>
+            <start x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <end x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <end x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </segment>
+         <point x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+         <polygon>
+            <vertex x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+            <vertex x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         </polygon>
+         <point x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+         <point x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+         <point x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </polygon>
+         <point x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+         <point x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         <segment>
+            <start x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <end x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <end x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <end x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <end x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <end x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <end x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+            <end x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <end x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+         </segment>
+         <point x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         <point x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+         <point x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         <segment>
+            <start x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <end x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <end x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+         </segment>
+         <point x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+         </polygon>
+         <point x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </polygon>
+         <point x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <end x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <end x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <end x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <end x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+         </segment>
+         <point x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+         <point x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+         <segment>
+            <start x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <end x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+            <end x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <end x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+         </segment>
+         <point x="(7phi+16)/-2" y="(7phi+16)/-2" z="(7phi+16)/-2" w="0"/>
+         <segment>
+            <start x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <end x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <end x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </segment>
+         <point x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+         <point x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         <segment>
+            <start x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <end x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <end x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         </segment>
+         <point x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         <point x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+         <segment>
+            <start x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <end x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <end x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <end x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <end x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+            <end x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <end x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         </segment>
+         <point x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         <polygon>
+            <vertex x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+            <vertex x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         </polygon>
+         <segment>
+            <start x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <end x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <end x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+         </segment>
+         <point x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+         <point x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         <point x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+         <point x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </polygon>
+         <segment>
+            <start x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <end x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <end x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <end x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <end x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+         </polygon>
+         <segment>
+            <start x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <end x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <end x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+         </segment>
+         <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+         <point x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+         <point x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         <segment>
+            <start x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <end x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <end x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </segment>
+         <point x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <end x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <end x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <end x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <end x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         </polygon>
+         <point x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <end x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <end x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+            <vertex x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </polygon>
+         <segment>
+            <start x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <end x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <end x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+         </segment>
+         <point x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+         <point x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+         <segment>
+            <start x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <end x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+         </segment>
+         <point x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <end x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <end x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </segment>
+         <point x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         <point x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+         </polygon>
+         <point x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         <point x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+      </CommandCentralSymmetry>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="5phi+3" y="9phi+17" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="5phi+15" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="5phi+9" z="9phi+17" w="0"/>
+            <vertex x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+            <vertex x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+            <vertex x="5phi+3" y="9phi+17" z="5phi+9" w="0"/>
+            <vertex x="5phi+3" y="9phi+23" z="5phi+15" w="0"/>
+            <vertex x="5phi+3" y="9phi+23" z="9phi+17" w="0"/>
+         </polygon>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="9phi+23" y="5phi+3" z="9phi+17" w="0"/>
+            <vertex x="9phi+23" y="5phi+3" z="5phi+15" w="0"/>
+            <vertex x="9phi+17" y="5phi+3" z="5phi+9" w="0"/>
+            <vertex x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+            <vertex x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+            <vertex x="5phi+9" y="5phi+3" z="9phi+17" w="0"/>
+            <vertex x="5phi+15" y="5phi+3" z="9phi+23" w="0"/>
+            <vertex x="9phi+17" y="5phi+3" z="9phi+23" w="0"/>
+         </polygon>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+            <vertex x="9phi+17" y="5phi+9" z="5phi+3" w="0"/>
+            <vertex x="9phi+23" y="5phi+15" z="5phi+3" w="0"/>
+            <vertex x="9phi+23" y="9phi+17" z="5phi+3" w="0"/>
+            <vertex x="9phi+17" y="9phi+23" z="5phi+3" w="0"/>
+            <vertex x="5phi+15" y="9phi+23" z="5phi+3" w="0"/>
+            <vertex x="5phi+9" y="9phi+17" z="5phi+3" w="0"/>
+            <vertex x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+         </polygon>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         </polygon>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+         </polygon>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+         </attr>
+         <point x="(7phi+16)/-2" y="(7phi+16)/-2" z="(7phi+16)/-2" w="0"/>
+      </CommandHide>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.group">
+            <Symmetry name="octahedral"/>
+         </attr>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <segment>
+            <start x="5phi+15" y="9phi+23" z="5phi+3" w="0"/>
+            <end x="5phi+15" y="9phi+29" z="5phi+9" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+            <end x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <end x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="5phi+9" z="9phi+17" w="0"/>
+            <end x="5phi+3" y="5phi+15" z="9phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <end x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <end x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+         </polygon>
+         <point x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+         <point x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+         <segment>
+            <start x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+            <end x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </segment>
+         <point x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+         <segment>
+            <start x="5phi+9" y="5phi+15" z="9phi+29" w="0"/>
+            <end x="5phi+15" y="5phi+9" z="9phi+29" w="0"/>
+         </segment>
+         <point x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+         <point x="5phi+15" y="5phi+9" z="9phi+29" w="0"/>
+         <point x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+         <point x="9phi+17" y="5phi+9" z="9phi+29" w="0"/>
+         <polygon>
+            <vertex x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+            <vertex x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+            <vertex x="9phi+23" y="9phi+29" z="5phi+15" w="0"/>
+            <vertex x="9phi+29" y="9phi+23" z="5phi+15" w="0"/>
+         </polygon>
+         <point x="5phi+15" y="9phi+29" z="9phi+23" w="0"/>
+         <point x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+         <segment>
+            <start x="9phi+23" y="9phi+29" z="5phi+15" w="0"/>
+            <end x="9phi+17" y="9phi+29" z="5phi+9" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+29" y="9phi+23" z="5phi+15" w="0"/>
+            <end x="9phi+23" y="9phi+29" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+            <end x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+         </polygon>
+         <point x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+         <segment>
+            <start x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+            <end x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+            <end x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <end x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <end x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+            <end x="9phi+23" y="9phi+29" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <end x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <end x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <end x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <end x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         </segment>
+         <point x="9phi+23" y="9phi+17" z="5phi+3" w="0"/>
+         <segment>
+            <start x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <end x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <end x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <end x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+            <end x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <end x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+            <end x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="9phi+23" y="5phi+15" z="9phi+29" w="0"/>
+            <vertex x="9phi+17" y="5phi+9" z="9phi+29" w="0"/>
+            <vertex x="9phi+17" y="5phi+3" z="9phi+23" w="0"/>
+            <vertex x="9phi+23" y="5phi+3" z="9phi+17" w="0"/>
+            <vertex x="9phi+29" y="5phi+9" z="9phi+17" w="0"/>
+            <vertex x="9phi+29" y="5phi+15" z="9phi+23" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="9phi+29" y="9phi+17" z="5phi+9" w="0"/>
+            <vertex x="9phi+23" y="9phi+17" z="5phi+3" w="0"/>
+            <vertex x="9phi+23" y="5phi+15" z="5phi+3" w="0"/>
+            <vertex x="9phi+29" y="5phi+15" z="5phi+9" w="0"/>
+         </polygon>
+         <segment>
+            <start x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <end x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <end x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <end x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+            <end x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <end x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+         </segment>
+         <point x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+         <point x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         <segment>
+            <start x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+            <end x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="9phi+23" y="9phi+29" z="5phi+15" w="0"/>
+            <vertex x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+            <vertex x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+            <vertex x="5phi+15" y="9phi+29" z="9phi+23" w="0"/>
+            <vertex x="5phi+9" y="9phi+29" z="9phi+17" w="0"/>
+            <vertex x="5phi+9" y="9phi+29" z="5phi+15" w="0"/>
+            <vertex x="5phi+15" y="9phi+29" z="5phi+9" w="0"/>
+            <vertex x="9phi+17" y="9phi+29" z="5phi+9" w="0"/>
+         </polygon>
+         <point x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+         <polygon>
+            <vertex x="5phi+3" y="9phi+17" z="5phi+9" w="0"/>
+            <vertex x="5phi+3" y="9phi+23" z="5phi+15" w="0"/>
+            <vertex x="5phi+9" y="9phi+29" z="5phi+15" w="0"/>
+            <vertex x="5phi+15" y="9phi+29" z="5phi+9" w="0"/>
+            <vertex x="5phi+15" y="9phi+23" z="5phi+3" w="0"/>
+            <vertex x="5phi+9" y="9phi+17" z="5phi+3" w="0"/>
+         </polygon>
+         <point x="9phi+23" y="5phi+3" z="5phi+15" w="0"/>
+         <segment>
+            <start x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+            <end x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+         </segment>
+         <point x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+         <segment>
+            <start x="5phi+15" y="9phi+23" z="9phi+29" w="0"/>
+            <end x="5phi+9" y="9phi+17" z="9phi+29" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <end x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+            <end x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+         </segment>
+         <point x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+         <point x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+         <segment>
+            <start x="9phi+17" y="5phi+3" z="5phi+9" w="0"/>
+            <end x="9phi+23" y="5phi+3" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+15" y="9phi+29" z="5phi+9" w="0"/>
+            <end x="5phi+9" y="9phi+29" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="5phi+15" z="9phi+23" w="0"/>
+            <end x="5phi+9" y="5phi+15" z="9phi+29" w="0"/>
+         </segment>
+         <point x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+         <segment>
+            <start x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+            <end x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+         </segment>
+         <point x="5phi+3" y="9phi+23" z="5phi+15" w="0"/>
+         <segment>
+            <start x="9phi+29" y="5phi+15" z="5phi+9" w="0"/>
+            <end x="9phi+23" y="5phi+15" z="5phi+3" w="0"/>
+         </segment>
+         <point x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+            <vertex x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+         </polygon>
+         <point x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+         <point x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+            <vertex x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+            <vertex x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+         </polygon>
+         <point x="0" y="0" z="0" w="0"/>
+         <point x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+         <point x="9phi+17" y="5phi+9" z="5phi+3" w="0"/>
+         <polygon>
+            <vertex x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+         </polygon>
+         <point x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         <segment>
+            <start x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <end x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <end x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         </segment>
+         <point x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         <point x="9phi+29" y="9phi+23" z="5phi+15" w="0"/>
+         <point x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+         <point x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+         <segment>
+            <start x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <end x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <end x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </segment>
+         <point x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+         <point x="9phi+29" y="9phi+17" z="5phi+9" w="0"/>
+         <polygon>
+            <vertex x="5phi+3" y="5phi+9" z="9phi+17" w="0"/>
+            <vertex x="5phi+9" y="5phi+3" z="9phi+17" w="0"/>
+            <vertex x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+            <vertex x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+         </polygon>
+         <segment>
+            <start x="9phi+29" y="5phi+9" z="9phi+17" w="0"/>
+            <end x="9phi+23" y="5phi+3" z="9phi+17" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+            <vertex x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         </polygon>
+         <segment>
+            <start x="9phi+29" y="5phi+9" z="5phi+15" w="0"/>
+            <end x="9phi+29" y="5phi+15" z="5phi+9" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+            <end x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+17" y="5phi+9" z="5phi+3" w="0"/>
+            <end x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+         </segment>
+         <point x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+         <point x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+         <point x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="9phi+23" y="5phi+3" z="5phi+15" w="0"/>
+            <end x="9phi+29" y="5phi+9" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="9phi+23" z="9phi+17" w="0"/>
+            <end x="5phi+3" y="9phi+23" z="5phi+15" w="0"/>
+         </segment>
+         <point x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+         <point x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         <segment>
+            <start x="9phi+29" y="5phi+15" z="9phi+23" w="0"/>
+            <end x="9phi+29" y="5phi+9" z="9phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+23" y="5phi+3" z="9phi+17" w="0"/>
+            <end x="9phi+17" y="5phi+3" z="9phi+23" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="5phi+9" y="9phi+29" z="9phi+17" w="0"/>
+            <vertex x="5phi+3" y="9phi+23" z="9phi+17" w="0"/>
+            <vertex x="5phi+3" y="9phi+23" z="5phi+15" w="0"/>
+            <vertex x="5phi+9" y="9phi+29" z="5phi+15" w="0"/>
+         </polygon>
+         <segment>
+            <start x="5phi+15" y="9phi+29" z="9phi+23" w="0"/>
+            <end x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+         </segment>
+         <point x="5phi+9" y="5phi+15" z="9phi+29" w="0"/>
+         <segment>
+            <start x="9phi+29" y="9phi+23" z="5phi+15" w="0"/>
+            <end x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="5phi+15" z="9phi+23" w="0"/>
+            <end x="5phi+3" y="9phi+17" z="9phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+            <end x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="5phi+9" y="9phi+17" z="9phi+29" w="0"/>
+            <vertex x="5phi+15" y="9phi+23" z="9phi+29" w="0"/>
+            <vertex x="5phi+15" y="9phi+29" z="9phi+23" w="0"/>
+            <vertex x="5phi+9" y="9phi+29" z="9phi+17" w="0"/>
+            <vertex x="5phi+3" y="9phi+23" z="9phi+17" w="0"/>
+            <vertex x="5phi+3" y="9phi+17" z="9phi+23" w="0"/>
+         </polygon>
+         <segment>
+            <start x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <end x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <end x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <end x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <end x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+15" y="5phi+9" z="9phi+29" w="0"/>
+            <end x="5phi+15" y="5phi+3" z="9phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <end x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <end x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="9phi+17" y="5phi+9" z="9phi+29" w="0"/>
+            <vertex x="9phi+17" y="5phi+3" z="9phi+23" w="0"/>
+            <vertex x="5phi+15" y="5phi+3" z="9phi+23" w="0"/>
+            <vertex x="5phi+15" y="5phi+9" z="9phi+29" w="0"/>
+         </polygon>
+         <segment>
+            <start x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+            <end x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <end x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+         </segment>
+         <point x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         <point x="5phi+9" y="9phi+17" z="5phi+3" w="0"/>
+         <segment>
+            <start x="5phi+9" y="9phi+29" z="5phi+15" w="0"/>
+            <end x="5phi+3" y="9phi+23" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+            <end x="9phi+17" y="5phi+3" z="5phi+9" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+17" y="5phi+3" z="9phi+23" w="0"/>
+            <end x="5phi+15" y="5phi+3" z="9phi+23" w="0"/>
+         </segment>
+         <point x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+         <point x="5phi+3" y="5phi+9" z="9phi+17" w="0"/>
+         <point x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         <segment>
+            <start x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <end x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <end x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+            <end x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+            <end x="9phi+29" y="5phi+15" z="9phi+23" w="0"/>
+         </segment>
+         <point x="9phi+17" y="9phi+29" z="5phi+9" w="0"/>
+         <segment>
+            <start x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+            <end x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+         </segment>
+         <point x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+         <point x="5phi+15" y="9phi+23" z="9phi+29" w="0"/>
+         <point x="5phi+9" y="5phi+3" z="9phi+17" w="0"/>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+         </polygon>
+         <point x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         <polygon>
+            <vertex x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </polygon>
+         <point x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <end x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <end x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <end x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+            <end x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+         </segment>
+         <point x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+         <point x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+         <segment>
+            <start x="5phi+9" y="5phi+3" z="9phi+17" w="0"/>
+            <end x="5phi+3" y="5phi+9" z="9phi+17" w="0"/>
+         </segment>
+         <point x="5phi+3" y="9phi+23" z="9phi+17" w="0"/>
+         <segment>
+            <start x="-2phi-7" y="2phi+13" z="-2phi-1" w="0"/>
+            <end x="-2phi-1" y="2phi+13" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+            <end x="2phi+7" y="-2phi-13" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+            <end x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="9phi+17" y="5phi+3" z="5phi+9" w="0"/>
+            <vertex x="9phi+17" y="5phi+9" z="5phi+3" w="0"/>
+            <vertex x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+            <vertex x="5phi+15" y="5phi+3" z="5phi+9" w="0"/>
+         </polygon>
+         <segment>
+            <start x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <end x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <end x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+23" y="9phi+17" z="5phi+3" w="0"/>
+            <end x="9phi+23" y="5phi+15" z="5phi+3" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+23" y="5phi+3" z="5phi+15" w="0"/>
+            <end x="9phi+23" y="5phi+3" z="9phi+17" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+            <vertex x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+            <vertex x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+            <vertex x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+            <vertex x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+            <vertex x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+         </polygon>
+         <point x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+         <segment>
+            <start x="5phi+9" y="9phi+29" z="9phi+17" w="0"/>
+            <end x="5phi+15" y="9phi+29" z="9phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="9phi+17" z="9phi+23" w="0"/>
+            <end x="5phi+3" y="9phi+23" z="9phi+17" w="0"/>
+         </segment>
+         <point x="9phi+17" y="5phi+3" z="5phi+9" w="0"/>
+         <point x="9phi+29" y="5phi+9" z="9phi+17" w="0"/>
+         <point x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         <segment>
+            <start x="9phi+29" y="9phi+17" z="5phi+9" w="0"/>
+            <end x="9phi+29" y="9phi+23" z="5phi+15" w="0"/>
+         </segment>
+         <point x="9phi+23" y="5phi+3" z="9phi+17" w="0"/>
+         <segment>
+            <start x="9phi+17" y="9phi+23" z="5phi+3" w="0"/>
+            <end x="9phi+23" y="9phi+17" z="5phi+3" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <end x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <end x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+            <end x="5phi+9" y="9phi+17" z="5phi+3" w="0"/>
+         </segment>
+         <point x="5phi+9" y="9phi+17" z="9phi+29" w="0"/>
+         <segment>
+            <start x="9phi+29" y="5phi+15" z="5phi+9" w="0"/>
+            <end x="9phi+29" y="9phi+17" z="5phi+9" w="0"/>
+         </segment>
+         <point x="5phi+9" y="9phi+29" z="5phi+15" w="0"/>
+         <polygon>
+            <vertex x="9phi+17" y="5phi+9" z="5phi+3" w="0"/>
+            <vertex x="9phi+23" y="5phi+15" z="5phi+3" w="0"/>
+            <vertex x="9phi+29" y="5phi+15" z="5phi+9" w="0"/>
+            <vertex x="9phi+29" y="5phi+9" z="5phi+15" w="0"/>
+            <vertex x="9phi+23" y="5phi+3" z="5phi+15" w="0"/>
+            <vertex x="9phi+17" y="5phi+3" z="5phi+9" w="0"/>
+         </polygon>
+         <point x="5phi+3" y="9phi+17" z="5phi+9" w="0"/>
+         <segment>
+            <start x="9phi+23" y="5phi+15" z="9phi+29" w="0"/>
+            <end x="9phi+29" y="5phi+15" z="9phi+23" w="0"/>
+         </segment>
+         <point x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+         <segment>
+            <start x="5phi+9" y="9phi+29" z="5phi+15" w="0"/>
+            <end x="5phi+9" y="9phi+29" z="9phi+17" w="0"/>
+         </segment>
+         <point x="9phi+17" y="9phi+23" z="5phi+3" w="0"/>
+         <point x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         <point x="5phi+9" y="9phi+29" z="9phi+17" w="0"/>
+         <polygon>
+            <vertex x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+            <vertex x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+            <vertex x="9phi+29" y="5phi+15" z="9phi+23" w="0"/>
+            <vertex x="9phi+23" y="5phi+15" z="9phi+29" w="0"/>
+         </polygon>
+         <point x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+         <segment>
+            <start x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <end x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+            <end x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+         </segment>
+         <point x="9phi+29" y="5phi+9" z="5phi+15" w="0"/>
+         <segment>
+            <start x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <end x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <end x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+            <end x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <end x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+9" y="9phi+17" z="9phi+29" w="0"/>
+            <end x="5phi+3" y="9phi+17" z="9phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+23" y="9phi+17" z="5phi+3" w="0"/>
+            <end x="9phi+29" y="9phi+17" z="5phi+9" w="0"/>
+         </segment>
+         <point x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         <segment>
+            <start x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+            <end x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+            <vertex x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </polygon>
+         <segment>
+            <start x="5phi+3" y="9phi+23" z="5phi+15" w="0"/>
+            <end x="5phi+3" y="9phi+17" z="5phi+9" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+            <vertex x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         </polygon>
+         <point x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+         <polygon>
+            <vertex x="5phi+9" y="5phi+15" z="9phi+29" w="0"/>
+            <vertex x="5phi+3" y="5phi+15" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="9phi+17" z="9phi+23" w="0"/>
+            <vertex x="5phi+9" y="9phi+17" z="9phi+29" w="0"/>
+         </polygon>
+         <segment>
+            <start x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+            <end x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+         </segment>
+         <point x="5phi+15" y="5phi+3" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="9phi+17" z="9phi+23" w="0"/>
+         <segment>
+            <start x="5phi+9" y="9phi+17" z="5phi+3" w="0"/>
+            <end x="5phi+15" y="9phi+23" z="5phi+3" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+            <end x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+9" y="5phi+3" z="9phi+17" w="0"/>
+            <end x="5phi+9" y="5phi+3" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+            <end x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <end x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+         </segment>
+         <point x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+         <point x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+         <point x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="5phi+15" y="5phi+9" z="9phi+29" w="0"/>
+            <end x="9phi+17" y="5phi+9" z="9phi+29" w="0"/>
+         </segment>
+         <point x="5phi+15" y="5phi+9" z="5phi+3" w="0"/>
+         <point x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </polygon>
+         <segment>
+            <start x="5phi+3" y="9phi+17" z="5phi+9" w="0"/>
+            <end x="5phi+9" y="9phi+17" z="5phi+3" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="-2phi-13" z="2phi+7" w="0"/>
+            <end x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+            <end x="2phi+1" y="2phi+13" z="-2phi-7" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="5phi+15" y="9phi+23" z="9phi+29" w="0"/>
+            <vertex x="5phi+15" y="9phi+29" z="9phi+23" w="0"/>
+            <vertex x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+            <vertex x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+         </polygon>
+         <segment>
+            <start x="9phi+17" y="5phi+9" z="9phi+29" w="0"/>
+            <end x="9phi+23" y="5phi+15" z="9phi+29" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+17" y="9phi+29" z="5phi+9" w="0"/>
+            <end x="5phi+15" y="9phi+29" z="5phi+9" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <end x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <end x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         </segment>
+         <point x="9phi+23" y="5phi+15" z="9phi+29" w="0"/>
+         <polygon>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+         </polygon>
+         <segment>
+            <start x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <end x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <end x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+         </segment>
+         <point x="(7phi+16)/2" y="(7phi+16)/2" z="(7phi+16)/2" w="0"/>
+         <segment>
+            <start x="5phi+15" y="9phi+29" z="9phi+23" w="0"/>
+            <end x="5phi+15" y="9phi+23" z="9phi+29" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="9phi+29" y="5phi+9" z="5phi+15" w="0"/>
+            <vertex x="9phi+29" y="5phi+9" z="9phi+17" w="0"/>
+            <vertex x="9phi+29" y="5phi+15" z="9phi+23" w="0"/>
+            <vertex x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+            <vertex x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+            <vertex x="9phi+29" y="9phi+23" z="5phi+15" w="0"/>
+            <vertex x="9phi+29" y="9phi+17" z="5phi+9" w="0"/>
+            <vertex x="9phi+29" y="5phi+15" z="5phi+9" w="0"/>
+         </polygon>
+         <point x="2phi+1" y="-2phi-13" z="2phi+7" w="0"/>
+         <point x="5phi+15" y="9phi+29" z="5phi+9" w="0"/>
+         <point x="7phi+16" y="7phi+16" z="7phi+16" w="0"/>
+         <point x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         <segment>
+            <start x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+            <end x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <end x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+         </segment>
+         <point x="9phi+23" y="5phi+15" z="5phi+3" w="0"/>
+         <point x="5phi+15" y="9phi+23" z="5phi+3" w="0"/>
+         <point x="-2phi-1" y="2phi+7" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+            <end x="5phi+15" y="9phi+23" z="9phi+29" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <end x="2phi+7" y="-2phi-13" z="-2phi-1" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+            <end x="-2phi-13" y="2phi+7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="9phi+23" z="9phi+17" w="0"/>
+            <end x="5phi+9" y="9phi+29" z="9phi+17" w="0"/>
+         </segment>
+         <point x="9phi+17" y="5phi+3" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="5phi+15" z="9phi+23" w="0"/>
+         <segment>
+            <start x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+            <end x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <end x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+         </segment>
+         <point x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="2phi+1" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+            <vertex x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+            <vertex x="5phi+9" y="9phi+17" z="5phi+3" w="0"/>
+            <vertex x="5phi+3" y="9phi+17" z="5phi+9" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="9phi+17" y="9phi+23" z="5phi+3" w="0"/>
+            <vertex x="9phi+17" y="9phi+29" z="5phi+9" w="0"/>
+            <vertex x="5phi+15" y="9phi+29" z="5phi+9" w="0"/>
+            <vertex x="5phi+15" y="9phi+23" z="5phi+3" w="0"/>
+         </polygon>
+         <point x="9phi+23" y="9phi+29" z="5phi+15" w="0"/>
+         <point x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+         <polygon>
+            <vertex x="9phi+29" y="5phi+9" z="5phi+15" w="0"/>
+            <vertex x="9phi+23" y="5phi+3" z="5phi+15" w="0"/>
+            <vertex x="9phi+23" y="5phi+3" z="9phi+17" w="0"/>
+            <vertex x="9phi+29" y="5phi+9" z="9phi+17" w="0"/>
+         </polygon>
+         <segment>
+            <start x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <end x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-1" y="-2phi-7" z="2phi+13" w="0"/>
+            <end x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+            <vertex x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="5phi+9" y="5phi+15" z="5phi+3" w="0"/>
+            <vertex x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </polygon>
+         <segment>
+            <start x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <end x="-2phi-13" y="-2phi-7" z="2phi+1" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+13" y="2phi+7" z="-2phi-1" w="0"/>
+            <end x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+17" y="9phi+29" z="5phi+9" w="0"/>
+            <end x="9phi+17" y="9phi+23" z="5phi+3" w="0"/>
+         </segment>
+         <point x="2phi+7" y="2phi+13" z="-2phi-1" w="0"/>
+         <segment>
+            <start x="5phi+15" y="5phi+3" z="9phi+23" w="0"/>
+            <end x="5phi+9" y="5phi+3" z="9phi+17" w="0"/>
+         </segment>
+         <point x="-2phi-7" y="2phi+13" z="2phi+1" w="0"/>
+         <segment>
+            <start x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+            <end x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+         </segment>
+         <point x="2phi+1" y="2phi+7" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="5phi+15" y="9phi+23" z="5phi+3" w="0"/>
+            <end x="9phi+17" y="9phi+23" z="5phi+3" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+23" y="5phi+15" z="5phi+3" w="0"/>
+            <end x="9phi+17" y="5phi+9" z="5phi+3" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+29" y="5phi+9" z="9phi+17" w="0"/>
+            <end x="9phi+29" y="5phi+9" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <end x="-2phi-1" y="2phi+7" z="2phi+13" w="0"/>
+         </segment>
+         <segment>
+            <start x="2phi+1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <end x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+9" y="9phi+17" z="9phi+29" w="0"/>
+            <end x="5phi+9" y="5phi+15" z="9phi+29" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+            <end x="5phi+3" y="5phi+9" z="9phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+17" y="5phi+3" z="9phi+23" w="0"/>
+            <end x="9phi+17" y="5phi+9" z="9phi+29" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+            <vertex x="9phi+23" y="5phi+15" z="9phi+29" w="0"/>
+            <vertex x="9phi+17" y="5phi+9" z="9phi+29" w="0"/>
+            <vertex x="5phi+15" y="5phi+9" z="9phi+29" w="0"/>
+            <vertex x="5phi+9" y="5phi+15" z="9phi+29" w="0"/>
+            <vertex x="5phi+9" y="9phi+17" z="9phi+29" w="0"/>
+            <vertex x="5phi+15" y="9phi+23" z="9phi+29" w="0"/>
+            <vertex x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+         </polygon>
+         <point x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         <point x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+         <segment>
+            <start x="5phi+3" y="9phi+17" z="5phi+9" w="0"/>
+            <end x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+         </segment>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-1" z="2phi+7" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+1" z="-2phi-13" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </polygon>
+         <point x="9phi+29" y="5phi+15" z="9phi+23" w="0"/>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="2phi+1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-7" y="2phi+1" z="-2phi-13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+7" y="-2phi-1" z="2phi+13" w="0"/>
+            <vertex x="2phi+13" y="-2phi-1" z="2phi+7" w="0"/>
+         </polygon>
+         <point x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         <polygon>
+            <vertex x="5phi+9" y="5phi+3" z="9phi+17" w="0"/>
+            <vertex x="5phi+15" y="5phi+3" z="9phi+23" w="0"/>
+            <vertex x="5phi+15" y="5phi+9" z="9phi+29" w="0"/>
+            <vertex x="5phi+9" y="5phi+15" z="9phi+29" w="0"/>
+            <vertex x="5phi+3" y="5phi+15" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="5phi+9" z="9phi+17" w="0"/>
+         </polygon>
+         <point x="-2phi-1" y="2phi+13" z="2phi+7" w="0"/>
+         <polygon>
+            <vertex x="9phi+29" y="9phi+23" z="5phi+15" w="0"/>
+            <vertex x="9phi+29" y="9phi+17" z="5phi+9" w="0"/>
+            <vertex x="9phi+23" y="9phi+17" z="5phi+3" w="0"/>
+            <vertex x="9phi+17" y="9phi+23" z="5phi+3" w="0"/>
+            <vertex x="9phi+17" y="9phi+29" z="5phi+9" w="0"/>
+            <vertex x="9phi+23" y="9phi+29" z="5phi+15" w="0"/>
+         </polygon>
+         <point x="9phi+29" y="5phi+15" z="5phi+9" w="0"/>
+         <segment>
+            <start x="9phi+17" y="5phi+9" z="5phi+3" w="0"/>
+            <end x="9phi+17" y="5phi+3" z="5phi+9" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="5phi+15" z="5phi+9" w="0"/>
+            <end x="5phi+3" y="5phi+9" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="9phi+23" y="5phi+15" z="9phi+29" w="0"/>
+            <end x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/-2" z="(21phi+48)/-2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+      </CommandHide>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="5phi+3" y="-9phi-17" z="5phi+9" w="0"/>
+         <point x="-5phi-3" y="-9phi-17" z="5phi+9" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="5phi+3" y="-5phi-15" z="5phi+9" w="0"/>
+         <point x="-5phi-3" y="-5phi-15" z="5phi+9" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="5phi+3" y="-5phi-9" z="5phi+15" w="0"/>
+         <point x="-5phi-3" y="-5phi-9" z="5phi+15" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-5phi-9" z="9phi+17" w="0"/>
+         <point x="5phi+3" y="-5phi-9" z="9phi+17" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-9phi-23" z="5phi+15" w="0"/>
+         <point x="5phi+3" y="-9phi-23" z="5phi+15" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-5phi-15" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="-5phi-15" z="9phi+23" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-9phi-23" z="9phi+17" w="0"/>
+         <point x="5phi+3" y="-9phi-23" z="9phi+17" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-9phi-17" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="-9phi-17" z="9phi+23" w="0"/>
+      </CommandJoinPoints>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-5phi-15" z="9phi+23" w="0"/>
+         <point x="-5phi-3" y="-9phi-17" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="-9phi-17" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="-5phi-15" z="9phi+23" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-9phi-23" z="9phi+17" w="0"/>
+         <point x="-5phi-3" y="-9phi-17" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="-9phi-17" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="-9phi-23" z="9phi+17" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-5phi-9" z="9phi+17" w="0"/>
+         <point x="-5phi-3" y="-5phi-15" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="-5phi-15" z="9phi+23" w="0"/>
+         <point x="5phi+3" y="-5phi-9" z="9phi+17" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-5phi-9" z="5phi+15" w="0"/>
+         <point x="-5phi-3" y="-5phi-9" z="9phi+17" w="0"/>
+         <point x="5phi+3" y="-5phi-9" z="9phi+17" w="0"/>
+         <point x="5phi+3" y="-5phi-9" z="5phi+15" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-5phi-15" z="5phi+9" w="0"/>
+         <point x="-5phi-3" y="-5phi-9" z="5phi+15" w="0"/>
+         <point x="5phi+3" y="-5phi-9" z="5phi+15" w="0"/>
+         <point x="5phi+3" y="-5phi-15" z="5phi+9" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-5phi-15" z="5phi+9" w="0"/>
+         <point x="-5phi-3" y="-9phi-17" z="5phi+9" w="0"/>
+         <point x="5phi+3" y="-9phi-17" z="5phi+9" w="0"/>
+         <point x="5phi+3" y="-5phi-15" z="5phi+9" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-9phi-17" z="5phi+9" w="0"/>
+         <point x="-5phi-3" y="-9phi-23" z="5phi+15" w="0"/>
+         <point x="5phi+3" y="-9phi-23" z="5phi+15" w="0"/>
+         <point x="5phi+3" y="-9phi-17" z="5phi+9" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="-9phi-23" z="5phi+15" w="0"/>
+         <point x="-5phi-3" y="-9phi-23" z="9phi+17" w="0"/>
+         <point x="5phi+3" y="-9phi-23" z="9phi+17" w="0"/>
+         <point x="5phi+3" y="-9phi-23" z="5phi+15" w="0"/>
+      </CommandPolygon>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.group">
+            <Symmetry name="octahedral"/>
+         </attr>
+         <polygon>
+            <vertex x="-5phi-3" y="-5phi-15" z="5phi+9" w="0"/>
+            <vertex x="-5phi-3" y="-9phi-17" z="5phi+9" w="0"/>
+            <vertex x="5phi+3" y="-9phi-17" z="5phi+9" w="0"/>
+            <vertex x="5phi+3" y="-5phi-15" z="5phi+9" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-5phi-3" y="-9phi-17" z="5phi+9" w="0"/>
+            <vertex x="-5phi-3" y="-9phi-23" z="5phi+15" w="0"/>
+            <vertex x="5phi+3" y="-9phi-23" z="5phi+15" w="0"/>
+            <vertex x="5phi+3" y="-9phi-17" z="5phi+9" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-5phi-3" y="-9phi-23" z="5phi+15" w="0"/>
+            <vertex x="-5phi-3" y="-9phi-23" z="9phi+17" w="0"/>
+            <vertex x="5phi+3" y="-9phi-23" z="9phi+17" w="0"/>
+            <vertex x="5phi+3" y="-9phi-23" z="5phi+15" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-5phi-3" y="-9phi-23" z="9phi+17" w="0"/>
+            <vertex x="-5phi-3" y="-9phi-17" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="-9phi-17" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="-9phi-23" z="9phi+17" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-5phi-3" y="-5phi-15" z="9phi+23" w="0"/>
+            <vertex x="-5phi-3" y="-9phi-17" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="-9phi-17" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="-5phi-15" z="9phi+23" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-5phi-3" y="-5phi-9" z="9phi+17" w="0"/>
+            <vertex x="-5phi-3" y="-5phi-15" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="-5phi-15" z="9phi+23" w="0"/>
+            <vertex x="5phi+3" y="-5phi-9" z="9phi+17" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-5phi-3" y="-5phi-9" z="5phi+15" w="0"/>
+            <vertex x="-5phi-3" y="-5phi-9" z="9phi+17" w="0"/>
+            <vertex x="5phi+3" y="-5phi-9" z="9phi+17" w="0"/>
+            <vertex x="5phi+3" y="-5phi-9" z="5phi+15" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-5phi-3" y="-5phi-15" z="5phi+9" w="0"/>
+            <vertex x="-5phi-3" y="-5phi-9" z="5phi+15" w="0"/>
+            <vertex x="5phi+3" y="-5phi-9" z="5phi+15" w="0"/>
+            <vertex x="5phi+3" y="-5phi-15" z="5phi+9" w="0"/>
+         </polygon>
+      </CommandSymmetry>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="symmetry.group">
+            <Symmetry name="octahedral"/>
+         </attr>
+         <segment>
+            <start x="-5phi-3" y="-9phi-17" z="9phi+23" w="0"/>
+            <end x="5phi+3" y="-9phi-17" z="9phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="-5phi-3" y="-5phi-15" z="9phi+23" w="0"/>
+            <end x="5phi+3" y="-5phi-15" z="9phi+23" w="0"/>
+         </segment>
+         <segment>
+            <start x="-5phi-3" y="-5phi-9" z="9phi+17" w="0"/>
+            <end x="5phi+3" y="-5phi-9" z="9phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="-5phi-9" z="5phi+15" w="0"/>
+            <end x="-5phi-3" y="-5phi-9" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="-5phi-15" z="5phi+9" w="0"/>
+            <end x="-5phi-3" y="-5phi-15" z="5phi+9" w="0"/>
+         </segment>
+         <segment>
+            <start x="-5phi-3" y="-9phi-23" z="9phi+17" w="0"/>
+            <end x="5phi+3" y="-9phi-23" z="9phi+17" w="0"/>
+         </segment>
+         <segment>
+            <start x="-5phi-3" y="-9phi-23" z="5phi+15" w="0"/>
+            <end x="5phi+3" y="-9phi-23" z="5phi+15" w="0"/>
+         </segment>
+         <segment>
+            <start x="5phi+3" y="-9phi-17" z="5phi+9" w="0"/>
+            <end x="-5phi-3" y="-9phi-17" z="5phi+9" w="0"/>
+         </segment>
+      </CommandSymmetry>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+         <point x="(21phi+48)/-2" y="(21phi+48)/2" z="(21phi+48)/2" w="0"/>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+            <vertex x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+            <vertex x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+            <vertex x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+            <vertex x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+            <vertex x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+            <vertex x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+            <vertex x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+            <vertex x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+            <vertex x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+            <vertex x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="9phi+17" y="9phi+23" z="9phi+29" w="0"/>
+            <vertex x="9phi+23" y="9phi+17" z="9phi+29" w="0"/>
+            <vertex x="9phi+29" y="9phi+17" z="9phi+23" w="0"/>
+            <vertex x="9phi+29" y="9phi+23" z="9phi+17" w="0"/>
+            <vertex x="9phi+23" y="9phi+29" z="9phi+17" w="0"/>
+            <vertex x="9phi+17" y="9phi+29" z="9phi+23" w="0"/>
+         </polygon>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="2phi+13" y="2phi+7" z="2phi+1" w="0"/>
+            <vertex x="2phi+13" y="2phi+1" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+1" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+7" z="2phi+13" w="0"/>
+            <vertex x="2phi+1" y="2phi+13" z="2phi+7" w="0"/>
+            <vertex x="2phi+7" y="2phi+13" z="2phi+1" w="0"/>
+         </polygon>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-2phi-13" y="-2phi-1" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-13" y="-2phi-7" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-13" z="-2phi-1" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-13" z="-2phi-7" w="0"/>
+            <vertex x="-2phi-1" y="-2phi-7" z="-2phi-13" w="0"/>
+            <vertex x="-2phi-7" y="-2phi-1" z="-2phi-13" w="0"/>
+         </polygon>
+      </CommandHide>
+      <CommandHide>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <polygon>
+            <vertex x="-9phi-29" y="-9phi-23" z="-9phi-17" w="0"/>
+            <vertex x="-9phi-29" y="-9phi-17" z="-9phi-23" w="0"/>
+            <vertex x="-9phi-23" y="-9phi-17" z="-9phi-29" w="0"/>
+            <vertex x="-9phi-17" y="-9phi-23" z="-9phi-29" w="0"/>
+            <vertex x="-9phi-17" y="-9phi-29" z="-9phi-23" w="0"/>
+            <vertex x="-9phi-23" y="-9phi-29" z="-9phi-17" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-9phi-17" y="-9phi-29" z="-9phi-23" w="0"/>
+            <vertex x="-9phi-23" y="-9phi-29" z="-9phi-17" w="0"/>
+            <vertex x="-9phi-29" y="-9phi-23" z="-9phi-17" w="0"/>
+            <vertex x="-9phi-29" y="-9phi-17" z="-9phi-23" w="0"/>
+            <vertex x="-9phi-23" y="-9phi-17" z="-9phi-29" w="0"/>
+            <vertex x="-9phi-17" y="-9phi-23" z="-9phi-29" w="0"/>
+         </polygon>
+         <polygon>
+            <vertex x="-9phi-23" y="-9phi-17" z="-9phi-29" w="0"/>
+            <vertex x="-9phi-17" y="-9phi-23" z="-9phi-29" w="0"/>
+            <vertex x="-9phi-17" y="-9phi-29" z="-9phi-23" w="0"/>
+            <vertex x="-9phi-23" y="-9phi-29" z="-9phi-17" w="0"/>
+            <vertex x="-9phi-29" y="-9phi-23" z="-9phi-17" w="0"/>
+            <vertex x="-9phi-29" y="-9phi-17" z="-9phi-23" w="0"/>
+         </polygon>
+      </CommandHide>
+   </editHistory>
+</vzome:vZome>

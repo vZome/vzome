@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="rootThree" version="3.0 beta 2" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
+  <Viewing>
+    <ViewModel near="1.0381237947661233" far="830.4990234375002" width="186.86228027343742" distance="415.24951171875"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.19940870592010684" y="0.9722574697277185" z="0.1222766558339431"/>
+      <LookDirection x="-0.13198520721059298" y="0.09699719992692096" z="-0.9864945252174091"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="dodecagonal" renderingStyle="prisms">
+    <Direction name="blue" available="true" snap="true" build="true" render="true" color="0,118,149">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="98">
+    <StrutCreation anchor="0 0 0 0 0 0" symm="dodecagonal" index="1" len="18 0"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 9 9 0 0 0"/>
+    <SelectManifestation point="0 9 9 0 0 0"/>
+    <SelectManifestation point="0 9 9 0 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 9 9 0 0 0"/>
+    <SelectManifestation point="0 9 9 0 0 0"/>
+    <EndBlock/>
+    <StrutCreation anchor="0 9 9 0 0 0" symm="dodecagonal" index="0" len="18 0"/>
+    <StrutCreation anchor="18 9 9 0 0 0" symm="dodecagonal" index="11" len="18 0"/>
+    <StrutCreation anchor="18 18 0 0 0 0" symm="dodecagonal" index="10" len="18 0"/>
+    <StrutCreation anchor="27 18 0 -9 0 0" symm="dodecagonal" index="9" len="18 0"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation point="18 9 9 0 0 0"/>
+    <SelectManifestation point="0 9 9 0 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="dodecagonal" index="0" len="18 0"/>
+    <StrutCreation anchor="18 0 0 0 0 0" symm="dodecagonal" index="11" len="18 0"/>
+    <StrutCreation anchor="18 9 -9 0 0 0" symm="dodecagonal" index="10" len="18 0"/>
+    <StrutCreation anchor="27 9 -9 -9 0 0" symm="dodecagonal" index="9" len="18 0"/>
+    <BeginBlock/>
+    <SelectManifestation point="18 9 9 0 0 0"/>
+    <SelectManifestation point="18 0 0 0 0 0"/>
+    <SelectManifestation point="18 18 0 0 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <DodecagonSymmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="18 18 0 0 0 0"/>
+    <SelectManifestation point="18 9 -9 0 0 0"/>
+    <SelectManifestation point="27 18 0 -9 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <DodecagonSymmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="27 18 0 -9 0 0"/>
+    <SelectManifestation point="27 9 -9 -9 0 0"/>
+    <SelectManifestation point="27 18 -18 -9 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="27 18 -18 -9 0 0" symm="dodecagonal" index="8" len="18 0"/>
+    <BeginBlock/>
+    <SelectManifestation point="18 18 -18 -18 0 0"/>
+    <SelectManifestation point="27 9 -27 -9 0 0"/>
+    <SelectManifestation point="27 18 -18 -9 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <DodecagonSymmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="27 18 -18 -9 0 0" endSegment="18 18 -18 -18 0 0"/>
+    <SelectManifestation point="18 18 -18 -18 0 0"/>
+    <SelectManifestation point="18 18 -18 -18 0 0"/>
+    <EndBlock/>
+    <DodecagonSymmetry/>
+    <StrutCreation anchor="18 18 -18 -18 0 0" symm="dodecagonal" index="7" len="18 0"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="18 18 -18 -18 0 0" endSegment="18 9 -27 -18 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="18 18 -18 -18 0 0" endSegment="18 9 -27 -18 0 0"/>
+    <EndBlock/>
+    <DodecagonSymmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="18 18 -18 -18 0 0"/>
+    <SelectManifestation point="18 9 -27 -18 0 0"/>
+    <SelectManifestation point="27 9 -27 -9 0 0"/>
+    <SelectManifestation startSegment="27 9 -9 -9 0 0" endSegment="27 9 -27 -9 0 0"/>
+    <SelectManifestation point="27 9 -9 -9 0 0"/>
+    <SelectManifestation startSegment="18 9 -9 0 0 0" endSegment="27 9 -9 -9 0 0"/>
+    <SelectManifestation point="18 9 -9 0 0 0"/>
+    <SelectManifestation startSegment="18 0 0 0 0 0" endSegment="18 9 -9 0 0 0"/>
+    <SelectManifestation point="18 0 0 0 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="18 0 0 0 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 9 9 0 0 0"/>
+    <SelectManifestation point="0 9 9 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 0"/>
+      <polygonVertex at="18 9 9 0 0 0"/>
+      <polygonVertex at="0 9 9 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 0"/>
+      <polygonVertex at="18 9 9 0 0 0"/>
+      <polygonVertex at="0 9 9 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation startSegment="0 9 9 0 0 0" endSegment="18 9 9 0 0 0"/>
+    <SelectManifestation point="18 9 9 0 0 0"/>
+    <SelectManifestation startSegment="18 9 9 0 0 0" endSegment="18 18 0 0 0 0"/>
+    <SelectManifestation point="18 18 0 0 0 0"/>
+    <SelectManifestation startSegment="18 18 0 0 0 0" endSegment="27 18 0 -9 0 0"/>
+    <SelectManifestation point="27 18 0 -9 0 0"/>
+    <SelectManifestation startSegment="27 18 0 -9 0 0" endSegment="27 18 -18 -9 0 0"/>
+    <SelectManifestation point="27 18 -18 -9 0 0"/>
+    <EndBlock/>
+    <Hide/>
+  </EditHistory>
+  <notes>
+    <page title="How to save notes">
+      <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">You can create as many pages as you like, using the '+' buttons in either direction.
+
+For now, only the text and the view of the model are different from one page to the next.  In the next update, each page will allow a different model entirely.
+
+Eventually there will be a 'vZome Player' application that will display the pages.
+</content>
+    </page>
+  </notes>
+</vzome:vZome>

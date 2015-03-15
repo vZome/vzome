@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" xmlns:vzome="http://tns.vorthmann.org/vZome/2.0.3/">
+   <editHistory editNumber="30">
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="25"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="0"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="phi+1" y="-2phi-1" z="-3phi-2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="10"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="5phi+3" y="-2phi-1" z="-3phi-2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="11"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="3phi+2" y="phi+1" z="2phi+1" w="0"/>
+         <point x="6phi+4" y="0" z="0" w="0"/>
+      </CommandJoinPoints>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="45"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="3phi+2"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="47"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="3phi+2"/>
+         </attr>
+         <point x="phi+1" y="-2phi-1" z="-3phi-2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="47"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="-5phi-3" y="3phi+2" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-10phi-6" y="3phi+2" z="-8phi-5" w="0"/>
+         <point x="-2phi-1" y="-2phi-1" z="-8phi-5" w="0"/>
+      </CommandJoinPoints>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="17"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="3phi+2"/>
+         </attr>
+         <point x="5phi+3" y="-2phi-1" z="-3phi-2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="0"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="3phi+2"/>
+         </attr>
+         <point x="6phi+4" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="1"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="3phi+2"/>
+         </attr>
+         <point x="3phi+2" y="phi+1" z="2phi+1" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="17"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="-2phi-1" y="-2phi-1" z="-8phi-5" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="0"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="8phi+5" y="-2phi-1" z="-8phi-5" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="1"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="11phi+7" y="3phi+2" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="45"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="3phi+2" y="6phi+4" z="5phi+3" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-5phi-3" y="11phi+7" z="5phi+3" w="0"/>
+         <point x="-5phi-3" y="3phi+2" z="0" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="8phi+5" y="-2phi-1" z="-8phi-5" w="0"/>
+         <point x="3phi+2" y="-2phi-1" z="-16phi-10" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="11phi+7" y="11phi+7" z="5phi+3" w="0"/>
+         <point x="3phi+2" y="6phi+4" z="5phi+3" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="11phi+7" y="3phi+2" z="0" w="0"/>
+         <point x="16phi+10" y="3phi+2" z="-8phi-5" w="0"/>
+      </CommandJoinPoints>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="1"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="-5phi-3" y="11phi+7" z="5phi+3" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="54"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="-10phi-6" y="3phi+2" z="-8phi-5" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="17"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="3phi+2" y="-2phi-1" z="-16phi-10" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="3"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="16phi+10" y="3phi+2" z="-8phi-5" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="6"/>
+         </attr>
+         <attr name="length">
+            <IntegralNumber value="5phi+3"/>
+         </attr>
+         <point x="11phi+7" y="11phi+7" z="5phi+3" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-10phi-6" y="24phi+15" z="5phi+3" w="0"/>
+         <point x="16phi+10" y="24phi+15" z="5phi+3" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="16phi+10" y="24phi+15" z="5phi+3" w="0"/>
+         <point x="24phi+15" y="11phi+7" z="-16phi-10" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-10phi-6" y="24phi+15" z="5phi+3" w="0"/>
+         <point x="-18phi-11" y="11phi+7" z="-16phi-10" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-18phi-11" y="11phi+7" z="-16phi-10" w="0"/>
+         <point x="3phi+2" y="3phi+2" z="-29phi-18" w="0"/>
+      </CommandJoinPoints>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="24phi+15" y="11phi+7" z="-16phi-10" w="0"/>
+         <point x="3phi+2" y="3phi+2" z="-29phi-18" w="0"/>
+      </CommandJoinPoints>
+   </editHistory>
+</vzome:vZome>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" xmlns:vzome="http://tns.vorthmann.org/vZome/2.1.0/">
+   <EditHistory editNumber="10">
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="red" index="47"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="8phi+5"/>
+         </attr>
+      </StrutCreation>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="orange" index="46"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="8phi+5"/>
+         </attr>
+      </StrutCreation>
+      <CommandCentroid>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="-8phi-5" y="0" z="-13phi-8" w="0"/>
+         <point x="(8phi+5)/2" y="(29phi+18)/2" z="(5phi+3)/-2" w="0"/>
+      </CommandCentroid>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(8phi+5)/-4" y="(29phi+18)/4" z="(-31phi-19)/4" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="38"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="4phi+2"/>
+         </attr>
+      </StrutCreation>
+      <SymmetryCenterChange>
+         <attr name="old">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <attr name="new">
+            <point x="(20phi+13)/-4" y="(33phi+22)/4" z="(-23phi-15)/4"
+            w="0"/>
+         </attr>
+      </SymmetryCenterChange>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="-8phi-5" y="0" z="-13phi-8" w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="orange" index="46"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="8phi+5"/>
+         </attr>
+      </StrutCreation>
+      <CommandJoinPoints>
+         <attr name="symmetry.center">
+            <point x="(20phi+13)/-4" y="(33phi+22)/4" z="(-23phi-15)/4"
+            w="0"/>
+         </attr>
+         <point x="(8phi+5)/-2" y="(29phi+18)/2" z="(31phi+19)/-2" w="0"/>
+         <point x="(8phi+5)/2" y="(29phi+18)/2" z="(5phi+3)/-2" w="0"/>
+      </CommandJoinPoints>
+      <StrutCreation>
+         <attr name="anchor">
+            <point x="(20phi+13)/-4" y="(33phi+22)/4" z="(-23phi-15)/4"
+            w="0"/>
+         </attr>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="turquoise" index="40" sense="minus"/>
+         </attr>
+         <attr name="len">
+            <IntegralNumber value="phi"/>
+         </attr>
+      </StrutCreation>
+      <SymmetryCenterChange>
+         <attr name="old">
+            <point x="(20phi+13)/-4" y="(33phi+22)/4" z="(-23phi-15)/4"
+            w="0"/>
+         </attr>
+         <attr name="new">
+            <point x="(24phi+5)/-4" y="(33phi+30)/4" z="(-27phi-19)/4"
+            w="0"/>
+         </attr>
+      </SymmetryCenterChange>
+      <CommandSymmetry>
+         <attr name="symmetry.center">
+            <point x="(24phi+5)/-4" y="(33phi+30)/4" z="(-27phi-19)/4"
+            w="0"/>
+         </attr>
+         <point x="(8phi+5)/-2" y="(29phi+18)/2" z="(31phi+19)/-2" w="0"/>
+         <point x="-8phi-5" y="0" z="-13phi-8" w="0"/>
+         <point x="(8phi+5)/2" y="(29phi+18)/2" z="(5phi+3)/-2" w="0"/>
+         <point x="0" y="0" z="0" w="0"/>
+         <segment>
+            <start x="-8phi-5" y="0" z="-13phi-8" w="0"/>
+            <end x="(8phi+5)/-2" y="(29phi+18)/2" z="(31phi+19)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="(8phi+5)/-2" y="(29phi+18)/2" z="(31phi+19)/-2" w="0"/>
+            <end x="(8phi+5)/2" y="(29phi+18)/2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="-8phi-5" y="0" z="-13phi-8" w="0"/>
+         </segment>
+         <segment>
+            <start x="0" y="0" z="0" w="0"/>
+            <end x="(8phi+5)/2" y="(29phi+18)/2" z="(5phi+3)/-2" w="0"/>
+         </segment>
+      </CommandSymmetry>
+   </EditHistory>
+</vzome:vZome>
