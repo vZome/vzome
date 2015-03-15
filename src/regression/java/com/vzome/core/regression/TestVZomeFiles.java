@@ -12,9 +12,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,9 +82,9 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 	
 	private Element testCase;
 	
-    private final static String BROWSER = "http://imac:8000/trac/browser/vZome2/attachments";
+    private final static String BROWSER = "https://github.com/vorth/vzome-core/blob/master/src/regression/files";
     
-    private final static String EXPORTS = "http://imac:8000/trac/export/HEAD/vZome2/attachments";
+    private final static String EXPORTS = "https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files";
     
 	private Element collectResults()
 	{
@@ -247,9 +251,14 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
             testSuite .addAttribute( new Attribute( "errors", "0" ) );
             testSuite .addAttribute( new Attribute( "failures", "0" ) );
             testSuite .addAttribute( new Attribute( "name", suiteName ) );
-            testSuite .addAttribute( new Attribute( "hostname", "Flori-iMac.local" ) );
+            String hostName = System.getenv("HOSTNAME");
+            if ( hostName == null )
+                hostName = "localhost";
+            testSuite .addAttribute( new Attribute( "hostname", hostName ) );
             testSuite .addAttribute( new Attribute( "time", "4.363" ) );
-            testSuite .addAttribute( new Attribute( "timestamp", "2009-10-13T06:58:29" ) );
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = new Date();
+            testSuite .addAttribute( new Attribute( "timestamp", dateFormat.format( date ) ) );
             testSuite .appendChild( new Element( "properties" ) );
             testSuite .appendChild( testCase );
             Element stdOut = new Element( "system-out" );
