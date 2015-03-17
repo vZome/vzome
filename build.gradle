@@ -55,8 +55,14 @@ task makeRegressionOutput << {
     regressionOutputDir.mkdirs()
 }
 task regression(type: JavaExec, dependsOn: check) {
-    // TODO put this into help --task regression
-    // customize regression task with -PregressionHome=... and/or -PregressionFile=..."
+    description = """\
+    Run regression testing
+        command-line options:
+            -PregressionHome=src/regression/files     (default shown, value can be absolute or relative)
+            -PregressionFile=sniff-test.vZome-files   (default shown, relative to regressionHome)
+    If the regressionFile is a ".vZome-files" file, it can contain paths that are
+    resolved relative to regressionHome.
+    """
     def testHome = 'src/regression/files'
     if( project .hasProperty( "regressionHome" ) ){
         testHome = regressionHome
