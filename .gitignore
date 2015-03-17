@@ -1,5 +1,6 @@
 // folders
 .gradle/
+.idea/
 .nb-gradle/
 .settings/
 bin/
@@ -16,3 +17,4 @@ temp/
 .project
 gradle-app.setting
 Thumbs.db
+vzome-core.iml
