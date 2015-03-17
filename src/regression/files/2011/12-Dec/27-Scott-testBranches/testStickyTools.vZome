@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" edition="vZome" version="4.0, build 0" revision="999" xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/">
+  <sceneModel ambientLight="45,45,45" background="12,14,5">
+    <directionalLight x="1.0" y="-1.0" z="-1.0" color="236,236,236"/>
+    <directionalLight x="-1.0" y="0.0" z="0.0" color="236,236,236"/>
+    <directionalLight x="0.0" y="0.0" z="-1.0" color="30,30,30"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.15622223350703907" y="0.8868518367125805" z="0.43484299865307047"/>
+      <LookDirection x="0.3306782483822901" y="0.46180329011849847" z="-0.8230368262007183"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors" single="true">
+    <Direction name="blue" available="true" snap="true" build="true" render="true" color="0,160,228">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" render="true" color="175,0,0">
+      <LengthModel scale="2" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="orange" available="true" render="true" color="220,76,0">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="purple" available="true" render="true" color="108,0,198">
+      <LengthModel scale="5" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="black" render="true" color="30,30,30">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="lavender" render="true" color="175,135,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="olive" render="true" color="100,113,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="maroon" render="true" color="117,0,50">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="rose" render="true" color="255,51,143">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="navy" render="true" color="0,0,153">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="turquoise" render="true" color="18,205,148">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="coral" render="true" color="255,126,106">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sulfur" render="true" color="230,245,62">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sand" render="true" color="154,117,74">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="apple" render="true" color="116,195,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="cinnamon" render="true" color="136,37,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="spruce" render="true" color="18,73,48">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="brown" color="107,53,26">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="8">
+    <Branch>
+      <StrutCreation anchor="0 0 0 0 0 0" index="2" len="2 4"/>
+      <StrutCreation anchor="0 0 0 0 0 0" index="1" len="2 4"/>
+      <StrutCreation anchor="0 0 0 0 0 0" index="0" len="2 4"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="6" len="1 1"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="15" len="1 2"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 3 -1 -2 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="1 1 2 3 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 0 2 4"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <DeselectAll/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 3 -1 -2 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 0 2 4"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="1 1 2 3 0 0"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.2/red 0-1"/>
+      <DeselectAll/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="1" len="1 1"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="15" len="1 1"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="1 2 -1 -1 0 0"/>
+      <SelectManifestation point="1 2 -1 -1 0 0"/>
+      <SelectManifestation point="1 2 -1 -1 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-1 -1 2 3 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 0 2 4"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.6/red 0-2"/>
+      <DeselectAll/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="0" len="1 1"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="2" len="1 1"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 -1 -1 2 3"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-1 -1 2 3 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 3 0 0 -1 -1"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.7/yellow 0-1"/>
+      <DeselectAll/>
+      <StrutCreation anchor="0 0 0 0 0 0" index="1" len="2 2"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="51" len="2 2"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 2 2 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-2 -2 2 2 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 0 2 4"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.14/red 1-2"/>
+      <DeselectAll/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="6" len="2 4"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="7" len="2 4"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="8" len="2 4"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 4 0 0 2 4"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 2 4 2 4"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 4 2 4 0 0"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <DeselectAll/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 4 0 0 2 4"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 4 2 4 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 2 4 2 4"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.16/yellow 1-0"/>
+      <DeselectAll/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="purple" index="45" len="1 1"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="orange" index="36" len="1 2"/>
+      <StrutCreation anchor="-2 -3 1 1 0 0" index="2" len="2 3"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-1 -2 -2 -3 0 0"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-2 -3 1 1 0 0"/>
+      <SelectManifestation startSegment="-2 -3 1 1 0 0" endSegment="-2 -3 1 1 2 3"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.17/red 1-0"/>
+      <DeselectAll/>
+      <StrutCreation anchor="0 0 0 0 0 0" index="47" len="2 3"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="purple" index="0" len="2 3"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="orange" index="36" len="2 3"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-2 -3 -3 -5 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="5 8 2 3 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 0 -2 -3"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <DeselectAll/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-2 -3 -3 -5 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 0 -2 -3"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="5 8 2 3 0 0"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.19/red 2-0"/>
+      <DeselectAll/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="36" len="2 4"/>
+      <StrutCreation anchor="-2 -4 -2 -4 0 0" index="47" len="2 2"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 4 0 0 0 0"/>
+      <SelectManifestation startSegment="-2 -4 -2 -4 0 0" endSegment="-2 -4 -2 -4 -2 -2"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="-2 -4 -2 -4 0 0"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.21/red 2-1"/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectAll/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <Hide>
+        <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+      </Hide>
+    </Branch>
+    <StrutCreation anchor="0 0 0 0 0 0" index="10" len="2 4"/>
+    <StrutCreation anchor="1 1 1 2 2 3" index="11" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation point="3 4 2 3 3 5"/>
+    <EndBlock/>
+    <TranslationTool name="translation.1/translation.1"/>
+  </EditHistory>
+  <notes/>
+</vzome:vZome>

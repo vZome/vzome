@@ -55,9 +55,21 @@ task makeRegressionOutput << {
     regressionOutputDir.mkdirs()
 }
 task regression(type: JavaExec, dependsOn: check) {
+    // TODO put this into help --task regression
+    // customize regression task with -PregressionHome=... and/or -PregressionFile=..."
+    def testHome = 'src/regression/files'
+    if( project .hasProperty( "regressionHome" ) ){
+        testHome = regressionHome
+        println "testHome is $testHome"
+    }
+    def testFile = 'sniff-test.vZome-files'
+    if( project .hasProperty( "regressionFile" ) ){
+        testFile = regressionFile
+        println "testFile is $testFile"
+    }
     classpath = sourceSets.regression.runtimeClasspath
     main = 'com.vzome.core.regression.TestVZomeFiles'
-    args( 'src/regression/files', 'sniff-test.vZome-files', 'build/test-results/regression/TEST-output.xml' )
+    args( testHome, testFile, 'build/test-results/regression/TEST-output.xml' )
     jvmArgs( '-Xmx3048M' )
 }
 regression.dependsOn makeRegressionOutput
