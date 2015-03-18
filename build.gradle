@@ -55,6 +55,7 @@ task makeRegressionOutput << {
     regressionOutputDir.mkdirs()
 }
 task regression(type: JavaExec, dependsOn: check) {
+    group = 'Verification'
     description = """\
     Run regression testing
         command-line options:
