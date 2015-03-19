@@ -6,10 +6,16 @@ apply plugin: 'eclipse'
 group = 'com.vzome.core'
 version = '0.2'
 
-description = """vzome-core"""
+description = "vzome-core"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
+
+ext.antlr4 = [
+    antlrSource: "src/main/antlr",
+    destinationDir: "src/antlr-generated/java",
+    grammarpackage: "com.vzome.core.grammar"
+]
 
 repositories {
     mavenCentral()
@@ -22,6 +28,11 @@ repositories {
     }
 }
 
+configurations {
+    antlr4 {
+        description = "ANTLR4"
+    }
+}
 
 // Support for decoupled "regression" task
 sourceSets {
@@ -33,6 +44,7 @@ sourceSets {
 
 dependencies {
     compile     group: 'antlr',             name: 'antlr',             version:'2.7.7'
+    compile     group: 'org.antlr',         name: 'antlr4',            version:'4.5'
     compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre11'
     compile     group: 'org.python',        name: 'jython',            version:'2.7-b4'
     compile     group: 'javax.servlet',     name: 'servlet-api',       version:'2.5'
@@ -45,7 +57,7 @@ dependencies {
     testCompile group: 'junit',             name: 'junit',             version:'3.8.1'
     testCompile group: 'xom',               name: 'xom',               version:'1.2.5'
 
-//  antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.5'
+    antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.5'
 
     regressionCompile sourceSets.main.output
     regressionCompile configurations.testCompile
@@ -53,11 +65,87 @@ dependencies {
     regressionRuntime configurations.testRuntime
 }
 
+
+// Antlr tasks
+task makeAntlrOutputDir << {
+    //String pkg = antlr4.grammarpackage.replaceAll("\\.", "/")
+    String dstRoot = antlr4.destinationDir //+ "/" + pkg
+    file(dstRoot).mkdirs()
+}
+
+
+// This is a start in ase we ever want to put each language into its own folder.
+// It got messy to do with separate Lexer and Parser grammars so I dumped them all in the same folder for now
+// We may eventually remove this part if we dont use it.
+
+//task makeAntlrOutputDirTree << {
+//    String pkg = antlr4.grammarpackage.replaceAll("\\.", "/")
+//    String srcRoot = antlr4.antlrSource + "/" + pkg'
+//    String dstRoot = antlr4.destinationDir + "/" + pkg
+//    def tree = fileTree(srcRoot).include('**/*.g4')
+//    tree.visit {element ->
+//        // this will only build the dstPath folder if there is a .g4 file under the srcRoot folder
+//        if (!element.isDirectory()) {
+//            String dstPath = dstRoot + "/" + element.relativePath
+//            //println "dstPath = " + dstPath
+//            // strip filename from dstPath so only folders remain
+//            dstPath = dstPath.substring(0, dstPath.lastIndexOf("/"))
+//            //println "DstPath = " + dstPath
+//            file(dstPath).mkdirs()
+//        }
+//    }
+//}
+
+task compileGrammars(type: JavaExec, dependsOn: makeAntlrOutputDir) {
+    // Grammars are conveniently sorted alphabetically. I assume that will remain true.
+    // That ensures that files named *Lexer.g4 are listed and therefore processed before the corresponding *Parser.g4
+    // It matters because the Lexer must be processed first since the Parser needs the .tokens file from the Lexer.
+    // Also note that the output file naming convention for combined grammars is slightly different from separate Lexer and Parser grammars.
+    // Also, changing the args to antlr will change the files it generates which affects the outputs collection.
+    def grammars = fileTree(antlr4.antlrSource).include('**/*.g4')
+    //def pkg = antlr4.grammarpackage.replaceAll("\\.", "/")
+    def target = file("${antlr4.destinationDir}") ///${pkg}")
+    inputs.files grammars
+    // TODO: This output spec is incorrect, so this task is never considered up to date.
+    // TODO: Tweak the outputs collection so it is correct with combined grammars as well as separate Lexer and Parser grammars.
+    outputs.dir target
+
+    main = 'org.antlr.v4.Tool'
+    classpath = configurations.antlr4
+    // Antlr command line args are at https://theantlrguy.atlassian.net/wiki/display/ANTLR4/ANTLR+Tool+Command+Line+Options
+    args = ["-o", target,
+            "-lib", target,
+            //"-listener",      //"-listener" is the default
+            //"-no-visitor",    //"-no-visitor" is the default
+            "-package", antlr4.grammarpackage,
+            grammars.files //grammars.collect{ relativePath(it) } // may want to do something with relative paths so leave this sample code here for now
+    ].flatten()
+    //println args
+
+    // include optional description and group (shown by ./gradlew tasks command)
+    description = 'Generates Java sources from ANTLR4 grammars.'
+    group       = 'Build'
+}
+
+compileJava {
+    dependsOn compileGrammars
+    source antlr4.destinationDir
+}
+
+task cleanAntlr {
+    //println 'Deleting ' + antlr4.destinationDir
+    delete antlr4.destinationDir
+}
+clean.dependsOn cleanAntlr
+
+
 // These tasks are used to run the vZome regression test suite
-def regressionOutputDir = new File('build/test-results/regression')
-task makeRegressionOutput << {
+def regressionOutputDir = new File(buildDir.toString() + '/test-results/regression')
+task makeRegressionOutputDir << {
+    //println 'Making Regression Output Directory: ' + regressionOutputDir
     regressionOutputDir.mkdirs()
 }
+
 task regression(type: JavaExec, dependsOn: check) {
     group = 'Verification'
     description = """\
