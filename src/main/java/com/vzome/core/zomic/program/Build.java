@@ -7,7 +7,7 @@ import com.vzome.core.zomic.ZomicException;
  * 
  * @author Scott Vorthmann 2003
  */
-public class Build extends Anything {
+public class Build extends ZomicStatement {
 
     private  boolean m_build, m_destroy;
 

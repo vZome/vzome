@@ -114,13 +114,13 @@ public class Interpreter extends Visitor.Default
 
     //
     // public static
-    // void render( Anything program, StatelessRenderer renderer ) throws
+    // void render( ZomicProgram program, StatelessRenderer renderer ) throws
     // ZomeException {
     //        render( program, new StatelessRendererAdapter( renderer ) );
     //    }
     //
     //    public static 
-    //    void render( Anything program, MutableStructure structure ) throws ZomeException {
+    //    void render( ZomicProgram program, MutableStructure structure ) throws ZomeException {
     //        render( program, new Renderer2Structure( structure ) );
     //    }
 

@@ -16,7 +16,7 @@ import com.vzome.core.zomic.Interpreter;
 import com.vzome.core.zomic.ZomicException;
 import com.vzome.core.zomic.parser.ErrorHandler;
 import com.vzome.core.zomic.parser.Parser;
-import com.vzome.core.zomic.program.Anything;
+import com.vzome.core.zomic.program.ZomicStatement;
 
 /**
  * @author Scott Vorthmann
@@ -50,7 +50,7 @@ public class CommandExecuteZomicScript extends AbstractCommand
 
     private static final Object[][] PARAM_SIGNATURE = new Object[][]{ { "start", Point.class } };
 
-    private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { SCRIPT_ATTR, Anything.class } };
+    private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { SCRIPT_ATTR, ZomicStatement.class } };
 
     public Object[][] getParameterSignature()
     {
@@ -69,7 +69,7 @@ public class CommandExecuteZomicScript extends AbstractCommand
         String script = (String) attrs .get( SCRIPT_ATTR );
         Parser parser = new Parser( (IcosahedralSymmetry) symmetry );
         List errors = new ArrayList();
-        Anything program = parser .parse(
+        ZomicStatement program = parser .parse(
             new ByteArrayInputStream( script .getBytes() ), new ErrorHandler.Default( errors ), "" );
         if ( errors.size() > 0 )
             throw new Failure( (String) errors .get(0) );

@@ -22,12 +22,12 @@ import com.vzome.core.zomic.Interpreter;
 import com.vzome.core.zomic.ZomicException;
 import com.vzome.core.zomic.parser.ErrorHandler;
 import com.vzome.core.zomic.parser.Parser;
-import com.vzome.core.zomic.program.Anything;
+import com.vzome.core.zomic.program.ZomicStatement;
 
 public class RunZomicScript extends ChangeConstructions
 {
     private String programText;
-    private Anything zomicProgram;
+    private ZomicStatement zomicProgram;
     private Point origin;
     private IcosahedralSymmetry symm;
 
@@ -58,11 +58,11 @@ public class RunZomicScript extends ChangeConstructions
         zomicProgram = parseScript( programText );
     }
     
-    protected Anything parseScript( String script ) throws Failure
+    protected ZomicStatement parseScript( String script ) throws Failure
     {
         Parser parser = new Parser( symm );
         List errors = new ArrayList();
-        Anything program = parser .parse(
+        ZomicStatement program = parser .parse(
             new ByteArrayInputStream( script .getBytes() ), new ErrorHandler.Default( errors ), "" );
         if ( errors.size() > 0 )
             throw new Failure( (String) errors .get(0) );

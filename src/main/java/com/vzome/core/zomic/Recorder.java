@@ -8,7 +8,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.render.ZomicEventHandler;
-import com.vzome.core.zomic.program.Anything;
+import com.vzome.core.zomic.program.ZomicStatement;
 import com.vzome.core.zomic.program.Build;
 import com.vzome.core.zomic.program.Move;
 import com.vzome.core.zomic.program.Reflect;
@@ -25,7 +25,7 @@ public class Recorder implements ZomicEventHandler
 {
     public interface Output
     {
-        void statement( Anything stmt );
+        void statement( ZomicStatement stmt );
     }
     
     protected Output mOutput;
@@ -37,7 +37,7 @@ public class Recorder implements ZomicEventHandler
         mOutput = output;
     }
 
-    public void record( Anything stmt )
+    public void record( ZomicStatement stmt )
     {
         if ( ! mSaves .isEmpty() )
             ((Walk) mSaves .peek()) .addStatement( stmt );

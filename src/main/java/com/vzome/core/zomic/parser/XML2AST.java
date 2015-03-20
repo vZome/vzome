@@ -12,7 +12,7 @@ import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.render.ZomicEventHandler;
 import com.vzome.core.zomic.ZomicNamingConvention;
-import com.vzome.core.zomic.program.Anything;
+import com.vzome.core.zomic.program.ZomicStatement;
 import com.vzome.core.zomic.program.Build;
 import com.vzome.core.zomic.program.Label;
 import com.vzome.core.zomic.program.Move;
@@ -44,17 +44,17 @@ public class XML2AST extends DefaultHandler
 			m_stmts .push( new Walk() );
 		}
 
-	public Anything getProgram()
+	public ZomicStatement getProgram()
 	{
-		return (Anything) m_stmts .firstElement();
+		return (ZomicStatement) m_stmts .firstElement();
 	}
 
 	public 
 	void startElement( String namespaceURI, String localName,
 	String qName, Attributes atts ) throws SAXException
 	{
-		Anything newStmt = null;
-		Anything currStmt = (Anything) m_stmts .peek();
+		ZomicStatement newStmt = null;
+		ZomicStatement currStmt = (ZomicStatement) m_stmts .peek();
 		if ( "through" .equals( localName ) ) {
 			Permute permute = null;
 			if ( currStmt instanceof Symmetry ){

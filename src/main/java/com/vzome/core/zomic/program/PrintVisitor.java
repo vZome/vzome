@@ -42,15 +42,15 @@ public class PrintVisitor extends Visitor .Default{
 			return;
         }
         if ( state == ZomicEventHandler .ACTION ) {
-        	Anything body = save .getBody();
+        	ZomicStatement body = save .getBody();
         	if ( body instanceof Walk ){
         		Walk walk = (Walk) body;
         		if ( walk .size() == 2 ){
         			Iterator it = walk .getStatements();
-        			Anything stmt = (Anything) it .next();
+        			ZomicStatement stmt = (ZomicStatement) it .next();
         			if ( stmt instanceof Build
         			&& ((Build) stmt) .justMoving() ) {
-        				stmt = (Anything) it .next();
+        				stmt = (ZomicStatement) it .next();
         				print( "from " );
         				stmt .accept( this );
         				return;
@@ -81,7 +81,7 @@ public class PrintVisitor extends Visitor .Default{
 	public  void visitWalk( Walk walk ) throws ZomicException
 	{
 		if ( walk .size() == 1 ) {
-			((Anything) walk .getStatements() .next()) .accept( this );
+			((ZomicStatement) walk .getStatements() .next()) .accept( this );
 			return;
 		}
 		println( "{" );
@@ -201,7 +201,7 @@ public class PrintVisitor extends Visitor .Default{
 			File file = new File( args[0] );
 			PentagonField field = new PentagonField();
             IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
-			Anything program = Parser .parse( new FileInputStream( file ), symmetry );
+			ZomicStatement program = Parser .parse( new FileInputStream( file ), symmetry );
 			PrintWriter out = new PrintWriter( System.out );
 			program .accept( new PrintVisitor( out, symmetry ) );
 			out .close();

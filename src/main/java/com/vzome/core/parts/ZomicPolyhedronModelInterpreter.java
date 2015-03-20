@@ -11,7 +11,7 @@ import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.AbstractZomicEventHandler;
 import com.vzome.core.zomic.Interpreter;
-import com.vzome.core.zomic.program.Anything;
+import com.vzome.core.zomic.program.ZomicStatement;
 
 /**
  * builds a polyhedron model from a Zomic script.
@@ -90,7 +90,7 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
      *            value to replace "-99" when it appears as a strut size
      * @param orientation
      */
-    public ZomicPolyhedronModelInterpreter( Symmetry symmetry, Anything zomicProgram,
+    public ZomicPolyhedronModelInterpreter( Symmetry symmetry, ZomicStatement zomicProgram,
             AlgebraicNumber variableLength, Permutation orientation, int handedness )
     {
         super( new LocationTracker( orientation, handedness, variableLength, symmetry ), symmetry );

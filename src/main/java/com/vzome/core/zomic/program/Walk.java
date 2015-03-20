@@ -5,7 +5,7 @@ import java.util .*;
 
 import com.vzome.core.zomic.ZomicException;
 
-public class Walk extends Anything{
+public class Walk extends ZomicStatement{
 
 	private List stmts = new ArrayList();
 
@@ -13,7 +13,7 @@ public class Walk extends Anything{
 		visitor .visitWalk( this );
 	}
 
-	public  void addStatement( Anything stmt ) {
+	public  void addStatement( ZomicStatement stmt ) {
 		stmts .add( stmt );
 	}
 
