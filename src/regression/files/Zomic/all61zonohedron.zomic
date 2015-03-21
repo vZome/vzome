@@ -1,0 +1,45 @@
+
+scale -2
+symmetry through center
+symmetry
+{
+	move
+		repeat 2 size 7 yellow +0
+		blue -13
+		repeat 4 long blue +4
+		short blue +12
+	build
+
+	blue +7
+scale -1
+		branch {
+			green +27 branch long red +3
+			green +29 branch long red +3
+			long blue +13 }
+	long red +3
+		branch {
+			green +27 branch green +38
+			green +29 branch green +38
+			long blue +13 }
+	green +38
+		branch {
+			green +27 branch long yellow +8
+			branch {
+				green +37
+				branch long yellow +8
+				green +29 }
+			green +29
+			green +37
+			branch long yellow +8
+			long blue +13 }
+	long yellow +8
+	branch long blue -12
+	green +27 green +37
+	branch long blue -12
+	green +29 green +35
+scale +1
+	branch blue -12
+	yellow +7
+	   branch blue +13
+	blue -12
+}

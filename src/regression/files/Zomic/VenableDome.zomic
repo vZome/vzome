@@ -1,0 +1,17 @@
+scale -1
+symmetry through center
+symmetry
+{
+move
+	repeat 2 size 2 red +0
+	repeat 2 red +0
+	long yellow +2
+	long red +0
+build
+	blue -13
+	short green -18
+	short green -57
+	blue +13
+	red -5
+	red -4
+}

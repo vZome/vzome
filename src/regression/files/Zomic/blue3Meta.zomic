@@ -1,0 +1,33 @@
+{
+  move
+  long blue +0
+  short red +4
+  build
+  repeat 2 {
+      repeat 2 {
+          long blue +0
+          short blue +14
+          branch long blue -0
+          blue -8
+          branch long blue -0
+          short blue -14
+          branch long blue -0
+          blue +8
+          branch long blue -0
+        }
+      repeat 2 {
+          blue +0
+          short blue +14
+          branch blue -0
+          blue -8
+          branch blue -0
+          short blue -14
+          branch blue -0
+          blue +8
+          branch blue -0
+        }
+    }
+  move
+  short red -4
+  long blue +0
+}

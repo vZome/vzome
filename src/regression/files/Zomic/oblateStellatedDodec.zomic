@@ -1,0 +1,19 @@
+scale -1
+symmetry through center
+  symmetry around red +0
+    symmetry around blue +11
+      branch {
+          move
+          size 1 red -0
+          short green -29
+          build
+          branch long blue -12
+          blue +12
+          branch long blue +12
+          branch blue -5
+          short blue +5
+          branch blue +5
+          branch green -46
+          short green +46
+          branch green +46
+        }

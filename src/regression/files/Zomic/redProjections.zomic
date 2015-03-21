@@ -1,0 +1,57 @@
+
+
+{
+
+branch {
+	size 7 green +02
+		blue -14
+}
+
+branch {
+	size 6 yellow +2
+		branch size 7 red +0
+		blue -14
+		size 7 red +0
+}
+
+branch {
+	blue +2
+		branch red +0
+		blue +14
+		red +0
+}
+branch long blue +7
+
+branch {
+	short red +3
+		branch short red +0
+		blue +14
+		short red +0
+}
+branch long yellow +7
+
+branch {
+	short blue -5
+		branch short red +0
+		blue +14
+		short red +0
+}
+branch green -57
+
+branch {
+	yellow -0
+		branch red +0
+		blue +14
+		red +0
+}
+branch long red -5
+
+branch {
+	long green -0
+		branch long red +0
+		blue +14
+		long red +0
+}
+size 6 blue -4
+
+}

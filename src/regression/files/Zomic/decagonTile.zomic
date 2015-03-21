@@ -1,0 +1,10 @@
+
+short orange 22
+save all
+repeat 3
+{
+short orange +1
+short orange +10
+rotate around red 4
+}
+from short orange 1

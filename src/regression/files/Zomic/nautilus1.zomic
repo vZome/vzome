@@ -1,0 +1,28 @@
+
+// start small where balls kiss on blue
+scale -3
+
+// come back to the origin
+branch {
+
+repeat 5 {
+
+	// build one unit of the spiral
+	branch { blue +8 short blue +8 }
+	branch { yellow -5 short yellow -5 }
+	blue -6
+	branch long blue +2
+	branch long yellow +7
+	long blue -11
+
+	// accumulate the rotation
+	rotate 1 around yellow +4
+	// accumulate the enlargement
+	scale +1
+}
+
+// add the last edges
+branch blue +8
+branch yellow -5
+
+}

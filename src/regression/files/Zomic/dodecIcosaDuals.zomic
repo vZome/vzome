@@ -1,0 +1,6 @@
+
+symmetry {
+	branch { from red +0 blue -7 }
+	from yellow +0 short blue +14
+}
+

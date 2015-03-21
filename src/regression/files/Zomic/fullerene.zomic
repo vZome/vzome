@@ -1,0 +1,6 @@
+
+scale -1
+symmetry {
+	from { long blue +4 red +0 }
+	blue -11 blue -6
+}

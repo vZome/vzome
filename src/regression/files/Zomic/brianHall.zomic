@@ -1,0 +1,4 @@
+{// here is A3 propersymmetry around yellow +1	symmetry around blue +2		symmetry around blue +5			branch short green +00// here are the fundamental weightsbranch repeat 3 {	branch repeat 3 {		branch repeat 3 {			// here is the unit being tesselated			symmetry through +11 {				short blue +1 short yellow +0 short yellow +3
+				short blue -1 short yellow -3
+				branch short blue +1
+				short yellow -0			}			from short blue +1		}		from short yellow +0	}	from short yellow +3}		}

@@ -1,0 +1,21 @@
+
+// demonstrates the rectangle diagonals that frame the system
+
+{
+
+branch short  blue +14
+branch medium blue -0
+branch long   blue -14
+
+
+short blue +8
+
+star {
+	short green -49
+	repeat 2 short red -0
+	repeat 2 medium yellow -7
+}
+
+}
+
+

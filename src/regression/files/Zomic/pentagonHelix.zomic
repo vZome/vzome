@@ -1,0 +1,23 @@
+
+{
+
+scale -1
+
+repeat 8 // as many iterations as you want
+
+// one cycle
+symmetry around red +0 {
+	// a pentagon
+	symmetry around red +1
+		long blue +3
+
+	long yellow +9
+
+	branch {
+		// this strut is a kiss
+		size 2 red +0
+		medium red +0
+	}
+}
+
+}

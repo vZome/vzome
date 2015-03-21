@@ -1,0 +1,11 @@
+
+symmetry through center
+symmetry {
+	move
+	size 6 yellow +0
+	short blue +7
+	build
+	short blue -13
+	short blue -12
+	short blue -7
+}

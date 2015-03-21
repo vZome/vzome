@@ -1,0 +1,49 @@
+
+symmetry through center
+symmetry {
+	move
+		repeat 2 long blue +0 short red +4
+	build
+			branch blue -13
+			scale -1
+label green_0
+label purple_0
+label orange_0
+label blue_0
+			red -3
+label blue_1
+label orange_3
+label yellow_0
+			red -4
+label blue_2
+			blue +14
+label blue_3
+			red +3
+label blue_4
+			red +4
+label blue_5
+label purple_1
+			long yellow +8
+label purple_2
+label red_0
+			blue -11
+label red_1
+			blue -13
+label red_2
+			blue +10
+label red_3
+			blue +12
+label red_4
+label purple_3
+label green_1
+			long yellow -7
+label green_2
+label orange_1
+			red -3
+label orange_2
+label yellow_1
+			scale +1
+			blue -8
+label yellow_2
+
+}

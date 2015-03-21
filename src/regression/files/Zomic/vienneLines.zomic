@@ -1,0 +1,27 @@
+
+repeat 3
+{
+
+short half blue +2
+half blue +2
+long half blue +2
+
+short half blue +5
+medium purple -0
+short half blue +5
+ short red -0
+short half blue +5
+short half green -0
+
+short half  blue +5
+half blue +5
+long half blue +5
+
+short half  blue +2
+yellow -0
+short half blue +2
+short orange -0
+short half blue +2
+
+scale +1
+}

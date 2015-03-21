@@ -1,0 +1,6 @@
+
+scale -1
+symmetry {
+	repeat 2 from long yellow +0
+	red +3 blue +14
+}

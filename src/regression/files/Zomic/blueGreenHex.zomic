@@ -1,0 +1,20 @@
+
+{
+
+symmetry through +9 branch {
+
+	blue -14
+	branch long blue -9
+
+	green +33
+	green -43
+	green +33
+
+	blue -14
+	green +37
+	blue -8
+	short blue -9
+	green +43
+	long blue -9
+
+}

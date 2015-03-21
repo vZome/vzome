@@ -1,0 +1,13 @@
+
+symmetry
+{
+ red -3
+branch short red -3
+ blue +1
+ yellow +2
+ blue -3
+ red -0
+ yellow -5
+ blue -6
+short red +4
+}

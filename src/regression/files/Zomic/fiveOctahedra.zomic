@@ -1,0 +1,8 @@
+
+symmetry  {
+    from repeat 2 long yellow +0
+    branch green +21
+    repeat 2 short green -21
+    repeat 2 size 2 green -21
+    short green -21
+}

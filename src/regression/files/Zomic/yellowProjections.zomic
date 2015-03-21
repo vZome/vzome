@@ -1,0 +1,36 @@
+
+
+{
+
+branch {
+	blue +0
+		long blue -7
+		long blue -13
+}
+branch long blue +10
+branch size 6 blue -14
+
+branch {
+	short red -5
+		branch long yellow +0
+		long blue -7
+		branch long yellow +0
+		long blue -13
+		branch long yellow +0
+}
+branch long yellow -2
+branch size 6 red -2
+
+branch {
+	 repeat 2 orange -50
+		branch long yellow +0
+		long blue -7
+		branch long yellow +0
+		long blue -13
+		branch long yellow +0
+}
+branch long green -01
+branch repeat 2 long orange -21
+
+
+}

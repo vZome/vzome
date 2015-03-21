@@ -1,0 +1,28 @@
+
+{
+
+symmetry branch {
+		repeat 2 from short red +0
+		repeat 2 short blue -9
+			from green +43
+			from long green +59
+		repeat 2 blue +12
+	}
+
+symmetry around yellow +1
+	symmetry around blue +13
+		symmetry around blue +2
+			symmetry around blue +5
+				branch {
+					repeat 2 from short red +0
+					repeat 2 from short blue -9
+					green +43
+					branch {
+						long green +59
+						repeat 2 long blue -5
+						repeat 2 long blue -2
+					}
+					branch short green -35
+				}
+
+}

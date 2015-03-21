@@ -1,0 +1,19 @@
+
+{
+  from size 8 yellow +0
+  symmetry through center
+    branch {
+        move
+        repeat 2 yellow -0
+        short blue +2
+        build
+        symmetry around yellow +0
+          {
+            // branch { yellow +0 green +50 }
+            branch repeat 2 size 5 orange +50
+            branch repeat 2 long yellow -0
+            blue -7
+          }
+      }
+  from size 8 yellow +0
+}

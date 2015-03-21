@@ -1,0 +1,8 @@
+
+symmetry through center
+symmetry {
+	from long yellow +0
+	short yellow -3
+	short yellow -9
+}
+

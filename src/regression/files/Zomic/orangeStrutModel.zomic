@@ -1,0 +1,16 @@
+
+symmetry branch {
+		from long blue +0
+		from short red +4
+		short blue +14
+		blue -8
+	}
+
+short blue +0 repeat 2 blue +8
+red +0
+
+scale -2 
+symmetry through +14 { 
+	branch { green +26 green +55 }
+	branch short green -55
+}

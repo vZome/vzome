@@ -1,0 +1,32 @@
+scale -1
+
+symmetry around blue +13
+symmetry through +13
+branch {
+from repeat 2 size 6 orange -0
+
+symmetry {
+	move long blue +0 short red +4
+	build short blue +14 blue -8 }
+
+from long yellow +0
+from short blue +2
+symmetry around yellow +0 blue -7
+long blue +4
+branch blue +13
+branch repeat 2 red -0
+branch repeat 2 size 4 orange +0
+short blue -2
+branch green -0
+branch repeat 2 size 4 orange +0
+blue +13
+}
+
+// extra ball, for blue directions
+branch{
+from repeat 2 size 6 orange -0
+from repeat 2 size 6 blue +2
+symmetry {
+	move long blue +0 short red +4
+	build short blue +14 blue -8 }
+}

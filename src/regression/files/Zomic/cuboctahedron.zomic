@@ -1,0 +1,9 @@
+
+symmetry through center
+symmetry around yellow +1
+symmetry around blue +2
+symmetry around blue +5
+	branch {
+		from short green +00
+		branch short green -59
+	}

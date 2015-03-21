@@ -1,0 +1,11 @@
+
+symmetry {
+move
+long red 0
+short blue 13
+build
+short black +0
+short black +0-
+short black -0
+short black -0-
+}

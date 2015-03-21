@@ -1,0 +1,13 @@
+
+scale -1
+symmetry through center
+branch {
+	from long red +0
+	symmetry around red +0
+		branch {
+			from short red +1
+			branch short blue -13
+			green -03
+			blue -1
+		}
+}

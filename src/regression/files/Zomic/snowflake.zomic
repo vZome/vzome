@@ -1,0 +1,24 @@
+scale -4
+symmetry through center
+{
+symmetry around yellow 3
+{
+   blue -5
+branch{
+   blue +14
+   blue +6
+   blue +14
+  branch  blue +6
+   blue -5
+  branch  blue +14
+   blue -6
+  branch  blue -5
+   blue -14
+   blue +5
+}
+blue -6
+}
+
+from repeat 2 blue -6
+}
+}

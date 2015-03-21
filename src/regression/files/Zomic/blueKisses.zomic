@@ -1,0 +1,13 @@
+
+/*
+	constructs a bouquet of size -4 blue struts
+		(balls kissing on rectangles)
+*/
+
+repeat 3 branch {
+	short blue +3 short blue +3       // column of the blue T
+	branch short blue +6 branch short blue -6     // top of the blue T
+	branch short red +5
+	branch short yellow -3
+	rotate 1 around yellow +4		// the axis of the bouquet
+}      // rotation must persist!

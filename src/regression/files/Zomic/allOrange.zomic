@@ -1,0 +1,29 @@
+
+symmetry {
+
+symmetry through +14 branch 
+{
+move
+repeat 2 size 5 yellow +0
+repeat 2 size 4 yellow +0
+scale -1
+orange +48
+orange +27
+orange +37
+orange +38
+
+build
+orange +29
+orange -38
+branch orange -48
+orange -29
+branch orange +38
+orange -37
+orange -48
+branch orange -27
+orange +29
+orange +37
+
+scale +1
+}
+}

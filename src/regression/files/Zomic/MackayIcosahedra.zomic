@@ -1,0 +1,10 @@
+
+//repeat 2
+{
+	symmetry {
+		from red +0
+		short yellow -5
+		short blue +12
+	}
+	// from red +0
+}

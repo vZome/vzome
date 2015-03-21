@@ -1,0 +1,15 @@
+
+
+{
+
+repeat 2 {
+branch repeat 10
+	{
+		branch short red +0
+		branch green +57
+		long yellow +6
+		rotate 1 around red +0
+	}
+    from short red +0
+}
+}

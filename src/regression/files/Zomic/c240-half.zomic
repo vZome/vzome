@@ -1,0 +1,37 @@
+{
+  {
+    scale -1
+    symmetry around red +0
+      {
+        symmetry around blue +2
+          symmetry around red +0
+            branch {
+                move
+                repeat 3 long red +0
+                 yellow -6
+                build
+                 blue +14
+                 yellow -5
+                 yellow -9
+                 blue +12
+                 yellow +5
+              }
+        symmetry through +14
+          branch {
+              move
+              repeat 3 long red +0
+              repeat 2  yellow -6
+               yellow -5
+              build
+               blue -6
+               blue -5
+               blue +14
+              from long blue -0
+               blue -14
+               blue -1
+               blue -4
+               blue +14
+            }
+      }
+  }
+}

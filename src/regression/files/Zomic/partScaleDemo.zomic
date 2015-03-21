@@ -1,0 +1,47 @@
+
+
+// to see the scale, reset view,
+// then zoom away as far as possible.
+// the actual and modeled triangles
+// will very nearly align
+
+// the triangle being modeled
+short red +0
+short red -3
+short blue -5
+
+// this just makes everything of
+// reasonable size for viewing
+scale -3
+
+// now the model
+
+symmetry {  // a ball
+	move long blue +0 short red +4
+	build short blue +14 blue -8
+}
+
+// a correctly scaled & doubled strut
+save scale { scale +5 repeat 2
+short red +0
+}
+
+symmetry {  // a ball
+	move long blue +0 short red +4
+	build short blue +14 blue -8
+}
+
+// a correctly scaled & doubled strut
+save scale { scale +5 repeat 2
+short red -3
+}
+
+symmetry {  // a ball
+	move long blue +0 short red +4
+	build short blue +14 blue -8
+}
+
+// a correctly scaled & doubled strut
+save scale { scale +5 repeat 2
+short blue -5
+}

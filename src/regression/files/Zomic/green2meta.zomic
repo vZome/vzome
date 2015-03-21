@@ -1,0 +1,44 @@
+{
+  from size 7 green +0
+  symmetry around blue +13
+    symmetry through +13
+      branch {
+          from yellow +1
+          branch green -0
+          save scale {
+              scale -1
+              from blue -12
+              long green -0
+              repeat 1 {
+                  branch {
+                      blue -14
+                      branch long green -0
+                      blue +12
+                      branch long green -0
+                    }
+                  long green -0
+                }
+              repeat 1 {
+                  branch {
+                      blue -14
+                      branch green -0
+                      blue +12
+                      branch green -0
+                    }
+                  green -0
+                }
+              branch yellow -0
+              blue -14
+              branch yellow -0
+              blue +12
+              yellow -0
+              branch green -0
+              blue -12
+              branch green -0
+              blue +14
+            }
+          branch blue -4
+          branch blue -3
+        }
+  from size 7 green +0
+}

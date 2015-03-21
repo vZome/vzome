@@ -1,0 +1,23 @@
+
+{
+
+symmetry {
+	move
+		long blue +0 short red +4
+	build
+		short blue +14 blue -8
+
+	save location { move red +1 build short blue -14 }
+	save location { move repeat 3 size 2 yellow +1 build blue +8 }
+	blue +0 short blue -14 blue +8
+}
+
+scale +1
+
+symmetry {
+	move
+		long blue +0 short red +4
+	build
+		short blue +14 blue -8
+}
+}

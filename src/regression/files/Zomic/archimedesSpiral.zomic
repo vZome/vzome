@@ -1,0 +1,18 @@
+
+{
+scale +5
+from long blue -5
+
+repeat 11 {
+
+	branch long blue +5
+	long blue -2
+	long blue +5
+	branch blue +2
+	blue +5
+	blue +2
+
+	rotate around blue +13
+	scale -2
+}
+}

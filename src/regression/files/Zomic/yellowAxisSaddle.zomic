@@ -1,0 +1,42 @@
+
+scale -2
+
+symmetry through 13 branch
+symmetry through 5 branch
+{
+from short half green -15
+
+purple +16
+
+symmetry through center
+save all{ short half green -50
+repeat 3 { green -50 scale +1 }}
+
+long purple +16
+
+symmetry through center
+save all{  half blue -4
+repeat 3 { long blue -4 scale +1 }}
+
+size 6 purple +16
+
+symmetry through center
+save all{  half green -4
+repeat 3 { long green -4 scale +1 }}
+
+long purple +16
+
+symmetry through center
+save all{  purple -1
+repeat 2 { repeat 2 long purple -1 scale +1 }
+scale -2
+repeat 2 { repeat 2 long purple -1 scale +1 }
+}
+
+size 6 purple +16
+
+symmetry through center
+save all{  long half green -3
+repeat 3 { size 6 green -3 scale +1 }}
+
+}

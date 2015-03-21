@@ -1,0 +1,12 @@
+
+symmetry through center
+symmetry
+{
+move
+	repeat 2 size 2 red +0
+	repeat 2 red +0
+build
+	short green -18
+	short green -57
+	red -2
+}

@@ -1,0 +1,15 @@
+
+
+symmetry  branch {
+		from short red +0
+		from long yellow +0
+		symmetry through +13 branch{
+			branch short blue -8
+			short yellow +7
+			branch {
+				short red -3
+				short blue -13
+			}
+			branch short blue -13
+		}
+	}

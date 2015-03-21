@@ -1,0 +1,85 @@
+
+{
+
+symmetry through +10
+symmetry around blue +10
+	{
+		from long red +0
+
+		save scale { scale -1
+			yellow +6	// center line
+			blue +11
+				branch {
+					yellow -7
+					branch yellow -6
+					branch yellow -8
+				}
+			blue +13
+				branch blue -10
+			yellow -8
+				branch {
+					yellow -7
+					blue -8 blue -7 blue -13
+					branch { yellow -2 blue -9 }
+					blue +8 blue +7 blue +13
+				}
+			yellow -9
+				branch blue -10
+			blue -8
+				branch {
+					yellow -7
+					branch yellow +9
+					yellow -3
+					blue -7
+					yellow -0
+					blue -6
+					yellow +9
+					yellow +0
+					blue +6
+					yellow +3
+				}
+			blue -9
+				branch blue -10
+			yellow -3
+				branch yellow +7
+				// the shell edge
+				branch {
+					repeat 2 yellow -7
+					repeat 3 yellow +9
+					repeat 2 yellow -6
+					yellow -6
+				}
+			blue -5
+			yellow -1	// center line
+			yellow -7
+				branch {
+					blue +5
+					branch { yellow +1 blue +9 }
+					blue -14 blue -6
+				}
+			blue -6
+				branch { blue -14 blue +5 }
+			yellow -5
+			yellow -6	// center line on the zone
+			blue -14
+				branch { yellow +5 yellow +6 }
+			yellow -6	// the zone
+				branch {
+					blue -14
+					yellow +5 yellow +6
+					branch blue +14
+					yellow +0
+						branch yellow +6
+					blue +9 yellow +0
+					blue +8
+						branch yellow -6
+					yellow +2
+						branch yellow +6
+					blue +8
+				}
+			yellow -5	// should meet up
+		}
+		from long red +0
+	}
+
+}

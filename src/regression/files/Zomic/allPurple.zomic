@@ -1,0 +1,33 @@
+
+symmetry through center
+symmetry// around yellow +0 branch
+{
+
+	scale -1
+	move
+	repeat 5 red +0
+	size 0 red +0
+	repeat 2 size -1 red +0
+
+	build
+	size 2 0 2 purple -33
+	branch size 2 0 2 purple -21
+	size 2 0 2 purple -32
+	size 2 0 2 purple -21
+	
+	save all {
+		move
+		size 2 0 2 purple -44
+		repeat 5 short yellow -0
+		repeat 2 yellow -0
+		size 2 yellow -0
+	}
+
+	size 2 0 2 purple +32
+
+	scale +1
+}
+
+// The "size 2 0 2" modifiers were added 2014-08-16.
+//  I believe the definition of purple changed since this script
+//  was recorded, and the modifiers account for that fact.

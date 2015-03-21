@@ -1,0 +1,26 @@
+
+scale -1
+
+symmetry through center
+branch {
+
+branch{
+	repeat 2 red -0
+	from short yellow +8
+	symmetry around red +0
+		short blue +10
+}
+
+from repeat 2 size 7 red -0
+
+branch{
+	long red +0
+	from short yellow +8
+	symmetry around red +0 {
+		short blue +10
+		branch repeat 3 long red +0
+	}
+}
+
+}
+

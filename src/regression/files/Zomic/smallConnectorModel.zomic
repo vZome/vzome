@@ -1,0 +1,53 @@
+
+
+{
+
+from red -0
+
+// the connector icosahedron
+symmetry branch {
+	from short red +0
+	short blue -7
+}
+
+// the yellow strut
+symmetry around yellow +0 branch {
+	from short red -2
+	repeat 2 yellow +0
+	blue +13
+}
+
+// the red strut
+symmetry around red +0 branch {
+	from short red -2
+	repeat 2 red +0
+	short blue +12
+}
+
+// the blue strut
+symmetry around blue +0 branch {
+	from short red +4
+	long blue +0
+	blue -8
+	branch long blue -0
+	short blue +14
+}
+
+// the green strut
+branch {
+	from short red +3
+	from short yellow +0
+	short blue -14 branch { green +0 short yellow -0 }
+	short blue +12 branch { green +0 short yellow -0 long red +0 short red +0 }
+	short blue +14 branch { green +0 short yellow -0 }
+	short blue -12
+	green +0
+	short blue -14
+	short blue +12
+	short blue +14
+	short blue -12
+	repeat 2 short green +0
+}
+
+
+}

@@ -1,0 +1,12 @@
+
+symmetry through center
+symmetry around red 0
+branch
+{
+from
+short red +4
+short blue -4
+symmetry through 14 branch {
+blue -4
+long blue -4 }
+}

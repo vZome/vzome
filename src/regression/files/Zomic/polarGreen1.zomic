@@ -1,0 +1,9 @@
+
+// rotational symmetry, but no "branch"
+
+scale -1
+symmetry around red +0 {
+	// try these lines separately!
+	symmetry around red +0 green -11
+	symmetry around red +0 green +11
+}

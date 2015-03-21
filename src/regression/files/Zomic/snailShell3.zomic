@@ -1,0 +1,31 @@
+
+
+{
+scale +3
+
+repeat 5 {
+scale -1 
+repeat 3 {
+	short green -18 blue -5
+		branch blue -14
+//	short red -0
+//		branch blue -14
+	red -3
+		branch yellow -8
+		branch blue +10
+	red +4
+		branch blue +10
+//	short red +0
+//		branch blue +10
+	blue +6
+		blue +10
+	from short green +29
+
+	rotate -1 around red +0
+}
+	from short green -18
+	{ scale -1 short blue -5 from short green +18 scale +1 }
+}
+
+		
+}

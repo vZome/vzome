@@ -1,0 +1,15 @@
+
+{
+scale -3
+
+
+
+symmetry branch {
+		repeat 2 from short red +0
+		from short yellow +8
+//		long red +0
+		short blue +10
+	}
+
+
+}

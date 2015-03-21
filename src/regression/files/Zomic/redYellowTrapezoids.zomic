@@ -1,0 +1,12 @@
+
+symmetry around blue +1
+symmetry around blue +9
+symmetry around blue +11
+symmetry through center
+symmetry around yellow +0
+branch {
+	from yellow +0
+	short red +3
+	red -2
+	short yellow -8
+}

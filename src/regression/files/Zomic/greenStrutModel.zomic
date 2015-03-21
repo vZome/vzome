@@ -1,0 +1,24 @@
+
+{
+scale -2
+
+scale +1
+symmetry around red +0
+branch {
+	from long red +0
+	from short yellow +8
+	short blue +13
+}
+scale -1
+
+branch
+{
+	repeat 2 long green +03
+	short red +1
+	branch {
+		blue -10 blue -13
+		blue +10 blue +13
+	}
+}
+
+}

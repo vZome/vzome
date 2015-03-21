@@ -1,0 +1,10 @@
+
+scale -1
+symmetry {
+	from { repeat 2 long yellow +1
+		yellow +4
+	}
+	branch green +48
+	branch green -37
+	green -43 green -37
+}

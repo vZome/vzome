@@ -1,0 +1,18 @@
+
+
+{
+
+symmetry through center
+	{
+		from long yellow +0
+		symmetry around yellow +0
+			branch {
+				red +3
+				branch yellow -6
+				yellow -9
+				branch blue -8
+				short red -1
+			}
+	}
+
+}

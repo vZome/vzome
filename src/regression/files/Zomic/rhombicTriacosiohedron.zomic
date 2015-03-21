@@ -1,0 +1,18 @@
+
+scale -1
+symmetry
+symmetry through center
+branch
+{
+  from size 6 blue +0
+  red +1
+  red +0
+  red -5
+  red +2
+  red -0
+  red -2
+  branch red +5
+  red -1
+  red +5
+  red -2
+}

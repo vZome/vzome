@@ -1,0 +1,14 @@
+
+symmetry
+{
+	move
+
+	size 6 yellow +0
+	short blue +8
+
+	build
+
+	repeat 2 short purple -35
+	branch repeat 2 short orange +48
+	branch short green -43
+}

@@ -1,0 +1,17 @@
+
+symmetry branch {
+		from long blue +0
+		from short red +4
+		short blue +14
+		blue -8
+	}
+
+long purple +03
+symmetry through +14
+branch {
+	size 2 red +0
+	short yellow +9
+		branch purple +03
+	short green -46
+		branch purple +03
+}

@@ -1,0 +1,23 @@
+
+{
+scale -4
+
+repeat 5 {
+scale +1
+	short red +3 size 6 red -0
+	branch yellow +0 branch red +5
+	red -3 branch blue +3
+	yellow +0 branch yellow +8
+		branch { short red +4
+			branch short yellow -5
+			branch short blue +8
+			red +0 short blue +8
+		}
+	long red +0 branch short blue -6
+	branch blue -12
+	red +3 from short red +3
+	rotate -1 around red +0
+}
+
+		
+}

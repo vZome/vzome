@@ -1,0 +1,15 @@
+
+{
+scale -4
+repeat 8 {
+	scale +1 
+	from red -2 red -4 red +2 red +4
+	branch blue -2
+	blue +14 red -3 yellow +7
+	short red +4 red +4
+	branch red -3
+	rotate 2 around yellow +0
+}
+
+		
+}

@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.symmetry.Axis;
@@ -26,12 +27,11 @@ public class PrintVisitor extends Visitor .Default{
 	
 	private final ZomicNamingConvention naming;
 
-	public  PrintVisitor( PrintWriter out ) {
+	public  PrintVisitor( PrintWriter out, IcosahedralSymmetry symmetry ) {
 		super();
 
 			m_out = out;
-			IcosahedralSymmetry symm = (IcosahedralSymmetry) new PentagonField() .getSymmetry( "icosahedral" );
-			naming = new ZomicNamingConvention( symm );
+			naming = new ZomicNamingConvention( symmetry );
 		}
 
     public  void visitSave( Save save, int state ) throws ZomicException
@@ -162,9 +162,9 @@ public class PrintVisitor extends Visitor .Default{
 	}
 
 	public 
-	void visitScale( int[] size )
+	void visitScale( AlgebraicNumber size )
     {
-		print( "scale 0 ( " + size[0] + " " + size[2]  + " )" );
+		print( "scale 0 ( " + size.toString( AlgebraicField.ZOMIC_FORMAT )  + " )" );
 	}
 
 	protected void print( String string )
@@ -199,9 +199,11 @@ public class PrintVisitor extends Visitor .Default{
 	{
 		try {
 			File file = new File( args[0] );
-			Anything program = Parser .parse( new FileInputStream( file ), (IcosahedralSymmetry) new PentagonField() .getSymmetry( "icosahedral" ) );
+			PentagonField field = new PentagonField();
+            IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
+			Anything program = Parser .parse( new FileInputStream( file ), symmetry );
 			PrintWriter out = new PrintWriter( System.out );
-			program .accept( new PrintVisitor( out ) );
+			program .accept( new PrintVisitor( out, symmetry ) );
 			out .close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

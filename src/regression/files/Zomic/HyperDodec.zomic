@@ -1,0 +1,29 @@
+
+scale -1
+symmetry {
+
+	from long yellow +0
+
+	// edge of central dodec
+	branch blue -2
+
+	// edge of middle layer wrapping dodec
+	yellow +0
+
+	// yellow-axis outer layer dodec
+	symmetry through center
+		{
+			from long yellow +0
+			branch {
+				red +3
+				branch yellow -6
+				yellow -9
+				branch blue -8
+				short red -1
+			}
+		}
+
+	from long red +0
+	short red +3
+	branch blue -12
+}

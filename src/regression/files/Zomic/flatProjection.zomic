@@ -1,0 +1,26 @@
+
+{
+
+// the plane
+
+branch blue +8
+branch { blue -8 green +49 }
+branch blue -14
+branch { blue +14 green +49 }
+branch green +37
+branch green -37
+
+// the blue lines
+branch { long blue -4 size 6 half green +49 }
+branch { blue -3 short half green +49 long half green +49 }
+branch { blue -2 half green +49 }
+branch { blue -9 size 6 half green +49 }
+branch { blue -10 short half green +49 }
+
+// the projections
+branch { red +4 size 6 half blue -0 }
+branch { red +3 short half blue -0 }
+branch { yellow +9 half blue -0 }
+branch { yellow -7 half blue -0 }
+
+}

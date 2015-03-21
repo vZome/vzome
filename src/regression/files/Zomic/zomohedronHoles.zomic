@@ -1,0 +1,29 @@
+
+symmetry
+{
+move
+	yellow +0
+	red +5
+
+	branch {
+		red +5 size -2 red +5
+		save build {
+			build short blue -2 }
+	}
+	blue +13
+	branch {
+		blue +5
+		branch save build {
+			build blue -13
+			short blue -2
+		}
+		size 2 red +2
+		save build { build
+			long blue -13
+			blue -2 }
+	}
+	branch {
+		repeat 3 size 2 yellow +0
+		save build { build blue -13 }
+	}
+}

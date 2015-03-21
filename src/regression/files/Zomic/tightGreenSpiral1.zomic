@@ -1,0 +1,12 @@
+
+{
+
+repeat 3
+symmetry around red -0 {
+	yellow -2
+	yellow -4
+	short green +02
+	branch short blue +3
+}
+
+}

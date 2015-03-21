@@ -1,0 +1,20 @@
+
+
+{
+
+branch {
+	short blue +4
+	short blue +2
+}
+short yellow +1
+branch yellow -6
+short yellow +1
+branch repeat 2 yellow -6
+short green +46
+blue -6
+repeat 2 short red -4
+
+size 2 blue +3
+repeat 2 size 2 red +0
+
+}

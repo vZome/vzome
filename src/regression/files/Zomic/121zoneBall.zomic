@@ -1,0 +1,15 @@
+
+symmetry through center
+symmetry {
+	move
+		repeat 2 long blue +0 short red +4
+	build
+		branch {
+			short blue +14
+			short red -4
+			blue -9
+		}
+		blue -13
+		yellow +7
+		short blue +14
+}

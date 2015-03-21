@@ -1,0 +1,22 @@
+scale -1
+  {
+    symmetry around red -0
+      branch {
+          move
+          repeat 2 size 6 yellow -6
+          purple +1
+          build
+          symmetry through +10
+            branch {
+                from half blue -10
+                blue +10
+                long half blue -2
+                branch orange -0
+                orange -35
+                branch blue -2
+                yellow +0
+                blue +11
+              }
+        }
+    from long red +0
+  }

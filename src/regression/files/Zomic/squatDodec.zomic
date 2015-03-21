@@ -1,0 +1,12 @@
+
+
+symmetry through center {
+	from red -0
+	symmetry around red +0
+		branch {
+			from red -5
+			blue -13
+			yellow +3
+			branch red +5
+		}
+}

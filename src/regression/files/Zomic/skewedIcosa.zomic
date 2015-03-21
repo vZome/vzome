@@ -1,0 +1,33 @@
+long half blue -10
+long half blue -0
+long half blue -7
+long half blue +5
+long half blue +1
+long half blue -9
+long half blue -5
+long half blue -1
+long half blue +10
+long half blue +0
+long half blue +7
+long half blue +8
+orange -4
+ purple -35
+
+ half green -29
+long half blue +8
+long half blue -9
+ half green +18
+ purple +57
+ half green +46
+branch  orange -4
+ purple +35
+branch  red -0
+ half green +18
+ orange -3
+long half blue +7
+ red -0
+ half green -18
+ orange +3
+branch  half green -46
+ purple +57
+ half green +29

@@ -1,0 +1,41 @@
+
+symmetry through +5
+symmetry around blue +5
+branch {
+scale -1
+
+from repeat 5 half blue -2
+
+	branch repeat 5 half green +43
+half blue +5
+	branch repeat 5 half green +43
+short yellow +0
+	branch { repeat 3 half green +43
+			long half green +43 }
+short orange +0
+	branch repeat 4 half green +43
+half green +0
+	branch repeat 3 half green +43
+short red +0
+	branch repeat 2 half green +43
+short purple +0
+	branch half green +43
+half blue +2
+half blue -13
+	branch half green +22
+short yellow -6
+	branch repeat 2 half green +22
+short orange -16
+	branch repeat 3 half green +22
+half green -16
+	branch repeat 4 half green +22
+short red -1
+	branch { long half  green +22
+			repeat 3 half green +22 }
+short purple -16
+	branch repeat 5 half green +22
+half blue -5
+	branch repeat 5 half green +22
+
+scale +1
+}

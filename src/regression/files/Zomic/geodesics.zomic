@@ -1,0 +1,21 @@
+
+symmetry 
+{
+	move
+
+	repeat 2 long yellow +0
+	size 2 0 2 purple +35
+
+	build
+
+	//branch { size 0 red -3 red -3 }
+	//branch short green +35
+
+	size 2 0 2 purple -21
+	size 2 0 2 purple -35
+	blue -12
+}
+
+// The "size 2 0 2" modifiers were added 2014-08-16.
+//  I believe the definition of purple changed since this script
+//  was recorded, and the modifiers account for that fact.

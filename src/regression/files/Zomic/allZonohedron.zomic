@@ -1,0 +1,19 @@
+
+scale -1
+symmetry through center
+symmetry
+{
+	from {
+		repeat 2 size 7 yellow +0
+		blue -13
+	}
+	blue +7
+	   branch blue +13
+	red +3
+	   branch blue +13
+	yellow +8
+	branch blue -12
+	yellow +7
+	   branch blue +13
+	blue -12
+}

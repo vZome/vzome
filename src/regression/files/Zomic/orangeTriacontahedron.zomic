@@ -1,0 +1,14 @@
+
+symmetry through center
+symmetry around blue +6
+symmetry around blue +10
+symmetry around yellow +0
+branch
+{
+long yellow +0
+orange +27
+branch long orange -1
+orange +46
+branch long purple -1
+orange -27
+}

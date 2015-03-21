@@ -1,0 +1,41 @@
+
+{
+scale -1
+
+branch repeat 3 {
+	branch repeat 3 {
+		branch repeat 3 {
+
+				// make a single tetrahedral unit
+				repeat 2 {
+					repeat 2 {
+						branch yellow +2
+						rotate 1 around blue -10
+					}
+					rotate 1 around blue +6
+				}
+
+			from green +01
+		}
+		from green +33
+	}
+	from green +27
+}
+}
+
+/*
+// a possible 3D "tesselate" operator
+{
+
+tesselate N green +01, +33, +27
+	// make a single tetrahedral unit
+	repeat 2 {
+		repeat 2 {
+			branch yellow +2
+			rotate 1 around blue -10
+		}
+		rotate 1 around blue +6
+	}
+
+}
+*/
