@@ -1,0 +1,19 @@
+{
+  symmetry branch {
+        from // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+        from // MOVE NOT PRINTED: red 17 : 1 + 2φ
+        // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+        // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+      }
+  // MOVE NOT PRINTED: blue 9 : 2 + 4φ
+  repeat 2 // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+  // MOVE NOT PRINTED: red 0 : 2 + 3φ
+  scale 0 ( 2 -1 )symmetry through +14
+    {
+      branch {
+          // MOVE NOT PRINTED: green 14 : 4 + 6φ
+          // MOVE NOT PRINTED: green 58 : 4 + 6φ
+        }
+      branch // MOVE NOT PRINTED: green 31 : 2 + 4φ
+    }
+}

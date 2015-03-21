@@ -1,0 +1,7 @@
+repeat 3 symmetry around -0
+    {
+      // MOVE NOT PRINTED: yellow 30 : 1 + 2φ
+      // MOVE NOT PRINTED: yellow 39 : 1 + 2φ
+      // MOVE NOT PRINTED: green 12 : 2 + 4φ
+      branch // MOVE NOT PRINTED: blue 23 : 2 + 4φ
+    }

@@ -1,0 +1,8 @@
+symmetry through center
+  symmetry around +1
+    symmetry around +2
+      symmetry around +5
+        branch {
+            from // MOVE NOT PRINTED: green 6 : 2 + 4φ
+            branch // MOVE NOT PRINTED: green 37 : 2 + 4φ
+          }

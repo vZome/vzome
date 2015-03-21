@@ -1,0 +1,9 @@
+{
+  // MOVE NOT PRINTED: orange 8 : 1 + 2φ
+  save all repeat 3 {
+        // MOVE NOT PRINTED: orange 9 : 1 + 2φ
+        // MOVE NOT PRINTED: orange 13 : 1 + 2φ
+        rotate 1 around +4
+      }
+  from // MOVE NOT PRINTED: orange 9 : 1 + 2φ
+}

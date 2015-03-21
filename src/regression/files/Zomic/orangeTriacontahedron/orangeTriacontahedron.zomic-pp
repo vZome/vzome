@@ -1,0 +1,12 @@
+symmetry through center
+  symmetry around +6
+    symmetry around +10
+      symmetry around +0
+        branch {
+            // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+            // MOVE NOT PRINTED: orange 5 : 2 + 3φ
+            branch // MOVE NOT PRINTED: orange 33 : 3 + 5φ
+            // MOVE NOT PRINTED: orange 29 : 2 + 3φ
+            branch // MOVE NOT PRINTED: purple 42 : 2 + 3φ
+            // MOVE NOT PRINTED: orange 56 : 2 + 3φ
+          }

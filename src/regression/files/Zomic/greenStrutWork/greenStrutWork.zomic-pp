@@ -1,0 +1,45 @@
+{
+  scale 0 ( 2 -1 )from // MOVE NOT PRINTED: green 6 : 26 + 42φ
+  symmetry around +13
+    symmetry through +13
+      branch {
+          // MOVE NOT PRINTED: yellow 9 : 1 + 2φ
+          // MOVE NOT PRINTED: green 36 : 4 + 6φ
+          save scale {
+              scale 0 ( -1 1 )repeat 2 {
+                  branch {
+                      // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+                      branch // MOVE NOT PRINTED: green 36 : 6 + 10φ
+                      // MOVE NOT PRINTED: blue 25 : 4 + 6φ
+                      branch // MOVE NOT PRINTED: green 36 : 6 + 10φ
+                      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+                      branch // MOVE NOT PRINTED: green 36 : 6 + 10φ
+                    }
+                  // MOVE NOT PRINTED: green 36 : 6 + 10φ
+                }
+              repeat 2 {
+                  branch {
+                      // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+                      branch // MOVE NOT PRINTED: green 36 : 4 + 6φ
+                      // MOVE NOT PRINTED: blue 25 : 4 + 6φ
+                      branch // MOVE NOT PRINTED: green 36 : 4 + 6φ
+                      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+                      branch // MOVE NOT PRINTED: green 36 : 4 + 6φ
+                    }
+                  // MOVE NOT PRINTED: green 36 : 4 + 6φ
+                }
+              from // MOVE NOT PRINTED: blue 25 : 4 + 6φ
+              branch // MOVE NOT PRINTED: yellow 16 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+              branch // MOVE NOT PRINTED: yellow 16 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 7 : 4 + 6φ
+              // MOVE NOT PRINTED: yellow 16 : 1 + 2φ
+              branch // MOVE NOT PRINTED: green 36 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 25 : 4 + 6φ
+              branch // MOVE NOT PRINTED: green 36 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+            }
+          branch // MOVE NOT PRINTED: blue 39 : 4 + 6φ
+          branch // MOVE NOT PRINTED: blue 41 : 4 + 6φ
+        }
+}

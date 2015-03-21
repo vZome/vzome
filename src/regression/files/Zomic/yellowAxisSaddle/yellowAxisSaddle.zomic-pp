@@ -1,0 +1,50 @@
+{
+  scale 0 ( 2 -1 )symmetry through +13
+    branch symmetry through +5
+        branch {
+            from // MOVE NOT PRINTED: green 28 : 1 + 2φ
+            // MOVE NOT PRINTED: purple 1 : 1 + 2φ
+            symmetry through center
+              save all {
+                  // MOVE NOT PRINTED: green 43 : 1 + 2φ
+                  repeat 3 {
+                      // MOVE NOT PRINTED: green 43 : 4 + 6φ
+                      scale 0 ( 0 1 )}
+                }
+            // MOVE NOT PRINTED: purple 1 : 2 + 3φ
+            symmetry through center
+              save all {
+                  // MOVE NOT PRINTED: blue 39 : 2 + 3φ
+                  repeat 3 {
+                      // MOVE NOT PRINTED: blue 39 : 6 + 10φ
+                      scale 0 ( 0 1 )}
+                }
+            // MOVE NOT PRINTED: purple 1 : 3 + 5φ
+            symmetry through center
+              save all {
+                  // MOVE NOT PRINTED: green 39 : 2 + 3φ
+                  repeat 3 {
+                      // MOVE NOT PRINTED: green 39 : 6 + 10φ
+                      scale 0 ( 0 1 )}
+                }
+            // MOVE NOT PRINTED: purple 1 : 2 + 3φ
+            symmetry through center
+              save all {
+                  // MOVE NOT PRINTED: purple 42 : 1 + 2φ
+                  repeat 2 {
+                      repeat 2 // MOVE NOT PRINTED: purple 42 : 2 + 3φ
+                      scale 0 ( 0 1 )}
+                  scale 0 ( 2 -1 )repeat 2 {
+                      repeat 2 // MOVE NOT PRINTED: purple 42 : 2 + 3φ
+                      scale 0 ( 0 1 )}
+                }
+            // MOVE NOT PRINTED: purple 1 : 3 + 5φ
+            symmetry through center
+              save all {
+                  // MOVE NOT PRINTED: green 42 : 3 + 5φ
+                  repeat 3 {
+                      // MOVE NOT PRINTED: green 42 : 10 + 16φ
+                      scale 0 ( 0 1 )}
+                }
+          }
+}

@@ -1,0 +1,16 @@
+{
+  scale 0 ( 5 -3 )repeat 8 {
+      scale 0 ( 0 1 )from // MOVE NOT PRINTED: red 47 : 2 + 3φ
+      // MOVE NOT PRINTED: red 32 : 2 + 3φ
+      // MOVE NOT PRINTED: red 2 : 2 + 3φ
+      // MOVE NOT PRINTED: red 17 : 2 + 3φ
+      branch // MOVE NOT PRINTED: blue 45 : 4 + 6φ
+      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+      // MOVE NOT PRINTED: red 45 : 2 + 3φ
+      // MOVE NOT PRINTED: yellow 5 : 1 + 2φ
+      // MOVE NOT PRINTED: red 17 : 1 + 2φ
+      // MOVE NOT PRINTED: red 17 : 2 + 3φ
+      branch // MOVE NOT PRINTED: red 45 : 2 + 3φ
+      rotate 2 around +0
+    }
+}

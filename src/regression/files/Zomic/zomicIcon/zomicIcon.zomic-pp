@@ -1,0 +1,5 @@
+{
+  scale 0 ( -1 1 )// MOVE NOT PRINTED: red 30 : 1 + 2φ
+  // MOVE NOT PRINTED: blue 9 : 2 + 4φ
+  // MOVE NOT PRINTED: yellow 30 : 1 + φ
+}

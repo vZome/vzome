@@ -1,0 +1,6 @@
+symmetry through center
+  symmetry {
+      from // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+      // MOVE NOT PRINTED: yellow 38 : 1 + φ
+      // MOVE NOT PRINTED: yellow 2 : 1 + φ
+    }

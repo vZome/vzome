@@ -1,0 +1,34 @@
+{
+  scale 0 ( -1 1 )symmetry around +0
+    {
+      symmetry around +2
+        symmetry around +0
+          branch {
+              move
+              repeat 3 // MOVE NOT PRINTED: red 0 : 3 + 5φ
+              // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+              build
+              // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+              // MOVE NOT PRINTED: yellow 21 : 1 + 2φ
+              // MOVE NOT PRINTED: yellow 2 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 7 : 4 + 6φ
+              // MOVE NOT PRINTED: yellow 1 : 1 + 2φ
+            }
+      symmetry through +14
+        branch {
+            move
+            repeat 3 // MOVE NOT PRINTED: red 0 : 3 + 5φ
+            repeat 2 // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+            // MOVE NOT PRINTED: yellow 21 : 1 + 2φ
+            build
+            // MOVE NOT PRINTED: blue 22 : 4 + 6φ
+            // MOVE NOT PRINTED: blue 16 : 4 + 6φ
+            // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+            from // MOVE NOT PRINTED: blue 36 : 6 + 10φ
+            // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+            // MOVE NOT PRINTED: blue 53 : 4 + 6φ
+            // MOVE NOT PRINTED: blue 39 : 4 + 6φ
+            // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+          }
+    }
+}

@@ -1,0 +1,7 @@
+{
+  scale 0 ( -1 1 )symmetry {
+      repeat 2 from // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+      // MOVE NOT PRINTED: red 15 : 2 + 3φ
+      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+    }
+}

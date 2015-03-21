@@ -1,0 +1,17 @@
+{
+  from // MOVE NOT PRINTED: yellow 6 : 8 + 13φ
+  symmetry through center
+    branch {
+        move
+        repeat 2 // MOVE NOT PRINTED: yellow 16 : 1 + 2φ
+        // MOVE NOT PRINTED: blue 0 : 2 + 4φ
+        build
+        symmetry around +0
+          {
+            branch repeat 2 // MOVE NOT PRINTED: orange 46 : 3 + 5φ
+            branch repeat 2 // MOVE NOT PRINTED: yellow 16 : 2 + 3φ
+            // MOVE NOT PRINTED: blue 56 : 4 + 6φ
+          }
+      }
+  from // MOVE NOT PRINTED: yellow 6 : 8 + 13φ
+}

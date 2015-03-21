@@ -1,0 +1,25 @@
+{
+  scale 0 ( -1 1 )symmetry through center
+    branch {
+        from // MOVE NOT PRINTED: red 30 : 1 + φ
+        from // MOVE NOT PRINTED: red 30 : 8 + 13φ
+        symmetry around +0
+          branch {
+              from // MOVE NOT PRINTED: yellow 1 : 1 + φ
+              branch {
+                  // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+                  // MOVE NOT PRINTED: green 6 : 4 + 6φ
+                  // MOVE NOT PRINTED: blue 11 : 4 + 6φ
+                  branch // MOVE NOT PRINTED: green 12 : 6 + 10φ
+                }
+              // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+              // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+              branch // MOVE NOT PRINTED: blue 55 : 2 + 4φ
+              branch // MOVE NOT PRINTED: blue 21 : 4 + 6φ
+              // MOVE NOT PRINTED: green 9 : 4 + 6φ
+              branch // MOVE NOT PRINTED: blue 21 : 4 + 6φ
+              branch // MOVE NOT PRINTED: green 12 : 6 + 10φ
+              // MOVE NOT PRINTED: blue 6 : 4 + 6φ
+            }
+      }
+}

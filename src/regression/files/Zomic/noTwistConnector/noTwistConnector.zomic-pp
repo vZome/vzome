@@ -1,0 +1,61 @@
+symmetry {
+    move
+    // MOVE NOT PRINTED: yellow 16 : 2 + 3φ
+    // MOVE NOT PRINTED: blue 16 : 6 + 10φ
+    // MOVE NOT PRINTED: red 16 : 3 + 5φ
+    build
+    label b0
+    label x0
+    label z0
+    label g0
+    label p0
+    // MOVE NOT PRINTED: blue 56 : 4 + 6φ
+    label z3
+    label g1
+    // MOVE NOT PRINTED: blue 23 : 2 + 4φ
+    // MOVE NOT PRINTED: red 16 : 0 + φ
+    label g2
+    label r0
+    // MOVE NOT PRINTED: orange 52 : 1 + 2φ
+    // MOVE NOT PRINTED: orange 52 : 1 + 2φ
+    label r1
+    // MOVE NOT PRINTED: orange 0 : 1 + 2φ
+    // MOVE NOT PRINTED: orange 0 : 1 + 2φ
+    label r2
+    // MOVE NOT PRINTED: orange 5 : 1 + 2φ
+    // MOVE NOT PRINTED: orange 5 : 1 + 2φ
+    label r3
+    // MOVE NOT PRINTED: orange 41 : 1 + 2φ
+    // MOVE NOT PRINTED: orange 41 : 1 + 2φ
+    label r4
+    label p2
+    branch // MOVE NOT PRINTED: blue 45 : 2 + 4φ
+    label p1
+    label g3
+    // MOVE NOT PRINTED: red 1 : 0 + φ
+    // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+    label p3
+    label b1
+    // MOVE NOT PRINTED: blue 2 : 6 + 10φ
+    label b2
+    // MOVE NOT PRINTED: blue 45 : 4 + 6φ
+    label b3
+    label x1
+    // MOVE NOT PRINTED: red 47 : 1 + φ
+    label x2
+    label o0
+    // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+    label o1
+    label y0
+    // MOVE NOT PRINTED: purple 59 : 1 + 2φ
+    // MOVE NOT PRINTED: purple 59 : 1 + 2φ
+    label y1
+    // MOVE NOT PRINTED: purple 15 : 1 + 2φ
+    // MOVE NOT PRINTED: purple 15 : 1 + 2φ
+    label y2
+    label o2
+    label x3
+    label z1
+    // MOVE NOT PRINTED: blue 56 : 4 + 6φ
+    label z2
+  }

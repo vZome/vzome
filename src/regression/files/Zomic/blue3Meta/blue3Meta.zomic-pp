@@ -1,0 +1,33 @@
+{
+  move
+  // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+  // MOVE NOT PRINTED: red 17 : 1 + 2φ
+  build
+  repeat 2 {
+      repeat 2 {
+          // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+          // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+          branch // MOVE NOT PRINTED: blue 36 : 6 + 10φ
+          // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+          branch // MOVE NOT PRINTED: blue 36 : 6 + 10φ
+          // MOVE NOT PRINTED: blue 55 : 2 + 4φ
+          branch // MOVE NOT PRINTED: blue 36 : 6 + 10φ
+          // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+          branch // MOVE NOT PRINTED: blue 36 : 6 + 10φ
+        }
+      repeat 2 {
+          // MOVE NOT PRINTED: blue 9 : 4 + 6φ
+          // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+          branch // MOVE NOT PRINTED: blue 36 : 4 + 6φ
+          // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+          branch // MOVE NOT PRINTED: blue 36 : 4 + 6φ
+          // MOVE NOT PRINTED: blue 55 : 2 + 4φ
+          branch // MOVE NOT PRINTED: blue 36 : 4 + 6φ
+          // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+          branch // MOVE NOT PRINTED: blue 36 : 4 + 6φ
+        }
+    }
+  move
+  // MOVE NOT PRINTED: red 32 : 1 + 2φ
+  // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+}

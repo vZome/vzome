@@ -1,0 +1,23 @@
+{
+  scale 0 ( -1 1 ){
+    symmetry around -0
+      branch {
+          move
+          repeat 2 // MOVE NOT PRINTED: yellow 22 : 3 + 5φ
+          // MOVE NOT PRINTED: purple 3 : 1 + 2φ
+          build
+          symmetry through +10
+            branch {
+                from // MOVE NOT PRINTED: blue 21 : 2 + 3φ
+                // MOVE NOT PRINTED: blue 54 : 4 + 6φ
+                // MOVE NOT PRINTED: blue 45 : 3 + 5φ
+                branch // MOVE NOT PRINTED: orange 36 : 2 + 3φ
+                // MOVE NOT PRINTED: orange 51 : 2 + 3φ
+                branch // MOVE NOT PRINTED: blue 45 : 4 + 6φ
+                // MOVE NOT PRINTED: yellow 6 : 1 + 2φ
+                // MOVE NOT PRINTED: blue 51 : 4 + 6φ
+              }
+        }
+    from // MOVE NOT PRINTED: red 0 : 3 + 5φ
+  }
+}

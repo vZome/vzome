@@ -1,0 +1,38 @@
+{
+  // MOVE NOT PRINTED: red 0 : 1 + 2φ
+  // MOVE NOT PRINTED: red 45 : 1 + 2φ
+  // MOVE NOT PRINTED: blue 16 : 2 + 4φ
+  scale 0 ( -3 2 )symmetry {
+      move
+      // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+      // MOVE NOT PRINTED: red 17 : 1 + 2φ
+      build
+      // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+      // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+    }
+  save scale {
+      scale 0 ( 3 5 )repeat 2 // MOVE NOT PRINTED: red 0 : 1 + 2φ
+    }
+  symmetry {
+      move
+      // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+      // MOVE NOT PRINTED: red 17 : 1 + 2φ
+      build
+      // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+      // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+    }
+  save scale {
+      scale 0 ( 3 5 )repeat 2 // MOVE NOT PRINTED: red 45 : 1 + 2φ
+    }
+  symmetry {
+      move
+      // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+      // MOVE NOT PRINTED: red 17 : 1 + 2φ
+      build
+      // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+      // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+    }
+  save scale {
+      scale 0 ( 3 5 )repeat 2 // MOVE NOT PRINTED: blue 16 : 2 + 4φ
+    }
+}

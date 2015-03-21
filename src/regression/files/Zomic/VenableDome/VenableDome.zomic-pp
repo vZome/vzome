@@ -1,0 +1,17 @@
+{
+  scale 0 ( -1 1 )symmetry through center
+    symmetry {
+        move
+        repeat 2 // MOVE NOT PRINTED: red 0 : 1 + φ
+        repeat 2 // MOVE NOT PRINTED: red 0 : 2 + 3φ
+        // MOVE NOT PRINTED: yellow 8 : 2 + 3φ
+        // MOVE NOT PRINTED: red 0 : 3 + 5φ
+        build
+        // MOVE NOT PRINTED: blue 47 : 4 + 6φ
+        // MOVE NOT PRINTED: green 25 : 2 + 4φ
+        // MOVE NOT PRINTED: green 34 : 2 + 4φ
+        // MOVE NOT PRINTED: blue 2 : 4 + 6φ
+        // MOVE NOT PRINTED: red 31 : 2 + 3φ
+        // MOVE NOT PRINTED: red 32 : 2 + 3φ
+      }
+}

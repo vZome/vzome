@@ -1,0 +1,97 @@
+symmetry through +10
+  symmetry around +10
+    {
+      from // MOVE NOT PRINTED: red 0 : 3 + 5φ
+      save scale {
+          scale 0 ( -1 1 )// MOVE NOT PRINTED: yellow 7 : 1 + 2φ
+          // MOVE NOT PRINTED: blue 51 : 4 + 6φ
+          branch {
+              // MOVE NOT PRINTED: yellow 54 : 1 + 2φ
+              branch // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+              branch // MOVE NOT PRINTED: yellow 4 : 1 + 2φ
+            }
+          // MOVE NOT PRINTED: blue 2 : 4 + 6φ
+          branch // MOVE NOT PRINTED: blue 21 : 4 + 6φ
+          // MOVE NOT PRINTED: yellow 4 : 1 + 2φ
+          branch {
+              // MOVE NOT PRINTED: yellow 54 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 56 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 47 : 4 + 6φ
+              branch {
+                  // MOVE NOT PRINTED: yellow 30 : 1 + 2φ
+                  // MOVE NOT PRINTED: blue 40 : 4 + 6φ
+                }
+              // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 8 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 2 : 4 + 6φ
+            }
+          // MOVE NOT PRINTED: yellow 2 : 1 + 2φ
+          branch // MOVE NOT PRINTED: blue 21 : 4 + 6φ
+          // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+          branch {
+              // MOVE NOT PRINTED: yellow 54 : 1 + 2φ
+              branch // MOVE NOT PRINTED: yellow 17 : 1 + 2φ
+              // MOVE NOT PRINTED: yellow 38 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 56 : 4 + 6φ
+              // MOVE NOT PRINTED: yellow 16 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 22 : 4 + 6φ
+              // MOVE NOT PRINTED: yellow 17 : 1 + 2φ
+              // MOVE NOT PRINTED: yellow 6 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 10 : 4 + 6φ
+              // MOVE NOT PRINTED: yellow 0 : 1 + 2φ
+            }
+          // MOVE NOT PRINTED: blue 40 : 4 + 6φ
+          branch // MOVE NOT PRINTED: blue 21 : 4 + 6φ
+          // MOVE NOT PRINTED: yellow 38 : 1 + 2��
+          branch // MOVE NOT PRINTED: yellow 5 : 1 + 2φ
+          branch {
+              repeat 2 // MOVE NOT PRINTED: yellow 54 : 1 + 2φ
+              repeat 3 // MOVE NOT PRINTED: yellow 17 : 1 + 2φ
+              repeat 2 // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+              // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+            }
+          // MOVE NOT PRINTED: blue 16 : 4 + 6φ
+          // MOVE NOT PRINTED: yellow 19 : 1 + 2φ
+          // MOVE NOT PRINTED: yellow 54 : 1 + 2φ
+          branch {
+              // MOVE NOT PRINTED: blue 1 : 4 + 6φ
+              branch {
+                  // MOVE NOT PRINTED: yellow 9 : 1 + 2φ
+                  // MOVE NOT PRINTED: blue 52 : 4 + 6φ
+                }
+              // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 22 : 4 + 6φ
+            }
+          // MOVE NOT PRINTED: blue 22 : 4 + 6φ
+          branch {
+              // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 1 : 4 + 6φ
+            }
+          // MOVE NOT PRINTED: yellow 21 : 1 + 2φ
+          // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+          // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+          branch {
+              // MOVE NOT PRINTED: yellow 1 : 1 + 2φ
+              // MOVE NOT PRINTED: yellow 7 : 1 + 2φ
+            }
+          // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+          branch {
+              // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+              // MOVE NOT PRINTED: yellow 1 : 1 + 2φ
+              // MOVE NOT PRINTED: yellow 7 : 1 + 2φ
+              branch // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+              // MOVE NOT PRINTED: yellow 6 : 1 + 2φ
+              branch // MOVE NOT PRINTED: yellow 7 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 52 : 4 + 6φ
+              // MOVE NOT PRINTED: yellow 6 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+              branch // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+              // MOVE NOT PRINTED: yellow 8 : 1 + 2φ
+              branch // MOVE NOT PRINTED: yellow 7 : 1 + 2φ
+              // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+            }
+          // MOVE NOT PRINTED: yellow 21 : 1 + 2φ
+        }
+      from // MOVE NOT PRINTED: red 0 : 3 + 5φ
+    }

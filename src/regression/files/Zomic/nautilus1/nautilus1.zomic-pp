@@ -1,0 +1,21 @@
+{
+  scale 0 ( -3 2 )branch {
+      repeat 5 {
+          branch {
+              // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 26 : 2 + 4φ
+            }
+          branch {
+              // MOVE NOT PRINTED: yellow 21 : 1 + 2φ
+              // MOVE NOT PRINTED: yellow 21 : 1 + φ
+            }
+          // MOVE NOT PRINTED: blue 22 : 4 + 6φ
+          branch // MOVE NOT PRINTED: blue 0 : 6 + 10φ
+          branch // MOVE NOT PRINTED: yellow 5 : 2 + 3φ
+          // MOVE NOT PRINTED: blue 24 : 6 + 10φ
+          rotate 1 around +4
+          scale 0 ( 0 1 )}
+      branch // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+      branch // MOVE NOT PRINTED: yellow 21 : 1 + 2φ
+    }
+}

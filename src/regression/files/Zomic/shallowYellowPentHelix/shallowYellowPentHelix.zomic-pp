@@ -1,0 +1,9 @@
+repeat 2 {
+    branch repeat 10 {
+          branch // MOVE NOT PRINTED: red 0 : 1 + 2φ
+          branch // MOVE NOT PRINTED: green 55 : 4 + 6φ
+          // MOVE NOT PRINTED: yellow 7 : 2 + 3φ
+          rotate 1 around +0
+        }
+    from // MOVE NOT PRINTED: red 0 : 1 + 2φ
+  }

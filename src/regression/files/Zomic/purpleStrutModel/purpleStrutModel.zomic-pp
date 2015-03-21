@@ -1,0 +1,17 @@
+{
+  symmetry branch {
+        from // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+        from // MOVE NOT PRINTED: red 17 : 1 + 2φ
+        // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+        // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+      }
+  // MOVE NOT PRINTED: purple 9 : 2 + 3φ
+  symmetry through +14
+    branch {
+        // MOVE NOT PRINTED: red 0 : 1 + φ
+        // MOVE NOT PRINTED: yellow 17 : 1 + φ
+        branch // MOVE NOT PRINTED: purple 9 : 1 + 2φ
+        // MOVE NOT PRINTED: green 32 : 2 + 4φ
+        branch // MOVE NOT PRINTED: purple 9 : 1 + 2φ
+      }
+}

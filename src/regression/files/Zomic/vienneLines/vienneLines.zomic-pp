@@ -1,0 +1,19 @@
+repeat 3 {
+    // MOVE NOT PRINTED: blue 0 : 1 + 2φ
+    // MOVE NOT PRINTED: blue 0 : 2 + 3φ
+    // MOVE NOT PRINTED: blue 0 : 3 + 5φ
+    // MOVE NOT PRINTED: blue 1 : 1 + 2φ
+    // MOVE NOT PRINTED: purple 30 : 1 + 2φ
+    // MOVE NOT PRINTED: blue 1 : 1 + 2φ
+    // MOVE NOT PRINTED: red 30 : 1 + 2φ
+    // MOVE NOT PRINTED: blue 1 : 1 + 2φ
+    // MOVE NOT PRINTED: green 36 : 1 + 2φ
+    // MOVE NOT PRINTED: blue 1 : 1 + 2φ
+    // MOVE NOT PRINTED: blue 1 : 2 + 3φ
+    // MOVE NOT PRINTED: blue 1 : 3 + 5φ
+    // MOVE NOT PRINTED: blue 0 : 1 + 2φ
+    // MOVE NOT PRINTED: yellow 16 : 1 + 2φ
+    // MOVE NOT PRINTED: blue 0 : 1 + 2φ
+    // MOVE NOT PRINTED: orange 36 : 1 + 2φ
+    // MOVE NOT PRINTED: blue 0 : 1 + 2φ
+    scale 0 ( 0 1 )}

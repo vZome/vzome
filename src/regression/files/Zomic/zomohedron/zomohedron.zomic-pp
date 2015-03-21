@@ -1,0 +1,33 @@
+{
+  symmetry {
+      move
+      // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+      // MOVE NOT PRINTED: red 17 : 1 + 2φ
+      build
+      // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+      // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+      branch {
+          move
+          // MOVE NOT PRINTED: red 1 : 2 + 3φ
+          build
+          // MOVE NOT PRINTED: blue 55 : 2 + 4φ
+        }
+      branch {
+          move
+          repeat 3 // MOVE NOT PRINTED: yellow 9 : 0 + φ
+          build
+          // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+        }
+      // MOVE NOT PRINTED: blue 9 : 4 + 6φ
+      // MOVE NOT PRINTED: blue 55 : 2 + 4φ
+      // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+    }
+  scale 0 ( 0 1 )symmetry {
+      move
+      // MOVE NOT PRINTED: blue 9 : 6 + 10φ
+      // MOVE NOT PRINTED: red 17 : 1 + 2φ
+      build
+      // MOVE NOT PRINTED: blue 37 : 2 + 4φ
+      // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+    }
+}

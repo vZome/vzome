@@ -1,0 +1,39 @@
+symmetry through +5
+  symmetry around +5
+    branch {
+        scale 0 ( -1 1 )from repeat 5 // MOVE NOT PRINTED: blue 45 : 2 + 3φ
+        branch repeat 5 // MOVE NOT PRINTED: green 23 : 2 + 3φ
+        // MOVE NOT PRINTED: blue 1 : 2 + 3φ
+        branch repeat 5 // MOVE NOT PRINTED: green 23 : 2 + 3φ
+        // MOVE NOT PRINTED: yellow 6 : 1 + φ
+        branch {
+            repeat 3 // MOVE NOT PRINTED: green 23 : 2 + 3φ
+            // MOVE NOT PRINTED: green 23 : 3 + 5φ
+          }
+        // MOVE NOT PRINTED: orange 6 : 1 + 2φ
+        branch repeat 4 // MOVE NOT PRINTED: green 23 : 2 + 3φ
+        // MOVE NOT PRINTED: green 6 : 2 + 3φ
+        branch repeat 3 // MOVE NOT PRINTED: green 23 : 2 + 3φ
+        // MOVE NOT PRINTED: red 0 : 1 + 2φ
+        branch repeat 2 // MOVE NOT PRINTED: green 23 : 2 + 3φ
+        // MOVE NOT PRINTED: purple 0 : 1 + φ
+        branch // MOVE NOT PRINTED: green 23 : 2 + 3φ
+        // MOVE NOT PRINTED: blue 0 : 2 + 3φ
+        // MOVE NOT PRINTED: blue 47 : 2 + 3φ
+        branch // MOVE NOT PRINTED: green 8 : 2 + 3φ
+        // MOVE NOT PRINTED: yellow 22 : 1 + φ
+        branch repeat 2 // MOVE NOT PRINTED: green 8 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 22 : 1 + 2φ
+        branch repeat 3 // MOVE NOT PRINTED: green 8 : 2 + 3φ
+        // MOVE NOT PRINTED: green 22 : 2 + 3φ
+        branch repeat 4 // MOVE NOT PRINTED: green 8 : 2 + 3φ
+        // MOVE NOT PRINTED: red 16 : 1 + 2φ
+        branch {
+            // MOVE NOT PRINTED: green 8 : 3 + 5φ
+            repeat 3 // MOVE NOT PRINTED: green 8 : 2 + 3φ
+          }
+        // MOVE NOT PRINTED: purple 16 : 1 + φ
+        branch repeat 5 // MOVE NOT PRINTED: green 8 : 2 + 3φ
+        // MOVE NOT PRINTED: blue 16 : 2 + 3φ
+        branch repeat 5 // MOVE NOT PRINTED: green 8 : 2 + 3φ
+        scale 0 ( 0 1 )}

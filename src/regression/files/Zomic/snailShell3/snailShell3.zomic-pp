@@ -1,0 +1,23 @@
+{
+  scale 0 ( 1 2 )repeat 5 {
+      scale 0 ( -1 1 )repeat 3 {
+          // MOVE NOT PRINTED: green 25 : 2 + 4φ
+          // MOVE NOT PRINTED: blue 16 : 4 + 6φ
+          branch // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+          // MOVE NOT PRINTED: red 45 : 2 + 3φ
+          branch // MOVE NOT PRINTED: yellow 4 : 1 + 2φ
+          branch // MOVE NOT PRINTED: blue 54 : 4 + 6φ
+          // MOVE NOT PRINTED: red 17 : 2 + 3φ
+          branch // MOVE NOT PRINTED: blue 54 : 4 + 6φ
+          // MOVE NOT PRINTED: blue 10 : 4 + 6φ
+          // MOVE NOT PRINTED: blue 54 : 4 + 6φ
+          from // MOVE NOT PRINTED: green 2 : 2 + 4φ
+          rotate -1 around +0
+        }
+      from // MOVE NOT PRINTED: green 25 : 2 + 4φ
+      {
+        scale 0 ( -1 1 )// MOVE NOT PRINTED: blue 16 : 2 + 4φ
+        from // MOVE NOT PRINTED: green 4 : 2 + 4φ
+        scale 0 ( 0 1 )}
+    }
+}

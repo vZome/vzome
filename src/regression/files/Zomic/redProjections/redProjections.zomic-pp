@@ -1,0 +1,47 @@
+{
+  branch {
+      // MOVE NOT PRINTED: green 12 : 16 + 26φ
+      // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+    }
+  branch {
+      // MOVE NOT PRINTED: yellow 8 : 3 + 5φ
+      branch // MOVE NOT PRINTED: red 0 : 8 + 13φ
+      // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+      // MOVE NOT PRINTED: red 0 : 8 + 13φ
+    }
+  branch {
+      // MOVE NOT PRINTED: blue 0 : 4 + 6φ
+      branch // MOVE NOT PRINTED: red 0 : 2 + 3φ
+      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+      // MOVE NOT PRINTED: red 0 : 2 + 3φ
+    }
+  branch // MOVE NOT PRINTED: blue 8 : 6 + 10φ
+  branch {
+      // MOVE NOT PRINTED: red 15 : 1 + 2φ
+      branch // MOVE NOT PRINTED: red 0 : 1 + 2φ
+      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+      // MOVE NOT PRINTED: red 0 : 1 + 2φ
+    }
+  branch // MOVE NOT PRINTED: yellow 5 : 2 + 3φ
+  branch {
+      // MOVE NOT PRINTED: blue 16 : 2 + 4φ
+      branch // MOVE NOT PRINTED: red 0 : 1 + 2φ
+      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+      // MOVE NOT PRINTED: red 0 : 1 + 2φ
+    }
+  branch // MOVE NOT PRINTED: green 34 : 4 + 6φ
+  branch {
+      // MOVE NOT PRINTED: yellow 16 : 1 + 2φ
+      branch // MOVE NOT PRINTED: red 0 : 2 + 3φ
+      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+      // MOVE NOT PRINTED: red 0 : 2 + 3φ
+    }
+  branch // MOVE NOT PRINTED: red 31 : 3 + 5φ
+  branch {
+      // MOVE NOT PRINTED: green 36 : 6 + 10φ
+      branch // MOVE NOT PRINTED: red 0 : 3 + 5φ
+      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+      // MOVE NOT PRINTED: red 0 : 3 + 5φ
+    }
+  // MOVE NOT PRINTED: blue 39 : 10 + 16φ
+}

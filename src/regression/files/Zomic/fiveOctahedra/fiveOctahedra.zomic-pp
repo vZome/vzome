@@ -1,0 +1,7 @@
+symmetry {
+    from repeat 2 // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+    branch // MOVE NOT PRINTED: green 11 : 4 + 6φ
+    repeat 2 // MOVE NOT PRINTED: green 50 : 2 + 4φ
+    repeat 2 // MOVE NOT PRINTED: green 50 : 2 + 2φ
+    // MOVE NOT PRINTED: green 50 : 2 + 4φ
+  }

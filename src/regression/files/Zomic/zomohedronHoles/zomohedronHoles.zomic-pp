@@ -1,0 +1,35 @@
+symmetry {
+    move
+    // MOVE NOT PRINTED: yellow 6 : 1 + 2φ
+    // MOVE NOT PRINTED: red 46 : 2 + 3φ
+    branch {
+        // MOVE NOT PRINTED: red 46 : 2 + 3φ
+        // MOVE NOT PRINTED: red 46 : 2 - φ
+        save build {
+            build
+            // MOVE NOT PRINTED: blue 45 : 2 + 4φ
+          }
+      }
+    // MOVE NOT PRINTED: blue 2 : 4 + 6φ
+    branch {
+        // MOVE NOT PRINTED: blue 1 : 4 + 6φ
+        branch save build {
+              build
+              // MOVE NOT PRINTED: blue 47 : 4 + 6φ
+              // MOVE NOT PRINTED: blue 45 : 2 + 4φ
+            }
+        // MOVE NOT PRINTED: red 2 : 1 + φ
+        save build {
+            build
+            // MOVE NOT PRINTED: blue 47 : 6 + 10φ
+            // MOVE NOT PRINTED: blue 45 : 4 + 6φ
+          }
+      }
+    branch {
+        repeat 3 // MOVE NOT PRINTED: yellow 6 : 0 + φ
+        save build {
+            build
+            // MOVE NOT PRINTED: blue 47 : 4 + 6φ
+          }
+      }
+  }

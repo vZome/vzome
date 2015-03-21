@@ -1,0 +1,51 @@
+{
+  branch // MOVE NOT PRINTED: blue 26 : 4 + 6φ
+  branch {
+      // MOVE NOT PRINTED: blue 38 : 4 + 6φ
+      // MOVE NOT PRINTED: green 17 : 4 + 6φ
+    }
+  branch // MOVE NOT PRINTED: blue 55 : 4 + 6φ
+  branch {
+      // MOVE NOT PRINTED: blue 37 : 4 + 6φ
+      // MOVE NOT PRINTED: green 17 : 4 + 6φ
+    }
+  branch // MOVE NOT PRINTED: green 18 : 4 + 6φ
+  branch // MOVE NOT PRINTED: green 54 : 4 + 6φ
+  branch {
+      // MOVE NOT PRINTED: blue 39 : 6 + 10φ
+      // MOVE NOT PRINTED: green 17 : 5 + 8φ
+    }
+  branch {
+      // MOVE NOT PRINTED: blue 41 : 4 + 6φ
+      // MOVE NOT PRINTED: green 17 : 1 + 2φ
+      // MOVE NOT PRINTED: green 17 : 3 + 5φ
+    }
+  branch {
+      // MOVE NOT PRINTED: blue 45 : 4 + 6φ
+      // MOVE NOT PRINTED: green 17 : 2 + 3φ
+    }
+  branch {
+      // MOVE NOT PRINTED: blue 40 : 4 + 6φ
+      // MOVE NOT PRINTED: green 17 : 5 + 8φ
+    }
+  branch {
+      // MOVE NOT PRINTED: blue 21 : 4 + 6φ
+      // MOVE NOT PRINTED: green 17 : 1 + 2φ
+    }
+  branch {
+      // MOVE NOT PRINTED: red 17 : 2 + 3φ
+      // MOVE NOT PRINTED: blue 36 : 5 + 8φ
+    }
+  branch {
+      // MOVE NOT PRINTED: red 15 : 2 + 3φ
+      // MOVE NOT PRINTED: blue 36 : 1 + 2φ
+    }
+  branch {
+      // MOVE NOT PRINTED: yellow 17 : 1 + 2φ
+      // MOVE NOT PRINTED: blue 36 : 2 + 3φ
+    }
+  branch {
+      // MOVE NOT PRINTED: yellow 54 : 1 + 2φ
+      // MOVE NOT PRINTED: blue 36 : 2 + 3φ
+    }
+}

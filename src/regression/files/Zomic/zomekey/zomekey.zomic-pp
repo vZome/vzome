@@ -1,0 +1,7 @@
+{
+  scale 0 ( -3 2 )symmetry branch {
+        repeat 2 from // MOVE NOT PRINTED: red 0 : 1 + 2φ
+        from // MOVE NOT PRINTED: yellow 24 : 1 + φ
+        // MOVE NOT PRINTED: blue 54 : 2 + 4φ
+      }
+}

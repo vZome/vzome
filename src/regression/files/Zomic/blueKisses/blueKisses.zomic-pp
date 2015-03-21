@@ -1,0 +1,9 @@
+repeat 3 branch {
+      // MOVE NOT PRINTED: blue 23 : 2 + 4φ
+      // MOVE NOT PRINTED: blue 23 : 2 + 4φ
+      branch // MOVE NOT PRINTED: blue 10 : 2 + 4φ
+      branch // MOVE NOT PRINTED: blue 22 : 2 + 4φ
+      branch // MOVE NOT PRINTED: red 46 : 1 + 2φ
+      branch // MOVE NOT PRINTED: yellow 38 : 1 + φ
+      rotate 1 around +4
+    }

@@ -1,0 +1,18 @@
+{
+  scale 0 ( -1 1 )branch repeat 3 {
+        branch repeat 3 {
+              branch repeat 3 {
+                    repeat 2 {
+                        repeat 2 {
+                            branch // MOVE NOT PRINTED: yellow 8 : 1 + 2φ
+                            rotate 1 around -10
+                          }
+                        rotate 1 around +6
+                      }
+                    from // MOVE NOT PRINTED: green 9 : 4 + 6φ
+                  }
+              from // MOVE NOT PRINTED: green 27 : 4 + 6φ
+            }
+        from // MOVE NOT PRINTED: green 5 : 4 + 6φ
+      }
+}

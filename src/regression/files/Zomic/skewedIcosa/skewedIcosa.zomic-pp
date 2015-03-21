@@ -1,0 +1,34 @@
+{
+  // MOVE NOT PRINTED: blue 21 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 36 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 56 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 1 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 11 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 40 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 16 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 53 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 54 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 9 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 8 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 26 : 3 + 5φ
+  // MOVE NOT PRINTED: orange 39 : 2 + 3φ
+  // MOVE NOT PRINTED: purple 45 : 1 + 2φ
+  // MOVE NOT PRINTED: green 59 : 2 + 3φ
+  // MOVE NOT PRINTED: blue 26 : 3 + 5φ
+  // MOVE NOT PRINTED: blue 40 : 3 + 5φ
+  // MOVE NOT PRINTED: green 4 : 2 + 3φ
+  // MOVE NOT PRINTED: purple 49 : 1 + 2φ
+  // MOVE NOT PRINTED: green 29 : 2 + 3φ
+  branch // MOVE NOT PRINTED: orange 39 : 2 + 3φ
+  // MOVE NOT PRINTED: purple 15 : 1 + 2φ
+  branch // MOVE NOT PRINTED: red 30 : 2 + 3φ
+  // MOVE NOT PRINTED: green 4 : 2 + 3φ
+  // MOVE NOT PRINTED: orange 42 : 2 + 3φ
+  // MOVE NOT PRINTED: blue 8 : 3 + 5φ
+  // MOVE NOT PRINTED: red 30 : 2 + 3φ
+  // MOVE NOT PRINTED: green 25 : 2 + 3φ
+  // MOVE NOT PRINTED: orange 0 : 2 + 3φ
+  branch // MOVE NOT PRINTED: green 32 : 2 + 3φ
+  // MOVE NOT PRINTED: purple 49 : 1 + 2φ
+  // MOVE NOT PRINTED: green 2 : 2 + 3φ
+}

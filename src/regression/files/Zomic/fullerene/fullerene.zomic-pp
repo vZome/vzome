@@ -1,0 +1,10 @@
+{
+  scale 0 ( -1 1 )symmetry {
+      from {
+        // MOVE NOT PRINTED: blue 6 : 6 + 10φ
+        // MOVE NOT PRINTED: red 0 : 2 + 3φ
+      }
+      // MOVE NOT PRINTED: blue 24 : 4 + 6φ
+      // MOVE NOT PRINTED: blue 22 : 4 + 6φ
+    }
+}

@@ -1,0 +1,29 @@
+{
+  branch {
+      // MOVE NOT PRINTED: blue 9 : 4 + 6φ
+      // MOVE NOT PRINTED: blue 56 : 6 + 10φ
+      // MOVE NOT PRINTED: blue 47 : 6 + 10φ
+    }
+  branch // MOVE NOT PRINTED: blue 54 : 6 + 10φ
+  branch // MOVE NOT PRINTED: blue 55 : 10 + 16φ
+  branch {
+      // MOVE NOT PRINTED: red 31 : 1 + 2φ
+      branch // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+      // MOVE NOT PRINTED: blue 56 : 6 + 10φ
+      branch // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+      // MOVE NOT PRINTED: blue 47 : 6 + 10φ
+      branch // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+    }
+  branch // MOVE NOT PRINTED: yellow 30 : 2 + 3φ
+  branch // MOVE NOT PRINTED: red 47 : 5 + 8φ
+  branch {
+      repeat 2 // MOVE NOT PRINTED: orange 43 : 2 + 3φ
+      branch // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+      // MOVE NOT PRINTED: blue 56 : 6 + 10φ
+      branch // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+      // MOVE NOT PRINTED: blue 47 : 6 + 10φ
+      branch // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+    }
+  branch // MOVE NOT PRINTED: green 33 : 6 + 10φ
+  branch repeat 2 // MOVE NOT PRINTED: orange 50 : 3 + 5φ
+}

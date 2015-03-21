@@ -1,0 +1,12 @@
+{
+  scale 0 ( 3 5 )from // MOVE NOT PRINTED: blue 16 : 6 + 10φ
+  repeat 11 {
+      branch // MOVE NOT PRINTED: blue 1 : 6 + 10φ
+      // MOVE NOT PRINTED: blue 45 : 6 + 10φ
+      // MOVE NOT PRINTED: blue 1 : 6 + 10φ
+      branch // MOVE NOT PRINTED: blue 0 : 4 + 6φ
+      // MOVE NOT PRINTED: blue 1 : 4 + 6φ
+      // MOVE NOT PRINTED: blue 0 : 4 + 6φ
+      rotate 1 around +13
+      scale 0 ( 2 -1 )}
+}

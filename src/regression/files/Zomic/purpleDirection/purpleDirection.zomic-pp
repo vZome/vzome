@@ -1,0 +1,15 @@
+{
+  branch {
+      // MOVE NOT PRINTED: blue 6 : 2 + 4φ
+      // MOVE NOT PRINTED: blue 0 : 2 + 4φ
+    }
+  // MOVE NOT PRINTED: yellow 9 : 1 + φ
+  branch // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+  // MOVE NOT PRINTED: yellow 9 : 1 + φ
+  branch repeat 2 // MOVE NOT PRINTED: yellow 22 : 1 + 2φ
+  // MOVE NOT PRINTED: green 29 : 2 + 4φ
+  // MOVE NOT PRINTED: blue 22 : 4 + 6φ
+  repeat 2 // MOVE NOT PRINTED: red 32 : 1 + 2φ
+  // MOVE NOT PRINTED: blue 23 : 2 + 2φ
+  repeat 2 // MOVE NOT PRINTED: red 0 : 1 + φ
+}

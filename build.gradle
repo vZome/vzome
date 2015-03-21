@@ -85,7 +85,6 @@ task zomicPP( type: JavaExec, dependsOn: build) {
     def theFile = 'src/regression/files/Zomic/yellowAxisSaddleWeb.zomic'
     if( project .hasProperty( "zomicFile" ) ){
         theFile = zomicFile
-        println "theFile is $theFile"
     }
     classpath = sourceSets.main.runtimeClasspath
     main = 'com.vzome.core.zomic.program.PrintVisitor'

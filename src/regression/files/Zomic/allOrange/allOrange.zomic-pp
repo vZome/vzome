@@ -1,0 +1,21 @@
+symmetry symmetry through +14
+    branch {
+        move
+        repeat 2 // MOVE NOT PRINTED: yellow 6 : 2 + 3φ
+        repeat 2 // MOVE NOT PRINTED: yellow 6 : 1 + 2φ
+        scale 0 ( -1 1 )// MOVE NOT PRINTED: orange 26 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 5 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 18 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 24 : 2 + 3φ
+        build
+        // MOVE NOT PRINTED: orange 2 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 48 : 2 + 3φ
+        branch // MOVE NOT PRINTED: orange 35 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 59 : 2 + 3φ
+        branch // MOVE NOT PRINTED: orange 24 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 54 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 35 : 2 + 3φ
+        branch // MOVE NOT PRINTED: orange 56 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 2 : 2 + 3φ
+        // MOVE NOT PRINTED: orange 18 : 2 + 3φ
+        scale 0 ( 0 1 )}

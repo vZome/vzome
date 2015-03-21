@@ -1,0 +1,25 @@
+{
+  symmetry around +1
+    symmetry around +2
+      symmetry around +5
+        branch // MOVE NOT PRINTED: green 6 : 2 + 4φ
+  branch repeat 3 {
+        branch repeat 3 {
+              branch repeat 3 {
+                    symmetry through +11
+                      {
+                        // MOVE NOT PRINTED: blue 11 : 2 + 4φ
+                        // MOVE NOT PRINTED: yellow 6 : 1 + φ
+                        // MOVE NOT PRINTED: yellow 0 : 1 + φ
+                        // MOVE NOT PRINTED: blue 53 : 2 + 4φ
+                        // MOVE NOT PRINTED: yellow 38 : 1 + φ
+                        branch // MOVE NOT PRINTED: blue 11 : 2 + 4φ
+                        // MOVE NOT PRINTED: yellow 16 : 1 + φ
+                      }
+                    from // MOVE NOT PRINTED: blue 11 : 2 + 4φ
+                  }
+              from // MOVE NOT PRINTED: yellow 6 : 1 + φ
+            }
+        from // MOVE NOT PRINTED: yellow 0 : 1 + φ
+      }
+}
