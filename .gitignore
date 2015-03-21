@@ -1,15 +1,22 @@
 // folders
 .gradle/
+.idea/
 .nb-gradle/
+.settings/
+bin/
 build/
 gradle/
+repos/
+target/
+temp/
 
 // files
 *.unused
 .classpath
 .DS_Store
 .project
-.settings
 gradle-app.setting
-target
+run-vzome.bat
+run-vzome.sh
 Thumbs.db
+vzome-desktop.iml

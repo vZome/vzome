@@ -61,17 +61,16 @@ sourceSets {
 		resources {
 			// The convention-based default built-in srcDir is 'src/main/resources' 
 			// Append any additional SrcDir entries here...
-			srcDir 'src/main/java' 
 			// Uncomment to list them all
 			// println project.name + ' resources.srcDirs = ' + srcDirs + '\n'
 			
-			include '**/*.gif'
-			include '**/*.properties'
-			include '**/*.py'
+			// listed alphabetically
 			include '**/*.gif'
 			include '**/*.jpg'
-			include '**/*.png'
 			include '**/*.pdf'
+			include '**/*.png'
+			include '**/*.properties'
+			include '**/*.py'
 			include '**/*.vef'
 			include '**/*.vZome'
 			include '**/*.zomic'
@@ -98,14 +97,21 @@ task run(type: JavaExec) {
 			,'-Dapple.awt.antialiasing=true'
 			,'-Djava.util.logging.config.file=logging.properties'
 			)
+    // include optional description and group (shown by ./gradlew tasks command)
+    description  = 'Runs vZome-desktop with specific command line args.'
+    group        = 'Run'
 }
 
 
 // This task may someday be useful in packaging distribution zip files
 // It's also used by run-vzome.bat to populate all of the project dependencies before starting the jvm
 task copyDependencies(type: Copy) {
-   from configurations.compile
-   into buildDir.toString() + '\\dependencies'
+	// dependsOn build
+	from configurations.compile
+	into buildDir.toString() + '\\dependencies'
+    // include optional description and group (shown by ./gradlew tasks command)
+    description = 'Copies all dependencies to the /dependencies folder (under the build directory).'
+    group       = 'Build'
 }
 
 
