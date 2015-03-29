@@ -2,16 +2,19 @@ package com.vzome.core.math;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,11 +42,25 @@ public class DomUtils {
 	
 	public static String toString( Element element )
 	{
-		DOMImplementationLS lsImpl = (DOMImplementationLS) element .getOwnerDocument() .getImplementation() .getFeature( "LS", "3.0" );
-		LSSerializer serializer = lsImpl .createLSSerializer();
-		serializer .getDomConfig() .setParameter( "xml-declaration", false ); //by default its true, so set it to false to get String without xml-declaration
-		return serializer .writeToString( element );
-	}
+        DOMImplementation impl = element .getOwnerDocument() .getImplementation();
+        if ( impl .hasFeature( "LS", "3.0" ) ){
+            DOMImplementationLS lsImpl = (DOMImplementationLS) impl .getFeature("LS", "3.0");
+            LSSerializer serializer = lsImpl .createLSSerializer();
+            serializer .getDomConfig() .setParameter( "xml-declaration", false ); //by default its true, so set it to false to get String without xml-declaration
+            return serializer .writeToString( element );
+        }
+        else {
+            try {
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                StringWriter stringWriter = new StringWriter();
+                transformer.transform(new DOMSource(element), new StreamResult(stringWriter));
+                return stringWriter.toString();
+            } catch (TransformerException e) {
+                e.printStackTrace();
+                return "<unableToSerialize/>";
+            }
+        }
+    }
 	
     public static void serialize( Document doc, Writer out ) throws UnsupportedEncodingException, TransformerException
     {       
@@ -100,9 +117,6 @@ public class DomUtils {
 	
 	public static String getXmlString( Element node )
 	{
-	    DOMImplementationLS lsImpl = (DOMImplementationLS)node.getOwnerDocument().getImplementation().getFeature("LS", "3.0");
-	    LSSerializer serializer = lsImpl.createLSSerializer();
-	    serializer.getDomConfig().setParameter("xml-declaration", false); //by default its true, so set it to false to get String without xml-declaration
-	    return serializer.writeToString(node);
+	    return toString( node );
 	}
 }
