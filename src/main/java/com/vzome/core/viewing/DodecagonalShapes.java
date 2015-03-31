@@ -9,7 +9,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.parts.DefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
 
 public class DodecagonalShapes extends AbstractShapes 
@@ -76,16 +75,7 @@ public class DodecagonalShapes extends AbstractShapes
         else if ( dir .getName() .equals( "green" ) )
             return new GreenStrutGeometry();
         else
-            return new DefaultStrutGeometry( dir );
-    }
-    
-    private final class NoStrutGeometry implements StrutGeometry
-    {
-        public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
-        {
-            // TODO Auto-generated method stub
-            return null;
-        }
+            return super .createStrutGeometry( dir );
     }
         
     private final class BlueStrutGeometry implements StrutGeometry

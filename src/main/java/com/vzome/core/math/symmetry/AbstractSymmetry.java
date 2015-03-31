@@ -34,7 +34,9 @@ public abstract class AbstractSymmetry implements Symmetry
     
     protected final AlgebraicField mField;
     
-    protected final String defaultStyle;    
+    protected final String defaultStyle;
+    
+    private final Map vectorToAxis = new HashMap();
         
     protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle )
     {
@@ -255,13 +257,19 @@ public abstract class AbstractSymmetry implements Symmetry
         if ( vector .isOrigin() ) {
             return null;
         }
-        for ( Iterator dirs = mDirectionList .iterator(); dirs .hasNext(); ) {
-            Direction dir = (Direction) dirs .next();
-            Axis line = dir .getAxis( vector );
-            if ( line != null )
-            	return line;
+        Axis result = (Axis) this .vectorToAxis .get( vector );
+        if ( result == null ) {
+            for ( Iterator dirs = mDirectionList .iterator(); dirs .hasNext(); ) {
+                Direction dir = (Direction) dirs .next();
+                Axis line = dir .getAxis( vector );
+                if ( line != null )
+                {
+                    this .vectorToAxis .put( vector, line );
+                    return line;
+                }
+            }
         }
-        return null;
+        return result;
 
 //        String axisName = "unnamed_" + NEXT_NEW_AXIS++;
 //        Direction dir = this .createZoneOrbit( axisName, 0, Symmetry.NO_ROTATION, vector );

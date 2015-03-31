@@ -83,7 +83,6 @@ import com.vzome.core.viewing.DodecagonalShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.OctahedralShapes;
-import com.vzome.core.viewing.ScriptedShapes;
 
 public class Application
 {
@@ -139,14 +138,14 @@ public class Application
             QuaternionicSymmetry T2 = new QuaternionicSymmetry( "2T", "com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef", field );
             field .addQuaternionSymmetry( T2 );
             mStyles.put( symmetry, new ArrayList<Shapes>() );
-            defaultShapes = new ScriptedShapes( prefsFolder, "default", "solid connectors", symmetry );
+            defaultShapes = new ExportedVEFShapes( prefsFolder, "default", "solid connectors", symmetry );
             addStyle( defaultShapes );
-            addStyle( new ScriptedShapes( prefsFolder, "lifelike", "lifelike", symmetry, defaultShapes ) );
-            defaultShapes =  new ScriptedShapes( prefsFolder, "tiny", "tiny connectors", symmetry );
+            addStyle( new ExportedVEFShapes( prefsFolder, "lifelike", "lifelike", symmetry, defaultShapes ) );
+            defaultShapes =  new ExportedVEFShapes( prefsFolder, "tiny", "tiny connectors", symmetry );
             addStyle( defaultShapes );
             addStyle( new ExportedVEFShapes( prefsFolder, "dodecs", "small dodecahedra", symmetry, defaultShapes ) );
-            addStyle( new ScriptedShapes( prefsFolder, "noTwist", "no-twist 121 zone", symmetry ) );
-            addStyle( new ScriptedShapes( prefsFolder, "vienne", "Vienne 121 zone", symmetry ) );
+            addStyle( new ExportedVEFShapes( prefsFolder, "noTwist", "no-twist 121 zone", symmetry ) );
+            addStyle( new ExportedVEFShapes( prefsFolder, "vienne", "Vienne 121 zone", symmetry ) );
             
             if ( enableCommands ) {
                 mCommands .put( "icosasymm-golden", new CommandSymmetry( symmetry ) );
@@ -273,10 +272,10 @@ public class Application
         {
             IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
             mStyles.put( symmetry, new ArrayList<Shapes>() );
-            defaultShapes = new ScriptedShapes( prefsFolder, "default", "solid connectors", symmetry );
+            defaultShapes = new ExportedVEFShapes( prefsFolder, "default", "solid connectors", symmetry );
             addStyle( defaultShapes );
-            addStyle( new ScriptedShapes( prefsFolder, "lifelike", "lifelike", symmetry, defaultShapes ) );
-            addStyle( new ScriptedShapes( prefsFolder, "tiny", "tiny connectors", symmetry ) );
+            addStyle( new ExportedVEFShapes( prefsFolder, "lifelike", "lifelike", symmetry, defaultShapes ) );
+            addStyle( new ExportedVEFShapes( prefsFolder, "tiny", "tiny connectors", symmetry ) );
 
             mCommands .put( "icosasymm-snubDodec", new CommandSymmetry( symmetry ) );
             mCommands .put( "tetrasymm-snubDodec", new CommandTetrahedralSymmetry( symmetry ) );

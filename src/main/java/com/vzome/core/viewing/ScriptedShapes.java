@@ -14,7 +14,6 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.parts.DefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.parts.ZomicPolyhedronModelInterpreter;
 import com.vzome.core.parts.ZomicStrutGeometry;
@@ -26,7 +25,7 @@ public class ScriptedShapes extends AbstractShapes
 {
     private static final String NODE_SCRIPT = "connector.zomic";
     
-    private final AbstractShapes delegate, fallback;
+    private final AbstractShapes fallback;
 
     public ScriptedShapes( File prefsFolder, String pkgName, String name, IcosahedralSymmetry symm )
     {
@@ -36,22 +35,17 @@ public class ScriptedShapes extends AbstractShapes
     public ScriptedShapes( File prefsFolder, String pkgName, String name, IcosahedralSymmetry symm, AbstractShapes fallback )
     {
         super( pkgName, name, symm );
-        delegate = new ExportedVEFShapes( prefsFolder, pkgName, name, symm, null );
         this.fallback = fallback;
     }
     
     protected StrutGeometry createStrutGeometry( Direction dir )
     {
-        StrutGeometry result = delegate .createStrutGeometry( dir );
-        if ( ! (result instanceof DefaultStrutGeometry ) )
-            return result;
-        // else is default, let's try to improve on that
         ZomicStrutGeometry zsg = new ZomicStrutGeometry( mPkgName, dir, mSymmetry );
         if ( zsg .isDefined() )
         	return zsg;
         if ( fallback != null )
             return fallback .createStrutGeometry( dir );
-        return result;
+        return super .createStrutGeometry( dir );
     }
     
     protected Polyhedron buildConnectorShape( String pkgName )

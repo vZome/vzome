@@ -51,6 +51,8 @@ public class RenderedModel implements ManifestationChanges
     private RenderingChanges mainListener;
 
 	private boolean enabled = true;
+
+    private boolean colorPanels;
     
     static Logger logger = Logger.getLogger( "com.vzome.core.render.RenderedModel" );
 
@@ -95,6 +97,12 @@ public class RenderedModel implements ManifestationChanges
 			}
 		} );
         this .enabled = enabled;
+    }
+    
+    public RenderedModel withColorPanels( boolean setting )
+    {
+        this .colorPanels = setting;
+        return this;
     }
     
     public AlgebraicField getField()
@@ -320,7 +328,7 @@ public class RenderedModel implements ManifestationChanges
             if ( normal .isOrigin() )
                 return;
             rm .setShape( shape );  
-            if ( justShape )
+            if ( justShape || ! this .colorPanels )
                 return;
 
             rm .setOrientation( field .identityMatrix( 3 ), false );

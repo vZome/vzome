@@ -24,8 +24,8 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.parts.DefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
 
 /**
@@ -48,7 +48,15 @@ public class ExportedVEFShapes extends AbstractShapes
     {
         super( pkgName, name, alias, symm );
         this .prefsFolder = prefsFolder;
-        this .fallback = null;
+        if ( symm instanceof IcosahedralSymmetry)
+            this .fallback = new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm );
+        else
+            this .fallback = null;
+    }
+    
+    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
+    {
+        this( prefsFolder, pkgName, name, null, symm );
     }
     
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, AbstractShapes fallback )
@@ -76,7 +84,10 @@ public class ExportedVEFShapes extends AbstractShapes
             bytes = Thread.currentThread() .getContextClassLoader().getResourceAsStream( path );
         }
         if ( bytes == null )
-            throw new IllegalStateException( "missing script: " + path );
+            if ( this .fallback != null )
+                return this .fallback .buildConnectorShape( pkgName );
+            else
+                throw new IllegalStateException( "missing script: " + path );
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
@@ -115,10 +126,10 @@ public class ExportedVEFShapes extends AbstractShapes
             bytes = Thread.currentThread() .getContextClassLoader().getResourceAsStream( script );
         }
         if ( bytes == null )
-            if ( this .fallback == null )
-                return new DefaultStrutGeometry( dir );
-            else
+            if ( this .fallback != null )
                 return this .fallback .createStrutGeometry( dir );
+            else
+                return super .createStrutGeometry( dir );
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
@@ -127,7 +138,7 @@ public class ExportedVEFShapes extends AbstractShapes
             while ( ( num = bytes .read( buf, 0, 1024 )) > 0 )
                 out .write( buf, 0, num );
         } catch ( IOException e ) {
-            return new DefaultStrutGeometry( dir );
+            return super .createStrutGeometry( dir );
         }
         String vefData = new String( out .toByteArray() );
         

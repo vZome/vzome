@@ -38,6 +38,7 @@ public class SymmetrySystem implements OrbitSource
     private final Map<String,Shapes> styles = new HashMap();
     private final List<String> styleNames = new ArrayList<String>();
     private Shapes shapes;
+    private Map<AlgebraicVector,Axis> vectorToAxis = new HashMap();
 
     private boolean noKnownDirections = false;
 
@@ -131,17 +132,25 @@ public class SymmetrySystem implements OrbitSource
         if ( vector .isOrigin() ) {
             return null;
         }
+        Axis line = this .vectorToAxis .get( vector );
+        if ( line != null )
+            return line;
         if ( ! this .noKnownDirections )
         {
-        	for ( Iterator dirs = orbits .iterator(); dirs .hasNext(); ) {
-        		Direction dir = (Direction) dirs .next();
-        		Axis line = dir .getAxis( vector );
-        		if ( line != null )
-        			return line;
-        	}
+            for ( Iterator dirs = orbits .iterator(); dirs .hasNext(); ) {
+                Direction dir = (Direction) dirs .next();
+                line = dir .getAxis( vector );
+                if ( line != null )
+                {
+                    this .vectorToAxis .put( vector, line );
+                    return line;
+                }
+            }
         }
         Direction dir = this .createAnonymousOrbit( vector );
-        return dir .getAxis( Symmetry.PLUS, 0 );
+        line = dir .getAxis( Symmetry.PLUS, 0 );
+        this .vectorToAxis .put( vector, line );
+        return line;
 	}
 	
 	public Direction createAnonymousOrbit( AlgebraicVector vector )
