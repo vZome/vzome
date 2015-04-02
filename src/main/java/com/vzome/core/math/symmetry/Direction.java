@@ -51,6 +51,8 @@ public class Direction implements Comparable
     private static int globalIndex = 0;
     
     private final int index;
+
+    private int canonicalize = 0;
     
     public Direction( String name, Symmetry group, int prototype, int rotatedPrototype, AlgebraicVector vector, boolean isStd )
     {
@@ -171,6 +173,32 @@ public class Direction implements Comparable
     public Axis getAxis( int sense, int index )
     {
         return mAxes[ sense ][ index ];
+    }
+    
+    public void withCorrection( int correction )
+    {
+        this .canonicalize = correction;
+    }
+    
+    /**
+     * Get the axis that protrudes from the canonical direction on the zome ball.
+     * Many Directions (orbits) are created without regard to whether "axis 0" actually sticks out
+     * of the ball in the fundamental domain with index 0.
+     * @param sense
+     * @param index
+     * @return
+     */
+    public Axis getCanonicalAxis( int sense, int index )
+    {
+        if ( this.canonicalize != 0 )
+        {
+            int canonicalize = Math.abs( this .canonicalize );
+            if ( this .canonicalize < 0 )
+                sense = ( sense + 1 ) % 2;
+            Permutation third = this .mSymmetryGroup .getPermutation( index );
+            index = third .mapIndex( canonicalize );
+        }
+        return this .getAxis( sense, index );
     }
 
     public void createAxis( int orientation, int rotation, int[] norm )
