@@ -16,6 +16,8 @@ public class RealVector {
 	public static final  RealVector ORIGIN = new RealVector( 0d, 0d, 0d );
 
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
+
+    public static final RealVector DIRECTION_0 = new RealVector( 10d, 0.1d, -0.1d );
 	
 	static {
         FORMAT .setMaximumFractionDigits( 5 );

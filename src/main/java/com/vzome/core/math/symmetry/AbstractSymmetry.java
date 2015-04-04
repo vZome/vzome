@@ -103,6 +103,11 @@ public abstract class AbstractSymmetry implements Symmetry
 
     protected abstract void createInitialPermutations();
     
+    public Direction getPrototypeChiralOrbit()
+    {
+        return null;
+    }
+
     public String getDefaultStyle()
     {
         return this .defaultStyle;
@@ -288,29 +293,47 @@ public abstract class AbstractSymmetry implements Symmetry
 		if ( RealVector .ORIGIN .equals( vector ) ) {
 			return null;
 		}
-		// largest cosine means smallest angle
-		//  and cosine is (a . b ) / |a| |b|
-		double maxCosine = - 1d;
-		Axis closest = null;
+
+	    // largest cosine means smallest angle
+        //  and cosine is (a . b ) / |a| |b|
+        double maxCosine = - 1d;
+        Axis closest = null;
+        int orientation = -1;
+        int sense = -1;
+
+        Direction chiralOrbit = this .getPrototypeChiralOrbit();
+		if ( chiralOrbit != null )
+		{
+		    // We can use the optimized approach, first finding the one fundamental region to look at,
+		    //  then checking the orbits.
+		    Axis closestChiralAxis = chiralOrbit .getChiralAxis( vector );
+	        orientation = closestChiralAxis .getOrientation();
+	        sense = closestChiralAxis .getSense();
+		}
+		
 		Iterator dirs = orbitSet .iterator();
 		if ( dirMask != null )
 		    dirs = dirMask .iterator();
         while ( dirs .hasNext() ) {
             Direction dir = (Direction) dirs .next();
-            // now iterate over axes
-			for ( Iterator axes = dir .getAxes(); axes .hasNext(); ) {
-				Axis axis = (Axis) axes .next();
-				RealVector axisV = axis .normal() .toRealVector();
-				double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
-				if ( cosine > maxCosine ) {
-					maxCosine = cosine;
-					closest = axis;
-				}
-			}
+            Axis axis = null;
+            if ( orientation >= 0 ) {
+                // we found the orientation above, so we don't need to iterate over the whole orbit
+                axis = dir .getCanonicalAxis( sense, orientation );
+            } else {
+                // iterate over zones in the orbit
+                axis = dir .getAxisBruteForce( vector );
+            }
+            RealVector axisV = axis .normal() .toRealVector();
+            double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
+            if ( cosine > maxCosine ) {
+                maxCosine = cosine;
+                closest = axis;
+            }
         }
 		return closest;
 	}
-	
+
     public int getChiralOrder()
     {
         return mOrientations .length;
@@ -392,6 +415,11 @@ public abstract class AbstractSymmetry implements Symmetry
             if ( closure[ i ] != null )
                 result[ j++ ] = i;
         return result;
+    }
+
+    public int[] getIncidentOrientations( int orientation )
+    {
+        return null;
     }
     
 }

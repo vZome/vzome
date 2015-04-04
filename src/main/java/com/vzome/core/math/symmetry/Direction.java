@@ -2,9 +2,12 @@
 
 package com.vzome.core.math.symmetry;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
@@ -149,23 +152,78 @@ public class Direction implements Comparable
     
     public Axis getAxis( RealVector vector )
     {
+        return this .getSymmetry() .getAxis( vector, Collections .singleton( this ) );
+    }
+    
+    Axis getChiralAxis( RealVector vector )
+    {
         if ( RealVector .ORIGIN .equals( vector ) ) {
             return null;
         }
         // largest cosine means smallest angle
         //  and cosine is (a . b ) / |a| |b|
-        double maxCosine = - 1d;
-        Axis closest = null;
+        double vectorLength = vector .length();
+        Set<Axis> checked = new HashSet<Axis>();
+        int closestOrientation = 0;
+        int closestSense = Symmetry.PLUS;
+        Axis closestAxis = this .getCanonicalAxis( Symmetry.PLUS, 0 );
+        checked .add( closestAxis );
+        RealVector axisV = closestAxis .normal() .toRealVector();
+        double maxCosine = vector .dot( axisV ) / (vectorLength * axisV .length());
+        if ( maxCosine < 0 ) {
+            // wrong hemisphere, flip to the other one
+            closestAxis = this .getCanonicalAxis( Symmetry.MINUS, 0 );
+            closestSense = Symmetry.MINUS;
+            checked .add( closestAxis );
+            axisV = closestAxis .normal() .toRealVector();
+            maxCosine = vector .dot( axisV ) / (vectorLength * axisV .length());
+        }
+        boolean finished = false;
+        while ( !finished ) {
+            int[] incidentOrientations = this .getSymmetry() .getIncidentOrientations( closestOrientation );
+            if ( incidentOrientations == null ) {
+                // this symmetry group has not implemented getIncidentOrientations, so we'll fall through to brute force
+                break;
+            }
+            int reverseSense = (closestSense+1)%2;
+            for ( int i : incidentOrientations ) {
+                Axis neighbor = this .getCanonicalAxis( reverseSense, i );
+                if ( checked .contains( neighbor ) )
+                    continue;
+                checked .add( neighbor );
+                axisV = neighbor .normal() .toRealVector();
+                double cosine = vector .dot( axisV ) / (vectorLength * axisV .length());
+                if ( cosine > maxCosine ) {
+                    maxCosine = cosine;
+                    closestAxis = neighbor;
+                    closestOrientation = i;
+                    closestSense = reverseSense;  // this assignment prevents the "success" return below
+                }
+            }
+            if ( reverseSense != closestSense ) {
+                // didn't flip the sense, which means we didn't find a better cosine,
+                //   so we're done, maxed out.
+                return closestAxis;
+            }
+        }
+        // Fall back to brute force search
+        return this .getAxisBruteForce( vector );
+    }
+    
+    Axis getAxisBruteForce( RealVector vector )
+    {        
+        Axis closestAxis = null;
+        double maxCosine = -1d;
         for ( Iterator axes = this .getAxes(); axes .hasNext(); ) {
             Axis axis = (Axis) axes .next();
             RealVector axisV = axis .normal() .toRealVector();
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {
                 maxCosine = cosine;
-                closest = axis;
+                closestAxis = axis;
             }
         }
-        return closest;
+        return closestAxis;
     }
 
 
@@ -175,9 +233,12 @@ public class Direction implements Comparable
         return mAxes[ sense ][ index ];
     }
     
-    public void withCorrection( int correction )
+    public void withCorrection()
     {
-        this .canonicalize = correction;
+        Axis treatedAs0 = this .getAxisBruteForce( RealVector.DIRECTION_0 );
+        this .canonicalize = treatedAs0 .getOrientation();
+        if ( treatedAs0 .getSense() == Symmetry.MINUS )
+            this .canonicalize *= -1;
     }
     
     /**
@@ -195,8 +256,8 @@ public class Direction implements Comparable
             int canonicalize = Math.abs( this .canonicalize );
             if ( this .canonicalize < 0 )
                 sense = ( sense + 1 ) % 2;
-            Permutation third = this .mSymmetryGroup .getPermutation( index );
-            index = third .mapIndex( canonicalize );
+            Permutation target = this .mSymmetryGroup .getPermutation( index );
+            index = target .mapIndex( canonicalize );
         }
         return this .getAxis( sense, index );
     }

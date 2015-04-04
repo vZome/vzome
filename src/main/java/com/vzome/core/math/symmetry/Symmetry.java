@@ -71,4 +71,8 @@ public interface Symmetry
     Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector vector );
 
     String getDefaultStyle();
+
+    public abstract int[] getIncidentOrientations( int orientation );
+
+    public abstract Direction getPrototypeChiralOrbit();
 }

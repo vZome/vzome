@@ -17,7 +17,7 @@ import com.vzome.core.algebra.SnubDodecField;
  */
 public class IcosahedralSymmetry extends AbstractSymmetry
 {
-    private static final int[][] INCIDENCES = new int[60][3];
+    private final int[][] INCIDENCES = new int[60][3];
     
 	public final Permutation IDENTITY = new Permutation( this, null );
     
@@ -58,6 +58,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         }
     }
     
+    @Override
     public int[] getIncidentOrientations( int orientation )
     {
         return this .INCIDENCES[ orientation ];
@@ -150,6 +151,12 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return result;
     }
 
+    @Override
+    public Direction getPrototypeChiralOrbit()
+    {
+        return this .getDirection( "black" );  // turqouise is more central, but black needs no index correction
+    }
+
     protected void createFrameOrbit( String frameColor )
     {
         AlgebraicVector xAxis = mField .basisVector( 3, AlgebraicVector .X );
@@ -201,31 +208,31 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 
         createZoneOrbit( "black",    3, NO_ROTATION, vector( new int[]{ 0,1,1,1, 1,1,0,1, 1,1,-1,1 } ) );
         
-        createZoneOrbit( "lavender", 0, NO_ROTATION, vector( new int[]{ 2,1,-1,1, 0,1,1,1, 2,1,-1,1 } ) ) .withCorrection( 21 );
+        createZoneOrbit( "lavender", 0, NO_ROTATION, vector( new int[]{ 2,1,-1,1, 0,1,1,1, 2,1,-1,1 } ) ) .withCorrection();
         
-        createZoneOrbit( "olive",    0, NO_ROTATION, vector( new int[]{ 0,1,1,1, 0,1,1,1, 2,1,-1,1 } ) ) .withCorrection( 6 );
+        createZoneOrbit( "olive",    0, NO_ROTATION, vector( new int[]{ 0,1,1,1, 0,1,1,1, 2,1,-1,1 } ) ) .withCorrection();
         
-        createZoneOrbit( "maroon",   0, NO_ROTATION, vector( new int[]{ -1,1,1,1, 3,1,-1,1, 1,1,-1,1 } ) ) .withCorrection( 24 );
+        createZoneOrbit( "maroon",   0, NO_ROTATION, vector( new int[]{ -1,1,1,1, 3,1,-1,1, 1,1,-1,1 } ) ) .withCorrection();
         
-        createZoneOrbit( "rose",     0, NO_ROTATION, vector( new int[]{ 2,1,-1,1, -1,1,2,1, 0,1,0,1 } ) ) .withCorrection( 17 );
+        createZoneOrbit( "rose",     0, NO_ROTATION, vector( new int[]{ 2,1,-1,1, -1,1,2,1, 0,1,0,1 } ) ) .withCorrection();
         
-        createZoneOrbit( "navy",     0, NO_ROTATION, vector( new int[]{ -1,1,2,1, 1,1,1,1, 0,1,0,1 } ), false, false, mField .createPower( -1 ) ) .withCorrection( 9 );
+        createZoneOrbit( "navy",     0, NO_ROTATION, vector( new int[]{ -1,1,2,1, 1,1,1,1, 0,1,0,1 } ), false, false, mField .createPower( -1 ) ) .withCorrection();
         
-        createZoneOrbit( "turquoise", 0, NO_ROTATION, vector( new int[]{ 2,1,0,1, 2,1,-1,1, -3,1,2,1 } ) ) .withCorrection( -30 );
+        createZoneOrbit( "turquoise", 0, NO_ROTATION, vector( new int[]{ 2,1,0,1, 2,1,-1,1, -3,1,2,1 } ) ) .withCorrection();
         
-        createZoneOrbit( "coral",    0, NO_ROTATION, vector( new int[]{ -3,1,3,1, 0,1,0,1, 1,1,0,1 } ) ) .withCorrection( 26 );
+        createZoneOrbit( "coral",    0, NO_ROTATION, vector( new int[]{ -3,1,3,1, 0,1,0,1, 1,1,0,1 } ) ) .withCorrection();
 
-        createZoneOrbit( "sulfur",   0, NO_ROTATION, vector( new int[]{ -3,1,3,1, 2,1,-1,1, 0,1,0,1 } ) );
+        createZoneOrbit( "sulfur",   0, NO_ROTATION, vector( new int[]{ -3,1,3,1, 2,1,-1,1, 0,1,0,1 } ) ) .withCorrection();
 
-        createZoneOrbit( "sand",     0, NO_ROTATION, vector( new int[]{ -2,1,2,1, -2,1,2,1, 2,1,0,1 } ) ) .withCorrection( -31 );
+        createZoneOrbit( "sand",     0, NO_ROTATION, vector( new int[]{ -2,1,2,1, -2,1,2,1, 2,1,0,1 } ) ) .withCorrection();
 
-        createZoneOrbit( "apple",    0, NO_ROTATION, vector( new int[]{ 5,1,-3,1, 1,1,0,1, 0,1,1,1 } ) ) .withCorrection( -59 );
+        createZoneOrbit( "apple",    0, NO_ROTATION, vector( new int[]{ 5,1,-3,1, 1,1,0,1, 0,1,1,1 } ) ) .withCorrection();
 
-        createZoneOrbit( "cinnamon", 0, NO_ROTATION, vector( new int[]{ 5,1,-3,1, 2,1,-1,1, 2,1,0,1 } ) ) .withCorrection( -31 );
+        createZoneOrbit( "cinnamon", 0, NO_ROTATION, vector( new int[]{ 5,1,-3,1, 2,1,-1,1, 2,1,0,1 } ) ) .withCorrection();
 
-        createZoneOrbit( "spruce",   0, NO_ROTATION, vector( new int[]{ -3,1,2,1, -3,1,2,1, 5,1,-2,1 } ) ) .withCorrection( -31 );
+        createZoneOrbit( "spruce",   0, NO_ROTATION, vector( new int[]{ -3,1,2,1, -3,1,2,1, 5,1,-2,1 } ) ) .withCorrection();
         
-        createZoneOrbit( "brown", 0, NO_ROTATION, vector( new int[] { - 1, 1, 1, 1, - 1, 1, 1, 1, - 2, 1, 2, 1 } ) );
+        createZoneOrbit( "brown", 0, NO_ROTATION, vector( new int[] { - 1, 1, 1, 1, - 1, 1, 1, 1, - 2, 1, 2, 1 } ) ) .withCorrection();
 
         if ( mField instanceof SnubDodecField )
         {
