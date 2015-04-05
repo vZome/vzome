@@ -10,6 +10,7 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.math.symmetry.Symmetry.SpecialOrbit;
 
 /**
  * @author Scott Vorthmann
@@ -25,15 +26,15 @@ public class FastDefaultStrutGeometry implements StrutGeometry
     {
         Symmetry symm = dir .getSymmetry();
         mAxis = dir .getAxis( Symmetry.PLUS, 0 );
-        Direction chiral = symm .getPrototypeChiralOrbit();
+        Direction chiral = symm .getSpecialOrbit( SpecialOrbit.BLACK );
         Axis canonical = mAxis;
         if ( chiral != null )
             canonical = chiral .getAxis( mAxis .normal() .toRealVector() );
         int orientation = canonical .getOrientation();
         int sense = canonical .getSense();
-        b2_vector = symm .getDirection( "blue" ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -2 ) );
-        AlgebraicVector v2 = symm .getDirection( "red" ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -3 ) );
-        AlgebraicVector v3 = symm .getDirection( "yellow" ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -4 ) );
+        b2_vector = symm .getSpecialOrbit( SpecialOrbit.BLUE ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -2 ) );
+        AlgebraicVector v2 = symm .getSpecialOrbit( SpecialOrbit.RED ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -3 ) );
+        AlgebraicVector v3 = symm .getSpecialOrbit( SpecialOrbit.YELLOW ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -4 ) );
         
         // just swapping any two of our three vertices will invert everything
         if ( sense == Symmetry.PLUS ) {

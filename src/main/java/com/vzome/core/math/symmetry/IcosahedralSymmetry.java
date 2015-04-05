@@ -5,10 +5,8 @@ package com.vzome.core.math.symmetry;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.BigRational;
-import com.vzome.core.algebra.SnubDodecField;
 
 
 /**
@@ -137,7 +135,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
      * @param canonical
      * @return
      */
-    private AlgebraicVector rationalVector( int[] integers )
+    protected AlgebraicVector rationalVector( int[] integers )
     {
         AlgebraicVector result = mField .origin( 3 );
         for (int i = 0; i < 3; i++)
@@ -151,10 +149,22 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return result;
     }
 
-    @Override
-    public Direction getPrototypeChiralOrbit()
+    public Direction getSpecialOrbit( SpecialOrbit which )
     {
-        return this .getDirection( "black" );  // turqouise is more central, but black needs no index correction
+        switch ( which ) {
+
+        case BLUE:
+            return this .getDirection( "blue" );
+
+        case RED:
+            return this .getDirection( "red" );
+
+        case YELLOW:
+            return this .getDirection( "yellow" );
+
+        default:
+            return this .getDirection( "black" );  // turqouise is more central, but black needs no index correction
+        }
     }
 
     protected void createFrameOrbit( String frameColor )
@@ -233,35 +243,6 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         createZoneOrbit( "spruce",   0, NO_ROTATION, vector( new int[]{ -3,1,2,1, -3,1,2,1, 5,1,-2,1 } ) ) .withCorrection();
         
         createZoneOrbit( "brown", 0, NO_ROTATION, vector( new int[] { - 1, 1, 1, 1, - 1, 1, 1, 1, - 2, 1, 2, 1 } ) ) .withCorrection();
-
-        if ( mField instanceof SnubDodecField )
-        {
-/*
- * 
-
-PENTAGON
-4 + tau*-4 + xi*0 + tau*xi*0 + xi^2*-2 + tau*xi^2*2, -4 + tau*0 + xi*0 + tau*xi*0 + xi^2*2 + tau*xi^2*0, 0 + tau*0 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*2
-4 -4 0 0 -2 2 -4 0 0 0 2 0 0 0 0 0 0 2
-(2,-2,0,0,-4,4) (0,2,0,0,0,-4) (2,0,0,0,0,0)
-
-
-TRIANGLE
-0 + tau*-4 + xi*-2 + tau*xi*0 + xi^2*0 + tau*xi^2*2, -4 + tau*4 + xi*0 + tau*xi*-2 + xi^2*2 + tau*xi^2*-2, -4 + tau*0 + xi*-2 + tau*xi*-2 + xi^2*2 + tau*xi^2*0
-0 -4 -2 0 0 2 -4 4 0 -2 2 -2 -4 0 -2 -2 2 0
-(2,0,0,-2,-4,0) (-2,2,-2,0,4,-4) (0,2,-2,-2,0,-4)
-
-
-DIAGONAL
-8 + tau*0 + xi*0 + tau*xi*4 + xi^2*-4 + tau*xi^2*0, 0 + tau*-4 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*0, 0 + tau*0 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*0
-8 0 0 4 -4 0 0 -4 0 0 0 0 0 0 0 0 0 0
-(0,-4,4,0,0,8) (0,0,0,0,-4,0) (0,0,0,0,0,0)
-
- */      
-            AlgebraicNumber scale = mField .createPower( -3 );
-            createZoneOrbit( "snubPentagon", 0, NO_ROTATION, rationalVector( new int[]{ 4,-4,0,0,-2,2,  -4,0,0,0,2,0,  0,0,0,0,0,2 } ), false, false, scale );
-            createZoneOrbit( "snubTriangle", 0, NO_ROTATION, rationalVector( new int[]{ 0,-4,-2,0,0,2,  -4,4,0,-2,2,-2,  -4,0,-2,-2,2,0 } ), false, false, scale );
-            createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, rationalVector( new int[]{ 8,0,0,4,-4,0,  0,-4,0,0,0,0,  0,0,0,0,0,0 } ), false, false, scale );
-        }
     }
 
 

@@ -17,7 +17,14 @@ import com.vzome.core.math.RealVector;
  */
 public interface Symmetry
 {
-	int PLUS = 0, MINUS = 1, NO_SENSE = 2;
+	public enum SpecialOrbit {
+	    BLUE,
+	    RED,
+	    YELLOW,
+	    BLACK
+    }
+
+    int PLUS = 0, MINUS = 1, NO_SENSE = 2;
 	
 	int NO_ROTATION = -1;
     
@@ -74,5 +81,5 @@ public interface Symmetry
 
     public abstract int[] getIncidentOrientations( int orientation );
 
-    public abstract Direction getPrototypeChiralOrbit();
+    public abstract Direction getSpecialOrbit( SpecialOrbit which );
 }

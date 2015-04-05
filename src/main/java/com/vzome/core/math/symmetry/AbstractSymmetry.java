@@ -103,11 +103,6 @@ public abstract class AbstractSymmetry implements Symmetry
 
     protected abstract void createInitialPermutations();
     
-    public Direction getPrototypeChiralOrbit()
-    {
-        return null;
-    }
-
     public String getDefaultStyle()
     {
         return this .defaultStyle;
@@ -260,7 +255,7 @@ public abstract class AbstractSymmetry implements Symmetry
         if ( vector .isOrigin() ) {
             return null;
         }
-        Direction canonicalOrbit = this .getPrototypeChiralOrbit();
+        Direction canonicalOrbit = this .getSpecialOrbit( SpecialOrbit.BLACK );
         if ( canonicalOrbit == null )
             // the old, brute-force approach
             for ( Iterator dirs = orbitSet .iterator(); dirs .hasNext(); ) {
@@ -307,7 +302,7 @@ public abstract class AbstractSymmetry implements Symmetry
         int orientation = -1;
         int sense = -1;
 
-        Direction chiralOrbit = this .getPrototypeChiralOrbit();
+        Direction chiralOrbit = this .getSpecialOrbit( SpecialOrbit.BLACK );
 		if ( chiralOrbit != null )
 		{
 		    // We can use the optimized approach, first finding the one fundamental region to look at,

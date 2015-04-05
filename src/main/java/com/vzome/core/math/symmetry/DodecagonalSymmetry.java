@@ -73,6 +73,24 @@ public class DodecagonalSymmetry extends AbstractSymmetry
         createZoneOrbit( "green", 0, NO_ROTATION, new int[]{ 1,1, 1,2, 1,2, 0,1, 0,1, 0,1 }, true );
         createZoneOrbit( "red", 0, NO_ROTATION, new int[]{ 0,1,0,1, 0,1,0,1, 1,1,0,1 }, true );
     }
+    
+    public Direction getSpecialOrbit( SpecialOrbit which )
+    {
+        switch ( which ) {
+
+        case BLUE:
+            return this .getDirection( "blue" );
+
+        case RED:
+            return this .getDirection( "red" );
+
+        case YELLOW:
+            return this .getDirection( "green" );
+
+        default:
+            return null;
+        }
+    }
 
     public String getName()
     {

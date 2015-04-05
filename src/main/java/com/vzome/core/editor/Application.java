@@ -165,7 +165,54 @@ public class Application
                 }
             }
 
-            Symmetry octaSymm = new OctahedralSymmetry( field, "blue", "trapezoids" );
+            Symmetry octaSymm = new OctahedralSymmetry( field, "blue", "trapezoids" ){
+                
+                @Override
+                public Direction getSpecialOrbit( SpecialOrbit which )
+                {
+                    switch ( which ) {
+
+                    case BLUE:
+                        return this .getDirection( "blue" );
+
+                    case RED:
+                        return this .getDirection( "green" );
+
+                    case YELLOW:
+                        return this .getDirection( "yellow" );
+
+                    default:
+                        return null; // TODO pick/define an orbit that needs no correction
+                    }
+                }
+
+                protected void createOtherOrbits()
+                {
+                    createZoneOrbit( "yellow", 0, 4, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 }, true, false, mField
+                            .createPower( - 1 ) );
+
+                    createZoneOrbit( "green", 1, 8, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 }, true, true, mField
+                            .createRational( new int[] { 2, 1 } ) );
+
+                    createZoneOrbit( "lavender", 0, NO_ROTATION, new int[] { 2, 1, - 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
+
+                    createZoneOrbit( "olive", 0, NO_ROTATION, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
+
+                    createZoneOrbit( "maroon", 0, NO_ROTATION, new int[] { - 1, 1, 1, 1, 3, 1, - 1, 1, 1, 1, - 1, 1 } );
+
+                    createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { - 1, 1, 1, 1, - 1, 1, 1, 1, - 2, 1, 2, 1 } );
+
+                    createZoneOrbit( "red", 0, NO_ROTATION, new int[] { 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 } );
+
+                    createZoneOrbit( "purple", 0, NO_ROTATION, new int[] { 1, 1, 1, 1, 0, 1, 0, 1, - 1, 1, 0, 1 }, false, false, mField
+                            .createPower( - 1 ) );
+
+                    createZoneOrbit( "black", 0, NO_ROTATION, new int[] { 1, 2, 0, 1, 0, 1, 1, 2, - 1, 2, 1, 2 }, false, false, mField
+                            .createRational( new int[] { 2, 1 } ) );
+
+                    createZoneOrbit( "turquoise", 0, NO_ROTATION, new int[] { 1, 1, 2, 1, 3, 1, 4, 1, 3, 1, 4, 1 } );
+                }
+            };
             symmetries .put( octaSymm.getName(), octaSymm );
             mStyles.put( octaSymm, new ArrayList<Shapes>() );
             defaultShapes =  new ExportedVEFShapes( prefsFolder, "octahedral", "trapezoids", octaSymm, null );
@@ -181,7 +228,17 @@ public class Application
         field = new RootTwoField();
         fields .put( field .getName(), field );
         {
-            Symmetry symmetry = new OctahedralSymmetry( field, "blue", "small octahedra" );
+            Symmetry symmetry = new OctahedralSymmetry( field, "blue", "small octahedra" ){
+                
+                protected void createOtherOrbits()
+                {
+                    createZoneOrbit( "yellow", 0, 4, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1 }, true );
+
+                    createZoneOrbit( "green", 1, 8, new int[] { 0, 1, 1, 2, 0, 1, 1, 2, 0, 1, 0, 1 }, true );
+
+                    createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 }, true );
+                }
+            };
             symmetries .put( symmetry.getName(), symmetry );
             mStyles.put( symmetry, new ArrayList<Shapes>() );
             defaultShapes =  new ExportedVEFShapes( prefsFolder, "rootTwoSmall", "small octahedra", "small connectors", symmetry );
@@ -210,6 +267,25 @@ public class Application
                 public String getName()
                 {
                     return "synestructics";
+                }
+
+                @Override
+                public Direction getSpecialOrbit( SpecialOrbit which )
+                {
+                    switch ( which ) {
+
+                    case BLUE:
+                        return this .getDirection( "orange" );
+
+                    case RED:
+                        return this .getDirection( "magenta" );
+
+                    case YELLOW:
+                        return this .getDirection( "yellow" );
+
+                    default:
+                        return null; // TODO pick/define an orbit that needs no correction
+                    }
                 }
 
                 protected void createOtherOrbits()
@@ -243,7 +319,21 @@ public class Application
         fields .put( field .getName(), field );
         fields .put( "dodecagon", field );
         {
-            Symmetry symmetry = new OctahedralSymmetry( field, "blue", "small octahedra" );
+            Symmetry symmetry = new OctahedralSymmetry( field, "blue", "small octahedra" ){
+                
+                protected void createOtherOrbits()
+                {
+                    super .createOtherOrbits();
+                    
+                    createZoneOrbit( "red", 0, NO_ROTATION, new int[] { 1, 1, 1, 2, 1, 2, 0, 1, 0, 1, 0, 1 }, true );
+
+//                    createZoneOrbit( "yellow", 0, 4, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1 }, true );
+//
+//                    createZoneOrbit( "green", 1, 8, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 }, true );
+
+                    createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 } );
+                }
+            };
             symmetries .put( symmetry.getName(), symmetry );
             mStyles.put( symmetry, new ArrayList<Shapes>() );
             addStyle( new ExportedVEFShapes( prefsFolder, "rootThreeOctaSmall", "small octahedra", "small connectors", symmetry ) );
@@ -270,7 +360,38 @@ public class Application
         field = new SnubDodecField( pentField );
         fields .put( field .getName(), field );
         {
-            IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
+            IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" ){
+                
+                protected void createOtherOrbits()
+                {
+                    super .createOtherOrbits();
+                    /*
+                     * 
+
+                    PENTAGON
+                    4 + tau*-4 + xi*0 + tau*xi*0 + xi^2*-2 + tau*xi^2*2, -4 + tau*0 + xi*0 + tau*xi*0 + xi^2*2 + tau*xi^2*0, 0 + tau*0 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*2
+                    4 -4 0 0 -2 2 -4 0 0 0 2 0 0 0 0 0 0 2
+                    (2,-2,0,0,-4,4) (0,2,0,0,0,-4) (2,0,0,0,0,0)
+                    
+                    
+                    TRIANGLE
+                    0 + tau*-4 + xi*-2 + tau*xi*0 + xi^2*0 + tau*xi^2*2, -4 + tau*4 + xi*0 + tau*xi*-2 + xi^2*2 + tau*xi^2*-2, -4 + tau*0 + xi*-2 + tau*xi*-2 + xi^2*2 + tau*xi^2*0
+                    0 -4 -2 0 0 2 -4 4 0 -2 2 -2 -4 0 -2 -2 2 0
+                    (2,0,0,-2,-4,0) (-2,2,-2,0,4,-4) (0,2,-2,-2,0,-4)
+                    
+                    
+                    DIAGONAL
+                    8 + tau*0 + xi*0 + tau*xi*4 + xi^2*-4 + tau*xi^2*0, 0 + tau*-4 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*0, 0 + tau*0 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*0
+                    8 0 0 4 -4 0 0 -4 0 0 0 0 0 0 0 0 0 0
+                    (0,-4,4,0,0,8) (0,0,0,0,-4,0) (0,0,0,0,0,0)
+
+                     */      
+                    AlgebraicNumber scale = mField .createPower( -3 );
+                    createZoneOrbit( "snubPentagon", 0, NO_ROTATION, rationalVector( new int[]{ 4,-4,0,0,-2,2,  -4,0,0,0,2,0,  0,0,0,0,0,2 } ), false, false, scale );
+                    createZoneOrbit( "snubTriangle", 0, NO_ROTATION, rationalVector( new int[]{ 0,-4,-2,0,0,2,  -4,4,0,-2,2,-2,  -4,0,-2,-2,2,0 } ), false, false, scale );
+                    createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, rationalVector( new int[]{ 8,0,0,4,-4,0,  0,-4,0,0,0,0,  0,0,0,0,0,0 } ), false, false, scale );
+                }
+            };
             mStyles.put( symmetry, new ArrayList<Shapes>() );
             defaultShapes = new ExportedVEFShapes( prefsFolder, "default", "solid connectors", symmetry );
             addStyle( defaultShapes );

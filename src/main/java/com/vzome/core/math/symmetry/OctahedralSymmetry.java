@@ -6,8 +6,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.algebra.RootThreeField;
-import com.vzome.core.algebra.RootTwoField;
 
 /**
  * @author Scott Vorthmann
@@ -19,12 +17,33 @@ public class OctahedralSymmetry extends AbstractSymmetry
 
     public final Permutation IDENTITY = new Permutation( this, null );
     
+    private final String frameColor;
+    
     public OctahedralSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
     {
         super( ORDER, field, frameColor, defaultStyle );
+        this.frameColor = frameColor;
         tetrahedralSubgroup = closure( new int[] { 0, 2, 4 } );
     }
     
+    public Direction getSpecialOrbit( SpecialOrbit which )
+    {
+        switch ( which ) {
+
+        case BLUE:
+            return this .getDirection( this .frameColor );
+
+        case RED:
+            return this .getDirection( "green" );
+
+        case YELLOW:
+            return this .getDirection( "yellow" );
+
+        default:
+            return null; // TODO pick/define a chiral orbit with no index correction (0 means 0)
+        }
+    }
+
     protected void createInitialPermutations()
     {
         mOrientations[0] = IDENTITY;
@@ -56,60 +75,13 @@ public class OctahedralSymmetry extends AbstractSymmetry
 
     protected void createOtherOrbits()
     {
-        if ( mField instanceof PentagonField )
-        {
-            createZoneOrbit( "yellow", 0, 4, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 }, true, false, mField
-                    .createPower( - 1 ) );
-
-            createZoneOrbit( "green", 1, 8, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 }, true, true, mField
-                    .createRational( new int[] { 2, 1 } ) );
-
-            createZoneOrbit( "lavender", 0, NO_ROTATION, new int[] { 2, 1, - 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
-
-            createZoneOrbit( "olive", 0, NO_ROTATION, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
-
-            createZoneOrbit( "maroon", 0, NO_ROTATION, new int[] { - 1, 1, 1, 1, 3, 1, - 1, 1, 1, 1, - 1, 1 } );
-
-            createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { - 1, 1, 1, 1, - 1, 1, 1, 1, - 2, 1, 2, 1 } );
-
-            createZoneOrbit( "red", 0, NO_ROTATION, new int[] { 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 } );
-
-            createZoneOrbit( "purple", 0, NO_ROTATION, new int[] { 1, 1, 1, 1, 0, 1, 0, 1, - 1, 1, 0, 1 }, false, false, mField
-                    .createPower( - 1 ) );
-
-            createZoneOrbit( "black", 0, NO_ROTATION, new int[] { 1, 2, 0, 1, 0, 1, 1, 2, - 1, 2, 1, 2 }, false, false, mField
-                    .createRational( new int[] { 2, 1 } ) );
-
-            createZoneOrbit( "turquoise", 0, NO_ROTATION, new int[] { 1, 1, 2, 1, 3, 1, 4, 1, 3, 1, 4, 1 } );
-        }
-        else if ( mField instanceof RootTwoField )
-        {
-            createZoneOrbit( "yellow", 0, 4, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1 }, true );
-
-            createZoneOrbit( "green", 1, 8, new int[] { 0, 1, 1, 2, 0, 1, 1, 2, 0, 1, 0, 1 }, true );
-
-            createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 }, true );
-        }
-        else if ( mField instanceof RootThreeField )
-        {
-            createZoneOrbit( "red", 0, NO_ROTATION, new int[] { 1, 1, 1, 2, 1, 2, 0, 1, 0, 1, 0, 1 }, true );
-
-            createZoneOrbit( "yellow", 0, 4, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1 }, true );
-
-            createZoneOrbit( "green", 1, 8, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 }, true );
-
-            createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 } );
-        }
-        else
-        {
-            AlgebraicVector xAxis = mField.basisVector( 3, AlgebraicVector.X );
-            AlgebraicVector yAxis = mField.basisVector( 3, AlgebraicVector.Y );
-            AlgebraicVector zAxis = mField.basisVector( 3, AlgebraicVector.Z );
-            AlgebraicVector green = xAxis .plus( yAxis );
-            createZoneOrbit( "green", 1, 8, green, true );
-            AlgebraicVector yellow = green .plus( zAxis );
-            createZoneOrbit( "yellow", 0, 4, yellow, true );
-        }
+        AlgebraicVector xAxis = mField.basisVector( 3, AlgebraicVector.X );
+        AlgebraicVector yAxis = mField.basisVector( 3, AlgebraicVector.Y );
+        AlgebraicVector zAxis = mField.basisVector( 3, AlgebraicVector.Z );
+        AlgebraicVector green = xAxis .plus( yAxis );
+        createZoneOrbit( "green", 1, 8, green, true );
+        AlgebraicVector yellow = green .plus( zAxis );
+        createZoneOrbit( "yellow", 0, 4, yellow, true );
     }
 
     protected void createFrameOrbit( String frameColor )
