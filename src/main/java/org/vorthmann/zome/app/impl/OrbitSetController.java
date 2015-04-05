@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             OrbitState orbit = new OrbitState();
             orbitDots .put( dir, orbit );
 
-            Axis axis = dir .getAxis( test );
+            Axis axis = symmetry .getAxis( test, Collections .singleton( dir ) );
             AlgebraicVector v = axis .normal();
             double z =  v .getComponent( 2 ) .evaluate();
             orbit.dotX = v .getComponent( 0 ) .evaluate();
