@@ -18,3 +18,5 @@ temp/
 gradle-app.setting
 Thumbs.db
 vzome-core.iml
+local.properties
+testOut.xml
