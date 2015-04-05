@@ -77,6 +77,8 @@ public class AlgebraicNumber implements Fields.Element
 
     public AlgebraicNumber plus( AlgebraicNumber that )
     {
+        if ( that .isZero() )
+            return this;
         int order = this .factors .length;
         BigRational[] sum = new BigRational[ order ];
         for ( int i = 0; i < order; i++ ) {
@@ -87,16 +89,24 @@ public class AlgebraicNumber implements Fields.Element
 
     public AlgebraicNumber times( AlgebraicNumber that )
     {
+        if ( that .isZero() )
+            return this .field .zero();
+        if ( that .isOne() )
+            return this;
         return new AlgebraicNumber( this .field, this .field .multiply( this .factors, that .factors ) );
     }
 
     public AlgebraicNumber minus( AlgebraicNumber that )
     {
+        if ( that .isZero() )
+            return this;
         return this .plus( that .negate() );
     }
     
     public AlgebraicNumber dividedBy( AlgebraicNumber that )
     {
+        if ( that .isOne() )
+            return this;
         return this .times( that .reciprocal() );
     }
 

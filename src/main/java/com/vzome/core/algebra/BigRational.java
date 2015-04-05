@@ -194,11 +194,11 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
 
     // is this BigRational negative, zero, or positive?
-    public boolean isZero()     { return compareTo(ZERO) == 0; }
+    public boolean isZero()     { return this .equals(ZERO); }
     public boolean isPositive() { return compareTo(ZERO)  > 0; }
     public boolean isNegative() { return compareTo(ZERO)  < 0; }
 
-    public boolean isOne() { return compareTo(ONE) == 0; }
+    public boolean isOne() { return this.equals(ONE); }
 
     // is this Rational object equal to y?
     public boolean equals( Object y )

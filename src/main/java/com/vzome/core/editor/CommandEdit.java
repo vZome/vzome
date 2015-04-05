@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,11 +17,11 @@ import org.w3c.dom.NodeList;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
+import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.CommandHide;
 import com.vzome.core.commands.CommandObliquePentagon;
 import com.vzome.core.commands.CommandTransform;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -195,7 +196,7 @@ public class CommandEdit extends ChangeConstructions
         if ( format .selectionsNotSaved() )
         {
             // this edit needs to be migrated
-            List selectedBefore = new ArrayList();
+            Set<Manifestation> selectedBefore = new LinkedHashSet<>();
             context .performAndRecord( new BeginBlock() );
 
             mAttrs = new HashMap();
