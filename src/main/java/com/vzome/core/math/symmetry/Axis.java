@@ -48,11 +48,6 @@ public class Axis
     {
         return vector .getLength( normal );
     }
-    
-    public AlgebraicVector scaleNormal( AlgebraicNumber length )
-    {
-        return normal .scale( length );
-    }
 
     @Override
 	public int hashCode()

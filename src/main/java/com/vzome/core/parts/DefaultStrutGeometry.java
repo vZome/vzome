@@ -90,9 +90,10 @@ public class DefaultStrutGeometry implements StrutGeometry
         //               \ /                \ /
         //                7 ---------------- 6
         //
+        AlgebraicVector strutVector = mAxis .normal() .scale( length );
         for ( int i = 0; i < 4; i++ ) {
             poly .addVertex( mCorners[i] );
-            poly .addVertex( mCorners[i] .plus( mAxis .scaleNormal( length ) ) );
+            poly .addVertex( mCorners[i] .plus( strutVector ) );
         }
         // two loops so normal computation works in addFace
 

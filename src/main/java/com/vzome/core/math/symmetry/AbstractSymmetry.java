@@ -171,7 +171,7 @@ public abstract class AbstractSymmetry implements Symmetry
     
     public Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm )
     {
-        return new Direction( name, this, prototype, rotatedPrototype, norm, false );
+        return new Direction( name, this, prototype, rotatedPrototype, norm, false ) .withCorrection();
     }
 
 

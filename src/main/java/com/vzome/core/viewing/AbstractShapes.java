@@ -13,7 +13,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.parts.DefaultStrutGeometry;
+import com.vzome.core.parts.FastDefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.render.Shapes;
 
@@ -48,7 +48,7 @@ public abstract class AbstractShapes implements Shapes
     
     protected StrutGeometry createStrutGeometry( Direction dir )
     {
-        return new DefaultStrutGeometry( dir );
+        return new FastDefaultStrutGeometry( dir );
     }
 
     public String getName()

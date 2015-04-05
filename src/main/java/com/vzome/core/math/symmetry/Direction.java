@@ -233,12 +233,13 @@ public class Direction implements Comparable
         return mAxes[ sense ][ index ];
     }
     
-    public void withCorrection()
+    public Direction withCorrection()
     {
         Axis treatedAs0 = this .getAxisBruteForce( RealVector.DIRECTION_0 );
         this .canonicalize = treatedAs0 .getOrientation();
         if ( treatedAs0 .getSense() == Symmetry.MINUS )
             this .canonicalize *= -1;
+        return this;
     }
     
     /**

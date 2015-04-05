@@ -155,7 +155,7 @@ public class SymmetrySystem implements OrbitSource
             }
         }
         Direction dir = this .createAnonymousOrbit( vector );
-        line = dir .getAxis( Symmetry.PLUS, 0 );
+        line = dir .getAxis( vector );
         this .vectorToAxis .put( vector, line );
         return line;
 	}
