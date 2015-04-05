@@ -309,7 +309,7 @@ public class DefaultApplication extends DefaultController implements Application
 
     			protected void resetAttributes(RenderedManifestation rm, 	 	 
     					boolean justShape, Connector m) {} 	 	 
-    		}); 
+    		} .withColorPanels( false ) ); 
     		document .loadXml( false, false );
             return document .getRenderedModel();
         } catch ( Exception e ) {
