@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.RealVector;
 
@@ -124,5 +125,17 @@ public class SymmetryTest extends TestCase
         axis = orbit .getAxis( vector );
         expected = orbit .getAxisBruteForce( vector );
         assertEquals( expected, axis );
+    }
+    
+    public void testGetAxis2()
+    {
+        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField(), null );
+        
+        Direction orbit = symm .getDirection( "turquoise" );
+        Axis expected = orbit .getAxis( Symmetry.MINUS, 23 );
+        
+        AlgebraicVector vector = expected .normal();
+        Axis actual = symm .getAxis( vector );
+        assertEquals( expected, actual );
     }
 }

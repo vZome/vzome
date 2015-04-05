@@ -255,31 +255,37 @@ public abstract class AbstractSymmetry implements Symmetry
     }
     
     
-    // TODO this is now partly redundant with SymmetryController .getAxis()
-    //
     public Axis getAxis( AlgebraicVector vector )
     {
         if ( vector .isOrigin() ) {
             return null;
         }
-        Axis result = (Axis) this .vectorToAxis .get( vector );
-        if ( result == null ) {
-            for ( Iterator dirs = mDirectionList .iterator(); dirs .hasNext(); ) {
+        Direction canonicalOrbit = this .getPrototypeChiralOrbit();
+        if ( canonicalOrbit == null )
+            // the old, brute-force approach
+            for ( Iterator dirs = orbitSet .iterator(); dirs .hasNext(); ) {
                 Direction dir = (Direction) dirs .next();
-                Axis line = dir .getAxis( vector );
-                if ( line != null )
+                Axis candidate = dir .getAxis( vector );
+                if ( candidate != null )
                 {
-                    this .vectorToAxis .put( vector, line );
-                    return line;
+                    this .vectorToAxis .put( vector, candidate );
+                    return candidate;
                 }
             }
+        else {
+            // smarter: find the orientation first, then check orbits
+            Axis zone = canonicalOrbit .getAxis( vector .toRealVector() );
+            int orientation = zone .getOrientation();
+            int sense = zone .getSense();
+            for ( Iterator iterator = orbitSet.iterator(); iterator
+                    .hasNext(); ) {
+                Direction orbit = (Direction) iterator.next();
+                Axis candidate = orbit .getCanonicalAxis( sense, orientation );
+                if ( candidate .normal() .cross( vector ) .isOrigin() )
+                    return candidate;
+            }
         }
-        return result;
-
-//        String axisName = "unnamed_" + NEXT_NEW_AXIS++;
-//        Direction dir = this .createZoneOrbit( axisName, 0, Symmetry.NO_ROTATION, vector );
-//        dir .setAutomatic( true );
-//        return dir .getAxis( PLUS, 0 );
+        return null;
     }
 
 

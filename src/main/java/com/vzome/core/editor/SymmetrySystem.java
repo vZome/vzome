@@ -117,6 +117,17 @@ public class SymmetrySystem implements OrbitSource
 					}
 				}
 			}
+			// fill in the orbits that might be newer than what the file had
+            for ( Iterator dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
+            {
+                Direction dir = (Direction) dirs .next();
+                if ( orbits .contains( dir ) )
+                    continue;
+                if ( dir .isStandard() || allowNonstandard )  // reader
+                    orbits .add( dir );
+                Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
+                orbitColors .put( dir, color );
+            }
 		}
         this .shapes = this .styles .get( styleName );
 	}
@@ -137,14 +148,10 @@ public class SymmetrySystem implements OrbitSource
             return line;
         if ( ! this .noKnownDirections )
         {
-            for ( Iterator dirs = orbits .iterator(); dirs .hasNext(); ) {
-                Direction dir = (Direction) dirs .next();
-                line = dir .getAxis( vector );
-                if ( line != null )
-                {
-                    this .vectorToAxis .put( vector, line );
-                    return line;
-                }
+            line = this .symmetry .getAxis( vector );
+            if ( line != null ) {
+                this .vectorToAxis .put( vector, line );
+                return line;
             }
         }
         Direction dir = this .createAnonymousOrbit( vector );
