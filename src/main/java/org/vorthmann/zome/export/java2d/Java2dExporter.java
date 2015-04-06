@@ -65,6 +65,7 @@ public class Java2dExporter extends Exporter3d
             lightColors[ i ] = new Color( mLights .getDirectionalLight( i, lightDirs[ i ] ) .getRGB() );
             // the lights stay fixed relative to the viewpoint, so we must not apply the view transform
             lightDirs[ i ] .normalize();
+            lightDirs[ i ] .negate();
         }
         ambientLight = new Color( mLights .getAmbientColor() .getRGB() );
 
