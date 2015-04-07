@@ -1,1 +1,1 @@
-web:    java -cp target/classes:target/dependency/* com.vzome.servlet.ExportTool
+web:    java -cp build/libs/antlr-*.jar:build/libs/jetty-security-*.jar:build/libs/jetty-server-*.jar:build/libs/jetty-servlet-*.jar:build/libs/jetty-util-*.jar:build/libs/jython-*.jar:build/libs/servlet-api-*.jar:build/libs/vecmath-*.jar:build/libs/vzome-core-*.jar com.vzome.servlet.ExportTool

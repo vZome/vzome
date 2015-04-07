@@ -239,6 +239,14 @@ jar {
     }
 }
 
+// this is for Heroku
+task stage( type: Copy ) {
+    into "$buildDir/libs"
+    from configurations.runtime
+}
+stage.mustRunAfter(clean)
+
+
 uploadArchives {
     repositories {
        flatDir {
