@@ -7,7 +7,6 @@ bin/
 build/
 gradle/
 repos/
-src/antlr-generated/
 target/
 temp/
 

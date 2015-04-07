@@ -8,28 +8,28 @@ options {
 	tokenVocab=ZomicLexer;
 } 
 
-//tokens {
-//	EMPTY
-//}
+program
+	:	stmt*	// maybe just warn if no code (e.g. all comments)
+		EOF		// generates an error if we don't parse everything
+	;
 
-program 
-	:	
-	(
-		//unexpected_stmt | 
-		stmt
-	)? EOF;	// generate an error if we don't handle everything up to EOF, but OK if no code (e.g. all comments)
 
 stmt
-	:	compound_stmt
-	|	direct_stmt
-	|	nested_stmt
-	;
-	
-compound_stmt :
-	LBRACE stmt* RBRACE
+	:	directCommand
+	|	nestedCommand
+	|	compound_stmt
 	;
 
-direct_stmt
+
+// we could just make stmt recursive, but this may be useful for printing the parse tree
+compound_stmt
+	:	LBRACE 
+		stmt* 
+		RBRACE 
+	;
+
+
+directCommand
 	:	strut_stmt
 	|	rotate_stmt
 	|	reflect_stmt
@@ -37,356 +37,244 @@ direct_stmt
 	|	build_stmt
 	|	move_stmt
 	|	destroy_stmt
-	|   label_stmt
+	|	label_stmt
 	;
 
 
-nested_stmt
+nestedCommand
 	:	from_stmt
 	|	branch_stmt
 	|	repeat_stmt
 	|	symmetry_stmt
 	|	save_stmt
 	;
-	
-//unexpected_stmt
-//	:	UNEXPECTED_CHAR;
+
 
 strut_stmt
-	:	
-//			{
-//				xml.startElement( "strut" );
-//			}
-		size_expr
-		length_expr?
-		half_axis_expr |
+	:	strut_length_expr
 		axis_expr
-//			{
-//				xml .endElement();
-//			}
-	;	
-	
+	;
+
+
 label_stmt
-	:	LABEL id=IDENT
-//			{
-//				xml .startElement( "label" );
-//				xml .attribute( "id", id.getText() );
-//				xml .endElement();
-//			}
+	:	LABEL 
+		IDENT
 	;
-	
+
+
 scale_stmt
-	:	SCALE i=INT
-//			{
-//				xml .startElement( "scale" );
-//				String size = i .getText();
-//				if ( size .endsWith( "+" ) || size .endsWith( "-" ) )
-//					size = size .substring( 0, size.length()-1 );
-//				xml .attribute( "size", size );
-//			}
-		(LPAREN length_expr RPAREN)?
-//			{
-//				xml .endElement();
-//			}
+	:	SCALE 
+		size = INT
+	(	LPAREN 
+		algebraic_number_expr?
+		RPAREN
+	)?
 	;
+
 
 build_stmt
 	:	BUILD
-//				xml .startElement( "build" );
-//				xml .attribute( "build", "on" );
-//				xml .endElement();
-//			}
 	;
-	
+
+
 destroy_stmt
 	:	DESTROY
-//			{
-//				xml .startElement( "build" );
-//				xml .attribute( "destroy", "on" );
-//				xml .endElement();
-//			}
 	;
-	
+
+
 move_stmt
 	:	MOVE
-//			{
-//				xml .startElement( "build" );
-//				xml .endElement();
-//			}
-	;	
+	;
 	
 	
 rotate_stmt
 	:	ROTATE
-//			{
-//				xml .startElement( "rotate" );
-//			}
-		( i=INT
-//			{
-//				String size = i .getText();
-//				if ( size .endsWith( "+" ) || size .endsWith( "-" ) )
-//					size = size .substring( 0, size.length()-1 );
-//				xml .attribute( "steps", size );
-//			}
-		)?
-		AROUND axis_expr
-//			{
-//				xml .endElement();
-//			}
+		steps = INT?
+		AROUND
+		axis_expr
 	;
-	
+
+
 reflect_stmt
 	:	REFLECT
-//			{
-//				xml .startElement( "reflect" );
-//			}
 		symmetry_center_expr
-//			{
-//				xml .endElement();
-//			}
 	;
-	
+
+
 from_stmt
 	:	FROM
-//			{
-//				xml .startElement( "save" );
-//				xml .attribute( "state", "build" );
-//					xml .startElement( "model" );
-//						xml .startElement( "build" );
-//						xml .attribute( "mode", "off" );
-//						xml .endElement();
-//			}
 		stmt
-//			{
-//					xml .endElement();
-//				xml .endElement();
-//			}
 	;
-	
+
+
 symmetry_stmt
 	:	SYMMETRY
-//			{
-//				xml .startElement( "symmetry" );
-//			}
-		(	AROUND
-//			{
-//				xml .startElement( "around" );
-//			} 
-		  	axis_expr
-//			{
-//				xml .endElement();
-//			}
-		|	symmetry_center_expr
-		)?
-		stmt
-//			{
-//				xml .endElement();
-//			}
+	(	AROUND
+	  	axis_expr
+	|	symmetry_center_expr
+	)?	stmt
 	;
 
-repeat_stmt
 
-	:	REPEAT i=INT
-//			{
-//				xml .startElement( "repeat" );
-//					String axisNum = i.getText();
-//					if ( axisNum .startsWith( "-" ) || axisNum .startsWith( "+" ) )
-//						axisNum = axisNum .substring( 1 );
-//					if ( axisNum .endsWith( "+" ) || axisNum .endsWith( "-" ) )
-//						axisNum = axisNum .substring( 0, axisNum.length()-1 );
-//				xml .attribute( "count", axisNum );
-//			}
+repeat_stmt
+	:	REPEAT 
+		count = INT
 		stmt
-//			{
-//				xml .endElement();
-//			}
 	;
 
 
 branch_stmt
-
 	:	BRANCH
-//			{
-//				xml .startElement( "save" );
-//				xml .attribute( "state", "location" );
-//			}
 		stmt
-//			{
-//				xml .endElement();
-//			}
 	;
 
 
 save_stmt
-
 	:	SAVE
-//			{
-//				xml .startElement( "save" );
-//			}
+		state =
 	(	LOCATION
-//			{
-//				xml .attribute( "state", "location" );
-//			}
 	|	SCALE
-//			{
-//				xml .attribute( "state", "scale" );
-//			}
 	|	ORIENTATION
-//			{
-//				xml .attribute( "state", "orientation" );
-//			}
 	|	BUILD
-//			{
-//				xml .attribute( "state", "build" );
-//			}
 	|	ALL
-	)	
-		stmt
-//			{
-//				xml .endElement();
-//			}
+	)   stmt
 	;
+
+
+/*
+	Begin Expressions
+*/
+
 
 symmetry_center_expr
-	:   THROUGH
-//			{
-//				xml .startElement( "through" );
-//			}
-			( CENTER
-//				{
-//					// leave the index attribute off
-//				}
-			| num=INT
-//				{
-//					String axisNum = num.getText();
-//					if ( axisNum .startsWith( "-" ) || axisNum .startsWith( "+" ) ) {
-//						axisNum = axisNum .substring( 1 );
-//					}
-//					if ( axisNum .endsWith( "+" ) || axisNum .endsWith( "-" ) )
-//						axisNum = axisNum .substring( 0, axisNum.length()-1 );
-//					xml .attribute( "index", axisNum );
-//				}
-			)
-//			{
-//				xml .endElement();
-//			}
+	:	THROUGH
+		CENTER
+	|	index = INT
 	;
 
-length_expr
-	:  ones=INT		
-//									{ String value = ones.getText();
-//											if ( value .endsWith( "+" ) || value .endsWith( "-" ) )
-//												value = value .substring( 0, value.length()-1 );
-//											xml .attribute( "lengthOnes", value );
-//										}
-	(	phis=INT			
-//									{ value = phis.getText();
-//											if ( value .endsWith( "+" ) || value .endsWith( "-" ) )
-//												value = value .substring( 0, value.length()-1 );
-//											xml .attribute( "lengthPhis", value );
-//										}
-	)?
+
+strut_length_expr
+	:	size_expr
+		algebraic_number_expr?
+		HALF?
 	;
-		
+
+
 size_expr
-	// returns TBD...
-	// TODO: Try to get away from java  specific
-	//@init { bool useDefault = true; }
-	//@after { if( useDefault ) { Token = MEDIUM; /* this is probably the wrong syntax */}; }
-	:	//(
-		explicit_size_expr //) { useDefault = false; }
-	|	named_size_expr //) { useDefault = false; }
-	//|	default_size_expr // ??? maybe
-	//|   '->' MEDIUM // This may be the right syntax to return a default value when none is found
-	//)
-//	finally {
-//		
-//	}
+	:	explicit_size_expr 
+	|	named_size_expr
 	;
 
-//default_size_expr : EMPTY;// -> MEDIUM;		//{ xml .attribute( "scale", Integer.toString( Constants.MEDIUM ) ); }
+
+algebraic_number_expr
+	:	ones = INT
+		phis = INT?
+	;
+
 
 explicit_size_expr
-	// TODO: Should we specifically generate a unique token for the "size -99" command so it can get hooked easier and more obviously?
-	:	SIZE 
-			i=INT
-//				{
-//					String axisNum = i.getText();
-//					if ( axisNum .endsWith( "+" ) || axisNum .endsWith( "-" ) )
-//						axisNum = axisNum .substring( 0, axisNum.length()-1 );
-//									xml .attribute( "scale", axisNum );
-//								}
-		|	id=IDENT 
-//				{ xml .attribute( "sizeRef", id.getText() ); }
-			;
+	:	SIZE
+	(	scale = INT			// TODO: support the old 'size -99' syntax used only by the internal resources until they are updated
+	|	sizeRef = IDENT		// TODO: Document this option
+	|	isVariableLength = QUESTIONMARK	// TODO: DJH proposed alternative variable length indicator, same as size -99 used to be
+	)
+	;
 
 named_size_expr
-	:	SHORT				//{ xml .attribute( "scale", Integer.toString( Constants.SHORT ) ); }
-	| 	LONG				//{ xml .attribute( "scale", Integer.toString( Constants.LONG ) ); }
-	|	MEDIUM | NULL		//{ xml .attribute( "scale", Integer.toString( Constants.MEDIUM ) ); } 
-//	|						//{ xml .attribute( "scale", Integer.toString( Constants.MEDIUM ) ); /* DEFAULT */}
+	:	SHORT		# SizeShort
+	| 	LONG		# SizeLong
+	|	MEDIUM		# SizeMedium
+	|				# SizeMedium // default is MEDIUM
 	;
 
-half_axis_expr	
-	:		HALF 				//{ xml .attribute( "half", "true" ); }
-	(		blue_axis 
-	| 		green
-	);
 
 axis_expr
-	:	axis_name num=INT
-//		{
-//			String axisNum = num.getText();
-/*
-			if ( axisNum .startsWith( "-" ) ) {
-				xml .attribute( "sense", "minus" );
-				axisNum = axisNum .substring( 1 );
-			}
-			else {
-				xml .attribute( "sense", "plus" );
-				if ( axisNum .startsWith( "+" ) )
-					axisNum = axisNum .substring( 1 );
-			}
-*/
-		pol=handedness? 
-//		{
-//			if ( (pol != null) && ("=" == pol.getText()) ) {
-//				xml.attribute( "handedness", "minus" );
-//			}
-//		}
-
-//			xml .attribute( "index", axisNum );
-			//// balancing startElement in axis_name
-//			xml .endElement();
-//		}
-	;
-	
-handedness	: POLARITY ;
-
-axis_name
-	: red_axis				
-	| blue_axis
-	| yellow_axis
-	| green
-	| orange
-	| purple
-	| black
-	;
-
-red_axis
-	: RED | PENT | PENTAGON		//{ xml .startElement( "red" ); }
-	;
-
-blue_axis
-	: BLUE | RECT | RECTANGLE	//{ xml .startElement( "blue" ); }
-	;
-
-yellow_axis
-	: YELLOW | TRI | TRIANGLE	//{ xml .startElement( "yellow" ); }
+	:	axis_name_expr
+		index = axis_index_expr
 	;
 
 
-green	:	GREEN;		//{ xml .startElement( "green" ); }
-orange	:	ORANGE;		//{ xml .startElement( "orange" ); }
-purple	:	PURPLE;		//{ xml .startElement( "purple" ); }
-black	:	BLACK;		//{ xml .startElement( "black" ); }
+axis_index_expr
+	:	indexNumber = INT	// Polarity is significant. +0 is different from -0 so don't use parseInt
+		handedness = POLARITY?
+	;
+
+
+// In order to simplify support for aliases, ZomicASTCompiler expects axis_name 
+//  to use only lower case parser tokens (e.g. red) 
+//  instead of  UPPER CASE  lexer tokens (e.g. RED)
+//  so don't be tempted to "optimize away" the extra layer by making them ALL CAPS.
+axis_name_expr
+	:	red_alias_expr
+	|	blue_alias_expr
+	|	yellow_alias_expr
+	|	green
+	|	orange
+	|	purple
+	|	black
+// Maybe new Zomic colors in the future?
+// Adjust the unit tests when these are uncommented
+//	|	lavender
+//	|	olive
+//	|	maroon
+//	|	rose
+//	|	navy
+//	|	turquoise
+//	|	coral
+//	|	sulfur
+
+// not yet supported in ZomicNamingConvention
+//	|	sand
+//	|	apple
+//	|	cinnamon
+//	|	spruce
+//	|	brown
+	;
+
+
+// NOTE: ZomicASTCompiler expects all color aliases
+//  to use only Proper Case labels (e.g. # Red) 
+//  and the label must correspond to the literal color name
+red_alias_expr
+	:	RED			# Red
+	|	PENT		# Red
+	|	PENTAGON	# Red
+	;
+
+
+blue_alias_expr
+	:	BLUE		# Blue
+	|	RECT		# Blue
+	|	RECTANGLE	# Blue
+	;
+
+
+yellow_alias_expr
+	:	YELLOW		# Yellow
+	|	TRI			# Yellow
+	|	TRIANGLE	# Yellow
+	;
+
+
+green		:	GREEN;
+orange		:	ORANGE;
+purple		:	PURPLE;
+black		:	BLACK;
+
+// Maybe new Zomic colors in the future?
+// Adjust the unit tests when these are uncommented
+//lavender	:	LAVENDER;
+//olive    	:	OLIVE;
+//maroon    	:	MAROON;
+//rose    	:	ROSE;
+//navy    	:	NAVY;
+//turquoise   :	TURQUOISE;
+//coral    	:	CORAL;
+//sulfur    	:	SULFUR;
+
+// not yet supported in ZomicNamingConvention
+//sand		:	SAND;
+///apple		:	APPLE;
+//cinnamon	:	CINNAMON;
+//spruce	:	SPRUCE;
+//brown		:	BROWN;
