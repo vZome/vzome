@@ -173,9 +173,7 @@ public class ZomicASTTest extends TestCase
 		try { 
 			// Cool! New try-with-resources syntax auto closes specified resources in implied finally block
 			try (PrintWriter out = new PrintWriter( output /* ... or use System.out*/ )) {
-				program .accept( new PrintVisitor( out
-						// TODO: Add this new parameter after I pull in Scott's latest fixes from github
-						//, new IcosahedralSymmetry( new PentagonField(), "solid connectors" )
+				program .accept( new PrintVisitor( out, new IcosahedralSymmetry( new PentagonField(), "solid connectors" )
 				) );
 			}
 		} catch (ZomicException ex) {

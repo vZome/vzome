@@ -173,7 +173,7 @@ task regression(type: JavaExec, dependsOn: check) {
     args( testHome, testFile, 'build/test-results/regression/TEST-output.xml' )
     jvmArgs( '-Xmx3048M' )
 }
-regression.dependsOn makeRegressionOutput
+regression.dependsOn makeRegressionOutputDir
 
 task zomicPP( type: JavaExec, dependsOn: build) {
     def theFile = 'src/regression/files/Zomic/yellowAxisSaddleWeb.zomic'
