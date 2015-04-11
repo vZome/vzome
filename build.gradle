@@ -176,10 +176,16 @@ task regression(type: JavaExec, dependsOn: check) {
 regression.dependsOn makeRegressionOutputDir
 
 task zomicPP( type: JavaExec, dependsOn: build) {
-    def theFile = 'src/regression/files/Zomic/yellowAxisSaddleWeb.zomic'
+    def theFile = 'src/regression/files/Zomic/yellowAxisSaddleWeb/yellowAxisSaddleWeb.zomic'
     if( project .hasProperty( "zomicFile" ) ){
         theFile = zomicFile
+    } else {
+        println "No zomic file was specified. Using default: $theFile."
+        println "  Sample Usage: gradle zomicPP -PzomicFile='src/regression/files/Zomic/yellowAxisSaddleWeb/yellowAxisSaddleWeb.zomic'."
     }
+    println ""
+    println ">>>>>>>> This output should be identical to $theFile-pp."
+    println ""
     classpath = sourceSets.main.runtimeClasspath
     main = 'com.vzome.core.zomic.program.PrintVisitor'
     args( theFile )
