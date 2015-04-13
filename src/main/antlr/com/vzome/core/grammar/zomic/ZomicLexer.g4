@@ -79,7 +79,7 @@ RPAREN			: ')' ;
 QUESTIONMARK	: '?' ;
 
 WS			    : ([ \t\f] | EOL )	-> skip; // skip white space
-EOL			    : '\r'? '\n'; // end of line
+EOL			    : ('\r'? '\n') | ('\n'? '\r'); // end of line
 
 fragment DIGIT  : '0'..'9';
 fragment NUMBER	: DIGIT+; // 1 or more digits

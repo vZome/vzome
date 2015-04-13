@@ -130,7 +130,7 @@ public class PrintVisitor extends Visitor .Default{
 	public
 	void visitMove( Axis axis, AlgebraicNumber length )
 	{
-		 println( "// MOVE NOT PRINTED: " + axis.getDirection().getName() + " " + axis.getOrientation() + " : " + length.toString() );
+		 println( "/* MOVE NOT PRINTED: */ " + axis.getDirection().getName() + " " + axis.getOrientation() + " : " + length.toString() );
 	    // TODO translate to Zomic text
 	}
 

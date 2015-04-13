@@ -64,7 +64,7 @@ label_stmt
 
 scale_stmt
 	:	SCALE 
-		size = INT
+		scale = INT
 	(	LPAREN 
 		algebraic_number_expr?
 		RPAREN

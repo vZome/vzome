@@ -23,7 +23,6 @@ import com.vzome.core.zomic.program.Repeat;
 import com.vzome.core.zomic.program.Save;
 import com.vzome.core.zomic.program.Scale;
 import com.vzome.core.zomic.program.Untranslatable;
-import com.vzome.core.zomic.program.Visitor;
 import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
 import java.util.Stack;
@@ -45,6 +44,7 @@ public class ZomicASTCompiler
 	private final IcosahedralSymmetry symmetry;
 	private final ZomicNamingConvention namingConvention ;
 	private final Stack<ZomicStatement> statements = new Stack<>();
+	private final Stack<ZomicStatementTemplate> templates = new Stack<>();
 	private static boolean doPrint = true; // Only intended to be set from test methods
 
     public ZomicASTCompiler( IcosahedralSymmetry symm ) {
@@ -122,12 +122,24 @@ public class ZomicASTCompiler
 		return Integer.parseInt( token.getText() );
 	}
 
-	protected void prepare( ZomicStatement statement) {
+	protected void prepareTemplate( ZomicStatementTemplate template ) {
+		templates.push(template);
+	}
+	
+	protected void prepareStatement( ZomicStatement statement ) {
 		statements.push(statement);
 	}
 	
-	protected void commmitLast() {
-		commit(statements.pop());
+	protected void commitLastStatement() {
+		ZomicStatement statement = statements.pop();
+		if ( statement instanceof Nested ) {
+			ZomicStatement body = ((Nested)statement).getBody();
+			if ( (body == null) || ( (body instanceof Walk) && ((Walk)body).size() == 0 ) ) {
+				// don't bother saving an empty Nested statement
+				return;
+			}
+		}
+		commit(statement);
 	}
 			
 	protected void commit(ZomicStatement newStatement)	{
@@ -177,172 +189,14 @@ public class ZomicASTCompiler
 
 /* 
 ******************************************************
-* BEGIN ZomicStatementTemplate and supporting classes 
+* BEGIN ZomicStatementTemplate and supporting classes
 ******************************************************
 */
 
-	protected interface IGenerateZomicStatement<T extends ZomicStatement> {
-		abstract T generate();
-		abstract T generate(IcosahedralSymmetry symmetry);
+	protected interface ZomicStatementTemplate <T extends ZomicStatement> {
+		T generate();
 	}
 	
-	protected abstract class ZomicStatementTemplate<T extends ZomicStatement> 
-		extends ZomicStatement
-		implements IGenerateZomicStatement<T> {
-
-		@Override
-		public void accept(Visitor visitor) throws ZomicException {
-			String msg = this.getClass().getSimpleName() + 
-					" does not accept visitors. It is only a template used for compiling Zomic Parse trees to other ZomicStatement derived classes.";
-			throw new UnsupportedOperationException( msg );
-		}
-
-		@Override
-		public T generate() {
-			String msg = this.getClass().getSimpleName() +
-					".generate() is not implemented. Try overriding it or use this.generate(IcosahedralSymmetry symmetry).";
-			throw new UnsupportedOperationException(  msg );
-		}
-		
-		@Override
-		public T generate(IcosahedralSymmetry symmetry) {
-			String msg = this.getClass().getSimpleName() + 
-					".generate(IcosahedralSymmetry symmetry) is not implemented. Try overriding it or use this.generate().";
-			throw new UnsupportedOperationException( msg );
-		}
-	}
-
-	
-	protected interface IHaveAlgebraicNumberInfo {
-		int ones();
-		void ones(int i);
-
-		int phis();
-		void phis(int i);
-		
-		AlgebraicNumberInfo getAlgebraicNumberInfo();
-	}
-
-	protected class AlgebraicNumberInfo
-		implements IHaveAlgebraicNumberInfo 
-	{
-		private int ones = 1;
-		@Override public int ones() { return ones; }
-		@Override public void ones(int i) { ones = i; }
-		
-		private int phis = 0;
-		@Override public int phis() { return phis; }
-		@Override public void phis(int i) { phis = i; }
-
-		AlgebraicNumber generate(IcosahedralSymmetry symmetry) {
-			return symmetry.getField().createAlgebraicNumber( ones, phis, 1, 1 );
-		}
-
-		@Override
-		public AlgebraicNumberInfo getAlgebraicNumberInfo() {
-			return this;
-		}
-	}
-
-	private void setCurrentScale(int scale) { 
-		((IHaveStrutLengthInfo)statements.peek()).scale(scale);
-	}
-
-	protected interface IHaveScaleInfo 
-		extends IHaveAlgebraicNumberInfo 
-	{
-		int scale();
-		void scale( int i );
-	}
-
-	protected class ScaleInfo 
-		extends AlgebraicNumberInfo
-		implements IHaveScaleInfo
-	 {
-		private int scale = 1;
-		@Override public int scale() { return scale; }
-		@Override public void scale(int i) { scale = i; }
-	}
-	
-	protected interface IHaveStrutLengthInfo 
-		extends IHaveScaleInfo
-	{
-		int denominator();
-		void denominator(int i);
-
-		String sizeRef();
-		void sizeRef(String s);
-		
-		boolean isVariableLength();
-		void isVariableLength(boolean is);
-	}
-
-	protected class StrutLengthInfo
-			extends ScaleInfo
-			implements IHaveStrutLengthInfo 
-	{
-		private int denominator = 1;
-		@Override public int denominator() { return denominator; }
-		@Override public void denominator(int i) { denominator = i; }
-
-		private String sizeRef = null;
-		@Override public String sizeRef() { return sizeRef; }
-		@Override public void sizeRef(String s)  { sizeRef = s; }
-
-		public StrutLengthInfo() {
-			scale(ZomicNamingConvention.MEDIUM);
-		}
-
-		private boolean isVariableLength = false;
-		@Override public boolean isVariableLength() { 
-			return ( isVariableLength	// DJH New proposed alternative to size -99
-					|| (-99 == scale())	// old variable size flag used only internally by strut resources.
-					); 
-		}
-		@Override public void isVariableLength(boolean is)  { isVariableLength = is; }
-
-		AlgebraicNumber generate(IcosahedralSymmetry symmetry, String axisColor) {
-			// validate 
-			if ( denominator != 1 ) {
-				Direction direction = symmetry.getDirection(axisColor);
-				if ( direction == null || ! direction.hasHalfSizes()) {
-					String msg = "half struts are not allowed on '" + axisColor + "' axes.";
-					println(msg);
-					throw new RuntimeException( msg );
-				}
-			} 
-			// Zero is the "variable" length indicator. Used only by internal core strut resources
-			if (isVariableLength()) { 
-				return symmetry.getField().zero();
-			}
-			// adjustments per color
-			int lengthFactor = 1;
-			int scaleOffset = 0;
-			switch (axisColor) {
-				case "blue":
-					lengthFactor = 2;
-					break;
-				case "green":
-					lengthFactor = 2;
-					break;
-				case "yellow":
-					scaleOffset = -1;
-					break;
-				case "purple":
-					scaleOffset = -1;
-					break;
-				default:
-					break;
-			}
-			// calculate
-			return symmetry.getField().createAlgebraicNumber( 
-					ones() * lengthFactor, 
-					phis() * lengthFactor, 
-					denominator, 
-					scale() + scaleOffset);
-		}
-	}
-
 	protected interface IHaveAxisInfo {
 										// e.g. red -2+
 		String axisColor();				// red
@@ -402,52 +256,99 @@ public class ZomicASTCompiler
 		public AxisInfo getAxisInfo() { return this; }
 	}
 
-	protected class MoveTemplate 
-		extends ZomicStatementTemplate<Move>
-		implements IHaveStrutLengthInfo, IHaveAxisInfo {
+	private void setCurrentScale(int scale) { 
+		((ScaleInfo)templates.peek()).scale = scale;
+	}
+
+	protected class ScaleInfo {
+		public int ones = 1;
+		public int phis = 0;
+		public int scale = 1;
+
+		AlgebraicNumber generate(IcosahedralSymmetry symmetry) {
+			return symmetry.getField().createAlgebraicNumber( ones, phis, 1, scale );
+		}
+	}
 	
-		private final StrutLengthInfo strutLengthInfo = new StrutLengthInfo();
+	protected class ScaleTemplate 
+		extends ScaleInfo
+		implements ZomicStatementTemplate<Scale>
+	{	
+		@Override
+		public Scale generate() {
+			AlgebraicNumber algebraicNumber = generate(symmetry);
+			return new Scale(algebraicNumber);
+		}
+	}
+
+	protected class MoveTemplate 
+		extends ScaleInfo
+		implements ZomicStatementTemplate<Move>, IHaveAxisInfo
+	{
 		private final AxisInfo axisInfo = new AxisInfo();
+		
+		public int denominator = 1;
+		public String sizeRef = null;
+
+		public MoveTemplate() {
+			scale = ZomicNamingConvention.MEDIUM;
+		}
+
+		private boolean isVariableLength = false;
+		public boolean isVariableLength() { 
+			return ( isVariableLength	// DJH New proposed alternative to size -99
+					|| (-99 == scale)	// old variable size flag used only internally by strut resources.
+					); 
+		}
+		public void isVariableLength(boolean is)  { isVariableLength = is; }
+
+		AlgebraicNumber generate(String axisColor) {
+			// validate 
+			if ( denominator != 1 ) {
+				Direction direction = symmetry.getDirection(axisColor);
+				if ( direction == null || ! direction.hasHalfSizes()) {
+					String msg = "half struts are not allowed on '" + axisColor + "' axes.";
+					println(msg);
+					throw new RuntimeException( msg );
+				}
+			} 
+			// Zero is the "variable" length indicator. Used only by internal core strut resources
+			if (isVariableLength()) { 
+				return symmetry.getField().zero();
+			}
+			// adjustments per color
+			int lengthFactor = 1;
+			int scaleOffset = 0;
+			switch (axisColor) {
+				case "blue":
+					lengthFactor = 2;
+					break;
+				case "green":
+					lengthFactor = 2;
+					break;
+				case "yellow":
+					scaleOffset = -1;
+					break;
+				case "purple":
+					scaleOffset = -1;
+					break;
+				default:
+					break;
+			}
+			// calculate
+			return symmetry.getField().createAlgebraicNumber( 
+					ones * lengthFactor, 
+					phis * lengthFactor, 
+					denominator, 
+					scale + scaleOffset);
+		}
 
 		@Override
-		public Move generate(IcosahedralSymmetry symmetry) {
+		public Move generate() {
 			Axis axis = axisInfo.generate();
-			AlgebraicNumber strutLength = strutLengthInfo.generate(symmetry, axisColor());
+			AlgebraicNumber strutLength = generate(axisColor());
 			return new Move(axis, strutLength);
 		}
-
-		@Override
-		public int denominator() { return strutLengthInfo.denominator; }
-		@Override
-		public void denominator(int i) { strutLengthInfo.denominator = i; }
-
-		@Override
-		public String sizeRef() { return strutLengthInfo.sizeRef; }
-		@Override
-		public void sizeRef(String s) { strutLengthInfo.sizeRef = s;}
-		
-		@Override
-		public boolean isVariableLength() { return strutLengthInfo.isVariableLength; }
-		@Override
-		public void isVariableLength(boolean is) { strutLengthInfo.isVariableLength = is;}
-		
-
-		@Override
-		public int scale() { return strutLengthInfo.scale(); }
-		@Override
-		public void scale(int i) { strutLengthInfo.scale(i); }
-
-		@Override
-		public int ones() { return strutLengthInfo.ones(); }
-		@Override
-		public void ones(int i) {
-			strutLengthInfo.ones(i);
-		}
-
-		@Override
-		public int phis() { return strutLengthInfo.phis(); }
-		@Override
-		public void phis(int i) { strutLengthInfo.phis(i); }
 
 		@Override
 		public String axisColor() { return axisInfo.axisColor; }
@@ -472,45 +373,6 @@ public class ZomicASTCompiler
 		public AxisInfo getAxisInfo() {
 			return axisInfo;
 		}
-
-		@Override
-		public AlgebraicNumberInfo getAlgebraicNumberInfo() {
-			return strutLengthInfo.getAlgebraicNumberInfo();
-		}
-	}
-
-	protected class ScaleTemplate 
-		extends ZomicStatementTemplate<Scale>
-		implements IHaveScaleInfo {
-	
-		private final ScaleInfo scaleInfo = new ScaleInfo();
-
-		@Override
-		public Scale generate() {
-			return new Scale(scaleInfo.generate(symmetry));
-		}
-
-		@Override
-		public int scale() { return scaleInfo.scale(); }
-		@Override
-		public void scale(int i) { scaleInfo.scale(i); }
-
-		@Override
-		public int ones() { return scaleInfo.ones(); }
-		@Override
-		public void ones(int i) {
-			scaleInfo.ones(i);
-		}
-
-		@Override
-		public int phis() { return scaleInfo.phis(); }
-		@Override
-		public void phis(int i) { scaleInfo.phis(i); }
-
-		@Override
-		public AlgebraicNumberInfo getAlgebraicNumberInfo() {
-			return scaleInfo.getAlgebraicNumberInfo();
-		}
 	}
 
 /* 
@@ -520,10 +382,12 @@ public class ZomicASTCompiler
 */
 	
 	@Override public void enterProgram(ZomicParser.ProgramContext ctx) { 
-		prepare( new Walk() );
+		prepareStatement( new Walk() );
+		prepareStatement( new Walk() );	// old parser had an extra Walk on the stack so we will too
 	}
 	
 	@Override public void exitProgram(ZomicParser.ProgramContext ctx) { 
+		commitLastStatement();	// old parser had an extra Walk on the stack so we will too
 		if(!(statements.firstElement() instanceof Walk)) {
 			throw new RuntimeException("We should always have a Walk by the time we get here!");		
 		}
@@ -532,32 +396,32 @@ public class ZomicASTCompiler
 	//@Override public void enterStmt(ZomicParser.StmtContext ctx) { }
 	//@Override public void exitStmt(ZomicParser.StmtContext ctx) { }
 
-	//@Override public void enterCompound_stmt(ZomicParser.Compound_stmtContext ctx) { }
-	//@Override public void exitCompound_stmt(ZomicParser.Compound_stmtContext ctx) { }
-	
-	@Override public void enterDirectCommand(ZomicParser.DirectCommandContext ctx) { 
-		prepare( new Walk() );
+	@Override public void enterCompound_stmt(ZomicParser.Compound_stmtContext ctx) {
+		prepareStatement( new Walk() );
 	}
 	
-	@Override public void exitDirectCommand(ZomicParser.DirectCommandContext ctx) {
-		commmitLast();
+	@Override public void exitCompound_stmt(ZomicParser.Compound_stmtContext ctx) {
+		commitLastStatement();
 	}
+	
+	//@Override public void enterDirectCommand(ZomicParser.DirectCommandContext ctx) { }
+	//@Override public void exitDirectCommand(ZomicParser.DirectCommandContext ctx) { }
 	
 	@Override public void enterNestedCommand(ZomicParser.NestedCommandContext ctx) { 
-		prepare( new Walk() );
+		//prepareStatement( new Walk() );
 	}
 	
 	@Override public void exitNestedCommand(ZomicParser.NestedCommandContext ctx) {
-		commmitLast();
+		//commitLastStatement();
 	}
 	
 	@Override public void enterStrut_stmt(ZomicParser.Strut_stmtContext ctx) { 
-		prepare( new MoveTemplate() );
+		prepareTemplate( new MoveTemplate() );
 	}
 	
 	@Override public void exitStrut_stmt(ZomicParser.Strut_stmtContext ctx) { 
-		MoveTemplate template = (MoveTemplate) statements.pop();
-		commit (template.generate(symmetry));
+		MoveTemplate template = (MoveTemplate) templates.pop();
+		commit (template.generate());
 	}
 	
 	//@Override public void enterLabel_stmt(ZomicParser.Label_stmtContext ctx) { }
@@ -567,11 +431,14 @@ public class ZomicASTCompiler
 	}
 	
 	@Override public void enterScale_stmt(ZomicParser.Scale_stmtContext ctx) {
-		prepare(new ScaleTemplate());
+		prepareTemplate(new ScaleTemplate());
 	}
 	
 	@Override public void exitScale_stmt(ZomicParser.Scale_stmtContext ctx) {
-		ScaleTemplate template = (ScaleTemplate) statements.pop();
+		if( ctx.scale != null ) {
+			setCurrentScale(parseInt(ctx.scale));
+		}
+		ScaleTemplate template = (ScaleTemplate) templates.pop();
 		commit (template.generate());
 	}
 
@@ -594,7 +461,7 @@ public class ZomicASTCompiler
 	}
 	
 //	@Override public void enterRotate_stmt(ZomicParser.Rotate_stmtContext ctx) {
-//		prepare(new RotateTemplate());
+//		prepareStatement(new RotateTemplate());
 //	}
 //	
 //	@Override public void exitRotate_stmt(ZomicParser.Rotate_stmtContext ctx) {
@@ -603,7 +470,7 @@ public class ZomicASTCompiler
 //	}
 	
 //	@Override public void enterReflect_stmt(ZomicParser.Reflect_stmtContext ctx) {
-//		prepare(new ReflectTemplate());
+//		prepareStatement(new ReflectTemplate());
 //	}
 //	
 //	@Override public void exitReflect_stmt(ZomicParser.Reflect_stmtContext ctx) {
@@ -611,15 +478,20 @@ public class ZomicASTCompiler
 //		commit (template.generate());
 //	}
 	
-	//@Override public void enterFrom_stmt(ZomicParser.From_stmtContext ctx) { }
+	@Override public void enterFrom_stmt(ZomicParser.From_stmtContext ctx) {
+		prepareStatement( new Save(ZomicEventHandler.ACTION) );
+		prepareStatement( new Walk() );
+		commit( new Build(/*build*/ false, /*destroy*/ false) );
+	}
 	
 	@Override public void exitFrom_stmt(ZomicParser.From_stmtContext ctx) {
-		commit( new Save(ZomicEventHandler.ACTION) );
-		commit( new Walk() );
+		commitLastStatement();
+		commitLastStatement();
+		//commitLastStatement();
 	}
 	
 //	@Override public void enterSymmetry_stmt(ZomicParser.Symmetry_stmtContext ctx) {
-//		prepare(new SymmetryTemplate());
+//		prepareStatement(new SymmetryTemplate());
 //	}
 //	
 //	@Override public void exitSymmetry_stmt(ZomicParser.Symmetry_stmtContext ctx) {
@@ -627,21 +499,23 @@ public class ZomicASTCompiler
 //		commit (template.generate());
 //	}
 	
-	//@Override public void enterRepeat_stmt(ZomicParser.Repeat_stmtContext ctx) { }
+	@Override public void enterRepeat_stmt(ZomicParser.Repeat_stmtContext ctx) {
+		prepareStatement( new Repeat(parseInt(ctx.count)) );
+	}
 	
 	@Override public void exitRepeat_stmt(ZomicParser.Repeat_stmtContext ctx) {
-		commit( new Repeat(parseInt(ctx.count)) );
+		commitLastStatement();
 	}
 	
-	//@Override public void enterBranch_stmt(ZomicParser.Branch_stmtContext ctx) { }
+	@Override public void enterBranch_stmt(ZomicParser.Branch_stmtContext ctx) {
+		prepareStatement(new Save(ZomicEventHandler.LOCATION) );
+	}
 	
 	@Override public void exitBranch_stmt(ZomicParser.Branch_stmtContext ctx) {
-		commit( new Save(ZomicEventHandler.LOCATION) );
+		commitLastStatement();
 	}
 	
-	//@Override public void enterSave_stmt(ZomicParser.Save_stmtContext ctx) { }
-	
-	@Override public void exitSave_stmt(ZomicParser.Save_stmtContext ctx) {
+	@Override public void enterSave_stmt(ZomicParser.Save_stmtContext ctx) {
 		int state = 0;
 		switch(ctx.state.getText()) {
 			case "orientation":
@@ -662,7 +536,11 @@ public class ZomicASTCompiler
 			default:
 				throw new UnsupportedOperationException("Unexpected save parameter: " + ctx.getText());
 		}
-		commit( new Save(state) );
+		prepareStatement( new Save(state) );
+	}
+	
+	@Override public void exitSave_stmt(ZomicParser.Save_stmtContext ctx) {
+		commitLastStatement();
 	}
 	
 	//@Override public void enterSymmetry_center_expr(ZomicParser.Symmetry_center_exprContext ctx) { }
@@ -673,16 +551,14 @@ public class ZomicASTCompiler
 	
 	@Override public void exitStrut_length_expr(ZomicParser.Strut_length_exprContext ctx) { 
 		if(ctx.HALF() != null) {
-			((IHaveStrutLengthInfo)statements.peek()).denominator(2);
+			((MoveTemplate)templates.peek()).denominator = 2;
 		}
 	}
 	
 	//@Override public void enterHalf_size_expr(ZomicParser.Half_size_exprContext ctx) { }
-	
 	//@Override public void exitHalf_size_expr(ZomicParser.Half_size_exprContext ctx) { }
 	
 	//@Override public void enterSize_expr(ZomicParser.Size_exprContext ctx) { }
-	
 	//@Override public void exitSize_expr(ZomicParser.Size_exprContext ctx) { }
 	
 	//@Override public void enterExplicit_size_expr(ZomicParser.Explicit_size_exprContext ctx) { }
@@ -691,14 +567,14 @@ public class ZomicASTCompiler
 		if( ctx.scale != null ) {
 			setCurrentScale(parseInt(ctx.scale));
 		}
-		IHaveStrutLengthInfo strutLengthInfo = (IHaveStrutLengthInfo)statements.peek();
+		MoveTemplate template = (MoveTemplate)templates.peek();
 		if( ctx.sizeRef != null ) {
 			String sizeRef = ctx.sizeRef.getText();
-			strutLengthInfo.sizeRef(sizeRef);
+			template.sizeRef = sizeRef;
 			println("Ignoring undocumented sizeRef = '" + sizeRef + "'.");
 		}
 		if( ctx.isVariableLength != null ) {
-			strutLengthInfo.isVariableLength(true);
+			template.isVariableLength(true);
 		}
 	}
 	
@@ -715,13 +591,12 @@ public class ZomicASTCompiler
 	}
 	
 	//@Override public void enterAxis_expr(ZomicParser.Axis_exprContext ctx) { }
-	
 	//@Override public void exitAxis_expr(ZomicParser.Axis_exprContext ctx) { }
 	
 	//@Override public void enterAxis_index_expr(ZomicParser.Axis_index_exprContext ctx) { }
 	
 	@Override public void exitAxis_index_expr(ZomicParser.Axis_index_exprContext ctx) {
-		AxisInfo elements = ((IHaveAxisInfo)statements.peek()).getAxisInfo();
+		AxisInfo elements = ((IHaveAxisInfo)templates.peek()).getAxisInfo();
 		elements.indexNumber = ctx.indexNumber.getText();
 		if ( ctx.handedness != null ) { 
 			elements.handedness = ctx.handedness.getText();
@@ -745,7 +620,7 @@ public class ZomicASTCompiler
 			colorContext = ctx.getChild(0).getClass().getSimpleName().toLowerCase();
 			if(colorContext.endsWith(strCONTEXT)) {
 				colorContext = colorContext.replaceFirst(strCONTEXT, "");
-				((IHaveAxisInfo)statements.peek()).axisColor(colorContext);
+				((IHaveAxisInfo)templates.peek()).axisColor(colorContext);
 				println(colorContext);
 				return;
 			}
@@ -755,10 +630,10 @@ public class ZomicASTCompiler
 	} 
 
 	@Override public void exitAlgebraic_number_expr(ZomicParser.Algebraic_number_exprContext ctx) { 
-		AlgebraicNumberInfo template = ((IHaveAlgebraicNumberInfo)statements.peek()).getAlgebraicNumberInfo();
+		ScaleInfo template = (ScaleInfo)templates.peek();
 		template.ones = parseInt(ctx.ones);
 		if(ctx.phis != null) {
-			template.phis =  parseInt(ctx.phis);
+			template.phis = parseInt(ctx.phis);
 		}
 	}
 	
