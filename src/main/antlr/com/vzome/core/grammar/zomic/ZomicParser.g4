@@ -146,13 +146,6 @@ save_stmt
 */
 
 
-symmetry_center_expr
-	:	THROUGH
-		CENTER
-	|	index = INT
-	;
-
-
 strut_length_expr
 	:	size_expr
 		algebraic_number_expr?
@@ -185,6 +178,17 @@ named_size_expr
 	| 	LONG		# SizeLong
 	|	MEDIUM		# SizeMedium
 	|				# SizeMedium // default is MEDIUM
+	;
+
+
+symmetry_center_expr
+	:	THROUGH
+	(	CENTER
+	|	
+	(	blue_alias_expr? // Optional, only for readability or to simplify changing script from "around" to "through" symmetry statement
+		blueAxisIndexNumber = INT // only an index to a blue axis is allowed here
+	)
+	)
 	;
 
 

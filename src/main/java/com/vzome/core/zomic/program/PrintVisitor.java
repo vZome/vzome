@@ -95,7 +95,7 @@ public class PrintVisitor extends Visitor .Default{
 	public 
 	void visitRepeat( Repeat repeated, int repetitions ) throws ZomicException
 	{
-		print( "repeat " + repetitions + " " );
+		print( "  repeat " + repetitions + " " );
 		visitNested( repeated );
 	}
 
@@ -130,8 +130,9 @@ public class PrintVisitor extends Visitor .Default{
 	public
 	void visitMove( Axis axis, AlgebraicNumber length )
 	{
-		 println( "/* MOVE NOT PRINTED: */ " + axis.getDirection().getName() + " " + axis.getOrientation() + " : " + length.toString() );
-	    // TODO translate to Zomic text
+		 println( //"/* MOVE NOT PRINTED: */ " + 
+				 axis.getDirection().getName() + " " + axis.getOrientation() + " : " + length.toString( AlgebraicField.ZOMIC_FORMAT ) );
+	    // TODO translate back to original Zomic naming convention
 	}
 
 	public 
@@ -164,7 +165,7 @@ public class PrintVisitor extends Visitor .Default{
 	public 
 	void visitScale( AlgebraicNumber size )
     {
-		print( "scale 0 ( " + size.toString( AlgebraicField.ZOMIC_FORMAT )  + " )" );
+		println( "scale 0 ( " + size.toString( AlgebraicField.ZOMIC_FORMAT )  + " )" );
 	}
 
 	protected void print( String string )

@@ -5,6 +5,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.NamingConvention;
 import com.vzome.core.zomic.program.Nested;
 import com.vzome.core.zomic.program.Permute;
 import com.vzome.core.zomic.program.Repeat;
@@ -26,11 +27,14 @@ public class ZomicTreeStructureVisitor
 	
 	protected int indent = 0;
 	
-	protected final ZomicNamingConvention naming = new ZomicNamingConvention( new IcosahedralSymmetry( new PentagonField(), "default" ) );
+	protected final IcosahedralSymmetry symmetry;
+	protected final ZomicNamingConvention naming;
 
 	public ZomicTreeStructureVisitor( PrintWriter out ) {
 		super();
 		m_out = out;
+		symmetry = new IcosahedralSymmetry( new PentagonField(), "default" );
+		naming = new ZomicNamingConvention( symmetry );
 		println("");
 	}
 	
@@ -76,12 +80,28 @@ public class ZomicTreeStructureVisitor
 
 	public void visitRotate( Axis axis, int steps )
 	{
-		println( "Rotate( axis = " + naming .getName( axis ) + ", steps = " + steps + " )");
+		String axisName = naming.getName( axis );
+		if(naming.UNKNOWN_AXIS.equals(axisName)) {
+			axisName = "/* " + axisName + ": " + 
+					(axis == null
+						? "<null>" 
+						: "(name = " + axis.getDirection().getName() + " orientation = " + Integer.toString(axis.getOrientation()) + ")") 
+					+ " */";			
+		}
+		println( "Rotate( axis = " + axisName + ", steps = " + steps + " )");
 	}
 
 	public void visitReflect( Axis blueAxis )
 	{
-		println( "Reflect through " + ( blueAxis == null ? "center" : naming .getName( blueAxis ) ) );
+		String axisName = "center";
+		if(blueAxis != null) {
+			axisName = naming.getName( blueAxis );
+			// TODO: This isn't necessarily so, is it ???
+			if(naming.UNKNOWN_AXIS.equals(axisName)) {
+				axisName = "center";
+			}
+		}
+		println( "Reflect through " + axisName );
 	}
 
 	public void visitMove( Axis axis, AlgebraicNumber length )

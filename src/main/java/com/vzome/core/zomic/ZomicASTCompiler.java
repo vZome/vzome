@@ -19,12 +19,16 @@ import com.vzome.core.zomic.program.Build;
 import com.vzome.core.zomic.program.Label;
 import com.vzome.core.zomic.program.Move;
 import com.vzome.core.zomic.program.Nested;
+import com.vzome.core.zomic.program.Reflect;
 import com.vzome.core.zomic.program.Repeat;
+import com.vzome.core.zomic.program.Rotate;
 import com.vzome.core.zomic.program.Save;
+import com.vzome.core.zomic.program.Symmetry;
 import com.vzome.core.zomic.program.Scale;
 import com.vzome.core.zomic.program.Untranslatable;
 import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
+import static java.lang.Math.abs;
 import java.util.Stack;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -41,15 +45,15 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class ZomicASTCompiler
     extends ZomicParserBaseListener
 {
-	private final IcosahedralSymmetry symmetry;
+	private final IcosahedralSymmetry icosaSymmetry;
 	private final ZomicNamingConvention namingConvention ;
 	private final Stack<ZomicStatement> statements = new Stack<>();
 	private final Stack<ZomicStatementTemplate> templates = new Stack<>();
 	private static boolean doPrint = true; // Only intended to be set from test methods
 
-    public ZomicASTCompiler( IcosahedralSymmetry symm ) {
-        symmetry = symm;
-		namingConvention = new ZomicNamingConvention( symm );
+    public ZomicASTCompiler( IcosahedralSymmetry icosaSymm ) {
+        icosaSymmetry = icosaSymm;
+		namingConvention = new ZomicNamingConvention( icosaSymm );
     }
 
 	public static Walk compile( CharStream input, IcosahedralSymmetry symm, boolean showProgressMessages ) {
@@ -209,8 +213,6 @@ public class ZomicASTCompiler
 		void handedness(String s);
 		
 		String indexFullName();			// -2+
-
-		AxisInfo getAxisInfo();
 	}
 
 	protected class AxisInfo 
@@ -251,9 +253,6 @@ public class ZomicASTCompiler
 
 		@Override
 		public String indexFullName() { return indexNumber + handedness; }
-		
-		@Override
-		public AxisInfo getAxisInfo() { return this; }
 	}
 
 	private void setCurrentScale(int scale) { 
@@ -276,7 +275,7 @@ public class ZomicASTCompiler
 	{	
 		@Override
 		public Scale generate() {
-			AlgebraicNumber algebraicNumber = generate(symmetry);
+			AlgebraicNumber algebraicNumber = generate(icosaSymmetry);
 			return new Scale(algebraicNumber);
 		}
 	}
@@ -305,7 +304,7 @@ public class ZomicASTCompiler
 		AlgebraicNumber generate(String axisColor) {
 			// validate 
 			if ( denominator != 1 ) {
-				Direction direction = symmetry.getDirection(axisColor);
+				Direction direction = icosaSymmetry.getDirection(axisColor);
 				if ( direction == null || ! direction.hasHalfSizes()) {
 					String msg = "half struts are not allowed on '" + axisColor + "' axes.";
 					println(msg);
@@ -314,7 +313,7 @@ public class ZomicASTCompiler
 			} 
 			// Zero is the "variable" length indicator. Used only by internal core strut resources
 			if (isVariableLength()) { 
-				return symmetry.getField().zero();
+				return icosaSymmetry.getField().zero();
 			}
 			// adjustments per color
 			int lengthFactor = 1;
@@ -336,7 +335,7 @@ public class ZomicASTCompiler
 					break;
 			}
 			// calculate
-			return symmetry.getField().createAlgebraicNumber( 
+			return icosaSymmetry.getField().createAlgebraicNumber( 
 					ones * lengthFactor, 
 					phis * lengthFactor, 
 					denominator, 
@@ -368,11 +367,189 @@ public class ZomicASTCompiler
 
 		@Override
 		public String indexFullName() { return axisInfo.indexFullName(); }
+	}
+
+	protected class RotateTemplate 
+		implements ZomicStatementTemplate<Rotate>, IHaveAxisInfo
+	{
+		private final AxisInfo axisInfo = new AxisInfo();
+		public int steps = 1;
+		
+		@Override
+		public Rotate generate() {
+			Axis axis = axisInfo.generate();
+			return new Rotate(axis, steps);
+		}
 
 		@Override
-		public AxisInfo getAxisInfo() {
-			return axisInfo;
+		public String axisColor() { return axisInfo.axisColor; }
+		@Override
+		public void axisColor(String s) { axisInfo.axisColor(s); }
+		
+		@Override
+		public String indexNumber() { return axisInfo.indexNumber; }
+		@Override
+		public void indexNumber(String s) { axisInfo.indexNumber(s); }
+		@Override
+
+		public String handedness() { return axisInfo.handedness; }
+		@Override
+		public void handedness(String s) { axisInfo.handedness(s); }
+
+
+		@Override
+		public String indexFullName() { return axisInfo.indexFullName(); }
+	}
+
+	protected class ReflectTemplate 
+		implements ZomicStatementTemplate<Reflect>, IHaveAxisInfo
+	{
+		private final AxisInfo axisInfo = new AxisInfo();
+		private final boolean isThroughCenter;
+				
+		public ReflectTemplate(boolean isThruCenter) {
+			isThroughCenter = isThruCenter;
 		}
+		
+		@Override
+		public Reflect generate() {
+			Reflect result = new Reflect();
+			if( !isThroughCenter ) {
+				if( "".equals(axisColor()) && !"".equals(indexNumber()) ) {
+					axisColor("blue");
+				}
+				Axis axis = axisInfo.generate();
+				result.setAxis(axis);
+			}
+			return result;
+		}
+
+		@Override
+		public String axisColor() { return axisInfo.axisColor; }
+		@Override
+		public void axisColor(String s) {
+			if( !"blue".equals(s)) {
+				enforceBlueAxis();
+			} else {
+				axisInfo.axisColor(s); 
+			}
+		}
+		
+		@Override
+		public String indexNumber() { return axisInfo.indexNumber; }
+		@Override
+		public void indexNumber(String s) {
+			// Old way silently removes any negative sign on the axis index
+			// so we always reflect around the positive axis.
+			// Don't know if that matters, but we'll do it the same way here.
+			// Note that the "symmetry around axis" statement does not strip the sign.
+			// but "symmetry through blueAxisIndex" does, just like ReflectTemplate.
+			s = s.replaceFirst("-", "");
+			axisInfo.indexNumber(s);
+			if( isThroughCenter && !"".equals(indexNumber())) {
+				axisColor("blue");
+			}
+		}
+		
+		@Override
+		public String handedness() { return axisInfo.handedness; }
+		@Override
+		public void handedness(String s) {
+			enforceBlueAxis();
+		}
+
+		@Override
+		public String indexFullName() { return axisInfo.indexFullName(); }
+		
+		private void enforceBlueAxis() {
+			throw new IllegalStateException("Only 'center' or blue axis indexes are allowed.");
+		}
+	}
+	
+	protected enum SymmetryModeEnum {
+			Icosahedral,	// around the origin
+			RotateAroundAxis,
+			MirrorThroughBlueAxis,
+			ReflectThroughOrigin
+	}
+	
+	protected class SymmetryTemplate 
+		implements ZomicStatementTemplate<Symmetry>, IHaveAxisInfo
+	{
+		private final AxisInfo axisInfo = new AxisInfo();
+		private final SymmetryModeEnum symmetryMode;
+				
+		public SymmetryTemplate(SymmetryModeEnum mode) {
+			symmetryMode = mode;
+		}
+		
+		@Override
+		public Symmetry generate() {
+			// Rather than creating a new Symmetry statement here, apply the collected template parameters 
+			// to the Symmetry statement that's already on the Statement stack collecting other statements in its body,
+			// but don't pop it off the Statements stack here, just peek() for now.
+			Symmetry result = (Symmetry) statements.peek();
+			switch(symmetryMode) {
+				case Icosahedral:
+					break;
+				case RotateAroundAxis:
+				{
+					Rotate rotate = new Rotate( null, -1 );
+					Axis axis = axisInfo.generate();
+					rotate.setAxis(axis);
+					result.setPermute( rotate );
+				}
+					break;
+				case MirrorThroughBlueAxis:
+				{
+					Reflect reflect = new Reflect();
+					Axis axis = axisInfo.generate();
+					reflect.setAxis(axis);
+					result.setPermute( reflect );
+				}
+					break;
+				case ReflectThroughOrigin:
+					result.setPermute( new Reflect() );
+					break;
+				default:
+					throw new IllegalStateException(
+							"Unexpected SymmetryModeEnum: " + 
+							symmetryMode == null
+							? "<null>" 
+							: symmetryMode.toString() 
+					);
+			}
+			return result;
+		}
+
+		@Override
+		public String axisColor() { return axisInfo.axisColor; }
+		@Override
+		public void axisColor(String s) { axisInfo.axisColor(s); }
+		
+		@Override
+		public String indexNumber() { return axisInfo.indexNumber; }
+		@Override
+		public void indexNumber(String s) {
+			// Note that the "symmetry around axis" statement does not strip the sign.
+			// but "symmetry through blueAxisIndex" does, just like ReflectTemplate.
+			// Don't know if that matters, but we'll do it the same way here.
+			if(symmetryMode == SymmetryModeEnum.MirrorThroughBlueAxis) {
+				s = s.replaceFirst("-", "");
+			}
+			axisInfo.indexNumber(s);
+			if( symmetryMode == SymmetryModeEnum.MirrorThroughBlueAxis ) {
+				axisColor("blue");
+			}
+		}
+		
+		@Override
+		public String handedness() { return axisInfo.handedness; }
+		@Override
+		public void handedness(String s) { axisInfo.handedness(s); }
+
+		@Override
+		public String indexFullName() { return axisInfo.indexFullName(); }
 	}
 
 /* 
@@ -407,13 +584,8 @@ public class ZomicASTCompiler
 	//@Override public void enterDirectCommand(ZomicParser.DirectCommandContext ctx) { }
 	//@Override public void exitDirectCommand(ZomicParser.DirectCommandContext ctx) { }
 	
-	@Override public void enterNestedCommand(ZomicParser.NestedCommandContext ctx) { 
-		//prepareStatement( new Walk() );
-	}
-	
-	@Override public void exitNestedCommand(ZomicParser.NestedCommandContext ctx) {
-		//commitLastStatement();
-	}
+//	@Override public void enterNestedCommand(ZomicParser.NestedCommandContext ctx) { }
+//	@Override public void exitNestedCommand(ZomicParser.NestedCommandContext ctx) { }
 	
 	@Override public void enterStrut_stmt(ZomicParser.Strut_stmtContext ctx) { 
 		prepareTemplate( new MoveTemplate() );
@@ -460,23 +632,27 @@ public class ZomicASTCompiler
 		commit( new Build(/*build*/ false, /*destroy*/ false) );
 	}
 	
-//	@Override public void enterRotate_stmt(ZomicParser.Rotate_stmtContext ctx) {
-//		prepareStatement(new RotateTemplate());
-//	}
-//	
-//	@Override public void exitRotate_stmt(ZomicParser.Rotate_stmtContext ctx) {
-//		RotateTemplate template = (RotateTemplate) statements.pop();
-//		commit (template.generate());
-//	}
+	@Override public void enterRotate_stmt(ZomicParser.Rotate_stmtContext ctx) {
+		prepareTemplate(new RotateTemplate());
+	}
+
+	@Override public void exitRotate_stmt(ZomicParser.Rotate_stmtContext ctx) {
+		RotateTemplate template = (RotateTemplate) templates.pop();
+		if(ctx.steps != null) {
+			template.steps = parseInt(ctx.steps);
+		}
+		commit (template.generate());
+	}
 	
-//	@Override public void enterReflect_stmt(ZomicParser.Reflect_stmtContext ctx) {
-//		prepareStatement(new ReflectTemplate());
-//	}
-//	
-//	@Override public void exitReflect_stmt(ZomicParser.Reflect_stmtContext ctx) {
-//		ReflectTemplate template = (ReflectTemplate) statements.pop();
-//		commit (template.generate());
-//	}
+	@Override public void enterReflect_stmt(ZomicParser.Reflect_stmtContext ctx) {
+		boolean isThruCenter = ctx.symmetry_center_expr().CENTER() != null;
+		prepareTemplate(new ReflectTemplate(isThruCenter));
+	}
+	
+	@Override public void exitReflect_stmt(ZomicParser.Reflect_stmtContext ctx) {
+		ReflectTemplate template = (ReflectTemplate) templates.pop();
+		commit( template.generate() );
+	}
 	
 	@Override public void enterFrom_stmt(ZomicParser.From_stmtContext ctx) {
 		prepareStatement( new Save(ZomicEventHandler.ACTION) );
@@ -487,20 +663,41 @@ public class ZomicASTCompiler
 	@Override public void exitFrom_stmt(ZomicParser.From_stmtContext ctx) {
 		commitLastStatement();
 		commitLastStatement();
-		//commitLastStatement();
 	}
 	
-//	@Override public void enterSymmetry_stmt(ZomicParser.Symmetry_stmtContext ctx) {
-//		prepareStatement(new SymmetryTemplate());
-//	}
-//	
-//	@Override public void exitSymmetry_stmt(ZomicParser.Symmetry_stmtContext ctx) {
-//		SymmetryTemplate template = (SymmetryTemplate) statements.pop();
-//		commit (template.generate());
-//	}
+	@Override public void enterSymmetry_stmt(ZomicParser.Symmetry_stmtContext ctx) {
+		SymmetryModeEnum symmetryMode = null;
+		if( ctx.axis_expr() != null ) {
+			symmetryMode = SymmetryModeEnum.RotateAroundAxis;
+		} else if( ctx.symmetry_center_expr() == null ) {
+			symmetryMode = SymmetryModeEnum.Icosahedral;
+		} else if(ctx.symmetry_center_expr().blueAxisIndexNumber != null) {
+			symmetryMode = SymmetryModeEnum.MirrorThroughBlueAxis;
+		} else if(ctx.symmetry_center_expr().CENTER() != null) {
+			symmetryMode = SymmetryModeEnum.ReflectThroughOrigin;
+		} else {
+			throw new IllegalStateException("Unexpected symmetry mode: " + ctx.getText());
+		}
+		// push a SymmetryTemplate on the Templates stack to collect the Symmetry parameters
+		prepareTemplate(new SymmetryTemplate(symmetryMode));
+		// push an actual Symmetry statement on the Statements stack to collect the body
+		prepareStatement(new Symmetry());
+	}
+
+	@Override public void exitSymmetry_stmt(ZomicParser.Symmetry_stmtContext ctx) {
+		SymmetryTemplate template = (SymmetryTemplate) templates.pop();
+		// SymmetryTemplate.generate() will apply collected template params 
+		// to the Symmetry statement that's already on the Statement stack collecting nested statements in its body.
+		// The Symmetry statement that's returned is the same object that's still on the stetements stack,
+		// so we can just ignore the return value here.
+		template.generate();
+		// Now commit the Symmetry statement and pop it off of the Statements stack.
+		commitLastStatement();
+	}
 	
 	@Override public void enterRepeat_stmt(ZomicParser.Repeat_stmtContext ctx) {
-		prepareStatement( new Repeat(parseInt(ctx.count)) );
+		// negative numbers are allowed but the sign is silently removed
+		prepareStatement( new Repeat(abs(parseInt(ctx.count))) );
 	}
 	
 	@Override public void exitRepeat_stmt(ZomicParser.Repeat_stmtContext ctx) {
@@ -545,7 +742,12 @@ public class ZomicASTCompiler
 	
 	//@Override public void enterSymmetry_center_expr(ZomicParser.Symmetry_center_exprContext ctx) { }
 	
-	//@Override public void exitSymmetry_center_expr(ZomicParser.Symmetry_center_exprContext ctx) { }
+	@Override public void exitSymmetry_center_expr(ZomicParser.Symmetry_center_exprContext ctx) {
+		IHaveAxisInfo elements = (IHaveAxisInfo)templates.peek();
+		if ( ctx.blueAxisIndexNumber != null ) { 
+			elements.indexNumber(ctx.blueAxisIndexNumber.getText());
+		}
+	}
 	
 	//@Override public void enterStrut_length_expr(ZomicParser.Strut_length_exprContext ctx) { }
 	
@@ -596,10 +798,10 @@ public class ZomicASTCompiler
 	//@Override public void enterAxis_index_expr(ZomicParser.Axis_index_exprContext ctx) { }
 	
 	@Override public void exitAxis_index_expr(ZomicParser.Axis_index_exprContext ctx) {
-		AxisInfo elements = ((IHaveAxisInfo)templates.peek()).getAxisInfo();
-		elements.indexNumber = ctx.indexNumber.getText();
+		IHaveAxisInfo elements = (IHaveAxisInfo)templates.peek();
+		elements.indexNumber(ctx.indexNumber.getText());
 		if ( ctx.handedness != null ) { 
-			elements.handedness = ctx.handedness.getText();
+			elements.handedness(ctx.handedness.getText());
 		}
 	}
 	
@@ -645,9 +847,7 @@ public class ZomicASTCompiler
 		printContext(ctx, false);
 	}
 	
-	@Override public void visitTerminal(TerminalNode node) { 
-		//println("visitTerminal");
-	}
+	//@Override public void visitTerminal(TerminalNode node) { }
 	
 	@Override public void visitErrorNode(ErrorNode node) { 
 		String msg = node.getText();
