@@ -28,8 +28,10 @@ import com.vzome.core.zomic.program.Scale;
 import com.vzome.core.zomic.program.Untranslatable;
 import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
+import java.io.IOException;
 import static java.lang.Math.abs;
 import java.util.Stack;
+import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -56,6 +58,23 @@ public class ZomicASTCompiler
 		namingConvention = new ZomicNamingConvention( icosaSymm );
     }
 
+	public static Walk compileFile( String fileName, IcosahedralSymmetry symm, boolean showProgressMessages ) {
+        doPrint = showProgressMessages;
+		Walk program = null;
+		ErrorHandler.Default errors = new ErrorHandler.Default();
+		ZomicASTCompiler compiler = new ZomicASTCompiler(symm );
+		try {
+			ANTLRFileStream fileStream = new ANTLRFileStream(fileName);
+			program = compiler.compile( fileStream, errors );
+			if( program != null ) {
+				program.setErrors( errors.getErrors() );
+			}
+		} catch (Exception ex) {
+			errors.parseError( ErrorHandler.UNKNOWN, ErrorHandler.UNKNOWN, ex.getMessage() );
+		}
+        return program;
+    }
+	
 	public static Walk compile( CharStream input, IcosahedralSymmetry symm, boolean showProgressMessages ) {
         doPrint = showProgressMessages;
 		ErrorHandler.Default errors = new ErrorHandler.Default();

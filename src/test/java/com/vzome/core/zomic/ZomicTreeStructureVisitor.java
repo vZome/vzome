@@ -8,6 +8,7 @@ import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.NamingConvention;
 import com.vzome.core.zomic.program.Nested;
 import com.vzome.core.zomic.program.Permute;
+import com.vzome.core.zomic.program.Reflect;
 import com.vzome.core.zomic.program.Repeat;
 import com.vzome.core.zomic.program.Save;
 import com.vzome.core.zomic.program.Symmetry;
@@ -27,25 +28,43 @@ public class ZomicTreeStructureVisitor
 	
 	protected int indent = 0;
 	
-	protected final IcosahedralSymmetry symmetry;
-	protected final ZomicNamingConvention naming;
+	private final ZomicNamingConvention namingConvention;
 
 	public ZomicTreeStructureVisitor( PrintWriter out ) {
 		super();
 		m_out = out;
-		symmetry = new IcosahedralSymmetry( new PentagonField(), "default" );
-		naming = new ZomicNamingConvention( symmetry );
+		PentagonField field = new PentagonField();
+		IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
+		namingConvention = new ZomicNamingConvention( symmetry );
 		println("");
 	}
 	
 	protected void println( String string )
     {
 		for ( int i = 0; i < indent; i++ ) {
-			m_out .print( "    " );
+			m_out.print( "    " );
 		}
-		m_out .println( string );
+		m_out.println( string );
 	}
 
+	protected String getAxisName( Axis axis) {
+		String axisName = "<null>";
+		if(axis != null) {
+			axisName = namingConvention.getName( axis );
+			// TODO: namingConvention always returns UNKNOWN_AXIS. 
+			// TODO: Fix that problem then get rid of the rest of this hack.
+			if(ZomicNamingConvention.UNKNOWN_AXIS.equals(axisName)) {
+				axisName = axis.getDirection().getName() + " " + Integer.toString(axis.getOrientation());
+				if(axis.getSense() == 1) {
+					axisName += "-";
+				}
+			} else {
+				println("TODO: This is just a breakpoint for debugging. We should always get here. Why don't we???");
+			}
+		}
+		return axisName;
+	}
+	
 	public  void visitSave( Save save, int state ) throws ZomicException
     {
 		println("Save( state = " + state + " )" );
@@ -80,14 +99,7 @@ public class ZomicTreeStructureVisitor
 
 	public void visitRotate( Axis axis, int steps )
 	{
-		String axisName = naming.getName( axis );
-		if(naming.UNKNOWN_AXIS.equals(axisName)) {
-			axisName = "/* " + axisName + ": " + 
-					(axis == null
-						? "<null>" 
-						: "(name = " + axis.getDirection().getName() + " orientation = " + Integer.toString(axis.getOrientation()) + ")") 
-					+ " */";			
-		}
+		String axisName = getAxisName(axis);
 		println( "Rotate( axis = " + axisName + ", steps = " + steps + " )");
 	}
 
@@ -95,36 +107,38 @@ public class ZomicTreeStructureVisitor
 	{
 		String axisName = "center";
 		if(blueAxis != null) {
-			axisName = naming.getName( blueAxis );
-			// TODO: This isn't necessarily so, is it ???
-			if(naming.UNKNOWN_AXIS.equals(axisName)) {
-				axisName = "center";
-			}
+			axisName = getAxisName(blueAxis);
 		}
 		println( "Reflect through " + axisName );
 	}
 
 	public void visitMove( Axis axis, AlgebraicNumber length )
 	{
-		 println( "Move( axis = " + axis.getDirection().getName() + " " + axis.getOrientation() + ", length = " + length.toString( AlgebraicField.ZOMIC_FORMAT ) + " )" );
+		String axisName = getAxisName(axis);
+		println( "Move( axis = " + axisName + ", length = " + length.toString( AlgebraicField.ZOMIC_FORMAT ) + " )" );
 	}
 
 	public void visitSymmetry( final Symmetry model, Permute permute ) throws ZomicException
 	{
-		println( "Symmetry( ... )" );
-//		if ( permute != null ){
-//			Axis axis = permute .getAxis();
-//			if ( permute instanceof Reflect ){
-//				print( "through " );
-//				if ( axis == null )
-//					println( "center");
-//				else
-//					// TODO this is wrong, prepends "blue "
-//					println( naming .getName( axis ) );
-//			}
-//			else
-//				println( "around " + naming .getName( axis ) );
-//		}
+		StringBuilder msg = new StringBuilder("Symmetry");
+		if ( permute != null ){
+			msg.append(" ( ");
+			Axis axis = permute .getAxis();
+			if ( permute instanceof Reflect ){
+				msg.append("through ");
+				if ( axis == null ) {
+					msg.append("center");
+				} else {
+					String axisName = getAxisName(axis);
+					msg.append(axisName);
+				}
+			} else {
+				String axisName = getAxisName(axis);
+				msg.append("around " + axisName );
+			}
+			msg.append(" )");
+		}
+		println(msg.toString());
 		super .visitSymmetry( model, permute );
 	}
 
@@ -150,7 +164,7 @@ public class ZomicTreeStructureVisitor
 
 	public void visitUntranslatable( String message )
 	{
-	    println( "Untranslatable( message = '" + message + "')" );
+	    println( "Untranslatable( '" + message + "' )" );
 	}
 
 	public void visitLabel( String id )

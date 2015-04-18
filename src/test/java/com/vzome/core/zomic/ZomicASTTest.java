@@ -14,10 +14,14 @@ import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javatests.TestSupport.assertNotEquals;
@@ -126,29 +130,71 @@ public class ZomicASTTest extends TestCase
 		assertTrue(true);
 		return programContext;
 	}
+
+	private Walk newCompileFile(String fileName) {
+		System.out.println("--------------------------------------------");
+		System.out.println("new way compile file:\n\"" + fileName + "\"\n");
+		boolean showProgressMessages = false; // set to true for more detailed output during AST compilation
+		Walk program = ZomicASTCompiler.compileFile(fileName, symmetry, showProgressMessages);
+		assertNotNull("ZomicASTCompiler.compileFile() should never return null", program);
+		System.out.println("New Program contains " + Integer.toString(program.size()) + " statement(s).");
+		System.out.println("");
+		return program;
+	}
 	
+	private Walk oldCompileFile(String fileName) {
+		System.out.println("--------------------------------------------");
+		System.out.println("old way compile file:\n\"" + fileName + "\"\n");
+		ZomicStatement oldProgram = null;
+		File file = new File(fileName);
+		try {		
+			FileInputStream fileInputStream = new FileInputStream( file );
+			oldProgram = Parser.parse( fileInputStream, symmetry );
+		} catch (FileNotFoundException ex) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+		}
+		assertNotNull("Assume that Parser.parse() should never return null", oldProgram);
+		Walk program = (Walk) oldProgram;
+		System.out.println("Old Program contains " + Integer.toString(program.size()) + " statement(s).");
+		System.out.println("");
+		return program;
+	}
+
+	private Walk compileAndCompareFile(File file) {
+		return compileAndCompareFile(file, true); 
+	}
+	
+	private Walk compileAndCompareFile(File file, boolean doCompare) {
+		String fileName = file.getAbsolutePath();
+		Walk oldProgram = oldCompileFile(fileName);
+		Walk newProgram = newCompileFile(fileName);
+		compareStructure(oldProgram, newProgram, doCompare);
+		return compareContent(oldProgram, newProgram, doCompare);
+	}
+		
 	private Walk newCompile(String input) {
 		System.out.println("--------------------------------------------");
-		System.out.println("compile:\n\"" + input + "\"\n");
+		System.out.println("new way compile:\n\"" + input + "\"\n");
 		boolean showProgressMessages = false; // set to true for more detailed output during AST compilation
 		Walk program = ZomicASTCompiler.compile(input, symmetry, showProgressMessages);
 		assertNotNull("ZomicASTCompiler.compile() should never return null", program);
-		Integer size = program.size();
-		System.out.println("New Program contains " + size.toString() + " statement(s).");
+		System.out.println("New Program contains " + Integer.toString(program.size()) + " statement(s).");
 		System.out.println("");
 		return program;
 	}
 	
 	private Walk oldCompile(String input) {
+		System.out.println("--------------------------------------------");
+		System.out.println("old way compile:\n\"" + input + "\"\n");
 		ZomicStatement oldProgram = null;
 		try {
 			oldProgram = Parser.parse( new ByteArrayInputStream( input.getBytes("UTF8") ), symmetry );
 		} catch (UnsupportedEncodingException ex) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
 		}
+		assertNotNull("Assume that Parser.parse() should never return null", oldProgram);
 		Walk program = (Walk) oldProgram;
-		Integer size = program.size();
-		System.out.println("Old Program contains " + size.toString() + " statement(s).");
+		System.out.println("Old Program contains " + Integer.toString(program.size()) + " statement(s).");
 		System.out.println("");
 		return program;
 	}
@@ -164,18 +210,21 @@ public class ZomicASTTest extends TestCase
 		return program;
 	}
 
-	private Walk compileAndCompareStructure(String input) {
-		return compileAndCompareStructure(input, true); 
-	}
+//	private Walk compileAndCompareStructure(String input) {
+//		return compileAndCompareStructure(input, true); 
+//	}
 	
 	private Walk compileAndCompareStructure(String input, boolean doCompare) {
-		final String nullStr = "<null>";
 		Walk oldProgram = oldCompile(input);
 		Walk newProgram = newCompile(input);
-		
+		return compareStructure(oldProgram, newProgram, doCompare);
+	}
+	
+	private Walk compareStructure(Walk oldProgram, Walk newProgram, boolean doCompare) {
 		String expected = printTreeStructure (oldProgram);
 		String actual = printTreeStructure (newProgram);
 
+		final String nullStr = "<null>";
 		if(expected == null) {expected = nullStr;}
 		if(actual == null) {actual = nullStr;}
 		if( !expected.equals(actual) ) {
@@ -199,10 +248,13 @@ public class ZomicASTTest extends TestCase
 	}
 	
 	private Walk compileAndCompareContent(String input, boolean doCompare) {
-		final String nullStr = "<null>";
 		Walk oldProgram = oldCompile(input);
 		Walk newProgram = newCompile(input);
+		return compareContent(oldProgram, newProgram, doCompare);
+	}
 		
+	private Walk compareContent(Walk oldProgram, Walk newProgram, boolean doCompare) {
+		final String nullStr = "<null>";
 		String expected = printContents (oldProgram);
 		String actual = printContents (newProgram);
 
@@ -943,4 +995,76 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
+	private int regressionTestCount = 0;
+	public void testOK_RegressionFiles() {
+		regressionTestCount = 0;
+		traverseDirectory(new File( "src/regression/files/Zomic/" ));
+		traverseDirectory(new File( "src/main/resources/com/vzome/core/parts/" ));
+		System.out.println("Regression tested " + regressionTestCount + " zomic files.");
+	}
+	
+	private void traverseDirectory(File directory) {		
+		assertTrue(directory.getName() + " must be a directory.", directory.isDirectory());
+		String[] files = directory.list();
+        if (files != null) {
+            for ( int i = 0; i < files .length; i++ ) {
+                File fileOrDirectory = new File( directory, files[i] );
+                if( fileOrDirectory.isDirectory()) {
+					traverseDirectory(fileOrDirectory);
+				} else if (fileOrDirectory.isFile()) {
+					verifyZomicFile(fileOrDirectory);
+				} else {
+					System.out.println("Skipping file: " + fileOrDirectory.getAbsolutePath());
+				}						
+            }
+		}
+	}
+	
+	private void verifyZomicFile(File file) {
+		if( "zomic".equals(getFileExtension( file ).toLowerCase()) ) {
+			String absoluteFilePath = file.getAbsolutePath();
+			regressionTestCount++;
+			System.out.println("Started # " + regressionTestCount + " file: " + absoluteFilePath);
+			switch (file.getName()) {
+				// TODO: old way can't handle these, but new way can...
+				// All of the files specifically named here are under src/regression/files/Zomic/
+				// All of their corresponding zomic-pp files are 0 length since the old way couldn't handle them.
+				case "allPurple.zomic":
+				case "geodesics.zomic":
+				case "orangeStrutModel2.zomic":
+				case "pentagonHelix.zomic":
+				case "polarGreen1.zomic":
+				case "shortRedStrutModel.zomic":
+					newCompileAndShow(file);
+					break;
+
+				case "system.zomic": 
+					// TODO: system.zomic has unknown keyword "star". It should throw an exception.
+					// old way just quits processing the file at that point with no complaint.
+					// new way reports the unexpected keywork but continues to process the rest of the file.
+					// this difference can be seen in system.zomic-pp
+					newCompileAndShow(file);
+					break;
+					
+			default:
+				compileAndCompareFile( file );
+				break;
+			}
+			System.out.println("Ending # " + regressionTestCount + " file: " + absoluteFilePath);
+		}
+	}
+	
+	private void newCompileAndShow(File file) {
+		String absoluteFilePath = file.getAbsolutePath();
+		Walk program = newCompileFile(absoluteFilePath);
+		System.out.println("Structure of " + absoluteFilePath);
+		System.out.println( printTreeStructure(program) );		
+		System.out.println("Contents of " + absoluteFilePath);
+		System.out.println( printContents(program) );		
+	}
+	
+	private static String getFileExtension( File file ) {
+		String ext = file.getAbsolutePath();
+		return ext.substring( ext.lastIndexOf( '.' ) + 1 );
+	}
 }
