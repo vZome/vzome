@@ -2,6 +2,7 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
+apply plugin: 'application'
 
 group = 'com.vzome'
 version = '5.0-SNAPSHOT'
@@ -10,6 +11,15 @@ description = 'vzome-desktop'
 
 //sourceCompatibility = 1.5
 //targetCompatibility = 1.5
+
+// for the 'application' Gradle plugin
+mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'
+run.args( '-entitlement.model.edit', 'true'
+        ,'-entitlement.lesson.edit', 'true'
+        ,'-entitlement.all.tools', 'true'
+        ,'-licensed.user', System.getProperty('user.name') )
+applicationDefaultJvmArgs = [ '-Xmx3048M','-Dapple.laf.useScreenMenuBar=true','-Dapple.awt.antialiasing=true','-Djava.util.logging.config.file=logging.properties' ]
+
 
 repositories {
     mavenLocal()
@@ -81,25 +91,6 @@ sourceSets {
 // The mainClass property is needed to run a Gradle project from the Netbeans IDE (and maybe others too).
 if (!hasProperty('mainClass')) {
     ext.mainClass = 'org.vorthmann.zome.ui.ApplicationUI'
-}
-
-// This task is used to run vzome-desktop as a Gradle task from the command line(e.g. ./gradlew run).
-task run(type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath
-    main = mainClass
-    args('-entitlement.model.edit', 'true'
-        ,'-entitlement.lesson.edit', 'true'
-        ,'-entitlement.all.tools', 'true'
-        ,'-licensed.user', System.getProperty('user.name')
-		)
-    jvmArgs('-Xmx3048M'
-			,'-Dapple.laf.useScreenMenuBar=true'
-			,'-Dapple.awt.antialiasing=true'
-			,'-Djava.util.logging.config.file=logging.properties'
-			)
-    // include optional description and group (shown by ./gradlew tasks command)
-    description  = 'Runs vZome-desktop with specific command line args.'
-    group        = 'Run'
 }
 
 
