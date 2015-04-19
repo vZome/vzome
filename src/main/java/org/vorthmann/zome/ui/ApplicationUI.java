@@ -34,11 +34,10 @@ import org.vorthmann.ui.ApplicationController;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
-import org.vorthmann.ui.LoggingErrorChannel;
 import org.vorthmann.ui.SplashScreen;
 
 
-public final class ApplicationUI extends DefaultController implements Platform.MacFinderHooks
+public final class ApplicationUI extends DefaultController
 {
     public boolean userHasEntitlement( String propName )
     {
@@ -201,14 +200,9 @@ public final class ApplicationUI extends DefaultController implements Platform.M
         mController .setNextController( this );
 
         controller .initialize( mProperties );
-
-//        final JFrame colorsFrame = new JFrame( "Colors" );
-//        mColorPanel = new ColorPanel( mController .getSubController( "colors" ) );
-//        colorsFrame .setContentPane( mColorPanel );
-//        colorsFrame .pack();
-//        mColorsFrame = colorsFrame;
     }
 
+    // This is not used on the Mac, where the MacAdapter is the main class.
     public static void main( String[] args )
     {
         try {
@@ -217,6 +211,7 @@ public final class ApplicationUI extends DefaultController implements Platform.M
             URL codebase = workingDir .toURI() .toURL();
             initialize( args, codebase );
         } catch ( Throwable e ) {
+            e .printStackTrace();
             Logger .getLogger( "org.vorthmann.zome.ui.ApplicationUI" )
                 .log( Level.SEVERE, "problem in main()", e );
         }
@@ -289,37 +284,7 @@ public final class ApplicationUI extends DefaultController implements Platform.M
             logger .log( Level.SEVERE, "controller class could not instantiate: " + controllerClassName, e );
             System .exit( 0 );
         }
-        
-        if ( props .containsKey( "checkAllFiles" ) )
-        {
-            URL url = null;
-            if ( urlStr == null )
-                throw new IllegalArgumentException( "no URL argument provided with fileChecker argument" );
-            
-            try {
-                url = new URL( codebase, urlStr );
-            } catch ( MalformedURLException e ) {
-                logger .log( Level.SEVERE, "bad URL for fileChecker: " + urlStr, e );
-                System .exit( 0 );
-            }
-            if ( url .getProtocol() != "file" ) {
-                logger .severe( "non-file URL for fileChecker: " + urlStr );
-                System .exit( 0 );
-            }
-            
-            controller .setErrorChannel( new LoggingErrorChannel( logger ) );
-            controller .initialize( props );
-
-            File fileToCheck = new File( url .getFile() );
-            try {
-                controller .doFileAction( "checkAllFiles", fileToCheck );
-            } catch ( Exception e ) {
-                logger .log( Level.SEVERE, "exception from checkAllFiles action", e );
-                System .exit( 0 );
-            }
-            return null;
-        }
-        
+                
         SplashScreen splash = null;
         String splashImage = props .getProperty( "splash" );
         if ( splashImage == null )
@@ -361,11 +326,6 @@ public final class ApplicationUI extends DefaultController implements Platform.M
         };
         controller .setErrorChannel( appErrors );
         appUI .setErrorChannel( appErrors );
-
-        // doing this after to make sure that openURL is ready to work...
-        //   presumably the listener mechanisms buffer the events long enough
-        logger .fine( "setting up Platform event listeners" );
-        Platform .setupEventListener( appUI );
 
         URL url = null;
         if ( urlStr != null )
@@ -648,16 +608,7 @@ public final class ApplicationUI extends DefaultController implements Platform.M
         mWindows .add( frame );
     }
 
-    /**
-     * This is implementing Platform.UI, for Apple "open document" callback
-     */
-    public void openFile( File file )
-    {
-        logger .fine( "in openFile()" );
-        openFile( file, new Properties() );
-    }
-
-    private void openFile( File file, Properties props )
+    public void openFile( File file, Properties props )
     {
         try {
             URL url = file .toURI() .toURL();
@@ -681,44 +632,6 @@ public final class ApplicationUI extends DefaultController implements Platform.M
         return true;
     }
 
-    /**
-     * Single execution path for command-line argument interpretation.
-     * May be called by Java Web Start SingleInstanceService.
-     */
-    public void newActivation( String[] args, URL codebase )
-    {
-        logger .fine( "in newActivation()" );
-        Properties props = new Properties();
-        try {
-            URL url = null;
-            for ( int i = 0; i < args.length; i++ ) {
-                if ( args[i] .equals( "-field" ) )
-                    ++i;
-                else if ( args[i] .equals( "-open" ) )
-                {
-                    // I believe this is how Windows handles a double-click
-                    String fileName = args[++i];
-                    url = new File( fileName ) .toURI() .toURL();
-                }
-                else if ( args[i] .startsWith( "-" ) ) {
-                    String propName = args[i++] .substring( 1 );
-                    String propValue = args[i];
-                    props .setProperty( propName, propValue );
-                }
-                else
-                    url = new URL( codebase, args[i] );
-            }
-            if ( url != null )
-                System .out .println( "opening " + url .toString() );
-            openURL( url, props );
-        } catch ( Exception e ) {
-            logger .log( Level.SEVERE, "exception during newActivation()", e );
-            JOptionPane .showMessageDialog( null,
-                    e .getMessage(),
-                    "file open error", JOptionPane.ERROR_MESSAGE );
-        }
-    }
-
     public void about()
     {
         String licensee = mController .getProperty( "licensed.user" );
@@ -729,31 +642,13 @@ public final class ApplicationUI extends DefaultController implements Platform.M
         JOptionPane.showMessageDialog( null, mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + "\n\n"
                 + "by Scott Vorthmann\n\n"
                 + licensee + "\n\n"
-                + "Acknowledgements:\n\n" + "Paul Hildebrandt\n" + "Marc Pelletier\n"
+                + "Acknowledgements:\n\n" + "Paul Hildebrandt\n" + "Marc Pelletier\n" + "David Hall\n"
                 + "David Richter\n" + "Brian Hall\n" + "Dan Duddy\n" + "Fabien Vienne\n" + "George Hart\n"
                 + "Edmund Harriss\n" + "Corrado Falcolini\n" + "Ezra Bradford\n" + "Chris Kling\n" + "Samuel Verbiese\n" + "Walt Venable\n"
                 + "Will Ackel\n" + "Tom Darrow\n" + "Sam Vandervelde\n" + "Henri Picciotto\n" + "Florelia Braschi\n"
                 + "\n" + "Dedicated to Everett Vorthmann,\n" + "who made me an engineer\n" + "\n"
                 + "  Copyright 2015, Scott Vorthmann \n", "About vZome", JOptionPane.PLAIN_MESSAGE );
     }
-    
-//    public void showColorDialog( String colorName, ListSelectionListener listener )
-//    {
-//        mColorPanel .setup( colorName, listener );
-//        mColorsFrame .setVisible( true );
-//    }
-//
-//    public String pickCustomColor( String colorName )
-//    {
-////        java.awt.Color color = mColorPanel .toAwtColor( colorName );
-////        color = JColorChooser .showDialog( mColorsFrame,
-////            "Choose Color", color );
-////        if ( color != null ) {
-////            colorName = Colors.RGB_CUSTOM + " " + color.getRed() + " " + color.getGreen() + " " + color.getBlue();
-////            mColorPanel .setColor( colorName, color );
-////        }
-//        return colorName;
-//    }
 } 
 
 

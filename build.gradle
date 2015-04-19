@@ -1,8 +1,9 @@
-// main project
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'eclipse'
-apply plugin: 'application'
+plugins {
+    id 'java'
+    id 'maven'
+    id 'eclipse'
+    id 'application'
+}
 
 group = 'com.vzome'
 version = '5.0-SNAPSHOT'
@@ -12,26 +13,42 @@ description = 'vzome-desktop'
 //sourceCompatibility = 1.5
 //targetCompatibility = 1.5
 
+// these are for both 'application' and 'macappbundle' Gradle plugins
+ext.appName = 'vZome'
+ext.jvmArgs = [
+//    "java.ext.dirs": ".",
+    "apple.laf.useScreenMenuBar": "true",
+    "apple.awt.antialiasing": "true",
+    "apple.awt.application.name": appName,
+    "com.apple.macos.use-file-dialog-packages": "true",
+    "com.apple.macos.useScreenMenuBar": "true",
+    "com.apple.smallTabs": "true",
+    "java.util.logging.config.file": "logging.properties" ]
+ext.vzomeArgs = [  // a list, not a map
+    '-entitlement.model.edit', 'true', '-entitlement.lesson.edit', 'true', '-entitlement.all.tools', 'true',
+    '-licensed.user', System.getProperty('user.name') ]
+
 // for the 'application' Gradle plugin
 mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'
-run.args( '-entitlement.model.edit', 'true'
-        ,'-entitlement.lesson.edit', 'true'
-        ,'-entitlement.all.tools', 'true'
-        ,'-licensed.user', System.getProperty('user.name') )
-applicationDefaultJvmArgs = [ '-Xmx3048M','-Dapple.laf.useScreenMenuBar=true','-Dapple.awt.antialiasing=true','-Djava.util.logging.config.file=logging.properties' ]
+run.args( vzomeArgs )
+applicationDefaultJvmArgs = [ '-Xmx3048M' ]
+jvmArgs.each { entry ->
+    applicationDefaultJvmArgs << "-D$entry.key=$entry.value"
+}
 
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        
+        // this one is for javax.media.jai
+        maven { url 'http://repository.springsource.com/maven/bundles/external' }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    
-    // this one is for javax.media.jai
-    maven { url 'http://repository.springsource.com/maven/bundles/external' }
-
-    ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for java3d/*
-        url "http://jogamp.org/deployment"
-        layout "pattern", {
-            artifact "[organization]/[revision]/[artifact].[ext]"
+        ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for java3d/*
+            url "http://jogamp.org/deployment"
+            layout "pattern", {
+                artifact "[organization]/[revision]/[artifact].[ext]"
+            }
         }
     }
 }
@@ -50,66 +67,35 @@ dependencies {
 sourceSets {
     main {
         java {
-			// The convention-based default built-in srcDir is 'src/main/java' 
-			// Append any additional SrcDir entries here...
-			srcDir 'platform/shared/src/main/java'
-			
-			// DJH - The following snippet may make the separate mac project unnecessary
-			// but it may cause problems packaging OS specific builds.
-			// I'll leave it in here for now, but it may need to come out later.
-			def plat = System.properties['os.name']
-			if ( plat.toLowerCase().contains('mac') ) {
-				println '*\tProject [' + project.name + '] includes Mac extensions when built on ' + plat + ' platform.'
-				srcDir 'platform/mac/src/main/java'
-			}
-
-			// Uncomment the following line to list them all
-			// println project.name + ' java.srcDirs = ' + srcDirs + '\n'
-			
-			exclude 'org/vorthmann/zome/render/jogl/**'  // initial framework for a pure JOGL renderer is not ready for use
-		}
-		resources {
-			// The convention-based default built-in srcDir is 'src/main/resources' 
-			// Append any additional SrcDir entries here...
-			// Uncomment to list them all
-			// println project.name + ' resources.srcDirs = ' + srcDirs + '\n'
-			
-			// listed alphabetically
-			include '**/*.gif'
-			include '**/*.jpg'
-			include '**/*.pdf'
-			include '**/*.png'
-			include '**/*.properties'
-			include '**/*.py'
-			include '**/*.vef'
-			include '**/*.vZome'
-			include '**/*.zomic'
+            exclude 'org/vorthmann/zome/render/jogl/**'  // initial framework for a pure JOGL renderer is not ready for use
+        }
+        resources {
+            // The convention-based default built-in srcDir is 'src/main/resources' 
+            // Append any additional SrcDir entries here...
+            
+            // listed alphabetically
+            include '**/*.gif'
+            include '**/*.jpg'
+            include '**/*.pdf'
+            include '**/*.png'
+            include '**/*.properties'
+            include '**/*.py'
+            include '**/*.vef'
+            include '**/*.vZome'
+            include '**/*.zomic'
         }
     }
 }
 
 // The mainClass property is needed to run a Gradle project from the Netbeans IDE (and maybe others too).
 if (!hasProperty('mainClass')) {
-    ext.mainClass = 'org.vorthmann.zome.ui.ApplicationUI'
+    ext.mainClass = mainClassName
 }
-
-
-// This task may someday be useful in packaging distribution zip files
-// It's also used by run-vzome.bat to populate all of the project dependencies before starting the jvm
-task copyDependencies(type: Copy) {
-	// dependsOn build
-	from configurations.compile
-	into buildDir.toString() + '\\dependencies'
-    // include optional description and group (shown by ./gradlew tasks command)
-    description = 'Copies all dependencies to the /dependencies folder (under the build directory).'
-    group       = 'Build'
-}
-
 
 // Specify common settings for all subprojects
 subprojects {
-	buildDir	= rootProject.buildDir
-	group		= rootProject.group
-	version		= rootProject.version
-	description = rootProject.name + '-' + project.name
+    buildDir    = rootProject.buildDir
+    group       = rootProject.group
+    version     = rootProject.version
+    description = rootProject.name + '-' + project.name
 }

@@ -1,21 +1,27 @@
-apply plugin: 'java'
-
-sourceSets {
-	main {
-		java {
-			// The convention-based default built-in srcDir is 'src/main/java' 
-			// Append any additional SrcDir entries here...
-			srcDir '../shared/src/main/java'
-			// Uncomment the following line to list them all
-			// println project.name + ' java srcDirs = ' + srcDirs + '\n'
-			
-			def osName = System.properties['os.name']
-			if ( ! osName.toLowerCase().contains('mac') ) {
-				println '*****************************************************************************************************************'
-				println '*\tWARNING: Project [' + project.name + '] intentionally excludes Mac extensions when built on ' + osName + ' platform.'
-				println '*****************************************************************************************************************\n'
-				exclude 'org/vorthmann/extensions/**'
-			}
-		}
-	}
+plugins {
+    id 'java'
+    id 'edu.sc.seis.macAppBundle' version '2.1.0'
 }
+
+dependencies {
+    compile project( ':' )
+}
+
+// for the 'macappbundle' Gradle plugin
+macAppBundle {
+	appName = project.appName
+    delegate.mainClassName = 'com.vzome.platform.mac.Adapter'
+	creatorCode = 'vZ50'
+    icon = 'vZomeLogo.icns'
+    bundleJRE = 'true'
+    javaProperties.putAll jvmArgs
+    arguments.addAll vzomeArgs
+	bundleExtras = [ CFBundleDocumentTypes: [ [
+        CFBundleTypeExtensions: [ project.appName ],
+        CFBundleTypeIconFile: 'vZomeLogo.icns',
+        CFBundleTypeName: project.appName + ' model',
+        CFBundleTypeRole: 'Editor',
+        LSTypeIsPackage: 'false'
+    ] ] ]
+}
+

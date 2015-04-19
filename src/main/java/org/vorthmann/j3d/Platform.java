@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.security.AccessControlException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -19,26 +18,16 @@ import java.util.logging.Logger;
  * @author scott
  */
 public class Platform
-{
-	static boolean isJFreeD = false;
-	
+{	
 	static boolean isMac = false;
 	
 	static boolean isWindows = false;
     
-    static boolean is14 = true;
-    
-    static boolean hasSingleInstanceService = false;
-    
-    static boolean isWebStart = false;
-
 	static
     {
         Logger logger = Logger .getLogger( "org.vorthmann.vzome" );
         try {
             String os = System .getProperty( "org.vorthmann.zome.Platform" );
-            if ( os != null && os .startsWith( "JFreeD" ) )
-                isJFreeD = true;
             os = System .getProperty( "os.name" );
             logger .fine( "os.name: " + os );
             if ( os != null && os .startsWith( "Mac" ) )
@@ -47,114 +36,21 @@ public class Platform
                 isWindows = true;
             os = System .getProperty( "java.specification.version" );
             logger .fine( "java.specification.version: " + os );
-            if ( os != null && os .startsWith( "1.3" ) )
-                is14 = false;
         } catch ( AccessControlException e ) {
             // must be running in JNLP without signing
             logger .fine( "running in JNLP without signing" );
-            isWebStart = true;
         }
 	}
     
-    public static void setWebStart()
-    {
-        isWebStart = true;
-        try {
-            Class .forName( "javax.jnlp.SingleInstanceService" );
-            System .out .println( "found Java Web Start SingleInstanceService" );
-            hasSingleInstanceService = true;
-        } catch ( ClassNotFoundException e ) {
-            Logger .getLogger( "org.vorthmann.vzome" ) .warning( "no Java Web Start SingleInstanceService" );
-        }
-    }
-
-    public interface MacFinderHooks
-    {
-        void openFile( java.io.File file );
-        
-        void newActivation( String[] args, java.net.URL codebase );
-        
-        void about();
-        
-        boolean quit();
-    }
-
-    public static void setupEventListener( final MacFinderHooks ui )
-    {
-        if ( isMac )
-            try {
-                // org.vorthmann.extensions.MacAdapter.setupListener( ui );
-                Class adapterClass = Class .forName( "org.vorthmann.extensions.MacAdapter" );
-                Class hooksInterface = MacFinderHooks.class;
-                System .out .println( "found MacAdapter for Finder integration" );
-                Method setupMethod = adapterClass .getDeclaredMethod( "setupListener", hooksInterface );
-                System .out .println( "found MacAdapter.setupListener method" );
-                setupMethod .invoke( adapterClass, ui );
-                System .out .println( "invoked MacAdapter.setupListener() via reflection" );
-            } catch ( ClassNotFoundException e ) {
-                Log( e, "found no MacAdapter class" );
-            } catch ( NoSuchMethodException e ) {
-                Log( e, "found no MacAdapter.setupListener() method" );
-            } catch ( Exception e ) {
-                Log( e, "unexpected exception invoking MacAdapter.setupListener() method" );
-            }
-    }
-    
-     private static void Log(Exception ex, String msg)
-    {
-        ex.printStackTrace();
-        Logger.getLogger( "org.vorthmann.vzome" ).log(Level.WARNING, "{0}\nStack Trace sent to stderr.\n{1}]n", ex.toString());
-        if(msg != null) {
-            Logger.getLogger( "org.vorthmann.vzome" ).log(Level.WARNING, msg);
-        }
-    }
-    
-    public static boolean isMac()
-    {
-        return isMac;
-    }
-    
-    public static boolean isWindows()
-    {
-        return isWindows;
-    }
-    
     public static String logsPath()
     {
-        return isWindows()? "vZomeLogs" : isMac()? "Library/Logs/vZome" : "vZomeLogs";
+        return isWindows? "vZomeLogs" : isMac? "Library/Logs/vZome" : "vZomeLogs";
     }
     
     public static File logsFolder()
     {
         return new File( System.getProperty( "user.home" ), logsPath() );
     }
-    	
-	public static Object newInstance( Class clazz )
-	{
-	    try
-        {
-            if ( is14 ) {
-                String className = clazz .getName() + "14";
-                try {
-					clazz = Class .forName( className );
-                }
-                catch ( Exception e )
-                {
-                	// just use the original tryClass
-                }
-            }
-            Object result = clazz .newInstance();
-            return result;
-        } catch (Exception e)
-        {
-            e .printStackTrace();
-            return null;
-        }
-	}
-		
-	public static boolean mustRepaint(){
-		return isJFreeD;
-	}
 	
 	public static void openApplication( File file )
 	{
@@ -219,18 +115,7 @@ public class Platform
 				e .printStackTrace();
 			}            
 		}
-	}
-    	
-//	public static GraphicsConfiguration getGraphicsConfig(){
-//		if ( isJFreeD ){
-//			GraphicsEnvironment genv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-//			GraphicsDevice gd = genv.getScreenDevices()[0];
-//			return gd.getDefaultConfiguration();
-//		}
-//		else
-//			return null;//SimpleUniverse.getPreferredConfiguration();
-//	}
-    
+	}    
     
     public static File getPreferencesFolder()
     {
@@ -247,17 +132,4 @@ public class Platform
 		else
 			return ActionEvent.CTRL_MASK;
 	}
-    
-    public static float getDirectionalBrightness(){
-        if ( isJFreeD )
-            return 0.87f;
-        else
-            return 0.67f;
-    } 
-    public static float getAmbientBrightness(){
-        if ( isJFreeD )
-            return 0.07f;
-        else
-            return 0.54f;
-    }
 }

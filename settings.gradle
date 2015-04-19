@@ -1,12 +1,10 @@
 rootProject.name = 'vzome-desktop'
 
 def platformName = System.properties['os.name']
-def strAction = 'Excluding'
 def macSubProjectName = ':platform:mac'
 
 if ( platformName.toLowerCase().contains('mac') ) {
-	strAction = 'Including'
+    println "Platform is ${platformName}, so including ${macSubProjectName}"
 	include macSubProjectName
 }
 
-println '*** ' + strAction + ' ' + macSubProjectName + ' Sub-project on ' + platformName + ' platform.\n'
