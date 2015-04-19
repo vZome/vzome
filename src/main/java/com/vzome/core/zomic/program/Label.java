@@ -13,7 +13,7 @@ package com.vzome.core.zomic.program;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Label extends Anything {
+public class Label extends ZomicStatement {
 
 	protected final String mLabel;
 	
@@ -23,7 +23,7 @@ public class Label extends Anything {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.vzome.core.zomic.program.Anything#accept(com.vzome.core.zomic.program.Visitor)
+	 * @see com.vzome.core.zomic.program.ZomicProgram#accept(com.vzome.core.zomic.program.Visitor)
 	 */
 	public void accept(Visitor visitor) {
 		

@@ -14,7 +14,7 @@ import com.vzome.core.zomic.ZomicException;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class Untranslatable extends Anything
+public class Untranslatable extends ZomicStatement
 {
     protected String message;
     
@@ -29,7 +29,7 @@ public class Untranslatable extends Anything
     }
     
     /* (non-Javadoc)
-     * @see com.vzome.core.zomic.program.Anything#accept(com.vzome.core.zomic.program.Visitor)
+     * @see com.vzome.core.zomic.program.ZomicProgram#accept(com.vzome.core.zomic.program.Visitor)
      */
     public void accept( Visitor visitor ) throws ZomicException
     {

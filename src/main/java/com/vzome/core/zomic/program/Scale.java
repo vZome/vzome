@@ -4,7 +4,7 @@ package com.vzome.core.zomic.program;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.zomic.ZomicException;
 
-public class Scale extends Anything{
+public class Scale extends ZomicStatement{
 
 	private  AlgebraicNumber m_scale;
 

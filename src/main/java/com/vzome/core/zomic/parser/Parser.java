@@ -7,7 +7,7 @@ import java.io.InputStream;
 import com.vzome.core.antlr.ANTLR2XML;
 import com.vzome.core.antlr.ANTLRContentSupplier;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
-import com.vzome.core.zomic.program.Anything;
+import com.vzome.core.zomic.program.ZomicStatement;
 
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
@@ -23,7 +23,7 @@ public class Parser
     }
 
     public 
-    Anything parse( InputStream input, ErrorHandler errors, String version ) {
+    ZomicStatement parse( InputStream input, ErrorHandler errors, String version ) {
         XML2AST handler = new XML2AST( symm );
         try  {
             ANTLRContentSupplier xml = new ANTLRContentSupplier( handler );
@@ -49,9 +49,9 @@ public class Parser
     }
 
     public static 
-    Anything parse( InputStream input, IcosahedralSymmetry symm ) {
+    ZomicStatement parse( InputStream input, IcosahedralSymmetry symm ) {
         ErrorHandler.Default errors = new ErrorHandler.Default();
-        Anything program = new Parser( symm ) .parse( input, errors, null );
+        ZomicStatement program = new Parser( symm ) .parse( input, errors, null );
         program .setErrors( errors .getErrors() );
         return program;
     }

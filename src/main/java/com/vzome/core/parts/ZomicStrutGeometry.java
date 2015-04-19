@@ -17,7 +17,7 @@ import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.zomic.ZomicNamingConvention;
 import com.vzome.core.zomic.parser.Parser;
-import com.vzome.core.zomic.program.Anything;
+import com.vzome.core.zomic.program.ZomicStatement;
 
 public class ZomicStrutGeometry implements StrutGeometry
 {
@@ -33,7 +33,7 @@ public class ZomicStrutGeometry implements StrutGeometry
 
     private final double mNoStrutSize, mNormalStrutSize;
 
-    private final Anything mStrutProgram, mShortStrutProgram;
+    private final ZomicStatement mStrutProgram, mShortStrutProgram;
 
     private final Symmetry mSymmetry;
 
@@ -98,7 +98,7 @@ public class ZomicStrutGeometry implements StrutGeometry
         double len = length .evaluate();
         if ( len < mNoStrutSize )
             return null;
-        Anything program = len < mNormalStrutSize ? mShortStrutProgram : mStrutProgram;
+        ZomicStatement program = len < mNormalStrutSize ? mShortStrutProgram : mStrutProgram;
         
         if ( program == null )
         	return null;

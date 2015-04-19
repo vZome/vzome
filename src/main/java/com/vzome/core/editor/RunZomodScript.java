@@ -13,7 +13,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.zomic.parser.ErrorHandler;
-import com.vzome.core.zomic.program.Anything;
+import com.vzome.core.zomic.program.ZomicStatement;
 import com.vzome.core.zomod.parser.Parser;
 
 public class RunZomodScript extends RunZomicScript
@@ -24,11 +24,11 @@ public class RunZomodScript extends RunZomicScript
         return "RunZomodScript";
     }
 
-    protected Anything parseScript( String script ) throws Failure
+    protected ZomicStatement parseScript( String script ) throws Failure
     {
         Parser parser = new Parser( new IcosahedralSymmetry( new PentagonField(), "default" ));
         List errors = new ArrayList();
-        Anything program = parser .parse(
+        ZomicStatement program = parser .parse(
             new ByteArrayInputStream( script .getBytes() ), new ErrorHandler.Default( errors ), "" );
         if ( errors.size() > 0 )
             throw new Failure( (String) errors .get(0) );

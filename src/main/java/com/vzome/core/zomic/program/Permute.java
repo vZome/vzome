@@ -14,7 +14,7 @@ import com.vzome.core.math.symmetry.Axis;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public abstract class Permute extends Anything {
+public abstract class Permute extends ZomicStatement {
 
 	private Axis m_axis;
 

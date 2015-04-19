@@ -5,7 +5,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.zomic.ZomicException;
 
-public class Move extends Anything
+public class Move extends ZomicStatement
 {
 	protected Axis axis;
 	

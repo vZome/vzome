@@ -1,22 +1,24 @@
-// folders
+# folders (in alphabetical order)
 .gradle/
 .idea/
 .nb-gradle/
 .settings/
 bin/
 build/
+gen/
+generated/
 gradle/
 repos/
 target/
 temp/
 
-// files
+# files (in alphabetical order)
 *.unused
 .classpath
 .DS_Store
 .project
 gradle-app.setting
-Thumbs.db
-vzome-core.iml
 local.properties
 testOut.xml
+Thumbs.db
+vzome-core.iml

@@ -3,19 +3,19 @@ package com.vzome.core.zomic.program;
 
 import com.vzome.core.zomic.ZomicException;
 
-public class Nested extends Anything{
+public class Nested extends ZomicStatement{
 
-	protected  Anything m_body;
+	protected  ZomicStatement m_body;
 
 	public  void accept( Visitor visitor ) throws ZomicException {
 		visitor .visitNested( this );
 	}
 
-	public  void setBody( Anything body ) {
+	public  void setBody( ZomicStatement body ) {
 		m_body = body;
 	}
 
-	public  Anything getBody() {
+	public  ZomicStatement getBody() {
 		return m_body;
 	}
 

@@ -13,6 +13,8 @@ import java.util.Map;
  */
 public class NamingConvention
 {
+	public final static String UNKNOWN_AXIS = "UNKNOWN AXIS";
+	
 	private final Map mNamings = new HashMap();
 	
 	public void addDirectionNaming( DirectionNaming naming )
@@ -35,7 +37,7 @@ public class NamingConvention
 			if ( naming .getDirection() .equals( axis .getDirection() ) )
 				return naming .getName( axis );
 		}
-		return "UNKNOWN AXIS";
+		return UNKNOWN_AXIS;
 	}
 
 }
