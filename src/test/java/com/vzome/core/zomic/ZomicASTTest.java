@@ -21,7 +21,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javatests.TestSupport.assertNotEquals;
@@ -126,18 +125,25 @@ public class ZomicASTTest extends TestCase
 
 		// specify our entry point (top level rule)
 		ProgramContext programContext = parser.program(); // parse
-		// TODO: ... whatever ...
-		assertTrue(true);
+		assertNotNull("programContext should not be null.", programContext);
 		return programContext;
 	}
 
 	private Walk newCompileFile(String fileName) {
+		return newCompileFile(fileName, false);
+	}
+
+	private Walk newCompileFile(String fileName, boolean expectErrors) {
 		System.out.println("--------------------------------------------");
 		System.out.println("new way compile file:\n\"" + fileName + "\"\n");
 		boolean showProgressMessages = false; // set to true for more detailed output during AST compilation
 		Walk program = ZomicASTCompiler.compileFile(fileName, symmetry, showProgressMessages);
-		assertNotNull("ZomicASTCompiler.compileFile() should never return null", program);
-		System.out.println("New Program contains " + Integer.toString(program.size()) + " statement(s).");
+		if(!expectErrors) {
+			assertNotNull("ZomicASTCompiler.compileFile() should never return null", program);
+		}
+		if(program != null) {
+			System.out.println("New Program contains " + Integer.toString(program.size()) + " statement(s).");
+		}
 		System.out.println("");
 		return program;
 	}
@@ -165,9 +171,15 @@ public class ZomicASTTest extends TestCase
 	}
 	
 	private Walk compileAndCompareFile(File file, boolean doCompare) {
+		return compileAndCompareFile(file, doCompare, false); 
+	}
+	
+	private Walk compileAndCompareFile(File file, boolean doCompare, boolean expectErrors) {
 		String fileName = file.getAbsolutePath();
 		Walk oldProgram = oldCompileFile(fileName);
 		Walk newProgram = newCompileFile(fileName);
+		assertExpectedErrors(oldProgram, expectErrors);
+		assertExpectedErrors(newProgram, expectErrors);
 		compareStructure(oldProgram, newProgram, doCompare);
 		return compareContent(oldProgram, newProgram, doCompare);
 	}
@@ -199,21 +211,32 @@ public class ZomicASTTest extends TestCase
 		return program;
 	}
 	
+	private void newCompileAndShow(File file) {
+		String absoluteFilePath = file.getAbsolutePath();
+		Walk program = newCompileFile(absoluteFilePath);
+		System.out.println("Structure of " + absoluteFilePath);
+		System.out.println( printTreeStructure(program) );		
+		System.out.println("Contents of " + absoluteFilePath);
+		System.out.println( printContents(program) );		
+	}
+	
 	private Walk compileAndCompare(String input) {
 		return compileAndCompare (input, true);
 	}
-	
+
 	private Walk compileAndCompare(String input, boolean doCompare) {
-		Walk 
-		program = compileAndCompareStructure (input, doCompare);
-		program = compileAndCompareContent (input, doCompare);
-		return program;
+		return compileAndCompare (input, doCompare, false);
+	}
+	
+	private Walk compileAndCompare(String input, boolean doCompare, boolean expectErrors) {
+		Walk oldProgram = oldCompile(input);
+		Walk newProgram = newCompile(input);
+		assertExpectedErrors(oldProgram, expectErrors);
+		assertExpectedErrors(newProgram, expectErrors);
+		compareStructure(oldProgram, newProgram, doCompare);
+		return compareContent(oldProgram, newProgram, doCompare);
 	}
 
-//	private Walk compileAndCompareStructure(String input) {
-//		return compileAndCompareStructure(input, true); 
-//	}
-	
 	private Walk compileAndCompareStructure(String input, boolean doCompare) {
 		Walk oldProgram = oldCompile(input);
 		Walk newProgram = newCompile(input);
@@ -281,7 +304,7 @@ public class ZomicASTTest extends TestCase
 		try { 
 			// Cool! New try-with-resources syntax auto closes specified resources in implied finally block
 			try (PrintWriter out = new PrintWriter( output /* ... or use System.out*/ )) {
-				program .accept( new PrintVisitor( out, symmetry ) ); 
+				program.accept( new PrintVisitor( out, symmetry ) ); 
 			}
 		} catch (ZomicException ex) {
 			ex.printStackTrace();
@@ -295,7 +318,7 @@ public class ZomicASTTest extends TestCase
 		try { 
 			// Cool! New try-with-resources syntax auto closes specified resources in implied finally block
 			try (PrintWriter out = new PrintWriter( output /* ... or use System.out*/ )) {
-				program .accept( new ZomicTreeStructureVisitor( out ) );
+				program.accept( new ZomicTreeStructureVisitor( out ) );
 			}
 		} catch (ZomicException ex) {
 			ex.printStackTrace();
@@ -305,9 +328,34 @@ public class ZomicASTTest extends TestCase
 	}
 	
 	private void assertProgramSize(int size, Walk program) {
+		assertNotNull("program should not be null", program);
 		assertEquals("program.size", size, program.size());
 	}
+
+	private void assertExpectedErrors(Walk program, boolean expectErrors) {
+		assertNotNull("program should not be null", program);
+		showErrors(program);
+		String[] errors = program.getErrors();
+		assertNotNull("program.getErrors() should not be null", errors);
+		if(expectErrors) {
+			assertTrue("Expected program to have 1 or more errors.", errors.length > 0);
+		} else {
+			assertEquals("Expected program to have 0 errors.", 0, errors.length);
+		}
+	}
 	
+	private void showErrors(Walk program) {
+		if(program != null) {
+			String[] errors = program.getErrors();
+			if(errors != null) {
+				for( String error: errors ) {
+					System.out.println("Error Reported: '" + error + "'.");
+				}
+			}
+		}
+	}
+	
+
 	////////////////////////////////////////
 	// BEGIN test definitions
 	////////////////////////////////////////
@@ -375,7 +423,6 @@ public class ZomicASTTest extends TestCase
 		String input = "size valid_sizeref.123 red 2";
 		ProgramContext programContext = parse( input );
 		assertNotNull("programContext should not be null", programContext);
-		// TODO: ... whatever ...
 	}
 	
 	public void testOK_EmptyProgram() {
@@ -432,7 +479,6 @@ public class ZomicASTTest extends TestCase
 		String label = "valid_lowercase_label.234_whatever";
 		Walk program = compileAndCompare("label " + label);
 		assertProgramSize(1, program);
-		// TODO: verify the id.
 	}
 	
 	public void testOK_StrutDefaultValues() {
@@ -495,7 +541,7 @@ public class ZomicASTTest extends TestCase
 		program = compileAndCompare("size +0 red 2");
 		assertProgramSize(1, program);
 		
-		// TODO: confirm that the sign is not lost 
+		// confirm that the sign is not lost 
 		// since +0 is different from -0.
 		// -zero 
 		program = compileAndCompare("size -0 red 2");
@@ -549,22 +595,21 @@ public class ZomicASTTest extends TestCase
 	}
 	
 	public void testOK_StrutVariableSize() {
-		// -99 is the old indicator for variable size.
+		// -99 is the old undocumented indicator for variable size.
 		Walk program = compileAndCompare("size -99 red 0");
 		assertProgramSize(1, program);
 		
-		// DJH New proposed alternative to 'size -99' is 'size ?'
-		program = newCompile("size ? red -0"); // can't compare new feature with old compiler
-		assertProgramSize(1, program);	
+		// New alternative to 'size -99' is 'size ?'
+		program = newCompile("size ? red 0"); // can't compare new feature with old compiler
+		assertProgramSize(1, program);
+		System.out.println(printTreeStructure(program));
+		System.out.println(printContents(program));
 	}
 	
 	public void testOK_StrutSizeRef() {
 		String input = "size any_valid_lowercase_sizeref_even_with_digits...0123456789 red +0";
 
-		// TODO: sizeRef was undocumented and seems to be unused by the old code, although it was valid in the old grammar.
-		// TODO: I have used it as an alternative variable length indicator.
-		// TODO: I hope to eventually use this clearer mechanism to replace the 'size -99' trigger 
-		// TODO: since size -99 used only by the strut resources and was also undocumented.
+		// sizeRef was undocumented and seems to be unused by the old code, although it was valid in the old grammar.
 		Walk program = compileAndCompare( input );
 		assertProgramSize(1, program);
 }
@@ -595,44 +640,20 @@ public class ZomicASTTest extends TestCase
 				(tests > 0) && (tests == zomicColors.size()) );
 	}
 	
-	public void _testTODO_NotYetZomicStrutColors() {
+	public void testOK_NotYetZomicStrutColors() {
 		int tests = 0;
 		for ( String color : notYetZomicColors ) {
-			String script = color + " 0";
-			try {
-				compileAndCompare(script);
-				assertFalse("Script '" + script + "' shouldn't get here without throwing an exception.", 
-						true);
-			} 
-			catch (RuntimeException ex) {
-				String exMsg = ex.getMessage();
-				if(exMsg == null) { exMsg = "msg = <null> for exception: " + ex.toString(); }
-				assertTrue("Script '" + script + "' threw a different exception than expected: " + exMsg,
-						exMsg.startsWith("bad axis specification") ||
-						exMsg.startsWith("Unexpected Axis Color") );
-			}
+			compileAndCompare(color + " 0", true, true);
 			tests++; // be sure we tested all colors
 		}
 		assertTrue("Why didn't we test the other notYetZomicColors?",
 				(tests > 0) && (tests == notYetZomicColors.size()) );
 	}
 	
-	public void _testTODO_UnsupportedStrutColors() {
+	public void testOK_UnsupportedStrutColors() {
 		int tests = 0;
 		for ( String color : unsupportedColors ) {
-			String script = color + " 0";
-			try {
-				compileAndCompare(script);
-				assertFalse("Script '" + script + "' shouldn't get here without throwing an exception.", 
-						true);
-			} 
-			catch (RuntimeException ex) {
-				String exMsg = ex.getMessage();
-				if(exMsg == null) { exMsg = "msg = <null> for exception: " + ex.toString(); }
-				assertTrue("Script '" + script + "' threw a different exception than expected: " + exMsg,
-						exMsg.startsWith("bad axis specification") ||
-						exMsg.startsWith("Unexpected Axis Color") );
-			}
+			compileAndCompare(color + " 0", true, true);
 			tests++; // be sure we tested all colors
 		}
 		assertTrue("Why didn't we test the other unsupportedColors?",
@@ -783,19 +804,19 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void _testTODO_EmptyBranchStatement() {
-		// TODO: These two aren't necessarily even valid tests except that I want to understand why the lexer balks.
-		Walk
-		// TODO: this one generates a lexer or parser error message saying:
+	public void testOK_EmptyBranchStatement() {
+		// TODO: These aren't necessarily even valid tests except that I want to understand why the lexer balks.
+		// This one generates a lexer or parser error message saying:
 		// "line 1:6 no viable alternative at input '<EOF>'"
-		program = compileAndCompare("branch");
-		assertProgramSize(1, program);
+		Walk program = compileAndCompare("branch", false, true);
+		assertProgramSize(0, program);
+		System.out.println( printTreeStructure (program) );
 		
 		// old version will compile this, but can't walk it
 		// new version omits empty nested branches so don't compare them
 		program = newCompile("branch {}");
-		System.out.println( printTreeStructure (program) );
 		assertProgramSize(1, program);
+		System.out.println( printTreeStructure (program) );
 	}
 	
 	public void testOK_SimpleBranchStatement() {
@@ -835,7 +856,8 @@ public class ZomicASTTest extends TestCase
 
 	public void testOK_RepeatStatement() {
 		Walk 
-		// TODO: this one generates a lexer or parser error message saying:
+		// TODO: This isn't necessarily even a valid test except that I want to understand why the lexer balks.
+		// This one generates a lexer or parser error message saying:
 		// "line 1:8 no viable alternative at input '<EOF>'"
 //		program = compileAndCompare("repeat 0");
 //		assertProgramSize(1, program);
@@ -916,20 +938,28 @@ public class ZomicASTTest extends TestCase
 		program = compileAndCompare("reflect through -14 green 1");
 		assertProgramSize(1, program);
 
-		// TODO: old way can't handle ignoring inline comment. new one can, so don't actually compare them
+		// old way can't handle ignoring inline comment. new one can, so don't actually compare them
 		program = compileAndCompare("reflect through /*comment*/ 2 green 2", false);
 		assertProgramSize(1, program);
 		
-		// TODO: old way can't handle ignoring 'blue'. new one can, so don't actually compare them
-		program = compileAndCompare("reflect through blue 2 green 3", false);
+		// old way can't handle ignoring 'blue'. new one can, so don't actually compare them
+		String script = "reflect through blue 2 green 3";
+		program = oldCompile(script);
 		assertProgramSize(1, program);
+		assertExpectedErrors(program, true);
+		System.out.println(printTreeStructure(program));
+		System.out.println(printContents(program));
+		// new
+		program = newCompile(script);
+		assertProgramSize(1, program);
+		assertExpectedErrors(program, false);
+		System.out.println(printTreeStructure(program));
+		System.out.println(printContents(program));
 		
-		// TODO: old way can't handle ignoring 'red'. new one can, so don't actually compare them
-		// TODO: new way should allow ONLY blue and blue alias axes
-//		program = compileAndCompare("reflect through red 2 green 4", false);
-//		assertProgramSize(1, program);
-//		assertFalse("TODO: Don't allow reflection through non-blue axis", true);
-		
+		// old way can't handle ignoring 'red'. new one can, so don't actually compare them
+		// new way allows ONLY blue and blue alias axes
+		program = compileAndCompare("reflect through red 2 green 4", false, true);
+		assertProgramSize(0, program);		
 	}
 
 	public void testOK_SymmetryStatement() {
@@ -985,14 +1015,31 @@ public class ZomicASTTest extends TestCase
 
 	}
 
-	public void ThisIsAFutureTest_MisplacedIntegerPolarity() {
-		// TODO: these should throw exceptions, but be sure we catch them.
-		// negative
-		Walk program = compileAndCompare("size 1- red 1");
-		assertProgramSize(1, program);
-		// positive
-		program = compileAndCompare("size 2+ red 2");
-		assertProgramSize(1, program);
+	public void testOK_MisplacedIntegerPolarity() {
+		// These should not parse without errors. 
+		// Be sure we catch the errors in the new version.
+		// old version silently ignored the error.
+
+		int count = 0;
+		String scripts[] = { 
+			"size 1- red 1", // negative
+			"size 2+ red 2" // positive
+		};
+		for(String script : scripts) {
+			count ++;
+			Walk program = oldCompile(script);
+			assertProgramSize(1, program);
+			assertExpectedErrors(program, false);
+			System.out.println(printTreeStructure(program));
+			System.out.println(printContents(program));
+			// new
+			program = newCompile(script);
+			assertProgramSize(0, program);
+			assertExpectedErrors(program, true);
+			System.out.println(printTreeStructure(program));
+			System.out.println(printContents(program));
+		}
+		assertEquals("Expected to test all scripts", scripts.length, count);
 	}
 	
 	private int regressionTestCount = 0;
@@ -1026,7 +1073,7 @@ public class ZomicASTTest extends TestCase
 			regressionTestCount++;
 			System.out.println("Started # " + regressionTestCount + " file: " + absoluteFilePath);
 			switch (file.getName()) {
-				// TODO: old way can't handle these, but new way can...
+				// Old way can't handle these, but new way can...
 				// All of the files specifically named here are under src/regression/files/Zomic/
 				// All of their corresponding zomic-pp files are 0 length since the old way couldn't handle them.
 				case "allPurple.zomic":
@@ -1039,11 +1086,15 @@ public class ZomicASTTest extends TestCase
 					break;
 
 				case "system.zomic": 
-					// TODO: system.zomic has unknown keyword "star". It should throw an exception.
-					// old way just quits processing the file at that point with no complaint.
-					// new way reports the unexpected keywork but continues to process the rest of the file.
-					// this difference can be seen in system.zomic-pp
-					newCompileAndShow(file);
+					// system.zomic has unknown keyword "star". 
+					// Old way just quits processing the file at that point with no complaint.
+					//	the result of the old way can be seen in system.zomic-pp
+					// 
+					// Original ZomicASTCompiler using ZomicLexer reports the unexpected keyword 
+					//	but recovers and continued to process the rest of the file ignoring the lexer error.
+					// New ZomicASTCompiler using StrictZomicLexer throws an exception 
+					//  at the first lexer or parser error.
+					verifyBailErrorStrategy(file);
 					break;
 					
 			default:
@@ -1054,13 +1105,14 @@ public class ZomicASTTest extends TestCase
 		}
 	}
 	
-	private void newCompileAndShow(File file) {
+	private void verifyBailErrorStrategy(File file) {
 		String absoluteFilePath = file.getAbsolutePath();
-		Walk program = newCompileFile(absoluteFilePath);
-		System.out.println("Structure of " + absoluteFilePath);
-		System.out.println( printTreeStructure(program) );		
-		System.out.println("Contents of " + absoluteFilePath);
-		System.out.println( printContents(program) );		
+		final boolean expectErrors = true;
+		Walk program = newCompileFile(absoluteFilePath, expectErrors);
+		assertProgramSize(0, program);
+		assertExpectedErrors(program, true);
+		System.out.println(printTreeStructure(program));
+		System.out.println(printContents(program));
 	}
 	
 	private static String getFileExtension( File file ) {

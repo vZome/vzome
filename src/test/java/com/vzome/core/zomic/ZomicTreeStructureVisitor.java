@@ -5,7 +5,6 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
-import com.vzome.core.math.symmetry.NamingConvention;
 import com.vzome.core.zomic.program.Nested;
 import com.vzome.core.zomic.program.Permute;
 import com.vzome.core.zomic.program.Reflect;
@@ -115,7 +114,8 @@ public class ZomicTreeStructureVisitor
 	public void visitMove( Axis axis, AlgebraicNumber length )
 	{
 		String axisName = getAxisName(axis);
-		println( "Move( axis = " + axisName + ", length = " + length.toString( AlgebraicField.ZOMIC_FORMAT ) + " )" );
+		String len = length.toString( AlgebraicField.ZOMIC_FORMAT );
+		println( "Move( axis = " + axisName + ", length = " + len + " )" );
 	}
 
 	public void visitSymmetry( final Symmetry model, Permute permute ) throws ZomicException

@@ -33,10 +33,14 @@ import static java.lang.Math.abs;
 import java.util.Stack;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.InputMismatchException;
+import org.antlr.v4.runtime.LexerNoViableAltException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -69,7 +73,7 @@ public class ZomicASTCompiler
 			if( program != null ) {
 				program.setErrors( errors.getErrors() );
 			}
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			errors.parseError( ErrorHandler.UNKNOWN, ErrorHandler.UNKNOWN, ex.getMessage() );
 		}
         return program;
@@ -102,42 +106,100 @@ public class ZomicASTCompiler
         } catch (TokenStreamRecognitionException ex ) {
             RecognitionException re = ex.recog;
             errors.parseError( re.getLine(), re .getColumn(), re.getMessage() );
+        } catch (ParseCancellationException ex) {
+			int line = ErrorHandler.UNKNOWN;
+			int column = ErrorHandler.UNKNOWN;
+			String msg = "Parser Cancelled.";
+			Throwable cause = ex.getCause();
+			if( cause instanceof InputMismatchException ) {
+				InputMismatchException immEx = (InputMismatchException) cause;
+				Token offender = immEx.getOffendingToken();
+				if( offender != null ) {
+					line = offender.getLine();
+					column = offender.getCharPositionInLine();
+					String txt = offender.getText();
+					if(txt != null) {
+						msg = " Unexpected Token '" + txt + "'.";
+					}
+				}
+			}
+            errors.parseError( line, column, msg );
         } catch (TokenStreamException ex) {
             errors.parseError( ErrorHandler.UNKNOWN, ErrorHandler.UNKNOWN, ex.getMessage() );
         }		
-        return null;
+        return getProgram();
     }
 
 	protected void reset() {
 		tabs = 0; 
-		statements.clear(); 		
+		statements.clear();
+		templates.clear();
+	}
+	
+	private static class RuntimeWrapperException 
+	extends RuntimeException 
+	{
+		RuntimeWrapperException(LexerNoViableAltException ex) {
+			this.initCause(ex);
+		}
+	}
+	
+	public static class StrictZomicLexer 
+	extends ZomicLexer 
+	{
+		public StrictZomicLexer(CharStream input) { super(input); }
+		public void recover(LexerNoViableAltException e) {
+			// Bail out of the lexer at the first lexical error instead of trying to recover.
+			// Use this in conjunction with BailErrorStrategy.
+			// Wrap the LexerNoViableAltException in a RuntimeWrapperException
+			// to be sure the lexer doesn't handle the LexerNoViableAltException.
+			// The LexerNoViableAltException will be extracted from the RuntimeWrapperException
+			// inside the compile() method below and re-thrown without the RuntimeWrapperException
+			// since we'll be outside of the lexer rules at that point.
+			throw new RuntimeWrapperException(e); 
+		}
 	}
 	
 	protected Walk compile( CharStream inputStream )
-		throws RecognitionException, TokenStreamException {
-		reset(); // in case a single instance compiles more than one program
-		
-		// feed input to lexer
-        ZomicLexer lexer = new ZomicLexer( inputStream );
-		// get a stream of matched tokens
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		// pass tokens to the parser
-        ZomicParser parser = new ZomicParser( tokens );
+		throws RecognitionException, 
+			TokenStreamException,
+			ParseCancellationException // thrown by BailErrorStrategy
+	{
+		try {
+			reset(); // in case a single instance compiles more than one program
+			// feed input to lexer (either a ZomicLexer or, preferably a StrictZomicLexer)
+			ZomicLexer lexer = new StrictZomicLexer( inputStream );
+			// get a stream of matched tokens
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			// pass tokens to the parser
+			ZomicParser parser = new ZomicParser( tokens );
 
-		// specify our entry point (top level rule)
- 		ZomicParser.ProgramContext program = parser.program(); // parse
-		
-		// Use the DEFAULT walker to walk from the entry point with this listener attached.
-		// In the process, the enter and exit methods of this class will be invoked to populate the statements collection.
-        ParseTreeWalker.DEFAULT.walk(this, program);
-		
+			if(lexer instanceof StrictZomicLexer) {
+			// Use this only in conjunction with the StrictZomicLexer class
+			// bail out of the parser upon the first syntax error 
+			// instead of using the default error strategy which tries to recover if possible.
+				parser.setErrorHandler(new BailErrorStrategy());
+			}
+
+			// specify our entry point (top level rule)
+			ZomicParser.ProgramContext program = parser.program(); // parse
+
+			// Use the DEFAULT walker to walk from the entry point with this listener attached.
+			// In the process, the enter and exit methods of this class will be invoked to populate the statements collection.
+			ParseTreeWalker.DEFAULT.walk(this, program);
+		}
+		catch( RuntimeWrapperException ex ) {
+			// unwrap the LexerNoViableAltException from the RuntimeWrapperException 
+			// and rethrow it as described in StrictZomicLexer.recover()
+			throw (LexerNoViableAltException) ex.getCause();
+		}
 		// Now we return the statement(s) collected by the listener.
 		return getProgram();
 	}
 	
 	protected Walk getProgram() {
 		return statements.size() == 0 
-				? null
+				? new Walk() // just so we never return null, even parsing errors or an empty string
 				: (Walk) statements.firstElement();
 	}
 	
