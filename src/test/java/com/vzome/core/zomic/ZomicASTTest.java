@@ -6,7 +6,9 @@ import com.vzome.core.antlr.generated.ZomicLexer;
 import com.vzome.core.antlr.generated.ZomicParser;
 import com.vzome.core.antlr.generated.ZomicParser.ProgramContext;
 import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.NamingConvention;
 import com.vzome.core.zomic.parser.Parser;
 import com.vzome.core.zomic.program.Move;
 import com.vzome.core.zomic.program.PrintVisitor;
@@ -20,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,9 +43,12 @@ public class ZomicASTTest extends TestCase
 		// even when I skip over all others by renaming them.
 	}
 
-	private final IcosahedralSymmetry symmetry = new IcosahedralSymmetry( new PentagonField(), "default" );
+	private final IcosahedralSymmetry symmetry;
+	private final ZomicNamingConvention namingConvention;
 			
 	public ZomicASTTest() {
+		symmetry = new IcosahedralSymmetry( new PentagonField(), "default" );
+		namingConvention = new ZomicNamingConvention(symmetry);
 		initColors();	
 	}
 	
@@ -53,7 +59,7 @@ public class ZomicASTTest extends TestCase
 	private final ArrayList<String> chiralColors = new ArrayList<>();
 
 	private void initColors() {
-		if (zomicColors.size() == 0) {
+		if (zomicColors.isEmpty()) {
 			// blue and green are first so we can test half length struts easily
 			zomicColors.add("blue"); 
 			zomicColors.add("green"); 
@@ -62,8 +68,8 @@ public class ZomicASTTest extends TestCase
 			zomicColors.add("black");			//chiral
 			zomicColors.add("orange"); 
 			zomicColors.add("purple");
-		};
-		if (notYetZomicColors.size() == 0) {
+		}
+		if (notYetZomicColors.isEmpty()) {
 			notYetZomicColors.add("lavender"); 
 			notYetZomicColors.add("olive"); 
 			notYetZomicColors.add("maroon"); 
@@ -72,8 +78,8 @@ public class ZomicASTTest extends TestCase
 			notYetZomicColors.add("coral"); 
 			notYetZomicColors.add("sulfur"); 
 			notYetZomicColors.add("turquoise");	//chiral
-		};
-		if (unsupportedColors.size() == 0) {
+		}
+		if (unsupportedColors.isEmpty()) {
 			unsupportedColors.add("sand");		//chiral
 			unsupportedColors.add("apple");		//chiral
 			unsupportedColors.add("cinnamon");	//chiral
@@ -84,7 +90,7 @@ public class ZomicASTTest extends TestCase
 		// that is NOT on the perimeter of the red-blue-yellow triangle 
 		// as seen in the strut direction selector control of the GUI.
 		// Re-list them all, grouped as chiral or not.
-		if (nonChiralColors.size() == 0) {
+		if (nonChiralColors.isEmpty()) {
 			nonChiralColors.add("red"); 
 			nonChiralColors.add("blue"); 
 			nonChiralColors.add("yellow"); 
@@ -99,7 +105,7 @@ public class ZomicASTTest extends TestCase
 //			nonChiralColors.add("coral"); 
 //			nonChiralColors.add("sulfur"); 
 		}
-		if (chiralColors.size() == 0) {
+		if (chiralColors.isEmpty()) {
 			chiralColors.add("black");		//chiral
 			//chiralColors.add("turquoise");	// turquoise is chiral, but zomic doesn't know it yet
 			
@@ -161,7 +167,9 @@ public class ZomicASTTest extends TestCase
 		}
 		assertNotNull("Assume that Parser.parse() should never return null", oldProgram);
 		Walk program = (Walk) oldProgram;
-		System.out.println("Old Program contains " + Integer.toString(program.size()) + " statement(s).");
+		if(program != null) {
+			System.out.println("Old Program contains " + Integer.toString(program.size()) + " statement(s).");
+		}
 		System.out.println("");
 		return program;
 	}
@@ -206,7 +214,9 @@ public class ZomicASTTest extends TestCase
 		}
 		assertNotNull("Assume that Parser.parse() should never return null", oldProgram);
 		Walk program = (Walk) oldProgram;
-		System.out.println("Old Program contains " + Integer.toString(program.size()) + " statement(s).");
+		if(program != null) {
+			System.out.println("Old Program contains " + Integer.toString(program.size()) + " statement(s).");
+		}
 		System.out.println("");
 		return program;
 	}
@@ -307,7 +317,7 @@ public class ZomicASTTest extends TestCase
 				program.accept( new PrintVisitor( out, symmetry ) ); 
 			}
 		} catch (ZomicException ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			throw new RuntimeException(ex);
 		}
 		return new String(output.toByteArray());
@@ -318,10 +328,10 @@ public class ZomicASTTest extends TestCase
 		try { 
 			// Cool! New try-with-resources syntax auto closes specified resources in implied finally block
 			try (PrintWriter out = new PrintWriter( output /* ... or use System.out*/ )) {
-				program.accept( new ZomicTreeStructureVisitor( out ) );
+				program.accept( new ZomicTreeStructureVisitor( out, symmetry ) );
 			}
 		} catch (ZomicException ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			throw new RuntimeException(ex);
 		}
 		return new String(output.toByteArray());
@@ -372,38 +382,87 @@ public class ZomicASTTest extends TestCase
 	//	e.g. __testOK___DisableThisTestKnowingThatItPasses()
 	////////////////////////////////////////
 
-	public void testOK_ZomicNamingConvention() {
-		String[] colors = symmetry.getDirectionNames();
-		ZomicNamingConvention namingConvention = new ZomicNamingConvention(symmetry);
-		for ( String color : colors ) {
-			// TODO: Loop through all valid permutations of indexes and handedness per color, not just "0"
-			//	When that's working, then remove the corresponding run-time test from ZomicASTCompiler.
-			String indexName = "0";
-			Axis axis = namingConvention.getAxis(color, indexName );
-			if(axis == null) {
-					String msg = symmetry.getClass().getSimpleName() +
-							" colors include '" +
-							color + 
-							"' which is not yet supported by " +
-							namingConvention.getClass().getSimpleName();
-					System.out.println(msg);
-					assertTrue(msg, unsupportedColors.contains(color));
-					assertFalse(msg, notYetZomicColors.contains(color));
-					assertFalse(msg, zomicColors.contains(color));
-			} else {
-				String indexNameCheck = namingConvention.getName( axis );
-				if ( axis != namingConvention.getAxis(color, indexNameCheck ) ) {
-					String msg = color + " " + indexName + " is unexpectedly mapped to " + indexNameCheck;
-					System.out.println(msg);
-					assertTrue(msg, false);
+	public void testOK_ListAllZomicAxes() {
+		for (String color : symmetry.getDirectionNames()) {
+			Direction direction = symmetry.getDirection(color);
+			ArrayList<String> list = new ArrayList<>();
+			boolean hasNegativeAxes = false;
+			boolean isChiral = false;
+			for ( Iterator axes = direction.getAxes(); axes.hasNext(); ) {
+				Axis axis = (Axis) axes.next();
+				String indexName = namingConvention.getName(axis);
+				if (NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
+					break; 
+				} else {
+					list.add(indexName);
+					if(indexName.startsWith("-")) { hasNegativeAxes = true; }
+					if(indexName.endsWith("+") || indexName.endsWith("-")) { isChiral = true; }
 				}
-				String msg = color;
-				assertTrue(msg, zomicColors.contains(color) || notYetZomicColors.contains(color));
-				assertFalse(msg, unsupportedColors.contains(color));
+			}
+			if(!list.isEmpty()) {
+				//System.out.println(color + " " + (isChiral ? "has" : "does NOT have") + " Chiral Axes.");
+				//System.out.println(color + " " + (hasNegativeAxes ? "knows" : "does NOT know") + " about Negative Axes.");
+				assertTrue(color + ": Fully suppported colors must be able to map to negative axes.", 
+						hasNegativeAxes || unsupportedColors.contains(color) || notYetZomicColors.contains(color));
+				
+				Collections.sort(list);
+				for(String axisName: list) {
+					String fullName = color + " " + axisName;
+					System.out.println(fullName);
+					if(hasNegativeAxes) {
+						assertTrue(fullName + ": Positive axes should have a corresponding negative axis.", list.contains("+" + axisName.substring(1))); 
+						assertTrue(fullName + ": Negative axes should have a corresponding positive axis.", list.contains("-" + axisName.substring(1))); 
+						if(isChiral) {
+							if(axisName.endsWith("-")) {
+								assertTrue(fullName + ": Negative chiral axes should have a corresponding positive chiral axis.", list.contains(axisName.substring(0, axisName.length()-1) + "" )); 
+							} else {
+								assertTrue(fullName + ": Positive chiral axes should have a corresponding negative chiral axis.", list.contains(axisName + "-" )); 
+							}
+						}
+					}
+				}
 			}
 		}
 	}
-	
+
+	public void testOK_ZomicNamingConvention() {
+		for (String color : symmetry.getDirectionNames()) {
+			Direction direction = symmetry.getDirection(color);
+			for (Iterator axes = direction.getAxes(); axes.hasNext();) {
+				Axis symmetryAxis = (Axis) axes.next();
+				String indexName = namingConvention.getName(symmetryAxis);
+				Axis namingAxis = namingConvention.getAxis(color, indexName);
+				if (namingAxis == null || NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
+					String msg = symmetry.getClass().getSimpleName()
+							+ " colors include '"
+							+ color
+							+ "' which is not yet supported by "
+							+ namingConvention.getClass().getSimpleName();
+					System.out.println(msg);
+					
+					assertNull(msg, namingAxis);
+					assertEquals(msg, NamingConvention.UNKNOWN_AXIS, indexName);
+					
+					assertTrue(msg, unsupportedColors.contains(color));
+					assertFalse(msg, notYetZomicColors.contains(color));
+					assertFalse(msg, zomicColors.contains(color));
+					break; // break out of the for(axes) loop;
+				} else {
+					String indexNameCheck = namingConvention.getName(namingAxis);
+					if (namingAxis != namingConvention.getAxis(color, indexNameCheck)) {
+						String msg = color + " " + indexName + " is unexpectedly mapped to " + indexNameCheck;
+						System.out.println(msg);
+					}
+					String msg = color;
+					assertEquals(msg, namingAxis, namingConvention.getAxis(color, indexNameCheck));
+					assertTrue(msg, zomicColors.contains(color) || notYetZomicColors.contains(color));
+					assertFalse(msg, unsupportedColors.contains(color));
+					//System.out.println(color + " " + indexName);
+				}
+			}
+		}
+	}
+
 	public void testOK_ZomicLexer() {
 		try {
 			CharStream inputStream = new ANTLRInputStream("red -7");
@@ -674,10 +733,10 @@ public class ZomicASTTest extends TestCase
 	
 	public void testOK_StrutHandedness() {			
 		String[] signs = { "", "+", "-" };	
-		for (int i=0; i<signs.length; i++) {
+		for (String sign1 : signs) {
 			int tests = 0;
-			for ( String color : chiralColors ) {
-				String sign = signs[i];
+			for (String color : chiralColors) {
+				String sign = sign1;
 				String script = color + " " + sign + "0" + sign + " /* __test_StrutHandedness */";
 				Walk program = compileAndCompare(script);
 				assertProgramSize(1, program);
@@ -690,17 +749,17 @@ public class ZomicASTTest extends TestCase
 	
 	public void testOK_StrutInvalidHandedness() {			
 		String[] signs = { "", "+", "-" };	
-		for (int i=0; i<signs.length; i++) {
+		for (String sign1 : signs) {
 			int tests = 0;
-			for ( String color : nonChiralColors ) {
-				String sign = signs[i];
+			for (String color : nonChiralColors) {
+				String sign = sign1;
 				String script = color + " " + sign + "0" + sign + " /* __test_StrutInvalidHandedness */";
 				try {
 					Walk program = compileAndCompare(script);
 					assertProgramSize(1, program); // just a convenient breakpoint in case we do get to the next line.
 					assertTrue("Script '" + script + "' shouldn't get here without throwing an exception "
-							+ "unless sign is omitted.", 
-							"".equals(sign)); 
+							+ "unless sign is omitted.",
+							"".equals(sign));
 				} 
 				catch (RuntimeException ex) {
 					String exMsg = ex.getMessage();
@@ -1054,16 +1113,16 @@ public class ZomicASTTest extends TestCase
 		assertTrue(directory.getName() + " must be a directory.", directory.isDirectory());
 		String[] files = directory.list();
         if (files != null) {
-            for ( int i = 0; i < files .length; i++ ) {
-                File fileOrDirectory = new File( directory, files[i] );
-                if( fileOrDirectory.isDirectory()) {
+			for (String file : files) {
+				File fileOrDirectory = new File(directory, file);
+				if( fileOrDirectory.isDirectory()) {
 					traverseDirectory(fileOrDirectory);
 				} else if (fileOrDirectory.isFile()) {
 					verifyZomicFile(fileOrDirectory);
 				} else {
 					System.out.println("Skipping file: " + fileOrDirectory.getAbsolutePath());
-				}						
-            }
+				}
+			}
 		}
 	}
 	

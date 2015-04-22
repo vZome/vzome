@@ -43,7 +43,6 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
  * Created by David Hall on 3/20/2015.
@@ -148,6 +147,7 @@ public class ZomicASTCompiler
 	extends ZomicLexer 
 	{
 		public StrictZomicLexer(CharStream input) { super(input); }
+		@Override
 		public void recover(LexerNoViableAltException e) {
 			// Bail out of the lexer at the first lexical error instead of trying to recover.
 			// Use this in conjunction with BailErrorStrategy.
@@ -305,12 +305,13 @@ public class ZomicASTCompiler
 
 		Axis generate() {
 			try {
-				// TODO: move this check into a unit test instead of a runtime check.
 				Axis axis = namingConvention.getAxis(axisColor, indexFullName() );
-				String check = namingConvention.getName( axis );
-				if ( axis != namingConvention.getAxis(axisColor, check ) ) {
-					println( axisColor + " " + indexFullName() + " mapped to " + check );
-				}
+				// This check has been moved into a thorough unit test instead of a runtime check.
+				// but I'll leave the code commented out here in case additional colors are eventually supported and need debugging
+//				String check = namingConvention.getName( axis );
+//				if ( axis != namingConvention.getAxis(axisColor, check ) ) {
+//					println( axisColor + " " + indexFullName() + " mapped to " + check );
+//				}
 				return axis;
 			} catch( RuntimeException ex ) {
 				throw new RuntimeException( "bad axis specification: '" + axisColor + " " + indexFullName() + "'", ex);
