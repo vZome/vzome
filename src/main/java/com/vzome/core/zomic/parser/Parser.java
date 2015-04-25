@@ -13,6 +13,7 @@ import antlr.RecognitionException;
 import antlr.TokenStreamException;
 import antlr.TokenStreamRecognitionException;
 
+@Deprecated
 public class Parser
 {
     private final IcosahedralSymmetry symm;
