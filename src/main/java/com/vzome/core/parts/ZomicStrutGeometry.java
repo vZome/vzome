@@ -15,8 +15,8 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.zomic.ZomicASTCompiler;
 import com.vzome.core.zomic.ZomicNamingConvention;
-import com.vzome.core.zomic.parser.Parser;
 import com.vzome.core.zomic.program.ZomicStatement;
 
 public class ZomicStrutGeometry implements StrutGeometry
@@ -72,14 +72,16 @@ public class ZomicStrutGeometry implements StrutGeometry
         	return;
         }
 
-        mStrutProgram = Parser.parse( nodeScript, (IcosahedralSymmetry) symmetry );
+        //mStrutProgram = Parser.parse( nodeScript, (IcosahedralSymmetry) symmetry );
+		mStrutProgram = ZomicASTCompiler.compile( nodeScript, (IcosahedralSymmetry) mSymmetry );
         
         nodeScript = getClass().getClassLoader().getResourceAsStream(
                 script + SHORT_SCRIPT_SUFFIX );
         if ( nodeScript == null )
             mShortStrutProgram = mStrutProgram;
         else
-            mShortStrutProgram = Parser.parse( nodeScript, (IcosahedralSymmetry) symmetry );
+            // mShortStrutProgram = Parser.parse( nodeScript, (IcosahedralSymmetry) symmetry );
+			mShortStrutProgram = ZomicASTCompiler.compile( nodeScript, (IcosahedralSymmetry) mSymmetry );
     }
     
     public boolean isDefined()

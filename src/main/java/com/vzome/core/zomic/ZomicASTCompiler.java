@@ -28,7 +28,9 @@ import com.vzome.core.zomic.program.Scale;
 import com.vzome.core.zomic.program.Untranslatable;
 import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import static java.lang.Math.abs;
 import java.util.Stack;
 import org.antlr.v4.runtime.ANTLRFileStream;
@@ -61,7 +63,8 @@ public class ZomicASTCompiler
 		namingConvention = new ZomicNamingConvention( icosaSymm );
     }
 
-	public static Walk compileFile( String fileName, IcosahedralSymmetry symm, boolean showProgressMessages ) {
+	public static Walk compile( File file, IcosahedralSymmetry symm, boolean showProgressMessages ) {
+		String fileName = file.getAbsolutePath();
         doPrint = showProgressMessages;
 		Walk program = null;
 		ErrorHandler.Default errors = new ErrorHandler.Default();
@@ -93,8 +96,22 @@ public class ZomicASTCompiler
 		return compile( new ANTLRInputStream( input ), symm, showProgressMessages );
 	}
 	
+	public static Walk compile(InputStream input, IcosahedralSymmetry symm) {
+		try {
+			return compile(new ANTLRInputStream(input), symm, false);
+		} catch (IOException e) {
+			Walk program = new Walk();
+			program.setErrors(new String[] {"Unable to compile: " + e.toString()});
+			return program;
+		}
+	}
+
 	public static Walk compile( String input, IcosahedralSymmetry symm ) {
 		return compile( input, symm, false );
+	}
+	
+	public Walk compile( String input, ErrorHandler errors ) {
+		return compile( new ANTLRInputStream( input ), errors );
 	}
 	
 	public Walk compile( CharStream input, ErrorHandler errors ) {
@@ -937,7 +954,6 @@ public class ZomicASTCompiler
 		// by catching a RecognitionException in the parser and using parser.getExpectedTokens()...
 		// See http://stackoverflow.com/questions/25512770/antlr4-get-next-possible-matching-parser-rules-for-the-given-input
 		// or "Altering and Redirecting ANTLR Error Messages" from section 9.2 of "The Definitive ANTLR 4 Reference"
-		println("visitErrorNode: " + msg);
 		commit( new Untranslatable(msg) );
 	}
 

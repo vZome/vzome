@@ -1,6 +1,7 @@
 package com.vzome.core.zomic.parser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description here.
@@ -9,28 +10,29 @@ import java.util.*;
  */
 public interface ErrorHandler {
 
-    int UNKNOWN = -1;
+	final int UNKNOWN = -1;
 
     void parseError( int line, int column, String message );
 
-
     public static class Default implements ErrorHandler {
         
-        List mErrors = new ArrayList();
+        final private List<String> mErrors;
         
-        public Default( List errors ){
+        public Default( List<String> errors ) {
             mErrors = errors;
         }
         
         public Default(){
+			this(new ArrayList<String>());
         }
         
-        public void parseError( int line, int column, String message ){
-            StringBuffer msg = new StringBuffer( "error: ");
+		@Override
+        public void parseError( int line, int column, String message ) {
+            StringBuilder msg = new StringBuilder( "error: ");
             if( line != UNKNOWN ) {
-                msg .append( "line " + line );
+                msg.append("line ") .append(line);
                 if( column != UNKNOWN )
-                    msg .append( ", column " + column );
+                    msg.append(", column ") .append(column);
                 msg .append( ": " );
             }
             msg .append( message );
@@ -38,7 +40,7 @@ public interface ErrorHandler {
         }
         
         public String[] getErrors() {
-            return (String[]) mErrors.toArray( new String[0] );
+            return mErrors.toArray( new String[0] );
         }
     }
 }

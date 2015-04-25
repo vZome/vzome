@@ -5,8 +5,6 @@ package com.vzome.core.editor;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import org.w3c.dom.Element;
 
@@ -19,16 +17,17 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.zomic.Interpreter;
+import com.vzome.core.zomic.ZomicASTCompiler;
 import com.vzome.core.zomic.ZomicException;
 import com.vzome.core.zomic.parser.ErrorHandler;
-import com.vzome.core.zomic.parser.Parser;
+import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
 
 public class RunZomicScript extends ChangeConstructions
 {
     private String programText;
     private ZomicStatement zomicProgram;
-    private Point origin;
+    private final Point origin;
     private IcosahedralSymmetry symm;
 
     public RunZomicScript( Selection selection, RealizedModel realized, String text, Point origin )
@@ -40,16 +39,19 @@ public class RunZomicScript extends ChangeConstructions
             this .symm = (IcosahedralSymmetry) origin .getField() .getSymmetry( "icosahedral" );
     }
 
+	@Override
     protected String getXmlElementName()
     {
         return "RunZomicScript";
     }
 
+	@Override
     protected void getXmlAttributes( Element element )
     {
         element .setTextContent( XmlSaveFormat .escapeNewlines( programText ) );
     }
 
+	@Override
     protected void setXmlAttributes( Element xml, XmlSaveFormat format )
             throws Failure
     {
@@ -60,35 +62,38 @@ public class RunZomicScript extends ChangeConstructions
     
     protected ZomicStatement parseScript( String script ) throws Failure
     {
-        Parser parser = new Parser( symm );
-        List errors = new ArrayList();
-        ZomicStatement program = parser .parse(
-            new ByteArrayInputStream( script .getBytes() ), new ErrorHandler.Default( errors ), "" );
+        ArrayList<String> errors = new ArrayList<>();
+		ErrorHandler errorHandler = new ErrorHandler.Default( errors );
+//        Parser parser = new Parser( symm );
+//        ZomicStatement program = parser .parse(
+//            new ByteArrayInputStream( script .getBytes() ), errorHandler, "" );
+		ZomicASTCompiler compiler = new ZomicASTCompiler(symm);
+        Walk program = compiler.compile( script, errorHandler );
         if ( errors.size() > 0 )
             throw new Failure( (String) errors .get(0) );
         return program;
     }
 
+	@Override
     public void perform() throws Failure
     {
         Point offset = null;
         boolean pointFound = false;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
-            if ( man instanceof Connector )
-            {
-                Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();
-                if ( ! pointFound )
-                {
-                    pointFound = true;
-                    offset = nextPoint;
-                }
-                else
-                {
-                    offset = null;
-                }
-            }
-        }
+		for (Manifestation man : mSelection) {
+			if ( man instanceof Connector )
+			{
+				Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();
+				if ( ! pointFound )
+				{
+					pointFound = true;
+					offset = nextPoint;
+				}
+				else
+				{
+					offset = null;
+				}
+			}
+		}
         if ( offset == null )
             offset = origin;
 
