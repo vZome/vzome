@@ -38,6 +38,11 @@ configurations {
 
 // Support for decoupled "regression" task
 sourceSets {
+    main {
+        java {
+            exclude 'com/vzome/servlet/**'  // skip the Exporter servlet, to avoid the Jetty dependency
+        }
+    }
     regression {
         java.srcDir file('src/regression/java')
     }
@@ -49,8 +54,8 @@ dependencies {
     compile     group: 'org.antlr',         name: 'antlr4',            version:'4.5'
     compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre11'
     compile     group: 'org.python',        name: 'jython',            version:'2.7-b4'
-    compile     group: 'javax.servlet',     name: 'servlet-api',       version:'2.5'
-    compile     group: 'org.eclipse.jetty', name: 'jetty-servlet',     version:'7.6.0.v20120127'
+//    compile     group: 'javax.servlet',     name: 'servlet-api',       version:'2.5'
+//    compile     group: 'org.eclipse.jetty', name: 'jetty-servlet',     version:'7.6.0.v20120127'
 
     runtime     group: 'antlr',             name: 'antlr',             version:'2.7.7'
     runtime     group: 'org.python',        name: 'jython',            version:'2.7-b4'
