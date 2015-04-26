@@ -42,9 +42,7 @@ A NetBeans configuration file (nbactions.xml) is included.
 Running vZome from the Command Line
 --------------
 
-Once you have successfully built vZome, you can run it using "run-vzome.sh".  You'll have to make the script executable, first, using "chmod u+x run-vzome.sh". To run vZome in Windows, use run-vzome.bat. In Windows PowerShell, the syntax is .\run-vzome.bat.
-
-It can also be run as a Gradle task using the command:
+Once you have successfully built vZome, you can run it as a Gradle task using the command:
 
 	gradlew run
 	
@@ -56,5 +54,15 @@ It can also be run as a Gradle task using the command:
 Packaging vZome
 ---------------
 
-I have not yet ported the the packaging steps for the self-contained Mac application, nor the deployment script for the JavaWebStart version.  There is no self-contained packaging for Windows, yet.
+On the Mac, you can package a self-contained application for vZome, with an embedded JRE, using this command:
+
+    ./gradlew createApp
+
+The app will appear as build/macApp/vZome.app.
+
+If you want to build a disk image containing the app, you can do:
+
+    ./gradlew createDmg
+
+The disk image will show up under build/distributions.
 
