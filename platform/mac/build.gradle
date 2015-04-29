@@ -3,6 +3,18 @@ plugins {
     id 'edu.sc.seis.macAppBundle' version '2.1.0'
 }
 
+compileJava {
+    // The ignore.symbol.file is evidently necessary to allow the com.apple.eawt classes inside lib/rt.jar
+    // to be visible.
+    // See http://mail.openjdk.java.net/pipermail/macosx-port-dev/2011-September/000864.html
+    // and http://stackoverflow.com/questions/12554829/passing-arguments-to-compiler-and-javadoc-in-gradle
+    // "I only managed to get this working when I forked 
+    // and passed 'javac' as an executable"
+    options.compilerArgs << '-XDignore.symbol.file'
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+}
+
 dependencies {
     compile project( ':' )
 }
