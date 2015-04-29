@@ -11,6 +11,7 @@ import java.util.*;
  * 
  * @author Scott Vorthmann 2003
  */
+@Deprecated
 public interface ANTLR2XML {
 
     void setParser( antlr.Parser parser );
@@ -21,7 +22,8 @@ public interface ANTLR2XML {
 
     void endElement() throws RecognitionException;
 
-    public class ANTLR2XMLException extends RecognitionException {
+    @Deprecated
+	public class ANTLR2XMLException extends RecognitionException {
         
         public ANTLR2XMLException( Token t, String message ) {
             super( message );
@@ -31,7 +33,8 @@ public interface ANTLR2XML {
 
     }
 
-    public abstract class Default extends Object implements ANTLR2XML {
+    @Deprecated
+	public abstract class Default extends Object implements ANTLR2XML {
 
         private Stack m_elementNames = new Stack();
 

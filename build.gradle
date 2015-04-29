@@ -8,8 +8,8 @@ version = '0.2'
 
 description = "vzome-core"
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 ext.antlr4 = [
     antlrSource:    "src/main/antlr",
@@ -68,10 +68,23 @@ dependencies {
     regressionRuntime configurations.testRuntime
 }
 
+// Don't necessarily want to turn on these warnings yet, but here's the code to do it eventually.
+//gradle.projectsEvaluated {
+//	tasks.withType(JavaCompile) {
+//		options.compilerArgs 
+//		<< "-Xlint:unchecked" 
+//		<< "-Xlint:deprecation"
+//	}
+//}
 
-// Antlr tasks
-task makeAntlrOutputDir << {
-    file(antlr4.destinationDir).mkdirs()
+task makeAntlrOutputDir {
+	outputs.dir antlr4.destinationDir
+	doLast() {
+		// Be sure to wrap this inside doLast(). 
+		// Otherwise it wiil run during the initialization or configuration phase, even when an unrelated task is is run.
+		//println 'Making Antlr Output Directory: ' + antlr4.destinationDir
+		file(antlr4.destinationDir).mkdirs()
+	}
 }
 
 
@@ -97,18 +110,19 @@ task makeAntlrOutputDir << {
 //    }
 //}
 
-task compileAntlrGrammars(type: JavaExec, dependsOn: makeAntlrOutputDir) {
+// Accordiing to https://gradle.org/docs/current/userguide/more_about_tasks.html...
+// A task with no defined outputs will never be considered up-to-date.
+// A task with only outputs (no inputs) defined will be considered up-to-date if those outputs are unchanged since the previous build.
+task compileAntlrGrammars(type: JavaExec , dependsOn: makeAntlrOutputDir) {
     // Grammars are conveniently sorted alphabetically. I assume that will remain true.
     // That ensures that files named *Lexer.g4 are listed and therefore processed before the corresponding *Parser.g4
     // It matters because the Lexer must be processed first since the Parser needs the .tokens file from the Lexer.
     // Also note that the output file naming convention for combined grammars is slightly different from separate Lexer and Parser grammars.
-    // Also, changing the args to antlr will change the files it generates which affects the outputs collection.
+    // Also, changing the args when invoking Antlr will change the files it generates which affects the outputs collection.
     def grammars = fileTree(antlr4.antlrSource).include('**/*.g4')
     //def pkg = antlr4.grammarpackage.replaceAll("\\.", "/")
     def target = file("${antlr4.destinationDir}") ///${pkg}")
     inputs.files grammars
-    // TODO: This output spec is incorrect, so this task is never considered up to date.
-    // TODO: Tweak the outputs collection so it is correct with combined grammars as well as separate Lexer and Parser grammars.
     outputs.dir target
 
     main = 'org.antlr.v4.Tool'
@@ -135,23 +149,31 @@ compileJava {
 }
 
 task cleanAntlr {
-    //println 'Deleting ' + antlr4.destinationDir
-    delete antlr4.destinationDir
+	doLast() {
+		// Be sure to wrap this inside doLast(). 
+		// Otherwise it wiil run during the initialization or configuration phase, even when an unrelated task is is run.
+		// It would also run when the NetBeas IDE first loaded the project.
+		//println 'Deleting Antlr Directory: ' + antlr4.destinationDir
+		delete antlr4.destinationDir
+	}
 }
 clean.dependsOn cleanAntlr
 
-
 // These tasks are used to run the vZome regression test suite
 def regressionOutputDir = new File(buildDir.toString() + '/test-results/regression')
-task makeRegressionOutputDir << {
-    //println 'Making Regression Output Directory: ' + regressionOutputDir
-    regressionOutputDir.mkdirs()
+task makeRegressionOutputDir {
+	outputs.dir regressionOutputDir
+	doLast() {
+		// Be sure to wrap this inside doLast(). 
+		// Otherwise it wiil run during the initialization or configuration phase, even when an unrelated task is is run.
+		println 'Making Regression Output Directory: ' + regressionOutputDir
+		regressionOutputDir.mkdirs()
+	}
 }
 
 task regression(type: JavaExec, dependsOn: check) {
     group = 'Verification'
-    description = """\
-    Run regression testing
+    description = """Run regression testing
         command-line options:
             -PregressionHome=src/regression/files     (default shown, value can be absolute or relative)
             -PregressionFile=sniff-test.vZome-files   (default shown, relative to regressionHome)
@@ -184,16 +206,30 @@ task zomicPP( type: JavaExec, dependsOn: build) {
     main = 'com.vzome.core.zomic.program.PrintVisitor'
     args( theFile )
 	
-	doLast { // doFirst and doLast are executed only during the execution phase, not during the initialization of configuration phases.
+	group = 'Verification'
+    description = """Pretty-Prints the specified Zomic file
+        command-line options:
+            -PzomicFile="$theFile"		(default shown, value can be absolute or relative)
+                Prints the file using the ORIGINAL zomic parser.
+            -P-new
+                Prints the file using the NEW Antlr4 zomic compiler.
+            -P-new -P-v
+                Prints the file using the NEW Antlr4 zomic compiler with verbose output.
+    Sample Usage:
+        gradle zomicPP -PzomicFile="$theFile"
+        gradle zomicPP -PzomicFile="$theFile" -P-new
+        gradle zomicPP -PzomicFile="$theFile" -P-new -P-v
+  The output should be identical to $theFile-pp
+    """
+
+	doLast { // doFirst and doLast are executed only during the execution phase, not during the initialization or configuration phases.
 		if( !project.hasProperty( "zomicFile" ) ){
 			println ""
 			println "No zomic file was specified. Using default: $theFile"
-			println '  Sample Usage: gradle zomicPP -PzomicFile="src/regression/files/Zomic/yellowAxisSaddleWeb/yellowAxisSaddleWeb.zomic"'
-			println ">>>>>>>>  The output should be identical to $theFile-pp"
+			println description
 			println ""
 		}
 	}
-
 }
 
 jar {
@@ -210,4 +246,3 @@ uploadArchives {
        }
     }
 }
-

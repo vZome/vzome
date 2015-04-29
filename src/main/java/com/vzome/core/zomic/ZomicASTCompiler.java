@@ -28,7 +28,9 @@ import com.vzome.core.zomic.program.Scale;
 import com.vzome.core.zomic.program.Untranslatable;
 import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import static java.lang.Math.abs;
 import java.util.Stack;
 import org.antlr.v4.runtime.ANTLRFileStream;
@@ -43,7 +45,6 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
  * Created by David Hall on 3/20/2015.
@@ -62,7 +63,8 @@ public class ZomicASTCompiler
 		namingConvention = new ZomicNamingConvention( icosaSymm );
     }
 
-	public static Walk compileFile( String fileName, IcosahedralSymmetry symm, boolean showProgressMessages ) {
+	public static Walk compile( File file, IcosahedralSymmetry symm, boolean showProgressMessages ) {
+		String fileName = file.getAbsolutePath();
         doPrint = showProgressMessages;
 		Walk program = null;
 		ErrorHandler.Default errors = new ErrorHandler.Default();
@@ -94,8 +96,22 @@ public class ZomicASTCompiler
 		return compile( new ANTLRInputStream( input ), symm, showProgressMessages );
 	}
 	
+	public static Walk compile(InputStream input, IcosahedralSymmetry symm) {
+		try {
+			return compile(new ANTLRInputStream(input), symm, false);
+		} catch (IOException e) {
+			Walk program = new Walk();
+			program.setErrors(new String[] {"Unable to compile: " + e.toString()});
+			return program;
+		}
+	}
+
 	public static Walk compile( String input, IcosahedralSymmetry symm ) {
 		return compile( input, symm, false );
+	}
+	
+	public Walk compile( String input, ErrorHandler errors ) {
+		return compile( new ANTLRInputStream( input ), errors );
 	}
 	
 	public Walk compile( CharStream input, ErrorHandler errors ) {
@@ -148,6 +164,7 @@ public class ZomicASTCompiler
 	extends ZomicLexer 
 	{
 		public StrictZomicLexer(CharStream input) { super(input); }
+		@Override
 		public void recover(LexerNoViableAltException e) {
 			// Bail out of the lexer at the first lexical error instead of trying to recover.
 			// Use this in conjunction with BailErrorStrategy.
@@ -305,12 +322,13 @@ public class ZomicASTCompiler
 
 		Axis generate() {
 			try {
-				// TODO: move this check into a unit test instead of a runtime check.
 				Axis axis = namingConvention.getAxis(axisColor, indexFullName() );
-				String check = namingConvention.getName( axis );
-				if ( axis != namingConvention.getAxis(axisColor, check ) ) {
-					println( axisColor + " " + indexFullName() + " mapped to " + check );
-				}
+				// This check has been moved into a thorough unit test instead of a runtime check.
+				// but I'll leave the code commented out here in case additional colors are eventually supported and need debugging
+//				String check = namingConvention.getName( axis );
+//				if ( axis != namingConvention.getAxis(axisColor, check ) ) {
+//					println( axisColor + " " + indexFullName() + " mapped to " + check );
+//				}
 				return axis;
 			} catch( RuntimeException ex ) {
 				throw new RuntimeException( "bad axis specification: '" + axisColor + " " + indexFullName() + "'", ex);
@@ -936,7 +954,6 @@ public class ZomicASTCompiler
 		// by catching a RecognitionException in the parser and using parser.getExpectedTokens()...
 		// See http://stackoverflow.com/questions/25512770/antlr4-get-next-possible-matching-parser-rules-for-the-given-input
 		// or "Altering and Redirecting ANTLR Error Messages" from section 9.2 of "The Definitive ANTLR 4 Reference"
-		println("visitErrorNode: " + msg);
 		commit( new Untranslatable(msg) );
 	}
 

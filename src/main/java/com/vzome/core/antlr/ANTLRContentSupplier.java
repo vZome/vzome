@@ -5,6 +5,7 @@ import org.xml.sax .*;
 import org.xml.sax.helpers .AttributesImpl;
 import antlr .*;
 
+@Deprecated
 public class ANTLRContentSupplier extends ANTLR2XML .Default{
 
 	public  ANTLRContentSupplier( ContentHandler handler ) {

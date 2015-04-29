@@ -1,0 +1,630 @@
+{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fswiss\fcharset77 Helvetica-Bold;\f2\fmodern\fcharset77 Courier;
+\f3\fmodern\fcharset77 Courier-Oblique;\f4\fmodern\fcharset77 Courier-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww14000\viewh17740\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0\fs28 \cf0 \
+
+\f1\b Introduction
+\f0\b0 \
+\
+This is a very brief description of the Zomic language.  Zomic is designed to allow the concise description of vZome model constructions.\
+\
+This reference is organized around a formal grammar for Zomic, with brief but complete descriptions of each language feature.  First, however, it is best to understand the execution model for Zomic, describe in the next section.\
+\
+\
+
+\f1\b Virtual Machine
+\f0\b0 \
+\
+The Zomic virtual machine (or "VM" for short) operates on a virtual Zome model (a collection of struts and connector balls), and effects changes to the model through strut-building statements.  The action of these strut statements is adjusted according to four state variables in the VM:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2900\fi-2220\ri-1500\ql\qnatural
+\cf0 	location		A position in the virtual Zome space.  There may or may not be a connector ball in the model at that location.  A strut statement always starts at the current location, and sets the location to the end of the new strut.  The initial location is the origin, (0,0,0).\
+\
+orientation		A linear mapping of the Zome axes.  Mathematically, this can be treated as the composition of a rotation around one of the 31 axes, and possibly a mirror reflection through one of the axes.  Either or both may be the identity mapping, of course.  The orientation mapping is applied to the axis of any strut statement before that statement is executed on the model.  The initial orientation is the identity mapping.\
+\
+scale			A "magnification" to be applied to strut sizes, which are simply integer values.  The scale variable is added to the size of each strut.  The resulting value is used as the exponent for Tau in computing the length of the strut to build.  The initial scale is zero.\
+\
+build mode		A "switch" that can be on or off.  When on, strut statements cause struts (and usually connector balls) to be added to the model.  When off, strut statements have no effect on the model, but the location variable is still affected.  Build mode is on by default.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+\
+
+\f1\b Zomic Grammar
+\f0\b0 \
+\
+The grammar is shown in 
+\f2 Courier
+\f0  font.  Grammar nonterminal symbols are shown in 
+\f3\i italics
+\f0\i0 .  Keywords and literals are in 
+\f4\b 'bold'
+\f0\b0 .  Parentheses indicate grouping, "
+\f2 ?
+\f0 " indicates an optional element, "
+\f2 +
+\f0 " indicates one-or-more repetitions, and "
+\f2 |
+\f0 " separates choices.\
+\
+The following tokens are used throughout the grammar:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 DIGIT
+\f2\i0  : '0'..'9'\
+\
+
+\f3\i INT
+\f2\i0  : 
+\f3\i DIGIT
+\f2\i0 +\
+\
+
+\f3\i SIGNED_INT
+\f2\i0  : ( '+' | '-' )? 
+\f3\i INT
+\f2\i0 \
+
+\f0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+A Zomic program is just a series of statements.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 compound_statement
+\f2\i0  : 
+\f3\i statement
+\f2\i0 +
+\f0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 statement
+\f2\i0 \
+	:	
+\f3\i direct_statement
+\f2\i0 \
+	|	
+\f3\i nested_statement
+\f2\i0 \
+	|	'
+\f4\b \{'
+\f2\b0  
+\f3\i compound_statement
+\f2\i0  '\}'\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+\
+
+\f1\b Direct statements
+\f0\b0 \
+\
+Direct statements are non-nested statements that directly affect one of the four VM variables: location, orientation, scale, or build/move mode.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 direct_statement
+\f2\i0 \
+	:	
+\f3\i strut_statement
+\f2\i0 \
+	|	
+\f3\i rotate_statement
+\f2\i0 \
+	|	
+\f3\i scale_statement
+\f2\i0 \
+	|	
+\f3\i build_statement
+\f2\i0 \
+	|	
+\f3\i move_statement
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+\
+
+\f1\b Strut statement
+\f0\b0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 strut_statement
+\f2\i0  : 
+\f3\i size_expr length_expr
+\f2\i0 ? 
+\f4\b "half"
+\f2\b0 ? 
+\f3\i axis_expr
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+If the build-mode VM variable is on, make a strut starting at the current location (VM variable), and set the location to the end of the new strut.  Connector balls at each end are added automatically, as necessary.\
+\
+If the build-mode variable is off, the location is adjusted in the same fashion, but no struts or connectors balls are added to the model.\
+\
+Before the action is performed, the following adjustments are made: The stated strut size is adjusted by the current scale VM variable.  The stated axis is mapped according to the current orientation VM variable.\
+\
+The optional length expression allows struts of arbitrary length to be constructed.  The scaled strut size is multiplied by the indicated number before the build or move occurs.\
+\
+The optional "half" modifier builds or moves by a half-strut length, and is allowed only for green and blue axes.\
+\
+\
+
+\f1\b Size expression
+\f0\b0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 size_expr
+\f2\i0 \
+	: 
+\f4\b "size"
+\f2\b0  
+\f3\i SIGNED_INT
+\f2\i0 \
+	| 
+\f4\b "short"
+\f2\b0  | 
+\f4\b "medium"
+\f2\b0  | 
+\f4\b "long"
+\f2\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+An absolute scale for Zome struts.  The "
+\f4\b short
+\f0\b0 ", "
+\f4\b medium
+\f0\b0 ", and "
+\f4\b long
+\f0\b0 " sizes correspond to the standard sizes in the ZomeTool kits.\
+\
+Size values are simply the powers of tau, with the unit length ("
+\f4\b size 
+\f2\b0 0
+\f0 ") defined as the diameter of the Zome connector ball in the blue direction.  In other words, a "
+\f4\b size
+\f2\b0  0
+\f0 " blue strut appears as two balls "kissing".  This implies that "
+\f4\b size 4
+\f0\b0 " is exactly equivalent to "
+\f4\b medium
+\f0\b0 ".  Size values can be negative.\
+\
+\
+
+\f1\b Length expression
+\f0\b0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 length_expr
+\f2\i0 \
+	: 
+\f3\i SIGNED_INT SIGNED_INT
+\f2\i0 ?\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+A length multiplier for Zome struts.  The two integers together form a "golden number", of the form A*tau+B, where A is the optional second integer, and B is the first integer.  If the second integer is missing, therefore, the length multiplier is just an integer, 0*tau + B.  If the length expression is omitted entirely, the length multiplier is one.\
+\
+\
+
+\f1\b Axis expression
+\f0\b0 \
+\
+The name of one of the fixed "directions" in the Zome system.  Examples: "
+\f4\b red +0
+\f0\b0 " "
+\f4\b blue -4
+\f0\b0 " "
+\f4\b green +22
+\f0\b0 ".  The axis numbers use the indexing from the Zomod language.  A cut-out paper model for an axis "key" is available from the author.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 axis_expr
+\f2\i0  : 
+\f3\i axis_name
+\f2\i0  
+\f3\i SIGNED_INT
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 axis_name
+\f2\i0  : 
+\f4\b "red"
+\f2\b0  | 
+\f4\b "blue"
+\f2\b0  | 
+\f4\b "yellow"
+\f2\b0  | 
+\f4\b "green" 
+\f2\b0 |
+\f4\b  "orange" 
+\f2\b0 |
+\f4\b  "purple"
+\f2\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+The "
+\f4\b orange
+\f0\b0 " and "
+\f4\b purple
+\f0\b0 " directions are not (yet) available in the physical Zome system, but they represent useful directions.  To see the relationships, run the following script (model credit to Fabien Vienne):\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li380\fi-20\ql\qnatural
+
+\f4\b \cf0 repeat 3 // or as many times as you can stand!\
+\{\
+short blue +2 blue +2 long blue +2\
+\
+short blue +5 long purple -0\
+short blue +5 repeat 2 short red -0\
+short blue +5 short green -0\
+\
+short blue +5 blue +5 long blue +5\
+\
+short blue +2 repeat 2 yellow -0\
+short blue +2 orange -0\
+short blue +2\
+\
+scale +1\
+\}
+\f0\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+\cf0 \
+\
+
+\f1\b Scale statement
+\f0\b0 \
+\
+Increment or decrement the scale VM variable.  The scale variable adjusts the sizes of struts and moves accomplished by the strut_statement.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 scale_statement
+\f2\i0  : "
+\f4\b scale
+\f2\b0 " 
+\f3\i SIGNED_INT ( 
+\f4\i0\b "("
+\f3\i\b0  length_expr 
+\f4\i0\b ")"
+\f3\i\b0  )?
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+The required integer is interpreted as a power of tau.  The optional 
+\f3\i length_expr
+\f0\i0  between parentheses indicate a further multiplicative scaling factor, with the same interpretation as used for strut statements.\
+\
+
+\f1\b Build statement
+\f0\b0 \
+\
+Set the build-mode VM variable to "on" (building).  Subsequent 
+\f3\i strut_statements
+\f0\i0  will add struts the model.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 build_statement
+\f2\i0  : "
+\f4\b build
+\f2\b0 "\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+\
+
+\f1\b Move statement
+\f0\b0 \
+\
+Set the build-mode VM variable to "off" (just moving).  Subsequent 
+\f3\i strut_statements
+\f0\i0  will NOT add struts the model, but will still adjust the location VM variable.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 move_statement
+\f2\i0  : "
+\f4\b move
+\f2\b0 "\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+\
+
+\f1\b Rotate statement
+\f0\b0 \
+\
+Add a rotation to the current orientation VM variable.  The number of "steps" will be the given integer (or 1, if absent) modulo the number of possible rotations for the given axis.  E.g., "
+\f4\b rotate
+\f2\b0  6 
+\f4\b around red
+\f2\b0  +0
+\f0 " is equivalent to "
+\f4\b rotate
+\f2\b0  1 
+\f4\b around red
+\f2\b0  +0
+\f0 ". \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 rotate_statement
+\f2\i0  :	"
+\f4\b rotate
+\f2\b0 " 
+\f3\i SIGNED_INT
+\f2\i0 ? "
+\f4\b around
+\f2\b0 " 
+\f3\i axis_expr
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+The sense of the rotation is best stated by example: "
+\f4\b rotate around red
+\f2\b0  +0
+\f0 " maps "
+\f4\b blue
+\f2\b0  +0
+\f0 " to "
+\f4\b blue
+\f2\b0  +4
+\f0 ".\
+\
+\
+
+\f1\b Nested Statements
+\f0\b0 \
+\
+These are statements of the form <modifier> 
+\f3\i statement
+\f0\i0 , where the modifier has some temporary effect while the statement executes.  The statement is often compound ("\{"..."\}").\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 nested_statement
+\f2\i0 \
+	:	
+\f3\i branch_statement
+\f2\i0 \
+	|	
+\f3\i from_statement
+\f2\i0 \
+	|	
+\f3\i repeat_statement
+\f2\i0 \
+	|	
+\f3\i symmetry_statement
+\f2\i0 \
+	|	
+\f3\i save_statement
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+\
+
+\f1\b Save statement
+\f0\b0 \
+\
+Execute a statement with "protected" copies of the current VM variables.  Adjustments to the VM variables within the statement will not persist after the save statement.\
+\
+All the VM variables will be protected if "save all" is used.  Otherwise, only the variable stated will be protected.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 save_statement
+\f2\i0  :\
+		"
+\f4\b save
+\f2\b0 "\
+			( "
+\f4\b location
+\f2\b0 "\
+			| "
+\f4\b scale
+\f2\b0 "\
+			| "
+\f4\b orientation
+\f2\b0 "\
+			| "
+\f4\b build
+\f2\b0 "\
+			| "
+\f4\b all
+\f2\b0 "\
+			)\
+		
+\f3\i statement
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+\
+
+\f1\b From statement
+\f0\b0 \
+\
+Move the location as if a strut were built, regardless of the current value of the build-mode VM variable.  The statement MUST be a strut statement.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 from_statement
+\f2\i0  : "
+\f4\b from
+\f2\b0 " 
+\f3\i strut_statement
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+This is shorthand for: "
+\f4\b save build \{ move
+\f0\b0  
+\f3\i strut_statement
+\f0\i0  
+\f4\b \}
+\f0\b0 "\
+\
+\
+
+\f1\b Branch statement
+\f0\b0 \
+\
+Execute a statement and then restore the current location VM variable.  The statement may be compound: "\{" ... "\}".\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 branch_statement
+\f2\i0  : "
+\f4\b branch
+\f2\b0 " 
+\f3\i statement
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+This is shorthand for: 
+\f2  "
+\f4\b save location
+\f2\b0  
+\f3\i statement
+\f4\i0\b "
+\f2\b0 .
+\f0 \
+\
+\
+
+\f1\b Symmetry statement
+\f0\b0 \
+\
+Apply a symmetry operator to the given statement.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 symmetry_statement
+\f2\i0  :\
+		"
+\f4\b symmetry
+\f2\b0 "\
+			( "
+\f4\b around
+\f2\b0 " 
+\f3\i axis_expr
+\f2\i0 \
+			| "
+\f4\b through
+\f2\b0 " ( "
+\f4\b center
+\f2\b0 " | 
+\f3\i SIGNED_INT
+\f2\i0  )\
+			)?\
+		
+\f3\i statement
+\f2\i0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+There are four variants:\
+\
+1. Rotational symmetry around an axis.\
+\
+2. Mirror symmetry through a blue axis\
+\
+3. Point symmetry through a center (the starting location)\
+\
+4. Icosahedral symmetry: the statement is repeated with every one of the 60 right-handed orientations applied.  (This preserves "handedness" or "chirality"... see the scripts "greenGiant" or "snubDodec" as examples that takes advantage of this.  Full icosahedral symmetry, with left-handed orientations applied as well, can be achieved simply by adding "
+\f4\b symmetry through center
+\f0\b0 " before the symmetry statement.)\
+\
+For icosahedral symmetry, a "
+\f4\b save all
+\f0\b0 " modifier is implicit: "
+\f4\b symmetry red 
+\f2\b0 +0
+\f0 " is equivalent to "
+\f4\b symmetry save all red
+\f2\b0  +0
+\f0 ".  This means that the current location, orientation, scale, and build mode will be restored before each of the 60 executions of the nested statement.  The main effect is that the model will be roughly "spherical" around a central point, the location before the start of the symmetry statement.\
+\
+For point, rotational, and mirror symmetry, a "
+\f4\b save orientation
+\f0\b0 " modifier is implicit: "
+\f4\b symmetry around red
+\f0\b0  
+\f2 +0
+\f4\b  blue
+\f0\b0  
+\f2 +3
+\f0 " is equivalent to "
+\f4\b symmetry around red
+\f0\b0  
+\f2 +0
+\f0  
+\f4\b save orientation blue
+\f0\b0  
+\f2 +3
+\f0 ".  The location, scale, and build mode are NOT preserved, allowing helical or spiral models, for example.\
+\
+\
+
+\f1\b Repeat statement
+\f0\b0 \
+\
+Repeat execution of the given statement.  This can be useful for building spirals, helixes, and space-filling structures.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li440\fi-40\ql\qnatural
+
+\f3\i \cf0 repeat_statement
+\f2\i0  : "
+\f4\b repeat
+\f2\b0 " 
+\f3\i INT
+\f2\i0  
+\f3\i statement
+\f2\i0  \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+\
+
+\f1\b Comments
+\f0\b0 \
+\
+Comments use the C++ style, both forms:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2 \cf0 	// a comment that goes to the end of the line\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f2 \cf0 	/* a comment that does not */\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural
+
+\f0 \cf0 \
+}

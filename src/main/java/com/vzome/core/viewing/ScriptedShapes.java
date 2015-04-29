@@ -17,7 +17,7 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.parts.ZomicPolyhedronModelInterpreter;
 import com.vzome.core.parts.ZomicStrutGeometry;
-import com.vzome.core.zomic.parser.Parser;
+import com.vzome.core.zomic.ZomicASTCompiler;
 import com.vzome.core.zomic.program.ZomicStatement;
 
 
@@ -57,7 +57,8 @@ public class ScriptedShapes extends AbstractShapes
         if ( nodeScript == null )
             throw new IllegalStateException( "missing script: " + prefix
                     + NODE_SCRIPT );
-        ZomicStatement connScript = Parser.parse( nodeScript, (IcosahedralSymmetry) mSymmetry );
+        //ZomicStatement connScript = Parser.parse( nodeScript, (IcosahedralSymmetry) mSymmetry );
+        ZomicStatement connScript = ZomicASTCompiler.compile( nodeScript, (IcosahedralSymmetry) mSymmetry );
         AlgebraicNumber zero = mSymmetry .getField() .zero();
         ZomicPolyhedronModelInterpreter zpmi = new ZomicPolyhedronModelInterpreter( mSymmetry,
                 connScript, zero, mSymmetry.getPermutation( 0 ),

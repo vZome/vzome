@@ -13,6 +13,7 @@ import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.render.ZomicEventHandler;
+import com.vzome.core.zomic.ZomicASTCompiler;
 import com.vzome.core.zomic.ZomicException;
 import com.vzome.core.zomic.ZomicNamingConvention;
 import com.vzome.core.zomic.parser.Parser;
@@ -27,13 +28,13 @@ public class PrintVisitor extends Visitor .Default{
 	
 	private final ZomicNamingConvention naming;
 
-	public  PrintVisitor( PrintWriter out, IcosahedralSymmetry symmetry ) {
+	public PrintVisitor(PrintWriter out, IcosahedralSymmetry symmetry) {
 		super();
+		m_out = out;
+		naming = new ZomicNamingConvention(symmetry);
+	}
 
-			m_out = out;
-			naming = new ZomicNamingConvention( symmetry );
-		}
-
+	@Override
     public  void visitSave( Save save, int state ) throws ZomicException
     {
         if ( state == ZomicEventHandler .LOCATION ){
@@ -78,6 +79,7 @@ public class PrintVisitor extends Visitor .Default{
 		super .visitSave( save, state );
     }
 
+	@Override
 	public  void visitWalk( Walk walk ) throws ZomicException
 	{
 		if ( walk .size() == 1 ) {
@@ -92,6 +94,7 @@ public class PrintVisitor extends Visitor .Default{
 	}
 
 
+	@Override
 	public 
 	void visitRepeat( Repeat repeated, int repetitions ) throws ZomicException
 	{
@@ -99,6 +102,7 @@ public class PrintVisitor extends Visitor .Default{
 		visitNested( repeated );
 	}
 
+	@Override
 	public void visitBuild( boolean build, boolean destroy )
 	{
 		if ( build == destroy )
@@ -109,6 +113,7 @@ public class PrintVisitor extends Visitor .Default{
 			println( "destroy" );
 	}
 
+	@Override
 	public 
 	void visitRotate( Axis axis, int steps )
 	{
@@ -116,6 +121,7 @@ public class PrintVisitor extends Visitor .Default{
 				+ naming .getName( axis ) );
 	}
 
+	@Override
 	public void visitReflect( Axis blueAxis )
 	{
 		print( "reflect through " );
@@ -127,6 +133,7 @@ public class PrintVisitor extends Visitor .Default{
 		println( naming .getName( blueAxis ) );
 	}
 
+	@Override
 	public
 	void visitMove( Axis axis, AlgebraicNumber length )
 	{
@@ -135,6 +142,7 @@ public class PrintVisitor extends Visitor .Default{
 	    // TODO translate back to original Zomic naming convention
 	}
 
+	@Override
 	public 
 	void visitSymmetry( final Symmetry model, Permute permute ) throws ZomicException
 	{
@@ -155,6 +163,7 @@ public class PrintVisitor extends Visitor .Default{
 		super .visitSymmetry( model, permute );
 	}
 
+	@Override
 	public 
 	void visitNested( Nested compound ) throws ZomicException {
 		++indent;
@@ -162,6 +171,7 @@ public class PrintVisitor extends Visitor .Default{
 		--indent;
 	}
 
+	@Override
 	public 
 	void visitScale( AlgebraicNumber size )
     {
@@ -184,37 +194,57 @@ public class PrintVisitor extends Visitor .Default{
 		atNewLine = true;
 	}
         
+	@Override
 	public
 	void visitUntranslatable( String message )
 	{
 	    println( "untranslatable // " + message );
 	}
 
+	@Override
 	public void visitLabel( String id )
 	{
 		println( "label " + id );
 	}
-
 	
 	public static void main( String[] args )
 	{
+		if(args.length == 0) {
+			System.out.println("Usage: PrintVisitor FileSpec [-new [-show]]");
+			System.out.println("\tFileSpec = path to zomic file");
+			System.out.println("\t-new = optional: use the new Antlr4 Parser");
+			System.out.println("\t-v = optional: display verbose parsing info");
+			System.out.println("\t-new must be specified first if -v is to be used.");
+		}
 		try {
-			File file = new File( args[0] );
+			String fileSpec = args[0];
+			File file = new File( fileSpec );
+			boolean useNewParser = false;
+			if(args.length > 1) {
+				useNewParser = ( "-new".compareToIgnoreCase(args[1]) == 0 );
+			}
+			boolean showProgressMessages = false;
+			if(args.length > 2) {
+				showProgressMessages = ( "-v".compareToIgnoreCase(args[2]) == 0 );
+			}
+			
 			PentagonField field = new PentagonField();
-            IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
-			ZomicStatement program = Parser .parse( new FileInputStream( file ), symmetry );
-			PrintWriter out = new PrintWriter( System.out );
-			program .accept( new PrintVisitor( out, symmetry ) );
-			out .close();
+			IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
+			ZomicStatement program;
+			if(useNewParser) {
+				program = ZomicASTCompiler.compile( file, symmetry, showProgressMessages);
+			} else {
+				program = Parser.parse(new FileInputStream( file ), symmetry);
+			}
+			try (PrintWriter out = new PrintWriter(System.out)) {
+				program.accept(new PrintVisitor(out, symmetry));
+			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ZomicException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 }
-
-

@@ -26,6 +26,7 @@ import com.vzome.core.zomic.program.Scale;
 import com.vzome.core.zomic.program.Symmetry;
 import com.vzome.core.zomic.program.Walk;
 
+@Deprecated
 public class XML2AST extends DefaultHandler
 {
 	protected final Stack m_stmts = new Stack();
