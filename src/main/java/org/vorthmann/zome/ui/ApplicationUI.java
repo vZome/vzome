@@ -55,6 +55,9 @@ public final class ApplicationUI extends DefaultController
 
     public String getProperty( String string )
     {
+        if ( "formatIsSupported".equals( string ) )
+            return "true";
+
         return mProperties .getProperty( string );
     }
 
@@ -195,12 +198,28 @@ public final class ApplicationUI extends DefaultController
         
         mProperties = new Properties( userPreferences );
         mProperties .putAll( commandLineArgs );
+        mProperties .putAll( loadBuildProperties() );
         
         mController = controller;
         mController .setNextController( this );
 
         controller .initialize( mProperties );
     }
+    
+	public static Properties loadBuildProperties()
+	{
+        String defaultRsrc = "build.properties";
+        Properties defaults = new Properties();
+        try {
+            ClassLoader cl = ApplicationUI.class.getClassLoader();
+            InputStream in = cl.getResourceAsStream( defaultRsrc );
+            if ( in != null )
+            	defaults .load( in );
+        } catch ( IOException ioe ) {
+            System.err.println( "problem reading build properties: " + defaultRsrc );
+        }
+        return defaults;
+	}
 
     // This is not used on the Mac, where the MacAdapter is the main class.
     public static void main( String[] args )

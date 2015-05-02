@@ -22,6 +22,8 @@ dependencies {
 // for the 'macappbundle' Gradle plugin
 macAppBundle {
 	appName = project.appName
+    dmgName = "${appName}-MacOSX-${->project.version}"
+    volumeName = dmgName
     delegate.mainClassName = 'com.vzome.platform.mac.Adapter'
 	creatorCode = 'vZ50'
     icon = 'vZomeLogo.icns'

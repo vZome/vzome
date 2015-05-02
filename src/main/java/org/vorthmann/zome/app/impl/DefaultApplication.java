@@ -22,7 +22,6 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.Version;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
@@ -139,15 +138,6 @@ public class DefaultApplication extends DefaultController implements Application
 
         if ( "splash.image.resource".equals( string ) )
             return "org/vorthmann/zome/ui/vZome50Splash.gif";
-
-        if ( "version".equals( string ) )
-            return Version.label;
-
-        if ( "edition".equals( string ) )
-            return Version.edition;
-
-        if ( "formatIsSupported".equals( string ) )
-            return Version.formatIsSupported;
 
         if ( "field.name".equals( string ) )
             return "golden";

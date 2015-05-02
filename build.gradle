@@ -1,3 +1,4 @@
+
 plugins {
     id 'java'
     id 'maven'
@@ -5,16 +6,34 @@ plugins {
     id 'application'
 }
 
+// these environment variables are available during a Jenkins build
+ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'SNAPSHOT'
+ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
+ext.appName = 'vZome'
+ext.edition = appName
+
 group = 'com.vzome'
-version = '5.0-SNAPSHOT'
+version = "5.0-${buildNumber}"
 
 description = 'vzome-desktop'
 
 //sourceCompatibility = 1.5
 //targetCompatibility = 1.5
 
+task recordBuildProperties {
+    def propsFile = file( "$buildDir/buildPropsResource/build.properties" )
+    ext.outputDir = propsFile .getParentFile()
+    doFirst {
+        writeProjectProperties( [ 'version', 'edition', 'buildNumber', 'gitCommit' ], propsFile )
+    }
+}
+processResources { 
+    dependsOn recordBuildProperties
+    from recordBuildProperties.outputDir
+} 
+
+
 // these are for both 'application' and 'macappbundle' Gradle plugins
-ext.appName = 'vZome'
 ext.jvmArgs = [
 //    "java.ext.dirs": ".",
     "apple.laf.useScreenMenuBar": "true",
@@ -98,4 +117,21 @@ subprojects {
     group       = rootProject.group
     version     = rootProject.version
     description = rootProject.name + '-' + project.name
+}
+
+def writeProjectProperties( keys, propsFile )
+{
+    def outputDir = propsFile .getParentFile()
+    outputDir.exists() || outputDir.mkdirs()
+    def buildProps = new Properties()
+    project.properties.findAll( { it.key in keys } ) .each {
+        buildProps .put( it.key, it.value.toString() )
+    }
+    def writer = new FileWriter( propsFile )
+    try {
+        buildProps .store( writer, null )
+        writer.flush()
+    } finally {
+        writer.close()
+    }
 }
