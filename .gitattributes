@@ -36,6 +36,7 @@
 # Declare files that will always have explicit CR, LF or CRLF line endings on checkout. 
 # Future zomic regression tests will explicitly verify the ability to parse each one.
 # Listed alphabetically:
+*.bat text eol=crlf
 *.crlf.zomic text eol=crlf
 *.cr.zomic text eol=cr
 *.lf.zomic text eol=lf
