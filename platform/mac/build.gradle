@@ -23,7 +23,7 @@ dependencies {
 macAppBundle {
 	appName = project.appName
     dmgName = "${appName}-MacOSX-${->project.version}"
-    volumeName = dmgName
+    volumeName = "${dmgName}-build-${->project.buildNumber}"
     delegate.mainClassName = 'com.vzome.platform.mac.Adapter'
 	creatorCode = 'vZ50'
     icon = 'vZomeLogo.icns'
