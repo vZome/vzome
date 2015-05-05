@@ -1,3 +1,12 @@
+// the buildscript closure has to be declared before the plugins closure
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'edu.sc.seis.gradle:launch4j:1.0.6'
+    }
+}
 
 plugins {
     id 'java'
@@ -5,6 +14,10 @@ plugins {
     id 'eclipse'
     id 'application'
 }
+// launch4j is not a Gradle Core plugin, 
+// so it can't be declared with the plugins { } syntax,
+// but it still works using the "apply plugin:" syntax
+apply plugin: 'launch4j' 
 
 // these environment variables are available during a Jenkins build
 ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'SNAPSHOT'
@@ -17,8 +30,8 @@ version = "5.0"
 
 description = 'vzome-desktop'
 
-//sourceCompatibility = 1.5
-//targetCompatibility = 1.5
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 task recordBuildProperties {
     def propsFile = file( "$buildDir/buildPropsResource/build.properties" )
@@ -32,8 +45,8 @@ processResources {
     from recordBuildProperties.outputDir
 } 
 
-
-// these are for both 'application' and 'macappbundle' Gradle plugins
+// used by the 'application' and 'launch4j' Gradle plugins
+// as well as the 'macappbundle' plugin in Gradle sub-projects
 ext.jvmArgs = [
     "apple.laf.useScreenMenuBar": "true",
     "apple.awt.antialiasing": "true",
@@ -46,12 +59,35 @@ ext.vzomeArgs = [  // a list, not a map
     '-entitlement.model.edit', 'true', '-entitlement.lesson.edit', 'true', '-entitlement.all.tools', 'true',
     '-licensed.user', 'whomever' ]
 
-// for the 'application' Gradle plugin
-mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'
+// used by both 'application' and 'launch4j' Gradle plugins
+startScripts {
+    project.mainClassName = "org.vorthmann.zome.ui.ApplicationUI"
+}
+
+// used by the 'application' Gradle plugin
 run.args( vzomeArgs )
 applicationDefaultJvmArgs = [ '-Xmx3048M', "-Djava.ext.dirs=${System.env.'JAVA_HOME'}/jre/lib" ]
 jvmArgs.each { entry ->
     applicationDefaultJvmArgs << "-D$entry.key=$entry.value"
+}
+
+launch4j {
+	mainClassName = project.mainClassName
+	//outputDir = "launch4j"		// path is relative to buildDir
+	jar = "lib/" + project.tasks[JavaPlugin.JAR_TASK_NAME].outputs.files.getSingleFile().name	// path is relative to outputDir
+	icon = "../../platform/windows/resources/icons/vZomeLogo.ico"	// path is relative to outputDir
+	jreMinVersion = project.targetCompatibility.toString() + ".0" + "_30"
+	jreMaxVersion = project.targetCompatibility.toString() + ".0" + "_31"
+	bundledJrePath = "./jre" + jreMaxVersion // path is relative to launch4j.outputDir
+	// TODO: Lots of the config file parameters are not supported by the launch4j plugin
+	// so eventually, it may be better to store a copy of launch4j.xml in the project 
+	// and then override the generateXmlConfig task to just copy it into the outputDir
+	// or use dependencies to wedge a new replaceXmlConfig task in between generateXmlConfig and createExe.
+	// The problem with a static config file is that it wouldn't automatically pick up the dependencies.
+	opt = "-Xmx3048M"
+	// TODO: pass vzomeArgs to the vzome-desktop
+	version = project.version
+	copyright = "Copyright 2015, Scott Vorthmann"
 }
 
 allprojects {
