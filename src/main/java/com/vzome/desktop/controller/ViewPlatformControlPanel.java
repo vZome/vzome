@@ -40,6 +40,8 @@ private JPanel trackpad;
     
     private static int magToTicks( float magnification )
     {
+    	magnification = Math.max( magnification, MIN_MAG );
+    	magnification = Math.min( magnification, MAX_MAG );
         return Math.round( MAG_PER_TICKS * ( magnification - 1f ) );
     }
     
