@@ -52,7 +52,7 @@ public class RenderedModel implements ManifestationChanges
 
 	private boolean enabled = true;
 
-    private boolean colorPanels;
+    private boolean colorPanels = true;
     
     static Logger logger = Logger.getLogger( "com.vzome.core.render.RenderedModel" );
 
