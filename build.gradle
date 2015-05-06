@@ -45,7 +45,7 @@ ext.jvmArgs = [
     "java.util.logging.config.file": "logging.properties" ]
 ext.vzomeArgs = [  // a list, not a map
     '-entitlement.model.edit', 'true', '-entitlement.lesson.edit', 'true', '-entitlement.all.tools', 'true',
-    '-licensed.user', System.getProperty('user.name') ]
+    '-licensed.user', 'whomever' ]
 
 // for the 'application' Gradle plugin
 mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'

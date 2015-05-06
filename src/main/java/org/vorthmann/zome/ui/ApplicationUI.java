@@ -658,8 +658,9 @@ public final class ApplicationUI extends DefaultController
             licensee = "unlicensed";
         else
             licensee = "licensed to " + licensee;
-        JOptionPane.showMessageDialog( null, mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + "\n\n"
-                + "by Scott Vorthmann\n\n"
+        JOptionPane.showMessageDialog( null, mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + ", build "
+        		+ mController .getProperty( "buildNumber" ) + "\n\n"
+                + "  by Scott Vorthmann\n\n"
                 + licensee + "\n\n"
                 + "Acknowledgements:\n\n" + "Paul Hildebrandt\n" + "Marc Pelletier\n" + "David Hall\n"
                 + "David Richter\n" + "Brian Hall\n" + "Dan Duddy\n" + "Fabien Vienne\n" + "George Hart\n"
