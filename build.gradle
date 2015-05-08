@@ -35,7 +35,6 @@ processResources {
 
 // these are for both 'application' and 'macappbundle' Gradle plugins
 ext.jvmArgs = [
-//    "java.ext.dirs": ".",
     "apple.laf.useScreenMenuBar": "true",
     "apple.awt.antialiasing": "true",
     "apple.awt.application.name": appName,
@@ -50,7 +49,7 @@ ext.vzomeArgs = [  // a list, not a map
 // for the 'application' Gradle plugin
 mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'
 run.args( vzomeArgs )
-applicationDefaultJvmArgs = [ '-Xmx3048M' ]
+applicationDefaultJvmArgs = [ '-Xmx3048M', "-Djava.ext.dirs=${System.env.'JAVA_HOME'}/jre/lib" ]
 jvmArgs.each { entry ->
     applicationDefaultJvmArgs << "-D$entry.key=$entry.value"
 }
