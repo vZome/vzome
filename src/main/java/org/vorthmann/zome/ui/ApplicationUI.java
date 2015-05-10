@@ -157,8 +157,10 @@ public final class ApplicationUI extends DefaultController
     
     private final ApplicationController mController;
 
-	private static final String applicationLoggerName = "org.vorthmann.zome.ui.ApplicationUI";
-    private static final Logger logger = Logger .getLogger( applicationLoggerName );
+	// loggerClassName = "org.vorthmann.zome.ui.ApplicationUI"
+	// Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
+	private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
+    private static final Logger logger = Logger .getLogger( loggerClassName );
 
     public ApplicationUI( Properties commandLineArgs,  ApplicationController controller  )
     {
@@ -234,34 +236,36 @@ public final class ApplicationUI extends DefaultController
 
 	// Be sure logConfig is not called until after loadBuildProperties()
 	private void logConfig() {
-		String eol = System.getProperty("line.separator");
-		StringBuilder sb = new StringBuilder(eol);
-		String[][] props = { 
-			{	// use System.getProperty(propName)
+		StringBuilder sb = new StringBuilder("Initializing Application:");
+		appendPropertiesList(sb, null, new String[]
+			{	// use with System.getProperty(propName)
 				"java.version",
 				"java.home",
 				"os.name",
 				"os.arch"
-			}, 
-			{	// use mController.getProperty(propName)
+			}); 
+		appendPropertiesList(sb, mController, new String[]
+			{	// use with ApplicationController.getProperty(propName)
 				"edition",
 				"version",
 				"buildNumber",
 				"gitCommit"
-			} 
-		};
-		boolean sysProp = true;
-		for (String[] propNames : props) {
-			for (String propName : propNames) {
-				String propValue = sysProp 
-						? System.getProperty(propName)
-						: mController.getProperty(propName);
-				propValue = (propValue == null ? "<null>" : propValue);
-				sb.append(propName).append(": '").append(propValue).append("'").append(eol);
-			}
-			sysProp = false;
-		}
+			});
 		logger.config(sb.toString());
+	}
+	
+	private static void appendPropertiesList(StringBuilder sb, ApplicationController src, String[] propNames) {
+		for (String propName : propNames) {
+			String propValue = (src == null)
+					? System.getProperty(propName)
+					: src.getProperty(propName);
+			propValue = (propValue == null ? "<null>" : propValue);
+			sb.append(System.getProperty("line.separator"))
+					.append("    ")
+					.append(propName)
+					.append(" = ")
+					.append(propValue);
+		}
 	}
 	
     // This is not used on the Mac, where the MacAdapter is the main class.
@@ -274,7 +278,7 @@ public final class ApplicationUI extends DefaultController
             initialize( args, codebase );
         } catch ( Throwable e ) {
             e .printStackTrace();
-            Logger .getLogger( applicationLoggerName )
+            Logger .getLogger( loggerClassName )
                 .log( Level.SEVERE, "problem in main()", e );
         }
     }
