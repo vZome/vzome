@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/vzome-desktop/src/main/java/org/vorthmann/zome/ui/ApplicationUI.java"/>
+<listEntry value="/vzome-desktop/platform/mac/src/main/java/com/vzome/platform/mac/Adapter.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -13,8 +13,8 @@
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.vorthmann.zome.ui.ApplicationUI"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.vzome.platform.mac.Adapter"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-entitlement.model.edit true -entitlement.lesson.edit true -entitlement.all.tools true -licensed.user Nobody"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="vzome-desktop"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx3048M -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true -Djava.util.logging.config.file=logging.properties"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx3048M -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true -Djava.util.logging.config.file=logging.properties -Djava.ext.dirs=$JAVA_HOME"/>
 </launchConfiguration>
