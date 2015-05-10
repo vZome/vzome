@@ -606,7 +606,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
                     saveAsAction.actionPerformed( e );
                 else {
                     mController .doFileAction( "save", mFile );
-                    mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "reset.change.count" ) );
                 }
             }
         };
@@ -1285,14 +1284,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             int response = JOptionPane.showConfirmDialog( DocumentFrame.this, "Do you want to save your changes?",
                     "file is changed", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE );
             
-            // TODO I seem to get two calls (and thus two dialogs) If I try to quit (as opposed to close the window)
-            lkjlkj;
-            
             if ( response == JOptionPane.CANCEL_OPTION )
                 return false;
             if ( response == JOptionPane.YES_OPTION )
                 try {
                     saveAction.actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "save" ) );
+                    return false;
                 } catch ( RuntimeException e ) {
                     logger.log( Level.WARNING, "did not save due to error", e );
                     return false;

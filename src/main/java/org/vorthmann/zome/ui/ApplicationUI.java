@@ -515,17 +515,17 @@ public final class ApplicationUI extends DefaultController
                 docController .doAction( "finish.load", e );
                 
                 String title = finalTitle;
-                String edited = docController .getProperty( "edited" );
+                String migrated = docController .getProperty( "migrated" );
 
                 if ( ! userHasEntitlement( "model.edit" ) )
                 {
                     docController .doAction( "switchToArticle", e );
                     if ( url != null )
                         title = url .toExternalForm();
-                    edited = "false";
+                    migrated = "false";
                 }
 
-                if ( ! asTemplate && "true" .equals( edited ) ) // a migration
+                if ( ! asTemplate && "true" .equals( migrated ) ) // a migration
                     if ( "true" .equals( mController .getProperty( "autoFormatConversion" ) ) )
                     {
                         if ( "true" .equals( mController .getProperty( "formatIsSupported" ) ) )
@@ -595,6 +595,8 @@ public final class ApplicationUI extends DefaultController
     private Properties userPreferences;
 
     private File prefsFile;
+
+	private boolean reentrantQuit;
     
     public void recordRecentDoc( String title )
     {
@@ -642,12 +644,18 @@ public final class ApplicationUI extends DefaultController
 
     public boolean quit()
     {
+    	if ( this .reentrantQuit )
+    		return false;
+    	this .reentrantQuit = true;
         Collection wins = new ArrayList( mDocuments .values() );
         for ( Iterator windows = wins .iterator(); windows .hasNext(); ) {
             DocumentFrame window = (DocumentFrame) windows .next();
-            if ( ! window .closeWindow() )
+            if ( ! window .closeWindow() ) {
+            	this .reentrantQuit = false;
                 return false;
+            }
         }
+    	this .reentrantQuit = false;
         return true;
     }
 

@@ -708,11 +708,6 @@ public class EditorController extends DefaultController implements J3dComponentF
             this .syncRendering();
             return;
         }
-        else if ( "reset.change.count" .equals( action ) ) {
-            // just did a save, so lets record the document change count again,
-            //  so isEdited() will return false until more changes occur.
-            this .changeCount  = this .document .getChangeCount();
-        }
 
         mErrors .clearError();
         try {
@@ -1081,6 +1076,12 @@ public class EditorController extends DefaultController implements J3dComponentF
                 FileOutputStream out = new FileOutputStream( file );
                 DomUtils .serialize( doc, out );
                 out.close();
+                // just did a save, so lets record the document change count again,
+                //  so isEdited() will return false until more changes occur.
+                // IMPORTANT! TODO if we ever implement "save a copy", this code should NOT reset
+                //   the count just because we're writing a copy.  The reset will have to move to the
+                //   context of the save.
+                this .changeCount  = this .document .getChangeCount();
                 return;
             }
             if ( command.startsWith( "capture." ) )
@@ -1235,6 +1236,9 @@ public class EditorController extends DefaultController implements J3dComponentF
         }
         if ( "startReader".equals( string ) )
             return Boolean.toString( startReader );
+
+        if ( "migrated".equals( string ) )
+            return Boolean.toString( this .document .isMigrated() );
 
         if ( "edited".equals( string ) )
             return Boolean.toString( this .isEdited() );
