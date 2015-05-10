@@ -240,17 +240,22 @@ jar {
 }
 
 // this is for Heroku
-task stage( dependsOn: build ) {
-    File script = file('Procfile')
-    script.withPrintWriter {
-        it.println "web: java -cp ${getRuntimeClasspath()} com.vzome.servlet.ExportTool"
+task stage( type: Copy, dependsOn: build ) {
+    into "$buildDir/libs"
+    from configurations.runtime
+}
+stage << {
+    File libs = file( "$buildDir/libs" )
+    def jars = []
+    libs .eachFile {
+        jars << "build/libs/${it.getName()}"
+    }
+    File script = file( 'Procfile' )
+    script .withPrintWriter {
+        it.println "web: java -cp ${jars.join(':')} com.vzome.servlet.ExportTool"
     }
 }
-stage.mustRunAfter(clean)
-
-String getRuntimeClasspath() {
-    sourceSets.main.runtimeClasspath.collect { it.absolutePath }.join(':')
-}
+stage .mustRunAfter( clean )
 
 
 uploadArchives {
