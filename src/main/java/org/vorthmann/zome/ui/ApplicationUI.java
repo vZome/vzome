@@ -240,7 +240,9 @@ public final class ApplicationUI extends DefaultController
 		appendPropertiesList(sb, null, new String[]
 			{	// use with System.getProperty(propName)
 				"java.version",
+				"java.vendor",
 				"java.home",
+				"user.dir", // current working directory
 				"os.name",
 				"os.arch"
 			}); 
@@ -316,7 +318,8 @@ public final class ApplicationUI extends DefaultController
 			// It also results in the log files accumulating forever rather than overwriting the older ones
 			//  and leaving only the number of log files specified in the constructor,
 			//  so be sure to specify %u in the format string.
-            fh = new FileHandler( "%h/" + Platform .logsPath() + "/vZomeLog%g.%u.log", 200000, 12 );
+			// If we limit the number of logs to 10, then sorting them alphabetically (0-9) conveniently sorts them by date & time as well.
+            fh = new FileHandler( "%h/" + Platform .logsPath() + "/vZomeLog%g.%u.log", 200000, 10 );
         } catch ( Exception e1 ) {
         	rootLogger .log( Level.WARNING, "unable to set up vZome file log handler", e1 );
             try {
@@ -633,13 +636,11 @@ public final class ApplicationUI extends DefaultController
         } .actionPerformed( null );   
     }
     
-	//private static int mLastOffset = 0;
 	protected static void setInitialPosition(DocumentFrame frame) {
-		// Finds the monitor with the largest area (on multi-monitor system) 
-		// Set the frame size to just a bit smaller than that monitor
-		// so the frame will fit on the screen if the user un-maximizes it.
-		// Default to being maximized on the largest monitor 
-		//  or we could just use the primary monitor.
+		// Find the screen with the largest area if this is a multi-monitor system.
+		// Set the frame size to just a bit smaller than the screen
+		//	so the frame will fit on the screen if the user un-maximizes it.
+		// Default to opening the window as maximized on the selected (or default) monitor.
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
 		if(gs.length > 0) {
@@ -659,7 +660,7 @@ public final class ApplicationUI extends DefaultController
 			}
 			Rectangle bounds = bestDevice.getDefaultConfiguration().getBounds();
 			frame.setLocation(bounds.x, bounds.y);
-			int n = 15, d = n + 1; // reduce to 15/16 of full screen size before we maximize
+			int n = 15, d = n + 1; // set size to 15/16 of full screen size then maximize it
 			frame.setSize(bestMode.getWidth() * n/d, bestMode.getHeight() * n/d);
 		}
 		frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
