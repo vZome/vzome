@@ -1,9 +1,12 @@
 
-
 package org.vorthmann.zome.ui;
 
+import java.awt.DisplayMode;
 import java.awt.EventQueue;
 import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +42,7 @@ import org.vorthmann.ui.SplashScreen;
 
 public final class ApplicationUI extends DefaultController
 {
+	@Override
     public boolean userHasEntitlement( String propName )
     {
         if ( "save.files" .equals( propName ) )
@@ -53,6 +57,7 @@ public final class ApplicationUI extends DefaultController
         // this IS the backstop controller, so no purpose in calling super
     }
 
+	@Override
     public String getProperty( String string )
     {
         if ( "formatIsSupported".equals( string ) )
@@ -61,6 +66,7 @@ public final class ApplicationUI extends DefaultController
         return mProperties .getProperty( string );
     }
 
+	@Override
     public void doFileAction( String command, File file )
     {
         if ( file != null )
@@ -80,6 +86,7 @@ public final class ApplicationUI extends DefaultController
         }
     }
 
+	@Override
     public void doAction( String action, ActionEvent e )
     {
         if ( "new" .equals( action ) )
@@ -130,13 +137,15 @@ public final class ApplicationUI extends DefaultController
         }
     }
 
-    private int mLastUntitled = 0, mLastOffset = 0;
+    private int mLastUntitled = 0;
     
-    private final List mWindows = new ArrayList();
+	// TODO: This collection is only ever added to or removed from, never read or counted. 
+	//  Is it really needed? Maybe for future use?
+    private final List<Frame> mWindows = new ArrayList<>();
     
-    private final Map mDocuments = new HashMap(); // keyed by URL
+    private final Map<String, Frame> mDocuments = new HashMap<>(); // keyed by URL
     
-    private final LinkedList mRecentDocs = new LinkedList();
+    private final LinkedList<String> mRecentDocs = new LinkedList<>();
     
 //    private final JFrame mColorsFrame;
     
@@ -146,9 +155,12 @@ public final class ApplicationUI extends DefaultController
         
 //    private final ColorPanel mColorPanel;
     
-    private ApplicationController mController;
+    private final ApplicationController mController;
 
-    private Logger logger = Logger .getLogger( "org.vorthmann.zome.ui.ApplicationUI" );
+	// loggerClassName = "org.vorthmann.zome.ui.ApplicationUI"
+	// Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
+	private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
+    private static final Logger logger = Logger .getLogger( loggerClassName );
 
     public ApplicationUI( Properties commandLineArgs,  ApplicationController controller  )
     {
@@ -199,11 +211,12 @@ public final class ApplicationUI extends DefaultController
         mProperties = new Properties( userPreferences );
         mProperties .putAll( commandLineArgs );
         mProperties .putAll( loadBuildProperties() );
-        
+        	
         mController = controller;
         mController .setNextController( this );
 
         controller .initialize( mProperties );
+		logConfig();
     }
     
 	public static Properties loadBuildProperties()
@@ -213,7 +226,7 @@ public final class ApplicationUI extends DefaultController
         try {
             ClassLoader cl = ApplicationUI.class.getClassLoader();
             InputStream in = cl.getResourceAsStream( defaultRsrc );
-            if ( in != null )
+            if ( in != null ) 
             	defaults .load( in );
         } catch ( IOException ioe ) {
             System.err.println( "problem reading build properties: " + defaultRsrc );
@@ -221,6 +234,42 @@ public final class ApplicationUI extends DefaultController
         return defaults;
 	}
 
+	// Be sure logConfig is not called until after loadBuildProperties()
+	private void logConfig() {
+		StringBuilder sb = new StringBuilder("Initializing Application:");
+		appendPropertiesList(sb, null, new String[]
+			{	// use with System.getProperty(propName)
+				"java.version",
+				"java.vendor",
+				"java.home",
+				"user.dir", // current working directory
+				"os.name",
+				"os.arch"
+			}); 
+		appendPropertiesList(sb, mController, new String[]
+			{	// use with ApplicationController.getProperty(propName)
+				"edition",
+				"version",
+				"buildNumber",
+				"gitCommit"
+			});
+		logger.config(sb.toString());
+	}
+	
+	private static void appendPropertiesList(StringBuilder sb, ApplicationController src, String[] propNames) {
+		for (String propName : propNames) {
+			String propValue = (src == null)
+					? System.getProperty(propName)
+					: src.getProperty(propName);
+			propValue = (propValue == null ? "<null>" : propValue);
+			sb.append(System.getProperty("line.separator"))
+					.append("    ")
+					.append(propName)
+					.append(" = ")
+					.append(propValue);
+		}
+	}
+	
     // This is not used on the Mac, where the MacAdapter is the main class.
     public static void main( String[] args )
     {
@@ -231,11 +280,11 @@ public final class ApplicationUI extends DefaultController
             initialize( args, codebase );
         } catch ( Throwable e ) {
             e .printStackTrace();
-            Logger .getLogger( "org.vorthmann.zome.ui.ApplicationUI" )
+            Logger .getLogger( loggerClassName )
                 .log( Level.SEVERE, "problem in main()", e );
         }
     }
-    
+	
     /**
      * A common entry point for main() and WebStartWrapper.main().
      * 
@@ -258,17 +307,25 @@ public final class ApplicationUI extends DefaultController
          */
 
         Logger rootLogger = Logger .getLogger( "" );
+		rootLogger.setLevel(Level.CONFIG);
         File logsFolder = Platform .logsFolder();
         logsFolder .mkdir();
         Handler fh = null;
         try {
-            fh = new FileHandler( "%h/" + Platform .logsPath() + "/vZomeLog%g.log", 200000, 12 );
+			// If there is a log file naming conflict and no "%u" field has been specified, 
+			//  an incremental unique number will be added at the end of the filename after a dot.
+			// This behavior interferes with file associations based on the .log file extension.
+			// It also results in the log files accumulating forever rather than overwriting the older ones
+			//  and leaving only the number of log files specified in the constructor,
+			//  so be sure to specify %u in the format string.
+			// If we limit the number of logs to 10, then sorting them alphabetically (0-9) conveniently sorts them by date & time as well.
+            fh = new FileHandler( "%h/" + Platform .logsPath() + "/vZomeLog%g.%u.log", 200000, 10 );
         } catch ( Exception e1 ) {
         	rootLogger .log( Level.WARNING, "unable to set up vZome file log handler", e1 );
             try {
                 fh = new FileHandler();
             } catch ( Exception e2 ) {
-            	rootLogger .log( Level.WARNING, "unable to set up default file log handler", e1 );
+            	rootLogger .log( Level.WARNING, "unable to set up default file log handler", e2 );
             }        
         }
         if ( fh != null )
@@ -276,9 +333,7 @@ public final class ApplicationUI extends DefaultController
             fh .setFormatter( new SimpleFormatter() );
             rootLogger .addHandler( fh );
         }
-        
-        final Logger logger = Logger .getLogger( "org.vorthmann.zome.ui.ApplicationUI" );
-        
+
         Properties props = new Properties();
         String urlStr = null;
         for ( int i = 0; i < args.length; i++ ) {
@@ -303,7 +358,7 @@ public final class ApplicationUI extends DefaultController
             logger .log( Level.SEVERE, "controller class could not instantiate: " + controllerClassName, e );
             System .exit( 0 );
         }
-                
+
         SplashScreen splash = null;
         String splashImage = props .getProperty( "splash" );
         if ( splashImage == null )
@@ -316,9 +371,10 @@ public final class ApplicationUI extends DefaultController
         // NOW we're ready to spend the cost of the controller init
         ApplicationUI appUI = new ApplicationUI( props, controller );
         // props have now been copied to the appUI, so we can add props for the initial doc if we want
-        
+
         ErrorChannel appErrors =  new ErrorChannel()
         {
+			@Override
             public void reportError( String errorCode, Object[] arguments )
             {
             	// code copied from DocumentFrame!
@@ -330,16 +386,17 @@ public final class ApplicationUI extends DefaultController
                 } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
                     errorCode = ( (Exception) arguments[0] ).getMessage();
                     logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
-                    errorCode = "internal error, see vZomeLog0.log in your home directory";
+                    errorCode = "internal error, see vZomeLog0.0.log in your home directory";
                 } else {
                     logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
-                    ; // TODO use resources
+                    // TODO use resources
                 }
-                    ; // TODO use resources
+                    // TODO use resources
                 JOptionPane .showMessageDialog( null, errorCode,
                         "Application Error", JOptionPane.ERROR_MESSAGE );
             }
 
+			@Override
             public void clearError()
             {}
         };
@@ -502,13 +559,13 @@ public final class ApplicationUI extends DefaultController
         
         final DocumentFrame frame = new DocumentFrame( this, file, docController );
         
-        frame .setLocation( 20*mLastOffset, 20*mLastOffset );
-        mLastOffset = (++mLastOffset) % 10;
-        
+		setInitialPosition(frame);
+
         final String finalTitle = title;
         final String NL = System .getProperty( "line.separator" );
         new ExclusiveAction( frame .getExcluder() )
         {
+			@Override
             protected void doAction( ActionEvent e ) throws Exception
             {
             	// exceptions here will end up in showError() below
@@ -566,6 +623,7 @@ public final class ApplicationUI extends DefaultController
                 documentFrameRenamed( null, title, frame );
             }
 
+			@Override
             protected void showError( Exception e )
             {
                 JOptionPane .showMessageDialog( frame,
@@ -575,10 +633,39 @@ public final class ApplicationUI extends DefaultController
                 frame .dispose();
             }
             
-        } .actionPerformed( null );
-        
+        } .actionPerformed( null );   
     }
     
+	protected static void setInitialPosition(DocumentFrame frame) {
+		// Find the screen with the largest area if this is a multi-monitor system.
+		// Set the frame size to just a bit smaller than the screen
+		//	so the frame will fit on the screen if the user un-maximizes it.
+		// Default to opening the window as maximized on the selected (or default) monitor.
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		if(gs.length > 0) {
+			int bestIndex = 0;
+			GraphicsDevice bestDevice = gs[bestIndex];
+			DisplayMode bestMode = bestDevice.getDisplayMode();
+			int bestArea = bestMode.getHeight() * bestMode.getWidth();
+			for (int i = bestIndex+1; i < gs.length; i++) {
+				GraphicsDevice testDevice = gs[i];
+				DisplayMode testMode = testDevice.getDisplayMode();
+				int testArea = testMode.getHeight() * testMode.getWidth();
+				if(bestArea < testArea) {
+					bestArea = testArea;					
+					bestMode = testMode;					
+					bestDevice = testDevice;
+				}
+			}
+			Rectangle bounds = bestDevice.getDefaultConfiguration().getBounds();
+			frame.setLocation(bounds.x, bounds.y);
+			int n = 15, d = n + 1; // set size to 15/16 of full screen size then maximize it
+			frame.setSize(bestMode.getWidth() * n/d, bestMode.getHeight() * n/d);
+		}
+		frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
+	}
+	
     public void documentFrameClosed( DocumentFrame frame )
     {
 //      if ( doc .isChanged() ) {
@@ -647,7 +734,7 @@ public final class ApplicationUI extends DefaultController
     	if ( this .reentrantQuit )
     		return false;
     	this .reentrantQuit = true;
-        Collection wins = new ArrayList( mDocuments .values() );
+        Collection<Frame> wins = new ArrayList<>( mDocuments .values() );
         for ( Iterator windows = wins .iterator(); windows .hasNext(); ) {
             DocumentFrame window = (DocumentFrame) windows .next();
             if ( ! window .closeWindow() ) {
@@ -678,7 +765,3 @@ public final class ApplicationUI extends DefaultController
                 + "  Copyright 2015, Scott Vorthmann \n", "About vZome", JOptionPane.PLAIN_MESSAGE );
     }
 } 
-
-
-
-
