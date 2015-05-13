@@ -14,7 +14,7 @@ targetCompatibility = 1.8
 ext.antlr4 = [
     antlrSource:    "src/main/antlr",
     // Simplify multiple IDE integration by putting destinationDir under src/main/java 
-    // Some IDEs don't corectly read multiple source folders from build.gradle. 
+    // Some IDEs don't correctly read multiple source folders from build.gradle. 
     destinationDir: "src/main/java/com/vzome/core/antlr/generated",
     grammarpackage:               "com.vzome.core.antlr.generated"
 ]
@@ -69,8 +69,8 @@ dependencies {
 // Don't necessarily want to turn on these warnings yet, but here's the code to do it eventually.
 //gradle.projectsEvaluated {
 //	tasks.withType(JavaCompile) {
-//		options.compilerArgs 
-//		<< "-Xlint:unchecked" 
+//		options.compilerArgs \
+//		<< "-Xlint:unchecked" \
 //		<< "-Xlint:deprecation"
 //	}
 //}
@@ -79,7 +79,7 @@ task makeAntlrOutputDir {
 	outputs.dir antlr4.destinationDir
 	doLast() {
 		// Be sure to wrap this inside doLast(). 
-		// Otherwise it wiil run during the initialization or configuration phase, even when an unrelated task is is run.
+		// Otherwise it will run during the initialization or configuration phase, even when an unrelated task is is run.
 		//println 'Making Antlr Output Directory: ' + antlr4.destinationDir
 		file(antlr4.destinationDir).mkdirs()
 	}
@@ -88,7 +88,7 @@ task makeAntlrOutputDir {
 
 // This is a start in case we ever want to put each language into its own folder.
 // It got messy to do with separate Lexer and Parser grammars so I dumped them all in the same folder for now
-// We may eventually remove this part if we dont use it.
+// We may eventually remove this part if we don't use it.
 
 //task makeAntlrOutputDirTree << {
 //    String pkg = antlr4.grammarpackage.replaceAll("\\.", "/")
@@ -108,7 +108,7 @@ task makeAntlrOutputDir {
 //    }
 //}
 
-// Accordiing to https://gradle.org/docs/current/userguide/more_about_tasks.html...
+// According to https://gradle.org/docs/current/userguide/more_about_tasks.html...
 // A task with no defined outputs will never be considered up-to-date.
 // A task with only outputs (no inputs) defined will be considered up-to-date if those outputs are unchanged since the previous build.
 task compileAntlrGrammars(type: JavaExec , dependsOn: makeAntlrOutputDir) {
@@ -149,7 +149,7 @@ compileJava {
 task cleanAntlr {
 	doLast() {
 		// Be sure to wrap this inside doLast(). 
-		// Otherwise it wiil run during the initialization or configuration phase, even when an unrelated task is is run.
+		// Otherwise it will run during the initialization or configuration phase, even when an unrelated task is is run.
 		// It would also run when the NetBeas IDE first loaded the project.
 		//println 'Deleting Antlr Directory: ' + antlr4.destinationDir
 		delete antlr4.destinationDir
@@ -163,7 +163,7 @@ task makeRegressionOutputDir {
 	outputs.dir regressionOutputDir
 	doLast() {
 		// Be sure to wrap this inside doLast(). 
-		// Otherwise it wiil run during the initialization or configuration phase, even when an unrelated task is is run.
+		// Otherwise it will run during the initialization or configuration phase, even when an unrelated task is is run.
 		println 'Making Regression Output Directory: ' + regressionOutputDir
 		regressionOutputDir.mkdirs()
 	}
