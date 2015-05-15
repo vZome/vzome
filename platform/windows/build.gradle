@@ -8,9 +8,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'java'
-}
 // launch4j is not a Gradle Core plugin, 
 // so it can't be declared with the plugins { } syntax,
 // but it still works using the "apply plugin:" syntax
@@ -31,7 +28,7 @@ ext.companyName = 'Scott Vorthmann'
 ext.copyright = "Copyright ${Calendar.getInstance().get(Calendar.YEAR)}, ${companyName}"	// year that generateXmlConfig task is run
 ext.l4jxmlFileName = 'launch4j.xml'
 ext.l4jOutputDir = 'launch4j/windows'		// path is relative to buildDir
-ext.l4jOutputBaseFileName = "${rootProject.name}.${version}"
+ext.l4jOutputBaseFileName = "${rootProject.appName}-Windows-x64-${version}"
 ext.bundledJrePath = './jre/'				// path is relative to launch4j.outputDir and must start with '.'
 
 // JRE version naming convention based on Oracle's Java version naming convention (e.g. 1.8.0_45)
@@ -41,7 +38,7 @@ ext.jreRevision = 0
 // 31 = Oracle
 // 40 = Azul			// TODO: Manually repackage the "jre" folder and the "release" file for 40 (Azul) as described in README.md
 // 45 = Oracle
-ext.jreBuildNumber = 40 // Default is the Azul JRE
+ext.jreBuildNumber = 45 // Default is the latest Oracle JRE
 
 // allow ext.jreBuildNumber to be overridden by the gradle command line 
 // e.g. gradle createExe -PjreBuildOverride=45
@@ -56,7 +53,7 @@ ext.jrePriorVersion  = "${targetCompatibility}.${jreRevision}_${jreBuildNumber-1
 // these are used by the zip and distribution tasks after launch4j has run
 ext.jreArchiveSourcePath = 'jre/x64/'		// path is relative to the root of this subproject
 ext.jreDistributionPath = "$l4jOutputDir/$bundledJrePath"
-ext.win64InstallerBaseFileName = "setup-${rootProject.name}"
+ext.win64InstallerBaseFileName = "extract-${rootProject.appName}-Windows-x64"
 
 launch4j {
 	xmlFileName = project.l4jxmlFileName
@@ -92,7 +89,7 @@ launch4j {
 	// or just completely override the generateXmlConfig task.
 	// The problem with a static config file in the project is that it wouldn't automatically pick up the dependencies.
 
-	// TODO: fileDescription, productName and internalName elements of versionInfo are hard coded in the plugin to use project.name 
+	// TODO: fileDescription, productName and internalName elements of versionInfo are hard-coded in the plugin to use project.name
 	// On 5/12/2015, I posted a feature request at https://code.google.com/p/gradle-launch4j/wiki/Intro
 	//  to let these three properties be configurable in the plugin.
 	// Eventually, once the plugin supports them, I want them to use these values:
@@ -147,7 +144,7 @@ task extractWin64Jre(type: Sync) {
 		}
 	}
 	group = 'Windows Distribution'
-	description = "Unzips the Windows 64 bit JRE from ${src} into the bundled JRE path."
+	description = "Unzips the Windows 64-bit JRE from ${src} into the bundled JRE path."
 }
 
 task zipWin64Distribution(type: Zip) {
@@ -157,7 +154,7 @@ task zipWin64Distribution(type: Zip) {
 	baseName = win64InstallerBaseFileName
 	// TODO: We'll eventually want to not include the jre version in the installer distribution. 
 	// Here's where that gets changed.
-	classifier = "x64-jre${jreTargetVersion}"
+	//classifier = "x64-jre${jreTargetVersion}"
 	//classifier = 'x64'
 
 	doLast() {
@@ -166,7 +163,7 @@ task zipWin64Distribution(type: Zip) {
 		}
 	}
 	group = 'Windows Distribution'
-	description = 'Generates the 64 bit Windows zip file distribution.'
+	description = 'Generates the 64-bit Windows zip file distribution.'
 	dependsOn { [ "createExe", "extractWin64Jre" ] }
 }
 
@@ -184,13 +181,13 @@ task createWin64sfxInstaller(type: FileConcatTask) {
 	}
 	
 	group = 'Windows Distribution'
-	description = 'Generates the 64 bit Windows self extracting installer.'
+	description = 'Generates the 64-bit Windows self-extracting installer.'
 	dependsOn zipWin64Distribution
 }
 
 task distSfx {
 	group = 'Windows Distribution'
-	description = 'Primary task to be invoked for creating the self extracting installer with launch4j and subsequent build steps.'
+	description = 'Primary task to be invoked for creating the self-extracting installer with launch4j and subsequent build steps.'
 	dependsOn createWin64sfxInstaller
 }
 
