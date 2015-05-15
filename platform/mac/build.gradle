@@ -19,19 +19,22 @@ dependencies {
     compile project( ':' )
 }
 
+sourceSets.main.output.classesDir 'build/classes'
+sourceSets.main.output.resourcesDir 'build/resources'
+
 // for the 'macappbundle' Gradle plugin
 macAppBundle {
-	appName = project.appName
+    appName = project.appName
     dmgName = "${appName}-MacOSX-${->project.version}"
     volumeName = "${dmgName}-build-${->project.buildNumber}"
     delegate.mainClassName = 'com.vzome.platform.mac.Adapter'
-	creatorCode = 'vZ50'
+    creatorCode = 'vZ50'
     icon = 'vZomeLogo.icns'
     bundleJRE = 'true'
     javaProperties.putAll jvmArgs
     javaProperties.put 'java.ext.dirs', '.'
     arguments.addAll vzomeArgs
-	bundleExtras = [ CFBundleDocumentTypes: [ [
+    bundleExtras = [ CFBundleDocumentTypes: [ [
         CFBundleTypeExtensions: [ project.appName ],
         CFBundleTypeIconFile: 'vZomeLogo.icns',
         CFBundleTypeName: project.appName + ' model',
