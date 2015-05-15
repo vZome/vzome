@@ -54,4 +54,7 @@ macAppBundle {
         groovy.xml.XmlUtil .serialize( plist, writer )
     }
 }
+// the macAppBundle extension adds this unwanted dependency
+assemble .dependsOn .remove( createDmg )
+//println assemble.taskDependencies.values
 
