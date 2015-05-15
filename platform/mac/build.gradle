@@ -19,8 +19,19 @@ dependencies {
     compile project( ':' )
 }
 
+// The classesDir adjustment is necessary so that mac-5.0.jar does not end up containing
+//  all the classes of vzome-desktop.  The correct fix is actually in vzome-desktop/build.gradle,
+//  to remove the common buildDir for all subprojects.  However, applying that fix causes a
+//  mysterious failure from "createDmg":
+//       hdiutil: create failed - error -5341
+//  I am unable to determine what the error code means.  After much experimentation, the
+//  failure correlates with a size-optimized mac-5.0.jar.  If I leave in all or even some of
+//  the extraneous classes and resources, the error does not appear.  Therefore I have
+//  found an acceptable compromise.  For classes, I use a separate directory, configured
+//  here.  For resources, I continue to use the master build/main/resources directory.
+//  Finally, to minimize unnecessary bloat, I am removing all the old, unused splash images
+//  from the source.
 sourceSets.main.output.classesDir 'build/classes'
-sourceSets.main.output.resourcesDir 'build/resources'
 
 // for the 'macappbundle' Gradle plugin
 macAppBundle {
