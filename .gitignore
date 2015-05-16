@@ -12,6 +12,7 @@ target/
 temp/
 
 // files
+*.iml
 *.unused
 .classpath
 .DS_Store
@@ -20,4 +21,4 @@ gradle-app.setting
 run-vzome.bat
 run-vzome.sh
 Thumbs.db
-vzome-desktop.iml
+local.properties

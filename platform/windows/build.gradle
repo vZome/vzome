@@ -27,8 +27,9 @@ dependencies {
 ext.companyName = 'Scott Vorthmann'
 ext.copyright = "Copyright ${Calendar.getInstance().get(Calendar.YEAR)}, ${companyName}"	// year that generateXmlConfig task is run
 ext.l4jxmlFileName = 'launch4j.xml'
-ext.l4jOutputDir = 'launch4j/windows'		// path is relative to buildDir
 ext.l4jOutputBaseFileName = "${rootProject.appName}-Windows-x64-${version}"
+def folderName = "${l4jOutputBaseFileName}-build-${rootProject.buildNumber}"
+ext.l4jOutputDir = "launch4j/${folderName}"  // path is relative to buildDir
 ext.bundledJrePath = './jre/'				// path is relative to launch4j.outputDir and must start with '.'
 
 // JRE version naming convention based on Oracle's Java version naming convention (e.g. 1.8.0_45)
@@ -51,7 +52,7 @@ if( project.hasProperty( 'jreBuildOverride' ) ) {
 ext.jreTargetVersion = "${targetCompatibility}.${jreRevision}_${jreBuildNumber}"   // target JRE version   (e.g. 1.8.0_45)
 ext.jrePriorVersion  = "${targetCompatibility}.${jreRevision}_${jreBuildNumber-1}" // target JRE version-1 (e.g. 1.8.0_44)
 // these are used by the zip and distribution tasks after launch4j has run
-ext.jreArchiveSourcePath = 'jre/x64/'		// path is relative to the root of this subproject
+ext.jreArchiveSourcePath = project.hasProperty( 'jreZips' ) ? project.getProperty( 'jreZips' ) : 'jre/x64/' // path is relative to the root of this subproject
 ext.jreDistributionPath = "$l4jOutputDir/$bundledJrePath"
 ext.win64InstallerBaseFileName = "extract-${rootProject.appName}-Windows-x64"
 
@@ -148,14 +149,10 @@ task extractWin64Jre(type: Sync) {
 }
 
 task zipWin64Distribution(type: Zip) {
-	def src = "${buildDir}/${l4jOutputDir}"
+	def src = "${buildDir}/launch4j"
 	from src
-		exclude "${launch4j.xmlFileName}"
+		exclude "${folderName}/${launch4j.xmlFileName}"
 	baseName = win64InstallerBaseFileName
-	// TODO: We'll eventually want to not include the jre version in the installer distribution. 
-	// Here's where that gets changed.
-	//classifier = "x64-jre${jreTargetVersion}"
-	//classifier = 'x64'
 
 	doLast() {
 		if(getDidWork()) {
