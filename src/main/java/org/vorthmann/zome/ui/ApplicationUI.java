@@ -219,8 +219,8 @@ public final class ApplicationUI extends DefaultController
         mController = controller;
         mController .setNextController( this );
 
+		logConfig( mProperties );
         controller .initialize( mProperties );
-		logConfig();
     }
     
 	public static Properties loadBuildProperties()
@@ -239,8 +239,8 @@ public final class ApplicationUI extends DefaultController
 	}
 
 	// Be sure logConfig is not called until after loadBuildProperties()
-	private void logConfig() {
-		StringBuilder sb = new StringBuilder("Initializing Application:");
+	private void logConfig( Properties src ) {
+		StringBuilder sb = new StringBuilder("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Initializing Application:");
 		appendPropertiesList(sb, null, new String[]
 			{	// use with System.getProperty(propName)
 				"java.version",
@@ -250,7 +250,7 @@ public final class ApplicationUI extends DefaultController
 				"os.name",
 				"os.arch"
 			}); 
-		appendPropertiesList(sb, mController, new String[]
+		appendPropertiesList(sb, src, new String[]
 			{	// use with ApplicationController.getProperty(propName)
 				"edition",
 				"version",
@@ -260,7 +260,7 @@ public final class ApplicationUI extends DefaultController
 		logger.config(sb.toString());
 	}
 	
-	private static void appendPropertiesList(StringBuilder sb, ApplicationController src, String[] propNames) {
+	private static void appendPropertiesList(StringBuilder sb, Properties src, String[] propNames) {
 		for (String propName : propNames) {
 			String propValue = (src == null)
 					? System.getProperty(propName)
@@ -284,8 +284,7 @@ public final class ApplicationUI extends DefaultController
             initialize( args, codebase );
         } catch ( Throwable e ) {
             e .printStackTrace();
-            Logger .getLogger( loggerClassName )
-                .log( Level.SEVERE, "problem in main()", e );
+            System.out.println( "problem in main(): " + e.getMessage() );
         }
     }
 	
@@ -323,7 +322,10 @@ public final class ApplicationUI extends DefaultController
 			//  and leaving only the number of log files specified in the constructor,
 			//  so be sure to specify %u in the format string.
 			// If we limit the number of logs to 10, then sorting them alphabetically (0-9) conveniently sorts them by date & time as well.
-            fh = new FileHandler( "%h/" + Platform .logsPath() + "/vZomeLog%g.%u.log", 200000, 10 );
+        	// 
+        	// SV: I've reversed the %u and %g, so that sorting by name puts related logs together, in order.  The Finder / Explorer already
+        	//   knows how to sort by date, so we don't need to support that.
+            fh = new FileHandler( "%h/" + Platform .logsPath() + "/vZomeLog%u.%g.log", 500000, 10 );
         } catch ( Exception e1 ) {
         	rootLogger .log( Level.WARNING, "unable to set up vZome file log handler", e1 );
             try {
@@ -381,7 +383,9 @@ public final class ApplicationUI extends DefaultController
             splash = new SplashScreen( splashImage );
             splash .splash();
         }
-        
+        if ( logger .isLoggable( Level .INFO ) )
+            logger .info( "splash screen displayed" );
+
         // NOW we're ready to spend the cost of the controller init
         ApplicationUI appUI = new ApplicationUI( props, controller );
         // props have now been copied to the appUI, so we can add props for the initial doc if we want

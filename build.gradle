@@ -27,6 +27,7 @@ task recordBuildProperties {
     doFirst {
         writeProjectProperties( [ 'version', 'edition', 'buildNumber', 'gitCommit' ], propsFile )
     }
+    println 'recorded build properties'
 }
 processResources { 
     dependsOn recordBuildProperties
