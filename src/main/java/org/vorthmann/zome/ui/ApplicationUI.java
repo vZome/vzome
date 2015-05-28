@@ -363,6 +363,16 @@ public final class ApplicationUI extends DefaultController
             System .exit( 0 );
         }
 
+		if( System.getProperty("os.name").toLowerCase().contains("windows")) {
+			if( "console".compareToIgnoreCase(System.getenv("SESSIONNAME")) != 0) {
+				logger.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
+				final String msg = "vZome cannot be run under Windows Terminal Services.";
+				logger.severe(msg);
+				JOptionPane.showMessageDialog( null, msg, "vZome Fatal Error", JOptionPane.ERROR_MESSAGE );
+				System .exit( 0 );
+			}
+		}
+
         SplashScreen splash = null;
         String splashImage = props .getProperty( "splash" );
         if ( splashImage == null )
