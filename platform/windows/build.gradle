@@ -1,17 +1,18 @@
 // the buildscript closure has to be declared before the plugins closure
 buildscript {
     repositories {
-        mavenCentral()
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
     }
     dependencies {
-        classpath 'edu.sc.seis.gradle:launch4j:1.0.6'
+        classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:1.1.0'
     }
 }
 
-// launch4j is not a Gradle Core plugin, 
-// so it can't be declared with the plugins { } syntax,
-// but it still works using the "apply plugin:" syntax
-apply plugin: 'launch4j' 
+plugins {
+  id "edu.sc.seis.launch4j" version "1.1.0"
+}
 
 dependencies {
     compile project( ':' )
@@ -66,37 +67,30 @@ launch4j {
 	jreMinVersion = project.jrePriorVersion
 	jreMaxVersion = project.jreTargetVersion
 	bundledJrePath = project.bundledJrePath	// path is relative to launch4j.outputDir
+	bundledJre64Bit = true
+	jdkPreference = 'jdkOnly' // default is 'preferJre'
+	jreRuntimeBits = '64'
 
 	opt = '-Xmx3048M'
-	// most of the rootProject.jvmArgs have apple or macos in the name, but I'm going to include all of them anyway for now...
+	// Most of the rootProject.jvmArgs have apple in the name, but I'm going to include all of them anyway for now...
 	rootProject.jvmArgs.each { entry ->
 		opt = opt + " -D${entry.key}=${entry.value}"
 	}
-	cmdLine = ''  // docs say cmdLine is boolean, but code says it's a String just as we'd expect.
+	cmdLine = ''
 	def sp = ''
 	rootProject.vzomeArgs.each { entry ->
 		cmdLine = cmdLine + "${sp}${entry}"
 		sp = ' '
 	}
 
-	// The companyName element of versionInfo is supported by launch4j, but not (yet) by the plugin.
-	//companyName = project.companyName 
+	// Several of the plugin property names don't exactly match the corresponding XML element.
+	companyName = project.companyName 
 	version = project.version
+	textVersion = project.version
 	copyright = project.copyright
-
-	// TODO: Lots of the config file parameters are not supported by the launch4j plugin
-	// so eventually, it may be better to store a copy of launch4j.xml in the project 
-	// and then overload the generateXmlConfig task to just copy it into the outputDir
-	// or just completely override the generateXmlConfig task.
-	// The problem with a static config file in the project is that it wouldn't automatically pick up the dependencies.
-
-	// TODO: fileDescription, productName and internalName elements of versionInfo are hard-coded in the plugin to use project.name
-	// On 5/12/2015, I posted a feature request at https://code.google.com/p/gradle-launch4j/wiki/Intro
-	//  to let these three properties be configurable in the plugin.
-	// Eventually, once the plugin supports them, I want them to use these values:
-	//fileDescription = 'Generates 3D zome models'
-	//productName = rootProject.name
-	//internalName = rootProject.name
+	description = 'Generates virtual zome 3D models'
+	productName = rootProject.name
+	internalName = rootProject.name
 }
 
 // msg is only displayed if the gradle logging level is set with command line parameter '--info' or '--debug'

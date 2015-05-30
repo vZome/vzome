@@ -178,20 +178,24 @@ public final class ApplicationUI extends DefaultController
         
         File prefsFolder = Platform .getPreferencesFolder();        
         prefsFile = new File( prefsFolder, "vZome.preferences" );
+		final String loadPrefMsg = "User Preferences loaded from ";
         try {
             InputStream in = new FileInputStream( prefsFile );
             userPreferences .load( in );
+			logger.config(loadPrefMsg + prefsFile.getAbsolutePath());
         } catch ( IOException ioe ) {
             prefsFolder = new File( System.getProperty( "user.home" ) );
             prefsFile = new File( prefsFolder, "vZome.preferences" );
             try {
                 InputStream in = new FileInputStream( prefsFile );
                 userPreferences .load( in );
+				logger.config(loadPrefMsg + prefsFile.getAbsolutePath());
             } catch ( IOException ioe2 ) {
                 prefsFile = new File( prefsFolder, ".vZome.prefs" );
                 try {
                     InputStream in = new FileInputStream( prefsFile );
                     userPreferences .load( in );
+					logger.config(loadPrefMsg + prefsFile.getAbsolutePath());
                 } catch ( IOException ioe3 ) {
                     // TODO record the preferences file
                     System.out
@@ -229,7 +233,7 @@ public final class ApplicationUI extends DefaultController
             if ( in != null ) 
             	defaults .load( in );
         } catch ( IOException ioe ) {
-            System.err.println( "problem reading build properties: " + defaultRsrc );
+            logger.warning( "problem reading build properties: " + defaultRsrc );
         }
         return defaults;
 	}
@@ -358,6 +362,16 @@ public final class ApplicationUI extends DefaultController
             logger .log( Level.SEVERE, "controller class could not instantiate: " + controllerClassName, e );
             System .exit( 0 );
         }
+
+		if( System.getProperty("os.name").toLowerCase().contains("windows")) {
+			if( "console".compareToIgnoreCase(System.getenv("SESSIONNAME")) != 0) {
+				logger.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
+				final String msg = "vZome cannot be run under Windows Terminal Services.";
+				logger.severe(msg);
+				JOptionPane.showMessageDialog( null, msg, "vZome Fatal Error", JOptionPane.ERROR_MESSAGE );
+				System .exit( 0 );
+			}
+		}
 
         SplashScreen splash = null;
         String splashImage = props .getProperty( "splash" );

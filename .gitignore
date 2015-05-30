@@ -1,4 +1,4 @@
-// folders
+# folders (in alphabetical order)
 .gradle/
 .idea/
 .nb-gradle/
@@ -11,14 +11,14 @@ repos/
 target/
 temp/
 
-// files
+# files (in alphabetical order)
 *.iml
 *.unused
 .classpath
 .DS_Store
 .project
 gradle-app.setting
+local.properties
 run-vzome.bat
 run-vzome.sh
 Thumbs.db
-local.properties
