@@ -86,8 +86,9 @@ public class DefaultApplication extends DefaultController implements Application
         			extension = "py";
         		else if ( fileName .endsWith( ".vef" ) )
         			extension = "vef";
-        		else if ( fileName .endsWith( ".zomod" ) )
-        			extension = "zomod";
+				// zomod support removed in vzome-core 5.0.3
+//        		else if ( fileName .endsWith( ".zomod" ) )
+//        			extension = "zomod";
         		else if ( fileName .endsWith( ".zcd" ) )
         			extension = "zcd";
         		else {

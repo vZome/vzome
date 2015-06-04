@@ -1046,10 +1046,15 @@ public class EditorController extends DefaultController implements J3dComponentF
         }
     }
 
+	@Override
     public void doScriptAction( String command, String script )
     {
-        if ( command.equals( "runZomicScript" ) || command.equals( "runPythonScript" )
-        		|| command.equals( "import.vef" ) || command.equals( "import.zomod" ) )
+        if ( command.equals( "runZomicScript" ) 
+				|| command.equals( "runPythonScript" )
+        		|| command.equals( "import.vef" ) 
+				// zomod support removed in vzome-core 5.0.3
+				//|| command.equals( "import.zomod" ) 
+				)
         	document .doScriptAction( command, script );
         else
         	super .doScriptAction( command, script );
@@ -1141,7 +1146,10 @@ public class EditorController extends DefaultController implements J3dComponentF
                 }
                 return;
             }
-            if ( command.equals( "import.vef" ) || command.equals( "import.zomod" ) ) {
+            if ( command.equals( "import.vef" ) 
+					// zomod support removed in vzome-core 5.0.3
+					// || command.equals( "import.zomod" )
+					) {
                 String vefData = readFile( file );
                 document .doScriptAction( command, vefData );
                 return;

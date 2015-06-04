@@ -683,8 +683,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         JMenu submenu = new JMenu( "Import 3D..." );
         import3dSubmenu = submenu;
-        import3dSubmenu .add( createMenuItem( "Zomod",
-                        new ControllerFileAction( new FileDialog( this ), true, "import.zomod", "zomod", mController ) ) );
+		// zomod support removed in vzome-core 5.0.3
+//        import3dSubmenu .add( createMenuItem( "Zomod",
+//                        new ControllerFileAction( new FileDialog( this ), true, "import.zomod", "zomod", mController ) ) );
         import3dSubmenu.add( createMenuItem( "4D VEF projection", new ControllerFileAction( new FileDialog( this ), true, "import.vef", "vef",
                 mController ) ) );
         menu.add( import3dSubmenu );
