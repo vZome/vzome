@@ -73,11 +73,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             this.pickerPopup = pickerPopup;
         }
 
+		@Override
         public void mousePressed( MouseEvent e )
         {
             maybeShowPopup( e );
         }
 
+		@Override
         public void mouseReleased( MouseEvent e )
         {
             maybeShowPopup( e );
@@ -123,7 +125,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
     private CardLayout modelArticleCardLayout;
 
-    private static Logger logger = Logger.getLogger( "org.vorthmann.zome.ui" );
+    private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui" );
 
     private LessonPanel lessonPanel;
 
@@ -273,6 +275,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         final Controller.ErrorChannel errors = new Controller.ErrorChannel()
         {
+			@Override
             public void reportError( String errorCode, Object[] arguments )
             {
                 if ( Controller.USER_ERROR_CODE.equals( errorCode ) ) {
@@ -285,7 +288,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
                     errorCode = "internal error, see vZomeLog0.log in your home directory";
                 } else {
                     logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
-                    ; // TODO use resources
+                    // TODO use resources
                 }
 
                 if ( statusText != null )
@@ -294,6 +297,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
                     JOptionPane .showMessageDialog( DocumentFrame.this, errorCode, "Command Failure", JOptionPane .ERROR_MESSAGE );
             }
 
+			@Override
             public void clearError()
             {
                 if ( statusText != null )
@@ -348,6 +352,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
                     snapshotButton .setActionCommand( "takeSnapshot" );
                     snapshotButton .addActionListener( new ActionListener()
                     {
+						@Override
                         public void actionPerformed( ActionEvent e )
                         {
                             mController .actionPerformed( e ); // sends thumbnailChanged propertyChange, but no listener...
@@ -425,7 +430,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
                         else
                             monoStereoCardLayout .show( mModelPanel, "mono" );
                         viewPlatform .addPropertyListener( new PropertyChangeListener(){
-
+							@Override
                             public void propertyChange( PropertyChangeEvent chg )
                             {
                                 if ( "stereo" .equals( chg .getPropertyName() ) )
@@ -547,6 +552,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         menuItem = createMenuItem( "Set Background Color...", "setBackgroundColor", new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 Color color = JColorChooser.showDialog( DocumentFrame.this, "Choose Background Color", null );
@@ -563,6 +569,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         menuItem = doCreateMenuItem( "Show Properties", "showProperties", fullPower, new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 JOptionPane.showMessageDialog( null, mController.getProperty( "objectProperties" ), "Object Properties",
@@ -590,6 +597,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         final ActionListener saveAsAction = new ControllerFileAction( new FileDialog( this ), false, "save", "vZome", mController )
         {
             // this happens at the very end, after choose, save, set type
+			@Override
             protected void openApplication( File file )
             {
                 mFile = file;
@@ -600,6 +608,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         };
         this.saveAction = new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 if ( mFile == null )
@@ -611,6 +620,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         };
         final ActionListener saveDefault = new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 // this is basically "save a copy...", with no choosing
@@ -642,6 +652,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
                 KeyEvent.VK_O ) );
         menu.add( createMenuItem( "Open URL...", new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 String url = JOptionPane.showInputDialog( null, "Enter the URL for an online .vZome file.", "Open URL",
@@ -664,6 +675,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         menu.addSeparator();
         menu.add( createMenuItem( "Close", new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent arg0 )
             {
                 closeWindow();
@@ -756,6 +768,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         menu.add( createEditorMenuItem( "Capture PDF or SVG...", new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 if ( snapshot2dFrame == null ) {
@@ -789,6 +802,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             menu.add( createEditorMenuItem( "Set Breakpoint", getExclusiveAction( "setBreakpoint" ), KeyEvent.VK_B ) );
             menuItem = createPowerMenuItem( "Redo to Edit Number...", new ActionListener()
             {
+				@Override
                 public void actionPerformed( ActionEvent e )
                 {
                     String number = JOptionPane.showInputDialog( null, "Enter the edit number.", "Set Edit Number",
@@ -832,6 +846,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         menu .addSeparator();
         setColorMenuItem = createEditorMenuItem( "Set Color...", new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 Color color = JColorChooser.showDialog( DocumentFrame.this, "Choose Object Color", null );
@@ -915,10 +930,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         {
             private String system = initSystem;
 
-            private Map shapesDialogs = new HashMap();
+            private final Map<String, JDialog> shapesDialogs = new HashMap<>();
 
-            private Map directionsDialogs = new HashMap();
+            private final Map<String, JDialog> directionsDialogs = new HashMap<>();
 
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 String cmd = e.getActionCommand();
@@ -974,6 +990,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         
         showToolsMenuItem = createEditorMenuItem( "Show Tools Panel", new ActionListener(){
 
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 tabbedPane .setSelectedIndex( 1 );  // should be "tools" tab
@@ -1147,11 +1164,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         showStrutScalesItem .setSelected( setting );
         showStrutScalesItem .setEnabled( fullPower );
         controller .addPropertyListener( new PropertyChangeListener(){
-
+			@Override
             public void propertyChange( PropertyChangeEvent chg )
             {
                 if ( "showStrutScales" .equals( chg .getPropertyName() ) )
-                    showStrutScalesItem .setSelected( ((Boolean) chg .getNewValue()) .booleanValue() );
+                    showStrutScalesItem .setSelected(((Boolean) chg .getNewValue()));
                 if ( developerExtras && "current.edit.xml" .equals( chg .getPropertyName() ) )
                 	DocumentFrame.this .statusText .setText( (String) chg .getNewValue() );
             }} );
@@ -1177,6 +1194,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         menu .setEnabled( fullPower );
         pythonMenuItem = createMenuItem( "Python...", new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 mPythonFrame.setVisible( true );
@@ -1187,6 +1205,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             menu .add( pythonMenuItem );
         zomicMenuItem = createMenuItem( "Zomic...", new ActionListener()
         {
+			@Override
             public void actionPerformed( ActionEvent e )
             {
                 mZomicFrame.setVisible( true );
@@ -1305,11 +1324,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
     {
         return new ExclusiveAction( getExcluder() )
         {
+			@Override
             protected void doAction( ActionEvent e ) throws Exception
             {
                 mController.doAction( action, e );
             }
 
+			@Override
             protected void showError( Exception e )
             {
                 JOptionPane.showMessageDialog( DocumentFrame.this, e.getMessage(), "Command failure", JOptionPane.ERROR_MESSAGE );
@@ -1476,6 +1497,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         return control;
     }
 
+	@Override
     public void propertyChange( PropertyChangeEvent e )
     {
         if ( "command.status" .equals( e .getPropertyName() ) )
