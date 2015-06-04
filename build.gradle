@@ -45,17 +45,15 @@ sourceSets {
 
 
 dependencies {
-    compile     group: 'antlr',             name: 'antlr',             version:'2.7.7'
     compile     group: 'org.antlr',         name: 'antlr4',            version:'4.5'
     compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre11'
     compile     group: 'org.python',        name: 'jython',            version:'2.7-b4'
 
-    runtime     group: 'antlr',             name: 'antlr',             version:'2.7.7'
     runtime     group: 'org.python',        name: 'jython',            version:'2.7-b4'
     runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre11'
 
+	testCompile group: 'antlr',             name: 'antlr',             version:'2.7.7'
     testCompile group: 'junit',             name: 'junit',             version:'4.12'
-
     testCompile group: 'xom',               name: 'xom',               version:'1.2.5'
 
     antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.5'
@@ -66,7 +64,7 @@ dependencies {
     regressionRuntime configurations.testRuntime
 }
 
-// Don't necessarily want to turn on these warnings yet, but here's the code to do it eventually.
+ //Don't necessarily want to turn on these warnings yet, but here's the code to do it eventually.
 //gradle.projectsEvaluated {
 //	tasks.withType(JavaCompile) {
 //		options.compilerArgs \
@@ -200,7 +198,7 @@ task zomicPP( type: JavaExec, dependsOn: build) {
 	if( project.hasProperty( "zomicFile" ) ){
 		theFile = zomicFile
 	}
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = sourceSets.test.runtimeClasspath
     main = 'com.vzome.core.zomic.program.PrintVisitor'
     args( theFile )
 	
