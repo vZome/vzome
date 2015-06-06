@@ -15,7 +15,7 @@ tokens {
 LABEL			: 'label';
 SCALE			: 'scale';
 BUILD			: 'build';
-DESTROY			: 'destroy'; 
+//DESTROY			: 'destroy'; // remove unsupported keyword from the grammar although supporting code is partially in place
 MOVE			: 'move';
 ROTATE			: 'rotate';
 AROUND			: 'around';

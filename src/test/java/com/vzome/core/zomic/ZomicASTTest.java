@@ -668,13 +668,14 @@ public class ZomicASTTest extends TestCase
 		System.out.println(printContents(program));
 	}
 	
-	public void testOK_StrutSizeRef() {
-		String input = "size any_valid_lowercase_sizeref_even_with_digits...0123456789 red +0";
-
-		// sizeRef was undocumented and seems to be unused by the old code, although it was valid in the old grammar.
-		Walk program = compileAndCompare( input );
-		assertProgramSize(1, program);
-}
+	// remove unsupported sizeRef feature from the grammar although supporting code is partially in place
+//	public void testOK_StrutSizeRef() {
+//		String input = "size any_valid_lowercase_sizeref_even_with_digits...0123456789 red +0";
+//
+//		// sizeRef was undocumented and seems to be unused by the old code, although it was valid in the old grammar.
+//		Walk program = compileAndCompare( input );
+//		assertProgramSize(1, program);
+//	}
 	
 	public void testOK_StrutNamedSizes() {
 		Walk program = compileAndCompare("long red 0");
@@ -836,8 +837,9 @@ public class ZomicASTTest extends TestCase
 		program = compileAndCompare("move");
 		assertProgramSize(1, program);
 
-		program = compileAndCompare("destroy");
-		assertProgramSize(1, program);
+		// remove unsupported keyword from the grammar although supporting code is partially in place
+//		program = compileAndCompare("destroy");
+//		assertProgramSize(1, program);
 	}
 	
 	public void testOK_ScaleStatement() {

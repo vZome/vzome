@@ -36,8 +36,9 @@ directCommand
 	|	scale_stmt
 	|	build_stmt
 	|	move_stmt
-	|	destroy_stmt
 	|	label_stmt
+	// remove unsupported feature from the grammar although supporting code is partially in place
+	// |	destroy_stmt
 	;
 
 
@@ -77,9 +78,10 @@ build_stmt
 	;
 
 
-destroy_stmt
-	:	DESTROY
-	;
+// remove unsupported keyword from the grammar although supporting code is partially in place
+//destroy_stmt
+//	:	DESTROY
+//	;
 
 
 move_stmt
@@ -168,7 +170,8 @@ algebraic_number_expr
 explicit_size_expr
 	:	SIZE
 	(	scale = INT			// TODO: support the old 'size -99' syntax used only by the internal resources until they are updated
-	|	sizeRef = IDENT		// TODO: Document this option
+	// remove unsupported sizeRef feature from the grammar although supporting code is partially in place
+	// |	sizeRef = IDENT		// TODO: Document or remove this option
 	|	isVariableLength = QUESTIONMARK	// TODO: DJH proposed alternative variable length indicator, same as size -99 used to be
 	)
 	;

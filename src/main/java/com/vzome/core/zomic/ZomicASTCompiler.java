@@ -710,9 +710,10 @@ public class ZomicASTCompiler
 	
 	//@Override public void enterDestroy_stmt(ZomicParser.Destroy_stmtContext ctx) { }
 	
-	@Override public void exitDestroy_stmt(ZomicParser.Destroy_stmtContext ctx) { 
-		commit( new Build(/*build*/ false, /*destroy*/ true) );
-	}
+	// remove unsupported feature from the grammar although supporting code is partially in place
+//	@Override public void exitDestroy_stmt(ZomicParser.Destroy_stmtContext ctx) { 
+//		commit( new Build(/*build*/ false, /*destroy*/ true) );
+//	}
 	
 	//@Override public void enterMove_stmt(ZomicParser.Move_stmtContext ctx) { }
 	
@@ -858,11 +859,12 @@ public class ZomicASTCompiler
 			setCurrentScale(parseInt(ctx.scale));
 		}
 		MoveTemplate template = (MoveTemplate)templates.peek();
-		if( ctx.sizeRef != null ) {
-			String sizeRef = ctx.sizeRef.getText();
-			template.sizeRef = sizeRef;
-			logger.warning("Ignoring undocumented sizeRef = '" + sizeRef + "'.");
-		}
+		// remove unsupported feature from the grammar although supporting code is partially in place
+//		if( ctx.sizeRef != null ) {
+//			String sizeRef = ctx.sizeRef.getText();
+//			template.sizeRef = sizeRef;
+//			logger.warning("Ignoring undocumented sizeRef = '" + sizeRef + "'.");
+//		}
 		if( ctx.isVariableLength != null ) {
 			template.isVariableLength(true);
 		}
