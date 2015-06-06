@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 
 import org.w3c.dom.Element;

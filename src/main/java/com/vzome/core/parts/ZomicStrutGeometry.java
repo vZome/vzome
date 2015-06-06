@@ -95,6 +95,7 @@ public class ZomicStrutGeometry implements StrutGeometry
         this( geom, dir, symmetry .getField() .createPower( 0 ), symmetry .getField() .createPower( 1 ), symmetry );
     }
 
+	@Override
     public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
     {
         double len = length .evaluate();

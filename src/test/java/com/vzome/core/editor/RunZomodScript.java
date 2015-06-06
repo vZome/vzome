@@ -19,11 +19,13 @@ import com.vzome.core.zomod.parser.Parser;
 public class RunZomodScript extends RunZomicScript
 {
 
+	@Override
     protected String getXmlElementName()
     {
         return "RunZomodScript";
     }
 
+	@Override
     protected ZomicStatement parseScript( String script ) throws Failure
     {
         Parser parser = new Parser( new IcosahedralSymmetry( new PentagonField(), "default" ));
