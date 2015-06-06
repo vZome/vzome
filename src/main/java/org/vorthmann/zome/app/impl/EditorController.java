@@ -71,6 +71,7 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -958,6 +959,12 @@ public class EditorController extends DefaultController implements J3dComponentF
             {
     	        ToolEvent event = (ToolEvent) e;
     	        document .applyTool( event .getTool(), toolsController, event .getModes() );
+            }
+            
+            else if ( action.equals( "h4symmetry" ) )
+            {
+                QuaternionicSymmetry qsymm = document .getField() .getQuaternionSymmetry( "H_4" ); 
+                document .applyQuaternionSymmetry( qsymm, qsymm );
             }
             
             else if ( action .equals( "copy" ) )
