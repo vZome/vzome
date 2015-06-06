@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import static java.lang.Math.abs;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -53,16 +55,23 @@ public class ZomicASTCompiler
 	private final ZomicNamingConvention namingConvention ;
 	private final Stack<ZomicStatement> statements = new Stack<>();
 	private final Stack<ZomicStatementTemplate> templates = new Stack<>();
-	private static boolean doPrint = true; // Only intended to be set from test methods
 
+	public static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
+    private static final Logger logger = Logger .getLogger( loggerClassName );
+	// verboseLoggingLevel is the level at which the logger for this class will generate the majority of its output.
+	public static final Level verboseLoggingLevel = Level.FINER; // corresponds to entering() and exiting() which use Level.FINER
+	
+	public static boolean logging() {
+		return logger.isLoggable(verboseLoggingLevel);
+	}
+	
     public ZomicASTCompiler( IcosahedralSymmetry icosaSymm ) {
         icosaSymmetry = icosaSymm;
 		namingConvention = new ZomicNamingConvention( icosaSymm );
     }
 
-	public static Walk compile( File file, IcosahedralSymmetry symm, boolean showProgressMessages ) {
+	public static Walk compile( File file, IcosahedralSymmetry symm ) {
 		String fileName = file.getAbsolutePath();
-        doPrint = showProgressMessages;
 		Walk program = null;
 		ErrorHandler.Default errors = new ErrorHandler.Default();
 		ZomicASTCompiler compiler = new ZomicASTCompiler(symm );
@@ -78,8 +87,7 @@ public class ZomicASTCompiler
         return program;
     }
 	
-	public static Walk compile( CharStream input, IcosahedralSymmetry symm, boolean showProgressMessages ) {
-        doPrint = showProgressMessages;
+	public static Walk compile( CharStream input, IcosahedralSymmetry symm ) {
 		ErrorHandler.Default errors = new ErrorHandler.Default();
 		ZomicASTCompiler compiler = new ZomicASTCompiler(symm );
         Walk program = compiler.compile( input, errors );
@@ -89,13 +97,13 @@ public class ZomicASTCompiler
         return program;
     }
 	
-	public static Walk compile( String input, IcosahedralSymmetry symm, boolean showProgressMessages ) {
-		return compile( new ANTLRInputStream( input ), symm, showProgressMessages );
+	public static Walk compile( String input, IcosahedralSymmetry symm ) {
+		return compile( new ANTLRInputStream( input ), symm );
 	}
 	
 	public static Walk compile(InputStream input, IcosahedralSymmetry symm) {
 		try {
-			return compile(new ANTLRInputStream(input), symm, false);
+			return compile(new ANTLRInputStream(input), symm);
 		} catch (IOException e) {
 			Walk program = new Walk();
 			program.setErrors(new String[] {"Unable to compile: " + e.toString()});
@@ -103,10 +111,6 @@ public class ZomicASTCompiler
 		}
 	}
 
-	public static Walk compile( String input, IcosahedralSymmetry symm ) {
-		return compile( input, symm, false );
-	}
-	
 	public Walk compile( String input, ErrorHandler errors ) {
 		return compile( new ANTLRInputStream( input ), errors );
 	}
@@ -242,38 +246,35 @@ public class ZomicASTCompiler
 	}
 
 	private int tabs = 0;
-	private void showTabs(boolean add) 	{
-		if(doPrint) { 
+	private String getTabs(boolean add) 	{
+		if(logging()) { 
+			StringBuilder sb = new StringBuilder("");
 			if(!add) { tabs--; }
 			for( int i = 0; i < tabs; i++)
 			{
-				print("   ");
+				sb.append("   ");
 			}
 			if(add) { tabs++; }
+			return sb.toString();
+		}
+		return "";
+	}
+
+	protected void logContext(ParserRuleContext ctx, boolean isEntering) 	{ 
+		if(logging()) { 
+			String contextName = ctx.getClass().getSimpleName();
+			String strContext = "Context";
+			if(contextName.endsWith(strContext)) {
+				// strip "Context" from the name for readability
+				contextName = contextName.substring(0, contextName.length() - strContext.length());
+			}
+			log(getTabs(isEntering) + (isEntering ? "--> " : "<-- ") + contextName);
 		}
 	}
 
-	protected void printContext(ParserRuleContext ctx, boolean isEntering) 	{ 
-		if(!doPrint) { return; }
-		showTabs(isEntering);
-		String contextName = ctx.getClass().getSimpleName();
-		String strContext = "Context";
-		if(contextName.endsWith(strContext)) {
-			// strip "Context" from the name for readability
-			contextName = contextName.substring(0, contextName.length() - strContext.length());
-		}
-		println((isEntering ? "--> " : "<-- ") + contextName);
-	}
-
-	protected static void print(String msg) {
-		if(doPrint && msg != null) {
-			System.out.print(msg);
-		}
-	}
-
-	protected static void println(String msg) {
-		if(doPrint && msg != null) {
-			System.out.println(msg);
+	protected static void log(String msg) {
+		if(msg != null) {
+			logger.log(verboseLoggingLevel, msg);
 		}
 	}
 
@@ -315,7 +316,7 @@ public class ZomicASTCompiler
 				// but I'll leave the code commented out here in case additional colors are eventually supported and need debugging
 //				String check = namingConvention.getName( axis );
 //				if ( axis != namingConvention.getAxis(axisColor, check ) ) {
-//					println( axisColor + " " + indexFullName() + " mapped to " + check );
+//					log( axisColor + " " + indexFullName() + " mapped to " + check );
 //				}
 				return axis;
 			} catch( RuntimeException ex ) {
@@ -394,7 +395,7 @@ public class ZomicASTCompiler
 				Direction direction = icosaSymmetry.getDirection(axisColor);
 				if ( direction == null || ! direction.hasHalfSizes()) {
 					String msg = "half struts are not allowed on '" + axisColor + "' axes.";
-					println(msg);
+					logger.warning(msg);
 					throw new RuntimeException( msg );
 				}
 			} 
@@ -860,7 +861,7 @@ public class ZomicASTCompiler
 		if( ctx.sizeRef != null ) {
 			String sizeRef = ctx.sizeRef.getText();
 			template.sizeRef = sizeRef;
-			println("Ignoring undocumented sizeRef = '" + sizeRef + "'.");
+			logger.warning("Ignoring undocumented sizeRef = '" + sizeRef + "'.");
 		}
 		if( ctx.isVariableLength != null ) {
 			template.isVariableLength(true);
@@ -910,11 +911,11 @@ public class ZomicASTCompiler
 			if(colorContext.endsWith(strCONTEXT)) {
 				colorContext = colorContext.replaceFirst(strCONTEXT, "");
 				((IHaveAxisInfo)templates.peek()).axisColor(colorContext);
-				println(colorContext);
+				log(colorContext);
 				return;
 			}
 		} 
-		println(colorContext);
+		log(colorContext);
 		throw new RuntimeException( colorContext );
 	} 
 
@@ -927,11 +928,11 @@ public class ZomicASTCompiler
 	}
 	
 	@Override public void enterEveryRule(ParserRuleContext ctx) { 
-		printContext(ctx, true);
+		logContext(ctx, true);
 	}
 	
 	@Override public void exitEveryRule(ParserRuleContext ctx) { 
-		printContext(ctx, false);
+		logContext(ctx, false);
 	}
 	
 	//@Override public void visitTerminal(TerminalNode node) { }

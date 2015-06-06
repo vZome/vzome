@@ -210,11 +210,10 @@ public class PrintVisitor extends Visitor .Default{
 	public static void main( String[] args )
 	{
 		if(args.length == 0) {
-			System.out.println("Usage: PrintVisitor FileSpec [-new [-show]]");
+			System.out.println("Usage: PrintVisitor FileSpec [-new]");
 			System.out.println("\tFileSpec = path to zomic file");
 			System.out.println("\t-new = optional: use the new Antlr4 Parser");
-			System.out.println("\t-v = optional: display verbose parsing info");
-			System.out.println("\t-new must be specified first if -v is to be used.");
+			System.out.println("\tNote: logging level must be configured to display verbose parsing info.");
 		}
 		try {
 			String fileSpec = args[0];
@@ -223,16 +222,12 @@ public class PrintVisitor extends Visitor .Default{
 			if(args.length > 1) {
 				useNewParser = ( "-new".compareToIgnoreCase(args[1]) == 0 );
 			}
-			boolean showProgressMessages = false;
-			if(args.length > 2) {
-				showProgressMessages = ( "-v".compareToIgnoreCase(args[2]) == 0 );
-			}
-			
+
 			PentagonField field = new PentagonField();
 			IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
 			ZomicStatement program;
 			if(useNewParser) {
-				program = ZomicASTCompiler.compile( file, symmetry, showProgressMessages);
+				program = ZomicASTCompiler.compile( file, symmetry);
 			} else {
 				program = Parser.parse(new FileInputStream( file ), symmetry);
 			}

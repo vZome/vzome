@@ -147,8 +147,7 @@ public class ZomicASTTest extends TestCase
 	private Walk newCompile(File file, boolean expectErrors) {
 		System.out.println("--------------------------------------------");
 		System.out.println("new way compile file:\n\"" + file.getAbsolutePath() + "\"\n");
-		boolean showProgressMessages = false; // set to true for more detailed output during AST compilation
-		Walk program = ZomicASTCompiler.compile(file, symmetry, showProgressMessages);
+		Walk program = ZomicASTCompiler.compile(file, symmetry);
 		if(!expectErrors) {
 			assertNotNull("ZomicASTCompiler.compileFile() should never return null", program);
 		}
@@ -200,8 +199,7 @@ public class ZomicASTTest extends TestCase
 	private Walk newCompile(String input) {
 		System.out.println("--------------------------------------------");
 		System.out.println("new way compile:\n\"" + input + "\"\n");
-		boolean showProgressMessages = false; // set to true for more detailed output during AST compilation
-		Walk program = ZomicASTCompiler.compile(input, symmetry, showProgressMessages);
+		Walk program = ZomicASTCompiler.compile(input, symmetry);
 		assertNotNull("ZomicASTCompiler.compile() should never return null", program);
 		System.out.println("New Program contains " + Integer.toString(program.size()) + " statement(s).");
 		System.out.println("");

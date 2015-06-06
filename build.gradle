@@ -73,6 +73,62 @@ dependencies {
 //	}
 //}
 
+// Successive runs of 'test' tasks will not be executed 
+//  unless the results of the previous run are 'cleaned'.
+//
+// Individual tests or a group of tests based on method name patterns 
+//  can be run from the gradle command line.
+//
+// The method name(s) of individual tests or groups of tests to be run 
+//  can be specified by specifying a pattern matching the fully qualified name of the test class method
+//  or with appropriate wildcards.
+// Note that the patterns are CaSe SeNsItIve.
+// For example, a pattern to execute the three tests: 
+//  testOK_RedAliases, testOK_BlueAliases and testOK_YellowAliases
+//  would be *testOK_*Aliases
+//
+// Standard Output and Standard Error are not displayed by default for gradle tests.
+// Use -P"testLogging.showStandardStreams" in the command line to enable them as shown below.
+//
+// To execute the same test or group of tests repeatedly, 
+//  use a gradle command line like this:
+//
+// gradle cleanTest test --tests *testOK_*Aliases
+//
+// ... or with standard streams displayed to the console:
+// gradle cleanTest test --tests *testOK_*Aliases -P"testLogging.showStandardStreams"
+//
+test {
+	def loggingProperties = new File ('src/test/java/logging.properties')
+	if(loggingProperties.exists()) {
+		jvmArgs "-Djava.util.logging.config.file=${loggingProperties.absolutePath}"
+	}
+	doLast {
+		if(loggingProperties.exists()) {
+			println("Tests used java.util.logging.config.file: ${loggingProperties.absolutePath}")
+		}
+	}
+	testLogging {
+		// Only set showStandardStreams=true from the gradle command line.
+		//  using -P"testLogging.showStandardStreams"
+		// Otherwise, it normally defaults to false which is correct for the NetBeans IDE.
+		if( project.hasProperty( 'testLogging.showStandardStreams' ) ) {
+			// Make sure output from standard out or error is shown in Gradle output.
+			showStandardStreams = true
+
+			// Or we use events method:
+			// events 'standard_out', 'standard_error' // ,'started', 'passed'
+
+			// Or set property events:
+			// events = ['standard_out', 'standard_error']
+
+			// Instead of string values we can use enum values:
+			// events org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_OUT,
+			//        org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR,
+		}
+	}
+}
+
 task makeAntlrOutputDir {
 	outputs.dir antlr4.destinationDir
 	doLast() {
@@ -195,7 +251,7 @@ regression.dependsOn makeRegressionOutputDir
 
 task zomicPP( type: JavaExec, dependsOn: build) {
     def theFile = 'src/regression/files/Zomic/yellowAxisSaddleWeb/yellowAxisSaddleWeb.zomic'
-	if( project.hasProperty( "zomicFile" ) ){
+	if( project.hasProperty( 'zomicFile' ) ){
 		theFile = zomicFile
 	}
     classpath = sourceSets.test.runtimeClasspath
@@ -209,17 +265,14 @@ task zomicPP( type: JavaExec, dependsOn: build) {
                 Prints the file using the ORIGINAL zomic parser.
             -P-new
                 Prints the file using the NEW Antlr4 zomic compiler.
-            -P-new -P-v
-                Prints the file using the NEW Antlr4 zomic compiler with verbose output.
     Sample Usage:
         gradle zomicPP -PzomicFile="$theFile"
         gradle zomicPP -PzomicFile="$theFile" -P-new
-        gradle zomicPP -PzomicFile="$theFile" -P-new -P-v
   The output should be identical to $theFile-pp
     """
 
 	doLast { // doFirst and doLast are executed only during the execution phase, not during the initialization or configuration phases.
-		if( !project.hasProperty( "zomicFile" ) ){
+		if( !project.hasProperty( 'zomicFile' ) ){
 			println ""
 			println "No zomic file was specified. Using default: $theFile"
 			println description
