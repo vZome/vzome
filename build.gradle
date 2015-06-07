@@ -14,7 +14,7 @@ targetCompatibility = 1.8
 ext.antlr4 = [
     antlrSource:    "src/main/antlr",
     // Simplify multiple IDE integration by putting destinationDir under src/main/java 
-    // Some IDEs don't corectly read multiple source folders from build.gradle. 
+    // Some IDEs don't correctly read multiple source folders from build.gradle. 
     destinationDir: "src/main/java/com/vzome/core/antlr/generated",
     grammarpackage:               "com.vzome.core.antlr.generated"
 ]
@@ -45,17 +45,15 @@ sourceSets {
 
 
 dependencies {
-    compile     group: 'antlr',             name: 'antlr',             version:'2.7.7'
     compile     group: 'org.antlr',         name: 'antlr4',            version:'4.5'
     compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre11'
     compile     group: 'org.python',        name: 'jython',            version:'2.7-b4'
 
-    runtime     group: 'antlr',             name: 'antlr',             version:'2.7.7'
     runtime     group: 'org.python',        name: 'jython',            version:'2.7-b4'
     runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre11'
 
+	testCompile group: 'antlr',             name: 'antlr',             version:'2.7.7'
     testCompile group: 'junit',             name: 'junit',             version:'4.12'
-
     testCompile group: 'xom',               name: 'xom',               version:'1.2.5'
 
     antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.5'
@@ -66,20 +64,76 @@ dependencies {
     regressionRuntime configurations.testRuntime
 }
 
-// Don't necessarily want to turn on these warnings yet, but here's the code to do it eventually.
+ //Don't necessarily want to turn on these warnings yet, but here's the code to do it eventually.
 //gradle.projectsEvaluated {
 //	tasks.withType(JavaCompile) {
-//		options.compilerArgs 
-//		<< "-Xlint:unchecked" 
+//		options.compilerArgs \
+//		<< "-Xlint:unchecked" \
 //		<< "-Xlint:deprecation"
 //	}
 //}
+
+// Successive runs of 'test' tasks will not be executed 
+//  unless the results of the previous run are 'cleaned'.
+//
+// Individual tests or a group of tests based on method name patterns 
+//  can be run from the gradle command line.
+//
+// The method name(s) of individual tests or groups of tests to be run 
+//  can be specified by specifying a pattern matching the fully qualified name of the test class method
+//  or with appropriate wildcards.
+// Note that the patterns are CaSe SeNsItIve.
+// For example, a pattern to execute the three tests: 
+//  testOK_RedAliases, testOK_BlueAliases and testOK_YellowAliases
+//  would be *testOK_*Aliases
+//
+// Standard Output and Standard Error are not displayed by default for gradle tests.
+// Use -P"testLogging.showStandardStreams" in the command line to enable them as shown below.
+//
+// To execute the same test or group of tests repeatedly, 
+//  use a gradle command line like this:
+//
+// gradle cleanTest test --tests *testOK_*Aliases
+//
+// ... or with standard streams displayed to the console:
+// gradle cleanTest test --tests *testOK_*Aliases -P"testLogging.showStandardStreams"
+//
+test {
+	def loggingProperties = new File ('src/test/java/logging.properties')
+	if(loggingProperties.exists()) {
+		jvmArgs "-Djava.util.logging.config.file=${loggingProperties.absolutePath}"
+	}
+	doLast {
+		if(loggingProperties.exists()) {
+			println("Tests used java.util.logging.config.file: ${loggingProperties.absolutePath}")
+		}
+	}
+	testLogging {
+		// Only set showStandardStreams=true from the gradle command line.
+		//  using -P"testLogging.showStandardStreams"
+		// Otherwise, it normally defaults to false which is correct for the NetBeans IDE.
+		if( project.hasProperty( 'testLogging.showStandardStreams' ) ) {
+			// Make sure output from standard out or error is shown in Gradle output.
+			showStandardStreams = true
+
+			// Or we use events method:
+			// events 'standard_out', 'standard_error' // ,'started', 'passed'
+
+			// Or set property events:
+			// events = ['standard_out', 'standard_error']
+
+			// Instead of string values we can use enum values:
+			// events org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_OUT,
+			//        org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR,
+		}
+	}
+}
 
 task makeAntlrOutputDir {
 	outputs.dir antlr4.destinationDir
 	doLast() {
 		// Be sure to wrap this inside doLast(). 
-		// Otherwise it wiil run during the initialization or configuration phase, even when an unrelated task is is run.
+		// Otherwise it will run during the initialization or configuration phase, even when an unrelated task is is run.
 		//println 'Making Antlr Output Directory: ' + antlr4.destinationDir
 		file(antlr4.destinationDir).mkdirs()
 	}
@@ -88,7 +142,7 @@ task makeAntlrOutputDir {
 
 // This is a start in case we ever want to put each language into its own folder.
 // It got messy to do with separate Lexer and Parser grammars so I dumped them all in the same folder for now
-// We may eventually remove this part if we dont use it.
+// We may eventually remove this part if we don't use it.
 
 //task makeAntlrOutputDirTree << {
 //    String pkg = antlr4.grammarpackage.replaceAll("\\.", "/")
@@ -108,7 +162,7 @@ task makeAntlrOutputDir {
 //    }
 //}
 
-// Accordiing to https://gradle.org/docs/current/userguide/more_about_tasks.html...
+// According to https://gradle.org/docs/current/userguide/more_about_tasks.html...
 // A task with no defined outputs will never be considered up-to-date.
 // A task with only outputs (no inputs) defined will be considered up-to-date if those outputs are unchanged since the previous build.
 task compileAntlrGrammars(type: JavaExec , dependsOn: makeAntlrOutputDir) {
@@ -149,7 +203,7 @@ compileJava {
 task cleanAntlr {
 	doLast() {
 		// Be sure to wrap this inside doLast(). 
-		// Otherwise it wiil run during the initialization or configuration phase, even when an unrelated task is is run.
+		// Otherwise it will run during the initialization or configuration phase, even when an unrelated task is is run.
 		// It would also run when the NetBeas IDE first loaded the project.
 		//println 'Deleting Antlr Directory: ' + antlr4.destinationDir
 		delete antlr4.destinationDir
@@ -163,7 +217,7 @@ task makeRegressionOutputDir {
 	outputs.dir regressionOutputDir
 	doLast() {
 		// Be sure to wrap this inside doLast(). 
-		// Otherwise it wiil run during the initialization or configuration phase, even when an unrelated task is is run.
+		// Otherwise it will run during the initialization or configuration phase, even when an unrelated task is is run.
 		println 'Making Regression Output Directory: ' + regressionOutputDir
 		regressionOutputDir.mkdirs()
 	}
@@ -197,10 +251,10 @@ regression.dependsOn makeRegressionOutputDir
 
 task zomicPP( type: JavaExec, dependsOn: build) {
     def theFile = 'src/regression/files/Zomic/yellowAxisSaddleWeb/yellowAxisSaddleWeb.zomic'
-	if( project.hasProperty( "zomicFile" ) ){
+	if( project.hasProperty( 'zomicFile' ) ){
 		theFile = zomicFile
 	}
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = sourceSets.test.runtimeClasspath
     main = 'com.vzome.core.zomic.program.PrintVisitor'
     args( theFile )
 	
@@ -211,17 +265,14 @@ task zomicPP( type: JavaExec, dependsOn: build) {
                 Prints the file using the ORIGINAL zomic parser.
             -P-new
                 Prints the file using the NEW Antlr4 zomic compiler.
-            -P-new -P-v
-                Prints the file using the NEW Antlr4 zomic compiler with verbose output.
     Sample Usage:
         gradle zomicPP -PzomicFile="$theFile"
         gradle zomicPP -PzomicFile="$theFile" -P-new
-        gradle zomicPP -PzomicFile="$theFile" -P-new -P-v
   The output should be identical to $theFile-pp
     """
 
 	doLast { // doFirst and doLast are executed only during the execution phase, not during the initialization or configuration phases.
-		if( !project.hasProperty( "zomicFile" ) ){
+		if( !project.hasProperty( 'zomicFile' ) ){
 			println ""
 			println "No zomic file was specified. Using default: $theFile"
 			println description

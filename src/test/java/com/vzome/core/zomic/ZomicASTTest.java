@@ -147,8 +147,7 @@ public class ZomicASTTest extends TestCase
 	private Walk newCompile(File file, boolean expectErrors) {
 		System.out.println("--------------------------------------------");
 		System.out.println("new way compile file:\n\"" + file.getAbsolutePath() + "\"\n");
-		boolean showProgressMessages = false; // set to true for more detailed output during AST compilation
-		Walk program = ZomicASTCompiler.compile(file, symmetry, showProgressMessages);
+		Walk program = ZomicASTCompiler.compile(file, symmetry);
 		if(!expectErrors) {
 			assertNotNull("ZomicASTCompiler.compileFile() should never return null", program);
 		}
@@ -200,8 +199,7 @@ public class ZomicASTTest extends TestCase
 	private Walk newCompile(String input) {
 		System.out.println("--------------------------------------------");
 		System.out.println("new way compile:\n\"" + input + "\"\n");
-		boolean showProgressMessages = false; // set to true for more detailed output during AST compilation
-		Walk program = ZomicASTCompiler.compile(input, symmetry, showProgressMessages);
+		Walk program = ZomicASTCompiler.compile(input, symmetry);
 		assertNotNull("ZomicASTCompiler.compile() should never return null", program);
 		System.out.println("New Program contains " + Integer.toString(program.size()) + " statement(s).");
 		System.out.println("");
@@ -670,13 +668,14 @@ public class ZomicASTTest extends TestCase
 		System.out.println(printContents(program));
 	}
 	
-	public void testOK_StrutSizeRef() {
-		String input = "size any_valid_lowercase_sizeref_even_with_digits...0123456789 red +0";
-
-		// sizeRef was undocumented and seems to be unused by the old code, although it was valid in the old grammar.
-		Walk program = compileAndCompare( input );
-		assertProgramSize(1, program);
-}
+	// remove unsupported sizeRef feature from the grammar although supporting code is partially in place
+//	public void testOK_StrutSizeRef() {
+//		String input = "size any_valid_lowercase_sizeref_even_with_digits...0123456789 red +0";
+//
+//		// sizeRef was undocumented and seems to be unused by the old code, although it was valid in the old grammar.
+//		Walk program = compileAndCompare( input );
+//		assertProgramSize(1, program);
+//	}
 	
 	public void testOK_StrutNamedSizes() {
 		Walk program = compileAndCompare("long red 0");
@@ -838,8 +837,9 @@ public class ZomicASTTest extends TestCase
 		program = compileAndCompare("move");
 		assertProgramSize(1, program);
 
-		program = compileAndCompare("destroy");
-		assertProgramSize(1, program);
+		// remove unsupported keyword from the grammar although supporting code is partially in place
+//		program = compileAndCompare("destroy");
+//		assertProgramSize(1, program);
 	}
 	
 	public void testOK_ScaleStatement() {
