@@ -29,7 +29,7 @@ public abstract class AbstractCommand implements Command
      */
     public Map setXml( Element xml, XmlSaveFormat format ) 
     {
-        Map attrs = format .loadCommandAttributes( xml, true );
+        Map attrs = format .loadCommandAttributes( xml );
         
         setFixedAttributes( attrs, format );
         

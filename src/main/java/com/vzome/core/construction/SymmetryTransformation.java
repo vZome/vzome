@@ -46,7 +46,7 @@ public class SymmetryTransformation extends Transformation
         if ( mCenter .isImpossible() )
             return setStateVariables( null, null, true );
         
-        AlgebraicVector loc = mCenter .getLocation();
+        AlgebraicVector loc = mCenter .getLocation() .projectTo3d( true );
         AlgebraicMatrix matrix = mSymmetry .getMatrix( mOrientation );
         return setStateVariables( matrix, loc, false );
     }

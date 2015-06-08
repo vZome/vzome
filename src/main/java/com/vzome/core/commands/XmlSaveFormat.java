@@ -208,7 +208,7 @@ public class XmlSaveFormat
     
     
     
-    protected AlgebraicVector parseAlgebraicVector( Element elem, boolean threeD )
+    protected AlgebraicVector parseAlgebraicVector( Element elem )
     {        
         String val = elem .getAttribute( "x" );
         AlgebraicNumber x = (val==null || val .isEmpty() )? mField .zero() : mField .parseLegacyNumber( val );
@@ -217,17 +217,19 @@ public class XmlSaveFormat
         val = elem .getAttribute( "z" );
         AlgebraicNumber z = (val==null || val .isEmpty() )? mField .zero() : mField .parseLegacyNumber( val );
         val = elem .getAttribute( "w" );
-        AlgebraicNumber w = (val==null || val .isEmpty() )? mField .zero() : mField .parseLegacyNumber( val );
+        boolean threeD = val==null || val .isEmpty();
+        AlgebraicNumber w = null;
+        if ( !threeD )
+        	w =  mField .parseLegacyNumber( val );
 
-        AlgebraicVector value = new AlgebraicVector( w, x, y, z );
+        AlgebraicVector value = threeD?  new AlgebraicVector( x, y, z ) : new AlgebraicVector( w, x, y, z );
         
-        if ( threeD && ! value .getComponent( AlgebraicVector .W4 ) .isZero()
-                && logger .isLoggable( Level.FINE ) )
-            logger .fine( "stripping non-zero W component from " + value .toString() );
-//            throw new IllegalStateException( "stripping non-zero W component from " + RationalNumbers .toString( value ) );
-        
-        if ( mProject4d || threeD )
+        if ( mProject4d && !threeD ) {        
+            if ( ! w .isZero() && logger .isLoggable( Level.WARNING ) )
+                logger .warning( "stripping non-zero W component from " + value .toString() );
+
             value = mField .projectTo3d( value, true );
+        }
         if ( mMultiplier != null )
             value = value .scale( mMultiplier );
         return value;
@@ -269,7 +271,7 @@ public class XmlSaveFormat
             value = mField .createVector( result );
         }
         else if ( valName .equals( "GoldenVector" ) )
-            value = parseAlgebraicVector( val, true ); // TODO this attribute may need to be 4D for some model files
+            value = parseAlgebraicVector( val );
         else if ( valName .equals( "Boolean" ) ) {
             String gnum = val .getAttribute( "value" );
             value = new Boolean( Boolean .getBoolean( gnum ) );
@@ -320,25 +322,24 @@ public class XmlSaveFormat
 
     /**
      * this is for the old format (before rationalVectors)
-     * @param threeD 
      */
-    public Construction parseConstruction( String apName, Element attrOrParam, boolean threeD )
+    public Construction parseConstruction( String apName, Element attrOrParam )
     {
         Construction c = null;
         if ( apName .equals( "point" ) ) {
-            AlgebraicVector loc = parseAlgebraicVector( attrOrParam, threeD );
+            AlgebraicVector loc = parseAlgebraicVector( attrOrParam );
             c = new FreePoint( loc, mModelRoot );
         } else if ( apName .equals( "segment" ) ) {
             Element start = DomUtils .getFirstChildElement( attrOrParam, "start" );
             Element end = DomUtils .getFirstChildElement( attrOrParam, "end" );
-            AlgebraicVector sloc = parseAlgebraicVector( start, threeD );
-            AlgebraicVector eloc = parseAlgebraicVector( end, threeD );
+            AlgebraicVector sloc = parseAlgebraicVector( start );
+            AlgebraicVector eloc = parseAlgebraicVector( end );
             c = new SegmentJoiningPoints( new FreePoint( sloc, mModelRoot ), new FreePoint( eloc, mModelRoot ) );
         } else if ( apName .equals( "polygon" ) ) {
         	NodeList kids = attrOrParam .getElementsByTagName( "vertex" );
             Point[] pts = new Point[ kids .getLength() ];
             for ( int k = 0; k < kids .getLength(); k++ ) {
-                AlgebraicVector loc = parseAlgebraicVector( (Element) kids .item( k ), threeD );
+                AlgebraicVector loc = parseAlgebraicVector( (Element) kids .item( k ) );
                 pts[ k ] = new FreePoint( loc, mModelRoot );
             }
             c = new PolygonFromVertices( pts );
@@ -373,7 +374,7 @@ public class XmlSaveFormat
 //        return attrs;
 //    }
 
-    public Map loadCommandAttributes( Element editElem, boolean threeD )
+    public Map loadCommandAttributes( Element editElem )
     {
         Map attrs = new HashMap();
         NodeList kids = editElem .getChildNodes();
@@ -408,7 +409,7 @@ public class XmlSaveFormat
         	            throw new IllegalStateException( "unknown parameter construction: " + elemName );
         	    }
         	    else
-        	        value = parseConstruction( elemName, attrElem, threeD );
+        	        value = parseConstruction( elemName, attrElem );
         	attrs .put( attrName, value );
         }
         return attrs;

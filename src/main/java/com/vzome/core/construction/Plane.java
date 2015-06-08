@@ -45,7 +45,7 @@ public abstract class Plane extends Construction
             return false;
         
         // symm axis is used for the normal, and might be a 4D vector
-        normal = getField() .projectTo3d( normal, true );
+        normal = normal .projectTo3d( true );
 
         // try to find some cleaner vector to use for the line direction, to reduce the likelihood
         //   of ill-conditioned intersection computations

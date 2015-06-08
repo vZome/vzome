@@ -53,7 +53,7 @@ public class PointRotated4D extends Point
         loc = loc3d .inflateTo4d( true );
         loc = mRightQuaternion .leftMultiply( loc );
         loc = mLeftQuaternion .rightMultiply( loc );
-        loc = field .projectTo3d( loc, true );
+//        loc = field .projectTo3d( loc, true );
         return setStateVariable( loc, false );
     }
 

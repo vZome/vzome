@@ -61,7 +61,7 @@ public class SymmetryAxisChange implements UndoableEdit
         }
         else
         {
-            Map attrs = format .loadCommandAttributes( xml, false ); // get all four dimensions
+            Map attrs = format .loadCommandAttributes( xml );
             mNewAxis = (Segment) attrs .get( "new" );
         }
         

@@ -25,7 +25,7 @@ public class Test4dRotations extends TestCase
         Point prototype = new FreePoint( yAxis, root );
         prototype .setImpossible( false );
         PointRotated4D rotated = new PointRotated4D( roots[ 28 ], roots[ 105 ], prototype );
-        AlgebraicVector expected = field .createVector( new int[]{ 0, 1, -1, 2, 1, 2, -1, 2, 1, 2, 0, 1 } );
+        AlgebraicVector expected = field .createVector( new int[]{ 0, 1, 0, 1, 0, 1, -1, 2, 1, 2, -1, 2, 1, 2, 0, 1 } );
         assertEquals( expected, rotated .getLocation() );
     }
 }

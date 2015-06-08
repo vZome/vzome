@@ -6,13 +6,21 @@ package com.vzome.core.algebra;
 
 public class Quaternion
 {
-    AlgebraicMatrix representation, transpose;
+    @Override
+	public String toString() {
+		return "Quaternion: " + vector .toString();
+	}
+
+	AlgebraicMatrix representation, transpose;
     
     private final AlgebraicField field;
+    
+    private final AlgebraicVector vector;
     
     public Quaternion( AlgebraicField field, AlgebraicVector vector )
     {
         this.field = field;
+        this.vector = vector;
         int w_offset = 0;
         AlgebraicNumber factor = field .createRational( new int[]{ 0,1 } );
         if ( vector .dimension() > 3 ) // a 4D vector

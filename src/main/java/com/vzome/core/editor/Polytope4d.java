@@ -113,7 +113,7 @@ public class Polytope4d extends ChangeConstructions
             this.symmAxis = format .parseSegment( xml, "start", "end" );
         else
         {
-            Map attrs = format .loadCommandAttributes( xml, false );
+            Map attrs = format .loadCommandAttributes( xml );
             this.symmAxis = (Segment) attrs .get( "rotation" );
         }
     }

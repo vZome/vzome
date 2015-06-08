@@ -45,7 +45,7 @@ public class AnchoredSegment extends Segment
     {
         if ( mAnchor .isImpossible() || mLength .isZero() )
             return setStateVariables( null, null, true );
-        AlgebraicVector gv = mAnchor .getLocation();
+        AlgebraicVector gv = mAnchor .getLocation() .projectTo3d( true );
         AlgebraicVector offset = mAxis .normal() .scale( mLength );
         return setStateVariables( gv, offset, false );
     }

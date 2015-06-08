@@ -50,9 +50,15 @@ public class SegmentJoiningPoints extends Segment
     {
         if ( mStart .isImpossible() || mEnd .isImpossible() )
             return setStateVariables( null, null, true );
-        AlgebraicVector gv = mStart .getLocation();
-        AlgebraicVector offset = mEnd .getLocation() .minus( gv );
-        return setStateVariables( gv, offset, false );
+        AlgebraicVector startV = mStart .getLocation();
+        AlgebraicVector endV = mEnd .getLocation();
+        // if both 4d, keep the offset 4d, but never mix 4d and 3d when computing offset
+        if ( startV .dimension() == 3 || endV .dimension() == 3 ) {
+        	startV = startV .projectTo3d( true );
+        	endV = endV .projectTo3d( true );
+        }
+        AlgebraicVector offset = endV .minus( startV );
+        return setStateVariables( startV, offset, false );
     }
 
 

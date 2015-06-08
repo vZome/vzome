@@ -38,7 +38,7 @@ public class PointReflection extends Transformation
     {
         if ( mCenter .isImpossible() )
             setStateVariables( null, null, true );
-        AlgebraicVector loc = mCenter .getLocation();
+        AlgebraicVector loc = mCenter .getLocation() .projectTo3d( true );
         return setStateVariables( null, loc, false );
     }
     

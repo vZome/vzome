@@ -242,10 +242,16 @@ task regression(type: JavaExec, dependsOn: check) {
         testFile = regressionFile
         println "testFile is $testFile"
     }
+    def testOut = 'build/test-results/regression/TEST-output.xml'
+    if( project .hasProperty( "regressionOutput" ) ){
+        testOut = regressionOutput
+        println "testOut is $testOut"
+    }
     classpath = sourceSets.regression.runtimeClasspath
     main = 'com.vzome.core.regression.TestVZomeFiles'
-    args( testHome, testFile, 'build/test-results/regression/TEST-output.xml' )
+    args( testHome, testFile, testOut )
     jvmArgs( '-Xmx3048M' )
+//    jvmArgs( '-Djava.util.logging.config.file=logging.properties' )
 }
 regression.dependsOn makeRegressionOutputDir
 

@@ -38,7 +38,7 @@ public class ShowPoint extends ChangeConstructions
             this.point = format .parsePoint( xml, "point" );
         else
         {
-            Map attrs = format .loadCommandAttributes( xml, true );
+            Map attrs = format .loadCommandAttributes( xml );
             this.point = (Point) attrs .get( "point" );
         }
     }

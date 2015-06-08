@@ -160,6 +160,8 @@ public final class AlgebraicVector
 
     public AlgebraicVector projectTo3d( boolean wFirst )
     {
+    	if ( dimension() == 3 )
+    		return this;
         if ( wFirst )
             return new AlgebraicVector( this .coordinates[ 1 ], this .coordinates[ 2 ], this .coordinates[ 3 ] );
         else

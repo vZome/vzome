@@ -3,6 +3,8 @@
 
 package com.vzome.core.construction;
 
+import java.util.Arrays;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -13,7 +15,13 @@ import com.vzome.core.math.DomUtils;
 
 public abstract class Polygon extends Construction
 {
-    private AlgebraicVector[] mVertices;
+    @Override
+	public String toString() {
+		return "polygon " + Arrays.toString(mVertices);
+	}
+
+
+	private AlgebraicVector[] mVertices;
     
     public Polygon( AlgebraicField field )
     {

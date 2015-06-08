@@ -46,7 +46,7 @@ public class PolygonRotated4D extends Polygon
         for ( int i = 0; i < vertices.length; i++ ) {
             AlgebraicVector loc = mRightQuaternion .leftMultiply( vertices[i] );
             loc = mLeftQuaternion .rightMultiply( loc );
-            vertices[i] = field .projectTo3d( loc, true );
+            vertices[i] = loc; // field .projectTo3d( loc, true );
         }
         return setStateVariable( vertices, false );
     }

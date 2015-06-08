@@ -88,7 +88,7 @@ public class SelectManifestation extends ChangeSelection
         }
         else
         {
-            Map attrs = format .loadCommandAttributes( xml, true );
+            Map attrs = format .loadCommandAttributes( xml );
             construction = (Construction) attrs .get( "manifestation" );
             Boolean replaceVal = (Boolean) attrs .get( "replace" );
             if ( replaceVal != null && replaceVal .booleanValue() )

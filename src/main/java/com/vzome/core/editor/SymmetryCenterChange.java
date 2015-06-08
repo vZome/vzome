@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 
 public class SymmetryCenterChange implements UndoableEdit
@@ -61,8 +62,9 @@ public class SymmetryCenterChange implements UndoableEdit
         }
         else
         {
-            Map attrs = format .loadCommandAttributes( xml, true );
-            mNewCenter = (Point) attrs .get( "new" );
+            Map attrs = format .loadCommandAttributes( xml );
+            Point center = (Point) attrs .get( "new" );
+            mNewCenter = new FreePoint( center .getLocation() .projectTo3d( true ), format .getModelRoot() );
         }
         
         context .performAndRecord( this );

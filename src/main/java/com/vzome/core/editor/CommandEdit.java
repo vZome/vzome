@@ -48,7 +48,9 @@ public class CommandEdit extends ChangeConstructions
     private ModelRoot modelRoot;
     
     private Map mAttrs;
-        
+
+    private final Logger logger = Logger .getLogger( "com.vzome.core.editor.CommandEdit" );
+
 	public CommandEdit( AbstractCommand cmd, EditorModel editor, ModelRoot derivationModel, boolean groupInSelection )
     {
         super( editor .mSelection, editor .getRealizedModel(), groupInSelection );
@@ -79,10 +81,24 @@ public class CommandEdit extends ChangeConstructions
     {
         boolean isHide = mCommand instanceof CommandHide;
         
+        if ( logger .isLoggable( Level .FINER ) ) {
+            logger .finer( "------------------- CommandEdit" );
+        }
+
         ConstructionList constrsBefore = new ConstructionList();
         for ( Iterator mans = mSelection .iterator(); mans .hasNext(); )
         {
             Manifestation man = (Manifestation) mans .next();
+            
+            if ( logger .isLoggable( Level .FINER ) ) {
+                logger .finer( "----------- manifestation: " + man .toString() );
+                for (Iterator iterator = man .getConstructions(); iterator
+						.hasNext();) {
+					Construction c = (Construction) iterator.next();
+	                logger .finer( "   " + c .toString() );
+				}
+            }
+
             // SELECTION BUG: the unselect() below just plans the unselection, but... (search for the next SELECTION BUG comment)
             unselect( man );
             if ( isHide )
@@ -226,7 +242,7 @@ public class CommandEdit extends ChangeConstructions
 
                         Object value = format .parseAlgebraicObject( valName, val );
                         if ( value == XmlSaveFormat .NOT_AN_ATTRIBUTE )
-                            value = format .parseConstruction( valName, val, mCommand .attributeIs3D( attrName ) );
+                            value = format .parseConstruction( valName, val );
                         // TODO verify that w==0 in all existing models.  This may not be true if
                         //   I hand-edited a model to use a quaternion for 4D rotation
 
@@ -261,9 +277,7 @@ public class CommandEdit extends ChangeConstructions
 
                     } else { 
                         // these are selection parameters, they need to become selection commands
-                        //   TODO: verify that w==0 in all existing models!  This may not be true
-                        //   if the selected construction was a projection of a 4D point.
-                        Construction c = format .parseConstruction( apName, attrOrParam, true );
+                        Construction c = format .parseConstruction( apName, attrOrParam );
                         
                         // remember that we're preparing to create selection commands, not creating them yet;
                         //  see below for the actual creation
