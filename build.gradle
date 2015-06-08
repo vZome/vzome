@@ -15,6 +15,8 @@ ext.antlr4 = [
     antlrSource:    "src/main/antlr",
     // Simplify multiple IDE integration by putting destinationDir under src/main/java 
     // Some IDEs don't correctly read multiple source folders from build.gradle. 
+    // Simplify multiple IDE integration by putting destinationDir under src/main/java
+    // Some IDEs don't corectly read multiple source folders from build.gradle.
     destinationDir: "src/main/java/com/vzome/core/antlr/generated",
     grammarpackage:               "com.vzome.core.antlr.generated"
 ]
@@ -255,6 +257,32 @@ task regression(type: JavaExec, dependsOn: check) {
 }
 regression.dependsOn makeRegressionOutputDir
 
+
+[ '01-Jan', '02-Feb', '03-Mar', '04-Apr', '05-May', '06-Jun', '07-Jul', '08-Aug', '09-Sep', '10-Oct', '11-Nov', '12-Dec' ]
+.each { def month ->
+    task "regression-$month"( dependsOn: [check, makeRegressionOutputDir], type: JavaExec ) {
+        def testHome = 'src/regression/files'
+        if( project .hasProperty( "regressionHome" ) ){
+            testHome = regressionHome
+        }
+        def testYear = '2015'
+        if( project .hasProperty( "regressionYear" ) ){
+            testYear = regressionYear
+        }
+        def testFile = "${testYear}/${month}"
+        def testOut = "build/test-results/regression/TEST-${month}.xml"
+        if( project .hasProperty( "regressionOutput" ) ){
+            testOut = regressionOutput
+        }
+        classpath = sourceSets.regression.runtimeClasspath
+        main = 'com.vzome.core.regression.TestVZomeFiles'
+        args( testHome, testFile, testOut )
+        jvmArgs( '-Xmx3048M' )
+    }
+}
+task regressionYear( dependsOn: tasks.matching { Task task -> task.name.startsWith( "regression-" ) } )
+
+
 task zomicPP( type: JavaExec, dependsOn: build) {
     def theFile = 'src/regression/files/Zomic/yellowAxisSaddleWeb/yellowAxisSaddleWeb.zomic'
 	if( project.hasProperty( 'zomicFile' ) ){
@@ -263,7 +291,7 @@ task zomicPP( type: JavaExec, dependsOn: build) {
     classpath = sourceSets.test.runtimeClasspath
     main = 'com.vzome.core.zomic.program.PrintVisitor'
     args( theFile )
-	
+
 	group = 'Verification'
     description = """Pretty-Prints the specified Zomic file
         command-line options:
