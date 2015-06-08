@@ -421,6 +421,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		UndoableEdit edit = new ApplyTool( this.mSelection, this.mRealizedModel, tool, registry, modes, true );
         performAndRecord( edit );
 	}
+	
+	public void applyQuaternionSymmetry( QuaternionicSymmetry left, QuaternionicSymmetry right )
+	{
+		UndoableEdit edit = new Symmetry4d( this.mSelection, this.mRealizedModel, this .mDerivationModel, left, right );
+        performAndRecord( edit );
+	}
 
     public UndoableEdit createEdit( String action )
     {
