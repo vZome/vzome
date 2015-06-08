@@ -89,9 +89,7 @@ public class Application
     private final Map fields = new HashMap();
 
     private final Map<Symmetry,List<Shapes>> mStyles = new HashMap(); // key: Symmetry, value: List of
-    
-    private final Map symmetries = new HashMap();
-    
+        
     private final Map mCommands = new HashMap();
 
     private final Colors mColors;
@@ -130,7 +128,6 @@ public class Application
         fields .put( field .getName(), field );
         {
             IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
-            symmetries .put( symmetry.getName(), symmetry );
             QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", field );
             field .addQuaternionSymmetry( H4 );
             QuaternionicSymmetry H4_ROT = new QuaternionicSymmetry( "H4_ROT", "com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef", field );
@@ -213,7 +210,6 @@ public class Application
                     createZoneOrbit( "turquoise", 0, NO_ROTATION, new int[] { 1, 1, 2, 1, 3, 1, 4, 1, 3, 1, 4, 1 } );
                 }
             };
-            symmetries .put( octaSymm.getName(), octaSymm );
             mStyles.put( octaSymm, new ArrayList<Shapes>() );
             defaultShapes =  new ExportedVEFShapes( prefsFolder, "octahedral", "trapezoids", octaSymm, null );
             addStyle( defaultShapes );
@@ -239,7 +235,6 @@ public class Application
                     createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 }, true );
                 }
             };
-            symmetries .put( symmetry.getName(), symmetry );
             mStyles.put( symmetry, new ArrayList<Shapes>() );
             defaultShapes =  new ExportedVEFShapes( prefsFolder, "rootTwoSmall", "small octahedra", "small connectors", symmetry );
             addStyle( defaultShapes );
@@ -302,7 +297,6 @@ public class Application
                     createZoneOrbit( "brown", 0, NO_ROTATION, v, true );
             	}
             };
-            symmetries .put( symmetry.getName(), symmetry );
             mStyles.put( symmetry, new ArrayList() );
             defaultShapes =  new ExportedVEFShapes( prefsFolder, "rootTwoSmall", "small octahedra", symmetry, null );
             addStyle( new ExportedVEFShapes( prefsFolder, "rootTwoSmall", "small octahedra", symmetry, defaultShapes ) );
@@ -334,7 +328,6 @@ public class Application
                     createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 } );
                 }
             };
-            symmetries .put( symmetry.getName(), symmetry );
             mStyles.put( symmetry, new ArrayList<Shapes>() );
             addStyle( new ExportedVEFShapes( prefsFolder, "rootThreeOctaSmall", "small octahedra", "small connectors", symmetry ) );
             addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
@@ -348,7 +341,6 @@ public class Application
         }
         {
             Symmetry symmetry = new DodecagonalSymmetry( field, "prisms" );
-            symmetries .put( symmetry.getName(), symmetry );
             mStyles.put( symmetry, new ArrayList<Shapes>() );
             addStyle( new ExportedVEFShapes( prefsFolder, "dodecagon3d", "prisms", symmetry, null ) );
             addStyle( new DodecagonalShapes( "dodecagonal", "hexagons", "flat hexagons", symmetry ) );
