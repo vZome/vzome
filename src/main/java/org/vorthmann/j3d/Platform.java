@@ -73,7 +73,6 @@ public class Platform
 				int creator = 0x74747874 /* ttxt, TextEdit */;
 				if ( extension .equals( "pov" ) )
 					creator = 0x504F5633 /*POV3*/;
-				// zomod support removed in vzome-core 5.0.3
 //				else if ( extension .equals( "zomod" ) )
 //					creator = 0x5A4D4F44 /*ZMOD*/;
 				else if ( extension .equals( "jpg" ) ){
