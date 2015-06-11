@@ -123,7 +123,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
     private Java2dSnapshot mSnapshot = null;
 
-    private Map<String,SymmetryController> symmetries = new HashMap();
+    private Map<String,SymmetryController> symmetries = new HashMap<>();
 
     private boolean mRequireShift = false, showFrameLabels = false, useWorkingPlane = false;
 
@@ -889,7 +889,7 @@ public class EditorController extends DefaultController implements J3dComponentF
                 listVEFindices();
             else if ( action .equals( "usedOrbits" ) )
             {
-            	Set usedOrbits = new HashSet();
+            	Set<Direction> usedOrbits = new HashSet<>();
             	for ( Iterator iterator = mRenderedModel .getRenderedManifestations(); iterator.hasNext(); )
             	{
             		RenderedManifestation rm = (RenderedManifestation) iterator.next();
@@ -1046,10 +1046,14 @@ public class EditorController extends DefaultController implements J3dComponentF
         }
     }
 
+	@Override
     public void doScriptAction( String command, String script )
     {
-        if ( command.equals( "runZomicScript" ) || command.equals( "runPythonScript" )
-        		|| command.equals( "import.vef" ) || command.equals( "import.zomod" ) )
+        if ( command.equals( "runZomicScript" ) 
+				|| command.equals( "runPythonScript" )
+        		|| command.equals( "import.vef" ) 
+				//|| command.equals( "import.zomod" ) 
+				)
         	document .doScriptAction( command, script );
         else
         	super .doScriptAction( command, script );
@@ -1059,6 +1063,7 @@ public class EditorController extends DefaultController implements J3dComponentF
     /* (non-Javadoc)
      * @see org.vorthmann.ui.DefaultController#doFileAction(java.lang.String, java.io.File)
      */
+	@Override
     public void doFileAction( String command, final File file )
     {
         // TODO set output file types
@@ -1099,6 +1104,7 @@ public class EditorController extends DefaultController implements J3dComponentF
                 final String extension = command .substring( "capture.".length() );
                 imageCaptureViewer .captureImage( maxSize, new RenderingViewer.ImageCapture()
                 {
+					@Override
                     public void captureImage( RenderedImage image )
                     {                        
                         String type = extension.toUpperCase();
@@ -1141,7 +1147,9 @@ public class EditorController extends DefaultController implements J3dComponentF
                 }
                 return;
             }
-            if ( command.equals( "import.vef" ) || command.equals( "import.zomod" ) ) {
+            if ( command.equals( "import.vef" ) 
+					// || command.equals( "import.zomod" )
+					) {
                 String vefData = readFile( file );
                 document .doScriptAction( command, vefData );
                 return;
@@ -1173,6 +1181,7 @@ public class EditorController extends DefaultController implements J3dComponentF
     /**
      * This relies on mTargetManifestation being already set!
      */
+	@Override
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
     {
         boolean[] result = new boolean[menu.length];
@@ -1216,6 +1225,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         return currentChangeCount > this .changeCount;
     }
 
+	@Override
     public void setErrorChannel( ErrorChannel errors )
     {
         mErrors = errors;
@@ -1226,6 +1236,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         toolsController .setErrorChannel( errors );
     }
 
+	@Override
     public String getProperty( String string )
     {
         if ( "useGraphicalViews".equals( string ) ) {
@@ -1350,6 +1361,7 @@ public class EditorController extends DefaultController implements J3dComponentF
     // mAppUI .showColorDialog( colorName, null );
     // }
 
+	@Override
     public Controller getSubController( String name )
     {
         if ( name.equals( "viewPlatform" ) )
@@ -1377,6 +1389,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         return null;
     }
 
+	@Override
     public void setProperty( String cmd, Object value )
     {
         if ( "useGraphicalViews".equals( cmd ) ) {
@@ -1407,21 +1420,23 @@ public class EditorController extends DefaultController implements J3dComponentF
         super.setProperty( cmd, value );
     }
 
+	@Override
     public String[] getCommandList( String listName )
     {
         if ( "tool.templates" .equals( listName ) )
         {
-            List all = new ArrayList();
-            List genericTools = Arrays .asList( new String[]{ "translation", "scaling", "point reflection", "linear map", "module", "bookmark", "plane" } );
+            List<String> all = new ArrayList<>();
+            List<String> genericTools = Arrays .asList( new String[]{ "translation", "scaling", "point reflection", "linear map", "module", "bookmark", "plane" } );
             all .addAll( genericTools );
-            List symmTools = Arrays .asList( symmetryController .getCommandList( listName ) );
+            List<String> symmTools = Arrays .asList( symmetryController .getCommandList( listName ) );
             all .addAll( symmTools );
-            return (String[]) all .toArray( new String[0] );
+            return (String[]) all .toArray( );
         }
         
-        if ( "designs" .equals( listName ) )
-            return (String[]) designs .keySet() .toArray( new String[0] );
-
+        if ( "designs" .equals( listName ) ) {
+            Set<?> dkSet = designs.keySet();
+            return (String[]) dkSet.toArray( );
+		}
         return super.getCommandList( listName );
     }
 

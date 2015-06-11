@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.security.AccessControlException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -27,15 +28,14 @@ public class Platform
     {
         Logger logger = Logger .getLogger( "org.vorthmann.vzome" );
         try {
-            String os = System .getProperty( "org.vorthmann.zome.Platform" );
-            os = System .getProperty( "os.name" );
-            logger .fine( "os.name: " + os );
+            String os = System .getProperty( "os.name" );
+            logger .log(Level.FINE, "os.name: {0}", os);
             if ( os != null && os .startsWith( "Mac" ) )
                 isMac = true;
             else if ( os != null && os .startsWith( "Win" ) )
                 isWindows = true;
             os = System .getProperty( "java.specification.version" );
-            logger .fine( "java.specification.version: " + os );
+            logger .log(Level.FINE, "java.specification.version: {0}", os);
         } catch ( AccessControlException e ) {
             // must be running in JNLP without signing
             logger .fine( "running in JNLP without signing" );
@@ -73,8 +73,8 @@ public class Platform
 				int creator = 0x74747874 /* ttxt, TextEdit */;
 				if ( extension .equals( "pov" ) )
 					creator = 0x504F5633 /*POV3*/;
-				else if ( extension .equals( "zomod" ) )
-					creator = 0x5A4D4F44 /*ZMOD*/;
+//				else if ( extension .equals( "zomod" ) )
+//					creator = 0x5A4D4F44 /*ZMOD*/;
 				else if ( extension .equals( "jpg" ) ){
 					type = 0x4A504547 /*JPEG*/;
 					creator = 0; // should be "ogle"

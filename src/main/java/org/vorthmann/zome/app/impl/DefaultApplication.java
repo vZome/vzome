@@ -42,6 +42,7 @@ public class DefaultApplication extends DefaultController implements Application
 		this .properties = Application .loadDefaults();
 	}
 
+	@Override
 	public void doScriptAction( String command, String script )
     {
 		this .topEditor .doScriptAction( command, script );
@@ -52,6 +53,7 @@ public class DefaultApplication extends DefaultController implements Application
         return rvFactory;
     }
 
+	@Override
     public Controller loadController( InputStream bytes, Properties props )
     {
         if ( bytes == null )
@@ -86,8 +88,8 @@ public class DefaultApplication extends DefaultController implements Application
         			extension = "py";
         		else if ( fileName .endsWith( ".vef" ) )
         			extension = "vef";
-        		else if ( fileName .endsWith( ".zomod" ) )
-        			extension = "zomod";
+//        		else if ( fileName .endsWith( ".zomod" ) )
+//        			extension = "zomod";
         		else if ( fileName .endsWith( ".zcd" ) )
         			extension = "zcd";
         		else {
@@ -115,8 +117,7 @@ public class DefaultApplication extends DefaultController implements Application
         }
     }
 
-
-
+	@Override
     public boolean userHasEntitlement( String propName )
     {
         // this one is implemented here, not ApplicationUI, so that the headless
@@ -127,11 +128,13 @@ public class DefaultApplication extends DefaultController implements Application
         return super .userHasEntitlement( propName );
     }
     
+	@Override
     public Properties getDefaults()
     {
     	return properties;
     }
     
+	@Override
     public String getProperty( String string )
     {
         if ( "window.class.name".equals( string ) )
@@ -150,7 +153,7 @@ public class DefaultApplication extends DefaultController implements Application
 
     private final Lights mLights = new Lights();
 
-    private final Map mSymmetryModels = new HashMap();
+    private final Map<Symmetry, RenderedModel> mSymmetryModels = new HashMap<>();
 
     private RenderingViewer.Factory rvFactory;
     
@@ -167,6 +170,7 @@ public class DefaultApplication extends DefaultController implements Application
      * to be able to reply to getProperty() quickly, to get the splash image up
      * ASAP.
      */
+	@Override
     public void initialize( Properties props )
     {
         long starttime = System.currentTimeMillis();
@@ -177,9 +181,10 @@ public class DefaultApplication extends DefaultController implements Application
         // this now includes overrides to the defaults originally loaded
         this.properties = props;
 
-        boolean enableCommands = userHasEntitlement( "model.edit" );;
+        boolean enableCommands = userHasEntitlement( "model.edit" );
         final FailureChannel failures = new FailureChannel()
         {	
+			@Override
 			public void reportFailure( Failure f )
 			{
 	            mErrors.reportError( USER_ERROR_CODE, new Object[] { f } );
@@ -207,9 +212,9 @@ public class DefaultApplication extends DefaultController implements Application
             if ( factoryName == null )
                 factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
             try {
-                Class factoryClass = Class.forName( factoryName );
-                Constructor constructor = factoryClass .getConstructor( new Class[] { Colors.class, Boolean.class } );
-                rvFactory = (RenderingViewer.Factory) constructor.newInstance( new Object[] { colors, new Boolean( useEmissiveColor ) } );
+                Class<?> factoryClass = Class.forName( factoryName );
+                Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Colors.class, Boolean.class } );
+                rvFactory = (RenderingViewer.Factory) constructor.newInstance( new Object[] { colors, useEmissiveColor} );
             } catch ( Exception e ) {
                 mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
                 System.exit( 0 );
@@ -273,7 +278,7 @@ public class DefaultApplication extends DefaultController implements Application
 
         long endtime = System.currentTimeMillis();
         if ( logger .isLoggable( Level .INFO ) )
-            logger .info( "DefaultApplication .initialize() in milliseconds: " + ( endtime - starttime ) );
+            logger .log(Level.INFO, "DefaultApplication .initialize() in milliseconds: {0}", ( endtime - starttime ));
         
 //         String teaPort = props .getProperty( "tea.agent.port" );
 //         if ( teaPort != null )
@@ -299,9 +304,11 @@ public class DefaultApplication extends DefaultController implements Application
     		// a RenderedModel that only creates panels
     		document .setRenderedModel( new RenderedModel( document .getField(), true ) 	 	 
     		{
+				@Override
     			protected void resetAttributes( RenderedManifestation rm, 	 	 
     					boolean justShape, Strut strut ) {} 	 	 
 
+				@Override
     			protected void resetAttributes(RenderedManifestation rm, 	 	 
     					boolean justShape, Connector m) {} 	 	 
     		} .withColorPanels( false ) ); 
@@ -332,11 +339,12 @@ public class DefaultApplication extends DefaultController implements Application
         return (RenderedModel) mSymmetryModels.get( symm );
     }
     
+	@Override
     public String[] getCommandList( String listName )
     {
         if ( listName.startsWith( "fields." ) ) {
-            Set names = modelApp .getFieldNames();
-            return (String[]) names.toArray( new String[0] );
+            Set<?> names = (Set<?>)modelApp.getFieldNames();
+            return (String[]) names.toArray( );
         } else if ( listName.startsWith( "symmetries." ) ) {
             String fieldName = listName.substring( 11 );
             AlgebraicField field = modelApp .getField( fieldName );
@@ -354,10 +362,11 @@ public class DefaultApplication extends DefaultController implements Application
         return mLights;
     }
 
-    static Logger logger = Logger.getLogger( "org.vorthmann.zome.controller" );
+    static final Logger logger = Logger.getLogger( "org.vorthmann.zome.controller" );
 
     static Properties noRenderProps = new Properties();
 
+	@Override
     public void doFileAction( String command, File file )
     {
         noRenderProps.setProperty( "no.rendering", "true" );
