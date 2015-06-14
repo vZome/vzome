@@ -3,7 +3,6 @@
 
 package com.vzome.core.exporters;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -32,7 +31,7 @@ public class PartGeometryExporter extends VefExporter
         this.selection = selection;
     }
 
-    public void doExport( File directory, Writer writer, Dimension screenSize ) throws IOException
+    public void doExport( File directory, Writer writer, int height, int width ) throws IOException
     {
         AlgebraicField field = mModel .getField();
         AlgebraicNumber scale = field .createPower( -5 );
