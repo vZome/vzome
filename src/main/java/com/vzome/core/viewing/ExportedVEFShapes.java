@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -30,19 +31,18 @@ import com.vzome.core.parts.StrutGeometry;
 
 /**
  * @author vorth
- * 
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class ExportedVEFShapes extends AbstractShapes
 {
     public static final String MODEL_PREFIX = "com/vzome/core/parts/";
 
-    private static final String NODE_MODEL = "/connector.vef";
+    private static final String NODE_MODEL = "connector";
     
     private final File prefsFolder;
     
     private final AbstractShapes fallback;
+    
+    static Logger logger = Logger.getLogger( "com.vzome.core.viewing.shapes" );
         
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {
@@ -68,86 +68,65 @@ public class ExportedVEFShapes extends AbstractShapes
     
     protected Polyhedron buildConnectorShape( String pkgName )
     {
-        String path = pkgName + NODE_MODEL;       
-        InputStream bytes = null;
-        File shapeFile = new File( this .prefsFolder, "Shapes/" + path );
-        if ( shapeFile .exists() )
-            try {
-                bytes = new FileInputStream( shapeFile );
-            	bytes .close();
-            } catch ( Exception e1 ) {
-                // TODO log this... should never happen?
-                e1.printStackTrace();
-            }
-        else {
-            path = MODEL_PREFIX + path;
-            bytes = Thread.currentThread() .getContextClassLoader().getResourceAsStream( path );
-        }
-        if ( bytes == null )
-            if ( this .fallback != null )
-                return this .fallback .buildConnectorShape( pkgName );
-            else
-                throw new IllegalStateException( "missing script: " + path );
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num;
-        try {
-            while ( ( num = bytes .read( buf, 0, 1024 )) > 0 )
-                out .write( buf, 0, num );
-        } catch ( IOException e ) {
-            throw new IllegalStateException( "IO exception: " + path );
-        }
-        String vefData = new String( out .toByteArray() );
-        
-        VefToShape parser = new VefToShape();
-        parser .parseVEF( vefData, mSymmetry .getField() );
-
-        return parser .getConnectorPolyhedron();
+    	String vefData = loadVefData( NODE_MODEL );
+    	if ( vefData != null ) {
+            VefToShape parser = new VefToShape();
+            parser .parseVEF( vefData, mSymmetry .getField() );
+            return parser .getConnectorPolyhedron();
+    	}
+        if ( this .fallback != null )
+            return this .fallback .buildConnectorShape( pkgName );
+        else
+            throw new IllegalStateException( "missing connector shape: " + pkgName );
     }
 
     protected StrutGeometry createStrutGeometry( Direction dir )
     {
-        // else is default, let's try to improve on that
-
-        String script = mPkgName + "/" + dir .getName() + ".vef";
-        InputStream bytes = null;
-        File shapeFile = new File( this .prefsFolder, "Shapes/" + script );
-        if ( shapeFile .exists() )
-            try {
-                bytes = new FileInputStream( shapeFile );
-                bytes .close();
-            } catch ( Exception e1 ) {
-                // TODO log this... should never happen?
-                e1.printStackTrace();
-            }
-        else {
-            script = MODEL_PREFIX + script;
-            bytes = Thread.currentThread() .getContextClassLoader().getResourceAsStream( script );
-        }
-        if ( bytes == null )
-            if ( this .fallback != null )
-                return this .fallback .createStrutGeometry( dir );
-            else
-                return super .createStrutGeometry( dir );
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num;
-        try {
-            while ( ( num = bytes .read( buf, 0, 1024 )) > 0 )
-                out .write( buf, 0, num );
-        } catch ( IOException e ) {
-            return super .createStrutGeometry( dir );
-        }
-        String vefData = new String( out .toByteArray() );
-        
-        VefToShape parser = new VefToShape();
-        parser .parseVEF( vefData, mSymmetry .getField() );
-
-        return parser .getStrutGeometry( dir .getAxis( Symmetry .PLUS, 0 ) .normal() );
+    	String vefData = loadVefData( dir .getName() );
+    	if ( vefData != null ) {
+            VefToShape parser = new VefToShape();
+            parser .parseVEF( vefData, mSymmetry .getField() );
+            return parser .getStrutGeometry( dir .getAxis( Symmetry .PLUS, 0 ) .normal() );
+    	}
+    	else  if ( this .fallback != null )
+    		return this .fallback .createStrutGeometry( dir );
+    	else
+    		return super .createStrutGeometry( dir );
     }
-    
+
+    protected String loadVefData( String name )
+    {
+        String script = mPkgName + "/" + name + ".vef";
+        File shapeFile = new File( this .prefsFolder, "Shapes/" + script );
+        InputStream stream = null;
+        try {
+            if ( shapeFile .exists() )
+                stream = new FileInputStream( shapeFile );
+            else {
+                script = MODEL_PREFIX + script;
+                stream = Thread.currentThread() .getContextClassLoader().getResourceAsStream( script );
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            int num;
+            while ( ( num = stream .read( buf, 0, 1024 )) > 0 )
+            	out .write( buf, 0, num );
+            return new String( out .toByteArray() );
+
+        } catch (Exception e) {
+            logger .fine( "Failure loading VEF data from " + shapeFile );
+		} finally {
+			if ( stream != null )
+				try {
+					stream .close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+        return null;
+    }
+
     /*
      * The VEF file format parsed here is an "extended profile" of the usual format.
      * First, it is a profile because the only "balls" (not vertices) present in the file
