@@ -493,6 +493,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new Centroid( mSelection, mRealizedModel, false );
         else if ( action.equals( "showHidden" ) )
             edit = new ShowHidden( mSelection, mRealizedModel, false );
+        else if ( action.equals( RealizeMetaParts.NAME ) )
+            edit = new RealizeMetaParts( mSelection, mRealizedModel, mDerivationModel );
         else if ( action.equals( "affinePentagon" ) )
             edit = new AffinePentagon( mSelection, mRealizedModel, mDerivationModel, false );
         else if ( action.equals( "affineTransformAll" ) )
