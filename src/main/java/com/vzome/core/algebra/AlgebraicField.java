@@ -353,22 +353,31 @@ public abstract class AlgebraicField
             break;
 
         default:
+        	int first = 0;
             for ( int i = 0; i < factors.length; i++ )
             {
                 BigRational factor = factors[ i ];
-                if ( i == 0 )
-                {
-                    buf .append( factor .toString() );
+                if ( factor .isZero() ) {
+                	++ first;
+                	continue;
                 }
+                if ( i > first )
+                {
+                    buf .append( " " );
+                }
+                if ( factor .isNegative() )
+                {
+                    factor = factor .negate();
+                    buf .append( "-" );
+                }
+                else if ( i > first )
+                {
+                    buf .append( "+" );
+                }
+                if ( i == 0 )
+                    buf .append( factor .toString() );
                 else
                 {
-                    if ( factor .isNegative() )
-                    {
-                        factor = factor .negate();
-                        buf .append( " - " );
-                    } else {
-                        buf .append( " + " );
-                    }
                     if ( ! factor .isOne() )
                     {
                         buf .append( factor .toString() );
@@ -379,6 +388,9 @@ public abstract class AlgebraicField
                     buf .append(  multiplier );
                 }
             }
+            if ( first == factors.length )
+            	// all factors were zero
+            	buf .append( "0" );
             break;
         }
     }
