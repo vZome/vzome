@@ -389,6 +389,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		else if ( "ApplyTool".equals( name ) )
 			edit = new ApplyTool( this.mSelection, this.mRealizedModel, this, true );
 
+		else if ( "Symmetry4d".equals( name ) ) {
+            QuaternionicSymmetry h4symm = this .mField .getQuaternionSymmetry( "H_4" ); 
+			edit = new Symmetry4d( this.mSelection, this.mRealizedModel, this .mDerivationModel, h4symm, h4symm );
+		}
+
 		if ( edit == null )
 			// any command unknown (i.e. from a newer version of vZome) becomes a CommandEdit
 			edit = new CommandEdit( null, mEditorModel, mDerivationModel, groupInSelection );
