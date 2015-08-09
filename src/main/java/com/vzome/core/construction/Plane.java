@@ -61,7 +61,8 @@ public abstract class Plane extends Construction
         }
 
         mNormal = normal;
-        mBase = base;
+        // symm center is used for the base, and might be a 4D vector
+        mBase = base .projectTo3d( true );
         setImpossible( false );
         return true;
     }
