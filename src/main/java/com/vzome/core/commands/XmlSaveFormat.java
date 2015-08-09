@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -376,7 +377,7 @@ public class XmlSaveFormat
 
     public Map loadCommandAttributes( Element editElem )
     {
-        Map attrs = new HashMap();
+        Map attrs = new TreeMap(); // need this to be ordered for the purpose of regression testing
         NodeList kids = editElem .getChildNodes();
         for ( int j = 0; j < kids .getLength(); j++ )
         {
