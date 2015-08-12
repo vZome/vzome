@@ -60,7 +60,7 @@ public class StrutCreation extends ChangeConstructions
         }
         else
         {
-            Map attrs = format .loadCommandAttributes( xml );
+            Map attrs = format .loadCommandAttributes( xml, /*projectTo3d*/ true );
             mAnchor = (Point) attrs .get( "anchor" );
             mAxis = (Axis) attrs .get( "axis" );
             mLength = (AlgebraicNumber) attrs .get( "len" );

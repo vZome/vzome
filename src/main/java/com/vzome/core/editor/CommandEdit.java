@@ -25,7 +25,9 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
+import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
+import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
@@ -248,7 +250,8 @@ public class CommandEdit extends ChangeConstructions
 
                         if ( attrName .equals( CommandTransform .SYMMETRY_CENTER_ATTR_NAME ) )
                         {
-                            UndoableEdit edit = mEditorModel .setSymmetryCenter( (Construction) value );
+                            Point c = new FreePoint( ((Point) value) .getLocation() .projectTo3d( true ), this .modelRoot );
+                            UndoableEdit edit = mEditorModel .setSymmetryCenter( c );
                             if ( edit != null ) {
                                 context .performAndRecord( edit );
                             }

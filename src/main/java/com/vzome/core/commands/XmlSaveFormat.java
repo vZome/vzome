@@ -326,21 +326,37 @@ public class XmlSaveFormat
      */
     public Construction parseConstruction( String apName, Element attrOrParam )
     {
+    	return this .parseConstruction( apName, attrOrParam, false );
+    }
+
+    /**
+     * this is for the old format (before rationalVectors)
+     */
+    public Construction parseConstruction( String apName, Element attrOrParam, boolean projectTo3d )
+    {
         Construction c = null;
         if ( apName .equals( "point" ) ) {
             AlgebraicVector loc = parseAlgebraicVector( attrOrParam );
+            if ( projectTo3d )
+            	loc = loc .projectTo3d( true );
             c = new FreePoint( loc, mModelRoot );
         } else if ( apName .equals( "segment" ) ) {
             Element start = DomUtils .getFirstChildElement( attrOrParam, "start" );
             Element end = DomUtils .getFirstChildElement( attrOrParam, "end" );
             AlgebraicVector sloc = parseAlgebraicVector( start );
             AlgebraicVector eloc = parseAlgebraicVector( end );
+            if ( projectTo3d ) {
+            	sloc = sloc .projectTo3d( true );
+            	eloc = eloc .projectTo3d( true );
+            }
             c = new SegmentJoiningPoints( new FreePoint( sloc, mModelRoot ), new FreePoint( eloc, mModelRoot ) );
         } else if ( apName .equals( "polygon" ) ) {
         	NodeList kids = attrOrParam .getElementsByTagName( "vertex" );
             Point[] pts = new Point[ kids .getLength() ];
             for ( int k = 0; k < kids .getLength(); k++ ) {
                 AlgebraicVector loc = parseAlgebraicVector( (Element) kids .item( k ) );
+                if ( projectTo3d )
+                	loc = loc .projectTo3d( true );
                 pts[ k ] = new FreePoint( loc, mModelRoot );
             }
             c = new PolygonFromVertices( pts );
@@ -377,6 +393,11 @@ public class XmlSaveFormat
 
     public Map loadCommandAttributes( Element editElem )
     {
+    	return this .loadCommandAttributes( editElem, false );
+    }
+    
+    public Map loadCommandAttributes( Element editElem, boolean projectTo3d )
+    {
         Map attrs = new TreeMap(); // need this to be ordered for the purpose of regression testing
         NodeList kids = editElem .getChildNodes();
         for ( int j = 0; j < kids .getLength(); j++ )
@@ -401,16 +422,16 @@ public class XmlSaveFormat
         	    if ( rationalVectors() )
         	    {
         	        if ( elemName .equals( "point" ) )
-        	            value = parsePoint( attrElem, "at" );
+        	            value = parsePoint( attrElem, "at", projectTo3d );
         	        else if ( elemName .equals( "segment" ) )
-        	            value = parseSegment( attrElem, "start", "end" );
+        	            value = parseSegment( attrElem, "start", "end", projectTo3d );
         	        else if ( elemName .equals( "polygon" ) )
-        	            value = parsePolygon( attrElem, "vertex" );
+        	            value = parsePolygon( attrElem, "vertex", projectTo3d );
                     else
         	            throw new IllegalStateException( "unknown parameter construction: " + elemName );
         	    }
         	    else
-        	        value = parseConstruction( elemName, attrElem );
+        	        value = parseConstruction( elemName, attrElem, projectTo3d );
         	attrs .put( attrName, value );
         }
         return attrs;
@@ -485,14 +506,26 @@ public class XmlSaveFormat
 
     public final Point parsePoint( Element xml, String attrName )
     {
+    	return this .parsePoint( xml, attrName, false );
+    }
+
+    public final Point parsePoint( Element xml, String attrName, boolean projectTo3d )
+    {
         String nums = xml .getAttribute( attrName );
         if ( nums == null || nums .isEmpty() )
             return null;
         AlgebraicVector loc = mField .parseVector( nums );
+        if ( projectTo3d )
+        	loc = loc .projectTo3d( true );
         return new FreePoint( loc, mModelRoot );
     }
 
     public final Segment parseSegment( Element xml, String startAttrName, String endAttrName )
+    {
+    	return this .parseSegment( xml, startAttrName, endAttrName, false );
+    }
+
+    public final Segment parseSegment( Element xml, String startAttrName, String endAttrName, boolean projectTo3d )
     {
         String nums = xml .getAttribute( endAttrName );
         if ( nums == null || nums .isEmpty() )
@@ -502,10 +535,19 @@ public class XmlSaveFormat
         AlgebraicVector sloc = ( nums == null || nums .isEmpty() )?
                  mField .origin( eloc .dimension() )
                 : mField .parseVector( nums );
+        if ( projectTo3d ) {
+        	sloc = sloc .projectTo3d( true );
+        	eloc = eloc .projectTo3d( true );
+        }
         return new SegmentJoiningPoints( new FreePoint( sloc, mModelRoot ), new FreePoint( eloc, mModelRoot ) );
     }
 
     public final Polygon parsePolygon( Element xml, String vertexChildName )
+    {
+    	return this .parsePolygon( xml, vertexChildName, false );
+    }
+
+    public final Polygon parsePolygon( Element xml, String vertexChildName, boolean projectTo3d )
     {
         NodeList kids = xml .getElementsByTagName( vertexChildName );
         Point[] pts = new Point[ kids .getLength() ];
@@ -513,6 +555,8 @@ public class XmlSaveFormat
         {
             String nums = ((Element) kids .item( k )) .getAttribute( "at" );
             AlgebraicVector loc = mField .parseVector( nums );
+            if ( projectTo3d )
+            	loc = loc .projectTo3d( true );
             pts[ k ] = new FreePoint( loc, mModelRoot );
         }
         return new PolygonFromVertices( pts );
