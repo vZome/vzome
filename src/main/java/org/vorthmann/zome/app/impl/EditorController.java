@@ -14,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,14 +70,12 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
@@ -917,23 +914,6 @@ public class EditorController extends DefaultController implements J3dComponentF
                 LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
                 lmodel .setActualLength( length );
             }
-            else if ( action .equals( "extractPartModel" ) )
-            {
-                Strut strut = (Strut) mTargetManifestation;
-                AlgebraicVector offset = strut .getOffset();
-                RenderedManifestation rm = (RenderedManifestation) strut .getRenderedObject();
-                Polyhedron shape = rm .getShape();
-                AlgebraicField field = shape .getField();
-
-                AlgebraicNumber scale = field .createPower( 0 );
-                StringWriter writer = new StringWriter();
-                VefModelExporter exporter = new VefModelExporter( writer, field, scale );
-                exporter .exportStrutPolyhedron( shape, rm .getOrientation(), rm .reverseOrder(), offset );
-                exporter .finish();
-
-                String vefData = writer .toString();
-                document .doScriptAction( "import.vef", vefData );
-            }
             else if ( action .equals( "selectSimilarSize" ) )
             {
                 Strut strut = (Strut) mTargetManifestation;
@@ -961,12 +941,14 @@ public class EditorController extends DefaultController implements J3dComponentF
     	        document .applyTool( event .getTool(), toolsController, event .getModes() );
             }
             
-            else if ( action.equals( "h4symmetry" ) )
-            {
-                QuaternionicSymmetry qsymm = document .getField() .getQuaternionSymmetry( "H_4" ); 
-                document .applyQuaternionSymmetry( qsymm, qsymm );
-            }
-            
+// This was an experiment, to see if the applyQuaternionSymmetry() approach was workable.
+//  It seems it is too restrictive to insist upon all W=0 inputs.
+//            else if ( action.equals( "h4symmetry" ) )
+//            {
+//                QuaternionicSymmetry qsymm = document .getField() .getQuaternionSymmetry( "H_4" ); 
+//                document .applyQuaternionSymmetry( qsymm, qsymm );
+//            }
+//            
             else if ( action .equals( "copy" ) )
                 setProperty( "clipboard", document .copySelectionVEF() );
             else if ( action.equals( "paste" ) )
@@ -1145,9 +1127,12 @@ public class EditorController extends DefaultController implements J3dComponentF
                     }
                     else {
                         exporter = this .mApp .getExporter( format );
-                        if ( exporter != null )
-                            // this form of doExport will use the document's rendered model
-                            exporter .doExport( document, file, file.getParentFile(), out, 600, 600 ); // TODO fix hardcoded size
+                        if ( exporter == null ) {
+                        	// currently just "partgeom"
+                        	exporter = document .getStructuredExporter( format, mViewPlatform .getView(), colors, sceneLighting, mRenderedModel );
+                        }
+                    	if ( exporter != null )
+                    		exporter .doExport( document, file, file.getParentFile(), out, 600, 600 ); // TODO fix hardcoded size
                     }
                 } finally {
                     out.close();

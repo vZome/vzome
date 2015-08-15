@@ -117,7 +117,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
     private Snapshot2dFrame snapshot2dFrame = null;
 
-    private final boolean developerExtras;
+    private final boolean developerExtras, enable4d, metaModels;
 
     private boolean isEditor;
 
@@ -262,6 +262,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         this.fullPower = isEditor && controller .userHasEntitlement( "all.tools" );
 
         developerExtras = fullPower && controller .userHasEntitlement( "developer.extras" );
+
+        enable4d = developerExtras || ( fullPower && controller .userHasEntitlement( "4d.symmetries" ) );
+
+        metaModels = developerExtras || ( fullPower && controller .userHasEntitlement( "meta.models" ) );
 
         mZomicFrame = new JFrame( "Zomic Scripting" );
         mZomicFrame.setContentPane( new ZomicEditorPanel( mZomicFrame, controller ) );
@@ -578,11 +582,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         }, KeyEvent.CHAR_UNDEFINED, 0 );
         modelPopupMenu.add( menuItem );
 
-        if ( developerExtras ) {
-            menuItem = doCreateMenuItem( "Extract Part Model", "extractPartModel", fullPower, mController, KeyEvent.CHAR_UNDEFINED, 0 );
-            modelPopupMenu.add( menuItem );
-        }
-
         // -------------------------------------------- create the menubar
 
         JPopupMenu.setDefaultLightWeightPopupEnabled( false );
@@ -882,8 +881,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         menu.addSeparator();
 //        menu.add( createEditorMenuItem( "Affine Transform All", getExclusiveAction( "affineTransformAll" ) ) );
-        menuItem = createPowerMenuItem( "Conjugate", getExclusiveAction( "conjugate" ) );
-        menu .add(  menuItem );
+//        menuItem = createPowerMenuItem( "Conjugate", getExclusiveAction( "conjugate" ) );
+        if ( metaModels ) {
+        	menu .add(  createPowerMenuItem( "Meta-model", getExclusiveAction( "realizeMetaParts" ) ) );
+        }
         if ( isGolden ) {
             menu.add( createEditorMenuItem( "\u03C4 Divide", getExclusiveAction( "tauDivide" ) ) );
             menu.add( createPowerMenuItem( "Affine Pentagon", getExclusiveAction( "affinePentagon" ) ) );
@@ -1001,12 +1002,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         if ( isGolden ) {
             menu.add( createEditorMenuItem( "Icosahedral Symmetry", getExclusiveAction( "icosasymm-golden" ), KeyEvent.VK_I ) );
-            if ( developerExtras ) {
-                menu.add( createEditorMenuItem( "H_4 Symmetry", getExclusiveAction( "h4symmetry" ) ) );
-                menu.add( createEditorMenuItem( "H_4 Rotations", getExclusiveAction( "h4rotations" ) ) );
-                menu.add( createEditorMenuItem( "I,T Symmetry", getExclusiveAction( "IxTsymmetry" ) ) );
-                menu.add( createEditorMenuItem( "T,T Symmetry", getExclusiveAction( "TxTsymmetry" ) ) );
-            }
         } else if ( isSnubDodec )
             menu.add( createEditorMenuItem( "Icosahedral Symmetry", getExclusiveAction( "icosasymm-snubDodec" ), KeyEvent.VK_I ) );
 
@@ -1024,6 +1019,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         
         menu .addSeparator();
         menu .add( doCreateMenuItem( "Generate Polytope...", "showPolytopesDialog", fullPower, localActions, KeyEvent.VK_P, InputEvent.ALT_MASK ) );
+        if ( enable4d ) {
+            menu.add( createEditorMenuItem( "H_4 Symmetry", getExclusiveAction( "h4symmetry" ) ) );
+            menu.add( createEditorMenuItem( "H_4 Rotations", getExclusiveAction( "h4rotations" ) ) );
+            menu.add( createEditorMenuItem( "I,T Symmetry", getExclusiveAction( "IxTsymmetry" ) ) );
+            menu.add( createEditorMenuItem( "T,T Symmetry", getExclusiveAction( "TxTsymmetry" ) ) );
+        }
 
         menuBar.add( menu );
 
