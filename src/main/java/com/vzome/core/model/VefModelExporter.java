@@ -7,11 +7,13 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
@@ -23,7 +25,7 @@ public class VefModelExporter implements Exporter
 {
     private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 
-    private Map vertexData = new HashMap();
+    private Map vertexData = new LinkedHashMap();
 
     protected final AlgebraicField field;
 
@@ -46,6 +48,10 @@ public class VefModelExporter implements Exporter
     private int numPanels;
 
     private PrintWriter output;
+    
+    private boolean writingTip;
+    
+    private Set<Integer> middleVertices = new HashSet<Integer>();
 
     public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale )
     {
@@ -161,11 +167,23 @@ public class VefModelExporter implements Exporter
     {
         if ( man instanceof Connector )
         {
+        	if ( ! this .writingTip ) {
+        		output .print( "tip" );
+        		this .writingTip = true;
+        	}
             AlgebraicVector loc = ((Connector) man) .getLocation();
-            if ( first )
-                output .println( "tip " + getVertexIndex( loc ) );
-            else
-                output .print( " " + getVertexIndex( loc ) );
+            output .println( " " + getVertexIndex( loc ) );
+        }
+        else if ( man instanceof Panel ) {
+        	if ( this .middleVertices .isEmpty() )
+        		output .print( "middle" );
+            for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); ) {
+                Integer index = getVertexIndex( (AlgebraicVector) verts .next() );
+                if ( ! this .middleVertices .contains( index ) ) {
+                    this .middleVertices .add( index );
+                	output .print( " " + index );
+                }
+            }
         }
     }
     

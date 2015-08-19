@@ -137,19 +137,54 @@ public class ExportedVEFShapes extends AbstractShapes
      * The tip vector is subtracted from all the strut-end-tracking ("ball") vectors, in the prototype
      * polyhedron.  Then, when a new length polyhedron is required, the scaled prototype vector is added
      * to those ball vectors again, for the final polyhedron.
+     * 
+     * As of August 2015, this now supports parsing two successfile VEF files, if startParsingMidpoint()
+     * is called between the two.  In the second phase, it records midpointVertexIndices for balls, and ignores
+     * faces and vertices.  This is so that we can use this mechanism to model classic Zometool red and
+     * yellow struts, and any others that use a central structure.
      */
     
     private class VefToShape extends VefParser
     {                
-        private Set stretchVertexIndices = new HashSet();
+        private Set tipVertexIndices = new HashSet();
+        
+        private Set midpointVertexIndices = new HashSet();
+        
+        private AlgebraicVector tipVertex;
         
         private List vertices = new ArrayList();
         
         private List faces = new ArrayList();
-        
+                
         public StrutGeometry getStrutGeometry( AlgebraicVector prototype )
         {
-            return new ExportedVEFStrutGeometry( vertices, faces, prototype, stretchVertexIndices, mSymmetry .getField() );
+            // next, get the arbitrary axis that the strut model lies along
+            Axis tipAxis = mSymmetry .getAxis( tipVertex );
+         //   int sense = tipAxis .getSense();  // TODO make this logic the same regardless of sense
+            
+            AlgebraicVector midpoint = tipVertex .scale( mSymmetry .getField() .createRational( 1, 2 ) );
+            
+            // find the orientation index, and invert it...
+            int orientation = mSymmetry .inverse( tipAxis .getOrientation() );
+            // ... so we can get the inverse matrix without recomputing it
+            AlgebraicMatrix adjustment = mSymmetry .getMatrix( orientation );
+            
+            // now, adjust the vertex data
+            List newVertices = new ArrayList();
+            for ( int i = 0; i < vertices .size(); i++ )
+            {
+                AlgebraicVector originalVertex = (AlgebraicVector) vertices .get( i );
+                // first, subtract the tipVertex if appropriate
+                if ( tipVertexIndices .contains( new Integer( i ) ) )
+                    originalVertex = originalVertex .minus( tipVertex );
+                else if ( midpointVertexIndices .contains( new Integer( i ) ) )
+                	originalVertex = originalVertex .minus( midpoint );
+                // then, rotate to align with the 0-index zone for this orbit
+                AlgebraicVector adjustedVertex = adjustment .timesColumn( originalVertex );
+                newVertices .add( adjustedVertex );
+            }
+
+            return new ExportedVEFStrutGeometry( newVertices, faces, prototype, tipVertexIndices, midpointVertexIndices, mSymmetry .getField() );
         }
         
         public Polyhedron getConnectorPolyhedron()
@@ -169,7 +204,7 @@ public class ExportedVEFShapes extends AbstractShapes
             }
             return result;
         }
-
+        
         protected void addFace( int index, int[] verts )
         {
             List face = new ArrayList();
@@ -188,7 +223,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
         protected void addBall( int index, int vertex )
         {
-            stretchVertexIndices .add( new Integer( vertex ) );
+        	tipVertexIndices .add( new Integer( vertex ) );
         }
 
         protected void endFile( StringTokenizer tokens )
@@ -211,30 +246,24 @@ public class ExportedVEFShapes extends AbstractShapes
                 throw new RuntimeException( "VEF format error: strut tip vertex index (\"" + token + "\") must be an integer", e );
             }
             
-            AlgebraicVector tipVertex = (AlgebraicVector) vertices .get( tipIndex );
+            this .tipVertex = (AlgebraicVector) vertices .get( tipIndex );
 
-            // next, get the arbitrary axis that the strut model lies along
-            Axis tipAxis = mSymmetry .getAxis( tipVertex );
-         //   int sense = tipAxis .getSense();  // TODO make this logic the same regardless of sense
+            if ( ! tokens .hasMoreTokens() )
+                return;
             
-            // find the orientation index, and invert it...
-            int orientation = mSymmetry .inverse( tipAxis .getOrientation() );
-            // ... so we can get the inverse matrix without recomputing it
-            AlgebraicMatrix adjustment = mSymmetry .getMatrix( orientation );
-            
-            // now, adjust the vertex data
-            List newVertices = new ArrayList();
-            for ( int i = 0; i < vertices .size(); i++ )
-            {
-                AlgebraicVector originalVertex = (AlgebraicVector) vertices .get( i );
-                // first, subtract the tipVertex if appropriate
-                if ( stretchVertexIndices .contains( new Integer( i ) ) )
-                    originalVertex = originalVertex .minus( tipVertex );
-                // then, rotate to align with the 0-index zone for this orbit
-                AlgebraicVector adjustedVertex = adjustment .timesColumn( originalVertex );
-                newVertices .add( adjustedVertex );
+            token = tokens .nextToken();
+            if ( ! "middle" .equals( token ) )
+                throw new IllegalStateException( "VEF format error: token after tip vertex (\"" + token + "\" should be \"middle\"" );
+            while ( tokens .hasMoreTokens() ) {
+                token = tokens .nextToken();
+                int vertexIndex;
+                try {
+                	vertexIndex = Integer .parseInt( token );
+                } catch ( NumberFormatException e ) {
+                    throw new RuntimeException( "VEF format error: middle vertex index (\"" + token + "\") must be an integer", e );
+                }                
+        		midpointVertexIndices .add( new Integer( vertexIndex ) );
             }
-            vertices = newVertices;
         }
 
         protected void startBalls( int numVertices )

@@ -21,20 +21,27 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
     
     private final AlgebraicVector prototypeVector; // the prototype strut vector from the symmetry group
     
-    private final Set motileVertices;  // the polyhedron vertices that must adjust for different strut lengths
+    private final Set fullScaleVertices, halfScaleVertices;  // the polyhedron vertices that must adjust for different strut lengths
     
-    public ExportedVEFStrutGeometry( List vertices, List faces, AlgebraicVector prototype, Set motileVertices, AlgebraicField field )
+    public ExportedVEFStrutGeometry( List vertices, List faces, AlgebraicVector prototype, Set fullScaleVertices, Set halfScaleVertices, AlgebraicField field )
     {
         prototypeVertices = vertices;
         prototypeFaces = faces;
         prototypeVector = prototype;
-        this.motileVertices = motileVertices;
+        this.fullScaleVertices = fullScaleVertices;
+        this.halfScaleVertices = halfScaleVertices;
         this.field = field;
+    }
+
+    public ExportedVEFStrutGeometry( List vertices, List faces, AlgebraicVector prototype, Set fullScaleVertices, AlgebraicField field )
+    {
+    	this( vertices, faces, prototype, fullScaleVertices, null, field );
     }
 
     public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
     {
         AlgebraicVector tipVertex = prototypeVector .scale( length );
+        AlgebraicVector midpoint = tipVertex .scale( this .field .createRational( 1, 2 ) );
         if ( field .getName() .equals( "snubDodec" ) )
         {
             RealVector rproto = prototypeVector .toRealVector();
@@ -48,8 +55,10 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
         for ( int i = 0; i < prototypeVertices .size(); i ++ )
         {
             AlgebraicVector vertex = (AlgebraicVector) prototypeVertices .get( i );
-            if ( motileVertices .contains( new Integer( i ) ) ) {
+            if ( fullScaleVertices .contains( new Integer( i ) ) ) {
                 vertex = vertex .plus( tipVertex );
+            } else if ( halfScaleVertices != null && halfScaleVertices .contains( new Integer( i ) ) ) {
+                vertex = vertex .plus( midpoint );
             }
             result .addVertex( vertex );
         }
