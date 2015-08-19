@@ -1,5 +1,30 @@
 package com.vzome.core.zomic;
 
+import static javatests.TestSupport.assertNotEquals;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import junit.framework.TestCase;
+
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.misc.IntervalSet;
+
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.PentagonField;
 // Note that the com.vzome.core.antlr.generated classes can't be resolved after "clean"ing the project.
@@ -18,27 +43,6 @@ import com.vzome.core.zomic.program.Move;
 import com.vzome.core.zomic.program.PrintVisitor;
 import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static javatests.TestSupport.assertNotEquals;
-import junit.framework.TestCase;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.misc.IntervalSet;
 
 public class ZomicASTTest extends TestCase
 {
@@ -1199,7 +1203,7 @@ public class ZomicASTTest extends TestCase
 	// Begin Resource Regression Tests
 	private final String ZomicFileExtension = "zomic";
 	private final String resourceFolderName = "src/main/resources/";
-	private final int resourceFileCount = 55;
+	private final int resourceFileCount = 44;
 	private int regressionTestCount = 0;
 
 	public void test_RegressionResources() {
