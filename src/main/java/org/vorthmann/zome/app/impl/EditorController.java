@@ -1422,7 +1422,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             all .addAll( genericTools );
             List<String> symmTools = Arrays .asList( symmetryController .getCommandList( listName ) );
             all .addAll( symmTools );
-            return (String[]) all .toArray( );
+            return (String[]) all .toArray( new String[0] );
         }
         
         if ( "designs" .equals( listName ) ) {
