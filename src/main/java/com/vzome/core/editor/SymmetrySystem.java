@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -130,6 +131,11 @@ public class SymmetrySystem implements OrbitSource
             }
 		}
         this .shapes = this .styles .get( styleName );
+        
+        if ( this .shapes == null ) {
+        	Logger .getLogger( "com.vzome.core.editor" ) .warning( "UNKNOWN STYLE NAME: " + styleName );
+            this .shapes = this .styles .get( symmetry .getDefaultStyle() );
+        }
 	}
 	
 	public String getName()

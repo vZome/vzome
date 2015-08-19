@@ -61,7 +61,12 @@ public class ExportedVEFShapes extends AbstractShapes
     
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, AbstractShapes fallback )
     {
-        super( pkgName, name, symm );
+    	this( prefsFolder, pkgName, name, null, symm, fallback );
+    }
+    
+    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm, AbstractShapes fallback )
+    {
+        super( pkgName, name, alias, symm );
         this .prefsFolder = prefsFolder;
         this .fallback = fallback;
     }

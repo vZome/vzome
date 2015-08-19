@@ -140,7 +140,7 @@ public class Application
             addStyle( new ExportedVEFShapes( prefsFolder, "lifelike", "lifelike", symmetry, defaultShapes ) );
             defaultShapes =  new ExportedVEFShapes( prefsFolder, "tiny", "tiny connectors", symmetry );
             addStyle( defaultShapes );
-            addStyle( new ExportedVEFShapes( prefsFolder, "dodecs", "small dodecahedra", symmetry, defaultShapes ) );
+            addStyle( new ExportedVEFShapes( prefsFolder, "dodecs", "small dodecahedra", "tiny dodecahedra", symmetry, defaultShapes ) );
             addStyle( new ExportedVEFShapes( prefsFolder, "noTwist", "no-twist 121 zone", symmetry ) );
             addStyle( new ExportedVEFShapes( prefsFolder, "vienne", "Vienne 121 zone", symmetry ) );
             
