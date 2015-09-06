@@ -175,7 +175,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         this .symmetrySystem = new SymmetrySystem( xml, symmetry, app .getColors(), app .getGeometries( symmetry ), true );
         this .symmetrySystems .put( symmName, this .symmetrySystem );
 
-        this .renderedModel = new RenderedModel( field, this .symmetrySystem .getRenderingStyle(), this .symmetrySystem );
+        this .renderedModel = new RenderedModel( field, this .symmetrySystem );
 
 		this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
 		

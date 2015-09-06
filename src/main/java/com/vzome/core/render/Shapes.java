@@ -31,6 +31,10 @@ public interface Shapes{
     Symmetry getSymmetry();
 
     String getPackage();
+    
+    Color getColor( Direction dir );
+
+	boolean hasColors();
 }
 
 

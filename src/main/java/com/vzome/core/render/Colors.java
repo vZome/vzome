@@ -101,9 +101,14 @@ public class Colors
                     .round( percents[2] * 0xFF / 100 ) );
         }
         String pref = properties .getProperty( "color." + name );
-        if ( pref == null || pref.equals( "" ) )
+        return parseColor( pref );
+    }
+    
+    public static Color parseColor( String colorString )
+    {
+        if ( colorString == null || colorString.equals( "" ) )
             return Color.WHITE;
-        StringTokenizer tokens = new StringTokenizer( pref, ", " );
+        StringTokenizer tokens = new StringTokenizer( colorString, ", " );
         int[] rgb = new int[] { 0, 0, 0 };
         int i = 0;
         while ( tokens.hasMoreTokens() )

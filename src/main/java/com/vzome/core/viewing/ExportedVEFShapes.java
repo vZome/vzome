@@ -15,12 +15,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.editor.Application;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
@@ -28,13 +31,15 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.parts.StrutGeometry;
+import com.vzome.core.render.Color;
+import com.vzome.core.render.Colors;
 
 /**
  * @author vorth
  */
 public class ExportedVEFShapes extends AbstractShapes
 {
-    public static final String MODEL_PREFIX = "com/vzome/core/parts/";
+	public static final String MODEL_PREFIX = "com/vzome/core/parts/";
 
     private static final String NODE_MODEL = "connector";
     
@@ -42,16 +47,13 @@ public class ExportedVEFShapes extends AbstractShapes
     
     private final AbstractShapes fallback;
     
+    private final Properties colors = new Properties();
+    
     static Logger logger = Logger.getLogger( "com.vzome.core.viewing.shapes" );
         
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {
-        super( pkgName, name, alias, symm );
-        this .prefsFolder = prefsFolder;
-        if ( symm instanceof IcosahedralSymmetry)
-            this .fallback = new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm );
-        else
-            this .fallback = null;
+    	this( prefsFolder, pkgName, name, null, symm, ( symm instanceof IcosahedralSymmetry )? new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) : null );
     }
     
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
@@ -69,6 +71,17 @@ public class ExportedVEFShapes extends AbstractShapes
         super( pkgName, name, alias, symm );
         this .prefsFolder = prefsFolder;
         this .fallback = fallback;
+
+        String colorProps = MODEL_PREFIX + pkgName + "/colors.properties";
+        try {
+            ClassLoader cl = Application.class .getClassLoader();
+            InputStream in = cl .getResourceAsStream( colorProps );
+            if ( in != null )
+            	this .colors .load( in );
+        } catch ( IOException ioe ) {
+        	if ( logger .isLoggable( Level.FINE ) )
+        		logger .fine( "problem with shape color properties: " + colorProps );
+        }
     }
     
     protected Polyhedron buildConnectorShape( String pkgName )
@@ -131,6 +144,23 @@ public class ExportedVEFShapes extends AbstractShapes
 		}
         return null;
     }
+    
+    public boolean hasColors()
+    {
+    	return ! this .colors .isEmpty();
+    }
+
+    @Override
+	public Color getColor( Direction dir )
+    {
+    	if ( this .colors .isEmpty() )
+    		return null;
+		String dirName = ( dir == null )? NODE_MODEL : dir .getName();
+		String colorString = this .colors .getProperty( dirName );
+		if ( colorString == null )
+			return null;
+		return Colors .parseColor( colorString );
+	}
 
     /*
      * The VEF file format parsed here is an "extended profile" of the usual format.

@@ -221,7 +221,10 @@ public class SymmetrySystem implements OrbitSource
 	@Override
 	public Color getColor( Direction orbit )
 	{
-		return (Color) orbitColors .get( orbit );
+		Color shapeColor = this .shapes .getColor( orbit ); // usually null, but see ExportedVEFShapes
+		if ( shapeColor == null ) // the usual case
+			shapeColor = (Color) orbitColors .get( orbit );
+		return shapeColor;
 	}
 
 	public Symmetry getSymmetry()
@@ -282,4 +285,10 @@ public class SymmetrySystem implements OrbitSource
     {
         return this .shapes;
     }
+
+	@Override
+	public Shapes getShapes()
+	{
+		return this .shapes;
+	}
 }

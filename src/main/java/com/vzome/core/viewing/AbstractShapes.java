@@ -15,12 +15,13 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.parts.FastDefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.Shapes;
 
 
 public abstract class AbstractShapes implements Shapes
 {
-    private final Map strutShapesByLengthAndOrbit = new HashMap();
+	private final Map strutShapesByLengthAndOrbit = new HashMap();
 
     private final Map strutGeometriesByOrbit = new HashMap();
 
@@ -46,6 +47,17 @@ public abstract class AbstractShapes implements Shapes
         this( pkgName, name, null, symm );
     }
     
+    @Override
+	public Color getColor( Direction dir )
+    {
+		return null;
+	}
+    
+    public boolean hasColors()
+    {
+    	return false;
+    }
+
     protected StrutGeometry createStrutGeometry( Direction dir )
     {
         return new FastDefaultStrutGeometry( dir );

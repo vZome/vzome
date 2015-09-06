@@ -33,9 +33,7 @@ public class RenderedModel implements ManifestationChanges
 	private float mSelectionGlow = 0.8f;
 
 	protected final HashSet mRendered = new HashSet();
-    
-    protected final Map mStyles = new HashMap();
-    
+        
     protected Map mCurrentStyle = null;
     
     protected final Map mOrientations = new HashMap();
@@ -58,24 +56,28 @@ public class RenderedModel implements ManifestationChanges
 
     public interface OrbitSource
     {
+    	Symmetry getSymmetry();
+    	
         Axis getAxis( AlgebraicVector vector );
         
         Color getColor( Direction orbit );
 
 		OrbitSet getOrbits();
+		
+		Shapes getShapes();
     }
         
-    public RenderedModel( final AlgebraicField field, final Shapes shapes, final OrbitSource orbitSource )
+    public RenderedModel( final AlgebraicField field, final OrbitSource orbitSource )
     {
         super();
         this .field = field;
         this .orbitSource = orbitSource;
-        this .mPolyhedra = shapes;
+        this .mPolyhedra = ( orbitSource == null )? null : orbitSource .getShapes();
     }
     
     public RenderedModel( final AlgebraicField field, boolean enabled )
     {
-        this( field, null, new OrbitSource()
+        this( field, new OrbitSource()
         {
         	private final Symmetry symmetry = field .getSymmetries() [0];
         	private final OrbitSet orbits = new OrbitSet( symmetry );
@@ -87,13 +89,24 @@ public class RenderedModel implements ManifestationChanges
 			
 			public Axis getAxis( AlgebraicVector vector )
 			{
-				return field .getSymmetries() [0] .getAxis( vector );
+				return this .symmetry .getAxis( vector );
 			}
 
 			@Override
 			public OrbitSet getOrbits()
 			{
 				return orbits;
+			}
+
+			@Override
+			public Shapes getShapes() {
+				return null;
+			}
+
+			@Override
+			public Symmetry getSymmetry()
+			{
+				return this .symmetry;
 			}
 		} );
         this .enabled = enabled;
@@ -221,20 +234,21 @@ public class RenderedModel implements ManifestationChanges
 
     // TODO add changeScale( int increment )
 
-	public void setSymmetrySystem( OrbitSource orbitSource, Shapes geom )
+	public void setOrbitSource( OrbitSource orbitSource )
 	{
         this.orbitSource = orbitSource;
         this .enabled = true;
 
         if ( mPolyhedra == null ) {
-            mPolyhedra = geom;
-            mStyles .put( geom, new HashMap() );
+            mPolyhedra = orbitSource .getShapes();
             return;
         }
         Symmetry oldSymm = mPolyhedra .getSymmetry();
-	    mPolyhedra = geom;
-                
-        if ( oldSymm == geom .getSymmetry() ) {
+        boolean hadShapeColors = mPolyhedra .hasColors();
+        mPolyhedra = orbitSource .getShapes();
+        boolean hasShapeColors = mPolyhedra .hasColors();
+        
+        if ( oldSymm == orbitSource .getSymmetry() && !hadShapeColors && !hasShapeColors ) {
             
 //            boolean didOneBall = false;
             
@@ -372,7 +386,9 @@ public class RenderedModel implements ManifestationChanges
 		if ( justShape )
 		    return;
 		
-		Color color = orbitSource .getColor( orbit );
+		Color color = mPolyhedra .getColor( orbit );
+		if ( color == null )
+			color = orbitSource .getColor( orbit );
 		/*
 		 * What a hack!  This defines a "name" that simply encodes the RGB.
 		 * The orbitSource color is used only to create this name, and we'll
@@ -406,7 +422,8 @@ public class RenderedModel implements ManifestationChanges
 		rm .setShape( mPolyhedra .getConnectorShape() );
 		if ( justShape )
 		    return;
-		rm .setColorName( Colors .CONNECTOR );
+		Color color = mPolyhedra .getColor( null );
+		rm .setColorName( ( color == null )? Colors .CONNECTOR : Colors .getColorName( color ) );
 		rm .setOrientation( field .identityMatrix( 3 ), false );
 	}
 
