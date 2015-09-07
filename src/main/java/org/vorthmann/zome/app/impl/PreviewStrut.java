@@ -176,7 +176,7 @@ public class PreviewStrut implements PropertyChangeListener
     public void setSymmetryController( SymmetryController symmetryController )
     {
         this .symmetryController = symmetryController;
-        rendering .setSymmetrySystem( symmetryController, symmetryController .getRenderingStyle() );
+        rendering .setOrbitSource( symmetryController .getOrbitSource() );
     }
 
     public void trackballRolled( Quat4d roll )

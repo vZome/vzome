@@ -11,7 +11,6 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.ThumbnailRenderer;
-import com.vzome.core.viewing.ThumbnailRenderer.Listener;
 import com.vzome.core.viewing.ViewModel;
 
 
@@ -46,7 +45,7 @@ public class ThumbnailRendererImpl implements ThumbnailRenderer
         }
         synchronized ( snapshot )
         {
-            RenderedModel .renderChange( new RenderedModel( null, null, null ), snapshot, scene );
+            RenderedModel .renderChange( new RenderedModel( null, null ), snapshot, scene );
         }
         if ( logger .isLoggable( Level.FINER ) )
         {

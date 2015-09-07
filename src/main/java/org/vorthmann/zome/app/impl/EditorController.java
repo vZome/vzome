@@ -377,7 +377,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             }
         }
         
-        partsController = new PartsController( symmetryController );
+        partsController = new PartsController( symmetryController .getOrbitSource() );
         partsController .setNextController( this );
         mRenderedModel .addListener( partsController );
 
@@ -683,8 +683,8 @@ public class EditorController extends DefaultController implements J3dComponentF
     {
         if ( mRenderedModel != null ) {
             if ( partsController != null )
-                partsController .startSwitch( symmetryController );
-            mRenderedModel .setSymmetrySystem( symmetryController, symmetryController.getRenderingStyle() );
+                partsController .startSwitch( symmetryController .getOrbitSource() );
+            mRenderedModel .setOrbitSource( symmetryController .getOrbitSource() );
             if ( partsController != null )
                 partsController .endSwitch();
         }
@@ -1010,7 +1010,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         {
             if ( editingModel )
             {
-                RenderedModel .renderChange( new RenderedModel( null, null, null ), mRenderedModel, mainScene );
+                RenderedModel .renderChange( new RenderedModel( null, null ), mRenderedModel, mainScene );
                 mRenderedModel .addListener( mainScene );
                 // get the thumbnails updating in the background
                 if ( lessonController != null )
@@ -1021,7 +1021,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             }
             else
                 try {
-                    currentSnapshot = new RenderedModel( null, null, null ); // force render of first snapshot, see "renderSnapshot." below
+                    currentSnapshot = new RenderedModel( null, null ); // force render of first snapshot, see "renderSnapshot." below
                     lessonController .doAction( "restoreSnapshot", new ActionEvent( this, 0, "restoreSnapshot" ) );
                     // order these to avoid issues with the thumbnails (unexplained)
                     lessonController .renderThumbnails( document, thumbnails );

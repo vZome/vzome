@@ -25,12 +25,11 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Color;
-import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.Shapes;
 import com.vzome.desktop.controller.ViewPlatformModel;
 
-public class SymmetryController extends DefaultController implements RenderedModel.OrbitSource
+public class SymmetryController extends DefaultController// implements RenderedModel.OrbitSource
 {
     public String getProperty( String string )
     {

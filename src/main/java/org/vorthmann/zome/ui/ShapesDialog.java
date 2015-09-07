@@ -35,7 +35,7 @@ public class ShapesDialog extends EscapeDialog
             radioButton .addActionListener( controller );
         }
 
-        setSize( new Dimension( 250, 180 ) );
+        setSize( new Dimension( 250, 250 ) );
         setLocationRelativeTo( frame );
     }
 
