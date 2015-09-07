@@ -31,7 +31,15 @@ dependencies {
 //  here.  For resources, I continue to use the master build/main/resources directory.
 //  Finally, to minimize unnecessary bloat, I am removing all the old, unused splash images
 //  from the source.
+//
+//  UPDATE! Something changed with the vzome-core 0.5 adoption, either here or in vzome-core,
+//    And the fix described above no longer works.  What does work is this:
+//    I have commented out the buildDir sharing in the main project.  I've also added resourcesDir here,
+//    but I'm not sure it had any effect.  The mac-5.0.jar still seems to have some vzome-core
+//    resources.
 sourceSets.main.output.classesDir 'build/classes'
+sourceSets.main.output.resourcesDir 'build/resources'
+
 
 // for the 'macappbundle' Gradle plugin
 macAppBundle {

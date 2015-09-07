@@ -132,7 +132,8 @@ if (!hasProperty('mainClass')) {
 
 // Specify common settings for all subprojects
 subprojects {
-    buildDir    = rootProject.buildDir
+// see platform/mac/build.gradle, search for "error -5341"
+//    buildDir    = rootProject.buildDir
     group       = rootProject.group
     version     = rootProject.version
     description = rootProject.name + '-' + project.name
