@@ -248,7 +248,7 @@ public class RenderedModel implements ManifestationChanges
         mPolyhedra = orbitSource .getShapes();
         boolean hasShapeColors = mPolyhedra .hasColors();
         
-        if ( oldSymm == orbitSource .getSymmetry() && !hadShapeColors && !hasShapeColors ) {
+        if ( false && oldSymm == orbitSource .getSymmetry() && !hadShapeColors && !hasShapeColors ) {
             
 //            boolean didOneBall = false;
             

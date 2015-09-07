@@ -1203,7 +1203,7 @@ public class ZomicASTTest extends TestCase
 	// Begin Resource Regression Tests
 	private final String ZomicFileExtension = "zomic";
 	private final String resourceFolderName = "src/main/resources/";
-	private final int resourceFileCount = 44;
+	private final int resourceFileCount = 39;
 	private int regressionTestCount = 0;
 
 	public void test_RegressionResources() {

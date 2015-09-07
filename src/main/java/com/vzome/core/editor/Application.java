@@ -137,12 +137,16 @@ public class Application
             mStyles.put( symmetry, new ArrayList<Shapes>() );
             defaultShapes = new ExportedVEFShapes( prefsFolder, "default", "solid connectors", symmetry );
             addStyle( defaultShapes );
-            addStyle( new ExportedVEFShapes( prefsFolder, "lifelike", "lifelike", symmetry, defaultShapes ) );
-            defaultShapes =  new ExportedVEFShapes( prefsFolder, "tiny", "tiny connectors", symmetry );
-            addStyle( defaultShapes );
-            addStyle( new ExportedVEFShapes( prefsFolder, "dodecs", "small dodecahedra", "tiny dodecahedra", symmetry, defaultShapes ) );
-            addStyle( new ExportedVEFShapes( prefsFolder, "bigzome", "Big Zome", symmetry, defaultShapes ) );
+            AbstractShapes lifelikeShapes = new ExportedVEFShapes( prefsFolder, "lifelike", "lifelike", symmetry, defaultShapes );
+            addStyle( lifelikeShapes );
+            AbstractShapes tinyShapes =  new ExportedVEFShapes( prefsFolder, "tiny", "tiny connectors", symmetry );
+            addStyle( tinyShapes );
+            addStyle( new ExportedVEFShapes( prefsFolder, "dodecs", "small dodecahedra", "tiny dodecahedra", symmetry, tinyShapes ) );
+            addStyle( new ExportedVEFShapes( prefsFolder, "bigzome", "Big Zome", symmetry, tinyShapes ) );
             addStyle( new ExportedVEFShapes( prefsFolder, "noTwist", "no-twist 121 zone", symmetry ) );
+            AbstractShapes vienneShapes = new ExportedVEFShapes( prefsFolder, "vienne2", "Vienne", symmetry, defaultShapes );
+            addStyle( vienneShapes );
+            addStyle( new ExportedVEFShapes( prefsFolder, "vienne3", "Vienne lifelike", symmetry, vienneShapes ) );
             addStyle( new ExportedVEFShapes( prefsFolder, "vienne", "Vienne 121 zone", symmetry ) );
             
             if ( enableCommands ) {
