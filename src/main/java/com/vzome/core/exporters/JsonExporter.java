@@ -64,6 +64,10 @@ public class JsonExporter extends Exporter3d
         int numShapes = 0, numTransforms = 1;
         Map[] shapes = new Map[]{ new HashMap(), new HashMap() };
         Map transforms = new HashMap();
+        AlgebraicMatrix identity = this .field .identityMatrix( 3 );
+        Integer identityNum = new Integer(0);
+        transforms .put( identity, identityNum );
+        exportTransform( identityNum, identity, orientations );
 
         for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
         {
@@ -79,7 +83,9 @@ public class JsonExporter extends Exporter3d
                 exportShape( shapeNum, shape, flip );
             }
             AlgebraicMatrix transform = rm .getOrientation();
-            Integer transformNum = (transform==null)? new Integer(0) : (Integer) transforms .get( transform );
+            if ( transform == null )
+            	transform = identity;
+            Integer transformNum = (Integer) transforms .get( transform );
             if ( transformNum == null ){
                 if ( numTransforms > 0 )
                     orientations .append( ",\n" );
@@ -117,7 +123,7 @@ public class JsonExporter extends Exporter3d
         output .print( FORMAT .format( rgb[1] ) + ",1.0" );
         output .print( " ],\n\n\"instances\" :\n[\n" );
         output .print( instances );
-        output .print( "\n],\n\n\"orientations\" :\n[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1" );
+        output .print( "\n],\n\n\"orientations\" :\n[\n" );
         output .print( orientations );
         output .print( "\n]\n}\n" );
 	}

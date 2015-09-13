@@ -7,7 +7,31 @@ import java.util.Arrays;
 
 public class AlgebraicMatrix
 {
-    final AlgebraicNumber[][] matrix;
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		for (int i = 0; i < matrix.length; i++) {
+			result = prime * result + Arrays.hashCode( matrix[i] );
+		}
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AlgebraicMatrix other = (AlgebraicMatrix) obj;
+		if (!Arrays.deepEquals(matrix, other.matrix))
+			return false;
+		return true;
+	}
+
+	final AlgebraicNumber[][] matrix;
 
     /**
      * Create a new nXn identity matrix.
