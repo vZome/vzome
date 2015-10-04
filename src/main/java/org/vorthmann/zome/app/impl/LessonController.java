@@ -158,20 +158,19 @@ public class LessonController extends DefaultController
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
     {
         Integer item = (Integer) e .getSource();
-        if ( menu .length == 3 )  // document can be edited
-        {
-            if ( model .onPage( item .intValue() ) )
-                return new boolean[]{ true, false, true };
-            else
-                return new boolean[]{ false, true, true };
-        }
-        else
-        {
-            if ( model .onPage( item .intValue() ) )
-                return new boolean[]{ false, true };
-            else
-                return new boolean[]{ true, true };
-        }
+        boolean[] result = new boolean[ menu.length ];
+        boolean samePage = model .onPage( item .intValue() );
+        for ( int i = 0; i < result.length; i++ ) {
+			if ( menu[ i ] .startsWith( "usePageView-" ) )
+				result[ i ] = ! samePage;
+			else if ( "setView" .equals( menu[ i ] ) )
+				result[ i ] = samePage;
+			else if ( menu[ i ] .startsWith( "copyPageView-" ) )
+				result[ i ] = true;
+			else
+				result[ i ] = true;
+		}
+        return result;
     }
 
     public String getProperty( String propName )

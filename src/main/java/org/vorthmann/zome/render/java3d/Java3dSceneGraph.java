@@ -230,7 +230,7 @@ public class Java3dSceneGraph implements RenderingChanges
         LineArray frameEdges = new LineArray( 24, LineArray.COORDINATES | LineArray.COLOR_3 );
         int nextEdge = 0;
         frameLabels .addChild( new Shape3D( frameEdges ) );
-        String[] labels = { "n", "z", "p" };
+        String[] labels = { "-", "0", "+" };
         Color3f frameColor = new Color3f( 0.9f, 1.0f, 0.0f );
         float scale = 30f;
         for (int x = -1; x < 2; x++)
