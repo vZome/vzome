@@ -31,7 +31,7 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         
     private Tool.Registry tools;
 
-	private boolean halfSpace = true;
+	private boolean halfSpace = false;
 	private boolean boundaryOpen = false;
 	private boolean above = true;
 	private boolean includeBalls = true;
