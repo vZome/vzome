@@ -76,8 +76,8 @@ public class ChangeOfBasis extends Transformation
     
     protected boolean mapParamsToState()
     {
-        if ( 3d == Math.PI /* TODO test orthogonality */ )
-            setStateVariables( null, null, true );
+//        if ( 3d == Math.PI /* TODO test orthogonality */ )
+//            setStateVariables( null, null, true );
 
         AlgebraicVector loc = mKernel .getLocation();
         
@@ -100,12 +100,9 @@ public class ChangeOfBasis extends Transformation
                 if ( newCommon .equals( mNew[ i ] .getEnd() ) )
                     offsets[ i ] = offsets[ i ] .negate();
             }
-            AlgebraicMatrix transform = new AlgebraicMatrix( offsets );
+            AlgebraicMatrix newMatrix = new AlgebraicMatrix( offsets );
 
-            // TODO
-//            transform = oldMatrix .gaussJordanReduction( transform );
-            if ( 1 != 0 )
-                throw new IllegalStateException( "six-vector change-of-basis is not working right now" );
+            AlgebraicMatrix transform = newMatrix .times( oldMatrix .inverse() );
             
             // now transform has the transition matrix
             System .out .println( transform .toString() );

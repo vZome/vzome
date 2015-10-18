@@ -20,6 +20,40 @@ public class Fields
         boolean isOne();
     }
     
+    public static final int rows( Element[][] matrix )
+    {
+    	return matrix.length;
+    }
+    
+    public static final int columns( Element[][] matrix )
+    {
+    	return matrix[ 0 ] .length;
+    }
+    
+    public static final void matrixMultiplication( Element[][] left, Element[][] right, Element[][] product )
+    {
+    	if ( rows( right ) != columns( left ) )
+    		throw new IllegalArgumentException( "matrices cannot be multiplied" );
+    	if ( rows( product ) != rows( left ) )
+    		throw new IllegalArgumentException( "product matrix has wrong number of rows" );
+    	if ( columns( right ) != columns( product ) )
+    		throw new IllegalArgumentException( "product matrix has wrong number of columns" );
+    	
+    	for (int i = 0; i < rows( product ); i++) {
+			for (int j = 0; j < columns( product ); j++) {
+				Element sum = null;
+				for (int j2 = 0; j2 < columns( left ); j2++) {
+					Element prod = left[ i ][ j2 ] .times( right[ j2 ][ j ] );
+					if ( sum == null )
+						sum = prod;
+					else
+						sum = sum .plus( prod );
+				}
+				product[ i ][ j ] = sum;
+			}
+		}
+    }
+    
     public static final void gaussJordanReduction( Element[][] matrix, Element[][] adjoined )
     {
         for ( int upleft = 0; upleft < matrix.length; upleft++ )

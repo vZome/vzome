@@ -86,6 +86,15 @@ public class AlgebraicMatrix
         return result;
     }
 
+	public AlgebraicMatrix inverse()
+	{
+        AlgebraicField field = this .matrix[ 0 ][ 0 ] .getField();
+        AlgebraicMatrix result = new AlgebraicMatrix( field, this .matrix .length );
+
+        Fields .gaussJordanReduction( this .matrix, result .matrix );
+        return result;
+	}
+
     public AlgebraicMatrix transpose()
     {
         // TODO assert matrix is square
@@ -99,6 +108,15 @@ public class AlgebraicMatrix
         }
         return result;
     }
+
+	public AlgebraicMatrix times( AlgebraicMatrix that )
+	{
+        AlgebraicField field = this .matrix[ 0 ][ 0 ] .getField();
+        AlgebraicMatrix result = new AlgebraicMatrix( field, this .matrix .length );
+
+        Fields .matrixMultiplication( this .matrix, that .matrix, result .matrix );
+        return result;
+	}
 
     // rowVector * matrix
     public AlgebraicVector timesRow( AlgebraicVector rowVector )

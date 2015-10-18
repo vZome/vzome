@@ -33,9 +33,12 @@ public class LinearMapTool extends TransformationTool
 
     public void perform() throws Command.Failure
     {
-        Segment s1 = null, s2 = null, s3 = null;
-        Point center = null;
+
+        Segment[] oldBasis = new Segment[3];
+        Segment[] newBasis = new Segment[3];
+        int index = 0;
         boolean correct = true;
+        Point center = null;
         for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
             Manifestation man = (Manifestation) mans .next();
             unselect( man );
@@ -50,30 +53,34 @@ public class LinearMapTool extends TransformationTool
             }
             else if ( man instanceof Strut )
             {
-                if ( s3 != null )
-                {
+                if ( index >= 6 ) {
                     correct = false;
                     break;
                 }
-                if ( s1 == null )
-                    s1 = (Segment) ((Strut) man) .getConstructions() .next();
-                else if ( s2 == null )
-                    s2 = (Segment) ((Strut) man) .getConstructions() .next();
+                if ( index / 3 == 0 )
+                {
+                    oldBasis[ index % 3 ] = (Segment) man .getConstructions() .next();
+                }
                 else
-                    s3 = (Segment) ((Strut) man) .getConstructions() .next();
+                {
+                    newBasis[ index % 3 ] = (Segment) man .getConstructions() .next();
+                }
+                ++index;
             }
         }
         
-        correct = correct && s3 != null;
+        correct = correct && ( ( index == 3) || ( index == 6 ) );
         if ( !correct )
-            throw new Command.Failure( "linear map tool requires three non-parallel struts and a single (optional) center ball" );
+            throw new Command.Failure( "linear map tool requires three adjacent, non-parallel struts (or two sets of three) and a single (optional) center ball" );
 
         if ( center == null )
             center = this.originPoint;
         
         this .transforms = new Transformation[ 1 ];
-        transforms[ 0 ] = new ChangeOfBasis( s1, s2, s3, center, originalScaling );
-
+        if ( index == 6 )
+        	transforms[ 0 ] = new ChangeOfBasis( oldBasis, newBasis, center );
+        else
+        	transforms[ 0 ] = new ChangeOfBasis( oldBasis[ 0 ], oldBasis[ 1 ], oldBasis[ 2 ], center, originalScaling );
 
         defineTool();
     }

@@ -214,6 +214,27 @@ public class AlgebraicNumberTest extends TestCase
         AlgebraicNumber dot = v1 .dot( v2 );
         assertTrue( dot .isZero() );
     }
+    
+    public void testChangeOfBasis()
+    {
+        AlgebraicField field = new PentagonField();
+
+        AlgebraicVector c0 = new AlgebraicVector( field.createAlgebraicNumber( 3 ), field.one(), field .zero() );
+        AlgebraicVector c1 = new AlgebraicVector( field.one(), field.createAlgebraicNumber( 3 ), field .zero() );
+        AlgebraicVector c2 = new AlgebraicVector( field.one(), field .one(), field.createAlgebraicNumber( 3 ) );
+        AlgebraicMatrix U = new AlgebraicMatrix( c0, c1, c2 );
+        
+        AlgebraicVector b0 = new AlgebraicVector( field.one(), field.createAlgebraicNumber( -3 ), field .zero() );
+        AlgebraicVector b1 = new AlgebraicVector( field.createAlgebraicNumber( -3 ), field.one(), field .zero() );
+        AlgebraicVector b2 = new AlgebraicVector( field.createAlgebraicNumber( -2 ), field .createAlgebraicNumber( -2 ), field.createAlgebraicNumber( 2 ) );
+        AlgebraicMatrix V = new AlgebraicMatrix( b0, b1, b2 );
+        
+        AlgebraicMatrix r = V .times( U .inverse() );
+                
+        assertEquals( r .timesColumn( c0 ), b0 );
+        assertEquals( r .timesColumn( c1 ), b1 );
+        assertEquals( r .timesColumn( c2 ), b2 );
+    }
 
     public void testMatrixInverse()
     {
