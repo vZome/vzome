@@ -895,12 +895,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             menu.addSeparator();
 
             menu.add( createEditorMenuItem( "Assert Selection", getExclusiveAction( "assertSelection" ) ) );
-//            menu.addSeparator();
-//
-//            menu.add( createEditorMenuItem( "6-Lattice", getExclusiveAction( "sixLattice" ) ) );
 
-//            menu.add( createMenuItem( "Set Operator Parameters", getExclusiveAction( "setCustomOperatorParameters" ) ) );
-//            menu.add( createMenuItem( "Execute Operator", getExclusiveAction( "runCustomOperator" ) ) );
+//            menu.add( createEditorMenuItem( "6-Lattice", getExclusiveAction( "sixLattice" ) ) );
         }
 
         // TODO restore this somehow
