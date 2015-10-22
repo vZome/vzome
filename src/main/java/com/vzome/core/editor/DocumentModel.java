@@ -392,6 +392,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         else if ( RealizeMetaParts.NAME .equals( name ) )
             edit = new RealizeMetaParts( mSelection, mRealizedModel, mDerivationModel );
 
+        else if ( ShowVertices.NAME .equals( name ) )
+            edit = new ShowVertices( mSelection, mRealizedModel );
+
 		else if ( "Symmetry4d".equals( name ) ) {
             QuaternionicSymmetry h4symm = this .mField .getQuaternionSymmetry( "H_4" ); 
 			edit = new Symmetry4d( this.mSelection, this.mRealizedModel, this .mDerivationModel, h4symm, h4symm );
@@ -485,6 +488,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new JoinPoints( mSelection, mRealizedModel, false, true );
         else if ( action.equals( "chainBalls" ) )
             edit = new JoinPoints( mSelection, mRealizedModel, false, false );
+        else if ( ShowVertices.NAME .toLowerCase() .equals( action .toLowerCase() ) )
+            edit = new ShowVertices( mSelection, mRealizedModel );
         else if ( action.equals( "ballAtOrigin" ) )
             edit = new ShowPoint( originPoint, mSelection, mRealizedModel, false );
         else if ( action.equals( "ballAtSymmCenter" ) )

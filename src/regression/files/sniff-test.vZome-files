@@ -100,3 +100,6 @@ format-2.1.0-models.vZome-files
 # triggered Github defect #6
 2011/12-Dec/27-Scott-testBranches/testStickyTools.vZome
 
+# uses showVertices command for panel and strut
+2015/10-Oct/22-Scott-showVertices/showVertices-test.vZome
+
