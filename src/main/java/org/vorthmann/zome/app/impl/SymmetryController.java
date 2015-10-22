@@ -144,7 +144,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         {
             String dirName = name .substring( "length." .length() );
             Direction dir = this .symmetrySystem .getOrbits() .getDirection( dirName );
-            return (Controller) orbitLengths .get( dir );
+            return getLengthController( dir );
         }
         return null;
     }
@@ -260,17 +260,25 @@ public class SymmetryController extends DefaultController// implements RenderedM
                 Element length = DomUtils .getFirstChildElement( dirElem, "LengthModel" );
                 if ( length != null )
                 {
-                    LengthController lm = (LengthController) orbitLengths .get( dir );
-                    if ( lm == null )
-                    {
-                        lm = new LengthController( dir );
-                        lm .setNextController( buildController );
-                        orbitLengths .put( dir, lm );
-                    }
+                    LengthController lm = getLengthController( dir );
                     lm .setXml( length );
                 }
             }
         }
+    }
+    
+    private LengthController getLengthController( Direction dir )
+    {
+        LengthController result = (LengthController) orbitLengths .get( dir );
+        if ( result == null )
+        {
+        	result = new LengthController( dir );
+        	result .setNextController( buildController );
+            orbitLengths .put( dir, result );
+            renderOrbits .add( dir );
+            availableOrbits .add( dir );
+        }
+        return result;
     }
 
     public OrbitSet getOrbits()
@@ -287,28 +295,9 @@ public class SymmetryController extends DefaultController// implements RenderedM
     
     public Axis getZone( AlgebraicVector offset )
     {
-        return getAxis( offset );
+    	return this .symmetrySystem .getAxis( offset );
     }
     
-    public Axis getAxis( AlgebraicVector vector )
-    {
-    	Axis axis = this .symmetrySystem .getAxis( vector );
-    	    	
-        boolean allowNonstandard = userHasEntitlement( "all.tools" );  // modeler (not zomepad)
-        if ( allowNonstandard ) {
-            Direction dir = axis .getDirection();
-            if ( ! renderOrbits .contains( dir ) )
-            {
-                renderOrbits .add( dir );
-                LengthController lm = new LengthController( dir );
-                orbitLengths .put( dir, lm );
-                lm .setNextController( buildController );
-            }
-        }                
-        
-        return axis;
-    }
-
     public Color getColor( Direction orbit )
     {
         return this .symmetrySystem .getColor( orbit );
