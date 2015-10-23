@@ -785,7 +785,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         menuBar.add( menu );
 
-        // ----------------------------------------- Edit menu
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Edit menu
 
         menu = new JMenu( "Edit" );
         menu.add( createEditorMenuItem( "Undo", getExclusiveAction( "undo" ), KeyEvent.VK_Z ) );
@@ -794,7 +794,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         menu.add( createEditorMenuItem( "Redo All", getExclusiveAction( "redoAll" ), KeyEvent.VK_Y, InputEvent.ALT_MASK ) );
         if ( developerExtras )
         {
-            menu.addSeparator();
+            menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             menu.add( createPowerMenuItem( "Undo To Breakpoint", getExclusiveAction( "undoToBreakpoint" ), KeyEvent.VK_B, InputEvent.SHIFT_MASK ) );
             menu.add( createPowerMenuItem( "Redo To Breakpoint", getExclusiveAction( "redoToBreakpoint" ), KeyEvent.VK_B, InputEvent.ALT_MASK ) );
             menu.add( createEditorMenuItem( "Set Breakpoint", getExclusiveAction( "setBreakpoint" ), KeyEvent.VK_B ) );
@@ -814,26 +814,23 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             } );
             menu .add(  menuItem );
         }
-        menu .addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( createEditorMenuItem( "Copy", getExclusiveAction( "copy" ), KeyEvent.VK_C ) );
         menu .add( createEditorMenuItem( "Paste", getExclusiveAction( "paste" ), KeyEvent.VK_V ) );
 
-        menu .addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( createEditorMenuItem( "Select All", getExclusiveAction( "selectAll" ), KeyEvent.VK_A ) );
-        menu .add( createEditorMenuItem( "Select Neighbors", getExclusiveAction( "selectNeighbors" ), KeyEvent.VK_A,
-                        InputEvent.ALT_MASK ) );
+        menu .add( createEditorMenuItem( "Select Neighbors", getExclusiveAction( "selectNeighbors" ), KeyEvent.VK_A, InputEvent.ALT_MASK ) );
         menu.add( createEditorMenuItem( "Invert Selection", getExclusiveAction( "invertSelection" ) ) );
         menu.add( createEditorMenuItem( "Deselect Balls", getExclusiveAction( "unselectBalls" ) ) );
         menu.add( createEditorMenuItem( "Deselect Struts", getExclusiveAction( "unselectStruts" ) ) );
-        // menu .add( createMenuItem( "Select First Octant", getExclusiveAction(
-        // "test.pick.cube" ) ) );
+        // menu .add( createMenuItem( "Select First Octant", getExclusiveAction( "test.pick.cube" ) ) );
 
-        menu .addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( createPowerMenuItem( "Group", getExclusiveAction( "group" ), KeyEvent.VK_G, 0 ) );
-
         menu .add( createPowerMenuItem( "Ungroup", getExclusiveAction( "ungroup" ), KeyEvent.VK_G, InputEvent.ALT_MASK ) );
 
-        menu .addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menuItem = createEditorMenuItem( "Hide", getExclusiveAction( "hideball" ) );
         menuItem .setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_H, InputEvent.CTRL_MASK ) );
         menu .add( menuItem );
@@ -841,7 +838,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         menuItem .setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_H, InputEvent.CTRL_MASK | InputEvent.ALT_MASK ) );
         menu .add( menuItem );
 
-        menu .addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         setColorMenuItem = createEditorMenuItem( "Set Color...", new ActionListener()
         {
 			@Override
@@ -858,28 +855,28 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         menuBar .add( menu );
 
-        // ----------------------------------------- Construct menu
-
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Construct menu
         menu = new JMenu( "Construct" );
 
         menu.add( createEditorMenuItem( "Loop Balls", getExclusiveAction( "joinballs" ), KeyEvent.VK_J ) );
         menu.add( createEditorMenuItem( "Chain Balls", getExclusiveAction( "chainBalls" ), KeyEvent.VK_J, InputEvent.ALT_MASK ) );
 
-        menu.addSeparator();
-        menu.add( createEditorMenuItem( "Panel", getExclusiveAction( "panel" ), KeyEvent.VK_P ) );
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        menu .add( createEditorMenuItem( "Panel", getExclusiveAction( "panel" ), KeyEvent.VK_P ) );
+        menu .add( createEditorMenuItem( "Panel/Strut Vertices", getExclusiveAction( "showVertices" ) ) );
 
-        menu.addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( createPowerMenuItem( "Centroid", getExclusiveAction( "centroid" ) ) );
         menu.add( createEditorMenuItem( "Strut Midpoint", getExclusiveAction( "midpoint" ) ) );
         menu.add( createPowerMenuItem( "Line-Line Intersection", getExclusiveAction( "lineLineIntersect" ) ) );
         menu.add( createPowerMenuItem( "Line-Plane Intersection", getExclusiveAction( "linePlaneIntersect" ) ) );
         menu.add( createPowerMenuItem( "Cross Product", getExclusiveAction( "crossProduct" ) ) );
 
-        menu.addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( createEditorMenuItem( "Ball At Origin", getExclusiveAction( "ballAtOrigin" ) ) );
         menu.add( createEditorMenuItem( "Ball At Symmetry Center", getExclusiveAction( "ballAtSymmCenter" ) ) );
 
-        menu.addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //        menu.add( createEditorMenuItem( "Affine Transform All", getExclusiveAction( "affineTransformAll" ) ) );
 //        menuItem = createPowerMenuItem( "Conjugate", getExclusiveAction( "conjugate" ) );
         if ( metaModels ) {
@@ -892,7 +889,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
             menu.add( createPowerMenuItem( "1/\u03C3/\u03C1 Subdivisions", getExclusiveAction( "heptagonDivide" ) ) );
 
         if ( developerExtras ) {
-            menu.addSeparator();
+            menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
             menu.add( createEditorMenuItem( "Assert Selection", getExclusiveAction( "assertSelection" ) ) );
 
@@ -1334,7 +1331,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         };
     }
 
-    protected JButton makeEditButton( String cmdName, final String altText, String toolTipText )
+    private JButton makeEditButton( String cmdName, final String altText, String toolTipText )
     {
         String imageName = cmdName;
         if ( imageName.endsWith( "-roottwo" ) )
@@ -1344,7 +1341,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         return makeCommandButton( imageName, altText, toolTipText, getExclusiveAction( cmdName ) );
     }
 
-    protected AbstractButton makeMouseToolButton(
+    private AbstractButton makeMouseToolButton(
         String imageName, final String altText, String toolTipText, ItemListener listener )
     {
         // Look for the image.
@@ -1382,7 +1379,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         return button;
     }
 
-    protected JButton makeCommandButton( String imageName, final String altText, String toolTipText, ActionListener actions )
+    private JButton makeCommandButton( String imageName, final String altText, String toolTipText, ActionListener actions )
     {
         boolean skipImages = mController.getProperty( "noButtonImages" ) != null;
 
