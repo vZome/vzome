@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -727,6 +728,44 @@ public class ZomicASTTest extends TestCase
 				(tests > 0) && (tests == unsupportedColors.size()) );
 	}
 	
+	// axis indices can be invalid in two different ways:
+	// 1) Any axis index can be too large and throw an ArrayIndexOutOfBoundsException
+	// 2) Any color except red, yellow and blue can have an index that is in range, but not valid since they are not all sequential.
+	public void testOK_AxisIndexOutOfBounds() {
+		HashMap<String, Integer> axisIndexMap = new HashMap<>();
+		axisIndexMap.put("red", 6);
+		axisIndexMap.put("yellow", 10);
+		axisIndexMap.put("blue", 15);
+		// 5 is invalid for the remaining axes, although some higher numbers are valid for each of them.
+		axisIndexMap.put("green", 5); 
+		axisIndexMap.put("orange", 5); 
+		axisIndexMap.put("purple", 5);
+		axisIndexMap.put("black", 5);
+		
+		int tests = 0;
+		int exceptionCount = 0;
+		for ( String axisColor : axisIndexMap.keySet() ) {
+			String input = String.format("%s %s", axisColor, axisIndexMap.get(axisColor) + 0 );
+			try {
+				Walk program = newCompile(input);
+				// We should never get to this next line. Just here for a debugging breakpoint
+				assertExpectedErrors(program, false);
+			}
+			catch (RuntimeException ex) {
+				String exMsg = ex.getMessage();
+				if(exMsg == null) { exMsg = "msg = <null> for exception: " + ex.toString(); }
+				assertTrue("Script '" + input + "' threw a different exception than expected: " + exMsg,
+						exMsg.startsWith("bad axis specification") );
+				exceptionCount++;
+			}
+			tests++; // be sure we tested all colors
+		}
+		assertTrue("Why didn't all tests throw an exception?", 
+				tests == exceptionCount );
+		assertTrue("Why didn't we test the other colors?",
+				(tests > 0) && (tests == axisIndexMap.size()) );
+	}
+	
 	public void testOK_StrutExplicitHalfLengths() {
 			// negative axis
 			Walk program = compileAndCompare("size -1 -2 -3 half blue -4");
@@ -1206,7 +1245,7 @@ public class ZomicASTTest extends TestCase
 	private final int resourceFileCount = 39;
 	private int regressionTestCount = 0;
 
-	public void test_RegressionResources() {
+	public void testOK_RegressionResources() {
 		regressionTestCount = 0;
 		File resourceFolderRoot = new File(resourceFolderName + ZomicStrutGeometry.SCRIPT_PREFIX);
 		assertTrue(resourceFolderRoot.getName() + " must be a directory.", resourceFolderRoot.isDirectory());

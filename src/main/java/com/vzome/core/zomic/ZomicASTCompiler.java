@@ -171,6 +171,7 @@ public class ZomicASTCompiler
 		}
 	}
 	
+	protected ZomicParser parser;
 	protected Walk compile( CharStream inputStream )
 		throws ParseCancellationException // thrown by BailErrorStrategy
 	{
@@ -181,7 +182,7 @@ public class ZomicASTCompiler
 			// get a stream of matched tokens
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			// pass tokens to the parser
-			ZomicParser parser = new ZomicParser( tokens );
+			parser = new ZomicParser( tokens );
 
 			if(lexer instanceof StrictZomicLexer) {
 			// Use this only in conjunction with the StrictZomicLexer class
@@ -195,7 +196,16 @@ public class ZomicASTCompiler
 
 			// Use the DEFAULT walker to walk from the entry point with this listener attached.
 			// In the process, the enter and exit methods of this class will be invoked to populate the statements collection.
-			ParseTreeWalker.DEFAULT.walk(this, program);
+			try {
+				ParseTreeWalker.DEFAULT.walk(this, program);
+			}
+			catch (IllegalStateException ex ) {
+				logger.log(Level.WARNING, ex.getMessage(), ex);
+				// InputMismatchException will give the user an error message with line info from the parser
+				InputMismatchException imex = new InputMismatchException(parser);
+				logger.log(Level.INFO, imex.getMessage(), imex);
+				throw imex;
+			}
 		}
 		catch( RuntimeWrapperException ex ) {
 			// unwrap the LexerNoViableAltException from the RuntimeWrapperException 
@@ -318,10 +328,19 @@ public class ZomicASTCompiler
 //				if ( axis != namingConvention.getAxis(axisColor, check ) ) {
 //					log( axisColor + " " + indexFullName() + " mapped to " + check );
 //				}
+				if(axis == null) {
+					InputMismatchException imex = new InputMismatchException(parser);
+					logger.log(Level.WARNING, imex.getMessage(), imex);
+					throw imex;
+				}
 				return axis;
-			} catch( RuntimeException ex ) {
-				throw new RuntimeException( "bad axis specification: '" + axisColor + " " + indexFullName() + "'", ex);
-			}
+			//} catch( ArrayIndexOutOfBoundsException ex ){
+			//} catch( NullPointerException  ex ) {
+			} catch( RuntimeException ex) {
+				String msg = "bad axis specification: '" + axisColor + " " + indexFullName() + "'";
+				logger.warning(msg);
+				throw new RuntimeException( msg, ex);
+			} 
 		}
 
 		@Override
