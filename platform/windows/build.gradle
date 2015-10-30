@@ -63,7 +63,7 @@ launch4j {
 	outputDir = project.l4jOutputDir
 	outfile = "${l4jOutputBaseFileName}.exe"
 	jar = 'lib/' + project.tasks[JavaPlugin.JAR_TASK_NAME].outputs.files.getSingleFile().name	// path is relative to outputDir
-	icon = '../../../platform/windows/resources/icons/vZomeLogo.ico'	// path is relative to outputDir
+	icon = '../../../../../platform/windows/resources/icons/vZomeLogo.ico'	// path is relative to outputDir
 	jreMinVersion = project.jrePriorVersion
 	jreMaxVersion = project.jreTargetVersion
 	bundledJrePath = project.bundledJrePath	// path is relative to launch4j.outputDir
