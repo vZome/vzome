@@ -16,7 +16,7 @@ import com.vzome.core.model.Manifestation;
  */
 public class RenderedManifestation
 {
-    private Manifestation mManifestation;
+    private final Manifestation mManifestation;
     
     private Polyhedron mShape;
     
@@ -166,6 +166,7 @@ public class RenderedManifestation
             return location .toRealVector();
     }
 
+	@Override
     public int hashCode()
     {
         final int prime = 31;
@@ -177,6 +178,7 @@ public class RenderedManifestation
         return result;
     }
 
+	@Override
     public boolean equals( Object obj )
     {
         if ( this == obj )
@@ -186,11 +188,14 @@ public class RenderedManifestation
         if ( !(obj instanceof RenderedManifestation) )
             return false;
         RenderedManifestation other = (RenderedManifestation) obj;
-        if ( ! location .equals( other.location ) )
+        if ( location == null ) {
+            if ( other.location != null )
+                return false;
+        } else if ( ! location.equals( other.location ) )
             return false;
         if ( mMirrored != other.mMirrored )
             return false;
-        if ( ! mOrientation .equals( other.mOrientation ) )
+        if ( ! mOrientation.equals( other.mOrientation ) )
             return false;
         if ( mShape == null ) {
             if ( other.mShape != null )
