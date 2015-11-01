@@ -1,7 +1,6 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
-import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -22,7 +21,7 @@ public class StrutBuilderPanel extends JPanel
     private final NewLengthPanel lengthPanel;
 
     
-    public StrutBuilderPanel( JFrame frame, final String[] symmNames, final Controller controller, MouseListener orbitPopup )
+    public StrutBuilderPanel( JFrame frame, final String[] symmNames, final Controller controller, ControlActions enabler )
     {
         this .controller = controller;
         this .setLayout( new BorderLayout() );
@@ -76,7 +75,7 @@ public class StrutBuilderPanel extends JPanel
             
             final Controller orbitController = symmController .getSubController( "buildOrbits" );
             {
-                JPanel panel = new OrbitPanel( orbitController, symmController .getSubController( "availableOrbits" ), orbitPopup );
+                JPanel panel = new OrbitPanel( orbitController, symmController .getSubController( "availableOrbits" ), enabler );
                 panel .setBorder( BorderFactory .createTitledBorder( "strut directions" ) );
                 orbitCardPanel .add( system, panel );
             }

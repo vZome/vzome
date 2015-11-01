@@ -75,7 +75,10 @@ public class DefaultController implements Controller
 
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
     {
-        return null;
+        if ( mNextController != null )
+            return mNextController .enableContextualCommands( menu, e );
+        else
+            return new boolean[0];
     }
 
     public String[] getCommandList( String listName )

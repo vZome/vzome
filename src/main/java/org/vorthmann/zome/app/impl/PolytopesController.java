@@ -10,13 +10,14 @@ import org.vorthmann.ui.DefaultController;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.Polytope4d;
 
 public class PolytopesController extends DefaultController
 {
     private final DocumentModel model;
     
     private String group = "H4";
+    
+    private final String[] groups;
 
     private boolean[] generateEdge = new boolean[]{ false, false, false, true };
     private boolean[] renderEdge = new boolean[]{ true, true, true, true };
@@ -29,6 +30,14 @@ public class PolytopesController extends DefaultController
         for (int i = 0; i < edgeScales.length; i++)
         {
             edgeScales[ i ] = field .createPower( 0 );
+        }
+        // TODO: get the list from the field itself
+        if ( null == field .getQuaternionSymmetry( "H_4" ) ) {
+        	groups = new String[]{ "A4", "B4/C4", "D4", "F4" };
+        	group = "F4";
+        } else {
+        	groups = new String[]{ "A4", "B4/C4", "D4", "F4", "H4" };
+        	group = "H4";
         }
     }
 
@@ -71,7 +80,7 @@ public class PolytopesController extends DefaultController
 
     public String[] getCommandList( String listName )
     {
-        return Polytope4d .getSupportedGroups();
+    	return this .groups;
     }
 
     public String getProperty( String propName )

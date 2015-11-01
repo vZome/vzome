@@ -22,7 +22,7 @@ import org.vorthmann.ui.Controller;
 
 public class OrbitPanel extends JPanel
 {
-	public OrbitPanel( final Controller controller, final Controller orbitController, MouseListener orbitPopup )
+	public OrbitPanel( final Controller controller, final Controller orbitController, ControlActions enabler )
 	{
         final CardPanel cardPanel = new CardPanel();
         final JPanel orbitCheckboxes = new JPanel();
@@ -98,8 +98,22 @@ public class OrbitPanel extends JPanel
         } );
         
         controller .getMouseTool() .attach( orbitTriangle );
-        if ( orbitPopup != null )
+
+        if ( enabler != null )
+        {
+            PickerPopup directionPopupMenu = new PickerPopup();
+            directionPopupMenu.setLightWeightPopupEnabled( false );
+
+            directionPopupMenu.add( enabler .setMenuAction( "rZomeOrbits",         new JMenuItem( "real Zome" ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "predefinedOrbits",    new JMenuItem( "predefined" ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "usedOrbits",          new JMenuItem( "used in model" ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "setAllDirections",    new JMenuItem( "all" ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "configureDirections", new JMenuItem( "configure..." ) ) );
+
+            MouseListener orbitPopup = new ContextualMenuMouseListener( controller, directionPopupMenu );
+            
             orbitTriangle .addMouseListener( orbitPopup );
+        }
 	}
     
     private void orbitsChanged( final Controller controller, final Controller orbitController, JPanel orbitCheckboxes, JPanel orbitTriangle )
@@ -164,14 +178,6 @@ public class OrbitPanel extends JPanel
         //  This seems to address the problem.
         orbitCheckboxes .setVisible( false );
         orbitCheckboxes .setVisible( true );
-    }
-
-    protected static JMenuItem createMenuItem( String buttonText, String actionCommand, ActionListener listener )
-    {
-        JMenuItem menuItem = new JMenuItem( buttonText );
-        menuItem .addActionListener( listener );
-        menuItem .setActionCommand( actionCommand );        
-        return menuItem;
     }
 
     protected static JButton createButton( String buttonText, String actionCommand, ActionListener listener )

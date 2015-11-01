@@ -8,6 +8,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -21,7 +23,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.FileHandler;
@@ -110,6 +111,12 @@ public final class ApplicationUI extends DefaultController
         else if ( "quit" .equals( action ) )
             quit();
 
+        else if ( "documentClosed" .equals( action ) )
+        {
+        	DocumentFrame doc = (DocumentFrame) e .getSource();
+        	documentFrameClosed( doc );
+        }
+
         else if ( "showAbout" .equals( action ) )
             about();
 
@@ -140,11 +147,7 @@ public final class ApplicationUI extends DefaultController
     }
 
     private int mLastUntitled = 0;
-    
-	// TODO: This collection is only ever added to or removed from, never read or counted. 
-	//  Is it really needed? Maybe for future use?
-    private final List<Frame> mWindows = new ArrayList<>();
-    
+        
     private final Map<String, Frame> mDocuments = new HashMap<>(); // keyed by URL
     
     private final LinkedList<String> mRecentDocs = new LinkedList<>();
@@ -594,8 +597,19 @@ public final class ApplicationUI extends DefaultController
         if ( docController == null )
             return; // unable to read the doc, don't want an empty window... error already reported
         
-        final DocumentFrame frame = new DocumentFrame( this, file, docController );
-        
+        final DocumentFrame frame = new DocumentFrame( file, docController, new PropertyChangeListener(){
+
+			@Override
+			public void propertyChange( PropertyChangeEvent evt )
+			{
+				if ( "window.title" .equals( evt .getPropertyName() ) ) {
+					String oldTitle = (String) evt .getOldValue();
+					String newTitle = (String) evt .getNewValue();
+	                ApplicationUI.this .recordRecentDoc( oldTitle );
+	                ApplicationUI.this .documentFrameRenamed( oldTitle, newTitle, (DocumentFrame) evt .getSource() );
+				}
+			}} );
+
 		setInitialPosition(frame);
 
         final String finalTitle = title;
@@ -632,7 +646,7 @@ public final class ApplicationUI extends DefaultController
                         else
                         {
                             title = null;
-                            frame .setFile( null );
+                            frame .makeUnnamed();
                             JOptionPane .showMessageDialog( frame,
                                     "You have \"autoFormatConversion\" turned on," + NL + 
                                     "but the behavior is disabled until this version of vZome" + NL +
@@ -644,7 +658,7 @@ public final class ApplicationUI extends DefaultController
                     else
                     {
                         title = null;
-                        frame .setFile( null );
+                        frame .makeUnnamed();
                         JOptionPane .showMessageDialog( frame,
                                 "This document was created by an older version." + NL + 
                                 "It is being opened as a new document, so you can" + NL +
@@ -705,10 +719,6 @@ public final class ApplicationUI extends DefaultController
 	
     public void documentFrameClosed( DocumentFrame frame )
     {
-//      if ( doc .isChanged() ) {
-//      // ask to save or abort
-//      }
-        mWindows .remove( frame );
         mDocuments .values() .remove( frame );
         if ( mDocuments .isEmpty() )
             System .exit( 0 );
@@ -722,7 +732,7 @@ public final class ApplicationUI extends DefaultController
 
 	private boolean reentrantQuit;
     
-    public void recordRecentDoc( String title )
+    private void recordRecentDoc( String title )
     {
         if ( mRecentDocs .contains( title ) )
             mRecentDocs .remove( title );
@@ -735,12 +745,11 @@ public final class ApplicationUI extends DefaultController
             System .out .println( it .next() );
     }
     
-    public synchronized void documentFrameRenamed( String oldTitle, String newTitle, Frame frame )
+    private synchronized void documentFrameRenamed( String oldTitle, String newTitle, Frame frame )
     {
         Frame oldFrame = (Frame) mDocuments .get( newTitle );
         if ( oldFrame != null ) {
             // there's another window that was open on this title... changes might be lost!
-            mWindows .remove( frame );
             mDocuments .remove( newTitle );
         }
         
@@ -750,7 +759,6 @@ public final class ApplicationUI extends DefaultController
             mDocuments .put( newTitle, frame );
             frame .setTitle( newTitle );
         }
-        mWindows .add( frame );
     }
 
     public void openFile( File file, Properties props )
