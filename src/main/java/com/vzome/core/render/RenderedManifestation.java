@@ -186,7 +186,10 @@ public class RenderedManifestation
         if ( !(obj instanceof RenderedManifestation) )
             return false;
         RenderedManifestation other = (RenderedManifestation) obj;
-        if ( ! location .equals( other.location ) )
+        if ( location == null ) {
+            if ( other.location != null )
+                return false;
+        } else if ( ! location .equals( other.location ) )
             return false;
         if ( mMirrored != other.mMirrored )
             return false;
