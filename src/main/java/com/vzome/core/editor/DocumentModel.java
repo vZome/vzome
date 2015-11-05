@@ -304,7 +304,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new InvertSelection( this.mSelection, this.mRealizedModel, groupInSelection );
 
 		else if ( "JoinPoints".equals( name ) )
-			edit = new JoinPoints( this.mSelection, this.mRealizedModel, groupInSelection, true );
+			edit = new JoinPoints( this.mSelection, this.mRealizedModel, groupInSelection );
 
 		else if ( "NewCentroid" .equals( name ) )
 			edit = new Centroid( this.mSelection, this.mRealizedModel, groupInSelection );
@@ -485,9 +485,15 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new ColorManifestations( mSelection, mRealizedModel, new Color( rgb ), false );
         }
         else if ( action.equals( "joinballs" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, true );
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.closedLoop );
         else if ( action.equals( "chainBalls" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, false );
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.chainBalls );
+        else if ( action.equals( "joinBallsToFirst" ) )
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.allToFirst );
+        else if ( action.equals( "joinBallsToLast" ) )
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.allToLast );
+        else if ( action.equals( "joinBallsFullMesh" ) )
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.fullMesh );
         else if ( ShowVertices.NAME .toLowerCase() .equals( action .toLowerCase() ) )
             edit = new ShowVertices( mSelection, mRealizedModel );
         else if ( action.equals( "ballAtOrigin" ) )
