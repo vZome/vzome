@@ -30,7 +30,7 @@ public class RealizeMetaParts extends ChangeConstructions
     public void perform() throws Command.Failure
     {
         AlgebraicField field = this.root .getField();
-		AlgebraicNumber scale = field .createPower( 5 ) .times( field .createRational( 2 ));
+		AlgebraicNumber scale = field .createPower( 5 ); // .times( field .createRational( 2 ));
         for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
             Manifestation man = (Manifestation) mans .next();
             unselect( man );
