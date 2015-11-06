@@ -860,6 +860,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
 
         menu.add( createEditorMenuItem( "Loop Balls", getExclusiveAction( "joinballs" ), KeyEvent.VK_J ) );
         menu.add( createEditorMenuItem( "Chain Balls", getExclusiveAction( "chainBalls" ), KeyEvent.VK_J, InputEvent.ALT_MASK ) );
+        menu.add( createEditorMenuItem( "Join Balls to Last", getExclusiveAction( "joinBallsAllToLast" ) ) );
+        menu.add( createEditorMenuItem( "Make All Possible Struts", getExclusiveAction( "joinBallsAllPossible" ) ) );
+//TODO: menu.add( createEditorMenuItem( "Convex Hull", getExclusiveAction( "joinBallsConvexHull" ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( createEditorMenuItem( "Panel", getExclusiveAction( "panel" ), KeyEvent.VK_P ) );
