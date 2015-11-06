@@ -485,15 +485,15 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new ColorManifestations( mSelection, mRealizedModel, new Color( rgb ), false );
         }
         else if ( action.equals( "joinballs" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.closedLoop );
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CLOSED_LOOP );
         else if ( action.equals( "chainBalls" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.chainBalls );
-        else if ( action.equals( "joinBallsToFirst" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.allToFirst );
-        else if ( action.equals( "joinBallsToLast" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.allToLast );
-        else if ( action.equals( "joinBallsFullMesh" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.joinModeEnum.fullMesh );
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CHAIN_BALLS );
+        else if ( action.equals( "joinBallsAllToFirst" ) )
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_TO_FIRST );
+        else if ( action.equals( "joinBallsAllToLast" ) )
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_TO_LAST );
+        else if ( action.equals( "joinBallsAllPossible" ) )
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_POSSIBLE );
         else if ( ShowVertices.NAME .toLowerCase() .equals( action .toLowerCase() ) )
             edit = new ShowVertices( mSelection, mRealizedModel );
         else if ( action.equals( "ballAtOrigin" ) )
