@@ -25,7 +25,7 @@ public class VefModelExporter implements Exporter
 {
     private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 
-    private Map vertexData = new LinkedHashMap();
+    private final Map<AlgebraicVector, Integer> vertexData = new LinkedHashMap<>();
 
     protected final AlgebraicField field;
 
@@ -39,19 +39,19 @@ public class VefModelExporter implements Exporter
 
     private int numStruts;
 
-    private StringBuffer balls;
+    private final StringBuffer balls;
 
-    private StringBuffer panels;
+    private final StringBuffer panels;
 
-    private StringBuffer struts;
+    private final StringBuffer struts;
 
     private int numPanels;
 
-    private PrintWriter output;
+    private final PrintWriter output;
     
     private boolean writingTip;
     
-    private Set<Integer> middleVertices = new HashSet<Integer>();
+    private final Set<Integer> middleVertices = new HashSet<>();
 
     public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale )
     {
@@ -78,18 +78,18 @@ public class VefModelExporter implements Exporter
         //
         int[] vertexMapping = new int[ poly .getVertexList() .size() ];
         int vertexNum = 0;
-        for ( Iterator vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
-            AlgebraicVector vertexVector = (AlgebraicVector) vertices .next();
+        for ( Iterator verts = poly .getVertexList() .iterator(); verts .hasNext(); ) {
+            AlgebraicVector vertexVector = (AlgebraicVector) verts .next();
             if ( reverseFaces )
                 vertexVector = vertexVector .negate();
             vertexVector = rotation .timesColumn( vertexVector );
             // have to inline getVertexIndex here, so I can create balls.
-            Integer vefIndex = (Integer) vertexData .get( vertexVector );
+            Integer vefIndex = vertexData .get( vertexVector );
             if ( vefIndex == null )
             {
                 AlgebraicVector key = vertexVector;
                 int index = vertexData .size();
-                vefIndex = new Integer( index );
+                vefIndex = index;
                 vertexData .put( key, vefIndex );
                 if ( scale != null )
                     vertexVector = vertexVector .scale( scale );            
@@ -99,7 +99,7 @@ public class VefModelExporter implements Exporter
                 balls .append( " " );
                 balls .append( vefIndex );
             }
-            vertexMapping[ vertexNum++ ] = vefIndex .intValue();
+            vertexMapping[ vertexNum++ ] = vefIndex;
         }
         ++ numBalls;
         balls .append( " " );
@@ -108,22 +108,22 @@ public class VefModelExporter implements Exporter
         for ( Iterator faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
             ++ numPanels;
             Polyhedron.Face face = (Polyhedron.Face) faces .next();
-            List vs = new ArrayList();
+            List<Integer> vs = new ArrayList<>();
             int arity = face .size();
             for ( int j = 0; j < arity; j++ ){
                 Integer index = (Integer) face .get( /*reverseFaces? arity-j-1 :*/ j );
                 vs .add( vertexMapping[ index ] );
             }
             panels .append( vs .size() );
-            for ( int i = 0; i < vs .size(); i++ )
-            {
-                panels .append( " " );
-                panels .append( vs .get( i ) );
-            }
+			for (Integer v : vs) {
+				panels .append( " " );
+				panels .append(v);
+			}
             panels .append( "\n" );
         }
     }
 
+	@Override
     public void exportManifestation( Manifestation man )
     {
         if ( man instanceof Connector )
@@ -145,15 +145,14 @@ public class VefModelExporter implements Exporter
         else if ( man instanceof Panel )
         {
             ++ numPanels;
-            List vs = new ArrayList();
+            List<Integer> vs = new ArrayList<>();
             for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
                 vs .add( getVertexIndex( (AlgebraicVector) verts .next() ));
             panels .append( vs .size() );
-            for ( int i = 0; i < vs .size(); i++ )
-            {
-                panels .append( " " );
-                panels .append( vs .get( i ) );
-            }
+			for (Integer v : vs) {
+				panels .append( " " );
+				panels .append(v);
+			}
             panels .append( "\n" );
         }
     }
@@ -161,11 +160,16 @@ public class VefModelExporter implements Exporter
     /**
      * This is used only for vZome part geometry export    
      * @param man
-     * @param first
      */
-    public void exportSelectedManifestation( Manifestation man, boolean first )
+    public void exportSelectedManifestation( Manifestation man )
     {
-        if ( man instanceof Connector )
+		if(man == null) 
+		{
+			// This is called to append a newline after all of the panels are exported
+			// to provide readability and separation of whatever new field may eventually be appended.
+			output .println( "");
+		}
+		else if ( man instanceof Connector )
         {
         	if ( ! this .writingTip ) {
         		output .print( "tip" );
@@ -189,12 +193,12 @@ public class VefModelExporter implements Exporter
     
     protected Integer getVertexIndex( AlgebraicVector vertexVector )
     {
-        Integer obj = (Integer) vertexData .get(vertexVector);
+        Integer obj = vertexData .get(vertexVector);
         if ( obj == null )
         {
             AlgebraicVector key = vertexVector;
             int index = vertexData .size();
-            obj = new Integer( index );
+            obj = index;
             vertexData .put( key, obj );
             if ( scale != null )
                 vertexVector = vertexVector .scale( scale );            
@@ -217,6 +221,7 @@ public class VefModelExporter implements Exporter
         vector .getVectorExpression( buffer, AlgebraicField.VEF_FORMAT );
     }
         
+	@Override
     public void finish()
     {
         // format version 6, with explicit "balls" section, not a ball for every vertex
