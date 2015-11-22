@@ -32,7 +32,7 @@ public interface RenderingViewer extends ViewPlatformModel.Viewer, Manifestation
     {
         RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas );
         
-        RenderingChanges createRenderingChanges( Lights lights, boolean isSticky );
+        RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode );
     }
 
 //    Group getSceneGraphRoot();

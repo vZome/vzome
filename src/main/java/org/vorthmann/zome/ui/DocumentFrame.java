@@ -1182,6 +1182,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         cbMenuItem .setSelected( setting );
         menu.add( cbMenuItem );
 
+        cbMenuItem = (JMenuItem) setAction( new JCheckBoxMenuItem(), "Render Outlines", "toggleOutlines",
+                controller );
+        setting = "true".equals( controller.getProperty( "drawOutlines" ) );
+        cbMenuItem .setSelected( setting );
+        menu.add( cbMenuItem );
+
         menuBar.add( menu );
 
         // ----------------------------------------- Scripting menu

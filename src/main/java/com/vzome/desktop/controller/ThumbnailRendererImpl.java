@@ -24,7 +24,7 @@ public class ThumbnailRendererImpl implements ThumbnailRenderer
 
     public ThumbnailRendererImpl( RenderingViewer.Factory rvFactory, Lights sceneLighting )
     {
-        scene = rvFactory .createRenderingChanges( sceneLighting, false );
+        scene = rvFactory .createRenderingChanges( sceneLighting, false, false );
         viewer = rvFactory .createRenderingViewer( scene, null );
         vpm = new ViewPlatformModel();
         vpm .addViewer( viewer );

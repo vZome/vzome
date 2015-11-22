@@ -44,6 +44,7 @@ import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
 import org.vorthmann.zome.export.java2d.Java2dExporter;
 import org.vorthmann.zome.export.java2d.Java2dSnapshot;
+import org.vorthmann.zome.render.java3d.Java3dSceneGraph;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -292,9 +293,9 @@ public class EditorController extends DefaultController implements J3dComponentF
                 if ( ! noJava3d )
                 {
                 	RenderingViewer.Factory rvFactory = app .getJ3dFactory();
-                	mainScene = rvFactory .createRenderingChanges( sceneLighting, true );
+                	mainScene = rvFactory .createRenderingChanges( sceneLighting, true, true );
 
-                	mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true );
+                	mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, false );
 
                 	thumbnails = new ThumbnailRendererImpl( rvFactory, sceneLighting );
                 }
@@ -656,7 +657,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         }
         else
         {
-            RenderingChanges scene = rvFactory.createRenderingChanges( sceneLighting, true );
+            RenderingChanges scene = rvFactory.createRenderingChanges( sceneLighting, true, true );
             mRenderedModel.addListener( scene );
             RenderingViewer viewer = rvFactory.createRenderingViewer( mainScene, canvas );
             this.addPropertyListener( (PropertyChangeListener) viewer );
@@ -833,6 +834,11 @@ public class EditorController extends DefaultController implements J3dComponentF
                     mainScene .enableFrameLabels();
                 else
                     mainScene .disableFrameLabels();
+            }
+
+            else if ( action.equals( "toggleOutlines" ) )
+            {
+                ((Java3dSceneGraph) mainScene ) .togglePolygonOutlinesMode();
             }
 
             else if ( action.equals( "toggleWorkingPlane" ) )
@@ -1257,6 +1263,9 @@ public class EditorController extends DefaultController implements J3dComponentF
                 
         if ( "showFrameLabels" .equals( string ) )
             return Boolean .toString( showFrameLabels );
+                
+        if ( "drawOutlines" .equals( string ) )
+            return Boolean .toString( ((Java3dSceneGraph) mainScene) .getPolygonOutlinesMode() );
                 
         if ( "useWorkingPlane" .equals( string ) )
             return Boolean .toString( useWorkingPlane );

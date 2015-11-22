@@ -85,9 +85,9 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     }
 
 
-	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky )
+	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode )
 	{
-		return new Java3dSceneGraph( this, lights, isSticky );
+		return new Java3dSceneGraph( this, lights, isSticky, outlineMode );
 	}
 
     Colors getColors()
@@ -151,8 +151,6 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         return geom;
     }
     
-    // The resulting geometry avoids "stitching", but I can't seem to avoid triangulation...
-    //   a bug in GeometryInfo?
     Geometry makeOutlineGeometry( RenderedManifestation rm )
     {
     	Polyhedron poly = rm .getShape();
@@ -177,9 +175,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
 
     Geometry makeGeometry( Map map, Polyhedron poly, AlgebraicMatrix matrix, boolean reverseFaces, boolean makeNormals )
     {
-        
         Geometry geom = (Geometry) map .get( matrix );
-
         if ( geom == null ) {
 
             List vertices = poly .getVertexList();

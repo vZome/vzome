@@ -9,6 +9,8 @@ package org.vorthmann.zome.render.java3d;
 import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -80,6 +82,8 @@ public class Java3dSceneGraph implements RenderingChanges
 
     private final boolean isSticky;
 
+	private boolean polygonOutlinesMode;
+
     private final BranchGroup frameLabels;
 
     public BranchGroup getRoot()
@@ -97,10 +101,11 @@ public class Java3dSceneGraph implements RenderingChanges
         return mLights;
     }
 
-    public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky )
+    public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky, boolean polygonOutlinesMode )
     {
         mFactory = factory;
         this .isSticky = isSticky;
+        this .polygonOutlinesMode = polygonOutlinesMode;
 
         lights .addPropertyListener( new PropertyChangeListener(){
 
@@ -300,9 +305,7 @@ public class Java3dSceneGraph implements RenderingChanges
 //        int[] /* AlgebraicVector */location = rm.getManifestation().getLocation();
 //        if ( location == null )
 //            location = rm.getShape().getField().origin( 3 );
-    	
-    	boolean outlinePolygons = true; // TODO get this from rm
-    	
+    	    	
         RealVector loc = rm .getLocation();
         if ( loc == null )
             loc = new RealVector( 0d, 0d, 0d );
@@ -335,15 +338,16 @@ public class Java3dSceneGraph implements RenderingChanges
         tg.setCapability( Group.ALLOW_CHILDREN_EXTEND );
         tg.setCapability( Group.ALLOW_CHILDREN_READ );
         tg.setCapability( Group.ALLOW_CHILDREN_WRITE );
+        tg.setCapability( BranchGroup.ALLOW_DETACH );
         tg.setCapability( Shape3D.ENABLE_PICK_REPORTING );
         tg.setPickable( true );
         tg.addChild( solidPolyhedron );
 
-        if ( outlinePolygons ) {
+        if ( this .polygonOutlinesMode ) {
         	geom = mFactory .makeOutlineGeometry( rm );
             Shape3D outlinePolyhedron = new Shape3D( geom );
-            outlinePolyhedron.setAppearance( mFactory .getOutlineAppearance() );
-        	tg.addChild( outlinePolyhedron );
+            outlinePolyhedron .setAppearance( mFactory .getOutlineAppearance() );
+        	tg .addChild( outlinePolyhedron );
         }
 
         // Create a Text2D leaf node, add it to the scene graph.
@@ -370,7 +374,7 @@ public class Java3dSceneGraph implements RenderingChanges
         if ( this .isSticky )
             rm.setGraphicsObject( group );
     }
-
+    
     public void reset()
     {
         mScene.removeAllChildren();
@@ -530,4 +534,29 @@ public class Java3dSceneGraph implements RenderingChanges
     {
         return mFog;
     }
+
+	public void togglePolygonOutlinesMode()
+	{
+		this.polygonOutlinesMode = ! this .polygonOutlinesMode;
+		
+		Collection<BranchGroup> bgs = new ArrayList<>();
+        for ( int i = 0; i < mScene .numChildren(); i++ ) {
+            BranchGroup bg = (BranchGroup) mScene .getChild( i );
+            bgs .add( bg );
+        }
+        for (BranchGroup branchGroup : bgs) {
+            TransformGroup tg = (TransformGroup) branchGroup .getChild( 0 );
+        	Shape3D solidPoly = (Shape3D) tg .getChild( 0 );
+        	RenderedManifestation rm = (RenderedManifestation) solidPoly .getUserData();
+        	if ( rm != null ) {
+        		this .manifestationRemoved( rm );
+        		this .manifestationAdded( rm );
+        	}
+		}
+	}
+	
+	public boolean getPolygonOutlinesMode()
+	{
+		return this .polygonOutlinesMode;
+	}
 }
