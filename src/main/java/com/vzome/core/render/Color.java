@@ -13,6 +13,8 @@ public class Color
 
     public static final Color WHITE = new Color( 0xFF, 0xFF, 0xFF );
 
+    public static final Color GREY_TRANSPARENT = new Color( 25, 25, 25, 50 );
+
     public int red, green, blue, alpha;
 
     public Color( int r, int g, int b, int a )
@@ -80,7 +82,7 @@ public class Color
     
     public String toString()
     {
-        return red + "," + green + "," + blue;
+        return red + "," + green + "," + blue + ( (alpha<0xFF)? ","+alpha : "" );
     }
 
     public static Color parseColor( String str )
@@ -105,5 +107,10 @@ public class Color
 	public int getBlue()
 	{
 		return this.blue;
+	}
+
+	public int getAlpha()
+	{
+		return this.alpha;
 	}
 }

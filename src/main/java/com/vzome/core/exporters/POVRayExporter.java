@@ -128,14 +128,6 @@ public class POVRayExporter extends Exporter3d
         output .println();
 		
 		FORMAT .setMaximumFractionDigits( 3 );
-        
-		for ( Iterator cnames = mColors .getColorNames(); cnames .hasNext(); )
-        {
-		    String colorName = (String) cnames .next();
-            if ( "background" .equals( colorName ) )
-                continue;
-		    declareColor( prepColorName( colorName ), mColors .getColor( colorName ) );
-		}
 
 		StringBuffer instances = new StringBuffer();
 
@@ -152,6 +144,7 @@ public class POVRayExporter extends Exporter3d
 		int numShapes = 0, numTransforms = 0;
 		Map[] shapes = new Map[]{ new HashMap(), new HashMap() };
 		Map transforms = new HashMap();
+		Map colors = new HashMap();
 		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
 		{
 		    RenderedManifestation rm = (RenderedManifestation) rms .next();
@@ -170,6 +163,13 @@ public class POVRayExporter extends Exporter3d
 		        transforms .put( transform, transformName );
 		        exportTransform( transformName, transform );
 		    }
+		    Color color = rm .getColor();
+		    String colorName = (String) colors .get( color );
+		    if ( colorName == null ){
+		    	colorName = nameColor( color );
+		    	colors .put( color, colorName );
+		        exportColor( colorName, color );
+		    }
 			instances .append( "object { " + shapeName + " transform " + transformName + " translate " );
             instances .append( "(<" );
             Manifestation man = rm .getManifestation();
@@ -185,7 +185,7 @@ public class POVRayExporter extends Exporter3d
                 appendLocation( rm .getLocation(), instances );
             }
             instances .append( ">)" );
-			instances .append( " transform anim texture { " + prepColorName( rm .getColorName() ) + " } }" );
+			instances .append( " transform anim texture { " + colorName + " } }" );
 			instances .append( System .getProperty( "line.separator" ) );
 		}
 
@@ -212,9 +212,9 @@ public class POVRayExporter extends Exporter3d
 	}
 
 
-    String prepColorName( String colorName )
+    String nameColor( Color color )
     {
-        return "color_" + colorName .replace( '.', '_' ) .replace( ' ', '_' );
+        return "color_" + color .toString() .replace( ',', '_' );
     }
    
     private String printTuple3d( Tuple3d t )
@@ -229,7 +229,7 @@ public class POVRayExporter extends Exporter3d
     	return buf .toString();
     }
     
-    protected void declareColor( String name, Color color )
+    protected void exportColor( String name, Color color )
     {
 		output .print( "#declare " + name .replace( '.', '_' ) + " = texture { pigment { " );
 		printColor( color );
@@ -238,11 +238,22 @@ public class POVRayExporter extends Exporter3d
     
     private void printColor( Color color )
     {
-		output .print( "color rgb <" );
-		float[] rgb = color .getRGBColorComponents( new float[3] );
+    	boolean doAlpha = color .getAlpha() < 0xFF;
+    	if ( doAlpha )
+    		output .print( "color rgbf <" );
+    	else
+    		output .print( "color rgb <" );
+		float[] rgb = color .getRGBColorComponents( new float[4] );
 		output .print( FORMAT.format(rgb[0]) + "," );
 		output .print( FORMAT.format(rgb[1]) + "," );
-		output .print( FORMAT.format(rgb[2]) );
+		if ( doAlpha )
+		{
+			output .print( FORMAT.format(rgb[2]) + "," );
+			output .print( FORMAT.format(rgb[3]) );
+		}
+		else {
+			output .print( FORMAT.format(rgb[2]) );
+		}
 		output .print( ">" );
     }
     

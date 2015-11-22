@@ -95,7 +95,7 @@ public class JsonExporter extends Exporter3d
             }
             
             RealVector loc = rm .getLocation();
-            Color color = mColors .getColor( rm .getColorName() );
+            Color color = rm .getColor();
             float[] rgb = new float[3];
             color .getRGBColorComponents( rgb );
 

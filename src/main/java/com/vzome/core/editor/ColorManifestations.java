@@ -8,13 +8,12 @@ import java.util.Iterator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.render.Color;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 
 public class ColorManifestations extends ChangeManifestations
@@ -46,6 +45,9 @@ public class ColorManifestations extends ChangeManifestations
         result .setAttribute( "red", "" + color .getRed() );
         result .setAttribute( "green", "" + color .getGreen() );
         result .setAttribute( "blue", "" + color .getBlue() );
+        int alpha = color .getAlpha();
+        if ( alpha < 0xFF )
+            result .setAttribute( "alpha", "" + alpha );
     }
 
     public void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Failure
@@ -55,7 +57,9 @@ public class ColorManifestations extends ChangeManifestations
             String red = xml .getAttribute( "red" );
             String green = xml .getAttribute( "green" );
             String blue = xml .getAttribute( "blue" );
-            initialize( new Color( Integer .parseInt( red ), Integer .parseInt( green ), Integer .parseInt( blue ) ) );
+            String alphaStr = xml .getAttribute( "alpha" );
+            int alpha = ( alphaStr==null || alphaStr .isEmpty() )? 0xff : Integer .parseInt( alphaStr, 2 );
+            initialize( new Color( Integer .parseInt( red ), Integer .parseInt( green ), Integer .parseInt( blue ), alpha ) );
         }
         else
             initialize( null );
@@ -66,34 +70,35 @@ public class ColorManifestations extends ChangeManifestations
     {
         private final Manifestation mManifestation;
 
-        private final String oldColorName, newColorName;
+        private final Color oldColor, newColor;
         
         public ColorManifestation( Manifestation manifestation, Color color )
         {
             mManifestation = manifestation;
-            newColorName = Colors.RGB_CUSTOM + " " + color.getRed() + " " + color.getGreen() + " " + color.getBlue();
+            this .newColor = color;
             RenderedManifestation rm = (RenderedManifestation) manifestation .getRenderedObject();
-            if ( rm != null )
-                oldColorName = rm .getColorName();
+            if ( rm != null ) {
+            	oldColor = rm .getColor();
+            }
             else
-                oldColorName = Colors.RGB_CUSTOM + " 25 25 25"; // TODO fix this case
+            	oldColor = Color .GREY_TRANSPARENT; // TODO fix this case
         }
 
         public void redo()
         {
-            mManifestations .setColorName( mManifestation, newColorName );
+            mManifestations .setColor( mManifestation, newColor );
         }
 
         public void undo()
         {
-            mManifestations .setColorName( mManifestation, oldColorName );
+            mManifestations .setColor( mManifestation, oldColor );
         }
 
         @Override
         public Element getXml( Document doc )
         {
             Element result = doc .createElement( "color" );
-            DomUtils .addAttribute( result, "rgb", newColorName );
+            DomUtils .addAttribute( result, "rgb", newColor .toString() );
             Element man = mManifestation .getXml( doc );
             result .appendChild( man );
             return result;

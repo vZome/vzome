@@ -1,11 +1,9 @@
 package com.vzome.core.render;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -33,14 +31,8 @@ public class RenderedModel implements ManifestationChanges
 	private float mSelectionGlow = 0.8f;
 
 	protected final HashSet mRendered = new HashSet();
-        
-    protected Map mCurrentStyle = null;
-    
-    protected final Map mOrientations = new HashMap();
-    
-    protected final Map mAppearances = new HashMap();
-        
-    private final AlgebraicField field;
+
+	private final AlgebraicField field;
 
     private OrbitSource orbitSource;
     
@@ -195,12 +187,12 @@ public class RenderedModel implements ManifestationChanges
     }
 
     
-    public void setManifestationColor( Manifestation m, String colorName )
+    public void setManifestationColor( Manifestation m, Color color )
     {
         RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
-        rendered .setColorName( colorName );
+        rendered .setColor( color );
         if ( mainListener != null )
             mainListener .colorChanged( rendered );
         for ( int i = 0; i < mListeners .size(); i++ )
@@ -322,9 +314,7 @@ public class RenderedModel implements ManifestationChanges
 
     private void resetAttributes( RenderedManifestation rm, boolean justShape )
 	{
-        String oldColorName = rm .getColorName();
-        if ( oldColorName == null || ! oldColorName .startsWith( "rgb.custom" ) )
-            oldColorName = null;
+        Color oldColor = rm .getColor();
 	    Manifestation m = rm .getManifestation();
         if ( m instanceof Connector ) {
             resetAttributes( rm, justShape, (Connector) m );
@@ -346,7 +336,7 @@ public class RenderedModel implements ManifestationChanges
                 return;
 
             rm .setOrientation( field .identityMatrix( 3 ), false );
-            rm .setColorName( Colors .getColorName( Color.WHITE ) );
+            rm .setColor( Color.WHITE );
 
             try {
                 Axis axis = orbitSource .getAxis( normal );
@@ -355,15 +345,15 @@ public class RenderedModel implements ManifestationChanges
                 Direction orbit = axis .getDirection();
 
                 Color color = orbitSource .getColor( orbit ) .getPastel();
-                rm .setColorName( Colors .getColorName( color ) );
+                rm .setColor( color );
             } catch ( IllegalStateException e ) {
                 logger .warning( "Unable to set color for panel, normal = " + normal .toString() );
             }
         }
         else
             throw new UnsupportedOperationException( "only strut, ball, and panel shapes currently supported" );
-	    if ( oldColorName != null )
-	        rm .setColorName( oldColorName );
+	    if ( oldColor != null )
+	        rm .setColor( oldColor );
 	}
 
 	protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
@@ -403,7 +393,7 @@ public class RenderedModel implements ManifestationChanges
 		 * WHITE for everything.  NOTE: This is now fixed, since
 		 * DefaultApplication now loads the built-in defaults.
 		 */
-		rm .setColorName( Colors .getColorName( color ) );
+		rm .setColor( color );
 
 		int orn = axis .getOrientation();
 		AlgebraicMatrix orientation = mPolyhedra .getSymmetry() .getMatrix( orn );
@@ -423,7 +413,9 @@ public class RenderedModel implements ManifestationChanges
 		if ( justShape )
 		    return;
 		Color color = mPolyhedra .getColor( null );
-		rm .setColorName( ( color == null )? Colors .CONNECTOR : Colors .getColorName( color ) );
+		if ( color == null )
+			color = orbitSource .getColor( null );
+		rm .setColor( color );
 		rm .setOrientation( field .identityMatrix( 3 ), false );
 	}
 
@@ -452,10 +444,10 @@ public class RenderedModel implements ManifestationChanges
         return poly;
     }
 
-    public void manifestationColored( Manifestation m, String colorName )
+    public void manifestationColored( Manifestation m, Color color )
     {
 		if ( this .enabled )
-			this .setManifestationColor( m, colorName );
+			this .setManifestationColor( m, color );
     }
 
     public RenderedModel snapshot()
@@ -492,7 +484,7 @@ public class RenderedModel implements ManifestationChanges
                     changes .manifestationSwitched( fromRm, toRm );
                     if ( Float.floatToIntBits( fromRm .getGlow() ) != Float .floatToIntBits( toRm .getGlow() ) )
                         changes .glowChanged( toRm );
-                    if ( ! fromRm .getColorName() .equals( toRm .getColorName() ) )
+                    if ( ! fromRm .getColor() .equals( toRm .getColor() ) )
                         changes .colorChanged( toRm );
                 }
             }

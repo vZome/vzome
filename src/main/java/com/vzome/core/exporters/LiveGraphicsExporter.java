@@ -53,7 +53,7 @@ public class LiveGraphicsExporter extends Exporter3d
 		{
             output .print( "{FaceForm[" );
             RenderedManifestation rm = (RenderedManifestation) rms .next();
-            printColor( mColors .getColor( rm .getColorName() ) );
+            printColor( rm .getColor() );
             output .println( "]," );
             
 		    Polyhedron poly = rm .getShape();

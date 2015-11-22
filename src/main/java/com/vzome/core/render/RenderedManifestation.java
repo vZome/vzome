@@ -22,6 +22,8 @@ public class RenderedManifestation
     
     private String mColorName;
     
+    private Color color = null;
+    
     private AlgebraicMatrix mOrientation;
     
     private float mGlow = 0.0f, mTransparency = 0.0f;
@@ -114,18 +116,18 @@ public class RenderedManifestation
     {
         return mManifestation;
     }
-
-    public String getColorName()
-    {
-        return mColorName;
-    }
-
-    public void setColorName( String name )
-    {
-        mColorName = name;
-    }
     
-    public void setOrientation( AlgebraicMatrix m, boolean mirrored )
+    public Color getColor()
+    {
+		return this.color;
+	}
+
+	public void setColor( Color color )
+	{
+		this.color = color;
+	}
+
+	public void setOrientation( AlgebraicMatrix m, boolean mirrored )
     {
         mOrientation = m;
         mMirrored = mirrored;
@@ -174,6 +176,7 @@ public class RenderedManifestation
         result = prime * result + ((location == null) ? 0 : location.hashCode());
         result = prime * result + (mMirrored ? 1231 : 1237);
         result = prime * result + ((mShape == null) ? 0 : mShape.hashCode());
+//        result = prime * result + ((color == null) ? 0 : color.hashCode());
         result = prime * result + ((mOrientation == null) ? 0 : mOrientation.hashCode());
         return result;
     }
@@ -193,6 +196,11 @@ public class RenderedManifestation
                 return false;
         } else if ( ! location.equals( other.location ) )
             return false;
+//        if ( color == null ) {
+//            if ( other.color != null )
+//                return false;
+//        } else if ( ! color.equals( other.color ) )
+//            return false;
         if ( mMirrored != other.mMirrored )
             return false;
         if ( ! mOrientation.equals( other.mOrientation ) )
@@ -210,6 +218,7 @@ public class RenderedManifestation
         RenderedManifestation copy = new RenderedManifestation( null );
         copy .location = this .location;
         copy .mColorName = this .mColorName;
+        copy .color = this .color;
         copy .mGlow = this .mGlow;
         copy .mMirrored = this .mMirrored;
         copy .mOrientation = this .mOrientation;

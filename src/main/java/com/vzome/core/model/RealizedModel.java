@@ -18,6 +18,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.math.Projection;
+import com.vzome.core.render.Color;
 
 /**
  * @author Scott Vorthmann
@@ -184,11 +185,11 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
         }
     }
     
-    public void setColorName( Manifestation m, String colorName )
+    public void setColor( Manifestation m, Color color )
     {
         if ( m .isRendered() )
             for ( Iterator listeners = mListeners .iterator(); listeners .hasNext(); )
-                ((ManifestationChanges) listeners .next()) .manifestationColored( m, colorName );
+                ((ManifestationChanges) listeners .next()) .manifestationColored( m, color );
     }
     
     

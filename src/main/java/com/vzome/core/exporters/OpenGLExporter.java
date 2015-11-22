@@ -122,8 +122,7 @@ public class OpenGLExporter extends Exporter3d
             instance_transforms .append( transformIndex + ",\n" );
 			instance_shapes .append( shapeIndex + ",\n" );
 			instance_offsets .append( rm .getLocation() + ",\n" );
-            Color color = mColors .getColor( rm .getColorName() );
-            appendColor( color, instance_colors );
+            appendColor( rm .getColor(), instance_colors );
             ++ num_instances;
 		}
 

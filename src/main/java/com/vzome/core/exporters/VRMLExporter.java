@@ -48,13 +48,11 @@ public class VRMLExporter extends Exporter3d{
     }
     
     
-    private void printColor( String name, Color color )
+    private void exportColor( String name, Color color )
     {
-//        name = name .substring( name .lastIndexOf( "." ) +1 );
-        name = name .replace( '.', '_' );
-        name = name .replace( ' ', '_' );
-		output .println( "PROTO color_" + name + " [] {" );
+		output .println( "PROTO " + name + " [] {" );
 		output .print( "    Appearance { material Material { diffuseColor " );
+		// TODO implement transparency
 		float[] rgb = color .getRGBColorComponents( new float[3] );
 		output .print( rgb[0] + " " );
 		output .print( rgb[1] + " " );
@@ -81,15 +79,11 @@ public class VRMLExporter extends Exporter3d{
         output .println( new String( out .toByteArray() ) );
         output .println();
 
-        for ( Iterator cnames = mColors .getColorNames(); cnames .hasNext(); ) {
-            String colorName = (String) cnames .next();
-            printColor( colorName, mColors .getColor( colorName ) );
-        }
-
         AlgebraicField field = null;
         StringBuffer instances = new StringBuffer();
         int numShapes = 0;
         Map[] shapes = new Map[]{ new HashMap(), new HashMap() };
+        Map colors = new HashMap();
         for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
         {
             RenderedManifestation rm = (RenderedManifestation) rms .next();
@@ -145,14 +139,17 @@ public class VRMLExporter extends Exporter3d{
                 }
             }
             
-            String colorName = rm .getColorName();
-//            colorName = colorName .substring( colorName .lastIndexOf( "." ) + 1 );
-            colorName = colorName .replace( '.', '_' );
-            colorName = colorName .replace( ' ', '_' );
+            Color color = rm .getColor();
+            String colorName = (String) colors .get( color );
+            if ( colorName == null ) {
+                colorName = "color_" + color .toString() .replace( ',', '_' );
+                colors .put( color, colorName );
+                exportColor( colorName, color );
+            }
             instances .append( "Transform { translation " );
             instances .append( rm .getLocation() .scale( SCALE ) .spacedString() );
             instances .append( " rotation " + x + " " + y + " " + z + " " + angle );
-            instances .append( " children[ Shape{ geometry " + shapeName + "{} appearance color_" + colorName + "{}}]}\n" );
+            instances .append( " children[ Shape{ geometry " + shapeName + "{} appearance " + colorName + "{}}]}\n" );
         }
 
         output .println( instances .toString() );
