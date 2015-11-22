@@ -39,6 +39,8 @@ import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 import org.vorthmann.ui.SplashScreen;
 
+import com.vzome.core.editor.Application;
+
 
 public final class ApplicationUI extends DefaultController
 {
@@ -171,10 +173,10 @@ public final class ApplicationUI extends DefaultController
          *   
          *   ${Platform .getPreferencesFolder()}/vZome.preferences or .vZome.prefs (per user)
          *   
-         *   org/vorthmann/zome/app/defaultPrefs.properties resource (built-in defaults)
+         *   org/vorthmann/zome/ui/defaultPrefs.properties resource (built-in defaults)
          */
 
-        userPreferences = new Properties( controller .getDefaults() );
+        userPreferences = loadDefaults();
         
         File prefsFolder = Platform .getPreferencesFolder();        
         prefsFile = new File( prefsFolder, "vZome.preferences" );
@@ -223,6 +225,22 @@ public final class ApplicationUI extends DefaultController
         controller .initialize( mProperties );
     }
     
+	public static Properties loadDefaults()
+	{
+		Properties defaults = Application .loadDefaults();
+
+        String defaultRsrc = "org/vorthmann/zome/app/defaultPrefs.properties";
+        try {
+            ClassLoader cl = Application.class.getClassLoader();
+            InputStream in = cl.getResourceAsStream( defaultRsrc );
+            if ( in != null )
+            	defaults .load( in ); // override the core defaults
+        } catch ( IOException ioe ) {
+            System.err.println( "problem reading default preferences: " + defaultRsrc );
+        }
+        return defaults;
+	}
+
 	public static Properties loadBuildProperties()
 	{
         String defaultRsrc = "build.properties";
@@ -387,6 +405,7 @@ public final class ApplicationUI extends DefaultController
             logger .info( "splash screen displayed" );
 
         // NOW we're ready to spend the cost of the controller init
+        // Note that controller may have loaded some default properties, served by getDefaults()
         ApplicationUI appUI = new ApplicationUI( props, controller );
         // props have now been copied to the appUI, so we can add props for the initial doc if we want
 

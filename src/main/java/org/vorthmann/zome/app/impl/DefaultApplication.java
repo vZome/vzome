@@ -39,7 +39,6 @@ public class DefaultApplication extends DefaultController implements Application
 	public DefaultApplication()
     {
 		super();
-		this .properties = Application .loadDefaults();
 	}
 
 	@Override
