@@ -25,7 +25,7 @@ public class Java3dWireframeFactory extends Java3dFactory
         super( colors, emissiveHighlights );
     }
 
-    Geometry makeGeometry( RenderedManifestation rm )
+    Geometry makeSolidGeometry( RenderedManifestation rm )
     {
         Manifestation man = rm .getManifestation();
         if ( man instanceof Strut )
@@ -34,7 +34,7 @@ public class Java3dWireframeFactory extends Java3dFactory
             return makePointGeometry( (Connector) man, rm .getShape() .getField() );
         else
             // panels have polyhedron shapes
-            return super .makeGeometry( rm );
+            return super .makeSolidGeometry( rm );
     }
 
     LineArray makeLineGeometry( Strut strut, AlgebraicField field )

@@ -256,7 +256,6 @@ public class Java3dSceneGraph implements RenderingChanges
                         if ( parity == 0 )
                         {
                             // odd parity means this is an edge center, so let's render the edge of the cube
-                            float[] center = { scale*x, scale*y, scale*z };
                             int zeroCoord = ( x == 0 )? 0 : ( ( y == 0 )? 1 : 2 );
                             float[] start = { scale*x, scale*y, scale*z };
                             float[] end = { scale*x, scale*y, scale*z };
@@ -301,12 +300,15 @@ public class Java3dSceneGraph implements RenderingChanges
 //        int[] /* AlgebraicVector */location = rm.getManifestation().getLocation();
 //        if ( location == null )
 //            location = rm.getShape().getField().origin( 3 );
+    	
+    	boolean outlinePolygons = true; // TODO get this from rm
+    	
         RealVector loc = rm .getLocation();
         if ( loc == null )
             loc = new RealVector( 0d, 0d, 0d );
         
-        Appearance appearance = mFactory.getAppearance( rm.getColorName(), rm.getGlow() > 0f, rm.getTransparency() > 0f );
-        Geometry geom = mFactory.makeGeometry( rm );
+        Appearance appearance = mFactory .getAppearance( rm.getColorName(), rm.getGlow() > 0f, rm.getTransparency() > 0f );
+        Geometry geom = mFactory .makeSolidGeometry( rm );
         
         if ( logger .isLoggable( Level.FINEST )
                 && rm .getManifestation() == null )
@@ -321,38 +323,13 @@ public class Java3dSceneGraph implements RenderingChanges
 //            location = rm.getShape().getField().origin( 3 );
             loc = new RealVector( 0d, 0d, 0d );
         
-        geom.setCapability( Geometry.ALLOW_INTERSECT );
-        Shape3D polyhedron = new Shape3D( geom );
-        polyhedron.setCapability( Shape3D.ALLOW_APPEARANCE_WRITE );
-        polyhedron.setCapability( Shape3D.ALLOW_GEOMETRY_WRITE );
-        // polyhedron .setCapability( Shape3D .ALLOW_AUTO_COMPUTE_BOUNDS_READ );
-        // polyhedron .setCapability( Shape3D .ALLOW_BOUNDS_READ );
-        // polyhedron .setCapability( Shape3D .ALLOW_COLLIDABLE_READ );
-        // polyhedron .setCapability( Shape3D .ALLOW_COLLISION_BOUNDS_READ );
-        // polyhedron .setCapability( Shape3D .ALLOW_LOCAL_TO_VWORLD_READ );
-        // polyhedron .setCapability( Shape3D .ENABLE_COLLISION_REPORTING );
-        polyhedron.setAppearance( appearance );
-        Node child = polyhedron;
+        Shape3D solidPolyhedron = new Shape3D( geom );
+        solidPolyhedron .setCapability( Shape3D.ALLOW_APPEARANCE_WRITE );
+        solidPolyhedron .setAppearance( appearance );
+        solidPolyhedron .setUserData( rm );
 
-        // if ( rm .getManifestation() instanceof Connector ) {
-        // if ( mBallGroup == null ) {
-        // mBallGroup = new SharedGroup();
-        // mBallGroup .setCapability( Group.ALLOW_CHILDREN_READ );
-        // Switch ballSwitch = new Switch();
-        // ballSwitch .setCapability( Group.ALLOW_CHILDREN_READ );
-        // ballSwitch .setCapability( Group.ALLOW_CHILDREN_EXTEND );
-        // ballSwitch .setCapability( Switch.ALLOW_SWITCH_WRITE );
-        // mBallGroup .addChild( ballSwitch );
-        // ballSwitch .addChild( child );
-        // ballSwitch .setWhichChild( 0 );
-        // }
-        // child = new Link( mBallGroup );
-        // }
-
-        child.setUserData( rm );
         // omit this if trying to pre-optimize with makeGeometryAt
         Transform3D move = new Transform3D();
-//        RealVector loc = rm.getShape().getField().getRealVector( location );
         move.setTranslation( new Vector3d( loc.x, loc.y, loc.z ) );
         TransformGroup tg = new TransformGroup( move );
         tg.setCapability( Group.ALLOW_CHILDREN_EXTEND );
@@ -360,7 +337,14 @@ public class Java3dSceneGraph implements RenderingChanges
         tg.setCapability( Group.ALLOW_CHILDREN_WRITE );
         tg.setCapability( Shape3D.ENABLE_PICK_REPORTING );
         tg.setPickable( true );
-        tg.addChild( child );
+        tg.addChild( solidPolyhedron );
+
+        if ( outlinePolygons ) {
+        	geom = mFactory .makeOutlineGeometry( rm );
+            Shape3D outlinePolyhedron = new Shape3D( geom );
+            outlinePolyhedron.setAppearance( mFactory .getOutlineAppearance() );
+        	tg.addChild( outlinePolyhedron );
+        }
 
         // Create a Text2D leaf node, add it to the scene graph.
         // Text2D text2D = new Text2D( "     label", new Color3f( 0.9f, 1.0f,
@@ -374,15 +358,13 @@ public class Java3dSceneGraph implements RenderingChanges
         // os3D .setAlignmentMode( OrientedShape3D.ROTATE_ABOUT_POINT );
         // tg .addChild( os3D );
 
-        child = tg;
-
         BranchGroup group = new BranchGroup();
         group.setCapability( Group.ALLOW_CHILDREN_EXTEND );
         group.setCapability( Group.ALLOW_CHILDREN_READ );
         group.setCapability( Group.ALLOW_CHILDREN_WRITE );
         group.setCapability( Node.ENABLE_PICK_REPORTING );
         group.setCapability( BranchGroup.ALLOW_DETACH );
-        group.addChild( child );
+        group.addChild( tg );
 
         mScene.addChild( group );
         if ( this .isSticky )
@@ -520,7 +502,7 @@ public class Java3dSceneGraph implements RenderingChanges
             logger .severe( "no shape for: " + rm .getManifestation() .toString() );
         }
         else if ( polyhedron != null ) {
-            Geometry newShape = mFactory.makeGeometry( rm );
+            Geometry newShape = mFactory.makeSolidGeometry( rm );
             newShape.setCapability( Geometry.ALLOW_INTERSECT );
             polyhedron.setGeometry( newShape );
         }

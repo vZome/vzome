@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.media.j3d.Appearance;
 import javax.media.j3d.ColoringAttributes;
 import javax.media.j3d.Material;
+import javax.media.j3d.PolygonAttributes;
 import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Color3f;
 
@@ -78,7 +79,7 @@ public class Appearances extends Object implements Colors.Changes{
 			ta .setTransparencyMode( TransparencyAttributes .BLENDED );
 			ta .setTransparency( PREVIEW_TRANSPARENCY );
 			appearance .setTransparencyAttributes( ta );
-		}
+		}		
 		return appearance;
 	}
 	

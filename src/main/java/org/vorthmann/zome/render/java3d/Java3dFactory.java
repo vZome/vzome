@@ -1,6 +1,7 @@
 
 package org.vorthmann.zome.render.java3d;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
@@ -11,8 +12,14 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.media.j3d.Appearance;
+import javax.media.j3d.ColoringAttributes;
 import javax.media.j3d.Geometry;
+import javax.media.j3d.GeometryArray;
 import javax.media.j3d.GraphicsConfigTemplate3D;
+import javax.media.j3d.IndexedLineStripArray;
+import javax.media.j3d.LineAttributes;
+import javax.media.j3d.PolygonAttributes;
+import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
 import org.vorthmann.j3d.J3dComponentFactory;
@@ -35,14 +42,24 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
 {
     protected final Appearances mAppearances;
     
+    protected final Appearance outlines;
+    
     protected boolean mHasEmissiveColor;
     
-    protected final Map mGeomInfoCache = new HashMap();
+    protected final Map solidGeometries = new HashMap();
+
+    protected final Map outlineGeometries = new HashMap();
 
     public Java3dFactory( Colors colors, Boolean useEmissiveColor )
     {
         mHasEmissiveColor = useEmissiveColor .booleanValue();
         mAppearances = new Appearances( colors, mHasEmissiveColor );
+        outlines = new Appearance();
+        PolygonAttributes wirePa = new PolygonAttributes( PolygonAttributes.POLYGON_LINE, PolygonAttributes.CULL_BACK, -10f );
+        outlines .setPolygonAttributes( wirePa );
+        LineAttributes lineAtts = new LineAttributes( 1, LineAttributes .PATTERN_SOLID, true );
+        outlines .setLineAttributes( lineAtts );
+        outlines .setColoringAttributes( new ColoringAttributes( new Color3f( Color.BLACK ), ColoringAttributes .SHADE_FLAT ) );
     }
     
     public RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas )
@@ -82,23 +99,88 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     {
         return mAppearances .getAppearance( colorName, glowing, transparent );
     }
-
-    Geometry makeGeometry( RenderedManifestation rm )
+    
+    Appearance getOutlineAppearance()
     {
-        return makeGeometry( rm .getShape(), rm .getOrientation(), rm .reverseOrder() );
+    	return this .outlines;
     }
-
-    Geometry makeGeometry( Polyhedron poly, AlgebraicMatrix matrix, boolean reverseFaces )
+    
+    // The resulting geometry does not support the polygon offset
+    //  required to avoid "stitching" when the line geometry is rendered at the same Z-depth
+    //  as the solid geometry.
+    Geometry makeOutlineGeometry( Map map, Polyhedron poly, AlgebraicMatrix matrix )
     {
-        Map map = (Map) mGeomInfoCache .get( poly );
+        Geometry geom = (Geometry) map .get( matrix );
+
+        if ( geom == null ) {
+
+            List polyVertices = poly .getVertexList();
+            Set faces = poly .getFaceSet();
+            int[] counts = new int [ faces .size() ];
+            int numIndices = 0;
+            int i = 0;
+            for ( Iterator it = faces .iterator(); it .hasNext(); ){
+                int arity = ((List) it .next()) .size();
+                counts[i++] = arity;
+                numIndices += arity;
+            }
+            IndexedLineStripArray strips = new IndexedLineStripArray( polyVertices .size(), GeometryArray.COORDINATES, numIndices, counts );
+
+            i = 0;
+            for ( Iterator it = polyVertices .iterator(); it .hasNext(); ) {
+                AlgebraicVector gv = (AlgebraicVector) it .next();
+                if ( matrix != null )
+                    gv = matrix .timesColumn( gv );
+                RealVector v = gv .toRealVector();
+            	strips .setCoordinate( i++, new Point3d( v.x, v.y, v.z ) );
+            }
+            i = 0;
+            for ( Iterator it = faces .iterator(); it .hasNext(); ){
+                List face = (List) it .next();
+                int arity = face .size();
+                for ( int j = 0; j < arity; j++ ){
+                    Integer index = (Integer) face .get( j );
+                    strips .setCoordinateIndex( i++, index .intValue() );
+                }
+            }
+
+            geom = strips;
+            map .put( matrix, geom );
+        }
+
+        return geom;
+    }
+    
+    // The resulting geometry avoids "stitching", but I can't seem to avoid triangulation...
+    //   a bug in GeometryInfo?
+    Geometry makeOutlineGeometry( RenderedManifestation rm )
+    {
+    	Polyhedron poly = rm .getShape();
+        Map map = (Map) outlineGeometries .get( poly );
         if ( map == null ){
             map = new HashMap();
-            mGeomInfoCache .put( poly, map );
+            outlineGeometries .put( poly, map );
         }
-        
-        GeometryInfo gi = (GeometryInfo) map .get( matrix );
+        return makeOutlineGeometry( map, poly, rm .getOrientation() );
+    }
 
-        if ( gi == null ) {
+    Geometry makeSolidGeometry( RenderedManifestation rm )
+    {
+    	Polyhedron poly = rm .getShape();
+        Map map = (Map) solidGeometries .get( poly );
+        if ( map == null ){
+            map = new HashMap();
+            solidGeometries .put( poly, map );
+        }
+        return makeGeometry( map, poly, rm .getOrientation(), rm .reverseOrder(), true );
+    }
+
+    Geometry makeGeometry( Map map, Polyhedron poly, AlgebraicMatrix matrix, boolean reverseFaces, boolean makeNormals )
+    {
+        
+        Geometry geom = (Geometry) map .get( matrix );
+
+        if ( geom == null ) {
 
             List vertices = poly .getVertexList();
             Point3d[] coords = new Point3d [ vertices .size() ];
@@ -113,16 +195,16 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
                 coords[i++] = pt;
             }
 
-            // avoid all this work most of the time... only the actual
-            //  vertex coordinates need to be adjusted each time
             Set faces = poly .getFaceSet();
-            int[] counts = new int [ faces .size() ];
+            int[] stripCounts = new int [ faces .size() ];
+            int[] contourCounts = new int [ faces .size() ];
             i = 0;
             int numIndices = 0;
             i = 0;
             for ( Iterator it = faces .iterator(); it .hasNext(); ){
                 int arity = ((List) it .next()) .size();
-                counts[i++] = arity;
+                contourCounts[i] = 1;
+                stripCounts[i++] = arity;
                 numIndices += arity;
             }
             int[] indices = new int [ numIndices ];
@@ -136,26 +218,32 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
                 }
             }
         
-            gi = new GeometryInfo( GeometryInfo .POLYGON_ARRAY );
-            gi .setCoordinateIndices( indices );
-            gi .setStripCounts( counts );
+            GeometryInfo gi = new GeometryInfo( GeometryInfo .POLYGON_ARRAY );
             gi .setCoordinates( coords );
+            gi .setCoordinateIndices( indices );
+            gi .setStripCounts( stripCounts );
+            gi .setContourCounts( contourCounts );
             
 //          gi .convertToIndexedTriangles();
             
-            NormalGenerator ng = new NormalGenerator();
-            // zero crease angle means always make creases, no matter how close the normals are
-            ng .setCreaseAngle( (float) Math .toRadians( 0 ) );
-            ng .generateNormals( gi );
+            if ( makeNormals ) {
+            	NormalGenerator ng = new NormalGenerator();
+            	// zero crease angle means always make creases, no matter how close the normals are
+            	ng .setCreaseAngle( (float) Math .toRadians( 0 ) );
+            	ng .generateNormals( gi );
+                
+                // stripify
+                Stripifier st = new Stripifier();
+                st.stripify( gi );
+            }
             
-             // stripify
-             Stripifier st = new Stripifier();
-             st.stripify( gi );
-             
-            map .put( matrix, gi );
+            geom = gi .getGeometryArray();
+            if ( makeNormals )
+                geom .setCapability( Geometry.ALLOW_INTERSECT );
+            map .put( matrix, geom );
         }
 
-        return gi .getIndexedGeometryArray( false );
+        return geom;
     }
 
     boolean hasEmissiveColor()
