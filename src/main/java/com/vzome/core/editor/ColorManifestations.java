@@ -58,7 +58,7 @@ public class ColorManifestations extends ChangeManifestations
             String green = xml .getAttribute( "green" );
             String blue = xml .getAttribute( "blue" );
             String alphaStr = xml .getAttribute( "alpha" );
-            int alpha = ( alphaStr==null || alphaStr .isEmpty() )? 0xff : Integer .parseInt( alphaStr, 2 );
+            int alpha = ( alphaStr==null || alphaStr .isEmpty() )? 0xff : Integer .parseInt( alphaStr );
             initialize( new Color( Integer .parseInt( red ), Integer .parseInt( green ), Integer .parseInt( blue ), alpha ) );
         }
         else

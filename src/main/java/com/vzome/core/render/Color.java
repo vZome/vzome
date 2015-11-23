@@ -17,6 +17,19 @@ public class Color
 
     public int red, green, blue, alpha;
 
+    public Color( String rgbaHex )
+    {
+        int rgba = Integer .parseUnsignedInt( rgbaHex, 16 );
+        int r = ( rgba >> 24 ) & 0xFF;
+        int g = ( rgba >> 16 ) & 0xFF;
+        int b = ( rgba >> 8 ) & 0xFF;
+        int a = ( rgba >> 0 ) & 0xFF;
+        red = r > 0xFF? 0xFF : ( r < 0? 0 : r );
+        green = g > 0xFF? 0xFF : ( g < 0? 0 : g );
+        blue = b > 0xFF? 0xFF : ( b < 0? 0 : b );
+        alpha = a > 0xFF? 0xFF : ( a < 0? 0 : a );
+    }
+    
     public Color( int r, int g, int b, int a )
     {
         red = r > 0xFF? 0xFF : ( r < 0? 0 : r );
@@ -47,7 +60,7 @@ public class Color
     
     public int hashCode()
     {
-        return getRGB();
+        return getRGBA();
     }
     
     public boolean equals( Object other )
@@ -75,6 +88,11 @@ public class Color
     /**
      * @return
      */
+    public int getRGBA()
+    {
+        return red * 0x01000000 + green * 0x010000 + blue * 0x0100 + alpha;
+    }
+    
     public int getRGB()
     {
         return red * 0x010000 + green * 0x0100 + blue;

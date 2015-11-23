@@ -481,8 +481,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         else if ( action.startsWith( "setItemColor/" ) )
         {
             String value = action .substring( "setItemColor/" .length() );
-            int rgb = Integer .parseInt( value, 16 );
-            edit = new ColorManifestations( mSelection, mRealizedModel, new Color( rgb ), false );
+            edit = new ColorManifestations( mSelection, mRealizedModel, new Color( value ), false );
         }
         else if ( action.equals( "joinballs" ) )
             edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CLOSED_LOOP );
