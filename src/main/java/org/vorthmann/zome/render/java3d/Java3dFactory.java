@@ -95,9 +95,9 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         return mAppearances .getColors();
     }
 
-    Appearance getAppearance( String colorName, boolean glowing, boolean transparent )
+    Appearance getAppearance( com.vzome.core.render.Color color, boolean glowing, boolean transparent )
     {
-        return mAppearances .getAppearance( colorName, glowing, transparent );
+        return mAppearances .getAppearance( color, glowing, transparent );
     }
     
     Appearance getOutlineAppearance()

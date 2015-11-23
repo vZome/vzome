@@ -310,7 +310,7 @@ public class Java3dSceneGraph implements RenderingChanges
         if ( loc == null )
             loc = new RealVector( 0d, 0d, 0d );
         
-        Appearance appearance = mFactory .getAppearance( rm.getColorName(), rm.getGlow() > 0f, rm.getTransparency() > 0f );
+        Appearance appearance = mFactory .getAppearance( rm.getColor(), rm.getGlow() > 0f, rm.getTransparency() > 0f );
         Geometry geom = mFactory .makeSolidGeometry( rm );
         
         if ( logger .isLoggable( Level.FINEST )
@@ -450,7 +450,7 @@ public class Java3dSceneGraph implements RenderingChanges
 
         Shape3D polyhedron = (Shape3D) group.getChild( 0 );
         if ( polyhedron != null ) {
-            Appearance newAppearance = mFactory.getAppearance( rm.getColorName(), rm.getGlow() > 0f, rm.getTransparency() > 0f );
+            Appearance newAppearance = mFactory.getAppearance( rm.getColor(), rm.getGlow() > 0f, rm.getTransparency() > 0f );
             polyhedron.setAppearance( newAppearance );
         }
     }

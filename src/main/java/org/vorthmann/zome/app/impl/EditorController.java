@@ -77,6 +77,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
@@ -231,8 +232,8 @@ public class EditorController extends DefaultController implements J3dComponentF
                         mRenderedModel .setManifestationGlow( m, false );
                     }
 
-                    public void manifestationColored( Manifestation m, String colorName )
-                    {}
+					@Override
+					public void manifestationColored( Manifestation m, Color c ) {}
                 };
                 this .document .addSelectionListener( selectionRendering );
 
@@ -1313,7 +1314,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             // Manifestations
             if ( mTargetManifestation != null ) {
                 RenderedManifestation rm = (RenderedManifestation) mTargetManifestation.getRenderedObject();
-                rm.getColorName();
+                return rm.getColor() .toString();
             }
             mTargetManifestation = null;
             return "no object";

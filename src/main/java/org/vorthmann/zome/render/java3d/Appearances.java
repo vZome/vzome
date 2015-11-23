@@ -7,15 +7,15 @@ import java.util.Map;
 import javax.media.j3d.Appearance;
 import javax.media.j3d.ColoringAttributes;
 import javax.media.j3d.Material;
-import javax.media.j3d.PolygonAttributes;
 import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Color3f;
+import javax.vecmath.Color4f;
 
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 
-public class Appearances extends Object implements Colors.Changes{
-
+public class Appearances
+{
 	static final  float PREVIEW_TRANSPARENCY = 0.45f;
 
 	Color3f mGlowColor, mPanelColor;
@@ -48,35 +48,35 @@ public class Appearances extends Object implements Colors.Changes{
 		    Appearance[][] set = makeAppearances( color );
 		    mAppearances .put( name, set );
 		}
-        colors .addListener( this );
 	}
-
-
 	 
-	private Material makeMaterial( Color3f color, boolean glowing )
+	private Material makeMaterial( Color4f color, boolean glowing )
 	{
 	    Material material;
+	    Color3f justColor = new Color3f( color .x, color.y, color.z );
 	    // Material constructor: ambient, emissive, diffuse, specular, shininess
 		if ( mHasEmissiveColor )
-		    material = new Material( color, glowing? mGlowColor : BLACK, color, GREY, 100f );
+		    material = new Material( justColor, glowing? mGlowColor : BLACK, justColor, GREY, 100f );
 		else
-		    material = new Material( glowing? mGlowColor : color, BLACK, glowing? mGlowColor : color, GREY, 100f );
+		    material = new Material( glowing? mGlowColor : justColor, BLACK, glowing? mGlowColor : justColor, GREY, 100f );
 		material .setCapability( Material .ALLOW_COMPONENT_READ );
 		return material;
 	}
 
 	 
-	private Appearance makeAppearance( Material material, Color3f jColor, boolean transparent )
+	private Appearance makeAppearance( Material material, Color4f color, boolean transparent )
 	{
 		Appearance appearance = new Appearance();
 		appearance .setMaterial( material );
 		appearance .setCapability( Appearance .ALLOW_MATERIAL_READ );
 		appearance .setCapability( Appearance .ALLOW_MATERIAL_WRITE );
 		material .setLightingEnable( true );
-		appearance .setColoringAttributes( new ColoringAttributes( jColor, ColoringAttributes .SHADE_FLAT ) );
-		if ( transparent ) {
+	    Color3f justColor = new Color3f( color .x, color.y, color.z );
+		appearance .setColoringAttributes( new ColoringAttributes( justColor, ColoringAttributes .SHADE_FLAT ) );
+		if ( transparent || color.w < 1.0f ) {
 			TransparencyAttributes ta = new TransparencyAttributes();
 			ta .setTransparencyMode( TransparencyAttributes .BLENDED );
+			float alpha = transparent? ( PREVIEW_TRANSPARENCY * color.w ) : color.w;
 			ta .setTransparency( PREVIEW_TRANSPARENCY );
 			appearance .setTransparencyAttributes( ta );
 		}		
@@ -85,8 +85,8 @@ public class Appearances extends Object implements Colors.Changes{
 	
 	private Appearance[][] makeAppearances( Color color )
 	{
-		float[] rgb = new float[3];
-		Color3f jColor = new Color3f( color .getRGBColorComponents( rgb ) );
+		float[] rgba = new float[4];
+		Color4f jColor = new Color4f( color .getRGBColorComponents( rgba ) );
 	    Appearance[][] set = new Appearance[2][2];
 		for ( int glow = 0; glow < 2; glow++ ) {
 			Material material = makeMaterial( jColor, glow == 1 );
@@ -96,70 +96,23 @@ public class Appearances extends Object implements Colors.Changes{
 		return set;
 	}
 
-	public Appearance getAppearance( String colorName, boolean glowing, boolean transparent )
+	public Appearance getAppearance( Color color, boolean glowing, boolean transparent )
 	{
-		Appearance[][] set = ((Appearance[][]) mAppearances.get( colorName ));
+        if ( color == null )
+        	color = Color .WHITE;
+		Appearance[][] set = ((Appearance[][]) mAppearances.get( color ));
 		if ( set == null )
         {
-            Color newColor = mColors .getColor( colorName );
-            if ( newColor == null )
-                newColor = Color .WHITE;
-		    // an automatic direction (the old way, all white)
-		    set = makeAppearances( newColor );
-		    mAppearances .put( colorName, set );
+		    set = makeAppearances( color );
+		    mAppearances .put( color, set );
 		}
 		return set [ glowing? 1:0 ][ transparent?1:0 ];
 	}
-
-
-    public void colorChanged( String name, Color newColor )
-    {
-		float[] rgb = new float[3];
-		Color3f jColor = new Color3f( newColor .getRGBColorComponents( rgb ) );
-        if ( ( mHasEmissiveColor && name .equals( Colors.HIGHLIGHT ) ) 
-        || name .equals( Colors .HIGHLIGHT_MAC ) ) {
-            // simply make new Materials for all the glowing appearances
-            mGlowColor = jColor;
-            for ( Iterator sets = mAppearances.values() .iterator(); sets .hasNext(); ) {
-                Appearance[][] apps = (Appearance[][]) sets .next();
-                for ( int t = 0; t < 2; t++ ) {
-                    jColor = new Color3f();
-                    apps[1][t] .getMaterial() .getAmbientColor( jColor );
-                    Material mat = makeMaterial( jColor, true );
-                    apps[1][t] .setMaterial( mat );
-                }
-            }
-        }
-        else {
-            // make new Materials for all appearances for this key
-            Appearance[][] apps = (Appearance[][]) mAppearances .get( name );
-            if ( apps == null ) {
-                // an automatic direction (the new way, a new color for each new auto direction)
-                apps = makeAppearances( newColor );
-                mAppearances .put( name, apps );
-            }
-            for ( int g = 0; g < 2; g++ ) {
-                Material mat = makeMaterial( jColor, g == 1);
-                for ( int t = 0; t < 2; t++ )
-                    apps[g][t] .setMaterial( mat );
-            }
-        }
-    }
-
-
 
     Colors getColors()
     {
         return mColors;
     }
-
-
-
-    public void colorAdded( String name, Color color )
-    {
-        colorChanged( name, color );
-    }
-	
 }
 
 

@@ -847,7 +847,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
                 Color color = JColorChooser.showDialog( DocumentFrame.this, "Choose Object Color", null );
                 if ( color == null )
                     return;
-                String command = "setItemColor/" + Integer.toHexString( color.getRGB() & 0xffffff );
+                int rgb = color .getRGB() & 0xffffff;
+                int alpha = color .getAlpha() & 0xff;
+                String command = "setItemColor/" + Integer.toHexString( ( rgb << 8 ) | alpha );
                 mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
             }
         } );
