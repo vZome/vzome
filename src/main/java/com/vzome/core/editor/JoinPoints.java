@@ -57,13 +57,19 @@ public class JoinPoints extends ChangeConstructions {
 //  public static final String ATTRNAME_TOOLBEHAVIOR = "toolBehavior";
 
     @Override
-    protected void getXmlAttributes(Element element) {
-		// Retain the boolean ATTRNAME_CLOSEDLOOP attribute in the Xml for backward compatibility.
-        // Older versions will incorrectly handle the new joinModes, treating them as CLOSED_LOOP
-        // In some simplistic cases, such as with two or three balls selected, the results may be similar.
-        // In most cases where the new joinModes are used, the older versions will not produce the desired results.
-        element.setAttribute(ATTRNAME_CLOSEDLOOP, joinMode == JoinModeEnum.CLOSED_LOOP ? "true" : "false");
-        element.setAttribute(ATTRNAME_JOINMODE, joinMode.name());
+    protected void getXmlAttributes(Element element)
+    {	
+    	if ( joinMode == JoinModeEnum.CLOSED_LOOP ) {
+        	// For closedLoop mode, serialize as before.  The setXmlAttributes fallback will do the right thing.
+    	}
+    	else {
+    		// Retain the boolean ATTRNAME_CLOSEDLOOP attribute in the Xml for backward compatibility.
+            // Older versions will incorrectly handle the new joinModes, treating them as CLOSED_LOOP
+            // In some simplistic cases, such as with two or three balls selected, the results may be similar.
+            // In most cases where the new joinModes are used, the older versions will not produce the desired results.
+    		element.setAttribute( ATTRNAME_CLOSEDLOOP, "false" );
+    		element.setAttribute( ATTRNAME_JOINMODE, joinMode.name());
+    	}
 //		if(toolBehavior.hasAnyModifiers())
 //		{
 //			element .setAttribute( ATTRNAME_TOOLBEHAVIOR, toolBehavior.getModifiers().toString() );
