@@ -66,7 +66,7 @@ public class Java3dSceneGraph implements RenderingChanges
 
     protected LinearFog mFog;
 
-    protected AmbientLight mAmbient;
+    protected AmbientLight variableAmbient;
 
     protected int mGlowCount = 0;
 
@@ -153,11 +153,15 @@ public class Java3dSceneGraph implements RenderingChanges
 
         float[] rgb = new float[3];
         Color3f color = new Color3f( lights.getAmbientColor().getRGBColorComponents( rgb ) );
-        mAmbient = new AmbientLight( color );
-        mAmbient.setInfluencingBounds( mEverywhere );
-        mAmbient.setEnable( true );
-        mAmbient.setCapability( Light.ALLOW_STATE_WRITE );
-        mLights.addChild( mAmbient );
+        variableAmbient = new AmbientLight( color );
+        variableAmbient.setInfluencingBounds( mEverywhere );
+        variableAmbient.setEnable( true );
+        variableAmbient.setCapability( Light.ALLOW_STATE_WRITE );
+        mLights.addChild( variableAmbient );
+        AmbientLight fixedAmbient = new AmbientLight( color );
+        fixedAmbient.setInfluencingBounds( mEverywhere );
+        fixedAmbient.setEnable( true );
+        mLights.addChild( fixedAmbient );
 
         for ( int i = 0; i < 3; i++ ) {
             Vector3f direction = new Vector3f();
@@ -430,9 +434,9 @@ public class Java3dSceneGraph implements RenderingChanges
         if ( mFactory.hasEmissiveColor() )
             if ( glowOn ) {
                 ++ mGlowCount;
-                mAmbient.setEnable( false );
+                variableAmbient.setEnable( false );
             } else if ( -- mGlowCount == 0 ) {
-                mAmbient.setEnable( true );
+                variableAmbient.setEnable( true );
             }
         colorChanged( rm );
     }
