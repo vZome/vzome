@@ -68,7 +68,9 @@ public class JoinPoints extends ChangeConstructions {
             // In some simplistic cases, such as with two or three balls selected, the results may be similar.
             // In most cases where the new joinModes are used, the older versions will not produce the desired results.
     		element.setAttribute( ATTRNAME_CLOSEDLOOP, "false" );
-    		element.setAttribute( ATTRNAME_JOINMODE, joinMode.name());
+    		if ( joinMode != JoinModeEnum.CHAIN_BALLS )
+    			// don't emit the joinMode unless we have to
+    			element.setAttribute( ATTRNAME_JOINMODE, joinMode.name());
     	}
 //		if(toolBehavior.hasAnyModifiers())
 //		{
