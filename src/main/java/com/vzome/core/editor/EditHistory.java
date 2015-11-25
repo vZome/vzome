@@ -261,6 +261,8 @@ public class EditHistory
             Element edit = undoable .getDetailXml( doc );
             ++ edits;
             DomUtils .addAttribute( edit, "editNumber", Integer.toString( edits ) );
+            if ( logger .isLoggable( Level.FINEST ) )
+            	logger .finest( "side-effect: " + DomUtils .getXmlString( edit ) );
             result .appendChild( edit );
             if ( undoable .isSticky() )
                 lastStickyEdit = edits;
@@ -483,11 +485,11 @@ public class EditHistory
              * 
              * 3. the UndoableEdit may migrate itself, generating
              */
-        	if ( logger.isLoggable( Level.FINE ) ) // see the logger declaration to enable FINE
-        		logger.fine( "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + DomUtils .getXmlString( xml ) );
-
         	int num = mEditNumber;
             mEdits .remove( --mEditNumber );
+
+        	if ( logger.isLoggable( Level.FINE ) ) // see the logger declaration to enable FINE
+        		logger.fine( "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + num + ": " + DomUtils .getXmlString( xml ) );
 
         	UndoableEdit realized = null;
         	String cmdName = xml.getLocalName();

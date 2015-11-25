@@ -12,6 +12,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
+import com.vzome.core.math.DomUtils;
 
 public abstract class SideEffects implements UndoableEdit
 {
@@ -27,8 +28,11 @@ public abstract class SideEffects implements UndoableEdit
             if ( se != null )
             {
                 Element effect = se .getXml( doc );
-                if ( effect != null )
+                if ( effect != null ) {
+                    if ( BUG_ACCOMMODATION_LOGGER .isLoggable( Level.FINEST ) )
+                        BUG_ACCOMMODATION_LOGGER .finest( "side-effect: " + DomUtils .getXmlString( effect ) );
                     effects .appendChild( effect );
+                }
                 // else effect was ChangeConstructions.AttachConstruction, which we don't need to serialize
             }
         }

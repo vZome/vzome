@@ -253,7 +253,7 @@ task regression(type: JavaExec, dependsOn: check) {
     main = 'com.vzome.core.regression.TestVZomeFiles'
     args( testHome, testFile, testOut )
     jvmArgs( '-Xmx3048M' )
-//    jvmArgs( '-Djava.util.logging.config.file=logging.properties' )
+    jvmArgs( '-Djava.util.logging.config.file=regression-logging.properties' )
 }
 regression.dependsOn makeRegressionOutputDir
 
