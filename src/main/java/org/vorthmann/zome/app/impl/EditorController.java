@@ -721,6 +721,9 @@ public class EditorController extends DefaultController implements J3dComponentF
                 this .document .undo();
             else if ( action.equals( "redo" ) )
             	this .document .redo();
+            else if ( action.equals( "undoToManifestation" ) ) {
+            	this .document .undoToManifestation( mTargetManifestation );
+            }
             else if ( action.equals( "undoToBreakpoint" ) ) {
             	this .document .undoToBreakpoint();
             } else if ( action.equals( "redoToBreakpoint" ) ) {
@@ -1205,13 +1208,14 @@ public class EditorController extends DefaultController implements J3dComponentF
 
             else if ( mTargetManifestation instanceof Connector )
                 result[i] = menuItem.equals( "lookAtBall" ) || menuItem.equals( "setSymmetryCenter" )
-                        || menuItem.equals( "showProperties" );
+                        || menuItem.equals( "showProperties" ) || menuItem.equals( "undoToManifestation" );
             else if ( mTargetManifestation instanceof Strut )
-                result[i] = menuItem.equals( "setSymmetryAxis" ) 
+                result[i] = menuItem.equals( "setSymmetryAxis" ) || menuItem.equals( "undoToManifestation" )
                 			|| menuItem.equals( "setWorkingPlaneAxis" ) || menuItem.equals( "showProperties" ) || menuItem.equals( "extractPartModel" )
                             || menuItem.equals( "selectSimilarSize" ) || menuItem.equals( "setBuildOrbitAndLength" );
             else if ( mTargetManifestation instanceof Panel )
-                result[i] = menuItem.equals( "reversePanel" ) || menuItem.equals( "setWorkingPlane" ) || menuItem.equals( "showPanelVertices" );
+                result[i] = menuItem.equals( "reversePanel" ) || menuItem.equals( "setWorkingPlane" )
+                || menuItem.equals( "showPanelVertices" ) || menuItem.equals( "undoToManifestation" );
             else
                 result[i] = false;
         }

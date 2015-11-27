@@ -552,6 +552,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener
         menuItem = createMenuItem( "Select All Similar", "selectSimilarSize", mController );
         modelPopupMenu.add( menuItem );
 
+        menuItem = createMenuItem( "Undo Including This", "undoToManifestation", mController );
+        modelPopupMenu.add( menuItem );
+
         modelPopupMenu.addSeparator();
 
         menuItem = createMenuItem( "Set Background Color...", "setBackgroundColor", new ActionListener()
