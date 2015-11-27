@@ -4,6 +4,7 @@
 package com.vzome.core.editor;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -115,7 +116,24 @@ public abstract class ChangeManifestations extends ChangeSelection
     {
         plan( new RenderManifestation( m, false ) );
     }
-    
+
+	public boolean showsManifestation( Manifestation man )
+	{
+		for (Iterator iterator = this .getEffects(); iterator.hasNext();) {
+			SideEffect effect = (SideEffect) iterator.next();
+			if ( effect instanceof ManifestConstruction ) {
+				ManifestConstruction show = (ManifestConstruction) effect;
+				if ( show .showsManifestation( man ) )
+					return true;
+			}
+			else if ( effect instanceof RenderManifestation ) {
+				RenderManifestation show = (RenderManifestation) effect;
+				if ( show .showsManifestation( man ) )
+					return true;
+			}
+		}
+		return false;
+	}    
 
     private class ManifestConstruction implements SideEffect
     {
@@ -176,6 +194,11 @@ public abstract class ChangeManifestations extends ChangeSelection
             result .appendChild( man );
             return result;
         }
+        
+        public boolean showsManifestation( Manifestation man )
+        {
+        	return this .mShowing && this .mManifestation .equals( man );
+        }
     }
     
     private class RenderManifestation implements SideEffect
@@ -215,6 +238,11 @@ public abstract class ChangeManifestations extends ChangeSelection
             Element man = mManifestation .getXml( doc );
             result .appendChild( man );
             return result;
+        }
+        
+        public boolean showsManifestation( Manifestation man )
+        {
+        	return this .mShowing && this .mManifestation .equals( man );
         }
     }
 }

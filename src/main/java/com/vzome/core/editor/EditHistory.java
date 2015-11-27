@@ -20,6 +20,7 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.UndoableEdit.Context;
 import com.vzome.core.math.DomUtils;
+import com.vzome.core.model.Manifestation;
 
 public class EditHistory
 {	
@@ -105,6 +106,21 @@ public class EditHistory
             last = edit;
         } while ( true );
         return last;
+    }
+
+    public UndoableEdit undoToManifestation( Manifestation man )
+    {
+    	UndoableEdit edit = null;
+    	do {
+    		edit = undo();
+            if ( edit == null )
+                break;
+            if ( ( edit instanceof ChangeManifestations )
+            && ((ChangeManifestations) edit) .showsManifestation( man ) ) {
+            	break;
+            }
+        } while ( true );
+        return edit;
     }
 
     public UndoableEdit undoToBreakpoint()

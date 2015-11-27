@@ -4,6 +4,7 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -142,5 +143,10 @@ public abstract class SideEffects implements UndoableEdit
 	public void setContext( Context context )
 	{
 		this .context = context;
+	}
+	
+	protected Iterator<SideEffect> getEffects()
+	{
+		return this .mItems .iterator();
 	}
 }

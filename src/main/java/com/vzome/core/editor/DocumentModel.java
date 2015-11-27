@@ -927,6 +927,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		mHistory .undoToBreakpoint();
 	}
 
+	public void undoToManifestation( Manifestation man )
+	{
+		mHistory .undoToManifestation( man );
+	}
+
 	public void redoToBreakpoint() throws Command.Failure
 	{
 		mHistory .redoToBreakpoint();
