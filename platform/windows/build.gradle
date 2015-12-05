@@ -53,7 +53,7 @@ if( project.hasProperty( 'jreBuildOverride' ) ) {
 ext.jreTargetVersion = "${targetCompatibility}.${jreRevision}_${jreBuildNumber}"   // target JRE version   (e.g. 1.8.0_45)
 ext.jrePriorVersion  = "${targetCompatibility}.${jreRevision}_${jreBuildNumber-1}" // target JRE version-1 (e.g. 1.8.0_44)
 // these are used by the zip and distribution tasks after launch4j has run
-ext.jreArchiveSourcePath = project.hasProperty( 'jreZips' ) ? project.getProperty( 'jreZips' ) : 'jre/x64/' // path is relative to the root of this subproject
+ext.jreArchiveSourcePath = project.hasProperty( 'jreZips' ) ? project.getProperty( 'jreZips' ) : 'jre/x64' // path is relative to the root of this subproject
 ext.jreDistributionPath = "$l4jOutputDir/$bundledJrePath"
 ext.win64InstallerBaseFileName = "extract-${rootProject.appName}-Windows-x64"
 
@@ -129,7 +129,7 @@ task cleanDistributions {
 clean.dependsOn cleanDistributions
 
 task extractWin64Jre(type: Sync) {
-	def src = "${jreArchiveSourcePath}jre${jreTargetVersion}.zip"
+	def src = "${jreArchiveSourcePath}/jre${jreTargetVersion}.zip"
 	def dst = "${buildDir}/${jreDistributionPath}"
     from zipTree(src)
 	into dst
