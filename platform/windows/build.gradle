@@ -57,7 +57,7 @@ ext.jrePriorVersion  = "${targetCompatibility}.${jreRevision}_${jreBuildNumber-1
 // these are used by the zip and distribution tasks after launch4j has run
 ext.jreArchiveSourcePath = project.hasProperty( 'jreZips' ) ? project.getProperty( 'jreZips' ) : 'jre/x64' // path is relative to the root of this subproject
 ext.jreDistributionPath = "$l4jOutputDir/$bundledJrePath"
-ext.win64InstallerBaseFileName = "extract-${rootProject.appName}-Windows-x64"
+ext.win64ZipBaseFileName = "${rootProject.appName}-Windows-x64"
 
 launch4j {
     launch4jCmd = project.l4jCmdPath
@@ -149,7 +149,7 @@ task zipWin64Distribution(type: Zip) {
 	def src = "${buildDir}/launch4j"
 	from src
 		exclude "${folderName}/${launch4j.xmlFileName}"
-	baseName = win64InstallerBaseFileName
+	baseName = win64ZipBaseFileName
 
 	doLast() {
 		if(getDidWork()) {
