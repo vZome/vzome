@@ -45,7 +45,6 @@ ext.jvmArgs = [
     "com.apple.smallTabs": "true",
     "java.util.logging.config.file": "logging.properties" ]
 ext.vzomeArgs = [  // a list, not a map
-    '-vZomeDeveloper', 'vorth',
     '-entitlement.model.edit', 'true', '-entitlement.lesson.edit', 'true', '-entitlement.all.tools', 'true',
     '-licensed.user', 'whomever' ]
 
