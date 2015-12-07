@@ -91,7 +91,8 @@ public class Java2dExporter extends Exporter3d
             RenderedManifestation rm = (RenderedManifestation) rms .next();
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-            Color color = new Color( rm .getColor() .getRGB() );
+            com.vzome.core.render.Color c = rm .getColor();
+            Color color = (c == null)? Color.WHITE : new Color( c .getRGB() );
             
             if ( mSnapshot .isLineDrawing() ) {
                 Manifestation m = rm .getManifestation();
