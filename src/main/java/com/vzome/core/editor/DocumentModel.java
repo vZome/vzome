@@ -66,6 +66,7 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
+import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.viewing.Lights;
@@ -614,6 +615,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     {
         UndoableEdit edit = new SelectSimilarSizeStruts( this.symmetrySystem, orbit, length, mSelection, mRealizedModel );
         this .performAndRecord( edit );
+    }
+    
+    public Color getSelectionColor()
+    {
+    	Manifestation last = null;
+        for ( Iterator all = mSelection .iterator(); all .hasNext(); ) {
+            last = (Manifestation) all .next();
+        }
+        RenderedManifestation rm = (RenderedManifestation) last .getRenderedObject();
+        return rm .getColor();
     }
     
     public void loadXml( boolean openUndone, boolean asTemplate ) throws Command.Failure
