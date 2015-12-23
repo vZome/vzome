@@ -5,8 +5,11 @@
 package org.vorthmann.ui;
 
 import java.awt.Component;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +30,20 @@ public abstract class ExclusiveAction implements ActionListener
     {
         private final List mListeners = new ArrayList(40);
         
+        private final PropertyChangeListener statusListener;
+        
+        private boolean busy = false;
+        
+        public Excluder( PropertyChangeListener statusListener )
+        {
+			this.statusListener = statusListener;
+		}
+
+		public boolean isBusy()
+        {
+        	return this.busy;
+        }
+        
         public void grab( SwingWorker worker )
         {
             grab();
@@ -35,6 +52,7 @@ public abstract class ExclusiveAction implements ActionListener
 
         public void grab()
         {
+        	this .busy = true;
             for ( Iterator listeners = mListeners .iterator(); listeners .hasNext(); )
             {
                 Component component = (Component) listeners .next();
@@ -48,6 +66,8 @@ public abstract class ExclusiveAction implements ActionListener
             {
                 ((Component) listeners .next()) .setEnabled( true );
             }
+        	this .statusListener .propertyChange( new PropertyChangeEvent( this, "command.status", "busy...", "" ) );
+            this .busy = false;
         }
 //        
 //        private void setEnabled( Component object, boolean value )
@@ -63,8 +83,14 @@ public abstract class ExclusiveAction implements ActionListener
         
         public void addExcludable( Component component )
         {
-            if ( component .isEnabled() )
-                mListeners .add( component );
+        	// disabling this behavior, in favor of a simple "beep" action when another ExclusiveAction is in progress
+//            if ( component .isEnabled() )
+//                mListeners .add( component );
+        }
+
+        public void reportBusy()
+        {
+        	this .statusListener .propertyChange( new PropertyChangeEvent( this, "command.status", "", "busy..." ) );
         }
     }
     
@@ -80,6 +106,12 @@ public abstract class ExclusiveAction implements ActionListener
 
     public void actionPerformed( final ActionEvent e )
     {
+    	if ( this .mExcluder .isBusy() ) {
+    		this .mExcluder .reportBusy();
+    		Toolkit .getDefaultToolkit() .beep();
+    		return;
+    	}
+    	
         final SwingWorker worker = new SwingWorker()
         {            
             public Object construct()

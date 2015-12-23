@@ -51,7 +51,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             
     private final JTabbedPane tabbedPane = new JTabbedPane();
     
-    private final ExclusiveAction.Excluder mExcluder = new ExclusiveAction.Excluder();
+    private final ExclusiveAction.Excluder mExcluder = new ExclusiveAction.Excluder( this );
 
     private boolean isEditor, fullPower, readerPreview, canSave;
 
