@@ -208,6 +208,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     else {
                         mController .doFileAction( "save", mFile );
                     }
+                    break;
 
             	case "saveDefault":
                     // this is basically "save a copy...", with no choosing

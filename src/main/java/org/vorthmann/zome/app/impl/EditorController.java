@@ -514,7 +514,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             {
                 protected void dragFinished( Manifestation target, boolean b )
                 {
-                    mTargetManifestation = target;
+//                    mTargetManifestation = target;
                     // I am relying here on the order of attachment.  Since this listener is added
                     // to the canvas first, it should get called first, and so mTargetManifestation
                     // will be set before enableContextualCommands() is called.
@@ -522,7 +522,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
                 protected void dragStarted( Manifestation target, boolean b )
                 {
-                    mTargetManifestation = target;
+//                    mTargetManifestation = target;
                     // I am relying here on the order of attachment.  Since this listener is added
                     // to the canvas first, it should get called first, and so mTargetManifestation
                     // will be set before enableContextualCommands() is called.
@@ -1180,44 +1180,55 @@ public class EditorController extends DefaultController implements J3dComponentF
         return new String( out.toByteArray() );
     }
 
-    /**
-     * This relies on mTargetManifestation being already set!
-     */
 	@Override
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
     {
+        RenderedManifestation rm = imageCaptureViewer .pickManifestation( e );
+        mTargetManifestation = null;
+        if ( rm != null && rm.isPickable() )
+        	mTargetManifestation = rm.getManifestation();
+
         boolean[] result = new boolean[menu.length];
         for ( int i = 0; i < menu.length; i++ ) {
             String menuItem = menu[i];
-            // TODO restore command disable based on capabilities
-//            if ( ! mApp.getCommands().containsKey( menuItem ) ) {
-//                result[i] = false;
-//                continue;
-//            }
-            if ( menuItem.equals( "lookAtSymmetryCenter" )
-            	    || menuItem .equals( "setBackgroundColor" )
-                    // || menuItem .equals( "setZoneColor" )
-                    || menuItem.equals( "rZomeOrbits" ) || menuItem.equals( "predefinedOrbits" )
-                    || menuItem.equals( "setAllDirections" )
-                    || menuItem .equals( "usedOrbits" ) || menuItem .equals( "copyThisView" )
-                    || menuItem.equals( "configureDirections" ) || menuItem.equals( "lookAtOrigin" ) )
-                result[i] = true;
-            
-            else if ( menuItem .equals( "useCopiedView" ) )
-            	result[ i ] = mViewPlatform .hasCopiedView();
+            switch ( menuItem ) {
 
-            else if ( mTargetManifestation instanceof Connector )
-                result[i] = menuItem.equals( "lookAtBall" ) || menuItem.equals( "setSymmetryCenter" )
-                        || menuItem.equals( "showProperties" ) || menuItem.equals( "undoToManifestation" );
-            else if ( mTargetManifestation instanceof Strut )
-                result[i] = menuItem.equals( "setSymmetryAxis" ) || menuItem.equals( "undoToManifestation" )
-                			|| menuItem.equals( "setWorkingPlaneAxis" ) || menuItem.equals( "showProperties" ) || menuItem.equals( "extractPartModel" )
-                            || menuItem.equals( "selectSimilarSize" ) || menuItem.equals( "setBuildOrbitAndLength" );
-            else if ( mTargetManifestation instanceof Panel )
-                result[i] = menuItem.equals( "reversePanel" ) || menuItem.equals( "setWorkingPlane" )
-                || menuItem.equals( "showPanelVertices" ) || menuItem.equals( "undoToManifestation" );
-            else
+			case "lookAtOrigin":
+            case "lookAtSymmetryCenter":
+			case "setBackgroundColor":
+			case "copyThisView":
+                result[i] = true;
+				break;
+
+			case "useCopiedView":
+            	result[ i ] = mViewPlatform .hasCopiedView();
+				break;
+
+			case "showProperties":
+			case "undoToManifestation":
+            	result[ i ] = mTargetManifestation != null;
+				break;
+
+			case "lookAtBall":
+			case "setSymmetryCenter":
+            	result[ i ] = mTargetManifestation instanceof Connector;
+				break;
+
+			case "setSymmetryAxis":
+			case "setWorkingPlaneAxis":
+			case "selectSimilarSize":
+			case "setBuildOrbitAndLength":
+            	result[ i ] = mTargetManifestation instanceof Strut;
+				break;
+
+			case "setWorkingPlane":
+			case "showPanelVertices":
+            	result[ i ] = mTargetManifestation instanceof Panel;
+				break;
+
+			default:
                 result[i] = false;
+			}
         }
         return result;
     }

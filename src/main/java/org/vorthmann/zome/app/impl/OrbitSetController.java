@@ -417,7 +417,30 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             }
         }, /* half-second forgiveness */ 500 );
     }
-    
+
+	@Override
+    public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
+    {
+        boolean[] result = new boolean[menu.length];
+        for ( int i = 0; i < menu.length; i++ ) {
+            String menuItem = menu[i];
+            switch ( menuItem ) {
+
+			case "rZomeOrbits":
+			case "predefinedOrbits":
+			case "setAllDirections":
+			case "usedOrbits":
+			case "configureDirections":
+                result[i] = true;
+				break;
+
+			default:
+                result[i] = false;
+			}
+        }
+        return result;
+    }
+
     public String[] getCommandList( String listName )
     {
         if ( listName .equals( "orbits" ) )

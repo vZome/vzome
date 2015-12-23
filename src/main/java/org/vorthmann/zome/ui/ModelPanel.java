@@ -48,7 +48,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 
         final PickerPopup modelPopupMenu = new PickerPopup();
         modelPopupMenu .setLightWeightPopupEnabled( false );
-        ContextualMenuMouseListener modelPopupClicks = new ContextualMenuMouseListener( controller , modelPopupMenu );
+        modelPopupClicks = new ContextualMenuMouseListener( controller , modelPopupMenu );
 
         mMonocularPanel = new JPanel( new BorderLayout() );
         {
