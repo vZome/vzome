@@ -484,7 +484,13 @@ public class RenderedModel implements ManifestationChanges
                     changes .manifestationSwitched( fromRm, toRm );
                     if ( Float.floatToIntBits( fromRm .getGlow() ) != Float .floatToIntBits( toRm .getGlow() ) )
                         changes .glowChanged( toRm );
-                    if ( ! fromRm .getColor() .equals( toRm .getColor() ) )
+                    Color fromColor = fromRm .getColor();
+                    Color toColor = toRm .getColor();
+                    if ( fromColor == null && toColor == null )
+                    	continue;
+                    if ( ( fromColor == null && toColor != null )
+                      || ( fromColor != null && toColor == null )
+                      || ! fromColor .equals( toColor ) )
                         changes .colorChanged( toRm );
                 }
             }
