@@ -46,7 +46,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		monoStereoPanel .setLayout( monoStereoCardLayout );
         boolean showStereo =  "true" .equals( view .getProperty( "stereo" ) );
 
-        final PickerPopup modelPopupMenu = new PickerPopup();
+        final ContextualMenu modelPopupMenu = new ContextualMenu();
         modelPopupMenu .setLightWeightPopupEnabled( false );
         modelPopupClicks = new ContextualMenuMouseListener( controller , modelPopupMenu );
 

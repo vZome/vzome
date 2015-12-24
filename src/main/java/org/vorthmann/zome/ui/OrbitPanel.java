@@ -101,7 +101,7 @@ public class OrbitPanel extends JPanel
 
         if ( enabler != null )
         {
-            PickerPopup directionPopupMenu = new PickerPopup();
+            ContextualMenu directionPopupMenu = new ContextualMenu();
             directionPopupMenu.setLightWeightPopupEnabled( false );
 
             directionPopupMenu.add( enabler .setMenuAction( "rZomeOrbits",         new JMenuItem( "real Zome" ) ) );

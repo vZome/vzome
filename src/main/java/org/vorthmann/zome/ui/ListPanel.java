@@ -126,9 +126,9 @@ public class ListPanel extends JPanel implements PropertyChangeListener
     {
         private final Controller controller;
 
-        private final PickerPopup pickerPopup;
+        private final ContextualMenu pickerPopup;
 
-        private ContextualMenuMouseListener( Controller controller, PickerPopup pickerPopup )
+        private ContextualMenuMouseListener( Controller controller, ContextualMenu pickerPopup )
         {
             this.controller = controller;
             this.pickerPopup = pickerPopup;
@@ -178,7 +178,7 @@ public class ListPanel extends JPanel implements PropertyChangeListener
 
         this.isEditor = controller .userHasEntitlement( "lesson.edit" ) && ! controller .propertyIsTrue( "reader.preview" );
 
-        PickerPopup pageviewPopupMenu = new PickerPopup();
+        ContextualMenu pageviewPopupMenu = new ContextualMenu();
         pageviewPopupMenu .setLightWeightPopupEnabled( false );
         if ( this .isEditor )
         {

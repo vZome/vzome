@@ -9,12 +9,12 @@ final class ContextualMenuMouseListener extends MouseAdapter
 {
     private final Controller controller;
 
-    private final PickerPopup pickerPopup;
+    private final ContextualMenu popupMenu;
 
-    ContextualMenuMouseListener( Controller controller, PickerPopup pickerPopup )
+    ContextualMenuMouseListener( Controller controller, ContextualMenu popupMenu )
     {
         this.controller = controller;
-        this.pickerPopup = pickerPopup;
+        this.popupMenu = popupMenu;
     }
 
 	@Override
@@ -32,8 +32,8 @@ final class ContextualMenuMouseListener extends MouseAdapter
     private void maybeShowPopup( MouseEvent e )
     {
         if ( e.isPopupTrigger() ) {
-            pickerPopup.enableActions( controller, e );
-            pickerPopup.show( e.getComponent(), e.getX(), e.getY() );
+            popupMenu .enableActions( controller, e );
+            popupMenu .show( e.getComponent(), e.getX(), e.getY() );
         }
     }
 }

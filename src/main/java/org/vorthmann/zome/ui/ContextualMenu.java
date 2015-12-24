@@ -13,7 +13,7 @@ import javax.swing.JPopupMenu;
 
 import org.vorthmann.ui.Controller;
 
-public class PickerPopup extends JPopupMenu
+public class ContextualMenu extends JPopupMenu
 {
     private static final long serialVersionUID = 1L;
     
