@@ -254,11 +254,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 	mZomicFrame .setVisible( true );
                 	break;
                 
-                case "showProperties":
-                    JOptionPane .showMessageDialog( DocumentFrame.this, mController .getProperty( "objectProperties" ), "Object Properties",
-                            JOptionPane.PLAIN_MESSAGE );
-                	break;
-                
             	case "setItemColor":
                     Color color = JColorChooser.showDialog( DocumentFrame.this, "Choose Object Color", null );
                     if ( color == null )
@@ -310,6 +305,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     {
                         system = cmd .substring( "setSymmetry.".length() );
                         mController .actionPerformed( e ); // TODO exclusive
+                    }
+                    else if ( cmd .startsWith( "showProperties-" ) )
+                    {
+            			String key = cmd .substring( "showProperties-" .length() );
+                    	Controller subc = mController .getSubController( key + "Picking" );
+                        JOptionPane .showMessageDialog( DocumentFrame.this, subc .getProperty( "objectProperties" ), "Object Properties",
+                                JOptionPane.PLAIN_MESSAGE );
                     }
                     break;
                 }
@@ -384,7 +386,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     leftCenterPanel .add(  modeAndStatusPanel, BorderLayout.PAGE_START );
                 }
 
-                modelPanel = new ModelPanel( controller, viewPlatform, this, this .isEditor, fullPower );
+                modelPanel = new ModelPanel( controller, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );
@@ -556,6 +558,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         	case "setItemColor":
         	case "setBackgroundColor":
         	case "showPolytopesDialog":
+        	case "showZomicWindow":
+        	case "showPythonWindow":
         	case "rZomeOrbits":
         	case "predefinedOrbits":
         	case "usedOrbits":
@@ -571,6 +575,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         			actionListener = this .mController;
         		}
         		else if ( command .startsWith( "setSymmetry." ) ) {
+        			actionListener = this .localActions;
+        		}
+        		else if ( command .startsWith( "showProperties-" ) ) {
         			actionListener = this .localActions;
         		}
         		else if ( command .startsWith( "capture." ) ) {
