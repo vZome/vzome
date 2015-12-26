@@ -129,7 +129,7 @@ public class CommandImportVEFData extends AbstractCommand
         if ( noInversion != null && noInversion .booleanValue() )
             new VefToModelNoInversion( quaternion, root, effects ) .parseVEF( vefData, field );
         else
-            new VefToModel( quaternion, root, effects, field .createPower( 5 ), null ) .parseVEF( vefData, field );
+            new VefToModel( quaternion, effects, field .createPower( 5 ), null ) .parseVEF( vefData, field );
         
         return result;
     }
@@ -143,7 +143,7 @@ public class CommandImportVEFData extends AbstractCommand
         
         public VefToModelNoInversion( AlgebraicVector quaternion, ModelRoot root, ConstructionChanges effects )
         {
-            super( quaternion, root, effects, root .getField() .createPower( 5 ), null );
+            super( quaternion, effects, root .getField() .createPower( 5 ), null );
         }
 
         protected void addVertex( int index, AlgebraicVector location )
@@ -151,7 +151,7 @@ public class CommandImportVEFData extends AbstractCommand
             location = location .scale( scale );
             if ( mProjection != null )
                 location = mProjection .projectImage( location, wFirst() );
-            mVertices[ index ] = new FreePoint( location, mRoot );
+            mVertices[ index ] = new FreePoint( location );
 //            mEffects .constructionAdded( mVertices[ index ] );
         }
 

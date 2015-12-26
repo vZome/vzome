@@ -25,9 +25,7 @@ public class VefToModel extends VefParser
     protected Projection mProjection;
 
     protected Point[] mVertices;
-    
-    protected final ModelRoot mRoot;
-    
+        
     protected final ConstructionChanges mEffects;
     
     protected boolean noBallsSection = true;
@@ -35,12 +33,11 @@ public class VefToModel extends VefParser
     static Logger logger = Logger .getLogger( "com.vzome.core.construction.VefToModel" );
 
     
-    public VefToModel( AlgebraicVector quaternion, ModelRoot root, ConstructionChanges effects, AlgebraicNumber scale, AlgebraicVector offset )
+    public VefToModel( AlgebraicVector quaternion, ConstructionChanges effects, AlgebraicNumber scale, AlgebraicVector offset )
     {
         mQuaternion = quaternion;
-        mRoot = root;
         mEffects = effects;
-        field = root .getField();
+        field = scale .getField();
         this.scale = scale;
         this.offset = offset;
 
@@ -77,7 +74,7 @@ public class VefToModel extends VefParser
             logger .finest( "translated = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
         }
 
-        mVertices[ index ] = new FreePoint( location, mRoot );
+        mVertices[ index ] = new FreePoint( location );
         mVertices[ index ] .setIndex( index );
     }
 

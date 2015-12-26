@@ -8,7 +8,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 
 /**
@@ -35,9 +34,8 @@ public class CommandFreePoint extends AbstractCommand
     {
         ConstructionList result = new ConstructionList();
         AlgebraicVector loc = (AlgebraicVector) attributes .get( "where" );
-        ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );
         
-        Point pt2 = new FreePoint( loc, root );
+        Point pt2 = new FreePoint( loc );
         effects .constructionAdded( pt2 );
         result .addConstruction( pt2 );
     

@@ -12,9 +12,9 @@ public class FreePoint extends Point
     /**
      * @param loc
      */
-    public FreePoint( AlgebraicVector loc, ModelRoot root )
+    public FreePoint( AlgebraicVector loc )
     {
-        super( root.field );
+        super( loc .getField() );
         // the usual pattern is to call mapParamsToState()
         setStateVariable( loc, false );
     }

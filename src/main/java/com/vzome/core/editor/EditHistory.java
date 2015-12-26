@@ -532,6 +532,10 @@ public class EditHistory
         				// realized is responsible for inserting itself, or any replacements (migration)
         				try {
         					edit .perform();
+        		            if ( logger .isLoggable( Level.FINEST ) ) {
+            		            Element details = edit .getDetailXml( xml .getOwnerDocument() );
+        		            	logger .finest( "side-effect: " + DomUtils .getXmlString( details ) );
+        		            }
         				} catch (Failure e) {
         					// really hacky tunneling
         					throw new RuntimeException( e );

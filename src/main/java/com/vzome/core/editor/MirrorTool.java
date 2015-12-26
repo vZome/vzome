@@ -9,7 +9,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Plane;
 import com.vzome.core.construction.PlaneExtensionOfPolygon;
 import com.vzome.core.construction.PlaneFromNormalSegment;
@@ -27,12 +26,9 @@ import com.vzome.core.model.Strut;
 
 public class MirrorTool extends TransformationTool
 {
-    private final ModelRoot modelRoot;
-
-    public MirrorTool( String name, ModelRoot modelRoot, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    public MirrorTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
     {
         super( name, selection, realized, tools, originPoint );
-        this .modelRoot = modelRoot;
     }
 
     public void perform() throws Command.Failure
@@ -45,7 +41,7 @@ public class MirrorTool extends TransformationTool
             center = originPoint;
             AlgebraicField field = originPoint .getField();
             AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
-            Point p2 = new FreePoint( xAxis, modelRoot );
+            Point p2 = new FreePoint( xAxis );
             axis = new SegmentJoiningPoints( center, p2 );
         }
         else

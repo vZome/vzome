@@ -67,7 +67,7 @@ public class RealizeMetaParts extends ChangeManifestations
             vertex = orientation .timesColumn( vertex );
         if ( offset != null )
             vertex = vertex .plus( offset );
-        return new FreePoint( vertex .scale( scale ), this .root );
+        return new FreePoint( vertex .scale( scale ) );
     }
 
     public RealizeMetaParts( Selection selection, RealizedModel realized, ModelRoot root )

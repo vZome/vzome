@@ -13,7 +13,6 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.VefToModel;
 import com.vzome.core.math.DomUtils;
@@ -26,16 +25,14 @@ public class LoadVEF extends ChangeManifestations
     private String vefData;
     private AlgebraicVector quaternion;
     private AlgebraicNumber scale;
-    private ModelRoot root;
 
 
-    public LoadVEF( Selection selection, RealizedModel realized, String vefData, AlgebraicVector quaternion, AlgebraicNumber scale, ModelRoot root )
+    public LoadVEF( Selection selection, RealizedModel realized, String vefData, AlgebraicVector quaternion, AlgebraicNumber scale )
     {
         super( selection, realized, false );
         this .vefData = vefData;
         this .quaternion = quaternion;
         this .scale = scale;
-        this .root = root;
     }
 
     protected String getXmlElementName()
@@ -82,8 +79,9 @@ public class LoadVEF extends ChangeManifestations
             }
         }
 
-        AlgebraicField field = root .getField();
-        VefToModel v2m = new VefToModel( quaternion, root, new ManifestConstructions( this ), scale, offset );
+        AlgebraicField field = this .mManifestations .getField();
+        scale = (scale!=null)? scale : field .one();
+        VefToModel v2m = new VefToModel( quaternion, new ManifestConstructions( this ), scale, offset );
         v2m .parseVEF( vefData, field );
 
         redo();

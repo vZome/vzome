@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
@@ -31,9 +32,12 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
     
     private Projection mProjection;
 
-    public RealizedModel( Projection projection )
+	private final AlgebraicField field;
+
+    public RealizedModel( AlgebraicField field, Projection projection )
     {
         super();
+		this.field = field;
         mProjection = projection;
     }
     
@@ -285,4 +289,9 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
         removals .clear();
         this .doingBatch = false;
     }
+
+	public AlgebraicField getField()
+	{
+		return field;
+	}
 }

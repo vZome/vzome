@@ -9,7 +9,6 @@ import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.model.Manifestation;
@@ -22,11 +21,10 @@ public class TestSymmetry4d {
 	{
 		Selection selection = new Selection();
 		AlgebraicField golden = new PentagonField();
-		RealizedModel realized = new RealizedModel( new Projection.Default( golden  ) );
-		ModelRoot root = new ModelRoot( golden );
+		RealizedModel realized = new RealizedModel( golden, new Projection.Default( golden  ) );
 		
 		AlgebraicVector location = golden .createVector( new int[]{ 0, 1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1, 0, 1, 0, 1 } );
-		Construction pt = new FreePoint( location, root );
+		Construction pt = new FreePoint( location );
 		Manifestation man = realized .findConstruction( pt );
 		realized .add( man );
 		realized .show( man );
@@ -35,7 +33,7 @@ public class TestSymmetry4d {
 		
 		QuaternionicSymmetry h4Symm = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", golden );
 		try {
-			new Symmetry4d( selection, realized, root, h4Symm, h4Symm ) .perform();
+			new Symmetry4d( selection, realized, h4Symm, h4Symm ) .perform();
 			Assert .assertEquals( 330, realized .size() );
 		} catch ( Failure e ) {
 			Assert .fail( e .toString() );

@@ -38,12 +38,12 @@ public class HeptagonSubdivision extends ChangeManifestations
                     AlgebraicVector off1 = off2 .scale( scaleFactor );
 
                     AlgebraicVector v1 = p1.getLocation() .plus( off1 );
-                    Point firstPoint = new FreePoint( v1, this.root );
+                    Point firstPoint = new FreePoint( v1 );
                     select( manifestConstruction( firstPoint ) );
 
                     AlgebraicVector v2 = v1 .plus( off2 ); // note, starting from v1
                     // not p1
-                    Point secondPoint = new FreePoint( v2, this.root );
+                    Point secondPoint = new FreePoint( v2 );
                     select( manifestConstruction( secondPoint ) );
                     break;
                 }
@@ -53,12 +53,9 @@ public class HeptagonSubdivision extends ChangeManifestations
         redo();
     }
 
-    private final ModelRoot root;
-
     public HeptagonSubdivision( Selection selection, RealizedModel realized, ModelRoot root, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
-        this.root = root;
     }
 
     protected String getXmlElementName()

@@ -21,8 +21,7 @@ public class Test4dRotations extends TestCase
         Quaternion[] roots = h4 .getRoots();
         AlgebraicVector yAxis = field .basisVector( 3, AlgebraicVector.Y );
 
-        ModelRoot root = new ModelRoot( field );
-        Point prototype = new FreePoint( yAxis, root );
+        Point prototype = new FreePoint( yAxis );
         prototype .setImpossible( false );
         PointRotated4D rotated = new PointRotated4D( roots[ 28 ], roots[ 105 ], prototype );
         AlgebraicVector expected = field .createVector( new int[]{ 0, 1, 0, 1, 0, 1, -1, 2, 1, 2, -1, 2, 1, 2, 0, 1 } );

@@ -149,12 +149,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .mField = field;
 		this .mDerivationModel = new ModelRoot( field );
 		AlgebraicVector origin = field .origin( 3 );
-		this .originPoint = new FreePoint( origin, this .mDerivationModel );
+		this .originPoint = new FreePoint( origin );
 		this .failures = failures;
 		this .mXML = xml;
 		this .commands = app .getCommands();
 
-		this .mRealizedModel = new RealizedModel( new Projection.Default( field ) );
+		this .mRealizedModel = new RealizedModel( field, new Projection.Default( field ) );
 
         Symmetry[] symms = field .getSymmetries();
         for ( int i = 0; i < symms .length; i++ ) {
@@ -290,7 +290,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new Polytope4d( this.mSelection, this.mRealizedModel, this.mDerivationModel, null, 0, null, groupInSelection );
 
 		else if ( "LoadVEF".equals( name ) )
-			edit = new LoadVEF( this.mSelection, this.mRealizedModel, null, null, null, this.mDerivationModel );
+			edit = new LoadVEF( this.mSelection, this.mRealizedModel, null, null, null );
 
 		else if ( "GroupSelection".equals( name ) )
 			edit = new GroupSelection( this.mSelection, false );
@@ -352,10 +352,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new RunPythonScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint(), this .mDerivationModel );
 
 		else if ( "BookmarkTool".equals( name ) )
-			edit = new BookmarkTool( name, this.mSelection, this.mRealizedModel, mDerivationModel, this );
+			edit = new BookmarkTool( name, this.mSelection, this.mRealizedModel, this );
 
 		else if ( "ModuleTool" .equals( name ) )
-			edit = new ModuleTool( null, mSelection, mRealizedModel, mDerivationModel, this );
+			edit = new ModuleTool( null, mSelection, mRealizedModel, this );
 
 		else if ( "PlaneSelectionTool" .equals( name ) )
 			edit = new PlaneSelectionTool( null, mSelection, mField, this );
@@ -373,10 +373,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new InversionTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
 
 		else if ( "MirrorTool".equals( name ) )
-			edit = new MirrorTool( name, this.mDerivationModel, this.mSelection, this.mRealizedModel, this, this.originPoint );
+			edit = new MirrorTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
 
 		else if ( "TranslationTool".equals( name ) )
-			edit = new TranslationTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint, this.mDerivationModel );
+			edit = new TranslationTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
 
 		else if ( "LinearMapTool".equals( name ) )
 			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint, true );
@@ -398,7 +398,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 		else if ( "Symmetry4d".equals( name ) ) {
             QuaternionicSymmetry h4symm = this .mField .getQuaternionSymmetry( "H_4" ); 
-			edit = new Symmetry4d( this.mSelection, this.mRealizedModel, this .mDerivationModel, h4symm, h4symm );
+			edit = new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
 		}
 
 		if ( edit == null )
@@ -424,7 +424,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	public void pasteVEF( String vefContent )
 	{
-        UndoableEdit edit = new LoadVEF( this.mSelection, this.mRealizedModel, vefContent, null, null, this.mDerivationModel );
+        UndoableEdit edit = new LoadVEF( this.mSelection, this.mRealizedModel, vefContent, null, null );
         performAndRecord( edit );
 	}
 
@@ -436,7 +436,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	
 	public void applyQuaternionSymmetry( QuaternionicSymmetry left, QuaternionicSymmetry right )
 	{
-		UndoableEdit edit = new Symmetry4d( this.mSelection, this.mRealizedModel, this .mDerivationModel, left, right );
+		UndoableEdit edit = new Symmetry4d( this.mSelection, this.mRealizedModel, left, right );
         performAndRecord( edit );
 	}
 
@@ -823,7 +823,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     		if ( quat != null )
     			quat = quat .scale( mField .createPower( - 5 ) );
     		AlgebraicNumber scale = mField .createPower( 5 );
-    		edit = new LoadVEF( mSelection, mRealizedModel, script, quat, scale, mDerivationModel );
+    		edit = new LoadVEF( mSelection, mRealizedModel, script, quat, scale );
     		this .performAndRecord( edit );
     	}
     }
@@ -992,13 +992,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         
         UndoableEdit edit = null;
         if ( "bookmark" .equals( group ) )
-            edit = new BookmarkTool( name, toolSelection, mRealizedModel, mDerivationModel, tools );
+            edit = new BookmarkTool( name, toolSelection, mRealizedModel, tools );
         else if ( "point reflection" .equals( group ) )
             edit = new InversionTool( name, toolSelection, mRealizedModel, tools, originPoint );
         else if ( "mirror" .equals( group ) )
-            edit = new MirrorTool( name, mDerivationModel, toolSelection, mRealizedModel, tools, originPoint );
+            edit = new MirrorTool( name, toolSelection, mRealizedModel, tools, originPoint );
         else if ( "translation" .equals( group ) )
-            edit = new TranslationTool( name, toolSelection, mRealizedModel, tools, originPoint, mDerivationModel );
+            edit = new TranslationTool( name, toolSelection, mRealizedModel, tools, originPoint );
         else if ( "linear map" .equals( group ) )
             edit = new LinearMapTool( name, toolSelection, mRealizedModel, tools, originPoint, false );
         else if ( "rotation" .equals( group ) )
@@ -1008,7 +1008,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         else if ( "tetrahedral" .equals( group ) )
             edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
         else if ( "module" .equals( group ) )
-            edit = new ModuleTool( name, mSelection, mRealizedModel, mDerivationModel, tools );
+            edit = new ModuleTool( name, mSelection, mRealizedModel, tools );
         else if ( "plane" .equals( group ) )
             edit = new PlaneSelectionTool( name, mSelection, mField, tools );
         else
@@ -1116,9 +1116,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	public Segment getPlaneAxis( Polygon panel )
 	{
 		AlgebraicVector[] vertices = panel.getVertices();
-		FreePoint p0 = new FreePoint( vertices[ 0 ], this.mDerivationModel );
-		FreePoint p1 = new FreePoint( vertices[ 1 ], this.mDerivationModel );
-		FreePoint p2 = new FreePoint( vertices[ 2 ], this.mDerivationModel );
+		FreePoint p0 = new FreePoint( vertices[ 0 ] );
+		FreePoint p1 = new FreePoint( vertices[ 1 ] );
+		FreePoint p2 = new FreePoint( vertices[ 2 ] );
 		Segment s1 = new SegmentJoiningPoints( p0, p1 );
 		Segment s2 = new SegmentJoiningPoints( p1, p2 );
 		return new SegmentCrossProduct( s1, s2 );

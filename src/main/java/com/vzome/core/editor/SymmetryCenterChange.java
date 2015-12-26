@@ -64,7 +64,7 @@ public class SymmetryCenterChange implements UndoableEdit
         {
             Map attrs = format .loadCommandAttributes( xml );
             Point center = (Point) attrs .get( "new" );
-            mNewCenter = new FreePoint( center .getLocation() .projectTo3d( true ), format .getModelRoot() );
+            mNewCenter = new FreePoint( center .getLocation() .projectTo3d( true ) );
         }
         
         context .performAndRecord( this );

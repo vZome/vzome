@@ -123,7 +123,7 @@ public class B4Polytope extends ChangeManifestations
             if ( proj != null )
                 projected = proj .projectImage( vertex, true );
             
-            Point p = new FreePoint( projected .scale( scale ), root );
+            Point p = new FreePoint( projected .scale( scale ) );
             p .setIndex( numVertices++ );
             manifestConstruction( p );
             return p;

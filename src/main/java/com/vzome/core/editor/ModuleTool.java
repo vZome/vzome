@@ -10,10 +10,9 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -26,13 +25,10 @@ public class ModuleTool extends ChangeManifestations implements Tool
         
     private Tool.Registry tools;
 
-    private final ModelRoot root;
-
-    public ModuleTool( String name, Selection selection, RealizedModel realized, ModelRoot root, Tool.Registry tools )
+    public ModuleTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools )
     {
         super( selection, realized, false );
         this.name = name;
-        this.root = root;
         this.tools = tools;
         mSelection .copy( bookmarkedSelection );
     }
@@ -67,7 +63,7 @@ public class ModuleTool extends ChangeManifestations implements Tool
             return;
         Point p = (Point) c;
         AlgebraicVector loc = p .getLocation();
-        Duplicator duper = new Duplicator( applyTool, root, loc );
+        Duplicator duper = new Duplicator( applyTool, loc );
         for ( Iterator mans = bookmarkedSelection .iterator(); mans .hasNext(); ) {
             Manifestation man = (Manifestation) mans .next();
             duper .duplicateManifestation( man );

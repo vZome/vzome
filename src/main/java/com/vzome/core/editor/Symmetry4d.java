@@ -13,7 +13,6 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointRotated4D;
 import com.vzome.core.construction.Polygon;
@@ -39,13 +38,11 @@ import com.vzome.core.model.RealizedModel;
 public class Symmetry4d extends ChangeManifestations
 {    
 	private final QuaternionicSymmetry left, right;
-	private final ModelRoot root;
 
-    public Symmetry4d( Selection selection, RealizedModel realized, final ModelRoot root, final QuaternionicSymmetry leftSymm, final QuaternionicSymmetry rightSymm )
+    public Symmetry4d( Selection selection, RealizedModel realized, final QuaternionicSymmetry leftSymm, final QuaternionicSymmetry rightSymm )
     {
         super( selection, realized, false );
 		this.left = leftSymm;
-		this.root = root;
 		right = rightSymm;
     }
 
@@ -142,7 +139,7 @@ public class Symmetry4d extends ChangeManifestations
         loc = rightQuaternion .leftMultiply( loc );
         loc = leftQuaternion .rightMultiply( loc );
         loc = loc .projectTo3d( true );
-        return new FreePoint( loc, this .root );
+        return new FreePoint( loc );
     }
 }
 

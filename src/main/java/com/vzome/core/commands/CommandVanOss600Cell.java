@@ -16,7 +16,6 @@ import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
@@ -41,9 +40,8 @@ public class CommandVanOss600Cell extends CommandImportVEFData
 
             ConstructionList result = new ConstructionList();
             AlgebraicField field = new PentagonField();
-            ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );
             
-            new VefToModel( null, root, effects ) .parseVEF( vefData, field );
+            new VefToModel( null, effects ) .parseVEF( vefData, field );
             
             return result;
         }
@@ -60,17 +58,13 @@ public class CommandVanOss600Cell extends CommandImportVEFData
 
         protected Point[] mVertices;
         
-        protected final ModelRoot mRoot;
-        
         protected final ConstructionChanges mEffects;
         
         protected AlgebraicVector[] mLocations;
         
-        public VefToModel( Quaternion quaternion, ModelRoot root, ConstructionChanges effects )
+        public VefToModel( Quaternion quaternion, ConstructionChanges effects )
         {
             mQuaternion = null;
-            
-            mRoot = root;
             mEffects = effects;
         }
 
@@ -136,7 +130,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             for ( int i = 0; i < mLocations.length; i++ ) {
                 AlgebraicVector location = mLocations[i] .scale( power5 );
                 location = mProjection .projectImage( location, wFirst() );
-                mVertices[ i ] = new FreePoint( location, mRoot );
+                mVertices[ i ] = new FreePoint( location );
                 mEffects .constructionAdded( mVertices[ i ] );
             }
         }

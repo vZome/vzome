@@ -9,10 +9,9 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
@@ -24,12 +23,12 @@ public class BookmarkTool extends ChangeManifestations implements Tool
         
     private Tool.Registry tools;
     
-    public BookmarkTool( String name, Selection selection, RealizedModel realized, ModelRoot root, Tool.Registry tools )
+    public BookmarkTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools )
     {
         super( selection, realized, false );
         this.name = name;
         this.tools = tools;
-        Duplicator duper = new Duplicator( null, root, null );
+        Duplicator duper = new Duplicator( null, null );
         for (Iterator iterator = mSelection.iterator(); iterator.hasNext();) {
 			Manifestation man = (Manifestation) iterator.next();
 			Construction result = duper .duplicateConstruction( man );

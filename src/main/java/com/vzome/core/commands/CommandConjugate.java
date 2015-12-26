@@ -48,15 +48,15 @@ public class CommandConjugate extends AbstractCommand
             if ( params[ j ] instanceof Point ) {
                 AlgebraicVector loc = ((Point) params[ j ]) .getLocation();
                 loc = field .conjugate( loc );
-                conjugate = new FreePoint( loc .scale( up ), root );
+                conjugate = new FreePoint( loc .scale( up ) );
             }
             else if ( params[ j ] instanceof Segment ) {
                 AlgebraicVector loc = ((Segment) params[ j ]) .getStart();
                 loc = field .conjugate( loc );
-                Point p1 = new FreePoint( loc .scale( up ), root );
+                Point p1 = new FreePoint( loc .scale( up ) );
                 loc = ((Segment) params[ j ]) .getEnd();
                 loc = field .conjugate( loc );
-                Point p2 = new FreePoint( loc .scale( up ), root );
+                Point p2 = new FreePoint( loc .scale( up ) );
                 conjugate = new SegmentJoiningPoints( p1, p2 );
             }
             if ( conjugate != null ) {

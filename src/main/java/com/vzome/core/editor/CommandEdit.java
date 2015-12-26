@@ -249,7 +249,7 @@ public class CommandEdit extends ChangeManifestations
 
                         if ( attrName .equals( CommandTransform .SYMMETRY_CENTER_ATTR_NAME ) )
                         {
-                            Point c = new FreePoint( ((Point) value) .getLocation() .projectTo3d( true ), this .modelRoot );
+                            Point c = new FreePoint( ((Point) value) .getLocation() .projectTo3d( true ) );
                             UndoableEdit edit = mEditorModel .setSymmetryCenter( c );
                             if ( edit != null ) {
                                 context .performAndRecord( edit );
@@ -361,21 +361,6 @@ public class CommandEdit extends ChangeManifestations
         public void constructionAdded( Construction c )
         {
             add( c );
-        }
-
-        public void constructionHidden( Construction c )
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        public void constructionRemoved( Construction c )
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        public void constructionRevealed( Construction c )
-        {
-            throw new UnsupportedOperationException();
         }
     }
 

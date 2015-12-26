@@ -209,4 +209,9 @@ public final class AlgebraicVector
         }
         throw new IllegalStateException( "vector is the origin!" );
     }
+
+	public AlgebraicField getField()
+	{
+		return this .field;
+	}
 }

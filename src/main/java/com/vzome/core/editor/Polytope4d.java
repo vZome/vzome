@@ -35,7 +35,6 @@ import com.vzome.core.model.RealizedModel;
 public class Polytope4d extends ChangeManifestations
 {
     private int index;
-    private final ModelRoot root;
     private final AlgebraicField field;
     private Projection proj;
     private Segment symmAxis;
@@ -52,7 +51,6 @@ public class Polytope4d extends ChangeManifestations
     {
         super( selection, realized, false );
 
-        this.root = root;
         this.index = index;
         this.symmAxis = symmAxis;
         this.groupName = groupName;
@@ -68,7 +66,6 @@ public class Polytope4d extends ChangeManifestations
     {
         super( selection, realized, groupInSelection );
 
-        this.root = root;
         this.index = index;
         this.symmAxis = symmAxis;
         this.groupName = groupName;
@@ -129,19 +126,13 @@ public class Polytope4d extends ChangeManifestations
         {
             QuaternionicSymmetry qsymm = field .getQuaternionSymmetry( "H_4" ); 
             CommandUniformH4Polytope h4Builder = new CommandUniformH4Polytope( field, qsymm, 0 );
-            h4Builder .generate( this .proj, this .index, this .edgesToRender, this .edgeScales, root, new ConstructionChanges()
+            h4Builder .generate( this .proj, this .index, this .edgesToRender, this .edgeScales, new ConstructionChanges()
             {
                 public void constructionAdded( Construction c )
                 {
                     // TODO refactor to replace this with a WythoffListener
                     manifestConstruction( c );
                 }
-
-                public void constructionRevealed( Construction c ) {}
-                
-                public void constructionRemoved( Construction c ) {}
-                
-                public void constructionHidden( Construction c ) {}
             } );
         }
         else
@@ -190,7 +181,7 @@ public class Polytope4d extends ChangeManifestations
                 
                 projected = projected .scale( field .createPower( 5 ) );
 
-                p = new FreePoint( projected, root );
+                p = new FreePoint( projected );
                 p .setIndex( numVertices++ );
                 manifestConstruction( p );
                 vertices .put( vertex, p );

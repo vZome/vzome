@@ -31,11 +31,6 @@ public class ApiEdit extends ChangeManifestations
 		super( selection, realized, false );
         this .root = root;
 	}
-
-	private ModelRoot getRoot()
-	{
-		return this .root;
-	}
 	
 	private Selection getSelection()
 	{
@@ -97,15 +92,15 @@ public class ApiEdit extends ChangeManifestations
 		@Override
 		public Connector addBall( AlgebraicVector loc )
 		{
-			Point p1 = new FreePoint( loc, this .edit .getRoot() );
+			Point p1 = new FreePoint( loc );
 			return (Connector) manifest( p1 );
 		}
 
 		@Override
 		public Strut addStrut( AlgebraicVector start, AlgebraicVector end )
 		{
-			Point p1 = new FreePoint( start, this .edit .getRoot() );
-			Point p2 = new FreePoint( end, this .edit .getRoot() );
+			Point p1 = new FreePoint( start );
+			Point p2 = new FreePoint( end );
 			Segment s = new SegmentJoiningPoints( p1, p2 );
 			return (Strut) manifest( s );
 		}
@@ -116,7 +111,7 @@ public class ApiEdit extends ChangeManifestations
 			Point[] points = new Point[ vertices .length ];
 			int i = 0;
 			for ( AlgebraicVector vertex : vertices ) {
-				points[ i ] = new FreePoint( vertex, this .edit .getRoot() );
+				points[ i ] = new FreePoint( vertex );
 				++i;
 			}
 			return (Panel) manifest( new PolygonFromVertices( points ) );

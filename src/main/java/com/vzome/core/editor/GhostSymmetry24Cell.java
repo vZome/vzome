@@ -21,7 +21,6 @@ import com.vzome.core.model.RealizedModel;
 
 public class GhostSymmetry24Cell extends ChangeManifestations
 {
-    private final ModelRoot root;
     private final AlgebraicField field;
     private Projection proj;
     private Segment symmAxis;
@@ -31,7 +30,6 @@ public class GhostSymmetry24Cell extends ChangeManifestations
     {
         super( selection, realized, groupInSelection );
 
-        this.root = root;
         this.field = root .getField();
         this.symm = (DodecagonalSymmetry) field .getSymmetry( "dodecagonal" );
         this.symmAxis = symmAxis;
@@ -102,7 +100,7 @@ four real coordinates to obtain a model of the 24-cell with 12-fold ghost symmet
             if ( proj != null )
                 projected = proj .projectImage( projected, true );
             
-            Point p = new FreePoint( projected .scale( field .createPower( 5 ) ), root );
+            Point p = new FreePoint( projected .scale( field .createPower( 5 ) ) );
             p .setIndex( k );
             manifestConstruction( p );
 
@@ -115,7 +113,7 @@ four real coordinates to obtain a model of the 24-cell with 12-fold ghost symmet
             if ( proj != null )
                 projected = proj .projectImage( projected, true );
             
-            p = new FreePoint( projected .scale( field .createPower( 5 ) ), root );
+            p = new FreePoint( projected .scale( field .createPower( 5 ) ) );
             p .setIndex( 12 + k );
             manifestConstruction( p );
         }

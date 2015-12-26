@@ -12,7 +12,6 @@ import java.util.Map;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.SegmentJoiningPoints;
@@ -24,14 +23,12 @@ import com.vzome.core.model.Strut;
 public class Duplicator
 {
     private Map vertexData = new HashMap();
-    private final ModelRoot root;
     private final ChangeManifestations edit;
     private final AlgebraicVector offset;
 
-    public Duplicator( ChangeManifestations edit, ModelRoot root, AlgebraicVector offset )
+    public Duplicator( ChangeManifestations edit, AlgebraicVector offset )
     {
         this .edit = edit;
-        this .root = root;
         this .offset = offset;
     }
 
@@ -74,7 +71,7 @@ public class Duplicator
             AlgebraicVector key = vertexVector;
             if ( this .offset != null )
                 vertexVector = vertexVector .plus( this.offset );
-            result = new FreePoint( vertexVector, root );
+            result = new FreePoint( vertexVector );
             vertexData .put( key, result );
         }
         return result;

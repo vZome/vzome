@@ -10,7 +10,6 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointToPointTranslation;
 import com.vzome.core.construction.Transformation;
@@ -20,12 +19,9 @@ import com.vzome.core.model.RealizedModel;
 
 public class TranslationTool extends TransformationTool
 {
-    private final ModelRoot modelRoot;
-
-    public TranslationTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint, ModelRoot modelRoot )
+    public TranslationTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
     {
         super( name, selection, realized, tools, originPoint );
-        this .modelRoot = modelRoot;
     }
     
     public String getDefaultName( String baseName )
@@ -60,12 +56,12 @@ public class TranslationTool extends TransformationTool
             if ( isAutomatic() )
             {
                 p1 = originPoint;
-                AlgebraicField field = modelRoot .getField();
+                AlgebraicField field = originPoint .getField();
                 AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
                 AlgebraicNumber scale = field .createPower( 3 );
                 scale = scale .times( field .createRational( new int[]{ 2, 1 } ) );
                 xAxis = xAxis .scale( scale );
-                p2 = new FreePoint( xAxis, modelRoot );
+                p2 = new FreePoint( xAxis );
             }
             else
             {

@@ -20,7 +20,6 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
@@ -281,7 +280,6 @@ public class CommandUniformH4Polytope extends CommandTransform
 //        proj = new PerspectiveProjection( field, field .subtract( field .createPower( 5 ), field .createPower( 3 ) ) );
 //        proj = new PerspectiveProjection( field, field .createPower( 4 ) );
         
-        ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );
 //        final Integer scaleObj = (Integer) attributes .get( SCALE_ATTR_NAME );
 //        int scale = 5;
 //        if ( scaleObj != null )
@@ -294,12 +292,12 @@ public class CommandUniformH4Polytope extends CommandTransform
             // make sure the attr is set, so it get saved with the file
             attributes .put( POLYTOPE_INDEX_ATTR_NAME, new Integer( mPolytopeIndex ) );
         
-        generate( proj, mPolytopeIndex, mPolytopeIndex, null, root, effects );
+        generate( proj, mPolytopeIndex, mPolytopeIndex, null, effects );
         
         return new ConstructionList();
     }
     
-    public void generate( Projection proj, int index, int renderEdges, AlgebraicNumber[] edgeScales, ModelRoot root, ConstructionChanges effects )
+    public void generate( Projection proj, int index, int renderEdges, AlgebraicNumber[] edgeScales, ConstructionChanges effects )
     {   
         AlgebraicNumber SCALE_UP_5 = field .createPower( 5 );
 
@@ -352,7 +350,7 @@ public class CommandUniformH4Polytope extends CommandTransform
                     logger .finer( "scaled   : " );
                     printGoldenVector( projected, vefVertices );
 
-                    p = new FreePoint( projected, root );
+                    p = new FreePoint( projected );
                     p .setIndex( vertices .size() );
                     effects .constructionAdded( p );
                     
@@ -385,7 +383,7 @@ public class CommandUniformH4Polytope extends CommandTransform
                                 logger .finer( "scaled   : " );
                                 printGoldenVector( projected, vefVertices );
 
-                                p2 = new FreePoint( projected, root );
+                                p2 = new FreePoint( projected );
                                 p2 .setIndex( vertices .size() );
                                 effects .constructionAdded( p2 );
                                 

@@ -17,7 +17,6 @@ public class VefToModelTest extends TestCase
     {
         AlgebraicField field = new RootTwoField();
         AlgebraicVector quaternion = field .createVector( new int[]{ 2,1,1,1, 2,1,1,1, 2,1,1,1, 2,1,1,1 } );
-        ModelRoot root = new ModelRoot( field );
         NewConstructions effects = new NewConstructions();
         String vefData = "64 (-1,1) (0,1) (0,1) (0,1) (1,-1) (0,1) (0,1) (0,1) " +
                "(0,1) (-1,1) (0,1) (0,1) (0,1) (1,-1) (0,1) (0,1) (0,1) " +
@@ -49,7 +48,7 @@ public class VefToModelTest extends TestCase
                "(0,-1) (-1,1) (0,-1) (0,-1) (0,-1) (1,-1) (0,-1) (0,-1) " +
                "(-1,1) (0,-1) (0,-1) (0,-1) (1,-1) (0,-1) (0,-1) (0,-1)";
 
-        VefToModel parser = new VefToModel( quaternion, root, effects, field .createPower( 5 ), null );
+        VefToModel parser = new VefToModel( quaternion, effects, field .createPower( 5 ), null );
         parser .parseVEF( vefData, field );
         
         Point p0 = (Point) effects .get( 20 );
@@ -68,21 +67,6 @@ public class VefToModelTest extends TestCase
         public void constructionAdded( Construction c )
         {
             add( c );
-        }
-
-        public void constructionHidden( Construction c )
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        public void constructionRemoved( Construction c )
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        public void constructionRevealed( Construction c )
-        {
-            throw new UnsupportedOperationException();
         }
     }
 }
