@@ -69,7 +69,6 @@ public class AffineTransformAll extends ChangeConstructions
             } else {
                 // TODO handle other constructions 
             }
-            addConstruction( result );
             select( manifestConstruction( result ) );
         }
         redo();

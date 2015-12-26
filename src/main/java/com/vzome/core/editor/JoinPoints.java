@@ -156,7 +156,6 @@ public class JoinPoints extends ChangeConstructions {
     protected void addSegment(Point[] points, int start, int end) {
         if ((start != end) && !(points[start].getLocation().equals(points[end].getLocation()))) {
             Segment segment = new SegmentJoiningPoints(points[start], points[end]);
-            addConstruction(segment);
             select(manifestConstruction(segment));
         }
     }

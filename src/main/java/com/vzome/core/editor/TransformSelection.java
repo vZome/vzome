@@ -55,7 +55,6 @@ public class TransformSelection extends ChangeConstructions
             } else {
                 // TODO handle other constructions 
             }
-            addConstruction( result );
             select( manifestConstruction( result ), true );
         }
         redo();

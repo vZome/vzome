@@ -69,7 +69,6 @@ public class ApiEdit extends ChangeConstructions
 		
         private Manifestation manifest( Construction c )
         {
-            edit .addConstruction( c );
             Manifestation man = edit .manifestConstruction( c );
             edit .redo();
             return man;

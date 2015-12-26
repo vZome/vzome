@@ -131,7 +131,6 @@ public class Symmetry4d extends ChangeConstructions
                     }
                     if ( result == null )
                         continue;
-        			addConstruction( result );
         			manifestConstruction( result );
             	}
         redo();

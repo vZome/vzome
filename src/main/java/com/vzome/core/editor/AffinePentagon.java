@@ -87,23 +87,18 @@ public class AffinePentagon extends ChangeConstructions
         AlgebraicNumber scale = field .createPower( 1 );
         Transformation transform = new Translation( offset1 .scale( scale ), root );
         Point p3 = new TransformedPoint( transform, p2 );
-        addConstruction( p3 );
         manifestConstruction( p3 );
         // now, construct p4 = p1 + tau*(p2-common)
         transform = new Translation( offset2 .scale( scale ), root );
         Point p4 = new TransformedPoint( transform, p1 );
-        addConstruction( p4 );
         manifestConstruction( p4 );
 
         // now, construct struts p1-p3, p2-p4, and p3-p4
         Segment segment = new SegmentJoiningPoints( p1, p3 );
-        addConstruction( segment );
         select( manifestConstruction( segment ) );
         segment = new SegmentJoiningPoints( p2, p4 );
-        addConstruction( segment );
         select( manifestConstruction( segment ) );
         segment = new SegmentJoiningPoints( p3, p4 );
-        addConstruction( segment );
         select( manifestConstruction( segment ) );
 
         redo();

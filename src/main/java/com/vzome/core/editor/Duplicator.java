@@ -39,7 +39,6 @@ public class Duplicator
     public void duplicateManifestation( Manifestation man )
     {
     	Construction constr = duplicateConstruction( man );
-    	edit .addConstruction( constr );
     	edit .manifestConstruction( constr );
     }
 

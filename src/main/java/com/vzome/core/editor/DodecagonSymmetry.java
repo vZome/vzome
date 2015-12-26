@@ -34,7 +34,6 @@ public class DodecagonSymmetry extends ChangeConstructions
     public void perform()
     {
         Transformation transform = new SymmetryTransformation( symmetry, 1, center );
-        addConstruction( transform );
         
         for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
             Manifestation man = (Manifestation) mans .next();
@@ -53,7 +52,6 @@ public class DodecagonSymmetry extends ChangeConstructions
                 }
                 if ( c == null )
                     continue;
-                addConstruction( c );
                 select( manifestConstruction( c ) );
             }
         }

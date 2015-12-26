@@ -34,7 +34,6 @@ public class Centroid extends ChangeConstructions
 
         Point[] points = new Point[0];
         CentroidPoint centroid = new CentroidPoint( (Point[]) verticesList .toArray( points ) );
-        addConstruction( centroid );
         manifestConstruction( centroid );
 
         redo();

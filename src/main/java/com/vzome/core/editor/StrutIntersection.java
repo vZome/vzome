@@ -48,9 +48,6 @@ public class StrutIntersection extends ChangeConstructions
         if ( point .isImpossible() )
             throw new Failure( "lines are parallel or non-intersecting" );
         
-        addConstruction( l1 );
-        addConstruction( l2 );
-        addConstruction( point );
         Manifestation ball = manifestConstruction( point );
         select( ball );
         

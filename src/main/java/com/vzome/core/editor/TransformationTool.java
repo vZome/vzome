@@ -92,7 +92,6 @@ public abstract class TransformationTool extends ChangeConstructions implements 
             }
             if ( result == null )
                 continue;
-            applyTool .addConstruction( result );
             applyTool .manifestConstruction( result );
         }
         applyTool .redo();

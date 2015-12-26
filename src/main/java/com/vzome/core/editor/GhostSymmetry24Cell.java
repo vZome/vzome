@@ -104,7 +104,6 @@ four real coordinates to obtain a model of the 24-cell with 12-fold ghost symmet
             
             Point p = new FreePoint( projected .scale( field .createPower( 5 ) ), root );
             p .setIndex( k );
-            addConstruction( p );
             manifestConstruction( p );
 
             projected = symm .getField() .origin( 4 );
@@ -118,7 +117,6 @@ four real coordinates to obtain a model of the 24-cell with 12-fold ghost symmet
             
             p = new FreePoint( projected .scale( field .createPower( 5 ) ), root );
             p .setIndex( 12 + k );
-            addConstruction( p );
             manifestConstruction( p );
         }
         redo();

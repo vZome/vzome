@@ -42,7 +42,6 @@ public class RealizeMetaParts extends ChangeConstructions
                 for ( Iterator iterator = shape .getVertexList() .iterator(); iterator.hasNext(); ) {
                     AlgebraicVector vertex = (AlgebraicVector) iterator.next();
                     Point vertexPt = transformVertex( vertex, man .getLocation(), scale, orientation );
-                    addConstruction( vertexPt );
                     select( manifestConstruction( vertexPt ) );
                 }
                 for ( Iterator iterator = shape .getFaceSet() .iterator(); iterator .hasNext(); ) {
@@ -54,7 +53,6 @@ public class RealizeMetaParts extends ChangeConstructions
                         vertices[ i ] = transformVertex( vertex, man .getLocation(), scale, orientation );
                     }
                     Polygon polygon = new PolygonFromVertices( vertices );
-                    addConstruction( polygon );
                     select( manifestConstruction( polygon ) );
                 }
             }

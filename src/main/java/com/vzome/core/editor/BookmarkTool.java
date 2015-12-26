@@ -61,7 +61,6 @@ public class BookmarkTool extends ChangeConstructions implements Tool
     {
         for ( Iterator cons = bookmarkedConstructions .iterator(); cons .hasNext(); ) {
         	Construction con = (Construction) cons .next();
-        	edit .addConstruction( con );
         	edit .manifestConstruction( con );
         }
         edit .redo();

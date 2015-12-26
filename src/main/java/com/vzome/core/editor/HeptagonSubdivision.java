@@ -33,20 +33,17 @@ public class HeptagonSubdivision extends ChangeConstructions
                     Segment segment = new SegmentJoiningPoints( p1, nextPoint );
                     HeptagonField field = (HeptagonField) segment .getField();
                     AlgebraicNumber scaleFactor = field .sigmaReciprocal();
-                    addConstruction( segment );
                     AlgebraicVector offset = segment .getOffset();
                     AlgebraicVector off2 = offset .scale( scaleFactor );
                     AlgebraicVector off1 = off2 .scale( scaleFactor );
 
                     AlgebraicVector v1 = p1.getLocation() .plus( off1 );
                     Point firstPoint = new FreePoint( v1, this.root );
-                    addConstruction( firstPoint );
                     select( manifestConstruction( firstPoint ) );
 
                     AlgebraicVector v2 = v1 .plus( off2 ); // note, starting from v1
                     // not p1
                     Point secondPoint = new FreePoint( v2, this.root );
-                    addConstruction( secondPoint );
                     select( manifestConstruction( secondPoint ) );
                     break;
                 }

@@ -67,7 +67,6 @@ public class LinePlaneIntersect extends ChangeConstructions
             Point point = new LinePlaneIntersectionPoint( plane, line );
 
             if ( ! point .isImpossible() ) {
-                addConstruction( point );
                 select( manifestConstruction( point ) );
             }
         }

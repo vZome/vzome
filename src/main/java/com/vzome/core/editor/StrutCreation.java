@@ -34,10 +34,8 @@ public class StrutCreation extends ChangeConstructions
     public void perform()
     {
         Segment segment = new AnchoredSegment( mAxis, mLength, mAnchor );
-        addConstruction( segment );
         manifestConstruction( segment );
         Point point = new SegmentEndPoint( segment );
-        addConstruction( point );
         manifestConstruction( point );
 
         redo();

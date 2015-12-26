@@ -30,10 +30,8 @@ public class ShowVertices extends ChangeConstructions
             {
                 Segment s = (Segment) man .getConstructions() .next();
                 SegmentEndPoint start = new SegmentEndPoint( s, true );
-                addConstruction( start );
                 manifestConstruction( start );
                 SegmentEndPoint end = new SegmentEndPoint( s, false );
-                addConstruction( end );
                 select( manifestConstruction( end ) );
             }
             else if ( man instanceof Panel )
@@ -42,7 +40,6 @@ public class ShowVertices extends ChangeConstructions
                 AlgebraicVector[] vertices = polygon .getVertices();
                 for (int i = 0; i < vertices.length; i++) {
 					PolygonVertex v = new PolygonVertex( polygon, i );
-	                addConstruction( v );
 	                select( manifestConstruction( v ) );
 				}
             }

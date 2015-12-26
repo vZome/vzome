@@ -167,7 +167,6 @@ public class CommandEdit extends ChangeConstructions
         
         for ( Iterator adds = news .iterator(); adds .hasNext(); ) {
             Construction c = (Construction) adds .next();
-            addConstruction( c );
             manifestConstruction( c );
         }
         for ( int i = 0; i < selectionAfter .size(); i++ ) {

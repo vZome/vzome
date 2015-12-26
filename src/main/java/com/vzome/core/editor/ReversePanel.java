@@ -30,7 +30,6 @@ public class ReversePanel extends ChangeConstructions
                 unselect( panel );
             Polygon polygon = (Polygon) panel .getConstructions() .next();
             unmanifestConstruction( polygon );
-            removeConstruction( polygon );
             List vertices = null;
             // TODO complete this
         }

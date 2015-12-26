@@ -134,7 +134,6 @@ public class Polytope4d extends ChangeConstructions
                 public void constructionAdded( Construction c )
                 {
                     // TODO refactor to replace this with a WythoffListener
-                    addConstruction( c );
                     manifestConstruction( c );
                 }
 
@@ -171,7 +170,6 @@ public class Polytope4d extends ChangeConstructions
         public Object addEdge( Object p1, Object p2 )
         {
             Segment edge = new SegmentJoiningPoints( (Point) p1, (Point) p2 );
-            addConstruction( edge );
             manifestConstruction( edge );
             return edge;
         }
@@ -194,7 +192,6 @@ public class Polytope4d extends ChangeConstructions
 
                 p = new FreePoint( projected, root );
                 p .setIndex( numVertices++ );
-                addConstruction( p );
                 manifestConstruction( p );
                 vertices .put( vertex, p );
             }

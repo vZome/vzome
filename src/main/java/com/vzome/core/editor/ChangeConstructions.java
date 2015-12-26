@@ -16,9 +16,9 @@ public abstract class ChangeConstructions extends ChangeManifestations
         super( selection, realized, groupInSelection );
     }
     
-    public void addConstruction( Construction c ) {}
-    
-    protected void removeConstruction( Construction c ) {}
+//    public void addConstruction( Construction c ) {}
+//    
+//    protected void removeConstruction( Construction c ) {}
     
     // TODO use this in CommandEdit as well
     //
@@ -28,7 +28,6 @@ public abstract class ChangeConstructions extends ChangeManifestations
 
         public void constructionAdded( Construction c )
         {
-            addConstruction( c );
             manifestConstruction( c );
             redo();
         }

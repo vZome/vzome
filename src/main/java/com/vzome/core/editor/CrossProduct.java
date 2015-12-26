@@ -35,17 +35,13 @@ public class CrossProduct extends ChangeConstructions
                 {
                 	p2 = nextPoint;
                     s1 = new SegmentJoiningPoints( p1, nextPoint );
-                    addConstruction( s1 );
                 }
                 else 
                 {
                     Segment segment = new SegmentJoiningPoints( p2, nextPoint );
-                    addConstruction( segment );
                     segment = new SegmentCrossProduct( s1, segment );
-                    addConstruction( segment );
                     select( manifestConstruction( segment ) );
                     Point endpt = new SegmentEndPoint( segment );
-                    addConstruction( endpt );
                     manifestConstruction( endpt );
                     success = true;
                     break;

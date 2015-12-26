@@ -107,7 +107,6 @@ public class B4Polytope extends ChangeConstructions
         public Object addEdge( Object p1, Object p2 )
         {
             Segment edge = new SegmentJoiningPoints( (Point) p1, (Point) p2 );
-            addConstruction( edge );
             manifestConstruction( edge );
             return edge;
         }
@@ -126,7 +125,6 @@ public class B4Polytope extends ChangeConstructions
             
             Point p = new FreePoint( projected .scale( scale ), root );
             p .setIndex( numVertices++ );
-            addConstruction( p );
             manifestConstruction( p );
             return p;
         }
