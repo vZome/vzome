@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -45,7 +44,8 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 {
     public static void main( String[] args )
     {
-        Element results = new TestVZomeFiles( args[0], args[1] ) .collectResults();
+    	TestVZomeFiles tester = new TestVZomeFiles( args[0], args[1] );
+        Element results = tester .collectResults();
 
         FileOutputStream out;
         try {
@@ -60,7 +60,7 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
         } catch ( IOException e ) {
             e.printStackTrace();
         }
-        System.exit( 0 );
+        System.exit( tester .exitCode );
     }
 
     public TestVZomeFiles( String baseFolder, String testPath )
@@ -81,6 +81,8 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 	private Element testSuites;
 	
 	private Element testCase;
+	
+	private int exitCode = 0;
 	
     private final static String BROWSER = "https://github.com/vorth/vzome-core/blob/master/src/regression/files";
     
@@ -237,6 +239,7 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
                 e .printStackTrace( new PrintStream( out ) );
                 error .appendChild( new Text( new String( out .toByteArray() ) ) );
                 testCase .appendChild( error );
+                exitCode = 1;
             } finally
             {
                 handler .close();
