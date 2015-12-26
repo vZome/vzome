@@ -18,7 +18,7 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class DodecagonSymmetry extends ChangeConstructions
+public class DodecagonSymmetry extends ChangeManifestations
 {
     private final Point center;
     

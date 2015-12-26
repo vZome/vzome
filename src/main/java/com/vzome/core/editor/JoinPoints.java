@@ -13,7 +13,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import java.util.ArrayList;
 
-public class JoinPoints extends ChangeConstructions {
+public class JoinPoints extends ChangeManifestations {
 
     public enum JoinModeEnum {
 

@@ -16,7 +16,7 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class ApplyTool extends ChangeConstructions
+public class ApplyTool extends ChangeManifestations
 {
     public void perform() throws Failure
     {

@@ -97,18 +97,18 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         tools .addTool( this );
     }
 
-    public void prepare( ChangeConstructions applyTool ) {}
+    public void prepare( ChangeManifestations applyTool ) {}
 
-	public void complete( ChangeConstructions applyTool ) {}
+	public void complete( ChangeManifestations applyTool ) {}
 
     public boolean needsInput()
     {
     	return false;
     }
 
-    public void performEdit( Construction c, ChangeConstructions applyTool ) {}
+    public void performEdit( Construction c, ChangeManifestations applyTool ) {}
 
-	public void performSelect( Manifestation man, ChangeConstructions applyTool )
+	public void performSelect( Manifestation man, ChangeManifestations applyTool )
 	{
 	    if ( man .isHidden() )
 	        return;

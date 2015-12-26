@@ -21,7 +21,7 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class LoadVEF extends ChangeConstructions
+public class LoadVEF extends ChangeManifestations
 {
     private String vefData;
     private AlgebraicVector quaternion;
@@ -83,7 +83,7 @@ public class LoadVEF extends ChangeConstructions
         }
 
         AlgebraicField field = root .getField();
-        VefToModel v2m = new VefToModel( quaternion, root, new NewConstructions(), scale, offset );
+        VefToModel v2m = new VefToModel( quaternion, root, new ManifestConstructions( this ), scale, offset );
         v2m .parseVEF( vefData, field );
 
         redo();

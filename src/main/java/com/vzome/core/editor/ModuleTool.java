@@ -18,7 +18,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class ModuleTool extends ChangeConstructions implements Tool
+public class ModuleTool extends ChangeManifestations implements Tool
 {
     private String name;
     
@@ -52,16 +52,16 @@ public class ModuleTool extends ChangeConstructions implements Tool
         tools .addTool( this );
     }
 
-    public void prepare( ChangeConstructions applyTool ) {}
+    public void prepare( ChangeManifestations applyTool ) {}
 
-	public void complete( ChangeConstructions applyTool ) {}
+	public void complete( ChangeManifestations applyTool ) {}
 
     public boolean needsInput()
     {
     	return true;
     }
 
-    public void performEdit( Construction c, ChangeConstructions applyTool )
+    public void performEdit( Construction c, ChangeManifestations applyTool )
     {
         if ( ! ( c instanceof Point ) )
             return;
@@ -75,7 +75,7 @@ public class ModuleTool extends ChangeConstructions implements Tool
         applyTool .redo();
     }
 
-	public void performSelect( Manifestation man, ChangeConstructions applyTool ) {};
+	public void performSelect( Manifestation man, ChangeManifestations applyTool ) {};
 
     public void redo()
     {

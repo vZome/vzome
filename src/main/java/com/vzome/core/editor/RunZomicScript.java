@@ -22,7 +22,7 @@ import com.vzome.core.zomic.parser.ErrorHandler;
 import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
 
-public class RunZomicScript extends ChangeConstructions
+public class RunZomicScript extends ChangeManifestations
 {
     private String programText;
     private ZomicStatement zomicProgram;
@@ -99,7 +99,7 @@ public class RunZomicScript extends ChangeConstructions
         if ( zomicProgram == null )
             zomicProgram = parseScript( programText );
 
-        ZomicVirtualMachine builder = new ZomicVirtualMachine( offset, new NewConstructions(), symm );
+        ZomicVirtualMachine builder = new ZomicVirtualMachine( offset, new ManifestConstructions( this ), symm );
         try {
             zomicProgram .accept( new Interpreter( builder, symm ) );
         } catch ( ZomicException e ) {

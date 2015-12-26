@@ -20,7 +20,7 @@ import com.vzome.core.model.RealizedModel;
  * @author Scott Vorthmann
  *
  */
-public class ReversePanel extends ChangeConstructions
+public class ReversePanel extends ChangeManifestations
 {
     public void perform() throws Failure
     {

@@ -16,7 +16,7 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class CrossProduct extends ChangeConstructions
+public class CrossProduct extends ChangeManifestations
 {
     public void perform() throws Command.Failure
     {

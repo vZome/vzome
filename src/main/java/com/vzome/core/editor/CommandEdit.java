@@ -39,7 +39,7 @@ import com.vzome.core.model.Manifestation;
  * 
  * @author Scott Vorthmann 2006
  */
-public class CommandEdit extends ChangeConstructions
+public class CommandEdit extends ChangeManifestations
 {
     public static final String UNKNOWN_COMMAND = "unknown.command";
 

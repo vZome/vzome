@@ -29,12 +29,6 @@ public class CommandHide extends AbstractCommand
     
     public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
     {
-        final Construction[] params = parameters .getConstructions();
-        
-        for ( int j = 0; j < params .length; j++ ){
-            params[ j ] .setVisible( false );
-            effects .constructionHidden( params[ j ] );
-        }
-        return new ConstructionList();
+    	throw new Failure( "CommandHide apply attempted" );
     }
 }

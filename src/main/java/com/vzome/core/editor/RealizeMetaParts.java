@@ -21,7 +21,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.render.RenderedManifestation;
 
-public class RealizeMetaParts extends ChangeConstructions
+public class RealizeMetaParts extends ChangeManifestations
 {
     public static final String NAME = "realizeMetaParts";
     

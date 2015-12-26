@@ -32,7 +32,7 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.model.RealizedModel;
 
-public class Polytope4d extends ChangeConstructions
+public class Polytope4d extends ChangeManifestations
 {
     private int index;
     private final ModelRoot root;

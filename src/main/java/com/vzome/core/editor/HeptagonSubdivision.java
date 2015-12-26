@@ -17,7 +17,7 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class HeptagonSubdivision extends ChangeConstructions
+public class HeptagonSubdivision extends ChangeManifestations
 {
     public void perform() throws Command.Failure
     {

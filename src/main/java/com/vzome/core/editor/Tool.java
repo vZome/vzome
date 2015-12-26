@@ -8,13 +8,13 @@ import com.vzome.core.model.Manifestation;
 
 public interface Tool
 {
-	void prepare( ChangeConstructions applyTool );
+	void prepare( ChangeManifestations applyTool );
     
-    void performEdit( Construction c, ChangeConstructions edit );
+    void performEdit( Construction c, ChangeManifestations edit );
 
-	void performSelect( Manifestation man, ChangeConstructions applyTool );
+	void performSelect( Manifestation man, ChangeManifestations applyTool );
 
-	void complete( ChangeConstructions applyTool );
+	void complete( ChangeManifestations applyTool );
 	
     String getName();
     

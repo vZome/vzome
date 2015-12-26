@@ -19,7 +19,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
-public class AffineTransformAll extends ChangeConstructions
+public class AffineTransformAll extends ChangeManifestations
 {
     private Point center;
     

@@ -21,7 +21,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
-public class AffinePentagon extends ChangeConstructions
+public class AffinePentagon extends ChangeManifestations
 {
     private final ModelRoot root;
     

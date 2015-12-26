@@ -18,7 +18,7 @@ import com.vzome.core.construction.TransformedSegment;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class TransformSelection extends ChangeConstructions
+public class TransformSelection extends ChangeManifestations
 {
     protected final Transformation transform;
     

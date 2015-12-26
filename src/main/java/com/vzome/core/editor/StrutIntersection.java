@@ -15,7 +15,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
-public class StrutIntersection extends ChangeConstructions
+public class StrutIntersection extends ChangeManifestations
 {
     public StrutIntersection( Selection selection, RealizedModel realized, boolean groupInSelection )
     {

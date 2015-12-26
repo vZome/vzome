@@ -15,7 +15,7 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class Centroid extends ChangeConstructions
+public class Centroid extends ChangeManifestations
 {
     public void perform() throws Command.Failure
     {

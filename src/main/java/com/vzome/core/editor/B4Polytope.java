@@ -29,7 +29,7 @@ import com.vzome.core.model.RealizedModel;
  * @author Scott Vorthmann
  *
  */
-public class B4Polytope extends ChangeConstructions
+public class B4Polytope extends ChangeManifestations
 {
     private int index;
     private final ModelRoot root;

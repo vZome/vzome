@@ -17,7 +17,7 @@ import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 
-public class ShowVertices extends ChangeConstructions
+public class ShowVertices extends ChangeManifestations
 {
     public static final String NAME = "ShowVertices";
 

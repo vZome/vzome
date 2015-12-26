@@ -25,10 +25,10 @@ public class Duplicator
 {
     private Map vertexData = new HashMap();
     private final ModelRoot root;
-    private final ChangeConstructions edit;
+    private final ChangeManifestations edit;
     private final AlgebraicVector offset;
 
-    public Duplicator( ChangeConstructions edit, ModelRoot root, AlgebraicVector offset )
+    public Duplicator( ChangeManifestations edit, ModelRoot root, AlgebraicVector offset )
     {
         this .edit = edit;
         this .root = root;

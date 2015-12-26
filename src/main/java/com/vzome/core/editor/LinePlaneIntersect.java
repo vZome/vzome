@@ -20,7 +20,7 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
-public class LinePlaneIntersect extends ChangeConstructions
+public class LinePlaneIntersect extends ChangeManifestations
 {
     public LinePlaneIntersect( Selection selection, RealizedModel realized, boolean groupInSelection )
     {

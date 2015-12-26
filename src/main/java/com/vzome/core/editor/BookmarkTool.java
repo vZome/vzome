@@ -16,7 +16,7 @@ import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class BookmarkTool extends ChangeConstructions implements Tool
+public class BookmarkTool extends ChangeManifestations implements Tool
 {
     private String name;
     
@@ -57,7 +57,7 @@ public class BookmarkTool extends ChangeConstructions implements Tool
     	return false;
     }
 
-    public void prepare( ChangeConstructions edit )
+    public void prepare( ChangeManifestations edit )
     {
         for ( Iterator cons = bookmarkedConstructions .iterator(); cons .hasNext(); ) {
         	Construction con = (Construction) cons .next();
@@ -66,11 +66,11 @@ public class BookmarkTool extends ChangeConstructions implements Tool
         edit .redo();
     }
 
-	public void complete( ChangeConstructions applyTool ) {}
+	public void complete( ChangeManifestations applyTool ) {}
 
-    public void performEdit( Construction c, ChangeConstructions applyTool ) {}
+    public void performEdit( Construction c, ChangeManifestations applyTool ) {}
     
-	public void performSelect( Manifestation man, ChangeConstructions applyTool ) {}
+	public void performSelect( Manifestation man, ChangeManifestations applyTool ) {}
 
     public void redo()
     {

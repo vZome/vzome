@@ -36,7 +36,7 @@ import com.vzome.core.model.RealizedModel;
  * @author vorth
  *
  */
-public class Symmetry4d extends ChangeConstructions
+public class Symmetry4d extends ChangeManifestations
 {    
 	private final QuaternionicSymmetry left, right;
 	private final ModelRoot root;

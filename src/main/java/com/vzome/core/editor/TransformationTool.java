@@ -18,11 +18,11 @@ import com.vzome.core.construction.TransformedSegment;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public abstract class TransformationTool extends ChangeConstructions implements Tool
+public abstract class TransformationTool extends ChangeManifestations implements Tool
 {
-    public void prepare( ChangeConstructions applyTool ) {}
+    public void prepare( ChangeManifestations applyTool ) {}
 
-	public void complete( ChangeConstructions applyTool ) {}
+	public void complete( ChangeManifestations applyTool ) {}
 
 	public boolean isSticky()
     {
@@ -76,7 +76,7 @@ public abstract class TransformationTool extends ChangeConstructions implements 
         return ".auto" .equals( id );
     }
 
-    public void performEdit( Construction c, ChangeConstructions applyTool )
+    public void performEdit( Construction c, ChangeManifestations applyTool )
     {
         for ( int i = 0; i < transforms .length; i++ )
         {
@@ -97,7 +97,7 @@ public abstract class TransformationTool extends ChangeConstructions implements 
         applyTool .redo();
     }
     
-	public void performSelect( Manifestation man, ChangeConstructions applyTool ) {};
+	public void performSelect( Manifestation man, ChangeManifestations applyTool ) {};
 
     public void redo()
     {

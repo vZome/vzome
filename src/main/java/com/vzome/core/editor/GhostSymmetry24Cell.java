@@ -19,7 +19,7 @@ import com.vzome.core.math.symmetry.DodecagonalSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.RealizedModel;
 
-public class GhostSymmetry24Cell extends ChangeConstructions
+public class GhostSymmetry24Cell extends ChangeManifestations
 {
     private final ModelRoot root;
     private final AlgebraicField field;

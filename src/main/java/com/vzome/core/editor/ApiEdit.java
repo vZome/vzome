@@ -22,7 +22,7 @@ import com.vzome.core.model.Strut;
  * @author vorth
  *
  */
-public class ApiEdit extends ChangeConstructions
+public class ApiEdit extends ChangeManifestations
 {
     private ModelRoot root;
 

@@ -16,7 +16,7 @@ import com.vzome.core.construction.SegmentEndPoint;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.model.RealizedModel;
 
-public class StrutCreation extends ChangeConstructions
+public class StrutCreation extends ChangeManifestations
 {
     private Point mAnchor;
     private Axis mAxis;
