@@ -28,11 +28,6 @@ public abstract class Polygon extends Construction
         super( field );
     }
 
-    public void accept( Visitor v )
-    {
-        v .visitPolygon( this );
-    }
-
     protected boolean setStateVariable( AlgebraicVector[] vertices, boolean impossible )
     {
         if ( impossible ) {

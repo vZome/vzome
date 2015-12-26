@@ -24,21 +24,6 @@ public class SegmentMidpoint extends Point
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mSegment .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mSegment .removeDerivative( this );
-    }
-    
-    public void accept( Visitor v )
-    {
-        v .visitSegmentMidpoint( this );
-    }
-
     protected boolean mapParamsToState()
     {
         if ( mSegment .isImpossible() )

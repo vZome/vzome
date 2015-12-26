@@ -22,30 +22,6 @@ public class SegmentJoiningPoints extends Segment
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mStart .addDerivative( this );
-        mEnd .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mStart .removeDerivative( this );
-        mEnd .removeDerivative( this );
-    }
-//
-//    public Axis getAxis()
-//    {
-//        return IcosahedralSymmetry .INSTANCE .getAxis( getOffset() );
-//    }
-//
-//
-//    public GoldenVector getUnitVector()
-//    {
-//        return getAxis() .normal();
-//    }
-
-
     protected boolean mapParamsToState()
     {
         if ( mStart .isImpossible() || mEnd .isImpossible() )
@@ -60,33 +36,4 @@ public class SegmentJoiningPoints extends Segment
         AlgebraicVector offset = endV .minus( startV );
         return setStateVariables( startV, offset, false );
     }
-
-
-	public Point getStartPoint()
-	{
-		return mStart;
-	}
-
-
-	public Point getEndPoint()
-	{
-		return mEnd;
-	}
-    
-//    public static Construction load( Element elem, Map index )
-//    {
-//        String myIdStr = elem .getAttributeValue( "id" );
-//        int id = Integer .parseInt( myIdStr );
-//
-//        String idStr = elem .getAttributeValue( "start" );
-//        Point start = (Point) index .get( idStr );
-//        idStr = elem .getAttributeValue( "end" );
-//        Point end = (Point) index .get( idStr );
-//        SegmentJoiningPoints result = new SegmentJoiningPoints( start, end );
-//        
-//        result .mId = id;
-//        index .put( myIdStr, result );
-//        return result;
-//    }
-
 }

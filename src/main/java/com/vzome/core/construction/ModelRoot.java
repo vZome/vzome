@@ -21,15 +21,6 @@ public class ModelRoot extends Construction
         super( field );
     }
 
-    public void attach() {}
-
-    public void detach() {}
-
-    public void accept( Visitor v )
-    {
-        v .visitModelRoot( this );
-    }
-
     protected boolean mapParamsToState()
     {
         // TODO Auto-generated method stub

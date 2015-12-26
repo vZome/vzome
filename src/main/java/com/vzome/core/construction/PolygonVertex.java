@@ -22,16 +22,6 @@ public class PolygonVertex extends Point
         mapParamsToState();
     }
 
-    public void attach()
-    {
-    	polygon .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-    	polygon .removeDerivative( this );
-    }
-
     protected boolean mapParamsToState()
     {
         if (  polygon .isImpossible() )

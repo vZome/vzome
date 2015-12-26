@@ -19,18 +19,6 @@ public class LineLineIntersectionPoint extends Point
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        line1 .addDerivative( this );
-        line2 .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        line1 .removeDerivative( this );
-        line2 .removeDerivative( this );
-    }
-
 //    /**
 //     * from http://www.realtimerendering.com/int/
 //     *

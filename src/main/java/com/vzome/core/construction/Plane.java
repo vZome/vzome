@@ -24,12 +24,6 @@ public abstract class Plane extends Construction
         super( field );
     }
 
-    public void accept( Visitor v )
-    {
-        v .visitPlane( this );
-    }
-
-
     protected final boolean setStateVariables( AlgebraicVector base, AlgebraicVector normal, boolean impossible )
     {
         if ( impossible ) {

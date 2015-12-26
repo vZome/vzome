@@ -21,21 +21,6 @@ public class LineExtensionOfSegment extends Line
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mSegment .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mSegment .removeDerivative( this );
-    }
-
-//    public Axis getAxis()
-//    {
-//        return mSegment .getAxis();
-//    }
-
     protected boolean mapParamsToState()
     {
         if ( mSegment .isImpossible() )

@@ -31,16 +31,6 @@ public class AnchoredSegment extends Segment
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mAnchor .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mAnchor .removeDerivative( this );
-    }
-    
     protected boolean mapParamsToState()
     {
         if ( mAnchor .isImpossible() || mLength .isZero() )
@@ -48,26 +38,6 @@ public class AnchoredSegment extends Segment
         AlgebraicVector gv = mAnchor .getLocation() .projectTo3d( true );
         AlgebraicVector offset = mAxis .normal() .scale( mLength );
         return setStateVariables( gv, offset, false );
-    }
-
-    public void accept( Visitor v )
-    {
-        v .visitAnchoredSegment( this );
-    }
-
-    /**
-     * @param step
-     */
-    public void setAxis( Axis axis )
-    {
-        mAxis = axis;
-        paramOrAttrChanged();
-    }
-    
-    public void setLength( AlgebraicNumber len )
-    {
-        mLength = len;
-        paramOrAttrChanged();
     }
 
     public Axis getAxis()
@@ -84,21 +54,4 @@ public class AnchoredSegment extends Segment
     {
         return mAxis .normal();
     }
-
-    
-	public Point getStartPoint()
-	{
-		return mAnchor;
-	}
-
-
-	public Point getEndPoint()
-	{
-		Construction[] derivs = getDerivatives();
-		for ( int i = 0; i < derivs .length; i++ )
-			if ( derivs[i] instanceof SegmentEndPoint )
-				return (Point) derivs[i];
-		return null;
-	}
-
 }

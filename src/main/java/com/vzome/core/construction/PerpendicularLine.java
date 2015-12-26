@@ -26,20 +26,6 @@ public class PerpendicularLine extends Line
         mPoint = p;
         mapParamsToState();
     }
-
-    public void attach()
-    {
-        mLine1 .addDerivative( this );
-        mLine2 .addDerivative( this );
-        mPoint .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mLine1 .removeDerivative( this );
-        mLine2 .removeDerivative( this );
-        mPoint .removeDerivative( this );
-    }
     
     /**
      * returns true if something changed.
@@ -54,10 +40,4 @@ public class PerpendicularLine extends Line
         AlgebraicVector cross = norm1 .cross( norm2 );
         return setStateVariables( mPoint .getLocation(), cross, cross .isOrigin() );
     }
-    
-    public void accept( Visitor v )
-    {
-        v .visitPerpendicularLine( this );
-    }
-
 }

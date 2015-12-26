@@ -30,16 +30,6 @@ public class SymmetryTransformation extends Transformation
         mCenter = center;
         mapParamsToState();
     }
-
-    public void attach()
-    {
-        mCenter .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mCenter .removeDerivative( this );
-    }
     
     protected boolean mapParamsToState()
     {
@@ -50,17 +40,4 @@ public class SymmetryTransformation extends Transformation
         AlgebraicMatrix matrix = mSymmetry .getMatrix( mOrientation );
         return setStateVariables( matrix, loc, false );
     }
-    
-
-    public void accept( Visitor v )
-    {
-        v .visitIcosahedralRotation( this );
-    }
-
-    public void setOrientation( int orientation )
-    {
-        mOrientation = orientation;
-        paramOrAttrChanged();
-    }
-
 }

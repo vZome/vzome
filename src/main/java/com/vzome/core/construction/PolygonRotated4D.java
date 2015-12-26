@@ -24,20 +24,6 @@ public class PolygonRotated4D extends Polygon
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mPrototype .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mPrototype .removeDerivative( this );
-    }
-
-    /**
-     *
-     */
-
     protected boolean mapParamsToState()
     {
         if (  mPrototype .isImpossible() )

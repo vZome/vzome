@@ -22,21 +22,6 @@ public class PlaneExtensionOfPolygon extends Plane
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mPolygon .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mPolygon .removeDerivative( this );
-    }
-
-//    public Axis getAxis()
-//    {
-//        return mSegment .getAxis();
-//    }
-
     protected boolean mapParamsToState()
     {
         if ( mPolygon .isImpossible() )

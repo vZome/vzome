@@ -61,25 +61,6 @@ public abstract class Segment extends Construction
         return mOffset;
     }
 
-    
-    public abstract Point getStartPoint();
-    
-    public abstract Point getEndPoint();
-    
-//    public GoldenNumber getLength()
-//    {
-//        Axis axis = getAxis();
-//        if ( axis == null )
-//            return null;
-//        else
-//            return mOffset .div( axis .normal() );
-//    }
-
-    public void accept( Visitor v )
-    {
-        v .visitSegment( this );
-    }
-
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "segment" );

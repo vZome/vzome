@@ -25,16 +25,6 @@ public class PointRotated4D extends Point
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mPrototype .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mPrototype .removeDerivative( this );
-    }
-
     protected boolean mapParamsToState()
     {
         if ( mPrototype .isImpossible() )

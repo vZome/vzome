@@ -22,19 +22,6 @@ public class TransformedPolygon extends Polygon
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mTransform .addDerivative( this );
-        mPrototype .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mTransform .removeDerivative( this );
-        mPrototype .removeDerivative( this );
-    }
-
-
     protected boolean mapParamsToState()
     {
         // TODO implement impossibility

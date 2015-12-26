@@ -26,20 +26,6 @@ public class Scaling extends Transformation
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        s1 .addDerivative( this );
-        s2 .addDerivative( this );
-        center .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        s1 .removeDerivative( this );
-        s2 .removeDerivative( this );
-        center .removeDerivative( this );
-    }
-
     protected boolean mapParamsToState()
     {
         Axis zone1 = symmetry .getAxis( s1 .getOffset() );
@@ -57,10 +43,5 @@ public class Scaling extends Transformation
                 field .basisVector( 3, AlgebraicVector.Y ) .scale( scale ),
                 field .basisVector( 3, AlgebraicVector.Z ) .scale( scale ) );
         return setStateVariables( transform, center .getLocation(), false );
-    }
-
-    public void accept( Visitor v )
-    {
-//        v .visitTranslation( this );
     }
 }

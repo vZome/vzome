@@ -24,19 +24,6 @@ public class SegmentTauDivision extends Point
         shrink = field .createPower( -1 );
         mapParamsToState();
     }
-
-    public void attach()
-    {
-        mSegment .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mSegment .removeDerivative( this );
-    }
-    
-    public void accept( Visitor v )
-    {}
     
     final AlgebraicNumber shrink;
 

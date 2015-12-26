@@ -16,18 +16,6 @@ public class PolygonFromVertices extends Polygon
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        for ( int i = 0; i < mVertices .length; i++ )
-            mVertices[ i ] .addDerivative( this );
-    }
-
-    public void detach()
-    {
-        for ( int i = 0; i < mVertices .length; i++ )
-            mVertices[ i ] .removeDerivative( this );
-    }
-
     protected boolean mapParamsToState()
     {
         // TODO implement impossibility

@@ -22,18 +22,6 @@ public class SegmentCrossProduct extends Segment
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        seg1 .addDerivative( this );
-        seg2 .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        seg1 .removeDerivative( this );
-        seg2 .removeDerivative( this );
-    }
-
     protected boolean mapParamsToState()
     {
         if ( seg1 .isImpossible() || seg2 .isImpossible() )
@@ -44,17 +32,5 @@ public class SegmentCrossProduct extends Segment
         v2 = v2 .scale( field .createPower( -4 ) );
         v2 = v2 .scale( field .createRational( new int[]{ 1,2 } ) );
         return setStateVariables( seg1 .getEnd(), v2, false );
-    }
-
-    public Point getEndPoint()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Point getStartPoint()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

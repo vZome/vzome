@@ -9,8 +9,6 @@ import com.vzome.core.algebra.AlgebraicVector;
  */
 public class FreePoint extends Point
 {
-    private ModelRoot mRoot;
-    
     /**
      * @param loc
      */
@@ -19,37 +17,8 @@ public class FreePoint extends Point
         super( root.field );
         // the usual pattern is to call mapParamsToState()
         setStateVariable( loc, false );
-        mRoot = root;
     }
 
-    public void attach()
-    {
-        mRoot .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mRoot .removeDerivative( this );
-    }
-
-    /**
-     * A public setter for FreePoint's location attribute,
-     * distinguished (in concept) from Point's state variable.
-     * @param loc
-     */
-    public void setLocationAttribute( AlgebraicVector loc )
-    {
-        // this is the only Construction where we "preempt" paramOrAttrChanged(),
-        //   because the location attribute is stored as the state variable
-        if ( setStateVariable( loc, false ) )
-            paramOrAttrChanged();
-    }
-    
-    public void accept( Visitor v )
-    {
-        v .visitFreePoint( this );
-    }
-    
     protected boolean mapParamsToState()
     {
         // This won't get called unless there was a state change.  See setLocationAttribute above.

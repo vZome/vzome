@@ -30,20 +30,6 @@ public class SegmentRotated4D extends Segment
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mPrototype .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mPrototype .removeDerivative( this );
-    }
-
-    /**
-     *
-     */
-
     protected boolean mapParamsToState()
     {
         if (  mPrototype .isImpossible() )
@@ -72,18 +58,4 @@ public class SegmentRotated4D extends Segment
         
         return setStateVariables( loc, end .minus( loc ), false );
     }
-
-    
-	public Point getStartPoint()
-	{
-		return mPrototype .getStartPoint();
-	}
-
-
-	public Point getEndPoint()
-	{
-        return mPrototype .getEndPoint();
-	}
-
-
 }

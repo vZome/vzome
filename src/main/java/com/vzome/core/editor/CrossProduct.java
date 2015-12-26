@@ -20,7 +20,7 @@ public class CrossProduct extends ChangeConstructions
 {
     public void perform() throws Command.Failure
     {
-        Point p1 = null;
+        Point p1 = null, p2 = null;
         Segment s1 = null;
         boolean success = false;
         for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
@@ -33,12 +33,13 @@ public class CrossProduct extends ChangeConstructions
                     p1 = nextPoint;
                 else if ( s1 == null )
                 {
+                	p2 = nextPoint;
                     s1 = new SegmentJoiningPoints( p1, nextPoint );
                     addConstruction( s1 );
                 }
                 else 
                 {
-                    Segment segment = new SegmentJoiningPoints( s1 .getEndPoint(), nextPoint );
+                    Segment segment = new SegmentJoiningPoints( p2, nextPoint );
                     addConstruction( segment );
                     segment = new SegmentCrossProduct( s1, segment );
                     addConstruction( segment );

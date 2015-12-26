@@ -68,12 +68,7 @@ public abstract class Transformation extends Construction
         setImpossible( false );
         return true;
     }
-    
-    public void accept( Visitor v )
-    {
-        v .visitTransformation( this );
-    }
-    
+
     public AlgebraicVector transform( AlgebraicVector arg )
     {
         arg = arg .minus( mOffset );

@@ -25,26 +25,6 @@ public class SegmentOnLine extends Segment
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mLine .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mLine .removeDerivative( this );
-    }
-//
-//    public Axis getAxis()
-//    {
-//        return mLine .getAxis();
-//    }
-//
-//    public GoldenVector getUnitVector()
-//    {
-//        return mLine .getUnitVector();
-//    }
-
     protected boolean mapParamsToState()
     {
         if ( mLine .isImpossible() )
@@ -52,17 +32,4 @@ public class SegmentOnLine extends Segment
         AlgebraicVector offset = getOffset() .scale( mLength );
         return setStateVariables( mLine .getStart(), offset, false );
     }
-
-
-	public Point getStartPoint()
-	{
-		return null; // TODO ask mLine
-	}
-
-
-	public Point getEndPoint()
-	{
-		return null; // TODO check derivatives
-	}
-
 }

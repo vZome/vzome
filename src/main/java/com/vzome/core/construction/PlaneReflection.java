@@ -29,16 +29,6 @@ public class PlaneReflection extends Transformation
         
         mapParamsToState();
     }
-
-    public void attach()
-    {
-        mMirror .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mMirror .removeDerivative( this );
-    }
     
     protected boolean mapParamsToState()
     {
@@ -48,12 +38,6 @@ public class PlaneReflection extends Transformation
         AlgebraicVector loc = mMirror .getBase();
         
         return setStateVariables( null /*or field identity*/, loc, false );
-    }
-    
-
-    public void accept( Visitor v )
-    {
-        v .visitPlaneReflection( this );
     }
 
     public AlgebraicVector transform( AlgebraicVector arg )

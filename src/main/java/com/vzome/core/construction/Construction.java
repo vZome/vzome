@@ -2,9 +2,6 @@
 
 package com.vzome.core.construction;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -52,10 +49,7 @@ import com.vzome.core.algebra.AlgebraicField;
  */
 public abstract class Construction
 {
-    
     public static final Construction[] ARRAY_PROTOTYPE = new Construction[0];
-
-    private List mDerivatives = null;
     
     protected final AlgebraicField field;
     
@@ -105,14 +99,6 @@ public abstract class Construction
     {
         return mIndex;
     }
-
-    public Construction[] getDerivatives()
-    {
-        if ( mDerivatives == null )
-            return ARRAY_PROTOTYPE;
-        else
-            return (Construction[]) mDerivatives .toArray( Construction .ARRAY_PROTOTYPE );
-    }
     
     public boolean isVisible()
     {
@@ -133,54 +119,7 @@ public abstract class Construction
     {
         mImpossible = value;
     }
-    
-    /**
-     * Could do this with a Visitor, but this will be lots faster.
-     *
-     * TODO This is currently naive about graph traversal... some constructions
-     * could be visited twice.  (That has more perfomance impact than using
-     * a Visitor!)
-     * 
-     * Also, need some mechanism to communicate "dirty parts" to the outside world,
-     * to feed a rendering update, e.g.  Probably should pass in a Listener to this,
-     * and to any setter calling this.
-     */
-    protected void paramOrAttrChanged()
-    {
-        if ( ! mapParamsToState() )
-            return;
-        if ( mDerivatives == null )
-            return;
-        for ( int i = 0; i < mDerivatives .size(); i++ )
-        {
-            Construction derivative = (Construction) mDerivatives .get( i );
-            derivative .paramOrAttrChanged();
-        }
-    }
-    
-    /**
-     * For Transformations, all derivatives are added at constructor time.
-     * For all other Constructions, derivatives are added when this
-     * @param c
-     */
-    public void addDerivative( Construction c )
-    {
-        if ( mDerivatives == null )
-            mDerivatives = new ArrayList(2);
-        mDerivatives .add( c );
-    }
-    
-    public void removeDerivative( Construction c )
-    {
-        mDerivatives .remove( c );
-    }
-    
-    public abstract void attach();
-    
-    public abstract void detach();
-    
-    public abstract void accept( Visitor v );
-    
+
     /**
      * Update the state variables (like location) of this construction
      * according to the current parameters and attributes.

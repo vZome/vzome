@@ -41,12 +41,6 @@ public abstract class Point extends Construction
         return mLocation;
     }
 
-    public void accept( Visitor v )
-    {
-        v .visitPoint( this );
-    }
-
-    
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "point" );

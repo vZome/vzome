@@ -22,24 +22,6 @@ public class TransformedPoint extends Point
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mTransform .addDerivative( this );
-        mPrototype .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mTransform .removeDerivative( this );
-        mPrototype .removeDerivative( this );
-    }
-
-    public void accept( Visitor v )
-    {
-        v .visitTransformedPoint( this );
-    }
-
-
     protected boolean mapParamsToState()
     {
         if ( mTransform .isImpossible() || mPrototype .isImpossible() )

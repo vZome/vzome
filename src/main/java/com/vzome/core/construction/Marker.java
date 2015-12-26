@@ -21,19 +21,6 @@ public class Marker extends Construction
         return mTarget;
     }
 
-    public void attach()
-    {
-        mTarget .addDerivative( this );
-        }
-
-    public void detach()
-    {
-        mTarget .addDerivative( this );
-    }
-
-    public void accept( Visitor v )
-    {}
-
     protected boolean mapParamsToState()
     {
         return false;

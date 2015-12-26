@@ -45,34 +45,6 @@ public class ChangeOfBasis extends Transformation
         this .scale = field .createRational( new int[]{ 2,1 } ) .times( field .createPower( -7 ) );
         mapParamsToState();
     }
-
-    public void attach()
-    {
-        mNew[0] .addDerivative( this );
-        mNew[1] .addDerivative( this );
-        mNew[2] .addDerivative( this );
-        if ( mOld != null )
-        {
-            mOld[0] .addDerivative( this );
-            mOld[1] .addDerivative( this );
-            mOld[2] .addDerivative( this );
-        }
-        mKernel .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mNew[0] .removeDerivative( this );
-        mNew[1] .removeDerivative( this );
-        mNew[2] .removeDerivative( this );
-        if ( mOld != null )
-        {
-            mOld[0] .removeDerivative( this );
-            mOld[1] .removeDerivative( this );
-            mOld[2] .removeDerivative( this );
-        }
-        mKernel .addDerivative( this );
-    }
     
     protected boolean mapParamsToState()
     {
@@ -134,11 +106,4 @@ public class ChangeOfBasis extends Transformation
                 return null;
         }
     }
-    
-
-    public void accept( Visitor v )
-    {
-        v .visitChangeOfBasis( this );
-    }
-
 }

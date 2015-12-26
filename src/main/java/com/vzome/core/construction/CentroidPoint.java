@@ -21,18 +21,6 @@ public class CentroidPoint extends Point
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        for ( int i = 0; i < mPoints .length; i++ )
-            mPoints[ i ] .addDerivative( this );
-    }
-
-    public void detach()
-    {
-        for ( int i = 0; i < mPoints .length; i++ )
-            mPoints[ i ] .removeDerivative( this );
-    }
-
     protected boolean mapParamsToState()
     {
         // TODO implement impossibility

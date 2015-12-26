@@ -62,32 +62,10 @@ public class Edit implements ConstructionChanges{
             if ( renderer != null )
                 renderer .constructionHidden( constr );
         }
-        for ( Iterator added = mAddedConstructions .iterator(); added .hasNext(); ) {
-            Construction constr = (Construction) added .next();
-            constr .detach();
-            if ( renderer != null )
-                renderer .constructionRemoved( constr );
-        }
-        for ( Iterator removed = mRemovedConstructions .iterator(); removed .hasNext(); ) {
-            Construction constr = (Construction) removed .next();
-            constr .attach();
-            if ( renderer != null )
-                renderer .constructionAdded( constr );
-        }
     }
     
     public void redo( ConstructionChanges renderer )
     {
-        for ( Iterator removed = mRemovedConstructions .iterator(); removed .hasNext(); ) {
-            Construction constr = (Construction) removed .next();
-            constr .detach();
-            renderer .constructionRemoved( constr );
-        }
-        for ( Iterator added = mAddedConstructions .iterator(); added .hasNext(); ) {
-            Construction constr = (Construction) added .next();
-            constr .attach();
-            renderer .constructionAdded( constr );
-        }
         for ( Iterator added = mRevealedConstructions .iterator(); added .hasNext(); ) {
             Construction constr = (Construction) added .next();
             constr .setVisible( true );

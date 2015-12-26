@@ -23,18 +23,6 @@ public class LinePlaneIntersectionPoint extends Point
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mPlane .addDerivative( this );
-        mLine .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mPlane .removeDerivative( this );
-        mLine .removeDerivative( this );
-    }
-
     /**
      * From Vince, GA4CG, p. 196.
      * 

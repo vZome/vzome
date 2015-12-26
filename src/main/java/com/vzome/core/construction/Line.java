@@ -101,11 +101,6 @@ public abstract class Line extends Construction
 //        return mComputedAxis;
 //    }
 
-    public void accept( Visitor v )
-    {
-        v .visitLine( this );
-    }
-
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "line" );

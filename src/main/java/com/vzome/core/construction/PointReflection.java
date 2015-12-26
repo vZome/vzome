@@ -23,16 +23,6 @@ public class PointReflection extends Transformation
         mCenter = center;
         mapParamsToState();
     }
-
-    public void attach()
-    {
-        mCenter .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mCenter .removeDerivative( this );
-    }
     
     protected boolean mapParamsToState()
     {
@@ -48,11 +38,4 @@ public class PointReflection extends Transformation
         arg = mOffset .minus( arg );
         return arg;
     }
-    
-
-    public void accept( Visitor v )
-    {
-        v .visitPointReflection( this );
-    }
-
 }

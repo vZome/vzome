@@ -23,22 +23,6 @@ public class TransformedSegment extends Segment
         mapParamsToState();
     }
 
-    public void attach()
-    {
-        mTransform .addDerivative( this );
-        mPrototype .addDerivative( this );
-    }
-    
-    public void detach()
-    {
-        mTransform .removeDerivative( this );
-        mPrototype .removeDerivative( this );
-    }
-
-    /**
-     *
-     */
-
     protected boolean mapParamsToState()
     {
         if ( mTransform .isImpossible() || mPrototype .isImpossible() )
@@ -47,18 +31,4 @@ public class TransformedSegment extends Segment
         AlgebraicVector end = mTransform .transform( mPrototype .getEnd() .projectTo3d( true ) );
         return setStateVariables( loc, end .minus( loc ), false );
     }
-
-    
-	public Point getStartPoint()
-	{
-		return mPrototype .getStartPoint();  // TODO is this right?
-	}
-
-
-	public Point getEndPoint()
-	{
-        return mPrototype .getEndPoint();  // TODO is this right?
-	}
-
-
 }
