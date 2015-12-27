@@ -18,8 +18,6 @@ public class GroupSelection implements UndoableEdit
     
     private boolean recursiveGroups; // 2.1.2 and later, 3.0b1 and later
 
-	private Context context;
-
     public GroupSelection( Selection selection, boolean groupThem )
     {
         mSelection = selection;        
@@ -92,22 +90,6 @@ public class GroupSelection implements UndoableEdit
     public void perform()
     {
         redo();
-    }
-
-	public Context getContext()
-	{
-		return this .context;
-	}
-
-	public void setContext( Context context )
-	{
-		this .context = context;
-	}
-
-    public void releaseState()
-    {
-        setContext( null );
-        mSelection = null;
     }
 
     public boolean isSticky()

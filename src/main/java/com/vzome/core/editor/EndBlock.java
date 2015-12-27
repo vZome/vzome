@@ -16,8 +16,6 @@ import com.vzome.core.commands.Command.Failure;
  */
 public class EndBlock implements UndoableEdit
 {
-    private Context context;
-
 	public Element getXml( Document doc )
     {
         return doc .createElement( "EndBlock" );
@@ -52,21 +50,6 @@ public class EndBlock implements UndoableEdit
 
     public void perform()
     {}
-
-	public Context getContext()
-	{
-		return this .context;
-	}
-
-	public void setContext( Context context )
-	{
-		this .context = context;
-	}
-
-    public void releaseState()
-    {
-        setContext( null );
-    }
 
     public boolean isSticky()
     {

@@ -18,8 +18,15 @@ import com.vzome.core.commands.Command.Failure;
 
 public class Branch implements UndoableEdit
 {
-    private List edits = new ArrayList();
-    private Context context;
+	private final Context context;
+	
+    public Branch( Context context )
+    {
+		super();
+		this .context = context;
+	}
+
+	private List edits = new ArrayList();
     private XmlSaveFormat format;
     private Element xml;
     
@@ -110,18 +117,6 @@ public class Branch implements UndoableEdit
         this .format = format;
         context .performAndRecord( this );
     }
-
-    public void setContext( Context context )
-    {
-        this .context = context;
-    }
-
-    public Context getContext()
-    {
-        return this .context;
-    }
-
-    public void releaseState() {}
 
     public boolean isSticky()
     {

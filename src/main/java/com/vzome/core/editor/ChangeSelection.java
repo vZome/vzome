@@ -215,8 +215,10 @@ public abstract class ChangeSelection extends SideEffects
         public Element getXml( Document doc )
         {
             Element result = this .mOn ? doc .createElement( "select" ) : doc .createElement( "deselect" );
-            Element man = mMan .getXml( doc );
-            result .appendChild( man );
+            if ( mMan != null ) {
+                Element man = mMan .getXml( doc );
+                result .appendChild( man );
+            }
             return result;
         }
     }

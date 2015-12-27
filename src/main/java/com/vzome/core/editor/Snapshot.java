@@ -27,7 +27,6 @@ public class Snapshot implements UndoableEdit
 	
     private int id;
     private Recorder recorder;
-    private Context context;
 
     public void perform() throws Failure
     {
@@ -73,21 +72,6 @@ public class Snapshot implements UndoableEdit
         this .id = Integer .parseInt( xml .getAttribute( "id" ) );
 
         context .performAndRecord( this );
-    }
-
-    public void setContext( Context context )
-    {
-        this .context = context;
-    }
-
-    public Context getContext()
-    {
-        return this .context;
-    }
-
-    public void releaseState()
-    {
-        this .recorder = null;
     }
 
     public boolean isSticky()

@@ -6,6 +6,7 @@ package com.vzome.core.editor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -21,6 +22,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -84,7 +88,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	private final EditorModel mEditorModel;
 	
-	private final SymmetrySystem symmetrySystem;
+	private SymmetrySystem symmetrySystem;
 
     private final EditHistory mHistory;
     
@@ -120,7 +124,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	private final Map commands;
 
-    private Map symmetrySystems = new HashMap();
+    private Map<String,SymmetrySystem> symmetrySystems = new HashMap();
+
+	private final Lights sceneLighting;
 
     public void addPropertyChangeListener( PropertyChangeListener listener )
     {
@@ -153,6 +159,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .failures = failures;
 		this .mXML = xml;
 		this .commands = app .getCommands();
+		this .sceneLighting = app .getLights();
 
 		this .mRealizedModel = new RealizedModel( field, new Projection.Default( field ) );
 
@@ -250,7 +257,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new Snapshot( -1, this );
 
 		else if ( "Branch" .equals( name ) )
-			edit = new Branch();
+			edit = new Branch( this );
 
 		else if ( "ShowPoint".equals( name ) )
 			edit = new ShowPoint( null, this.mSelection, this.mRealizedModel, groupInSelection );
@@ -404,8 +411,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		if ( edit == null )
 			// any command unknown (i.e. from a newer version of vZome) becomes a CommandEdit
 			edit = new CommandEdit( null, mEditorModel, mDerivationModel, groupInSelection );
-
-		edit .setContext( this );
 		
 		return edit;
 	}
@@ -440,14 +445,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         performAndRecord( edit );
 	}
 
-    public UndoableEdit createEdit( String action )
+    public boolean doEdit( String action )
     {
     	// TODO break all these cases out as dedicated DocumentModel methods
 
     	Command command = (Command) commands .get( action );
     	if ( command != null )
     	{
-    	    return new CommandEdit( (AbstractCommand) command, mEditorModel, mDerivationModel, false );
+    		CommandEdit edit = new CommandEdit( (AbstractCommand) command, mEditorModel, mDerivationModel, false );
+            this .performAndRecord( edit );
+            return true;
     	}
     	
         UndoableEdit edit = null;
@@ -518,10 +525,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new AffinePentagon( mSelection, mRealizedModel, mDerivationModel, false );
         else if ( action.equals( "affineTransformAll" ) )
         	edit = new AffineTransformAll( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
-        else if ( action.equals( "setCustomOperatorParameters" ) )
-            edit = new DefineTransformation( mSelection, mEditorModel, false );
-        else if ( action.equals( "runCustomOperator" ) )
-            edit = new TransformSelection( mSelection, mRealizedModel, mEditorModel.getTransformation() );
         else if ( action.equals( "dodecagonsymm" ) )
             edit = new DodecagonSymmetry( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
         else if ( action.equals( "ghostsymm24cell" ) )
@@ -543,8 +546,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         if ( edit == null )
         {
         	logger .warning( "no DocumentModel action for : " + action );
+        	return false;
         }
-        return edit;
+        this .performAndRecord( edit );
+        return true;
     }
 
 	public void performAndRecord( UndoableEdit edit )
@@ -558,7 +563,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             synchronized ( this .mHistory ) {
                 edit .perform();
                 this .mHistory .mergeSelectionChanges();
-                this .mHistory .addEdit( edit );
+                this .mHistory .addEdit( edit, DocumentModel.this );
             }
         }
         catch ( RuntimeException re )
@@ -627,7 +632,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         return rm .getColor();
     }
     
-    public void loadXml( boolean openUndone, boolean asTemplate ) throws Command.Failure
+    public void finishLoading( boolean openUndone, boolean asTemplate ) throws Command.Failure
     {
     	if ( mXML == null )
     		return;
@@ -774,31 +779,52 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         return vZomeRoot;
     }
 
-    public Element getSaveXml( Document doc )
+    public void serialize( OutputStream out ) throws Exception
     {
+    	DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
+    	factory .setNamespaceAware( true );
+    	DocumentBuilder builder = factory .newDocumentBuilder();
+        Document doc = builder .newDocument();
+
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
         vZomeRoot .setAttribute( "xmlns:vzome", XmlSaveFormat.CURRENT_FORMAT );
         vZomeRoot .setAttribute( "edition", Version.edition );
         vZomeRoot .setAttribute( "version", Version.label );
         vZomeRoot .setAttribute( "revision", Integer .toString( Version.SVN_REVISION ) );
         vZomeRoot .setAttribute( "field", mField.getName() );
-        Element result;
+
+        Element childElement;
         {
-            result = mHistory .getXml( doc );
+            childElement = mHistory .getXml( doc );
             int edits = 0, lastStickyEdit=-1;
             for ( Iterator it = mHistory .iterator(); it .hasNext(); )
             {
                 UndoableEdit undoable = (UndoableEdit) it .next();
-                result .appendChild( undoable .getXml( doc ) );
+                childElement .appendChild( undoable .getXml( doc ) );
                 ++ edits;
                 if ( undoable .isSticky() )
                     lastStickyEdit = edits;
             }
-            result .setAttribute( "lastStickyEdit", Integer .toString( lastStickyEdit ) );
+            childElement .setAttribute( "lastStickyEdit", Integer .toString( lastStickyEdit ) );
         }
-        vZomeRoot .appendChild( result );
-        vZomeRoot .appendChild( lesson .getXml( doc ) );
-        return vZomeRoot;
+        vZomeRoot .appendChild( childElement );
+        doc .appendChild( vZomeRoot );
+
+        childElement = lesson .getXml( doc );
+        vZomeRoot .appendChild( childElement );
+
+        childElement = sceneLighting .getXml( doc );
+        vZomeRoot .appendChild( childElement );
+
+        childElement = doc .createElement( "Viewing" );
+        Element viewXml = this .defaultView .getXML( doc );
+        childElement .appendChild( viewXml );
+        vZomeRoot .appendChild( childElement );
+
+        childElement = this .symmetrySystem .getXml( doc );
+        vZomeRoot .appendChild( childElement );
+
+        DomUtils .serialize( doc, out );
     }
     
     public void doScriptAction( String command, String script )
@@ -855,11 +881,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	public void addSelectionListener( ManifestationChanges listener )
 	{
 		this .mSelection .addListener( listener );
-	}
-
-	public Element getLoadXml()
-	{
-		return this .mXML;
 	}
 
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
@@ -973,9 +994,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         return mEditorModel .selectManifestation( target, replace );
     }
 
-    public UndoableEdit createStrut( Point point, Axis zone, AlgebraicNumber length )
+    public void createStrut( Point point, Axis zone, AlgebraicNumber length )
     {
-        return new StrutCreation( point, zone, length, this .mRealizedModel );
+    	UndoableEdit edit = new StrutCreation( point, zone, length, this .mRealizedModel );
+        this .performAndRecord( edit );
     }
 
 	public void createTool( String name, String group, Tool.Registry tools, Symmetry symmetry )
@@ -1138,9 +1160,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     {
         return this .symmetrySystem;
     }
-
-    public Map<String, SymmetrySystem> getSymmetrySystems()
+    
+    public void setSymmetrySystem( String name )
     {
-        return this .symmetrySystems;
+    	this .symmetrySystem = this .symmetrySystems .get( name );
     }
 }

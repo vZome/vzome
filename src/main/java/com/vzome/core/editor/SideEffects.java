@@ -46,11 +46,6 @@ public abstract class SideEffects implements UndoableEdit
         return false;
     }
 
-    public void releaseState()
-    {
-        mItems = null;
-    }
-
     private List mItems = new ArrayList();
     
     /**
@@ -64,8 +59,6 @@ public abstract class SideEffects implements UndoableEdit
      * 
      */
     private int redone = 0;
-
-	private Context context;
 
     public static final Logger BUG_ACCOMMODATION_LOGGER = Logger.getLogger( "com.vzome.core.bug.accommodations" );
 
@@ -135,16 +128,6 @@ public abstract class SideEffects implements UndoableEdit
         redone = 0;
     }
 
-	public Context getContext()
-	{
-		return this .context;
-	}
-
-	public void setContext( Context context )
-	{
-		this .context = context;
-	}
-	
 	protected Iterator<SideEffect> getEffects()
 	{
 		return this .mItems .iterator();

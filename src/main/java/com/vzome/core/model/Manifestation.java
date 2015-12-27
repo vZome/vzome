@@ -105,8 +105,13 @@ public abstract class Manifestation
 
     public Element getXml( Document doc )
     {
-        Construction repr = (Construction) mManifests .iterator() .next();
-        Element result = repr .getXml( doc );
-        return result;
+    	Iterator cons = mManifests .iterator();
+    	if ( cons .hasNext() ) {
+            Construction repr = (Construction) cons .next();
+            Element result = repr .getXml( doc );
+            return result;
+    	} else {
+    		return doc .createElement( "NoConstructions" );
+    	}
     }
 }

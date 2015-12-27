@@ -35,12 +35,6 @@ public interface UndoableEdit
     	void performAndRecord( UndoableEdit edit );
     }
 
-	public void setContext( Context context );
-	
-	public Context getContext();
-	
-	public void releaseState();
-
 	/**
 	 * True when this edit must cause a persistent history branch.
 	 * @return

@@ -40,7 +40,7 @@ public class Application
 	public Document loadDocument( InputStream bytes ) throws Exception
 	{
 		DocumentModel docDelegate = this .delegate .loadDocument( bytes, true );
-		docDelegate .loadXml( false, false );
+		docDelegate .finishLoading( false, false );
 		return new Document( docDelegate );
     }
     

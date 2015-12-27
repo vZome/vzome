@@ -7,7 +7,6 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.construction.Transformation;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -52,17 +51,6 @@ public class EditorModel
     {
         mSymmetryAxis = segment;
     }
-
-    public Transformation getTransformation()
-    {
-        return mTransformation;
-    }
-    
-    public void setTransformation( Transformation transformation )
-    {
-        mTransformation = transformation;
-    }
-    
 
     public UndoableEdit selectManifestation( Manifestation m, boolean replace )
 	{
@@ -123,8 +111,6 @@ public class EditorModel
     private Point mCenterPoint;
     
     private Segment mSymmetryAxis;
-        
-    private Transformation mTransformation;  // TODO make this a Map
 
     private final boolean oldGroups;
 

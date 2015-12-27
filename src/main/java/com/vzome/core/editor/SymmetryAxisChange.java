@@ -16,7 +16,6 @@ public class SymmetryAxisChange implements UndoableEdit
 {
     private Segment mOldAxis, mNewAxis;
     private final EditorModel mEditor;
-	private Context context;
 
     public SymmetryAxisChange( EditorModel editor, Segment newAxis )
     {
@@ -71,21 +70,6 @@ public class SymmetryAxisChange implements UndoableEdit
     public void perform()
     {
         redo();
-    }
-
-	public Context getContext()
-	{
-		return this .context;
-	}
-
-	public void setContext( Context context )
-	{
-		this .context = context;
-	}
-
-    public void releaseState()
-    {
-        setContext( null );
     }
 
     public boolean isDestructive()

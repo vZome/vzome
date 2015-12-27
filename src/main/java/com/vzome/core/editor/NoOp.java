@@ -53,19 +53,6 @@ public class NoOp implements UndoableEdit
         throw new IllegalStateException();
     }
 
-    public void setContext( Context context )
-    {
-        throw new IllegalStateException();
-    }
-
-    public Context getContext()
-    {
-        throw new IllegalStateException();
-    }
-
-    public void releaseState()
-    {}
-
     public boolean isSticky()
     {
         return false;

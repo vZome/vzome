@@ -49,7 +49,7 @@ public class RenderedModel implements ManifestationChanges
     public interface OrbitSource
     {
     	Symmetry getSymmetry();
-    	
+    	    	
         Axis getAxis( AlgebraicVector vector );
         
         Color getColor( Direction orbit );
@@ -379,20 +379,6 @@ public class RenderedModel implements ManifestationChanges
 		Color color = mPolyhedra .getColor( orbit );
 		if ( color == null )
 			color = orbitSource .getColor( orbit );
-		/*
-		 * What a hack!  This defines a "name" that simply encodes the RGB.
-		 * The orbitSource color is used only to create this name, and we'll
-		 * later use the name to synthesize another copy of the color when
-		 * the Java3d rendering calls Colors.getColor() while creating
-		 * an appearance for that color name.
-		 * 
-		 * When translating old 2.0 files (that have no orbits defined within),
-		 * we're left with default colors, but only ApplicationUI loads the
-		 * preferences (including the built-in defaults), and we don't use
-		 * ApplicationUI.  That leaves the Colors.getColorPref() to return
-		 * WHITE for everything.  NOTE: This is now fixed, since
-		 * DefaultApplication now loads the built-in defaults.
-		 */
 		rm .setColor( color );
 
 		int orn = axis .getOrientation();

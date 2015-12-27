@@ -48,11 +48,11 @@ public class Document
 		return this .struts;
 	}
 	
-	public Command newCommand()
-	{
-		ApiEdit edit = (ApiEdit) this .delegate .createEdit( "apiProxy" );
-		return new Command( edit .createDelegate() );
-	}
+//	public Command newCommand()
+//	{
+//		ApiEdit edit = (ApiEdit) this .delegate .createEdit( "apiProxy" );
+//		return new Command( edit .createDelegate() );
+//	}
 	
 	public RenderedModel getRenderedModel()
 	{

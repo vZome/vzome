@@ -615,4 +615,9 @@ public class Application
     {
         return (Exporter3d) this .exporters .get( format );
     }
+
+	public Lights getLights()
+	{
+		return this .mLights;
+	}
 }

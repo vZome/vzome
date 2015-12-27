@@ -46,7 +46,7 @@ public class EditHistory
 		this .listener = listener;
 	}
 
-    public void addEdit( UndoableEdit edit )
+    public void addEdit( UndoableEdit edit, Context context )
     {
         if ( ! edit .isDestructive() )
         {
@@ -71,7 +71,7 @@ public class EditHistory
                 }
                 ++deadEditIndex;
             }
-            Branch branch = makeBranch? new Branch() : null;
+            Branch branch = makeBranch? new Branch( context ) : null;
             deadEditIndex = mEditNumber;
             for ( Iterator deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
                 UndoableEdit removed = (UndoableEdit) deadEdits .next();
@@ -81,7 +81,6 @@ public class EditHistory
                     // note that lastStickyEdit is initialized with the last edit not discarded,
                     // so this can only be true if a sticky edit had been found, and the loop
                     // has not reached it yet
-                    removed .releaseState();
                     branch .addEdit( removed );
                 }
                 ++deadEditIndex;
@@ -337,18 +336,12 @@ public class EditHistory
         if ( below instanceof ChangeManifestations )
             return;
         
-        // can never merge across contexts
-        if (  above .getContext() != below .getContext() )
-        	return;
-        
         if ( below instanceof ChangeSelection )
         {
             // two in a row, wrap with begin/end pair
         	UndoableEdit bracket = new BeginBlock();
-        	bracket .setContext( above .getContext() );
             mEdits .add( cursor, bracket );
             bracket = new EndBlock();
-        	bracket .setContext( above .getContext() );
             mEdits .add( bracket );
             mEditNumber += 2;
         }
@@ -426,23 +419,6 @@ public class EditHistory
         public void undo()
         {}
 
-        private Context context;
-
-		public void setContext( Context context )
-		{
-			this .context = context;
-		}
-
-		public Context getContext()
-		{
-			return this .context;
-		}
-
-        public void releaseState()
-        {
-            setContext( null );
-        }
-
         public boolean isSticky()
         {
             return false;
@@ -517,7 +493,6 @@ public class EditHistory
         	if ( cmdName .equals( "Breakpoint" ) )
         	{
         		realized = new Breakpoint();
-        		realized .setContext( context );
         	}
         	else
         		realized = context .createEdit( xml, format .groupingDoneInSelection() );
@@ -573,21 +548,6 @@ public class EditHistory
         public void perform()
         {
             // never called
-        }
-
-		public Context getContext()
-		{
-			return this.context;
-		}
-
-		public void setContext( Context context )
-		{
-            throw new IllegalStateException( "should never happen" );
-		}
-
-        public void releaseState()
-        {
-            setContext( null );
         }
 
         public boolean isSticky()
@@ -688,7 +648,7 @@ public class EditHistory
 	public void loadEdit( XmlSaveFormat format, Element editElem, Context context )
     {
         DeferredEdit edit = new DeferredEdit( format, editElem, context );
-        this .addEdit( edit );
+        this .addEdit( edit, context );
     }
 
     public Iterator iterator()
