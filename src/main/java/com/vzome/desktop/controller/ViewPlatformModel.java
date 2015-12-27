@@ -10,11 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.vecmath.Matrix4d;
 //import javax.media.j3d.Transform3D;
@@ -32,7 +29,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.viewing.ViewModel;
 
 /**
@@ -54,8 +50,6 @@ public class ViewPlatformModel extends DefaultController
 	
 	private ViewModel mParameters = new ViewModel();
 
-    private final Map bookmarks = new HashMap();
-    
     private ViewModel copied = null;
     
 	protected final List mViewers = new ArrayList();
@@ -142,19 +136,9 @@ public class ViewPlatformModel extends DefaultController
 		adjustProjection( mParameters );
 	}
     
-    public void bookmarkView( String name )
-    {
-        bookmarks .put( name, new ViewModel( mParameters ) );
-    }
-    
     public ViewModel getView()
     {
         return new ViewModel( mParameters );
-    }
-
-    protected ViewModel restoreView( String name )
-    {
-        return restoreView( (ViewModel) bookmarks .get( name ) );
     }
 
     public ViewModel restoreView( ViewModel view )
@@ -410,18 +394,6 @@ public class ViewPlatformModel extends DefaultController
                 --currentRecentView; //    skip over the view we just saved
             restoreView( (ViewModel) recentViews .get( --currentRecentView ) );
         }
-        else if ( action .startsWith( "saveView." ) )
-        {
-            bookmarkView( action .substring( "saveView." .length() ) );
-        }
-        else if ( action .startsWith( "restoreView." ) )
-        {
-            saveBaselineView(); // might have been zooming
-            String name = action .substring( "restoreView." .length() );
-            restoreView( name );
-            // bookmarked views are not "special"... they are stored in recent, too
-            saveBaselineView();
-        }
         else if ( action .equals( "initialView" ) )
         {
             saveBaselineView(); // might have been zooming
@@ -524,32 +496,11 @@ public class ViewPlatformModel extends DefaultController
         }
     }
 
-    public String[] getCommandList( String listName )
-    {
-        if ( listName .equals( "views" ) )
-        {
-            String[] result = new String[ bookmarks .size() ];
-            int i = 0;
-            for ( Iterator it = bookmarks .keySet() .iterator(); it .hasNext(); i++ )
-                result[ i ] = (String) it .next();
-            return result;
-        }
-        return new String[0];
-    }
-
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "Viewing" );
         Element modelXml = mParameters .getXML( doc );
         result .appendChild( modelXml );
-        for ( Iterator it = bookmarks .keySet() .iterator(); it .hasNext(); )
-        {
-            String name = (String) it .next();
-            ViewModel model = (ViewModel) bookmarks .get( name );
-            modelXml = model .getXML( doc );
-            DomUtils .addAttribute( modelXml, "name", name );
-            result .appendChild( modelXml );
-        }
         return result;
     }
 
@@ -564,8 +515,6 @@ public class ViewPlatformModel extends DefaultController
                 ViewModel model = new ViewModel( viewElem );
                 if ( name == null || name .isEmpty() )
                     restoreView( model );
-//                else
-//                    bookmarks .put( name, model );
             }
         }
     }
