@@ -35,9 +35,7 @@ public abstract class AbstractSymmetry implements Symmetry
     protected final AlgebraicField mField;
     
     protected final String defaultStyle;
-    
-    private final Map vectorToAxis = new HashMap();
-        
+            
     protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle )
     {
         mField = field;
@@ -252,18 +250,23 @@ public abstract class AbstractSymmetry implements Symmetry
     
     public Axis getAxis( AlgebraicVector vector )
     {
+    	return this .getAxis( vector, this .orbitSet );
+    }
+    
+    
+    public Axis getAxis( AlgebraicVector vector, OrbitSet orbits )
+    {
         if ( vector .isOrigin() ) {
             return null;
         }
         Direction canonicalOrbit = this .getSpecialOrbit( SpecialOrbit.BLACK );
         if ( canonicalOrbit == null )
             // the old, brute-force approach
-            for ( Iterator dirs = orbitSet .iterator(); dirs .hasNext(); ) {
+            for ( Iterator dirs = orbits .iterator(); dirs .hasNext(); ) {
                 Direction dir = (Direction) dirs .next();
                 Axis candidate = dir .getAxis( vector );
                 if ( candidate != null )
                 {
-                    this .vectorToAxis .put( vector, candidate );
                     return candidate;
                 }
             }
@@ -272,7 +275,7 @@ public abstract class AbstractSymmetry implements Symmetry
             Axis zone = canonicalOrbit .getAxis( vector .toRealVector() );
             int orientation = zone .getOrientation();
             int sense = zone .getSense();
-            for ( Iterator iterator = orbitSet.iterator(); iterator
+            for ( Iterator iterator = orbits .iterator(); iterator
                     .hasNext(); ) {
                 Direction orbit = (Direction) iterator.next();
                 Axis candidate = orbit .getCanonicalAxis( sense, orientation );

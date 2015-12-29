@@ -38,6 +38,8 @@ public interface Symmetry
     String getName();
 
     Axis getAxis( AlgebraicVector vector );
+    
+    Axis getAxis( AlgebraicVector vector, OrbitSet orbits );
 
     Axis getAxis( RealVector vector, Set filter );
     

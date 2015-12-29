@@ -19,6 +19,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.DomUtils;
+import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -154,7 +155,7 @@ public class SymmetrySystem implements OrbitSource
             return line;
         if ( ! this .noKnownDirections )
         {
-            line = this .symmetry .getAxis( vector );
+            line = this .symmetry .getAxis( vector, this .orbits );
             if ( line != null ) {
                 this .vectorToAxis .put( vector, line );
                 return line;
@@ -254,7 +255,7 @@ public class SymmetrySystem implements OrbitSource
         DomUtils .addAttribute( result, "name", this .getSymmetry() .getName() );
         DomUtils .addAttribute( result, "renderingStyle", this .shapes .getName() );
 
-        for ( Iterator dirs = this .getOrbits() .iterator(); dirs .hasNext(); )
+        for ( Iterator dirs = this .orbits .iterator(); dirs .hasNext(); )
         {
             Direction dir = (Direction) dirs .next();
             Element dirElem = doc .createElement( "Direction" );
@@ -290,5 +291,25 @@ public class SymmetrySystem implements OrbitSource
 	public Shapes getShapes()
 	{
 		return this .shapes;
+	}
+
+	public Polyhedron getShape( AlgebraicVector offset )
+	{
+		if ( offset == null )
+			return this .shapes .getConnectorShape();
+		else {
+			if ( offset .isOrigin() )
+			    return null;
+			Axis axis = this .getAxis( offset );
+			if ( axis == null )
+				return null; // this should only happen when using the bare Symmetry-based OrbitSource
+			Direction orbit = axis .getDirection();
+			
+			// TODO remove this length computation... see the comment on AbstractShapes.getStrutShape()
+			
+			AlgebraicNumber len = axis .getLength( offset );
+			
+			return this .shapes .getStrutShape( orbit, len );
+		}
 	}
 }

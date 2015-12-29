@@ -135,7 +135,12 @@ public class ViewModel implements Renderable
 		upDir .set( mUpDirection );
 	}
     
-    static final double EPSILON_ABSOLUTE = 1.0e-5;
+	public float getMagnification()
+	{
+		return (float) Math .log( mDistance / ORIG_DISTANCE );
+	}
+	
+   static final double EPSILON_ABSOLUTE = 1.0e-5;
 
     private static final boolean almostZero(double a)
     {

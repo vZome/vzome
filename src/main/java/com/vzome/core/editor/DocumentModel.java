@@ -191,6 +191,24 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		// the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
 		this .mEditorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint );
 
+		this .defaultView = new ViewModel();
+        Element views = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "Viewing" ) .item( 0 );
+        if ( views != null ) {
+            NodeList nodes = views .getChildNodes();
+            for ( int i = 0; i < nodes .getLength(); i++ ) {
+                Node node = nodes .item( i );
+        		if ( node instanceof Element ) {
+        			Element viewElem = (Element) node;
+        			String name = viewElem .getAttribute( "name" );
+        			if ( ( name == null || name .isEmpty() )
+        		    || ( "default" .equals( name ) ) )
+        			{
+        				this .defaultView = new ViewModel( viewElem );
+        			}
+        		}
+            }
+        }
+
         mHistory = new EditHistory();
         mHistory .setListener( new EditHistory.Listener() {
 			
@@ -681,7 +699,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         if ( !asTemplate )
         {
         	Map viewPages = new HashMap();
-            this .defaultView = new ViewModel();
             Element views = (Element) mXML .getElementsByTagName( "Viewing" ) .item( 0 );
             if ( views != null ) {
                 // make a notes page for each saved view
@@ -693,14 +710,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             		if ( node instanceof Element ) {
             			Element viewElem = (Element) node;
             			String name = viewElem .getAttribute( "name" );
-            			ViewModel view = new ViewModel( viewElem );
-            			if ( ( name == null || name .isEmpty() )
-            		    || ( "default" .equals( name ) ) )
+            			if ( name != null && name .isEmpty() && !( "default" .equals( name ) ) )
             			{
-            				this .defaultView = view;
-            			}
-            			else
+                			ViewModel view = new ViewModel( viewElem );
             				viewPages .put( name, view ); // named view to migrate to a lesson page
+            			}
             		}
             	}
             }

@@ -56,7 +56,7 @@ public abstract class Line extends Construction
         //   of ill-conditioned intersection computations
         Symmetry[] symms = getField() .getSymmetries();
         for ( int i = 0; i < symms.length; i++ ) {
-            Axis axis = symms[ i ] .getAxis( norm );  // TODO: this is BAD!  creating auto directions!
+            Axis axis = symms[ i ] .getAxis( norm );
             if ( axis != null )
             {
                 if ( ! axis .getDirection() .isAutomatic() )
