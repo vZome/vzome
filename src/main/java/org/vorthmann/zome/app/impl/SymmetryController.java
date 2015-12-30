@@ -12,14 +12,9 @@ import java.util.Map;
 
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.SymmetrySystem;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
@@ -183,87 +178,6 @@ public class SymmetryController extends DefaultController// implements RenderedM
             String styleName =  action .substring( "setStyle." .length() );
             this .symmetrySystem .setStyle( styleName );
             super .doAction( action, e ); // falling through so that rendering gets adjusted
-        }
-    }
-
-    public Element getXml( Document doc )
-    {
-        Element symmXml = this .symmetrySystem .getXml( doc );
-        // now layer on our controller state, as attributes and subelements
-        DomUtils .addAttribute( symmXml, "single", buildController .getProperty( "oneAtATime" ) );
-        NodeList nodes = symmXml .getChildNodes();
-        for ( int i = 0; i < nodes .getLength(); i++ ) {
-            Node node = nodes .item( i );
-            if ( node instanceof Element ) {
-                Element dirElem = (Element) node;
-                String name = dirElem .getAttribute( "name" );
-                Direction dir = this .symmetrySystem .getOrbits() .getDirection( name );
-                if ( availableOrbits .contains( dir ) )
-                    DomUtils .addAttribute( dirElem, "available", "true" );
-                if ( snapOrbits .contains( dir ) )
-                    DomUtils .addAttribute( dirElem, "snap", "true" );
-                if ( buildOrbits .contains( dir ) )
-                    DomUtils .addAttribute( dirElem, "build", "true" );
-                if ( renderOrbits .contains( dir ) )
-                    DomUtils .addAttribute( dirElem, "render", "true" );
-                {
-                    LengthController lengthModel = (LengthController) orbitLengths .get( dir );
-                    if ( lengthModel != null )
-                    {
-                        Element lengthElem = doc .createElement( "LengthModel" );
-                        lengthModel .getXml( lengthElem );
-                        dirElem .appendChild( lengthElem );
-                    }
-                }
-            }
-        }
-        return symmXml;
-    }
-
-    public void setXml( Element symmXml )
-    {
-        // The symmetrySystem has already been loaded from the same XML element,
-        //   so now we just need to set our controller state from the additional
-        //   attributes and subelements.
-
-        String oneAtATime = symmXml .getAttribute( "single" );
-        if ( oneAtATime == null || oneAtATime .isEmpty() )
-            oneAtATime = "true";
-        buildController .setProperty( "oneAtATime", oneAtATime );
-        
-        // make sure that the orbit sets have no leftovers from the constructor
-        availableOrbits .clear();
-        buildOrbits .clear();
-        snapOrbits .clear();
-        renderOrbits .clear();
-        
-        NodeList nodes = symmXml .getChildNodes();
-        for ( int i = 0; i < nodes .getLength(); i++ ) {
-            Node node = nodes .item( i );
-            if ( node instanceof Element ) {
-                Element dirElem = (Element) node;
-                String name = dirElem .getAttribute( "name" );
-                Direction dir = this .symmetrySystem .getOrbits() .getDirection( name );
-                
-                if ( dir == null )
-                    continue;  // an old, "unnamed_13"-style direction, with no prototype vector and thus no value
-
-                if ( "true" .equals( dirElem .getAttribute( "available" ) ) )
-                    availableController .toggleOrbit( dir );
-                if ( "true" .equals( dirElem .getAttribute( "snap" ) ) )
-                    snapController .toggleOrbit( dir );
-                if ( "true" .equals( dirElem .getAttribute( "build" ) ) )
-                    buildController .toggleOrbit( dir );
-                if ( "true" .equals( dirElem .getAttribute( "render" ) ) )
-                    renderController .toggleOrbit( dir );
-
-                Element length = DomUtils .getFirstChildElement( dirElem, "LengthModel" );
-                if ( length != null )
-                {
-                    LengthController lm = getLengthController( dir );
-                    lm .setXml( length );
-                }
-            }
         }
     }
     

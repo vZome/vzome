@@ -41,6 +41,7 @@ public class PickingController extends DefaultController implements Controller
         switch ( action ) {
 
         case "undoToManifestation":
+        case "symmTool-icosahedral":
         case "setSymmetryCenter":
         case "setSymmetryAxis":
         case "setWorkingPlaneAxis":
@@ -76,7 +77,8 @@ public class PickingController extends DefaultController implements Controller
 				break;
 
 			case "lookAtBall":
-			case "setSymmetryCenter":
+	        case "symmTool-icosahedral":
+	        case "setSymmetryCenter":
             	result[ i ] = pickedManifestation instanceof Connector;
 				break;
 

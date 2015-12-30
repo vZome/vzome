@@ -20,17 +20,32 @@ import javax.swing.JScrollPane;
 import org.vorthmann.ui.CardPanel;
 import org.vorthmann.ui.Controller;
 
-public class OrbitPanel extends JPanel
+public class OrbitPanel extends JPanel implements PropertyChangeListener
 {
-	public OrbitPanel( final Controller controller, final Controller orbitController, ControlActions enabler )
+	private Controller enabledOrbits, drawnOrbits;
+	private final ContextualMenu directionPopupMenu;
+	private final JPanel orbitTriangle, orbitCheckboxes;
+	private final CardPanel cardPanel;
+	
+	public OrbitPanel( final Controller selectedOrbits, final Controller drawnOrbits, ControlActions enabler )
 	{
-        final CardPanel cardPanel = new CardPanel();
-        final JPanel orbitCheckboxes = new JPanel();
-        final JPanel orbitTriangle = new JPanel()
+		this .enabledOrbits = selectedOrbits;
+		this .drawnOrbits = drawnOrbits;
+		
+		orbitTriangle = new JPanel()
         {
             public void paintComponent( Graphics graphics )
             {
-                controller .repaintGraphics( "orbits", graphics, getSize() );
+            	enabledOrbits .repaintGraphics( "orbits", graphics, getSize() );
+            }
+        };
+        orbitCheckboxes = new JPanel();
+        
+        final ActionListener indirection = new ActionListener()
+        {
+            public void actionPerformed( ActionEvent evt )
+            {
+            	enabledOrbits .actionPerformed( evt );
             }
         };
 
@@ -42,15 +57,15 @@ public class OrbitPanel extends JPanel
             {
                 JPanel row1 = new JPanel();
                 row1 .setLayout( new GridLayout( 0, 3 ) );
-                row1 .add( createButton( "None", "setNoDirections", controller ) );
-                final JCheckBox checkbox = createCheckbox( "single", "oneAtATime", controller );
-                if ( "true" .equals( controller .getProperty( "oneAtATime" ) ) )
+                row1 .add( createButton( "None", "setNoDirections", indirection ) );
+                final JCheckBox checkbox = createCheckbox( "single", "oneAtATime", indirection );
+                if ( "true" .equals( enabledOrbits .getProperty( "oneAtATime" ) ) )
                     checkbox .setSelected( true );
                 row1 .add( createButton( "All", "setAllDirections", new ActionListener()
                 {
                     public void actionPerformed( ActionEvent evt )
                     {
-                        controller .actionPerformed( evt );
+                    	indirection .actionPerformed( evt );
                         checkbox .setSelected( false );
                     }
                 } ) );
@@ -60,48 +75,19 @@ public class OrbitPanel extends JPanel
             this .add( controlStrip, BorderLayout.NORTH );
         }
         {
+            cardPanel = new CardPanel();
             cardPanel .add( "graphical", orbitTriangle );
             {
                 orbitCheckboxes .setLayout( new BoxLayout( orbitCheckboxes, 1 ) );
                 JScrollPane scrollPanel = new JScrollPane( orbitCheckboxes );
                 cardPanel .add( "textual", scrollPanel );
             }
-            if ( "true" .equals( controller .getProperty( "useGraphicalViews" ) ) )
-                cardPanel .showCard( "graphical" );
-            else
-                cardPanel .showCard( "textual" );
             this .add( cardPanel, BorderLayout.CENTER );
         }
-        orbitsChanged( controller, orbitController, orbitCheckboxes, orbitTriangle );
-
-        controller .addPropertyListener( new PropertyChangeListener()
-        {
-            public void propertyChange( PropertyChangeEvent event )
-            {
-                if ( "orbits" .equals( event .getPropertyName() ) )
-                    enabledChanged( controller, orbitCheckboxes, orbitTriangle );
-                else if ( "useGraphicalViews" .equals( event .getPropertyName() ) )
-                    if ( Boolean.TRUE .equals( event .getNewValue() ) )
-                        cardPanel .showCard( "graphical" );
-                    else
-                        cardPanel .showCard( "textual" );
-            }
-        } );
-        
-        orbitController .addPropertyListener( new PropertyChangeListener()
-        {
-            public void propertyChange( PropertyChangeEvent event )
-            {
-                if ( "orbits" .equals( event .getPropertyName() ) )
-                    orbitsChanged( controller, orbitController, orbitCheckboxes, orbitTriangle );
-            }
-        } );
-        
-        controller .getMouseTool() .attach( orbitTriangle );
 
         if ( enabler != null )
         {
-            ContextualMenu directionPopupMenu = new ContextualMenu();
+            directionPopupMenu = new ContextualMenu();
             directionPopupMenu.setLightWeightPopupEnabled( false );
 
             directionPopupMenu.add( enabler .setMenuAction( "rZomeOrbits",         new JMenuItem( "real Zome" ) ) );
@@ -109,19 +95,53 @@ public class OrbitPanel extends JPanel
             directionPopupMenu.add( enabler .setMenuAction( "usedOrbits",          new JMenuItem( "used in model" ) ) );
             directionPopupMenu.add( enabler .setMenuAction( "setAllDirections",    new JMenuItem( "all" ) ) );
             directionPopupMenu.add( enabler .setMenuAction( "configureDirections", new JMenuItem( "configure..." ) ) );
-
-            MouseListener orbitPopup = new ContextualMenuMouseListener( controller, directionPopupMenu );
-            
-            orbitTriangle .addMouseListener( orbitPopup );
         }
+        else
+        	directionPopupMenu = null;
+        
+        modeChanged( enabledOrbits .propertyIsTrue( "useGraphicalViews" ) );
+        systemChanged( selectedOrbits, drawnOrbits );
 	}
     
-    private void orbitsChanged( final Controller controller, final Controller orbitController, JPanel orbitCheckboxes, JPanel orbitTriangle )
+	void modeChanged( boolean graphical )
+	{
+		if ( graphical )
+            cardPanel .showCard( "graphical" );
+		else
+            cardPanel .showCard( "textual" );
+	}
+
+	public void systemChanged( Controller buildOrbits, Controller shownOrbits )
+	{
+        if ( directionPopupMenu != null )
+        	this .drawnOrbits .getMouseTool() .detach( orbitTriangle );
+        this .drawnOrbits .removePropertyListener( this );
+        this .enabledOrbits .removePropertyListener( this );
+
+        this .drawnOrbits = shownOrbits;
+		this .enabledOrbits = buildOrbits;
+		
+
+        enabledOrbits .addPropertyListener( this );
+        drawnOrbits .addPropertyListener( this );
+        
+        enabledOrbits .getMouseTool() .attach( orbitTriangle );
+
+        if ( directionPopupMenu != null )
+        {
+            MouseListener orbitPopup = new ContextualMenuMouseListener( enabledOrbits, directionPopupMenu );
+            orbitTriangle .addMouseListener( orbitPopup );
+        }
+        
+        orbitsChanged();
+    }
+
+	public void orbitsChanged()
     {
-        controller .actionPerformed( new ActionEvent( orbitTriangle, 0, "refreshDots" ) );
+		enabledOrbits .actionPerformed( new ActionEvent( orbitTriangle, 0, "refreshDots" ) );
         
         orbitCheckboxes .removeAll();
-        String[] dirNames = controller .getCommandList( "allOrbits" );
+        String[] dirNames = enabledOrbits .getCommandList( "allOrbits" );
         for ( int j = 0; j < dirNames.length; j++ )
         {
             final String orbitName = dirNames[ j ];
@@ -132,7 +152,7 @@ public class OrbitPanel extends JPanel
             {
                 public void paintComponent( Graphics graphics )
                 {
-                    controller .repaintGraphics( "oneOrbit." + orbitName, graphics, getSize() );
+                	enabledOrbits .repaintGraphics( "oneOrbit." + orbitName, graphics, getSize() );
                 }
             };
             colorSwatch .setMaximumSize( new Dimension( 60, 20 ) );
@@ -145,17 +165,17 @@ public class OrbitPanel extends JPanel
                 checkbox .setVisible( true );
                 checkbox .setSelected( false );
                 checkbox .setActionCommand( "toggleDirection." + orbitName );
-                checkbox .addActionListener( controller );
+                checkbox .addActionListener( enabledOrbits );
                 panel .add( checkbox, BorderLayout.CENTER );
             }
             orbitCheckboxes .add( panel );
         }
-        enabledChanged( controller, orbitCheckboxes, orbitTriangle );
+        enabledChanged();
     }
     
-    private void enabledChanged( Controller controller, JPanel orbitCheckboxes, JPanel orbitTriangle )
+    private void enabledChanged()
     {
-        String[] dirNames = controller .getCommandList( "orbits" );
+        String[] dirNames = enabledOrbits .getCommandList( "orbits" );
         for ( int i = 0; i < orbitCheckboxes .getComponentCount(); i++ ) {
             JPanel row  = (JPanel) orbitCheckboxes .getComponent( i );
             JCheckBox checkbox  = (JCheckBox) row .getComponent( 1 );
@@ -178,6 +198,27 @@ public class OrbitPanel extends JPanel
         //  This seems to address the problem.
         orbitCheckboxes .setVisible( false );
         orbitCheckboxes .setVisible( true );
+    }
+
+	@Override
+	public void propertyChange( PropertyChangeEvent event )
+	{
+    	switch ( event .getPropertyName() ) {
+
+    	case "orbits":
+            orbitsChanged();
+			break;
+
+    	case "useGraphicalViews":
+            if ( Boolean.TRUE .equals( event .getNewValue() ) )
+                cardPanel .showCard( "graphical" );
+            else
+                cardPanel .showCard( "textual" );
+			break;
+
+		default:
+			break;
+		}
     }
 
     protected static JButton createButton( String buttonText, String actionCommand, ActionListener listener )

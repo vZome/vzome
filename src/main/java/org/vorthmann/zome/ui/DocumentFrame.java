@@ -98,8 +98,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         controller .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
 
-        String fieldName = controller.getProperty( "field.name" );
-        
         // TODO: compute these booleans once here, and don't recompute in DocumentMenuBar
 
         this.readerPreview = controller .propertyIsTrue( "reader.preview" );
@@ -410,8 +408,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 modelArticleEditPanel .setLayout( modelArticleCardLayout );
                 if ( this .isEditor )
                 {
-                    String[] symmNames = controller.getCommandList( "symmetries." + fieldName );
-                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this, symmNames, controller, this );
+                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this, controller .getProperty( "symmetry" ), controller, this );
                     if ( this .fullPower )
                     {
                         tabbedPane .addTab( "build", buildPanel );

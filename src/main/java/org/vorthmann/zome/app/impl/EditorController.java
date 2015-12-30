@@ -24,14 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.media.jai.JAI;
 import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.MouseTool;
@@ -45,9 +41,6 @@ import org.vorthmann.ui.LeftMouseDragAdapter;
 import org.vorthmann.zome.export.java2d.Java2dExporter;
 import org.vorthmann.zome.export.java2d.Java2dSnapshot;
 import org.vorthmann.zome.render.java3d.Java3dSceneGraph;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -64,9 +57,7 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.Tool;
-import com.vzome.core.editor.UndoableEdit;
 import com.vzome.core.exporters.Exporter3d;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -86,7 +77,6 @@ import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.core.viewing.ViewModel;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
-import com.vzome.desktop.controller.TrackballViewPlatformModel;
 import com.vzome.desktop.controller.ViewPlatformModel;
 
 /**
@@ -106,7 +96,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
     private RenderedModel currentSnapshot;
 
-    private ViewPlatformModel mViewPlatform, trackballVPM;
+    private ViewPlatformModel mViewPlatform;
     
     private Lights sceneLighting;
     
@@ -121,8 +111,6 @@ public class EditorController extends DefaultController implements J3dComponentF
     private final DefaultApplication mApp;
 
     private Java2dSnapshot mSnapshot = null;
-
-    private Map<String,SymmetryController> symmetries = new HashMap<>();
 
     private boolean mRequireShift = false, showFrameLabels = false, useWorkingPlane = false;
 
@@ -143,9 +131,9 @@ public class EditorController extends DefaultController implements J3dComponentF
     private final ToolsController toolsController;
     
     private PartsController partsController;
-    
-    private TreeMap designs;
-    
+
+    private Map<String,SymmetryController> symmetries = new HashMap<>();
+
     private String designClipboard;
 
     private boolean editingModel;
@@ -261,23 +249,12 @@ public class EditorController extends DefaultController implements J3dComponentF
         else
         	document .addPropertyChangeListener( this .articleChanges );
 
-        sceneLighting = new Lights( app .getLights() );
-        if ( ! newDocument )
-        {
-        	// TODO move sceneLighting into DocumentModel
-        	NodeList nl = this .document .getLoadXml() .getElementsByTagName( "sceneModel" );
-        	if ( nl .getLength() != 0 )
-        		sceneLighting = new Lights( (Element) nl .item( 0 ) );
-        }
+        sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
 
         // this seems backwards, I know... the TrackballViewPlatformModel is the main
         // model, and only forwards two events to trackballVPM
-        trackballVPM = new ViewPlatformModel();
-        trackballVPM.setMagnification( 1f );
-
-        mViewPlatform = new TrackballViewPlatformModel( trackballVPM );
-        mViewPlatform.setNextController( this );
-        mViewPlatform.setMagnification( 1f );
+        mViewPlatform = new ViewPlatformModel( document .getViewModel() );
+        mViewPlatform .setNextController( this );
 
         RenderingViewer.Factory rvFactory = app .getJ3dFactory();
         mainScene = rvFactory .createRenderingChanges( sceneLighting, true, true );
@@ -309,57 +286,21 @@ public class EditorController extends DefaultController implements J3dComponentF
         useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
         showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
 
-        // RenderingViewer.Factory factory = app .getRenderingViewerFactory();
-
-        // mRenderedModel .addListener( colors ); // TODO this is weird
-
         AlgebraicField field = this .document .getField();
-        Symmetry symms[] = field .getSymmetries();
-        Map<String,SymmetrySystem> systems = document .getSymmetrySystems();
-        for ( int i = 0; i < symms.length; i++ ) {
-        	SymmetrySystem system = systems .get( symms[i] .getName() );
-            SymmetryController symmControl = new SymmetryController( this, system );
-            this.symmetries.put( symms[i].getName(), symmControl );
-            if ( i == 0 ) {
-                symmetryController = symmControl;
-                setRenderingStyle();
-                mControlBallModel = app .getSymmetryModel( symms[i] );
-                mControlBallModel .addListener( mControlBallScene );
-            }
-        }
+        previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
+        
+        lessonController = new LessonController( document .getLesson(), mViewPlatform );
+        lessonController .setNextController( this );
 
-        // can't do this before the setRenderingStyle() call just above
+        setSymmetrySystem( this .document .getSymmetrySystem() );
+
+        // can't do this before the setSymmetrySystem() call just above
         if ( mRenderedModel != null )
         {
         	this .document .setRenderedModel( mRenderedModel );
         	this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
         }
 
-        trackballVPM.setSnapper( symmetryController.getSnapper() );
-        mViewPlatform.setSnapper( symmetryController.getSnapper() );
-
-        previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
-        
-        lessonController = new LessonController( document .getLesson(), mViewPlatform );
-        lessonController .setNextController( this );
-
-        Element xml = this .document .getLoadXml();
-        if ( xml != null ) {
-            NodeList nl = xml .getElementsByTagName( "Viewing" );
-            if ( nl .getLength() != 0 )
-                // this will now restore just the anonymous view
-            	mViewPlatform .setXml( (Element) nl .item( 0 ) );
-            
-            nl = xml .getElementsByTagName( "SymmetrySystem" );
-            if ( nl .getLength() != 0 ) {
-            	Element symmXml = (Element) nl .item( 0 );
-                String system = symmXml .getAttribute( "name" );
-                SymmetryController symmControl = (SymmetryController) symmetries.get( system );
-                symmControl.setXml( symmXml );
-                setSymmetry( symmControl );
-            }
-        }
-        
         partsController = new PartsController( symmetryController .getOrbitSource() );
         partsController .setNextController( this );
         mRenderedModel .addListener( partsController );
@@ -517,9 +458,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
 				protected void dragFinished( Manifestation target, boolean b )
                 {
-                    UndoableEdit buildStrut = previewStrut .finishPreview( document );
-                    if ( buildStrut != null )
-                        document .performAndRecord( buildStrut );
+                    previewStrut .finishPreview( document );
                 }
             } );
             if ( editingModel )
@@ -560,7 +499,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             // mRenderedModel .setFactory( mViewer .getSceneGraphFactory() );
             // mRenderedModel .setTopGroup( mViewer .getSceneGraphRoot() );
 
-            mViewPlatform .init();
+            mViewPlatform .updateViewers();
 //            currentDesign .render( true, null );   // I think this is not necessary now
             return canvas;
         }
@@ -575,14 +514,14 @@ public class EditorController extends DefaultController implements J3dComponentF
             canvas .addMouseListener( trackball );
             canvas .addMouseMotionListener( trackball );
 
-            RenderingViewer viewer = rvFactory.createRenderingViewer( mControlBallScene, canvas );
-            trackballVPM .addViewer( viewer );
+            RenderingViewer viewer = rvFactory .createRenderingViewer( mControlBallScene, canvas );
+            mViewPlatform .addViewer( new TrackballRenderingViewer( viewer ) );
 
             // mControlBallScene .reset();
             for ( Iterator rms = mControlBallModel.getRenderedManifestations(); rms.hasNext(); )
                 mControlBallScene.manifestationAdded( (RenderedManifestation) rms.next() );
 
-            trackballVPM.init(); // TODO this is odd here
+            mViewPlatform .updateViewers();
             return canvas;
         }
         else
@@ -598,18 +537,23 @@ public class EditorController extends DefaultController implements J3dComponentF
         }
     }
 
-    private void setSymmetry( SymmetryController system )
+    private void setSymmetrySystem( SymmetrySystem symmetrySystem )
     {
-        symmetryController = system;
+    	String name =  symmetrySystem .getName();
+        symmetryController = this .symmetries .get( name );
+        if ( symmetryController == null ) {
+        	symmetryController = new SymmetryController( this, symmetrySystem );
+        	this .symmetries .put( name, symmetryController );
+        }
+
         mControlBallModel = mApp.getSymmetryModel( symmetryController.getSymmetry() );
         if ( mControlBallScene != null ) {
             mControlBallScene.reset();
             for ( Iterator rms = mControlBallModel.getRenderedManifestations(); rms.hasNext(); )
                 mControlBallScene.manifestationAdded( (RenderedManifestation) rms.next() );
         }
-        trackballVPM.setSnapper( symmetryController.getSnapper() );
-        mViewPlatform.setSnapper( symmetryController.getSnapper() );
-        properties().firePropertyChange( "symmetry", null, system.getSymmetry().getName() ); // notify UI, so cardpanel can flip, or whatever
+        mViewPlatform .setSnapper( symmetryController.getSnapper() );
+        properties().firePropertyChange( "symmetry", null, name ); // notify UI, so cardpanel can flip, or whatever
         setRenderingStyle();
     }
 
@@ -634,7 +578,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             boolean asTemplate = propertyIsTrue( "as.template" );
 
             // used to finish loading a model history on a non-UI thread
-            this .document .loadXml( openUndone, asTemplate );
+            this .document .finishLoading( openUndone, asTemplate );
                         
             // mainScene is not listening to mRenderedModel yet, so batch the rendering changes to it
             this .syncRendering();
@@ -772,7 +716,8 @@ public class EditorController extends DefaultController implements J3dComponentF
 
             else if ( action.startsWith( "setSymmetry." ) ) {
                 String system = action.substring( "setSymmetry.".length() );
-                setSymmetry( (SymmetryController) symmetries .get( system ) );
+                this .document .setSymmetrySystem( system );
+                setSymmetrySystem( this .document .getSymmetrySystem() );
             }
 
             else if ( action.equals( "copyThisView" ) )
@@ -869,11 +814,9 @@ public class EditorController extends DefaultController implements J3dComponentF
             		else 
             			action += "-golden"; 
             		 	 
-            	UndoableEdit edit = document .createEdit( action );
-                if ( edit == null )
+            	boolean handled = document .doEdit( action );
+                if ( ! handled )
                     super .doAction( action, e );
-                else
-                    document .performAndRecord( edit );
             }
 
  
@@ -945,15 +888,13 @@ public class EditorController extends DefaultController implements J3dComponentF
             final Colors colors = mApp.getColors();
 
             if ( "save".equals( command ) )
-            {
-            	Document doc = getSaveXml();
-            	
+            {            	
                 File dir = file .getParentFile();
                 if ( ! dir .exists() )
                     dir .mkdirs();
                 
                 FileOutputStream out = new FileOutputStream( file );
-                DomUtils .serialize( doc, out );
+                document .serialize( out );
                 out.close();
                 // just did a save, so lets record the document change count again,
                 //  so isEdited() will return false until more changes occur.
@@ -1261,33 +1202,8 @@ public class EditorController extends DefaultController implements J3dComponentF
             all .addAll( symmTools );
             return (String[]) all .toArray( new String[0] );
         }
-        
-        if ( "designs" .equals( listName ) ) {
-            Set<?> dkSet = designs.keySet();
-            return (String[]) dkSet.toArray( );
-		}
         return super.getCommandList( listName );
     }
-
-	public Document getSaveXml() throws ParserConfigurationException
-	{
-    	DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
-    	factory .setNamespaceAware( true );
-    	DocumentBuilder builder = factory .newDocumentBuilder();
-        Document doc = builder .newDocument();
-
-        Element modelXml = document .getSaveXml( doc );
-        doc .appendChild( modelXml );
-
-        Element result = sceneLighting .getXml( doc );
-        modelXml .appendChild( result );
-        result = mViewPlatform .getXml( doc );
-        modelXml .appendChild( result );
-        result = symmetryController .getXml( doc );  // TODO load this with the document
-        modelXml .appendChild( result );
-                
-        return doc;
-	}
 	
 	void doManifestationAction( Manifestation pickedManifestation, String action )
 	{
@@ -1301,6 +1217,13 @@ public class EditorController extends DefaultController implements J3dComponentF
             case "undoToManifestation":
                 this .document .undoToManifestation( pickedManifestation );
     			break;
+
+//            case "symmTool-icosahedral":
+//                Symmetry symmetry = ((SymmetryController) symmetries .get( "icosahedral" )) .getSymmetry();
+//
+//                this .document .createTool( "icosahedral.99/", "icosahedral", toolsController, symmetry );
+//                this .document .createAndApplyTool( pickedManifestation, "icosahedral", toolsController, symmetry );
+//    			break;
 
             case "setSymmetryCenter":
                 this .document .setParameter( singleConstruction, "ball" );

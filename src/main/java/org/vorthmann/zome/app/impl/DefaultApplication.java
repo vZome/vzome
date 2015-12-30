@@ -12,8 +12,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.vecmath.Vector3f;
-
 import org.vorthmann.ui.ApplicationController;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
@@ -27,7 +25,6 @@ import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
@@ -150,7 +147,7 @@ public class DefaultApplication extends DefaultController implements Application
     
     // Shapes
 
-    private final Lights mLights = new Lights();
+    private Lights mLights;
 
     private final Map<Symmetry, RenderedModel> mSymmetryModels = new HashMap<>();
 
@@ -192,14 +189,8 @@ public class DefaultApplication extends DefaultController implements Application
         modelApp = new Application( enableCommands, failures, props );
         
         Colors colors = modelApp .getColors();
-
-        for ( int i = 1; i <= 3; i++ ) {
-            Color color = colors .getColorPref( "light.directional." + i );
-            Vector3f dir = new Vector3f( colors .getVectorPref( "direction.light." + i ) );
-            mLights.addDirectionLight( color, dir );
-        }
-        mLights .setAmbientColor( colors .getColorPref( "light.ambient" ) );
-        mLights .setBackgroundColor( colors .getColor( Colors.BACKGROUND ) );
+        
+        this .mLights = modelApp .getLights();
 
         if ( ! "true".equals( props .getProperty( "no.rendering" ) )
         &&   ! "true" .equals( props .getProperty( "no.viewing" ) )
@@ -311,7 +302,7 @@ public class DefaultApplication extends DefaultController implements Application
     			protected void resetAttributes(RenderedManifestation rm, 	 	 
     					boolean justShape, Connector m) {} 	 	 
     		} .withColorPanels( false ) ); 
-    		document .loadXml( false, false );
+    		document .finishLoading( false, false );
             return document .getRenderedModel();
         } catch ( Exception e ) {
             throw new RuntimeException( e );

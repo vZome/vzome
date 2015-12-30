@@ -36,7 +36,7 @@ public class ViewPlatformControlPanel extends JPanel {
     
     private static final float MAG_PER_TICKS = -50f, MAX_MAG = 4f, MIN_MAG = -2f;
 
-private JPanel trackpad;
+    private JPanel trackpad;
     
     private static int magToTicks( float magnification )
     {

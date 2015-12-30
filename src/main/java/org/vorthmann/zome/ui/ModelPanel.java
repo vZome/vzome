@@ -257,6 +257,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 
 			this .addSeparator();
 
+			this .add( setMenuAction( "symmTool-icosahedral", new JMenuItem( "Apply Icosahedral Symmetry" ) ) );
 			this .add( setMenuAction( "setSymmetryCenter", new JMenuItem( "Set Symmetry Center" ) ) );
 			this .add( setMenuAction( "setSymmetryAxis", new JMenuItem( "Set Symmetry Axis" ) ) );
 

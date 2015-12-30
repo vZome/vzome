@@ -301,7 +301,6 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
             controller .setProperty( "showStrutScales", "true" );
         }
     }
-    
 
     public void propertyChange( PropertyChangeEvent e )
     {

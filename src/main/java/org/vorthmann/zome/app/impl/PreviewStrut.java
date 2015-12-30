@@ -15,7 +15,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.StrutCreation;
-import com.vzome.core.editor.UndoableEdit;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -55,7 +54,7 @@ public class PreviewStrut implements PropertyChangeListener
         rendering = new RenderedModel( field, true );
         TransparentRendering transp = new TransparentRendering( mainScene );
         rendering .addListener( transp );
-        model = new RealizedModel( new Projection.Default( field ) );
+        model = new RealizedModel( field, new Projection.Default( field ) );
         model .addListener( rendering );
 
         zoneBall = new ZoneVectorBall( viewPlatform )
@@ -137,18 +136,17 @@ public class PreviewStrut implements PropertyChangeListener
         length .addPropertyListener( this );
     }
 
-    public UndoableEdit finishPreview( DocumentModel document )
+    public void finishPreview( DocumentModel document )
     {
         if ( length == null )
-            return null;
+            return;
         length .removePropertyListener( this );
         strut .undo();
         strut = null;
-        UndoableEdit result = document .createStrut( point, zone, length .getValue() );
+        document .createStrut( point, zone, length .getValue() );
         point = null;
         zone = null;
         length = null;
-        return result;
     }
 
     public LengthController getLengthModel()

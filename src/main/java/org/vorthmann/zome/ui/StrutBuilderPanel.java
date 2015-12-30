@@ -9,7 +9,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.vorthmann.ui.CardPanel;
 import org.vorthmann.ui.Controller;
 
 
@@ -17,122 +16,83 @@ import org.vorthmann.ui.Controller;
 public class StrutBuilderPanel extends JPanel
 {
     private final Controller controller;
-    private final CardPanel orbitCardPanel;
     private final NewLengthPanel lengthPanel;
-
+    private final OrbitPanel orbitPanel;
     
-    public StrutBuilderPanel( JFrame frame, final String[] symmNames, final Controller controller, ControlActions enabler )
+    public StrutBuilderPanel( JFrame frame, final String symmName, final Controller controller, ControlActions enabler )
     {
         this .controller = controller;
         this .setLayout( new BorderLayout() );
         
         // here's the containment layout...
-        {
+        
         	JPanel constraintsPanel = new JPanel();
         	constraintsPanel .setLayout( new BorderLayout() );
-        	{
-        		orbitCardPanel = new CardPanel();
-        		constraintsPanel .add( orbitCardPanel, BorderLayout.CENTER );
-        		JPanel usePlanePanel = new JPanel();
+        	
+                final Controller symmController = this .controller .getSubController( "symmetry." + symmName );
+                
+                final Controller orbitController = symmController .getSubController( "buildOrbits" );
+                {
+                	orbitPanel = new OrbitPanel( orbitController, symmController .getSubController( "availableOrbits" ), enabler );
+                	orbitPanel .setBorder( BorderFactory .createTitledBorder( "strut directions" ) );
+            		constraintsPanel .add( orbitPanel, BorderLayout.CENTER );
+                }
+
+                JPanel usePlanePanel = new JPanel();
         		usePlanePanel .setLayout( new BorderLayout() );
         		final JCheckBox usePlaneCheckbox = new JCheckBox( "Use working plane" );
         		usePlaneCheckbox .setEnabled( controller .propertyIsTrue( "workingPlaneDefined" ) );
         		usePlaneCheckbox .setSelected( controller .propertyIsTrue( "useWorkingPlane" ) );
         		usePlaneCheckbox .addActionListener( controller );
         		usePlaneCheckbox .setActionCommand( "toggleWorkingPlane" );
-        		controller .addPropertyListener( new PropertyChangeListener() {
-					
-					@Override
-					public void propertyChange( PropertyChangeEvent event )
-					{
-	                    if ( "workingPlaneDefined" .equals( event .getPropertyName() ) )
-	                    {
-	                		usePlaneCheckbox .setEnabled( controller .propertyIsTrue( "workingPlaneDefined" ) );
-	                    }
-	                    else if ( "useWorkingPlane" .equals( event .getPropertyName() ) )
-	                    {
-	                		usePlaneCheckbox .setSelected( controller .propertyIsTrue( "useWorkingPlane" ) );
-	                    }
-					}
-				});
         		usePlanePanel .add( usePlaneCheckbox, BorderLayout.EAST );
         		constraintsPanel .add( usePlanePanel, BorderLayout.NORTH );
-        	}
+        	
             this .add( constraintsPanel, BorderLayout.CENTER );
-        }
+        
         {
             lengthPanel = new NewLengthPanel( frame );
             controller .addPropertyListener( lengthPanel );
             lengthPanel .setBorder( BorderFactory .createTitledBorder( "strut size" ) );
             this .add( lengthPanel, BorderLayout.SOUTH );
         }
+        
+        systemChanged( symmName );
 
-        // now add the cards for each symmetry
-        for ( int i = 0; i < symmNames.length; i++ )
+        this .controller .addPropertyListener( new PropertyChangeListener()
         {
-            final String system = symmNames[ i ];
-            final Controller symmController = this .controller .getSubController( "symmetry." + system );
-            
-            final Controller orbitController = symmController .getSubController( "buildOrbits" );
+            public void propertyChange( PropertyChangeEvent event )
             {
-                JPanel panel = new OrbitPanel( orbitController, symmController .getSubController( "availableOrbits" ), enabler );
-                panel .setBorder( BorderFactory .createTitledBorder( "strut directions" ) );
-                orbitCardPanel .add( system, panel );
-            }
-            
-            symmController .addPropertyListener( new PropertyChangeListener()
-            {
-                public void propertyChange( PropertyChangeEvent event )
-                {
-                    if ( "orbits" .equals( event .getPropertyName() ) )
-                    {
-//                        String dirName = orbitController .getProperty( "selectedOrbit" );
-//                        if ( dirName == null )
-//                            lengthCardPanel .setVisible( false );
-//                        else {
-//                            lengthCardPanel .setVisible( true );
-//                            lengthCardPanel .showCard( system + "." + dirName );
-//                        }
-                    }
-                }
-            } );
-            orbitController .addPropertyListener( new PropertyChangeListener()
-            {
-                public void propertyChange( PropertyChangeEvent evt )
-                {
-                    if ( "orbits" .equals( evt .getPropertyName() ) )
-                        changeOrbit( orbitController );
-                
-                    if ( "selectedOrbit" .equals( evt .getPropertyName() ) )
-                        changeOrbit( orbitController );
-                }
-            } );
-        }
-        String system = controller .getProperty( "symmetry" );
-        changeSystem( system );
+            	switch ( event .getPropertyName() ) {
 
-        controller .addPropertyListener( new PropertyChangeListener()
-        {
-            public void propertyChange( PropertyChangeEvent evt )
-            {
-                if ( "symmetry" .equals( evt .getPropertyName() ) )
-                {
-                    String system = (String) evt .getNewValue();
-                    changeSystem( system );
-                }
+            	case "symmetry":
+                    String system = (String) event .getNewValue();
+                    systemChanged( system );
+					break;
+
+            	case "useGraphicalViews":
+            		orbitPanel .modeChanged( Boolean.TRUE .equals( event .getNewValue() ) );
+					break;
+
+            	case "workingPlaneDefined":
+            		usePlaneCheckbox .setEnabled( Boolean.TRUE .equals( event .getNewValue() ) );
+					break;
+
+            	case "useWorkingPlane":
+            		usePlaneCheckbox .setSelected( Boolean.TRUE .equals( event .getNewValue() ) );
+					break;
+
+				default:
+					break;
+				}
             }
         } );
     }
 
-    private void changeSystem( String system )
+    private void systemChanged( String system )
     {
-        orbitCardPanel .showCard( system );
         Controller symmController = this .controller .getSubController( "symmetry." + system );
-        changeOrbit( symmController );
-    }
-    
-    private void changeOrbit( Controller symmController )
-    {
+        orbitPanel .systemChanged( symmController .getSubController( "buildOrbits" ), symmController .getSubController( "availableOrbits" ) );
         final Controller orbitController = symmController .getSubController( "buildOrbits" );
         String dirName = orbitController .getProperty( "selectedOrbit" );
         if ( dirName == null )
@@ -142,5 +102,4 @@ public class StrutBuilderPanel extends JPanel
             lengthPanel .setVisible( true );
         }
     }
-
 }
