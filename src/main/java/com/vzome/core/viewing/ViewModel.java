@@ -79,10 +79,13 @@ public class ViewModel implements Renderable
 
     public ViewModel()
     {
+    	this .setMagnification( 1f );
     }
     
     public ViewModel( ViewModel prototype )
     {
+    	this();
+    	
         this .mLookAtPoint = new Point3d( prototype .mLookAtPoint );
         this .mNear = prototype .mNear;
         this .mFar = prototype .mFar;
@@ -377,6 +380,11 @@ public class ViewModel implements Renderable
 		mWidth = mWidth * ratio;
 	}
 
+	public void setMagnification( float exp )
+	{
+		setViewpointDistance( (float) ( ORIG_DISTANCE * Math .pow( Math.E, exp ) ) );
+	}
+
     public boolean isStereo()
     {
         return mStereoAngle != 0d;
@@ -438,6 +446,8 @@ public class ViewModel implements Renderable
 
     public ViewModel( Element viewElem )
     {
+    	this();
+    	
         String str = viewElem .getAttribute( "near" );
         this .mNear = Double .parseDouble( str );
         str = viewElem .getAttribute( "far" );

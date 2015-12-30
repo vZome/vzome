@@ -710,7 +710,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             		if ( node instanceof Element ) {
             			Element viewElem = (Element) node;
             			String name = viewElem .getAttribute( "name" );
-            			if ( name != null && name .isEmpty() && !( "default" .equals( name ) ) )
+            			if ( name != null && ! name .isEmpty() && ! "default" .equals( name ) )
             			{
                 			ViewModel view = new ViewModel( viewElem );
             				viewPages .put( name, view ); // named view to migrate to a lesson page
