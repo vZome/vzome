@@ -84,10 +84,10 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.ThumbnailRenderer;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
-import com.vzome.desktop.controller.ViewPlatformModel;
+import com.vzome.desktop.controller.CameraController;
 
 /**
  * Description here.
@@ -106,7 +106,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
     private RenderedModel currentSnapshot;
 
-    private ViewPlatformModel mViewPlatform;
+    private CameraController mViewPlatform;
     
     private Lights sceneLighting;
     
@@ -148,7 +148,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
     private boolean editingModel;
 
-    private ViewModel currentView;
+    private Camera currentView;
 
     private MouseTool lessonPageClick, articleModeMainTrackball, modelModeMainTrackball;
 
@@ -233,7 +233,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         		}
         		else if ( "currentView" .equals( change .getPropertyName() ) )
         		{
-        			ViewModel newView = (ViewModel) change .getNewValue();
+        			Camera newView = (Camera) change .getNewValue();
         			if ( ! newView .equals( mViewPlatform .getView() ) )
         				mViewPlatform .restoreView( newView );
         		}
@@ -263,7 +263,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
         // this seems backwards, I know... the TrackballViewPlatformModel is the main
         // model, and only forwards two events to trackballVPM
-        mViewPlatform = new ViewPlatformModel( document .getViewModel() );
+        mViewPlatform = new CameraController( document .getViewModel() );
         mViewPlatform .setNextController( this );
 
         RenderingViewer.Factory rvFactory = app .getJ3dFactory();

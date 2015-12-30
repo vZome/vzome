@@ -27,7 +27,7 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 
 /**
@@ -37,7 +37,7 @@ import com.vzome.core.viewing.ViewModel;
  */
 public class Java2dExporter extends Exporter3d
 {
-	private final ViewModel view;
+	private final Camera view;
 	
 	private final Vector3f[] lightDirs = new Vector3f[3];
 	private final Color[] lightColors = new Color[3];
@@ -50,7 +50,7 @@ public class Java2dExporter extends Exporter3d
      * @param lights
      * @param model
      */
-    public Java2dExporter( ViewModel view, Colors colors, Lights lights, RenderedModel model )
+    public Java2dExporter( Camera view, Colors colors, Lights lights, RenderedModel model )
     {
         super( view, colors, lights, model );
         
@@ -185,7 +185,7 @@ public class Java2dExporter extends Exporter3d
      * 
      * @param point
      */
-    public void mapWorldToScreen( ViewModel view, Point3f point )
+    public void mapWorldToScreen( Camera view, Point3f point )
     {
         Matrix4d viewMatrix = new Matrix4d();
         this .view .getViewTransform( viewMatrix, 0d );
@@ -207,7 +207,7 @@ public class Java2dExporter extends Exporter3d
         point .project( new Point4f( p4 ) );
     }
 
-    private Vector3f mapCoordinates( RealVector rv, int height, int width, AlgebraicField field, ViewModel view )
+    private Vector3f mapCoordinates( RealVector rv, int height, int width, AlgebraicField field, Camera view )
     {
         float xscale = width/2f;
         Point3f vr = new Point3f( (float)rv.x, (float)rv.y, (float)rv.z );

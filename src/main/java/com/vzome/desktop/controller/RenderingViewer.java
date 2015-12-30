@@ -13,7 +13,7 @@ import com.vzome.core.render.ManifestationPicker;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
 
-public interface RenderingViewer extends ViewPlatformModel.Viewer, ManifestationPicker
+public interface RenderingViewer extends CameraController.Viewer, ManifestationPicker
 {
     void pickPoint( MouseEvent e, Point3d imagePt, Point3d eyePt );
 	

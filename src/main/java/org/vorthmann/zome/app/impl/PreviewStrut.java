@@ -24,7 +24,7 @@ import com.vzome.core.model.RealizedModel;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.render.TransparentRendering;
-import com.vzome.desktop.controller.ViewPlatformModel;
+import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.ZoneVectorBall;
 
 public class PreviewStrut implements PropertyChangeListener
@@ -49,7 +49,7 @@ public class PreviewStrut implements PropertyChangeListener
     
     private double[] workingPlaneDual = new double[4]; // a GA homogeneous vector for the dual of the working plane
     
-    public PreviewStrut( AlgebraicField field, RenderingChanges mainScene, ViewPlatformModel viewPlatform )
+    public PreviewStrut( AlgebraicField field, RenderingChanges mainScene, CameraController viewPlatform )
     {
         rendering = new RenderedModel( field, true );
         TransparentRendering transp = new TransparentRendering( mainScene );

@@ -4,31 +4,31 @@ import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 
-import com.vzome.core.viewing.ViewModel;
-import com.vzome.desktop.controller.ViewPlatformModel;
-import com.vzome.desktop.controller.ViewPlatformModel.Viewer;
+import com.vzome.core.viewing.Camera;
+import com.vzome.desktop.controller.CameraController;
+import com.vzome.desktop.controller.CameraController.Viewer;
 
 /**
- * A ViewPlatformModel.Viewer that only changes rotations.
+ * A CameraController.Viewer that only changes rotations.
  * 
- * It is connected to the ViewModel to rotate the trackball.
+ * It is connected to the Camera to rotate the trackball.
  * 
  * @author vorth
  *
  */
-public class TrackballRenderingViewer implements ViewPlatformModel.Viewer
+public class TrackballRenderingViewer implements CameraController.Viewer
 {
-	private final ViewPlatformModel.Viewer delegate;
+	private final CameraController.Viewer delegate;
 	
 	private final Vector3d translation;
 
-	public TrackballRenderingViewer( ViewPlatformModel.Viewer delegate )
+	public TrackballRenderingViewer( CameraController.Viewer delegate )
 	{
 		this .delegate = delegate;
 		
 		this .translation = new Vector3d();
 		Matrix4d matrix = new Matrix4d();
-		ViewModel defaultCamera = new ViewModel();
+		Camera defaultCamera = new Camera();
 		defaultCamera .setMagnification( 1.0f );
 		defaultCamera .getViewTransform( matrix, 0d );
 		matrix .get( translation ); // save the default translation to apply on every update below

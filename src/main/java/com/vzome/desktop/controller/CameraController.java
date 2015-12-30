@@ -25,13 +25,13 @@ import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.Trackball;
 import org.vorthmann.ui.DefaultController;
 
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 /**
  * In this view model, the frustum shape is generally held constant
  * as other parameters are varied.
  */
-public class ViewPlatformModel extends DefaultController
+public class CameraController extends DefaultController
 {
 	/**
 	 * The original frustum.
@@ -44,13 +44,13 @@ public class ViewPlatformModel extends DefaultController
 	
 	protected static final Vector3f ORIG_UP = new Vector3f(0,1,0);
 	
-	private ViewModel mParameters;
+	private Camera model;
 
-    private ViewModel copied = null;
+    private Camera copied = null;
     
 	protected final List mViewers = new ArrayList();
 	
-	private final ViewModel initialView;
+	private final Camera initialCamera;
 
     public interface Snapper
     {
@@ -77,31 +77,31 @@ public class ViewPlatformModel extends DefaultController
 	 */
 	public void setPerspective( boolean value )
 	{
-		mParameters .setPerspective( value );
+		model .setPerspective( value );
 		updateViewersTransformation();
 		updateViewersProjection();
 	}
     		
 	public void getViewOrientation( Vector3d lookDir, Vector3d upDir )
 	{
-		mParameters .getViewOrientation( lookDir, upDir );
+		model .getViewOrientation( lookDir, upDir );
 	}
     
     
-    public void addViewer( ViewPlatformModel.Viewer viewer )
+    public void addViewer( CameraController.Viewer viewer )
     {
         mViewers .add( viewer );
     }
     
-    public void removeViewer( ViewPlatformModel.Viewer viewer )
+    public void removeViewer( CameraController.Viewer viewer )
     {
         mViewers .remove( viewer );
     }
     
-    public ViewPlatformModel( ViewModel init )
+    public CameraController( Camera init )
     {
-    	mParameters = init;
-        initialView = new ViewModel( mParameters );
+    	model = init;
+        initialCamera = new Camera( model );
     }
     
     public void updateViewers()
@@ -111,30 +111,30 @@ public class ViewPlatformModel extends DefaultController
 	}
     
     // TODO get rid of this
-    public ViewModel getView()
+    public Camera getView()
     {
-        return new ViewModel( mParameters );
+        return new Camera( model );
     }
 
-    public ViewModel restoreView( ViewModel view )
+    public Camera restoreView( Camera view )
     {
         if ( view == null )
-            return mParameters;
-        boolean wasPerspective = mParameters .isPerspective();
-        boolean wasStereo = mParameters .isStereo();
-        float oldMag = mParameters .getMagnification();
-        mParameters = view;
+            return model;
+        boolean wasPerspective = model .isPerspective();
+        boolean wasStereo = model .isStereo();
+        float oldMag = model .getMagnification();
+        model = view;
         updateViewersTransformation();
         updateViewersProjection();
 
-        if ( wasPerspective != mParameters .isPerspective() )
-            properties() .firePropertyChange( "perspective", wasPerspective, mParameters .isPerspective() );
-        if ( wasStereo != mParameters .isStereo() )
-            properties() .firePropertyChange( "stereo", wasStereo, mParameters .isStereo() );
-        if ( oldMag != mParameters .getMagnification() )
-            properties() .firePropertyChange( "magnification", Float .toString( oldMag ), Float .toString( mParameters .getMagnification() ) );
+        if ( wasPerspective != model .isPerspective() )
+            properties() .firePropertyChange( "perspective", wasPerspective, model .isPerspective() );
+        if ( wasStereo != model .isStereo() )
+            properties() .firePropertyChange( "stereo", wasStereo, model .isStereo() );
+        if ( oldMag != model .getMagnification() )
+            properties() .firePropertyChange( "magnification", Float .toString( oldMag ), Float .toString( model .getMagnification() ) );
         
-        return mParameters;
+        return model;
     }
 
 	private void updateViewersTransformation()
@@ -143,37 +143,37 @@ public class ViewPlatformModel extends DefaultController
             return;
 		Matrix4d trans = new Matrix4d();
 		
-		mParameters .getViewTransform( trans, 0d );
+		model .getViewTransform( trans, 0d );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            ((ViewPlatformModel.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .MONOCULAR );
+            ((CameraController.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .MONOCULAR );
 		
-        mParameters .getStereoViewTransform( trans, Viewer .LEFT_EYE );
+        model .getStereoViewTransform( trans, Viewer .LEFT_EYE );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            ((ViewPlatformModel.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .LEFT_EYE );
+            ((CameraController.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .LEFT_EYE );
         
-        mParameters .getStereoViewTransform( trans, Viewer .RIGHT_EYE );
+        model .getStereoViewTransform( trans, Viewer .RIGHT_EYE );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            ((ViewPlatformModel.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .RIGHT_EYE );
+            ((CameraController.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .RIGHT_EYE );
 	}
 	
 	private void updateViewersProjection()
 	{
         if ( mViewers .size() == 0 )
             return;
-        double near = mParameters .getNearClipDistance();
-        double far = mParameters .getFarClipDistance();
-		if ( ! mParameters .isPerspective() ) {
-			double edge = mParameters .getWidth() / 2;
+        double near = model .getNearClipDistance();
+        double far = model .getFarClipDistance();
+		if ( ! model .isPerspective() ) {
+			double edge = model .getWidth() / 2;
             for ( int i = 0; i < mViewers .size(); i++ )
-                ((ViewPlatformModel.Viewer) mViewers .get( i )) .setOrthographic( edge, near, far );
+                ((CameraController.Viewer) mViewers .get( i )) .setOrthographic( edge, near, far );
 		}
 		else {
-			double field = mParameters .getFieldOfView();
+			double field = model .getFieldOfView();
             for ( int i = 0; i < mViewers .size(); i++ )
-                ((ViewPlatformModel.Viewer) mViewers .get( i )) .setPerspective( field, 1.0d, near, far );
+                ((CameraController.Viewer) mViewers .get( i )) .setPerspective( field, 1.0d, near, far );
 		}
 
         // TODO - make aspect ratio track the screen window shape
@@ -185,7 +185,7 @@ public class ViewPlatformModel extends DefaultController
 		Vector3d axis = new Vector3d( q.x, q.y, q.z );
 
 		Matrix4d viewTrans = new Matrix4d();
-		mParameters .getViewTransform( viewTrans, 0d );
+		model .getViewTransform( viewTrans, 0d );
         viewTrans .invert();
 
 		// now map the axis back to world coordinates
@@ -197,32 +197,32 @@ public class ViewPlatformModel extends DefaultController
 	public void mapViewToWorld( Vector3f vector )
 	{
 		Matrix4d viewTrans = new Matrix4d();
-		mParameters .getViewTransform( viewTrans, 0d );
+		model .getViewTransform( viewTrans, 0d );
         viewTrans .invert();
 		viewTrans .transform( vector );
 	}
 	
     public void setViewDirection( Vector3f lookDir )
     {
-    	mParameters .setViewDirection( lookDir );
+    	model .setViewDirection( lookDir );
         updateViewersTransformation();
     }
 
     public void setViewDirection( Vector3f lookDir, Vector3f upDir )
     {
-        mParameters .setViewDirection( lookDir, upDir );
+        model .setViewDirection( lookDir, upDir );
         updateViewersTransformation();
     }
 	
 	public void setLookAtPoint( Point3d lookAt )
 	{
-		mParameters .setLookAtPoint( lookAt );
+		model .setLookAtPoint( lookAt );
         updateViewersTransformation();
 	}
 
 	public void addViewpointRotation( Quat4d rotation )
 	{
-		mParameters .addViewpointRotation( rotation );
+		model .addViewpointRotation( rotation );
     	updateViewersTransformation();
 	}
 
@@ -233,7 +233,7 @@ public class ViewPlatformModel extends DefaultController
 	 */
 	public void setMagnification( float exp )
 	{
-		mParameters .setMagnification( exp );
+		model .setMagnification( exp );
 		
 		// have to adjust the projection, since the clipping distances
 		//   adjust with distance
@@ -244,7 +244,7 @@ public class ViewPlatformModel extends DefaultController
     
     private final LinkedList recentViews = new LinkedList();
     
-    private ViewModel baselineView = mParameters;  // invariant: baselineView .equals( mParameters) whenever the view
+    private Camera baselineView = model;  // invariant: baselineView .equals( mParameters) whenever the view
                                                     // is "at rest" (not rolling or zooming), AND baselineView equals the latest recentView
     private final static int MAX_RECENT = 20;
     
@@ -252,9 +252,9 @@ public class ViewPlatformModel extends DefaultController
     
     private boolean saveBaselineView()
     {
-        if ( mParameters .equals( baselineView ) )
+        if ( model .equals( baselineView ) )
             return false;
-        baselineView = new ViewModel( mParameters );
+        baselineView = new Camera( model );
         recentViews .add( baselineView );
         if ( recentViews .size() > MAX_RECENT )
             recentViews .removeFirst();
@@ -309,11 +309,11 @@ public class ViewPlatformModel extends DefaultController
         }
         else if ( action .equals( "toggleStereo" ) )
         {
-            boolean wasStereo = mParameters .isStereo();
+            boolean wasStereo = model .isStereo();
             if ( ! wasStereo )
-                mParameters .setStereoAngle( ViewPlatformModel.DEFAULT_STEREO_ANGLE );
+                model .setStereoAngle( CameraController.DEFAULT_STEREO_ANGLE );
             else
-                mParameters .setStereoAngle( 0d );
+                model .setStereoAngle( 0d );
             updateViewersTransformation();
             updateViewersProjection();
             properties() .firePropertyChange( "stereo", wasStereo, !wasStereo );
@@ -321,7 +321,7 @@ public class ViewPlatformModel extends DefaultController
         else if ( action .equals( "togglePerspective" ) )
         {
             saveBaselineView(); // might have been zooming
-            mParameters .setPerspective( ! mParameters .isPerspective() );
+            model .setPerspective( ! model .isPerspective() );
             updateViewersTransformation();
             updateViewersProjection();
             saveBaselineView();
@@ -330,7 +330,7 @@ public class ViewPlatformModel extends DefaultController
         {
             if ( currentRecentView >= recentViews .size() )
                 return;
-            restoreView( (ViewModel) recentViews .get( ++currentRecentView ) );
+            restoreView( (Camera) recentViews .get( ++currentRecentView ) );
         }
         else if ( action .equals( "goBack" ) )
         {
@@ -339,12 +339,12 @@ public class ViewPlatformModel extends DefaultController
             boolean wasZooming = saveBaselineView(); // might have been zooming
             if ( ( currentRecentView == recentViews .size() ) && wasZooming ) // we're not browsing recent views
                 --currentRecentView; //    skip over the view we just saved
-            restoreView( (ViewModel) recentViews .get( --currentRecentView ) );
+            restoreView( (Camera) recentViews .get( --currentRecentView ) );
         }
         else if ( action .equals( "initialView" ) )
         {
             saveBaselineView(); // might have been zooming
-            restoreView( this .initialView );
+            restoreView( this .initialCamera );
             // bookmarked views are not "special"... they are stored in recent, too
             saveBaselineView();
         }
@@ -401,7 +401,7 @@ public class ViewPlatformModel extends DefaultController
             public void mouseWheelMoved( MouseWheelEvent e )
             {
                 int amt = e .getWheelRotation();
-                float oldMag = mParameters .getMagnification();
+                float oldMag = model .getMagnification();
                 int ticks = magToTicks( oldMag );
                 ticks -= amt;
                 float newMag = ticksToMag( ticks );
@@ -414,13 +414,13 @@ public class ViewPlatformModel extends DefaultController
     public String getProperty( String propName )
     {
 		if ( "magnification" .equals( propName ) )
-			return Float .toString(  mParameters .getMagnification() );
+			return Float .toString(  model .getMagnification() );
 		if ( "perspective" .equals( propName ) )
-			return Boolean .toString( mParameters .isPerspective() );
+			return Boolean .toString( model .isPerspective() );
 		if ( "snap" .equals( propName ) )
 			return Boolean .toString( isSnapping() );
 		if ( "stereo" .equals( propName ) )
-			return Boolean .toString( mParameters .isStereo() );
+			return Boolean .toString( model .isStereo() );
         return super .getProperty( propName );
     }
     
@@ -443,7 +443,7 @@ public class ViewPlatformModel extends DefaultController
         }
     }
 
-	public void copyView( ViewModel newView )
+	public void copyView( Camera newView )
 	{
 		this .copied = newView;
 	}

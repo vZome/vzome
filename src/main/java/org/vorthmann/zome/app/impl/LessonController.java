@@ -15,18 +15,18 @@ import org.vorthmann.ui.SwingWorker;
 import com.vzome.core.editor.LessonModel;
 import com.vzome.core.editor.Snapshot;
 import com.vzome.core.viewing.ThumbnailRenderer;
-import com.vzome.core.viewing.ViewModel;
-import com.vzome.desktop.controller.ViewPlatformModel;
+import com.vzome.core.viewing.Camera;
+import com.vzome.desktop.controller.CameraController;
 
 public class LessonController extends DefaultController
 {
     private final LessonModel model;
     
-    private final ViewPlatformModel vpm;
+    private final CameraController vpm;
     
     private boolean listening = true;
         
-    public LessonController( LessonModel model, ViewPlatformModel vpm )
+    public LessonController( LessonModel model, CameraController vpm )
     {
     	this .model = model;
         this .vpm = vpm;
@@ -103,7 +103,7 @@ public class LessonController extends DefaultController
         {
             String pageStr = action .substring( "usePageView-".length() );
             int num = Integer .parseInt( pageStr );
-            ViewModel newView = model .getPageView( num );
+            Camera newView = model .getPageView( num );
             if ( ! newView .equals( this.vpm .getView() ) )
                 vpm .restoreView( newView );
         }
@@ -111,7 +111,7 @@ public class LessonController extends DefaultController
         {
             String pageStr = action .substring( "copyPageView-".length() );
             int num = Integer .parseInt( pageStr );
-            ViewModel newView = model .getPageView( num );
+            Camera newView = model .getPageView( num );
             vpm .copyView( newView );
         }
         else if ( "restoreSnapshot" .equals( action ) )

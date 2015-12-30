@@ -75,7 +75,7 @@ allprojects {
 }
 
 dependencies {
-    compile group: 'com.vzome.core', name: 'vzome-core', version:'0.8.0'
+    compile group: 'com.vzome.core', name: 'vzome-core', version:'0.8.1'
     compile group: 'java3d', name: 'j3dcore', version:'1.6.0-pre12'
     compile group: 'java3d', name: 'j3dutils', version:'1.6.0-pre12'
     compile group: 'java3d', name: 'vecmath', version:'1.6.0-pre12'

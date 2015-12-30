@@ -20,7 +20,7 @@ import com.vzome.core.math.symmetry.OrbitSet;
  */
 public abstract class ZoneVectorBall
 {
-    private final ViewPlatformModel mViewPlatform;
+    private final CameraController mViewPlatform;
     
     private OrbitSet orbits;
     
@@ -28,7 +28,7 @@ public abstract class ZoneVectorBall
 
     private Axis zone = null;
 
-    public ZoneVectorBall( ViewPlatformModel viewModel )
+    public ZoneVectorBall( CameraController viewModel )
     {
         mViewPlatform = viewModel;
     }

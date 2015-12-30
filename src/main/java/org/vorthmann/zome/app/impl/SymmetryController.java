@@ -22,7 +22,7 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.Shapes;
-import com.vzome.desktop.controller.ViewPlatformModel;
+import com.vzome.desktop.controller.CameraController;
 
 public class SymmetryController extends DefaultController// implements RenderedModel.OrbitSource
 {
@@ -47,7 +47,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     public OrbitSet snapOrbits;
     public OrbitSet buildOrbits;
     public OrbitSet renderOrbits;
-    private final ViewPlatformModel.Snapper snapper;
+    private final CameraController.Snapper snapper;
     
     public OrbitSetController availableController;
     public OrbitSetController snapController;
@@ -61,7 +61,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         return this .symmetrySystem .getSymmetry();
     }
     
-    public ViewPlatformModel.Snapper getSnapper()
+    public CameraController.Snapper getSnapper()
     {
         return snapper;
     }

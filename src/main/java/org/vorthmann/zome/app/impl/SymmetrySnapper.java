@@ -6,9 +6,9 @@ import javax.vecmath.Vector3f;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.OrbitSet;
-import com.vzome.desktop.controller.ViewPlatformModel;
+import com.vzome.desktop.controller.CameraController;
 
-public class SymmetrySnapper implements ViewPlatformModel.Snapper
+public class SymmetrySnapper implements CameraController.Snapper
 {
     private final OrbitSet orbitSet;
     
