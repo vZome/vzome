@@ -29,7 +29,7 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
@@ -42,12 +42,12 @@ public class POVRayExporter extends Exporter3d
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/povray/preamble.pov";
 
 	
-	public POVRayExporter( ViewModel scene, Colors colors, Lights lights, RenderedModel model )
+	public POVRayExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    super( scene, colors, lights, model );
 	}
     
-    public void mapViewToWorld( ViewModel view, Vector3f vector )
+    public void mapViewToWorld( Camera view, Vector3f vector )
     {
         Matrix4d viewTrans = new Matrix4d();
         view .getViewTransform( viewTrans, 0d );

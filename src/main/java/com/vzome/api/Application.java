@@ -6,10 +6,10 @@ package com.vzome.api;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.Properties;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
-import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
@@ -25,21 +25,27 @@ public class Application
 	{
 		this( new Command.FailureChannel() {
 			
-			public void reportFailure( Failure f )
+			public void reportFailure( Command.Failure f )
 			{
 				f .printStackTrace();
 			}
-		} );
+		}, null );
 	}
 
 	public Application( Command.FailureChannel failures )
 	{
-	    this .delegate = new com.vzome.core.editor.Application(true, failures, null );
+	    this( failures, null );
+	}
+
+	public Application( Command.FailureChannel failures, Properties props )
+	{
+		// TODO cleaner abstraction to wrap FailureChannel
+	    this .delegate = new com.vzome.core.editor.Application( true, failures, props );
 	}
 
 	public Document loadDocument( InputStream bytes ) throws Exception
 	{
-		DocumentModel docDelegate = this .delegate .loadDocument( bytes, true );
+		DocumentModel docDelegate = this .delegate .loadDocument( bytes );
 		docDelegate .finishLoading( false, false );
 		return new Document( docDelegate );
     }
@@ -87,4 +93,15 @@ public class Application
         Exporter3d privateExp = this .delegate .getExporter( format );
         return new Exporter( privateExp );
     }
+
+	public com.vzome.core.editor.Application getDelegate()
+	{
+		return this .delegate;
+	}
+
+	public Document createDocument( String fieldName )
+	{
+		DocumentModel docDelegate = this .delegate .createDocument( fieldName );
+		return new Document( docDelegate );
+	}
 }

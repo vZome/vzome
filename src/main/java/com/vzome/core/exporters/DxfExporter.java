@@ -15,12 +15,12 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 
 public class DxfExporter extends Exporter3d
 {
-	public DxfExporter( ViewModel scene, Colors colors, Lights lights, RenderedModel model )
+	public DxfExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    super( scene, colors, lights, model );
 	}

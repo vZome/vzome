@@ -18,13 +18,13 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 public class PartGeometryExporter extends VefExporter
 {
     Selection selection;
 
-    public PartGeometryExporter( ViewModel scene, Colors colors,
+    public PartGeometryExporter( Camera scene, Colors colors,
             Lights lights, RenderedModel model, Selection selection )
     {
         super( scene, colors, lights, model );

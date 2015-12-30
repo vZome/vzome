@@ -21,7 +21,7 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
@@ -42,7 +42,7 @@ public class VRMLExporter extends Exporter3d
      */
     private static final double SCALE = 0.350d / MODEL_BALL_RADIUS .evaluate();
 
-    public VRMLExporter( ViewModel scene, Colors colors, Lights lights, RenderedModel model )
+    public VRMLExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
     {
         super( scene, colors, lights, model );
     }

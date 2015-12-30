@@ -20,7 +20,7 @@ import com.vzome.core.editor.Snapshot.SnapshotAction;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.ThumbnailRenderer;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 
 public class LessonModel implements Iterable<PageModel>
@@ -67,7 +67,7 @@ public class LessonModel implements Iterable<PageModel>
         return result;
     }
 
-    public void setXml( Element notesXml, int defaultEditNum, ViewModel defaultView )
+    public void setXml( Element notesXml, int defaultEditNum, Camera defaultView )
     {
         pages .clear();
         
@@ -78,7 +78,7 @@ public class LessonModel implements Iterable<PageModel>
                 Element page = (Element) node;
                 String title = page .getAttribute( "title" );
                 Element viewElem = DomUtils .getFirstChildElement( page, "ViewModel" );
-                ViewModel view = ( viewElem == null )? defaultView : new ViewModel( viewElem );
+                Camera view = ( viewElem == null )? defaultView : new Camera( viewElem );
                 Element contentElem = DomUtils .getFirstChildElement( page, "content" );
                 String content = contentElem .getTextContent();
                 String snapshot = page .getAttribute( "snapshot" );
@@ -98,7 +98,7 @@ public class LessonModel implements Iterable<PageModel>
         }
     }
 
-	public void addPage( String name, String string, ViewModel view, int snapshot )
+	public void addPage( String name, String string, Camera view, int snapshot )
 	{
         PageModel page = new PageModel( name, string, view, snapshot );
         pages .add( page );
@@ -116,7 +116,7 @@ public class LessonModel implements Iterable<PageModel>
         pageNum = newPageNum;
         final PageModel newPage = pages .get( newPageNum );
         
-        ViewModel newView = newPage .getView();
+        Camera newView = newPage .getView();
         firePropertyChange( "currentView", null, newView );
 
         int newSnapshot = newPage .getSnapshot();
@@ -126,7 +126,7 @@ public class LessonModel implements Iterable<PageModel>
         firePropertyChange( "currentPage", -1, newPageNum );
     }
 
-	public void duplicatePage( ViewModel view )
+	public void duplicatePage( Camera view )
 	{
         int newPageNum = pageNum + 1;
         PageModel page = pages .get( pageNum );
@@ -138,7 +138,7 @@ public class LessonModel implements Iterable<PageModel>
         firePropertyChange( "thumbnailChanged", -1, newPageNum );
 	}
 
-	public void newSnapshotPage( int snapshotId, ViewModel view )
+	public void newSnapshotPage( int snapshotId, Camera view )
 	{
         int newPageNum = pages .size();
         PageModel pc = new PageModel( "", "", view, snapshotId );
@@ -244,7 +244,7 @@ public class LessonModel implements Iterable<PageModel>
 		this .goToPage( pages .size() - 1 );
 	}
 
-	public void setView( ViewModel view )
+	public void setView( Camera view )
 	{
         PageModel page = pages .get( pageNum );
         page .setView( view );
@@ -259,7 +259,7 @@ public class LessonModel implements Iterable<PageModel>
             goToPage( pageNum );
 	}
 
-	public ViewModel getPageView( int num )
+	public Camera getPageView( int num )
 	{
         PageModel page = pages .get( num );
         return page .getView();

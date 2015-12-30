@@ -12,6 +12,6 @@ public interface ThumbnailRenderer
     }
 
     public abstract void captureSnapshot( RenderedModel snapshot,
-            ViewModel view, int maxSize, Listener callback );
+            Camera view, int maxSize, Listener callback );
 
 }

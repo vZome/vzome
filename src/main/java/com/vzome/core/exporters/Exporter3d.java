@@ -8,7 +8,7 @@ import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 public abstract class Exporter3d
 {
@@ -33,12 +33,12 @@ public abstract class Exporter3d
 
 	protected transient PrintWriter output;
 	
-	protected transient ViewModel mScene;
+	protected transient Camera mScene;
 	protected transient Colors mColors;
 	protected transient Lights mLights;
 	protected transient RenderedModel mModel;
 	
-	public Exporter3d( ViewModel scene, Colors colors, Lights lights, RenderedModel model )
+	public Exporter3d( Camera scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    mScene = scene;
 	    mColors = colors;

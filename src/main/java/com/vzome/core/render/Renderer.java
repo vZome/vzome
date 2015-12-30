@@ -5,11 +5,11 @@ package com.vzome.core.render;
 
 import java.lang.reflect.Method;
 
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 public abstract class Renderer
 {
-    protected abstract void render( ViewModel viewModel );
+    protected abstract void render( Camera viewModel );
     
     public void render( Renderable renderable )
     {

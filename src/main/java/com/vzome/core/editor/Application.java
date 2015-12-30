@@ -101,13 +101,14 @@ public class Application
     
     static Logger logger = Logger.getLogger( "com.vzome.core.editor" );
 
-    public Application( boolean enableCommands, Command.FailureChannel failures, Properties props )
+    public Application( boolean enableCommands, Command.FailureChannel failures, Properties overrides )
     {
         this .failures = failures;
         
-        if ( props == null )
+        Properties props = loadDefaults();
+        if ( overrides != null )
         {
-        	props = loadDefaults();
+        	props .putAll( overrides );
         }
         mColors = new Colors( props );
         File prefsFolder = new File( System.getProperty( "user.home" ), "vZome-Preferences" );
@@ -453,7 +454,7 @@ public class Application
         styles .add( shapes );
     }
     
-    public DocumentModel loadDocument( InputStream bytes, boolean render ) throws Exception
+    public DocumentModel loadDocument( InputStream bytes ) throws Exception
     {
         Document xml = null;
 

@@ -7,18 +7,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.math.DomUtils;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 public class PageModel
 {
 	private String title;
 	private String content;
-	private ViewModel view;
+	private Camera view;
 	private int snapshot;
 	private boolean thumbnailCurrent = false;
 	private Object thumbnail;
 
-	public PageModel( String title, String content, ViewModel view, int snapshot )
+	public PageModel( String title, String content, Camera view, int snapshot )
 	{
 		this.setTitle(title);
 		this.setContent(content);
@@ -49,12 +49,12 @@ public class PageModel
 		this.snapshot = snapshot;
 	}
 
-	public ViewModel getView()
+	public Camera getView()
 	{
 		return view;
 	}
 
-	public void setView( ViewModel view )
+	public void setView( Camera view )
 	{
 		this.view = view;
 	}

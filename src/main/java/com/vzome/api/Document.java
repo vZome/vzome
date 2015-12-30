@@ -9,14 +9,13 @@ import java.util.Set;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 public class Document
 {
@@ -24,7 +23,7 @@ public class Document
 	private final Set<Ball> balls = new HashSet<>();
 	private final Set<Strut> struts = new HashSet<>();
 
-	public Document( DocumentModel delegate ) throws Failure
+	public Document( DocumentModel delegate )
 	{
 		this .delegate = delegate;		
 		for ( Manifestation manifestation : this .delegate .getRealizedModel() )
@@ -58,7 +57,7 @@ public class Document
 	    return this .delegate .getRenderedModel();
 	}
 	
-	public ViewModel getViewModel()
+	public Camera getViewModel()
 	{
 	    return this .delegate .getViewModel();
 	}
@@ -90,5 +89,10 @@ public class Document
 	        result[ orientation ] = asFloats;
 		}
 		return result;
+	}
+
+	public DocumentModel getDocumentModel()
+	{
+		return this .delegate;
 	}
 }

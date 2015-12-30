@@ -15,7 +15,7 @@ import com.vzome.core.math.DomUtils;
 import com.vzome.core.render.Renderable;
 import java.util.Objects;
 
-public class ViewModel implements Renderable
+public class Camera implements Renderable
 {
     /**
 	 * The original frustum.
@@ -52,10 +52,10 @@ public class ViewModel implements Renderable
             return false;
         if ( object == this )
             return true;
-        if ( ! ( object instanceof ViewModel ) )
+        if ( ! ( object instanceof Camera ) )
             return false;
         
-        ViewModel that = (ViewModel) object;
+        Camera that = (Camera) object;
 
         if ( this.mNear != that.mNear )
             return false;
@@ -91,12 +91,12 @@ public class ViewModel implements Renderable
         return hash;
     }
 
-    public ViewModel()
+    public Camera()
     {
     	this .setMagnification( 1f );
     }
     
-    public ViewModel( ViewModel prototype )
+    public Camera( Camera prototype )
     {
     	this();
     	
@@ -458,7 +458,7 @@ public class ViewModel implements Renderable
     }
 
 
-    public ViewModel( Element viewElem )
+    public Camera( Element viewElem )
     {
     	this();
     	

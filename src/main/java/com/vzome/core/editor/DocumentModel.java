@@ -72,7 +72,7 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.ViewModel;
+import com.vzome.core.viewing.Camera;
 
 public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context, Tool .Registry
 {
@@ -106,7 +106,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	
 	private RenderedModel renderedModel;
 	
-	private ViewModel defaultView;
+	private Camera defaultView;
 
     static Logger logger = Logger .getLogger( "com.vzome.core.editor" );
 
@@ -189,7 +189,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		// the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
 		this .mEditorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint );
 
-		this .defaultView = new ViewModel();
+		this .defaultView = new Camera();
         Element views = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "Viewing" ) .item( 0 );
         if ( views != null ) {
             NodeList nodes = views .getChildNodes();
@@ -201,7 +201,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         			if ( ( name == null || name .isEmpty() )
         		    || ( "default" .equals( name ) ) )
         			{
-        				this .defaultView = new ViewModel( viewElem );
+        				this .defaultView = new Camera( viewElem );
         			}
         		}
             }
@@ -694,7 +694,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         // if we're opening a template document, we don't want to inherit its lesson or saved views
         if ( !asTemplate )
         {
-        	Map<String, ViewModel> viewPages = new HashMap<>();
+        	Map<String, Camera> viewPages = new HashMap<>();
             Element views = (Element) mXML .getElementsByTagName( "Viewing" ) .item( 0 );
             if ( views != null ) {
                 // make a notes page for each saved view
@@ -708,7 +708,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             			String name = viewElem .getAttribute( "name" );
             			if ( name != null && ! name .isEmpty() && ! "default" .equals( name ) )
             			{
-                			ViewModel view = new ViewModel( viewElem );
+                			Camera view = new Camera( viewElem );
             				viewPages .put( name, view ); // named view to migrate to a lesson page
             			}
             		}
@@ -720,7 +720,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             	lesson .setXml( notesXml, editNum, this .defaultView );
             
             // add migrated views to the end of the lesson
-            for (Entry<String, ViewModel> namedView : viewPages .entrySet()) {
+            for (Entry<String, Camera> namedView : viewPages .entrySet()) {
                 lesson .addPage( namedView .getKey(), "This page was a saved view created by an older version of vZome.", namedView .getValue(), -editNum );
             }
             for (PageModel page : lesson) {
@@ -1043,7 +1043,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         performAndRecord( edit );
 	}
 
-	public Exporter3d getNaiveExporter( String format, ViewModel view, Colors colors, Lights lights, RenderedModel currentSnapshot )
+	public Exporter3d getNaiveExporter( String format, Camera view, Colors colors, Lights lights, RenderedModel currentSnapshot )
 	{
         if ( format.equals( "pov" ) )
             return new POVRayExporter( view, colors, lights, currentSnapshot );
@@ -1077,7 +1077,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	
 	// TODO move all the parameters inside this object!
 	
-	public Exporter3d getStructuredExporter( String format, ViewModel view, Colors colors, Lights lights, RenderedModel mRenderedModel )
+	public Exporter3d getStructuredExporter( String format, Camera view, Colors colors, Lights lights, RenderedModel mRenderedModel )
 	{
         if ( format.equals( "partgeom" ) )
         	return new PartGeometryExporter( view, colors, lights, mRenderedModel, mSelection );
@@ -1111,7 +1111,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         action .actOnSnapshot( snapshot );
 	}
 
-	public void addSnapshotPage( ViewModel view )
+	public void addSnapshotPage( Camera view )
 	{
         int id = numSnapshots;
         this .performAndRecord( new Snapshot( id, this ) );
@@ -1123,7 +1123,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		return this .renderedModel;
 	}
 	
-	public ViewModel getViewModel()
+	public Camera getViewModel()
 	{
 	    return this .defaultView;
 	}
