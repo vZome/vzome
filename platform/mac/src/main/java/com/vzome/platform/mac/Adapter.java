@@ -46,7 +46,7 @@ public class Adapter
                 {
                     for (Iterator iterator = ofe .getFiles() .iterator(); iterator.hasNext(); ) {
                         File file = (File) iterator.next();
-                        ui .openFile( file, new Properties() );
+                        ui .openFile( file );
                     }
                 }
             } );

@@ -9,7 +9,7 @@ import javax.vecmath.Vector3f;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 
-import com.vzome.desktop.controller.ViewPlatformModel;
+import com.vzome.desktop.controller.CameraController;
 
 public class AnimationCaptureController extends DefaultController implements Controller
 {
@@ -19,7 +19,7 @@ public class AnimationCaptureController extends DefaultController implements Con
 	
 	private static final String FILENAME_PATTERN = "frame%03d." + TYPE;
 	
-	private ViewPlatformModel cameraController;
+	private CameraController cameraController;
 	
 	private final Quat4d rotation;
 		
@@ -27,7 +27,7 @@ public class AnimationCaptureController extends DefaultController implements Con
 	
 	private int iteration;
 
-	public AnimationCaptureController( ViewPlatformModel cameraController, File directory )
+	public AnimationCaptureController( CameraController cameraController, File directory )
 	{    	
     	this .iteration = NUM_ITERATIONS;
     	double rotationRadians = 2 * Math.PI / NUM_ITERATIONS;

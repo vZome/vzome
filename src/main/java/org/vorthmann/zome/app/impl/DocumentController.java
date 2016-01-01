@@ -16,11 +16,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Writer;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -82,21 +78,21 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.ThumbnailRenderer;
-import com.vzome.core.viewing.Camera;
+import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
-import com.vzome.desktop.controller.CameraController;
 
 /**
  * Description here.
  * 
  * @author Scott Vorthmann 2003
  */
-public class EditorController extends DefaultController implements J3dComponentFactory
+public class DocumentController extends DefaultController implements J3dComponentFactory
 {
-    private DocumentModel document;
+    private DocumentModel documentModel;
     
     public boolean useGraphicalViews = false, showStrutScales = false;
 
@@ -118,7 +114,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
     private RenderingChanges mainScene, mControlBallScene;
 
-    private final DefaultApplication mApp;
+    private final ApplicationController mApp;
 
     private Java2dSnapshot mSnapshot = null;
 
@@ -161,7 +157,7 @@ public class EditorController extends DefaultController implements J3dComponentF
     private int changeCount = 0;
 
 	private final PickingController monoController, leftController, rightController;
-    
+	    
    /*
      * See the javadoc to control the logging:
      * 
@@ -173,17 +169,19 @@ public class EditorController extends DefaultController implements J3dComponentF
      * edit /Library/Java/Home/lib/logging.properties
      */
 
-    public EditorController( DocumentModel document, DefaultApplication app, Properties props, boolean newDocument )
+    public DocumentController( DocumentModel document, ApplicationController app, Properties props )
     {
         setNextController( app );
 
         this .properties = props;
-        this .document = document;
+        this .documentModel = document;
         
-        if ( document .isMigrated() )
+        if ( this .documentModel .isMigrated() )
             this .changeCount = -1; // this will force isEdited() to return true
 
         final boolean asTemplate = propertyIsTrue( "as.template" );
+
+        final boolean newDocument = propertyIsTrue( "new.document" );
 
         startReader = ! newDocument && ! asTemplate;
         
@@ -192,10 +190,10 @@ public class EditorController extends DefaultController implements J3dComponentF
         toolsController = new ToolsController();
         toolsController .setNextController( this );
         
-        polytopesController = new PolytopesController( document );
+        polytopesController = new PolytopesController( this .documentModel );
         polytopesController .setNextController( this );
         
-        mRenderedModel = new RenderedModel( this .document .getField(), true );
+        mRenderedModel = new RenderedModel( this .documentModel .getField(), true );
         currentSnapshot = mRenderedModel;
 
         selectionRendering = new ManifestationChanges()
@@ -213,7 +211,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         	@Override
         	public void manifestationColored( Manifestation m, Color c ) {}
         };
-        this .document .addSelectionListener( selectionRendering );
+        this .documentModel .addSelectionListener( selectionRendering );
 
         this .articleChanges = new PropertyChangeListener()
         {   
@@ -240,7 +238,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         		else if ( "thumbnailChanged" .equals( change .getPropertyName() ) )
         		{
         			int pageNum = ((Integer) change .getNewValue()) .intValue();
-        			EditorController .this .document .getLesson() .updateThumbnail( pageNum, EditorController .this .document, thumbnails );
+        			DocumentController .this .documentModel .getLesson() .updateThumbnail( pageNum, DocumentController .this .documentModel, thumbnails );
         		}
         	}
         };
@@ -255,9 +253,9 @@ public class EditorController extends DefaultController implements J3dComponentF
         	}
         };
         if ( editingModel )
-        	document .addPropertyChangeListener( this .modelChanges );
+        	this .documentModel .addPropertyChangeListener( this .modelChanges );
         else
-        	document .addPropertyChangeListener( this .articleChanges );
+        	this .documentModel .addPropertyChangeListener( this .articleChanges );
 
         sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
 
@@ -296,18 +294,18 @@ public class EditorController extends DefaultController implements J3dComponentF
         useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
         showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
 
-        AlgebraicField field = this .document .getField();
+        AlgebraicField field = this .documentModel .getField();
         previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
         
-        lessonController = new LessonController( document .getLesson(), mViewPlatform );
+        lessonController = new LessonController( this .documentModel .getLesson(), mViewPlatform );
         lessonController .setNextController( this );
 
-        setSymmetrySystem( this .document .getSymmetrySystem() );
+        setSymmetrySystem( this .documentModel .getSymmetrySystem() );
 
         // can't do this before the setSymmetrySystem() call just above
         if ( mRenderedModel != null )
         {
-        	this .document .setRenderedModel( mRenderedModel );
+        	this .documentModel .setRenderedModel( mRenderedModel );
         	this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
         }
 
@@ -436,12 +434,12 @@ public class EditorController extends DefaultController implements J3dComponentF
                         shift = shiftKey;
                     if ( target == null )
                         try {
-                            document .performAndRecord( document .deselectAll() );
+                            documentModel .performAndRecord( documentModel .deselectAll() );
                         } catch ( Exception e ) {
                             mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
                         }
                     else
-                        document .performAndRecord( document .selectManifestation( target, ! shift ) );
+                        documentModel .performAndRecord( documentModel .selectManifestation( target, ! shift ) );
                 }
             } );
             if ( editingModel )
@@ -468,7 +466,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
 				protected void dragFinished( Manifestation target, boolean b )
                 {
-                    previewStrut .finishPreview( document );
+                    previewStrut .finishPreview( documentModel );
                 }
             } );
             if ( editingModel )
@@ -528,8 +526,8 @@ public class EditorController extends DefaultController implements J3dComponentF
             mViewPlatform .addViewer( new TrackballRenderingViewer( viewer ) );
 
             // mControlBallScene .reset();
-            for ( Iterator rms = mControlBallModel.getRenderedManifestations(); rms.hasNext(); )
-                mControlBallScene.manifestationAdded( (RenderedManifestation) rms.next() );
+        	for ( RenderedManifestation rm : mControlBallModel )
+                mControlBallScene.manifestationAdded( rm );
 
             mViewPlatform .updateViewers();
             return canvas;
@@ -559,8 +557,8 @@ public class EditorController extends DefaultController implements J3dComponentF
         mControlBallModel = mApp.getSymmetryModel( symmetryController.getSymmetry() );
         if ( mControlBallScene != null ) {
             mControlBallScene.reset();
-            for ( Iterator rms = mControlBallModel.getRenderedManifestations(); rms.hasNext(); )
-                mControlBallScene.manifestationAdded( (RenderedManifestation) rms.next() );
+        	for ( RenderedManifestation rm : mControlBallModel )
+                mControlBallScene.manifestationAdded( rm );
         }
         mViewPlatform .setSnapper( symmetryController.getSnapper() );
         properties().firePropertyChange( "symmetry", null, name ); // notify UI, so cardpanel can flip, or whatever
@@ -588,33 +586,33 @@ public class EditorController extends DefaultController implements J3dComponentF
             boolean asTemplate = propertyIsTrue( "as.template" );
 
             // used to finish loading a model history on a non-UI thread
-            this .document .finishLoading( openUndone, asTemplate );
+            this .documentModel .finishLoading( openUndone, asTemplate );
                         
             // mainScene is not listening to mRenderedModel yet, so batch the rendering changes to it
             this .syncRendering();
             return;
         }
-
+        
         mErrors .clearError();
         try {
             if ( action.equals( "undo" ) )
-                this .document .undo();
+                this .documentModel .undo();
             else if ( action.equals( "redo" ) )
-            	this .document .redo();
+            	this .documentModel .redo();
             else if ( action.equals( "undoToBreakpoint" ) ) {
-            	this .document .undoToBreakpoint();
+            	this .documentModel .undoToBreakpoint();
             } else if ( action.equals( "redoToBreakpoint" ) ) {
-            	this .document .redoToBreakpoint();
+            	this .documentModel .redoToBreakpoint();
             } 
             else if ( action.equals( "setBreakpoint" ) )
-            	this .document .setBreakpoint();
+            	this .documentModel .setBreakpoint();
             else if ( action.equals( "undoAll" ) ) {
-            	this .document .undoAll();
+            	this .documentModel .undoAll();
             } else if ( action.equals( "redoAll" ) ) {
-            	this .document .redoAll( - 1 );
+            	this .documentModel .redoAll( - 1 );
             } else if ( action.startsWith( "redoUntilEdit." ) ) {
                 String editNum = action .substring( "redoUntilEdit.".length() );
-                this .document .redoAll( Integer.parseInt( editNum ) );
+                this .documentModel .redoAll( Integer.parseInt( editNum ) );
             }
             else if ( action .equals( "switchToArticle" ) )
             {
@@ -629,8 +627,8 @@ public class EditorController extends DefaultController implements J3dComponentF
                 lessonPageClick .attach( modelCanvas );
                 articleModeMainTrackball .attach( modelCanvas );
 
-                document .addPropertyChangeListener( this .articleChanges );
-                document .removePropertyChangeListener( this .modelChanges );
+                documentModel .addPropertyChangeListener( this .articleChanges );
+                documentModel .removePropertyChangeListener( this .modelChanges );
                 lessonController .doAction( "restoreSnapshot", e );
 
                 this .editingModel = false;
@@ -638,8 +636,8 @@ public class EditorController extends DefaultController implements J3dComponentF
             }
             else if ( action .equals( "switchToModel" ) )
             {
-                document .removePropertyChangeListener( this .articleChanges );
-                document .addPropertyChangeListener( this .modelChanges );
+                documentModel .removePropertyChangeListener( this .articleChanges );
+                documentModel .addPropertyChangeListener( this .modelChanges );
                 mViewPlatform .restoreView( currentView );
 
                 RenderedModel .renderChange( currentSnapshot, mRenderedModel, mainScene );
@@ -659,7 +657,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             }
             else if ( action .equals( "takeSnapshot" ) )
             {
-            	document .addSnapshotPage( mViewPlatform .getView() );
+            	documentModel .addSnapshotPage( mViewPlatform .getView() );
             }
 
             else if ( "nextPage" .equals( action ) )
@@ -726,8 +724,8 @@ public class EditorController extends DefaultController implements J3dComponentF
 
             else if ( action.startsWith( "setSymmetry." ) ) {
                 String system = action.substring( "setSymmetry.".length() );
-                this .document .setSymmetrySystem( system );
-                setSymmetrySystem( this .document .getSymmetrySystem() );
+                this .documentModel .setSymmetrySystem( system );
+                setSymmetrySystem( this .documentModel .getSymmetrySystem() );
             }
 
             else if ( action.equals( "copyThisView" ) )
@@ -743,21 +741,19 @@ public class EditorController extends DefaultController implements J3dComponentF
             
             else if ( action.equals( "lookAtSymmetryCenter" ) )
             {
-            	RealVector loc = document .getParamLocation( "ball" );
+            	RealVector loc = documentModel .getParamLocation( "ball" );
             	mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
             }
 
             else if ( action .equals( "usedOrbits" ) )
             {
             	Set<Direction> usedOrbits = new HashSet<>();
-            	for ( Iterator iterator = mRenderedModel .getRenderedManifestations(); iterator.hasNext(); )
-            	{
-            		RenderedManifestation rm = (RenderedManifestation) iterator.next();
+            	for ( RenderedManifestation rm : mRenderedModel ) {
             		Polyhedron shape = rm .getShape();
             		Direction orbit = shape .getOrbit();
             		if ( orbit != null )
             			usedOrbits .add( orbit );
-            	}
+				}
             	symmetryController .availableController .doAction( "setNoDirections", null );
             	for ( Iterator iterator = usedOrbits.iterator(); iterator.hasNext(); ) {
             		Direction orbit = (Direction) iterator.next();
@@ -774,12 +770,12 @@ public class EditorController extends DefaultController implements J3dComponentF
                 if ( "icosahedral" .equals( group ) || "octahedral" .equals( group ) )
                     symmetry = ((SymmetryController) symmetries .get( group )) .getSymmetry();
                 
-                document .createTool( name, group, toolsController, symmetry );
+                documentModel .createTool( name, group, toolsController, symmetry );
             }
             else if ( action.equals( "applyTool" ) )
             {
     	        ToolEvent event = (ToolEvent) e;
-    	        document .applyTool( event .getTool(), toolsController, event .getModes() );
+    	        documentModel .applyTool( event .getTool(), toolsController, event .getModes() );
             }
             
 // This was an experiment, to see if the applyQuaternionSymmetry() approach was workable.
@@ -791,11 +787,11 @@ public class EditorController extends DefaultController implements J3dComponentF
 //            }
 //            
             else if ( action .equals( "copy" ) )
-                setProperty( "clipboard", document .copySelectionVEF() );
+                setProperty( "clipboard", documentModel .copySelectionVEF() );
             else if ( action.equals( "paste" ) )
             {
                 String vefContent = getProperty( "clipboard" );
-                document .pasteVEF( vefContent );
+                documentModel .pasteVEF( vefContent );
             }
             else
             {
@@ -824,7 +820,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             		else 
             			action += "-golden"; 
             		 	 
-            	boolean handled = document .doEdit( action );
+            	boolean handled = documentModel .doEdit( action );
                 if ( ! handled )
                     super .doAction( action, e );
             }
@@ -852,9 +848,9 @@ public class EditorController extends DefaultController implements J3dComponentF
                 mRenderedModel .addListener( mainScene );
                 // get the thumbnails updating in the background
                 if ( lessonController != null )
-                    lessonController .renderThumbnails( document, thumbnails );
+                    lessonController .renderThumbnails( documentModel, thumbnails );
                 if ( this .toolsController != null )
-                    for ( Tool tool : this .document .getTools() )
+                    for ( Tool tool : this .documentModel .getTools() )
                         this .toolsController .addTool( tool );
             }
             else
@@ -862,7 +858,7 @@ public class EditorController extends DefaultController implements J3dComponentF
                     currentSnapshot = new RenderedModel( null, null ); // force render of first snapshot, see "renderSnapshot." below
                     lessonController .doAction( "restoreSnapshot", new ActionEvent( this, 0, "restoreSnapshot" ) );
                     // order these to avoid issues with the thumbnails (unexplained)
-                    lessonController .renderThumbnails( document, thumbnails );
+                    lessonController .renderThumbnails( documentModel, thumbnails );
                 } catch ( Exception e1 ) {
                     Throwable cause = e1.getCause();
                     if ( cause instanceof Command.Failure )
@@ -881,7 +877,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         		|| command.equals( "import.vef" ) 
 				//|| command.equals( "import.zomod" ) 
 				)
-        	document .doScriptAction( command, script );
+        	documentModel .doScriptAction( command, script );
         else
         	super .doScriptAction( command, script );
     }
@@ -904,14 +900,14 @@ public class EditorController extends DefaultController implements J3dComponentF
                     dir .mkdirs();
                 
                 FileOutputStream out = new FileOutputStream( file );
-                document .serialize( out );
+                documentModel .serialize( out );
                 out.close();
                 // just did a save, so lets record the document change count again,
                 //  so isEdited() will return false until more changes occur.
                 // IMPORTANT! TODO if we ever implement "save a copy", this code should NOT reset
                 //   the count just because we're writing a copy.  The reset will have to move to the
                 //   context of the save.
-                this .changeCount  = this .document .getChangeCount();
+                this .changeCount  = this .documentModel .getChangeCount();
                 return;
             }
             if ( "capture-animation" .equals( command ) )
@@ -947,7 +943,7 @@ public class EditorController extends DefaultController implements J3dComponentF
         		Dimension size = this .modelCanvas .getSize();        		
             	try {
                     String format = command .substring( "export." .length() );
-                    Exporter3d exporter = document .getNaiveExporter( format, mViewPlatform .getView(), colors, sceneLighting, currentSnapshot );
+                    Exporter3d exporter = documentModel .getNaiveExporter( format, mViewPlatform .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
                         exporter.doExport( file, file.getParentFile(), out, size.height, size.width );
                     }
@@ -955,10 +951,10 @@ public class EditorController extends DefaultController implements J3dComponentF
                         exporter = this .mApp .getExporter( format );
                         if ( exporter == null ) {
                         	// currently just "partgeom"
-                        	exporter = document .getStructuredExporter( format, mViewPlatform .getView(), colors, sceneLighting, mRenderedModel );
+                        	exporter = documentModel .getStructuredExporter( format, mViewPlatform .getView(), colors, sceneLighting, mRenderedModel );
                         }
                     	if ( exporter != null )
-                    		exporter .doExport( document, file, file.getParentFile(), out, size.height, size.width );
+                    		exporter .doExport( documentModel, file, file.getParentFile(), out, size.height, size.width );
                     }
                 } finally {
                     out.close();
@@ -969,7 +965,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 					// || command.equals( "import.zomod" )
 					) {
                 String vefData = readFile( file );
-                document .doScriptAction( command, vefData );
+                documentModel .doScriptAction( command, vefData );
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {
@@ -1047,7 +1043,7 @@ public class EditorController extends DefaultController implements J3dComponentF
     {
     	InputStream stream = null;
         try {
-        	stream = EditorController.class .getClassLoader() .getResourceAsStream( resourcePath );
+        	stream = DocumentController.class .getClassLoader() .getResourceAsStream( resourcePath );
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buf = new byte[1024];
             int num;
@@ -1108,7 +1104,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
     public boolean isEdited()
     {
-        int currentChangeCount = this .document .getChangeCount();
+        int currentChangeCount = this .documentModel .getChangeCount();
         return currentChangeCount > this .changeCount;
     }
 
@@ -1136,7 +1132,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             return Boolean.toString( startReader );
 
         if ( "migrated".equals( string ) )
-            return Boolean.toString( this .document .isMigrated() );
+            return Boolean.toString( this .documentModel .isMigrated() );
 
         if ( "edited".equals( string ) )
             return Boolean.toString( this .isEdited() );
@@ -1145,7 +1141,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             return symmetryController.getSymmetry().getName();
 
         if ( "field.name".equals( string ) )
-            return this .document .getField() .getName();
+            return this .documentModel .getField() .getName();
         
         if ( "clipboard" .equals( string ) )
             return designClipboard;
@@ -1260,6 +1256,13 @@ public class EditorController extends DefaultController implements J3dComponentF
             this.useGraphicalViews = "true".equals( value );
             properties().firePropertyChange( cmd, false, this.useGraphicalViews );
             return;
+        } else if ( "visible".equals( cmd ) ) {
+        	// Window is listening, will bring itself to the front, or close itself
+        	// App controller will set topDocument, or remove the document.
+        	properties() .firePropertyChange( "visible", null, value );
+        } else if ( "name".equals( cmd ) ) {
+        	// App controller is listening, will change its map
+            properties() .firePropertyChange( "name", null, (String) value );
         } else if ( "backgroundColor".equals( cmd ) ) {
             sceneLighting .setProperty( cmd, value );
         } else if ( "terminating".equals( cmd ) ) {
@@ -1309,7 +1312,7 @@ public class EditorController extends DefaultController implements J3dComponentF
             switch ( action ) {
 
             case "undoToManifestation":
-                this .document .undoToManifestation( pickedManifestation );
+                this .documentModel .undoToManifestation( pickedManifestation );
     			break;
 
 //            case "symmTool-icosahedral":
@@ -1320,11 +1323,11 @@ public class EditorController extends DefaultController implements J3dComponentF
 //    			break;
 
             case "setSymmetryCenter":
-                this .document .setParameter( singleConstruction, "ball" );
+                this .documentModel .setParameter( singleConstruction, "ball" );
     			break;
 
             case "setSymmetryAxis":
-                this .document .setParameter( singleConstruction, "strut" );
+                this .documentModel .setParameter( singleConstruction, "strut" );
     			break;
 
             case "setWorkingPlaneAxis":
@@ -1333,12 +1336,12 @@ public class EditorController extends DefaultController implements J3dComponentF
     			break;
 
             case "setWorkingPlane":
-            	this .workingPlaneAxis = this .document .getPlaneAxis( (Polygon) singleConstruction );
+            	this .workingPlaneAxis = this .documentModel .getPlaneAxis( (Polygon) singleConstruction );
             	this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
     			break;
 
             case "lookAtBall":
-            	RealVector loc = document .getLocation( singleConstruction );
+            	RealVector loc = documentModel .getLocation( singleConstruction );
             	mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
                 
@@ -1360,7 +1363,7 @@ public class EditorController extends DefaultController implements J3dComponentF
                 Axis zone = symmetryController .getZone( offset );
                 Direction orbit = zone .getOrbit();
                 AlgebraicNumber length = zone .getLength( offset );
-                document .selectSimilarStruts( orbit, length ); // does performAndRecord
+                documentModel .selectSimilarStruts( orbit, length ); // does performAndRecord
             	}
             	break;
     		}
@@ -1382,7 +1385,7 @@ public class EditorController extends DefaultController implements J3dComponentF
 
 		case "objectProperties":
 			if ( pickedManifestation != null ) {
-				String objectProps = document .getManifestationProperties( pickedManifestation, symmetryController .getOrbitSource() );
+				String objectProps = documentModel .getManifestationProperties( pickedManifestation, symmetryController .getOrbitSource() );
 				pickedManifestation = null;
 				return objectProps;
 			}

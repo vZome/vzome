@@ -25,11 +25,11 @@ import com.vzome.desktop.controller.RenderingViewer;
 public class PickingController extends DefaultController implements Controller
 {
 	private final RenderingViewer viewer;
-	private final EditorController delegate;
+	private final DocumentController delegate;
 	
 	private transient Manifestation pickedManifestation;
 
-	public PickingController( RenderingViewer viewer, EditorController delegate )
+	public PickingController( RenderingViewer viewer, DocumentController delegate )
 	{
 		this.viewer = viewer;
 		this.delegate = delegate;

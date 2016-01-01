@@ -35,7 +35,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.ReorderableJList;
 
 
-public class ListPanel extends JPanel implements PropertyChangeListener
+public class PagelistPanel extends JPanel implements PropertyChangeListener
 {
     private final JList list;
 
@@ -66,14 +66,14 @@ public class ListPanel extends JPanel implements PropertyChangeListener
         public void contentsChanged( ListDataEvent lde )
         {
             String action = "elementChanged-" + lde .getIndex0();
-            ListPanel .this .controller .actionPerformed( new ActionEvent( ListPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
+            PagelistPanel .this .controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
         }
         public void intervalAdded( ListDataEvent lde )
         {
             if ( moving )
             {
                 String action = "elementMoved-" + startIndex + ">" + lde .getIndex0();
-                ListPanel .this .controller .actionPerformed( new ActionEvent( ListPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
+                PagelistPanel .this .controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
             }
         }
         public void intervalRemoved( ListDataEvent lde )
@@ -169,7 +169,7 @@ public class ListPanel extends JPanel implements PropertyChangeListener
         return menuItem;
     }
 
-    public ListPanel( final Controller controller )
+    public PagelistPanel( final Controller controller )
     {
         super( new BorderLayout() );
         controller .addPropertyListener( this );
@@ -192,7 +192,7 @@ public class ListPanel extends JPanel implements PropertyChangeListener
         {
             public void actionPerformed( ActionEvent ae )
             {
-                controller .actionPerformed( new ActionEvent( ListPanel.this, ActionEvent.ACTION_PERFORMED, "usePageView-" + popupItem ) );
+                controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, "usePageView-" + popupItem ) );
             }
         } );
         pageviewPopupMenu .add( menuItem );
@@ -202,7 +202,7 @@ public class ListPanel extends JPanel implements PropertyChangeListener
         {
             public void actionPerformed( ActionEvent ae )
             {
-                controller .actionPerformed( new ActionEvent( ListPanel.this, ActionEvent.ACTION_PERFORMED, "copyPageView-" + popupItem ) );
+                controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, "copyPageView-" + popupItem ) );
             }
         } );
         pageviewPopupMenu .add( menuItem );
@@ -241,7 +241,7 @@ public class ListPanel extends JPanel implements PropertyChangeListener
                 if ( selected < 0 )
                     return;
                 String action = "elementSelected-" + selected;
-                ListPanel .this .controller .actionPerformed( new ActionEvent( ListPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
+                PagelistPanel .this .controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
             }
         } );
         list .addMouseListener( new MouseAdapter()
@@ -255,7 +255,7 @@ public class ListPanel extends JPanel implements PropertyChangeListener
                 if ( selected < 0 )
                     return;
                 String action = "elementSelected-" + selected;
-                ListPanel .this .controller .actionPerformed( new ActionEvent( ListPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
+                PagelistPanel .this .controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
             }
         });
         add( listScrollPane, BorderLayout.CENTER );

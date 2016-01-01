@@ -135,7 +135,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                 scaleSlider .setMajorTickSpacing( 1 );
                 scaleSlider .setPaintTicks( true );
                 sliderLabel = new JLabel( "unit" );
-                @SuppressWarnings("UseOfObsoleteCollectionType")
+//                @SuppressWarnings("UseOfObsoleteCollectionType")
                 Hashtable<Integer, JComponent > labelTable = new Hashtable<>();
                 labelTable .put( 0, sliderLabel );
                 scaleSlider .setLabelTable( labelTable );
@@ -318,22 +318,28 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
     @Override
     public void propertyChange( PropertyChangeEvent e )
     {
-        switch (e.getPropertyName()) {
-            case "length":
-                renderLength();
-                break;
-            case "selectedOrbit":
-                Controller newController = controller .getSubController( "currentLength" );
-                // newController will be null if all directions are disabled.
-                // in that case, just retain the controller from the previously selected orbit.
-                if(newController != null) {
-                    // we didn't set this.controller directly, since we need to disconnect from it first
-                    setController( newController );
-                }	break;
-            case "showStrutScales":
-                lengthDisplay .setVisible((Boolean) e.getNewValue());
-                break;
-        }
+    	switch (e.getPropertyName()) {
+
+    	case "length":
+    		renderLength();
+    		break;
+
+    	case "selectedOrbit":
+        	// this first one should fall "up" to the symmetry controller
+        	Controller newController = controller .getSubController( "buildOrbits" );
+        	newController = controller .getSubController( "currentLength" );
+    		// newController will be null if all directions are disabled.
+    		// in that case, just retain the controller from the previously selected orbit.
+    		if( newController != null ) {
+    			// we didn't set this.controller directly, since we need to disconnect from it first
+    			setController( newController );
+    		}
+    		break;
+
+    	case "showStrutScales":
+    		lengthDisplay .setVisible( (Boolean) e.getNewValue() );
+    		break;
+    	}
     }
 
 }

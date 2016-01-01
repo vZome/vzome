@@ -46,7 +46,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
 
         this .setLayout( new BorderLayout() );
         {
-            JPanel pagelistPanel = new ListPanel( controller );
+            JPanel pagelistPanel = new PagelistPanel( controller );
             this .add( pagelistPanel, BorderLayout.LINE_START );
 
             // here's the containment hierarchy

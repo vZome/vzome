@@ -29,12 +29,10 @@ public class DefaultController implements Controller
     public void actionPerformed( ActionEvent e )
     {
         try {
-            // TODO inline this
             doAction( e .getActionCommand(), e );
         } catch ( Exception ex )
         {
             ex .printStackTrace();
-            // TODO implement error codes for commands
             mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ ex } );
         }
     }
@@ -133,7 +131,7 @@ public class DefaultController implements Controller
     public void setNextController( Controller controller )
     {
         mNextController = controller;
-        controller .addPropertyListener( new PropertyChangeListener()
+        mNextController .addPropertyListener( new PropertyChangeListener()
         {
             // multicast prop changes down the tree of controllers... watch out for loops!
             public void propertyChange( PropertyChangeEvent event )
@@ -141,7 +139,7 @@ public class DefaultController implements Controller
                 properties() .firePropertyChange( event );
             }
         } );
-        if ( controller instanceof DefaultController )
+        if ( mNextController instanceof DefaultController )
             mErrors = ((DefaultController) mNextController) .mErrors;
     }
 

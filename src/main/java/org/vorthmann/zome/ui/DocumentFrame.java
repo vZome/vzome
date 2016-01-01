@@ -5,7 +5,11 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.FileDialog;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -13,6 +17,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -60,6 +65,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui" );
 
     private LessonPanel lessonPanel;
+    
+    private JFrame zomicFrame, pythonFrame;
 
     private JButton snapshotButton;
 
@@ -86,41 +93,49 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     private Snapshot2dFrame snapshot2dFrame;
 
 	private ControllerFileAction saveAsAction;
+
+	private PropertyChangeListener appUI;
     
     public ExclusiveAction.Excluder getExcluder()
     {
         return mExcluder;
     }
+    
+    private void createLessonPanel()
+    {
+    	if ( lessonPanel != null )
+    		return;
+        lessonPanel = new LessonPanel( lessonController );
+        modelArticleEditPanel .add( lessonPanel, "article" );
+    }
+    
+    void setAppUI( PropertyChangeListener appUI )
+    {
+    	this .appUI = appUI;
+    }
         
-    public DocumentFrame( File file, final Controller controller, PropertyChangeListener app )
+    public DocumentFrame( final Controller controller )
     {
         mController = controller;
-        this .mFile = file;
-        controller .addPropertyListener( this );
+        mController .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
+        
+        String path = mController .getProperty( "window.file" );
+        if ( path != null )
+        	this .mFile = new File( path ); // this enables "save" in localActions
 
         // TODO: compute these booleans once here, and don't recompute in DocumentMenuBar
 
-        this.readerPreview = controller .propertyIsTrue( "reader.preview" );
+        this.readerPreview = mController .propertyIsTrue( "reader.preview" );
 
-        this.isEditor = controller .userHasEntitlement( "model.edit" ) && ! readerPreview;
+        this.isEditor = mController .userHasEntitlement( "model.edit" ) && ! readerPreview;
 
-        this.canSave = controller .userHasEntitlement( "save.files" );
+        this.canSave = mController .userHasEntitlement( "save.files" );
 
         this.fullPower = isEditor ;//&& controller .userHasEntitlement( "all.tools" );
         
         this.developerExtras = fullPower && mController .userHasEntitlement( "developer.extras" );
         
-        JFrame mZomicFrame = new JFrame( "Zomic Scripting" );
-        mZomicFrame.setContentPane( new ZomicEditorPanel( mZomicFrame, controller ) );
-        mZomicFrame.pack();
-        
-        JFrame mPythonFrame = new JFrame( "Python Scripting" );
-        mPythonFrame .setContentPane( new PythonConsolePanel( mPythonFrame, controller ) );
-        mPythonFrame .pack();
-        
-        polytopesDialog = new PolytopesDialog( this, controller .getSubController( "polytopes" ) );
-
         errors = new Controller.ErrorChannel()
         {
 			@Override
@@ -152,23 +167,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     statusText .setText( "" );
             }
         };
-        controller.setErrorChannel( errors );
-
-		saveAsAction = new ControllerFileAction( new FileDialog( this ), false, "save", "vZome", mController )
-        {
-            // this happens at the very end, after choose, save, set type
-    		@Override
-            protected void openApplication( File file )
-            {
-                mFile = file;
-                String newTitle = file.getAbsolutePath();
-                app .propertyChange( new PropertyChangeEvent( DocumentFrame.this, "window.title", getTitle(), newTitle ) );
-            }
-        };
+        mController .setErrorChannel( errors );
 
         // ---- catch-all ActionListener for locally-handled actions
 
-        final String initSystem = controller .getProperty( "symmetry" );
+        final String initSystem = mController .getProperty( "symmetry" );
         localActions = new ActionListener()
         {
             private String system = initSystem;
@@ -180,7 +183,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			@Override
             public void actionPerformed( ActionEvent e )
             {
-				Controller delegate = controller;
+				Controller delegate = mController;
                 String cmd = e.getActionCommand();
                 switch ( cmd ) {
                 
@@ -188,22 +191,37 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             		closeWindow();
             		break;
 
-            	case "openURL":
-                    String url = JOptionPane .showInputDialog( DocumentFrame.this, "Enter the URL for an online .vZome file.", "Open URL",
-                            JOptionPane.PLAIN_MESSAGE );
-                    try {
-                        mController .doAction( cmd, new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, url ) );
-                    } catch ( Exception ex )
-                    {
-                        ex .printStackTrace();
-                        // TODO better error report
-                        errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ ex } );
-                    }
-                    break;
-                    
+//            	case "openURL":
+//                    String url = JOptionPane .showInputDialog( DocumentFrame.this, "Enter the URL for an online .vZome file.", "Open URL",
+//                            JOptionPane.PLAIN_MESSAGE );
+//                    try {
+//                        mController .doAction( cmd, new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, url ) );
+//                    } catch ( Exception ex )
+//                    {
+//                        ex .printStackTrace();
+//                        // TODO better error report
+//                        errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ ex } );
+//                    }
+//                    break;
+//                    
             	case "save":
-                    if ( mFile == null )
+                    if ( mFile == null ) {
+                    	if ( saveAsAction == null ) {
+                    		saveAsAction = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, "save", "vZome", mController )
+                            {
+                                // this happens at the very end, after choose, save, set type
+                        		@Override
+                                protected void openApplication( File file )
+                                {
+                                    mFile = file;
+                                    String newTitle = file .getAbsolutePath();
+                                    mController .setProperty( "name", newTitle );
+                                    setTitle( newTitle );
+                                }
+                            };
+                    	}
                         saveAsAction .actionPerformed( e );
+                    }
                     else {
                         mController .doFileAction( "save", mFile );
                     }
@@ -242,15 +260,27 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
             	case "showPolytopesDialog":
+            		if ( polytopesDialog == null )
+            	        polytopesDialog = new PolytopesDialog( DocumentFrame.this, mController .getSubController( "polytopes" ) );
                     polytopesDialog .setVisible( true );
                 	break;
                 
                 case "showPythonWindow":
-                	mPythonFrame .setVisible( true );
+                	if ( pythonFrame == null ) {
+                		pythonFrame = new JFrame( "Python Scripting" );
+                		pythonFrame .setContentPane( new PythonConsolePanel( pythonFrame, mController ) );
+                	}
+                	pythonFrame .pack();
+                	pythonFrame .setVisible( true );
                 	break;
                 
                 case "showZomicWindow":
-                	mZomicFrame .setVisible( true );
+                	if ( zomicFrame == null ) {
+                    	zomicFrame = new JFrame( "Zomic Scripting" );
+                        zomicFrame .setContentPane( new ZomicEditorPanel( zomicFrame, mController ) );
+                	}
+                    zomicFrame .pack();
+                    zomicFrame .setVisible( true );
                 	break;
                 
             	case "setItemColor":
@@ -298,6 +328,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         directionsDialogs .put( system, symmetryDialog );
                     }
                     symmetryDialog .setVisible( true );
+                    break;
 
                 default:
                     if ( cmd .startsWith( "setSymmetry." ) )
@@ -312,6 +343,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         JOptionPane .showMessageDialog( DocumentFrame.this, subc .getProperty( "objectProperties" ), "Object Properties",
                                 JOptionPane.PLAIN_MESSAGE );
                     }
+                    else
+                    	mController .actionPerformed( e );
                     break;
                 }
             }
@@ -319,8 +352,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         // -------------------------------------- create panels and tools
 
-        viewPlatform = controller .getSubController( "viewPlatform" );
-        lessonController = controller .getSubController( "lesson" );
+        viewPlatform = mController .getSubController( "viewPlatform" );
+        lessonController = mController .getSubController( "lesson" );
         lessonController .addPropertyListener( this );
 
         // Now the component containment hierarchy
@@ -385,7 +418,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     leftCenterPanel .add(  modeAndStatusPanel, BorderLayout.PAGE_START );
                 }
 
-                modelPanel = new ModelPanel( controller, this, this .isEditor, fullPower );
+                modelPanel = new ModelPanel( mController, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );
@@ -399,7 +432,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
             JPanel rightPanel = new JPanel( new BorderLayout() );
             {
-                Component trackballCanvas = ( (J3dComponentFactory) controller ) .createJ3dComponent( "controlViewer" );
+                Component trackballCanvas = ( (J3dComponentFactory) mController ) .createJ3dComponent( "controlViewer" );
                 viewControl = new ViewPlatformControlPanel( trackballCanvas, viewPlatform );
                 // this is probably moot for reader mode
                 rightPanel .add( viewControl, BorderLayout.PAGE_START );
@@ -409,25 +442,20 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 modelArticleEditPanel .setLayout( modelArticleCardLayout );
                 if ( this .isEditor )
                 {
-                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this, controller .getProperty( "symmetry" ), controller, this );
+                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this, mController .getProperty( "symmetry" ), mController, this );
                     if ( this .fullPower )
                     {
                         tabbedPane .addTab( "build", buildPanel );
                         JPanel toolsPanel = new ToolsPanel( DocumentFrame.this, toolsController );
                         tabbedPane .addTab( "tools", toolsPanel );
                         
-                        JPanel bomPanel = new PartsPanel( controller .getSubController( "parts" ) );
+                        JPanel bomPanel = new PartsPanel( mController .getSubController( "parts" ) );
                         tabbedPane .addTab( "parts", bomPanel );
                         
                         modelArticleEditPanel .add( tabbedPane, "model" );
                     }
                     else
                         modelArticleEditPanel .add( buildPanel, "model" );
-                }
-                {
-                    lessonPanel = new LessonPanel( lessonController );
-                    
-                    modelArticleEditPanel .add( lessonPanel, "article" );
                 }
 
                 if ( this .isEditor )
@@ -438,6 +466,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 }
                 else
                 {
+                	createLessonPanel();
                     modelArticleCardLayout .show( modelArticleEditPanel, "article" );
                     modelArticleEditPanel .setMinimumSize( new Dimension( 400, 500 ) );
                     modelArticleEditPanel .setPreferredSize( new Dimension( 400, 800 ) );
@@ -451,7 +480,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         ToolTipManager ttm = ToolTipManager.sharedInstance();
         ttm .setLightWeightPopupEnabled( false );
 
-        this .setJMenuBar( new DocumentMenuBar( controller, this ) );
+        this .setJMenuBar( new DocumentMenuBar( mController, this ) );
 
         this.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
         this.addWindowListener( new WindowAdapter()
@@ -459,13 +488,114 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             public void windowClosing( WindowEvent we )
             {
                 closeWindow();
-                mController .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "documentClosed" ));
             }
         } );
+
+		// Find the screen with the largest area if this is a multi-monitor system.
+		// Set the frame size to just a bit smaller than the screen
+		//	so the frame will fit on the screen if the user un-maximizes it.
+		// Default to opening the window as maximized on the selected (or default) monitor.
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		if(gs.length > 0) {
+			int bestIndex = 0;
+			GraphicsDevice bestDevice = gs[bestIndex];
+			DisplayMode bestMode = bestDevice.getDisplayMode();
+			int bestArea = bestMode.getHeight() * bestMode.getWidth();
+			for (int i = bestIndex+1; i < gs.length; i++) {
+				GraphicsDevice testDevice = gs[i];
+				DisplayMode testMode = testDevice.getDisplayMode();
+				int testArea = testMode.getHeight() * testMode.getWidth();
+				if(bestArea < testArea) {
+					bestArea = testArea;					
+					bestMode = testMode;					
+					bestDevice = testDevice;
+				}
+			}
+			Rectangle bounds = bestDevice.getDefaultConfiguration().getBounds();
+			this.setLocation(bounds.x, bounds.y);
+			int n = 15, d = n + 1; // set size to 15/16 of full screen size then maximize it
+			this.setSize(bestMode.getWidth() * n/d, bestMode.getHeight() * n/d);
+		}
+		this.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 
         this.pack();
         this.setVisible( true );
         this.setFocusable( true );
+
+
+        new ExclusiveAction( this .getExcluder() )
+        {
+			@Override
+            protected void doAction( ActionEvent e ) throws Exception
+            {
+				mController .doAction( "finish.load", e );
+                
+                String title = mController .getProperty( "window.title" );
+                boolean migrated = mController .propertyIsTrue( "migrated" );
+                
+                boolean asTemplate = mController .propertyIsTrue( "as.template" );
+                URL url = null; // TODO
+
+                if ( ! mController .userHasEntitlement( "model.edit" ) )
+                {
+                	mController .doAction( "switchToArticle", e );
+                    if ( url != null )
+                        title = url .toExternalForm();
+                    migrated = false;
+                }
+
+                if ( ! asTemplate && migrated ) { // a migration
+                    final String NL = System .getProperty( "line.separator" );
+                    if ( mController .propertyIsTrue( "autoFormatConversion" ) )
+                    {
+                        if ( mController .propertyIsTrue( "formatIsSupported" ) )
+                            JOptionPane .showMessageDialog( DocumentFrame.this,
+                                    "This document was created by an older version." + NL + 
+                                    "If you save it now, it will be converted automatically" + NL +
+                                    "to the current format.  It will no longer open using" + NL +
+                                    "the older version.",
+                                    "Automatic Conversion", JOptionPane.INFORMATION_MESSAGE );
+                        else
+                        {
+                            title = null;
+                            DocumentFrame.this .makeUnnamed();
+                            JOptionPane .showMessageDialog( DocumentFrame.this,
+                                    "You have \"autoFormatConversion\" turned on," + NL + 
+                                    "but the behavior is disabled until this version of vZome" + NL +
+                                    "is stable.  This converted document is being opened as" + NL +
+                                    "a new document.",
+                                    "Automatic Conversion Disabled", JOptionPane.INFORMATION_MESSAGE );
+                        }
+                    }
+                    else
+                    {
+                        title = null;
+                        DocumentFrame.this .makeUnnamed();
+                        JOptionPane .showMessageDialog( DocumentFrame.this,
+                                "This document was created by an older version." + NL + 
+                                "It is being opened as a new document, so you can" + NL +
+                                "still open the original using the older version.",
+                                "Outdated Format", JOptionPane.INFORMATION_MESSAGE );
+                    }
+                }
+
+                if ( title == null )
+                    title = mController .getProperty( "untitled.title" );
+                
+                DocumentFrame.this .setTitle( title );
+            }
+
+			@Override
+            protected void showError( Exception e )
+            {
+                JOptionPane .showMessageDialog( DocumentFrame.this,
+                        e .getLocalizedMessage(),
+                        "Error Loading Document", JOptionPane.ERROR_MESSAGE );
+                DocumentFrame.this .dispose();
+            }
+            
+        } .actionPerformed( null );
     }
 
     private ExclusiveAction getExclusiveAction( final String action )
@@ -516,15 +646,17 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         	ActionListener actionListener = this .mController;
         	switch ( command ) {
             
-    		// these can fall through to the ApplicationUI
+    		// these can fall through to the ApplicationController
         	case "quit":
         	case "new":
         	case "new-rootTwo":
         	case "new-rootThree":
         	case "new-heptagon":
         	case "new-snubDodec":
+        	case "openURL":
         	case "showAbout":
 
+        	// these will be handled by the DocumentController
         	case "toggleWireframe":
         	case "toggleOrbitViews":
         	case "toggleStrutScales":
@@ -549,7 +681,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         	case "save":
         	case "saveDefault":
-        	case "openURL":
         	case "close":
         	case "snapshot.2d":
         	case "showToolsPanel":
@@ -646,6 +777,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 //                viewControl .setVisible( true );
                 mExcluder .release();
             }
+            createLessonPanel();
             modelArticleCardLayout .show( modelArticleEditPanel, mode );
             modelArticleEditPanel .setMinimumSize( new Dimension( width, 500 ) );
             modelArticleEditPanel .setPreferredSize( new Dimension( width, 800 ) );
@@ -660,6 +792,17 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     modelButton .doClick();
             }
 			break;
+			
+		case "window.title":
+            this .setTitle( e .getNewValue() .toString() );
+            break;
+			
+		case "visible":
+			if ( Boolean.TRUE .equals( e .getNewValue() ) ) {
+				this .appUI .propertyChange( e ); // remove this window from the UI's collection
+				this .setVisible( true );
+			}
+            break;
 		}
     }
 
@@ -686,7 +829,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     			}
     	}
     	dispose();
-    	mController .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "documentClosed" ) );
+    	mController .setProperty( "visible", Boolean.FALSE );
     	return true;
     }
 

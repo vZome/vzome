@@ -199,9 +199,9 @@ public class LessonController extends DefaultController
         return super.getProperty( propName );
     }
     
-    public EditorController getEditorController()
+    public DocumentController getEditorController()
     {
-        return (EditorController) this .mNextController;
+        return (DocumentController) this .mNextController;
     }
 
     public void renderThumbnails( final Snapshot.Recorder recorder, final ThumbnailRenderer renderer )
