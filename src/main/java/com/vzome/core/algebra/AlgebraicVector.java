@@ -3,13 +3,14 @@ package com.vzome.core.algebra;
 import java.util.Arrays;
 
 import com.vzome.core.math.RealVector;
+import java.util.Comparator;
 
 
 /**
  * @author vorth
  *
  */
-public final class AlgebraicVector
+public final class AlgebraicVector implements Comparable<AlgebraicVector>, Comparator<AlgebraicVector>
 {
     public static final int X = 0, Y = 1, Z = 2;
 
@@ -41,7 +42,9 @@ public final class AlgebraicVector
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + Arrays.hashCode( coordinates );
+        result = prime * result 
+				+ Arrays.hashCode( coordinates )
+				+ field.hashCode();
         return result;
     }
 
@@ -57,15 +60,56 @@ public final class AlgebraicVector
         AlgebraicVector other = (AlgebraicVector) obj;
         if ( !Arrays.equals( coordinates, other.coordinates ) )
             return false;
-        return true;
+        return field.equals( other.field );
     }
     
-    public final RealVector toRealVector()
+	@Override
+	public int compareTo(AlgebraicVector other) {
+        if ( other == null )
+            return -1;
+		if ( this == other )
+            return 0;
+		if ( this .equals(other) )
+            return 0;
+		int comparison = Integer.compare(coordinates.length, other.coordinates.length);
+		if(comparison != 0) {
+			return comparison;
+		}
+		for(int i=0; i < coordinates.length; i++) {
+			AlgebraicNumber n1 = this. coordinates[i];
+			AlgebraicNumber n2 = other.coordinates[i];
+			comparison = n1.compareTo(n2);
+			if (comparison != 0) {
+				return comparison;
+			}
+		}
+        return field.compareTo( other.field );
+	}
+
+	@Override
+	public int compare(AlgebraicVector o1, AlgebraicVector o2) {
+		return (o1 == null)
+				? ((o2 == null) ? 0 : -1)
+				: o1.compareTo(o2);
+	}
+	
+	public final RealVector toRealVector()
     {
         // TODO assert this is 3d
         return new RealVector( this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() );
     }
     
+	/**
+	 * @return Returns a String with no extended characters so it's suitable for writing 
+	 * to an 8 bit stream such as System.out or an ASCII text log file in Windows.
+	 * Contrast this with {@link toString()} which contains extended characters (e.g. \u03C4 (phi))
+	 */
+	public final String toASCIIString()
+    {
+        return this .getVectorExpression( AlgebraicField .EXPRESSION_FORMAT );
+    }
+
+	@Override
     public final String toString()
     {
         return this .getVectorExpression( AlgebraicField .DEFAULT_FORMAT );
@@ -215,4 +259,5 @@ public final class AlgebraicVector
 	{
 		return this .field;
 	}
+
 }

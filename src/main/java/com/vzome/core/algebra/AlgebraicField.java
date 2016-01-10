@@ -9,8 +9,11 @@ import java.util.StringTokenizer;
 
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
 
-public abstract class AlgebraicField
+public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comparator<AlgebraicField>
 {
     public abstract AlgebraicNumber getDefaultStrutScaling();
 
@@ -78,6 +81,54 @@ public abstract class AlgebraicField
     {
         return this.name;
     }
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 43 * hash 
+				+ Objects.hashCode(this.name)
+				+ Objects.hashCode(this.symmetries.size());
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final AlgebraicField other = (AlgebraicField) obj;
+		if (this.symmetries.size() != other.symmetries.size()) {
+			return false;
+		}
+		return this.name.equals(other.name);
+	}
+			
+	@Override
+	public int compareTo(AlgebraicField other) {
+		if (other == null) {
+			return -1;
+		}
+		if (this == other) {
+			return 0;
+		}
+		if (this.equals(other)) {
+			return 0;
+		}
+		if (this.symmetries.size() != other.symmetries.size()) {
+			return Integer.compare(this.symmetries.size(), other.symmetries.size());
+		}
+		return this.name.compareTo(other.name);
+	}
+
+	@Override
+	public int compare(AlgebraicField o1, AlgebraicField o2) {
+		return (o1 == null)
+				? ((o2 == null) ? 0 : -1)
+				: o1.compareTo(o2);
+	}
 
     public AlgebraicField getSubfield()
     {

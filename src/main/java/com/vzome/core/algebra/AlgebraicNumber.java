@@ -5,9 +5,10 @@ package com.vzome.core.algebra;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Comparator;
 
 
-public class AlgebraicNumber implements Fields.Element
+public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumber>, Comparator<AlgebraicNumber>
 {
     private final AlgebraicField field;
     private final BigRational[] factors;
@@ -51,7 +52,9 @@ public class AlgebraicNumber implements Fields.Element
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + Arrays.hashCode( factors );
+        result = prime * result 
+				+ Arrays.hashCode( factors )
+				+ field.hashCode();
         return result;
     }
 
@@ -67,8 +70,41 @@ public class AlgebraicNumber implements Fields.Element
         AlgebraicNumber other = (AlgebraicNumber) obj;
         if ( !Arrays.equals( factors, other.factors ) )
             return false;
-        return true;
+        return field.equals( other.field );
     }
+
+	@Override
+	public int compareTo(AlgebraicNumber other) {
+		if (other == null) {
+			return -1;
+		}
+		if (this == other) {
+			return 0;
+		}
+		if (this.equals(other)) {
+			return 0;
+		}
+		int comparison = Integer.compare(factors.length, other.factors.length);
+		if (comparison != 0) {
+			return comparison;
+		}
+		for (int i = 0; i < factors.length; i++) {
+			BigRational n1 = this.factors[i];
+			BigRational n2 = other.factors[i];
+			comparison = n1.compareTo(n2);
+			if (comparison != 0) {
+				return comparison;
+			}
+		}
+		return field.compareTo( other.field );
+	}
+
+	@Override
+	public int compare(AlgebraicNumber o1, AlgebraicNumber o2) {
+		return (o1 == null)
+				? ((o2 == null) ? 0 : -1)
+				: o1.compareTo(o2);
+	}
 
     public AlgebraicField getField()
     {
@@ -115,6 +151,7 @@ public class AlgebraicNumber implements Fields.Element
         return this .field .evaluateNumber( factors );
     }
 
+	@Override
     public boolean isZero()
     {
         for ( BigRational factor : this .factors ) {
@@ -136,6 +173,7 @@ public class AlgebraicNumber implements Fields.Element
         return false;
     }
 
+	@Override
     public AlgebraicNumber negate()
     {
         BigRational[] result = new BigRational[ this .factors .length ];
@@ -145,6 +183,7 @@ public class AlgebraicNumber implements Fields.Element
         return new AlgebraicNumber( this .field, result );
     }
 
+	@Override
     public AlgebraicNumber reciprocal()
     {
         return new AlgebraicNumber( this .field, this .field .reciprocal( this .factors ) );
@@ -162,6 +201,7 @@ public class AlgebraicNumber implements Fields.Element
         return buf .toString();
     }
 
+	@Override
     public String toString()
     {
         return this .toString( AlgebraicField .DEFAULT_FORMAT );
