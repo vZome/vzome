@@ -41,7 +41,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         }
         return lcm;
     }
-    
+
     public BigRational[] getFactors()
     {
         return this .factors;
@@ -53,8 +53,8 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         final int prime = 31;
         int result = 1;
         result = prime * result 
-				+ Arrays.hashCode( factors )
-				+ field.hashCode();
+                + Arrays.hashCode( factors )
+                + field.hashCode();
         return result;
     }
 
@@ -73,38 +73,41 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         return field.equals( other.field );
     }
 
-	@Override
-	public int compareTo(AlgebraicNumber other) {
-		if (other == null) {
-			return -1;
-		}
-		if (this == other) {
-			return 0;
-		}
-		if (this.equals(other)) {
-			return 0;
-		}
-		int comparison = Integer.compare(factors.length, other.factors.length);
-		if (comparison != 0) {
-			return comparison;
-		}
-		for (int i = 0; i < factors.length; i++) {
-			BigRational n1 = this.factors[i];
-			BigRational n2 = other.factors[i];
-			comparison = n1.compareTo(n2);
-			if (comparison != 0) {
-				return comparison;
-			}
-		}
-		return field.compareTo( other.field );
-	}
+    @Override
+    public int compareTo(AlgebraicNumber other) {
+        if (this == other) {
+            return 0;
+        }
+        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
+            return 0;
+        }
+        if (0 != field.compareTo( other.field )) {
+            // Should never get here...
+            String reason = "Invalid field comparison: " + field.getName()
+                + " and " + other.field.getName() + ".";
+            throw new IllegalStateException(reason);
+        }
+        int comparison = Integer.compare(factors.length, other.factors.length);
+        if (comparison != 0) {
+            return comparison;
+        }
+        for (int i = 0; i < factors.length; i++) {
+            BigRational n1 = this.factors[i];
+            BigRational n2 = other.factors[i];
+            comparison = n1.compareTo(n2);
+            if (comparison != 0) {
+                return comparison;
+            }
+        }
+        return comparison;
+    }
 
-	@Override
-	public int compare(AlgebraicNumber o1, AlgebraicNumber o2) {
-		return (o1 == null)
-				? ((o2 == null) ? 0 : -1)
-				: o1.compareTo(o2);
-	}
+    @Override
+    public int compare(AlgebraicNumber o1, AlgebraicNumber o2) {
+        return (o1 == null)
+                ? ((o2 == null) ? 0 : -1)
+                : o1.compareTo(o2);
+    }
 
     public AlgebraicField getField()
     {
@@ -138,7 +141,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
             return this;
         return this .plus( that .negate() );
     }
-    
+
     public AlgebraicNumber dividedBy( AlgebraicNumber that )
     {
         if ( that .isOne() )
@@ -151,7 +154,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         return this .field .evaluateNumber( factors );
     }
 
-	@Override
+    @Override
     public boolean isZero()
     {
         for ( BigRational factor : this .factors ) {
@@ -173,7 +176,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         return false;
     }
 
-	@Override
+    @Override
     public AlgebraicNumber negate()
     {
         BigRational[] result = new BigRational[ this .factors .length ];
@@ -183,7 +186,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         return new AlgebraicNumber( this .field, result );
     }
 
-	@Override
+    @Override
     public AlgebraicNumber reciprocal()
     {
         return new AlgebraicNumber( this .field, this .field .reciprocal( this .factors ) );
@@ -201,7 +204,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         return buf .toString();
     }
 
-	@Override
+    @Override
     public String toString()
     {
         return this .toString( AlgebraicField .DEFAULT_FORMAT );

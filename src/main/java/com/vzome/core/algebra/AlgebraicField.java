@@ -9,9 +9,7 @@ import java.util.StringTokenizer;
 
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Objects;
 
 public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comparator<AlgebraicField>
 {
@@ -26,12 +24,12 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
     public abstract void defineMultiplier( StringBuffer instances, int w );
 
     public abstract int getOrder();
-    
+
     public int getNumIrrationals()
     {
         return this .getOrder() - 1;
     }
-    
+
     public abstract String getIrrational( int i, int format );
 
     public String getIrrational( int which )
@@ -42,9 +40,9 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
     private final String name;
 
     private final ArrayList<Symmetry> symmetries = new ArrayList<>();
-    
+
     private final Map<String, QuaternionicSymmetry> quaternionSymmetries = new HashMap<>();
-    
+
     private final AlgebraicNumber one = this .createRational( 1 );
 
     private final AlgebraicNumber zero = this .createRational( 0 );
@@ -54,12 +52,12 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
     /**
      * Positive powers of the first irrational.
      */
-	private ArrayList<AlgebraicNumber> positivePowers = new ArrayList<>( 8 );
+    private final ArrayList<AlgebraicNumber> positivePowers = new ArrayList<>( 8 );
 
     /**
      * Negative powers of the first irrational.
      */
-	private ArrayList<AlgebraicNumber> negativePowers = new ArrayList<>( 8 );
+    private final ArrayList<AlgebraicNumber> negativePowers = new ArrayList<>( 8 );
 
     public AlgebraicField( String name )
     {
@@ -82,53 +80,55 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
         return this.name;
     }
 
-	@Override
-	public int hashCode() {
-		int hash = 7;
-		hash = 43 * hash 
-				+ Objects.hashCode(this.name)
-				+ Objects.hashCode(this.symmetries.size());
-		return hash;
-	}
+    @Override
+    public int hashCode() {
+        int prime = 43;
+        int result = 7;
+        result = prime * result + name.hashCode();
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final AlgebraicField other = (AlgebraicField) obj;
-		if (this.symmetries.size() != other.symmetries.size()) {
-			return false;
-		}
-		return this.name.equals(other.name);
-	}
-			
-	@Override
-	public int compareTo(AlgebraicField other) {
-		if (other == null) {
-			return -1;
-		}
-		if (this == other) {
-			return 0;
-		}
-		if (this.equals(other)) {
-			return 0;
-		}
-		if (this.symmetries.size() != other.symmetries.size()) {
-			return Integer.compare(this.symmetries.size(), other.symmetries.size());
-		}
-		return this.name.compareTo(other.name);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AlgebraicField other = (AlgebraicField) obj;
+        if(! this.name.equals(other.name)) {
+            String reason = "All instances of " + getClass().getSimpleName() + " must have the same name."
+                    + " Found '" + this.name + "' and '" + other.name + "'.";
+            throw new IllegalStateException(reason);
+        }
+        return true;
+    }
 
-	@Override
-	public int compare(AlgebraicField o1, AlgebraicField o2) {
-		return (o1 == null)
-				? ((o2 == null) ? 0 : -1)
-				: o1.compareTo(o2);
-	}
+    @Override
+    public int compareTo(AlgebraicField other) {
+        if (this == other) {
+            return 0;
+        }
+        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
+            return 0;
+        }
+        // Should never get here...
+        String reason = "Invalid comparison of " + this.getClass().getSimpleName()
+                + " with " + other.getClass().getSimpleName() + ".";
+        throw new IllegalStateException(reason);
+
+    }
+
+    @Override
+    public int compare(AlgebraicField o1, AlgebraicField o2) {
+        return (o1 == null)
+                ? ((o2 == null) ? 0 : -1)
+                : o1.compareTo(o2);
+    }
 
     public AlgebraicField getSubfield()
     {
@@ -139,8 +139,8 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
     {
         return new AlgebraicNumber( this, factors );
     }
-    
-    public AlgebraicNumber createAlgebraicNumber( int... factors )
+
+    public final AlgebraicNumber createAlgebraicNumber( int... factors )
     {
         BigRational[] brs = new BigRational[ factors .length ];
         for ( int j = 0; j < factors.length; j++ ) {
@@ -162,99 +162,100 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
             return new AlgebraicNumber( this, factors ) .times( multiplier );
         }
         else
-        	return new AlgebraicNumber( this, factors );
+            return new AlgebraicNumber( this, factors );
     }
 
     public final AlgebraicNumber createPower( int power )
     {
-    	if ( power == 0 )
-    		return this .one;
-    	if ( power > 0 )
-    	{
-    		// first, fill in the missing powers in the list
-    		int size = this .positivePowers .size();
-    		AlgebraicNumber irrat = this .positivePowers .get( 1 );
-    		AlgebraicNumber last = this .positivePowers .get( size - 1 );
-    		for (int i = size; i <= power; i++) {
-    			AlgebraicNumber next = last .times( irrat );
-				this .positivePowers .add( next );
-				last = next;
-			}
-    		return positivePowers .get( power );
-    	}
-    	else
-    	{
-    		power = - power;
-    		// first, fill in the missing powers in the list
-    		int size = this .negativePowers .size();
-    		AlgebraicNumber irrat = this .negativePowers .get( 1 );
-    		AlgebraicNumber last = this .negativePowers .get( size - 1 );
-    		for (int i = size; i <= power; i++) {
-    			AlgebraicNumber next = last .times( irrat );
-				this .negativePowers .add( next );
-				last = next;
-			}
-    		return negativePowers .get( power );
-    	}
+        if ( power == 0 )
+            return this .one;
+        if ( power > 0 )
+        {
+            // first, fill in the missing powers in the list
+            int size = this .positivePowers .size();
+            AlgebraicNumber irrat = this .positivePowers .get( 1 );
+            AlgebraicNumber last = this .positivePowers .get( size - 1 );
+            for (int i = size; i <= power; i++) {
+                AlgebraicNumber next = last .times( irrat );
+                this .positivePowers .add( next );
+                last = next;
+            }
+            return positivePowers .get( power );
+        }
+        else
+        {
+            power = - power;
+            // first, fill in the missing powers in the list
+            int size = this .negativePowers .size();
+            AlgebraicNumber irrat = this .negativePowers .get( 1 );
+            AlgebraicNumber last = this .negativePowers .get( size - 1 );
+            for (int i = size; i <= power; i++) {
+                AlgebraicNumber next = last .times( irrat );
+                this .negativePowers .add( next );
+                last = next;
+            }
+            return negativePowers .get( power );
+        }
     }
 
     public final AlgebraicNumber createRational( int... value )
     {
-    	int denom = value.length == 2 ? value[ 1 ] : 1;
+        int denom = value.length == 2 ? value[ 1 ] : 1;
         return createAlgebraicNumber( value[0], 0, denom, 0 );
     }
 
-	public BigRational[] negate( BigRational[] e )
-	{
-    	BigRational[] result = new BigRational[ e.length ];
-    	for (int i = 0; i < e.length; i++) {
-			result[ i ] = e[ i ] .negate();
-		}
-    	return result;
-	}
+    public BigRational[] negate( BigRational[] array )
+    {
+        BigRational[] result = new BigRational[ array.length ];
+        for (int i = 0; i < array.length; i++) {
+            result[ i ] = array[ i ] .negate();
+        }
+        return result;
+    }
 
-	public boolean isZero( BigRational[] e )
-	{
-    	for ( BigRational r : e ) {
-    		if ( ! r .isZero() ) {
-    			return false;
+    public boolean isZero( BigRational[] array )
+    {
+        for (BigRational element : array) {
+            if (!element.isZero()) {
+                return false;
             }
         }
-		return true;
-	}
+        return true;
+    }
 
     public BigRational[] add( BigRational[] v1, BigRational[] v2 )
     {
-    	if ( v1.length != v2.length )
-    		throw new IllegalArgumentException( "arguments don't match" );
-    	BigRational[] result = new BigRational[ v1.length ];
-    	for (int i = 0; i < result.length; i++) {
-			result[ i ] = v1[ i ] .plus( v2[ i ] );
-		}
-    	return result;
+        if ( v1.length != v2.length )
+            throw new IllegalArgumentException( "arguments don't match" );
+        BigRational[] result = new BigRational[ v1.length ];
+        for (int i = 0; i < result.length; i++) {
+            result[ i ] = v1[ i ] .plus( v2[ i ] );
+        }
+        return result;
     }
 
     public BigRational[] subtract( BigRational[] v1, BigRational[] v2 )
     {
-    	if ( v1.length != v2.length )
-    		throw new IllegalArgumentException( "arguments don't match" );
-    	BigRational[] result = new BigRational[ v1.length ];
-    	for (int i = 0; i < result.length; i++) {
-			result[ i ] = v1[ i ] .minus( v2[ i ] );
-		}
-    	return result;
+        if ( v1.length != v2.length )
+            throw new IllegalArgumentException( "arguments don't match" );
+        BigRational[] result = new BigRational[ v1.length ];
+        for (int i = 0; i < result.length; i++) {
+            result[ i ] = v1[ i ] .minus( v2[ i ] );
+        }
+        return result;
     }
 
     public void addSymmetry( Symmetry symmetry )
     {
         this.symmetries.add( symmetry );
     }
-    
+
     public Symmetry getSymmetry( String name )
     {
-        for (Symmetry symm : symmetries) {
-            if ( symm .getName() .equals( name ) )
-                return symm;
+        for (Symmetry symmetry : symmetries) {
+            if (symmetry.getName().equals(name)) {
+                return symmetry;
+            }
         }
         return null;
     }
@@ -263,10 +264,10 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
     {
         return symmetries.toArray( new Symmetry[symmetries.size()] );
     }
-    
+
     public void addQuaternionSymmetry( QuaternionicSymmetry symm )
     {
-    	quaternionSymmetries .put( symm .getName(), symm );
+        quaternionSymmetries .put( symm .getName(), symm );
     }
 
     public QuaternionicSymmetry getQuaternionSymmetry( String name )
@@ -278,7 +279,7 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
      * Drop one coordinate from the 4D vector. If wFirst (the usual), then drop
      * the first coordinate, taking the "imaginary part" of the vector. If
      * !wFirst (for old VEF import, etc.), drop the last coordinate.
-     * 
+     *
      * @param source
      * @param wFirst
      * @return
@@ -342,7 +343,7 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
         }
         return reciprocalFactors;
     }
-        
+
     public final static int DEFAULT_FORMAT = 0; // 4 + 3 \u03C4
 
     public final static int EXPRESSION_FORMAT = 1; // 4+\u03C4*3
@@ -366,7 +367,7 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
         int order = this .getOrder();
         if ( is.length % order != 0 )
             throw new IllegalStateException( "Field order (" + order + ") does not divide length for " + is );
-        
+
         int dims = is.length / ( 2 * order );
         AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
         for ( int i = 0; i < dims; i++ ) {
@@ -404,13 +405,13 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
             break;
 
         default:
-        	int first = 0;
+            int first = 0;
             for ( int i = 0; i < factors.length; i++ )
             {
                 BigRational factor = factors[ i ];
                 if ( factor .isZero() ) {
-                	++ first;
-                	continue;
+                    ++ first;
+                    continue;
                 }
                 if ( i > first )
                 {
@@ -440,8 +441,8 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
                 }
             }
             if ( first == factors.length )
-            	// all factors were zero
-            	buf .append( "0" );
+                // all factors were zero
+                buf .append( "0" );
             break;
         }
     }
@@ -470,7 +471,7 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
         }
         return new AlgebraicNumber( this, rats );
     }
-    
+
     public AlgebraicVector parseVector( String nums )
     {
         StringTokenizer tokens = new StringTokenizer( nums, " " );
@@ -478,7 +479,7 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
         int order = this .getOrder();
         if ( numToks % order != 0 )
             throw new IllegalStateException( "Field order (" + order + ") does not divide token count: " + numToks + ", for '" + nums + "'" );
-        
+
         int dims = numToks / order;
         AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
         for ( int i = 0; i < dims; i++ ) {
@@ -494,5 +495,5 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
             columns[ i ] = this .basisVector( dims, i );
         }
         return new AlgebraicMatrix( columns );
-    }    
+    }
 }

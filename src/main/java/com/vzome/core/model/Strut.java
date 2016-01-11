@@ -27,17 +27,18 @@ public class Strut extends Manifestation implements Comparable<Strut>, Comparato
 	}
 
 	@Override
-	public boolean equals( Object other )
+	public boolean equals( Object obj )
 	{
-        if ( other == null )
+        if ( obj == null )
             return false;
-        if ( other == this )
+        if ( obj == this )
             return true;
-        if ( ! ( other instanceof Strut ) )
+        if ( ! ( obj instanceof Strut ) )
             return false;
-        Strut strut = (Strut) other;
-        AlgebraicVector otherStart = strut .m_end1;
-        AlgebraicVector otherEnd = strut .m_end2;
+        Strut other = (Strut) obj;
+        AlgebraicVector otherStart = other .m_end1;
+        AlgebraicVector otherEnd = other .m_end2;
+		// A strut from J to K should be considered equal to a strut from K to J.
         if ( otherStart .equals( m_end1 ) ) 
             return otherEnd .equals( m_end2 );
         else
@@ -55,10 +56,23 @@ public class Strut extends Manifestation implements Comparable<Strut>, Comparato
 			return 0;
 		if ( this.equals(other) )
 			return 0;
-        AlgebraicVector otherLoc = other.getLocation();
-        return ( this. getLocation().equals( otherLoc ) ) 
-            ? this. getEnd() .compareTo( other.getEnd() )
-			: this. getLocation() .compareTo( otherLoc );
+        AlgebraicVector thisFirst = this.getCanonicalLesserEnd();
+        AlgebraicVector thisLast = this.getCanonicalGreaterEnd();
+        AlgebraicVector otherFirst = other.getCanonicalLesserEnd();
+        AlgebraicVector otherLast = other.getCanonicalGreaterEnd();
+        int comparison = thisFirst.compareTo( otherFirst );
+		// A strut from J to K should be considered equal to a strut from K to J.
+        return ( comparison  == 0 ) 
+            ? thisLast.compareTo( otherLast )
+			: comparison;
+	}
+	
+	public AlgebraicVector getCanonicalLesserEnd() {
+		return (m_end1.compareTo(m_end2) < 0) ? m_end1 : m_end2;
+	}
+
+	public AlgebraicVector getCanonicalGreaterEnd() {
+		return (m_end1.compareTo(m_end2) > 0) ? m_end1 : m_end2;
 	}
 
 	@Override
