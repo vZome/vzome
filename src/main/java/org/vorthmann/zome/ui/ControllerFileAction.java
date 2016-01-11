@@ -16,7 +16,7 @@ public class ControllerFileAction extends FileAction
 
     public ControllerFileAction( FileDialog chooser, boolean open, String command, String extension, Controller controller )
     {
-        super( chooser, open, extension, command );
+        super( chooser, open, extension, controller .getProperty( "file-dialog-title." + command ) );
 
         mController = controller;
         mCommand = command;

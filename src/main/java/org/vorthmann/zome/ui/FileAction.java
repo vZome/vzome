@@ -83,7 +83,8 @@ public abstract class FileAction implements ActionListener
      */
     public void actionPerformed( ActionEvent arg0 )
     {
-		mFileChooser .setTitle( mTitle );
+    	String title = ( mTitle != null )? mTitle : ( mOpening? "Choose a file" : "Save a file" );
+		mFileChooser .setTitle( title );
 		mFileChooser .setMode( mOpening? FileDialog .LOAD : FileDialog .SAVE );
 		mFileChooser .setVisible( true );
 		mFileChooser .setFilenameFilter( null );

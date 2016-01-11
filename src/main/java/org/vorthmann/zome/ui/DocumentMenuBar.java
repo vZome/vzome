@@ -154,14 +154,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 //        }
 
         submenu = new JMenu( "Capture Image..." );
-        submenu .add( createMenuItem( "BMP", "capture.bmp" ) );
         submenu .add( createMenuItem( "JPEG", "capture.jpg" ) );
         submenu .add( createMenuItem( "PNG", "capture.png" ) );
-        submenu .add( createMenuItem( "TIFF", "capture.tiff" ) );
+        submenu .add( createMenuItem( "GIF", "capture.gif" ) );
+        submenu .add( createMenuItem( "BMP", "capture.bmp" ) );
         menu.add( submenu );
 
-        // menu .add( createMenuItem( "Capture Image Sequence...",
-        // new CaptureImageSequenceAction( mFileChooser, mVPM, mMainPanel ) ) );
+        menu .add( createMenuItem( "Capture Animation...", "capture-animation" ) );
 
         menu.add( enableIf( isEditor, createMenuItem( "Capture PDF or SVG...", "snapshot.2d" ) ) );
 

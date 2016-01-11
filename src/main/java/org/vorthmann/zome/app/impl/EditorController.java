@@ -1,6 +1,7 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -25,7 +26,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.media.jai.JAI;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
 
@@ -904,38 +909,18 @@ public class EditorController extends DefaultController implements J3dComponentF
                 this .changeCount  = this .document .getChangeCount();
                 return;
             }
+            if ( "capture-animation" .equals( command ) )
+            {
+            	AnimationCaptureController animation = new AnimationCaptureController( this .mViewPlatform, file );
+            	captureImageFile( null, AnimationCaptureController.TYPE, animation );
+                return;
+            }
             if ( command.startsWith( "capture." ) )
             {
-                try {
-                    Class.forName( "javax.media.jai.JAI" );
-                } catch ( Exception ex ) {
-                    mErrors.reportError(
-                            "You must install Java Advanced Imaging before running vZome, if you intend to capture images.",
-                            new Object[0] );
-                    return;
-                }
-                String maxSizeStr = getProperty( "max.image.size" );
-                final int maxSize = ( maxSizeStr == null )? -1 : Integer .parseInt( maxSizeStr );
                 final String extension = command .substring( "capture.".length() );
-                imageCaptureViewer .captureImage( maxSize, new RenderingViewer.ImageCapture()
-                {
-					@Override
-                    public void captureImage( RenderedImage image )
-                    {                        
-                        String type = extension.toUpperCase();
-                        if ( type.equals( "JPG" ) )
-                            type = "JPEG";
-                        try {
-                            FileOutputStream stream = new FileOutputStream( file );
-                            JAI .create( "encode", image, stream, type, null );
-                            stream.close();
-                            Platform.setFileType( file, extension );
-                            Platform.openApplication( file );
-                        } catch ( Exception exc ) {
-                            mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { exc } );
-                        }
-                    }
-                } );
+                captureImageFile( file, extension, null );
+	            Platform .setFileType( file, extension );
+	            Platform .openApplication( file );
                 return;
             }
 //            if ( command .equals( "export.zomespace" ) )
@@ -983,6 +968,53 @@ public class EditorController extends DefaultController implements J3dComponentF
             mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
         }
     }
+
+	private void captureImageFile( final File file, final String extension, final AnimationCaptureController animation )
+	{
+		String maxSizeStr = getProperty( "max.image.size" );
+		final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) :
+								( animation != null )? animation .getImageSize() : -1; // Animation images can't be too big
+		if ( animation != null ) {
+			animation .rotate();
+		}
+		imageCaptureViewer .captureImage( maxSize, new RenderingViewer.ImageCapture()
+		{
+			@Override
+		    public void captureImage( final RenderedImage image )
+		    {
+		        String type = extension.toUpperCase();
+		        if ( type.equals( "JPG" ) )
+		            type = "JPEG";
+		        try {
+		        	File thisFile = ( animation != null )? animation .nextFile() : file;
+		            ImageOutputStream  ios =  ImageIO.createImageOutputStream( thisFile );
+		            Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName( type );
+		            ImageWriter writer = iter .next();
+		            writer .setOutput( ios );
+		            ImageWriteParam iwParam = writer .getDefaultWriteParam();
+		            if ( iwParam .canWriteCompressed() ) {
+		            	String[] types = iwParam .getCompressionTypes();
+		                iwParam .setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
+		                iwParam .setCompressionType( types[ types.length - 1 ] ); // this default is better for BMP, to avoid non-compression
+		                iwParam .setCompressionQuality( .95f );
+		            }
+		            writer .write( null, new IIOImage( image, null, null), iwParam );
+		            writer .dispose();
+		            if ( animation != null && ! animation .finished() ) {
+		            	// queue up the next capture in the sequence
+		            	EventQueue .invokeLater( new Runnable(){
+
+							@Override
+							public void run() {
+				            	captureImageFile( null, extension, animation );
+							}});
+		            }
+				} catch (Exception e) {
+		            mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
+				}
+		    }
+		} );
+	}
     
     private static String readFile( File file ) throws IOException
     {
@@ -1101,6 +1133,16 @@ public class EditorController extends DefaultController implements J3dComponentF
                 return "select objects based on incidence on a plane or half-space";
             else
                 return "replicate objects to create " + string + " symmetry";
+        }
+        
+        if ( string .startsWith( "file-dialog-title." ) ) {
+        	switch ( string .substring( "file-dialog-title." .length() ) ) {
+			case "capture-animation":
+				return "Choose a target folder for animation frames";
+
+			default:
+				break; // fall through to properties or super
+			}
         }
 
         String result = this .properties .getProperty( string );

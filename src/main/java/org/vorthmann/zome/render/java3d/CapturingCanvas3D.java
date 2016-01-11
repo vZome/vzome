@@ -2,6 +2,7 @@
 package org.vorthmann.zome.render.java3d;
 
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GraphicsConfiguration;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -120,7 +121,16 @@ public class CapturingCanvas3D extends Canvas3D
                 img = JAI .create( "scale", params, hints ) .getAsBufferedImage();
             }
 
-            m_imageHandler .captureImage( img );
+            // since we're currently running on some Java3d rendering thread, we want to make sure
+            //   that we do the capture (which triggers a repaint) on the AWT event handler thread.
+            final BufferedImage bufImg = img;
+            final RenderingViewer.ImageCapture capturer = this .m_imageHandler;
+            EventQueue .invokeLater( new Runnable(){
+
+				@Override
+				public void run() {
+					capturer .captureImage( bufImg );
+				}} );
 
             postSwapCount_++;
             m_imageHandler = null;

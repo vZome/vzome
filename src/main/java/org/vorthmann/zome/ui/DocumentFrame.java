@@ -567,6 +567,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         		actionListener = this .localActions;
                 break;
                                                 
+        	case "capture-animation":
+        		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, "png", mController );
+                break;
+                                                
         	default:
         		if ( command .startsWith( "openResource-" ) ) {
         			actionListener = this .mController;
