@@ -18,6 +18,16 @@ import org.vorthmann.ui.Controller;
 
 public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 {
+	private static final int COMMAND = Platform.getKeyModifierMask();
+	
+	private static final int COMMAND_OPTION = COMMAND | InputEvent.ALT_MASK;
+
+	private static final int COMMAND_SHIFT = COMMAND | InputEvent.SHIFT_MASK;
+
+	private static final int CONTROL = InputEvent.ALT_MASK;
+	
+	private static final int CONTROL_OPTION = InputEvent.CTRL_MASK | InputEvent.ALT_MASK;
+	
     private JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, pythonMenuItem;
 
     private JMenu import3dSubmenu;
@@ -69,7 +79,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         if ( fullPower )
         {
             JMenu submenu = new JMenu( "New Model..." );
-            submenu.add( enableIf( isEditor || readerPreview, createMenuItem( "Zome (Golden Field)", "new", KeyEvent.VK_N, 0 ) ) );
+            submenu.add( enableIf( isEditor || readerPreview, createMenuItem( "Zome (Golden Field)", "new", KeyEvent.VK_N, COMMAND ) ) );
             submenu.add( createMenuItem( "\u221A2 Field", "new-rootTwo" ) );
             submenu.add( createMenuItem( "\u221A3 Field", "new-rootThree" ) );
             if ( "true" .equals( controller .getProperty( "enable.heptagon.field" ) ) )
@@ -80,16 +90,16 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         }
         else
         {
-            menu.add( createMenuItem( "New Model...", "new", KeyEvent.VK_N, 0 ) );
+            menu.add( createMenuItem( "New Model...", "new", KeyEvent.VK_N, COMMAND ) );
         }
-        menu.add( createMenuItem( "Open...", "open", KeyEvent.VK_O, 0 ) );
+        menu.add( createMenuItem( "Open...", "open", KeyEvent.VK_O, COMMAND ) );
         menu.add( createMenuItem( "Open URL...", "openURL" ) );
         menu.add( createMenuItem( "Open As New Model...", "newFromTemplate" ) );
         if ( developerExtras )
             menu.add( createMenuItem( "Open Deferred...", "openDeferringRedo" ) );
         menu.addSeparator();
-        menu.add( createMenuItem( "Close", "close", KeyEvent.VK_W, 0 ) );
-        menu .add( enableIf( canSave, createMenuItem( "Save...", "save", KeyEvent.VK_S, 0 ) ) );
+        menu.add( createMenuItem( "Close", "close", KeyEvent.VK_W, COMMAND ) );
+        menu .add( enableIf( canSave, createMenuItem( "Save...", "save", KeyEvent.VK_S, COMMAND ) ) );
         menu .add( enableIf( canSave, createMenuItem( "Save As...", "saveAs" ) ) );
         menu .add( enableIf( canSave, createMenuItem( "Save Default", "saveDefault" ) ) );
 
@@ -165,44 +175,44 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( enableIf( isEditor, createMenuItem( "Capture PDF or SVG...", "snapshot.2d" ) ) );
 
         menu.addSeparator();
-        menu.add( createMenuItem( "Quit", "quit", KeyEvent.VK_Q, 0 ) );
+        menu.add( createMenuItem( "Quit", "quit", KeyEvent.VK_Q, COMMAND ) );
 
         this .add( menu );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Edit menu
 
         menu = new JMenu( "Edit" );
-        menu.add( enableIf( isEditor, createMenuItem( "Undo", "undo", KeyEvent.VK_Z, 0 ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Redo", ( "redo" ), KeyEvent.VK_Y, 0 ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Undo All", ( "undoAll" ), KeyEvent.VK_Z, InputEvent.ALT_MASK ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Redo All", ( "redoAll" ), KeyEvent.VK_Y, InputEvent.ALT_MASK ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Undo", "undo", KeyEvent.VK_Z, COMMAND ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Redo", ( "redo" ), KeyEvent.VK_Y, COMMAND ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Undo All", ( "undoAll" ), KeyEvent.VK_Z, COMMAND_OPTION ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Redo All", ( "redoAll" ), KeyEvent.VK_Y, COMMAND_OPTION ) ) );
         if ( developerExtras )
         {
             menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            menu .add( createMenuItem( "Undo To Breakpoint", ( "undoToBreakpoint" ), KeyEvent.VK_B, InputEvent.SHIFT_MASK ) );
-            menu .add( createMenuItem( "Redo To Breakpoint", ( "redoToBreakpoint" ), KeyEvent.VK_B, InputEvent.ALT_MASK ) );
-            menu .add( createMenuItem( "Set Breakpoint", ( "setBreakpoint" ), KeyEvent.VK_B, 0 ) );
+            menu .add( createMenuItem( "Undo To Breakpoint", ( "undoToBreakpoint" ), KeyEvent.VK_B, COMMAND_SHIFT ) );
+            menu .add( createMenuItem( "Redo To Breakpoint", ( "redoToBreakpoint" ), KeyEvent.VK_B, COMMAND_OPTION ) );
+            menu .add( createMenuItem( "Set Breakpoint", ( "setBreakpoint" ), KeyEvent.VK_B, COMMAND ) );
             menu .add( createMenuItem( "Redo to Edit Number...", "redoUntilEdit" ) );
         }
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu .add( enableIf( isEditor, createMenuItem( "Copy", ( "copy" ), KeyEvent.VK_C, 0 ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Paste", ( "paste" ), KeyEvent.VK_V, 0 ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Copy", ( "copy" ), KeyEvent.VK_C, COMMAND ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Paste", ( "paste" ), KeyEvent.VK_V, COMMAND ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu .add( enableIf( isEditor, createMenuItem( "Select All", ( "selectAll" ), KeyEvent.VK_A, 0 ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Select Neighbors", ( "selectNeighbors" ), KeyEvent.VK_A, InputEvent.ALT_MASK ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Select All", ( "selectAll" ), KeyEvent.VK_A, COMMAND ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Select Neighbors", ( "selectNeighbors" ), KeyEvent.VK_A, COMMAND_OPTION ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Invert Selection", ( "invertSelection" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Deselect Balls", ( "unselectBalls" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Deselect Struts", ( "unselectStruts" ) ) ) );
         // menu .add( createMenuItem( "Select First Octant", getExclusiveAction( "test.pick.cube" ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu .add( enableIf( isEditor, createMenuItem( "Group", ( "group" ), KeyEvent.VK_G, 0 ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Ungroup", ( "ungroup" ), KeyEvent.VK_G, InputEvent.ALT_MASK ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Group", ( "group" ), KeyEvent.VK_G, COMMAND ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Ungroup", ( "ungroup" ), KeyEvent.VK_G, COMMAND_OPTION ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu .add( enableIf( isEditor, createMenuItem( "Hide", ( "hideball" ), KeyEvent.VK_H, InputEvent.CTRL_MASK ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Show All Hidden", ( "showHidden" ), KeyEvent.VK_H, InputEvent.CTRL_MASK | InputEvent.ALT_MASK ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Hide", ( "hideball" ), KeyEvent.VK_H, CONTROL ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Show All Hidden", ( "showHidden" ), KeyEvent.VK_H, CONTROL_OPTION ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         setColorMenuItem = enableIf( isEditor, createMenuItem( "Set Color...", "setItemColor" ) );
@@ -213,13 +223,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Construct menu
         menu = new JMenu( "Construct" );
 
-        menu.add( enableIf( isEditor, createMenuItem( "Loop Balls", "joinballs", KeyEvent.VK_J, 0 ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Chain Balls", "chainBalls", KeyEvent.VK_J, InputEvent.ALT_MASK ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Loop Balls", "joinballs", KeyEvent.VK_J, COMMAND ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Chain Balls", "chainBalls", KeyEvent.VK_J, COMMAND_OPTION ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Join Balls to Last", "joinBallsAllToLast" ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Make All Possible Struts", "joinBallsAllPossible" ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu .add( enableIf( isEditor, createMenuItem( "Panel", ( "panel" ), KeyEvent.VK_P, 0 ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Panel", ( "panel" ), KeyEvent.VK_P, COMMAND ) ) );
         menu .add( enableIf( isEditor, createMenuItem( "Panel/Strut Vertices", ( "showVertices" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -288,23 +298,22 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .addSeparator();
 
         if ( isGolden ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm-golden", KeyEvent.VK_I, 0 ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm-golden", KeyEvent.VK_I, COMMAND ) ) );
         } else if ( isSnubDodec )
-            menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm-snubDodec", KeyEvent.VK_I, 0 ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm-snubDodec", KeyEvent.VK_I, COMMAND ) ) );
 
         if ( developerExtras && isRootThree ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Dodecagonal Symmetry", "dodecagonsymm", KeyEvent.VK_D, 0 ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Dodecagonal Symmetry", "dodecagonsymm", KeyEvent.VK_D, COMMAND ) ) );
         }
-        menu.add( enableIf( isEditor, createMenuItem( "Cubic / Octahedral Symmetry", "octasymm", KeyEvent.VK_C, InputEvent.ALT_MASK ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", KeyEvent.VK_T,
-                InputEvent.ALT_MASK ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Axial Symmetry", "axialsymm", KeyEvent.VK_R, 0 ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Cubic / Octahedral Symmetry", "octasymm", KeyEvent.VK_C, COMMAND_OPTION ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", KeyEvent.VK_T, COMMAND_OPTION ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Axial Symmetry", "axialsymm", KeyEvent.VK_R, COMMAND ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Point Reflection", "pointsymm" ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Mirror Reflection", "mirrorsymm" , KeyEvent.VK_M, 0 ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Translate", "translate", KeyEvent.VK_T, 0 ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Mirror Reflection", "mirrorsymm" , KeyEvent.VK_M, COMMAND ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Translate", "translate", KeyEvent.VK_T, COMMAND ) ) );
         
         menu .addSeparator();
-        menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog", KeyEvent.VK_P, InputEvent.ALT_MASK ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog", KeyEvent.VK_P, COMMAND_OPTION ) ) );
         if ( enable4d ) {
             menu.add( enableIf( isEditor, createMenuItem( "H_4 Symmetry", "h4symmetry" ) ) );
             menu.add( enableIf( isEditor, createMenuItem( "H_4 Rotations", "h4rotations" ) ) );
@@ -513,7 +522,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
     	JMenuItem menuItem = actions .setMenuAction( command, new JMenuItem( label ) );
     	menuItem .setEnabled( true );
         if ( key != KeyEvent .CHAR_UNDEFINED )
-            menuItem .setAccelerator( KeyStroke.getKeyStroke( key, Platform.getKeyModifierMask() | modifiers ) );
+            menuItem .setAccelerator( KeyStroke.getKeyStroke( key, modifiers ) );
 		return menuItem;
 	}
 }
