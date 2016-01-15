@@ -95,6 +95,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     public DocumentFrame( File file, final Controller controller, PropertyChangeListener app )
     {
         mController = controller;
+        this .mFile = file;
         controller .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
 
