@@ -26,6 +26,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 	private final ContextualMenu directionPopupMenu;
 	private final JPanel orbitTriangle, orbitCheckboxes;
 	private final CardPanel cardPanel;
+	private MouseListener orbitPopup;
 	
 	public OrbitPanel( final Controller selectedOrbits, final Controller drawnOrbits, ControlActions enabler )
 	{
@@ -113,26 +114,26 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 
 	public void systemChanged( Controller buildOrbits, Controller shownOrbits )
 	{
-        if ( directionPopupMenu != null )
-        	this .drawnOrbits .getMouseTool() .detach( orbitTriangle );
+        if ( orbitPopup != null )
+        	orbitTriangle .removeMouseListener( orbitPopup );
+
+        this .enabledOrbits .getMouseTool() .detach( orbitTriangle );
         this .drawnOrbits .removePropertyListener( this );
         this .enabledOrbits .removePropertyListener( this );
 
         this .drawnOrbits = shownOrbits;
 		this .enabledOrbits = buildOrbits;
 		
-
         enabledOrbits .addPropertyListener( this );
         drawnOrbits .addPropertyListener( this );
-        
         enabledOrbits .getMouseTool() .attach( orbitTriangle );
 
         if ( directionPopupMenu != null )
         {
-            MouseListener orbitPopup = new ContextualMenuMouseListener( enabledOrbits, directionPopupMenu );
+            orbitPopup = new ContextualMenuMouseListener( enabledOrbits, directionPopupMenu );
             orbitTriangle .addMouseListener( orbitPopup );
         }
-        
+
         orbitsChanged();
     }
 

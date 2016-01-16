@@ -47,6 +47,18 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     double xMax = 0d, yMax = 0d;
     
     private final Map orbitDots = new HashMap();
+    
+    private final MouseTool mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
+    {
+        public void mouseClicked( MouseEvent click )
+        {
+            Direction pickedDir = pickDirection( click );
+            if ( pickedDir != null ) {
+                toggleOrbit( pickedDir );
+                properties() .firePropertyChange( "orbits", true, false );
+            }
+        }
+    }, /* half-second forgiveness */ 500 );
 
     private static class OrbitState
     {
@@ -77,6 +89,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
 
         orbitDots .clear();
 //        lastOrbit = null;  // cannot do this, we might have a valid value, for example after loading from XML
+        boolean lastOrbitChanged = false;
         for ( Iterator dirs = allOrbits .iterator(); dirs .hasNext(); )
         {
             Direction dir = (Direction) dirs .next();
@@ -84,6 +97,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             {
                 // just a way to initialize the lastOrbit
                 lastOrbit = dir;
+                lastOrbitChanged = true;
             }
             OrbitState orbit = new OrbitState();
             orbitDots .put( dir, orbit );
@@ -111,6 +125,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         }
         if ( ( lastOrbit == null ) || (! allOrbits .contains( lastOrbit ) ) )
         {
+        	lastOrbitChanged = true;
             if ( ! orbits .isEmpty() )
                 lastOrbit = (Direction) orbits .last();
             else if ( ! orbitDots .isEmpty() )
@@ -118,7 +133,8 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             else
                 lastOrbit = null;
         }
-        properties() .firePropertyChange( "selectedOrbit", null, lastOrbit == null? null : lastOrbit .getName() );
+        if ( lastOrbitChanged )
+        	properties() .firePropertyChange( "selectedOrbit", null, lastOrbit == null? null : lastOrbit .getName() );
     }
     
     public void doAction( String action, ActionEvent e ) throws Exception
@@ -405,17 +421,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
 
     public MouseTool getMouseTool()
     {
-        return new LeftMouseDragAdapter( new MouseToolDefault()
-        {
-            public void mouseClicked( MouseEvent click )
-            {
-                Direction pickedDir = pickDirection( click );
-                if ( pickedDir != null ) {
-                    toggleOrbit( pickedDir );
-                    properties() .firePropertyChange( "orbits", true, false );
-                }
-            }
-        }, /* half-second forgiveness */ 500 );
+        return this .mouseTool;
     }
 
 	@Override

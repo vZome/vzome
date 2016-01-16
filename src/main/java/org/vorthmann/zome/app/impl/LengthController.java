@@ -21,7 +21,6 @@ import com.vzome.core.math.symmetry.Direction;
 
 /**
  * Because of MOUSE_WHEEL_GAIN issues, this is more a model of the length panel than an actual length scalar value.
- * It should probably be renamed LengthController, in any case.
  *
  */
 public class LengthController extends DefaultController

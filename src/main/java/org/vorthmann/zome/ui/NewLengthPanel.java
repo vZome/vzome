@@ -308,7 +308,13 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
             renderLength();
         
         else if ( "selectedOrbit" .equals( e .getPropertyName() ) )
-            switchOrbit();
+        {
+        	// this first one should fall "up" to the symmetry controller
+        	Controller newController = controller .getSubController( "buildOrbits" );
+        	newController = controller .getSubController( "currentLength" );
+        	// we didn't set this.controller directly, since we need to disconnect from it first
+            setController( newController );
+        }
         
         else if ( "showStrutScales" .equals( e .getPropertyName() ) )
             lengthDisplay .setVisible( ((Boolean) e .getNewValue()) .booleanValue() );
