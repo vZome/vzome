@@ -62,6 +62,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
     
     private final JFrame frame;
 
+	@Override
     public void actionPerformed( ActionEvent e )
     {
         controller .actionPerformed( e );
@@ -101,6 +102,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                 {
                     scaleUp = createButton( "scaleUp", new ActionListener()
                     {
+						@Override
                         public void actionPerformed( ActionEvent e )
                         {
                             int value = scaleSlider .getValue();
@@ -111,6 +113,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                     upDownButtons .add( scaleUp );
                     scaleDown = createButton( "scaleDown", new ActionListener()
                     {
+						@Override
                         public void actionPerformed( ActionEvent e )
                         {
                             int value = scaleSlider .getValue();
@@ -132,8 +135,9 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                 scaleSlider .setMajorTickSpacing( 1 );
                 scaleSlider .setPaintTicks( true );
                 sliderLabel = new JLabel( "unit" );
-                Hashtable labelTable = new Hashtable();
-                labelTable .put( new Integer( 0 ), sliderLabel );
+				@SuppressWarnings("UseOfObsoleteCollectionType")
+                Hashtable<Integer, JComponent > labelTable = new Hashtable<>();
+                labelTable .put( 0, sliderLabel );
                 scaleSlider .setLabelTable( labelTable );
 
                 scaleSlider .setPaintLabels( true );
@@ -143,6 +147,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                 scaleSlider .setSnapToTicks( true );
                 scaleSlider .addChangeListener( new ChangeListener()
                 {
+					@Override
                     public  void stateChanged( ChangeEvent e )
                     {
                         // it is essential to report state changes only when they are initiated here,
@@ -224,6 +229,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                     editButton .setToolTipText( "customize the unit length" );
                     editButton .addActionListener( new ActionListener(){
 
+						@Override
                         public void actionPerformed( ActionEvent e )
                         {
                             lengthDialog .resync( controller );
@@ -242,7 +248,6 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
             lengthDisplay .setVisible( false );
         }
     }
-        
 
     protected static JButton createButton( String actionCommand, ActionListener listener )
     {
@@ -266,7 +271,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
         return button;
     }
 
-    private final void switchOrbit()
+    private void switchOrbit()
     {
         if ( "true" .equals( controller .getProperty( "halfSizes" ) ) )
             halfCardPanel .showCard( "half" );
@@ -291,7 +296,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
         repaint();
     }
     
-    private final void renderLength()
+    private void renderLength()
     {
         halfCheckbox .setSelected( "true" .equals( controller .getProperty( "half" ) ) );
 
@@ -310,22 +315,25 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
         }
     }
 
+	@Override
     public void propertyChange( PropertyChangeEvent e )
     {
-        if ( "length" .equals( e .getPropertyName() ) )
-            renderLength();
-        
-        else if ( "selectedOrbit" .equals( e .getPropertyName() ) )
-        {
-        	// this first one should fall "up" to the symmetry controller
-        	Controller newController = controller .getSubController( "buildOrbits" );
-        	newController = controller .getSubController( "currentLength" );
-        	// we didn't set this.controller directly, since we need to disconnect from it first
-            setController( newController );
-        }
-        
-        else if ( "showStrutScales" .equals( e .getPropertyName() ) )
-            lengthDisplay .setVisible( ((Boolean) e .getNewValue()) .booleanValue() );
+        switch (e.getPropertyName()) {
+			case "length":
+				renderLength();
+				break;
+			case "selectedOrbit":
+				Controller newController = controller .getSubController( "currentLength" );
+				// newController will be null if all directions are disabled.
+				// in that case, just retain the controller from the previously selected orbit.
+				if(newController != null) {
+					// we didn't set this.controller directly, since we need to disconnect from it first
+					setController( newController );
+				}	break;
+			case "showStrutScales":
+				lengthDisplay .setVisible((Boolean) e.getNewValue());
+				break;
+		}
     }
 
 }
