@@ -175,6 +175,14 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                     shortScale = createButton( "short", "b1", this );
                     mediumScale = createButton( "medium", "b2", this );
                     longScale = createButton( "long", "b3", this );
+					// set preferred width wide enough that the buttons don't resize 
+					// when the button text changes (e.g. from "b0" to "shorter")
+					Dimension preferredSize = superShortScale.getPreferredSize();
+					preferredSize.width = 80;
+					superShortScale.setPreferredSize(preferredSize);
+					shortScale.setPreferredSize(preferredSize);
+					mediumScale.setPreferredSize(preferredSize);
+					longScale.setPreferredSize(preferredSize);
                     scaleButtons .add( longScale );
                     scaleButtons .add( mediumScale );
                     scaleButtons .add( shortScale );
