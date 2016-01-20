@@ -104,6 +104,8 @@ sourceSets {
             include '**/*.vef'
             include '**/*.vZome'
             include '**/*.zomic'
+            include '**/*.html'
+            include '**/*.js'
         }
     }
 }

@@ -1,6 +1,7 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -15,7 +16,11 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Writer;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -911,7 +916,16 @@ public class EditorController extends DefaultController implements J3dComponentF
             }
             if ( "capture-animation" .equals( command ) )
             {
-            	AnimationCaptureController animation = new AnimationCaptureController( this .mViewPlatform, file );
+        		File dir = file .isDirectory()? file : file .getParentFile();
+        		Dimension size = this .modelCanvas .getSize();        		
+        		String html = readResource( "org/vorthmann/zome/app/animation.html" );
+        		html = html .replaceFirst( "%%WIDTH%%", Integer .toString( size .width ) );
+        		html = html .replaceFirst( "%%HEIGHT%%", Integer .toString( size .height ) );
+        		writeFile( html, new File( dir, "index.html" ) );
+        		String js = readResource( "org/vorthmann/zome/app/j360-loop.js" );
+        		writeFile( js, new File( dir, "j360-loop.js" ) );
+
+            	AnimationCaptureController animation = new AnimationCaptureController( this .mViewPlatform, dir );
             	captureImageFile( null, AnimationCaptureController.TYPE, animation );
                 return;
             }
@@ -930,11 +944,12 @@ public class EditorController extends DefaultController implements J3dComponentF
             if ( command.startsWith( "export." ) )
             {
                 Writer out = new FileWriter( file );
+        		Dimension size = this .modelCanvas .getSize();        		
             	try {
                     String format = command .substring( "export." .length() );
                     Exporter3d exporter = document .getNaiveExporter( format, mViewPlatform .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
-                        exporter.doExport( file, file.getParentFile(), out, 600, 600 ); // TODO fix hardcoded size
+                        exporter.doExport( file, file.getParentFile(), out, size.height, size.width );
                     }
                     else {
                         exporter = this .mApp .getExporter( format );
@@ -943,7 +958,7 @@ public class EditorController extends DefaultController implements J3dComponentF
                         	exporter = document .getStructuredExporter( format, mViewPlatform .getView(), colors, sceneLighting, mRenderedModel );
                         }
                     	if ( exporter != null )
-                    		exporter .doExport( document, file, file.getParentFile(), out, 600, 600 ); // TODO fix hardcoded size
+                    		exporter .doExport( document, file, file.getParentFile(), out, size.height, size.width );
                     }
                 } finally {
                     out.close();
@@ -1026,6 +1041,43 @@ public class EditorController extends DefaultController implements J3dComponentF
             out.write( buf, 0, num );
         bytes .close();
         return new String( out.toByteArray() );
+    }
+    
+    private static String readResource( String resourcePath )
+    {
+    	InputStream stream = null;
+        try {
+        	stream = EditorController.class .getClassLoader() .getResourceAsStream( resourcePath );
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            int num;
+            while ( ( num = stream .read( buf, 0, 1024 )) > 0 )
+            	out .write( buf, 0, num );
+            return new String( out .toByteArray() );
+        } catch (Exception e) {
+            return null;
+		} finally {
+			if ( stream != null )
+				try {
+					stream .close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+    }
+
+    private static void writeFile( String content, File file ) throws Exception
+    {
+    	FileWriter writer = null;
+        try {
+        	writer = new FileWriter( file );
+        	writer .write( content );
+        } catch (Exception ex) {
+            throw ex;
+        } finally {
+        	writer .close();
+        }
     }
 
 	@Override
