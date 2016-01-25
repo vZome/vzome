@@ -29,11 +29,11 @@ public class RunZomodScript extends RunZomicScript
     protected ZomicStatement parseScript( String script ) throws Failure
     {
         Parser parser = new Parser( new IcosahedralSymmetry( new PentagonField(), "default" ));
-        List errors = new ArrayList();
+        List<String> errors = new ArrayList<>();
         ZomicStatement program = parser .parse(
             new ByteArrayInputStream( script .getBytes() ), new ErrorHandler.Default( errors ), "" );
         if ( errors.size() > 0 )
-            throw new Failure( (String) errors .get(0) );
+            throw new Failure( errors .get(0) );
         return program;
     }
 

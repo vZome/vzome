@@ -61,7 +61,7 @@ public class SegExporter extends Exporter3d
         return "seg";
     }
 
-    private Map vertexData = new HashMap();
+    private Map<AlgebraicVector, Integer> vertexData = new HashMap<>();
     
     private transient StringBuffer vertices;
 
@@ -73,13 +73,13 @@ public class SegExporter extends Exporter3d
 
 	protected Integer getVertexIndex( AlgebraicVector vertexVector )
     {
-        Integer obj = (Integer) vertexData .get( vertexVector );
-        if ( obj == null )
+        Integer val = vertexData .get( vertexVector );
+        if ( val == null )
         {
             AlgebraicVector key = vertexVector;
             int index = vertexData .size();
-            obj = new Integer( index );
-            vertexData .put( key, obj );
+            val = new Integer( index );
+            vertexData .put( key, val );
             vertices .append( "v " );
             RealVector vertex =  vertexVector .toRealVector();
             vertices .append( format .format( vertex.x ) + " " );
@@ -87,7 +87,7 @@ public class SegExporter extends Exporter3d
             vertices .append( format .format( vertex.z ) + " " );
             vertices .append( "\n" );
         }
-        return obj;
+        return val;
     }
 
 }

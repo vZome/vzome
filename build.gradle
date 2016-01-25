@@ -66,14 +66,47 @@ dependencies {
     regressionRuntime configurations.testRuntime
 }
 
- //Don't necessarily want to turn on these warnings yet, but here's the code to do it eventually.
-//gradle.projectsEvaluated {
-//	tasks.withType(JavaCompile) {
-//		options.compilerArgs \
-//		<< "-Xlint:unchecked" \
-//		<< "-Xlint:deprecation"
-//	}
-//}
+// These options apply to all java projects
+// More info at http://www.javaworld.com/article/2073587/javac-s--xlint-options.html
+// I'm turning on most of the warnings 
+// ...except that the test project ignores deprecation 
+// and they all ignore serial for now.
+gradle.projectsEvaluated {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs \
+		<< "-Xlint:cast" \
+		<< "-Xlint:divzero" \
+		<< "-Xlint:empty" \
+		<< "-Xlint:fallthrough" \
+		<< "-Xlint:finally" \
+		<< "-Xlint:path" \
+		<< "-Xlint:unchecked"
+	}
+}
+// It seems that the settings below are the starting point
+// and that the ones above override them, so only put 
+// settings above if they are identical in all projects.
+
+// This applies only to the primary 'compile' java project
+compileJava {
+    options.compilerArgs \
+	<< "-Xlint:deprecation" \
+	<< "-Xlint:-overrides" \
+	<< "-Xlint:-serial" // TODO: Enable these two warnings and look into fixing the issues
+	// A minus sign following the colon removes these checks.
+}
+
+// This applies only to the 'test' java project
+compileTestJava {
+	// These warnings exist in the older legacy zomic code 
+	// which we don't plan to maintain 
+	// except for regression and backward compatibility testing.
+    options.compilerArgs \
+	<< "-Xlint:-deprecation" \
+	<< "-Xlint:overrides" \
+	<< "-Xlint:-serial" 
+	// A minus sign following the colon removes these checks.
+}
 
 // Successive runs of 'test' tasks will not be executed 
 //  unless the results of the previous run are 'cleaned'.

@@ -26,9 +26,9 @@ public class ApplyTool extends ChangeManifestations
         //  If the tool does not need input, it operates just on its parameters and
         //  the entire realized model, but it still may add to or replace the current
         //  selection.
-        List inputs = new ArrayList();
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        List<Manifestation> inputs = new ArrayList<>();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             if ( hideInputs && tool .needsInput() )
             {
                 super .unselect( man, true );

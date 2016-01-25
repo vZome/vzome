@@ -29,7 +29,7 @@ public class CommandFreePoint extends AbstractCommand
         return ATTRS;
     }
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes,
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();

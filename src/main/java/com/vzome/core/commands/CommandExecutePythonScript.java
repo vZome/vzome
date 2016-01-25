@@ -34,13 +34,13 @@ public class CommandExecutePythonScript extends AbstractCommand
     }
     
 
-    public ConstructionList apply( ConstructionList parameters, Map attrs, ConstructionChanges effects )
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects )
     throws Command.Failure
     {
         ConstructionList result = new ConstructionList();
         if ( parameters .size() != 1 )
             throw new Failure( "start parameter must be a single connector" );
-        Construction c = (Construction) parameters .get( 0 );
+        Construction c = parameters .get( 0 );
         if ( ! ( c instanceof Point ) )
             throw new Failure( "start parameter must be a connector" );
         Point pt1 = (Point) c;

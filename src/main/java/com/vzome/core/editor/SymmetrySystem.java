@@ -36,11 +36,11 @@ public class SymmetrySystem implements OrbitSource
     
 	private final Symmetry symmetry;
     private final OrbitSet orbits;
-    private final Map orbitColors = new HashMap();
-    private final Map<String,Shapes> styles = new HashMap();
-    private final List<String> styleNames = new ArrayList<String>();
+    private final Map<Direction, Color> orbitColors = new HashMap<>();
+    private final Map<String,Shapes> styles = new HashMap<>();
+    private final List<String> styleNames = new ArrayList<>();
     private Shapes shapes;
-    private Map<AlgebraicVector,Axis> vectorToAxis = new HashMap();
+    private Map<AlgebraicVector,Axis> vectorToAxis = new HashMap<>();
 
     private boolean noKnownDirections = false;
 
@@ -224,7 +224,7 @@ public class SymmetrySystem implements OrbitSource
 	{
 		Color shapeColor = this .shapes .getColor( orbit ); // usually null, but see ExportedVEFShapes
 		if ( shapeColor == null ) // the usual case
-			shapeColor = (Color) orbitColors .get( orbit );
+			shapeColor = orbitColors .get( orbit );
 		return shapeColor;
 	}
 
@@ -279,7 +279,7 @@ public class SymmetrySystem implements OrbitSource
 
     public String[] getStyleNames()
     {
-        return (String[]) this .styleNames .toArray( new String[]{} );
+        return this .styleNames .toArray( new String[]{} );
     }
 
     public Shapes getStyle()

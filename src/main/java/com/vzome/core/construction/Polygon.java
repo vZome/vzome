@@ -66,6 +66,6 @@ public abstract class Polygon extends Construction
     
     public AlgebraicVector[] getVertices()
     {
-        return (AlgebraicVector[]) mVertices .clone();
+        return mVertices .clone();
     }
 }

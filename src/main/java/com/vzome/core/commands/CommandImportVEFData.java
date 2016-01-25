@@ -80,16 +80,16 @@ public class CommandImportVEFData extends AbstractCommand
     /*
      * Adding this to support a 4D quaternion.
      */
-    public Map setXml( Element xml, XmlSaveFormat format ) 
+    public AttributeMap setXml( Element xml, XmlSaveFormat format ) 
     {
-        Map attrs = super .setXml( xml, format );
+        AttributeMap attrs = super .setXml( xml, format );
         
         quaternionVector = format .parseRationalVector( xml, "quaternion" );
         
         return attrs;
     }
     
-    public void getXml( Element result, Map attributes )
+    public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
         	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );
@@ -98,7 +98,7 @@ public class CommandImportVEFData extends AbstractCommand
     }
 
     
-    public void setFixedAttributes( Map attributes, XmlSaveFormat format )
+    public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         if ( ! attributes .containsKey( CommandImportVEFData .FIELD_ATTR_NAME ) )
             attributes .put( CommandImportVEFData .FIELD_ATTR_NAME, format .getField() );
@@ -106,7 +106,7 @@ public class CommandImportVEFData extends AbstractCommand
         super .setFixedAttributes( attributes, format );
     }
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes,
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();
@@ -139,7 +139,7 @@ public class CommandImportVEFData extends AbstractCommand
     {
         protected AlgebraicVector[][] mProjected;
         
-        protected final Set mUsedPoints = new HashSet();
+        protected final Set<Point> mUsedPoints = new HashSet<>();
         
         public VefToModelNoInversion( AlgebraicVector quaternion, ModelRoot root, ConstructionChanges effects )
         {

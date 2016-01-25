@@ -33,12 +33,12 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
  */
 public class CommandUniformH4Polytope extends CommandTransform
 {
-    public void setFixedAttributes( Map attributes, XmlSaveFormat format )
+    public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         super.setFixedAttributes( attributes, format );
 
         this.field = format .getField();
-        this.symm = (H4Symmetry) h4Symms .get( field );
+        this.symm = h4Symms .get( field );
         if ( symm == null )
         {
             symm = new H4Symmetry( field );
@@ -47,7 +47,7 @@ public class CommandUniformH4Polytope extends CommandTransform
         this .mRoots = format .getQuaternionicSymmetry( "H_4" ) .getRoots();
     }
     
-    private final Map h4Symms = new HashMap();
+    private final Map<AlgebraicField, H4Symmetry> h4Symms = new HashMap<>();
 
     public static final String POLYTOPE_INDEX_ATTR_NAME = "polytope.index";
         
@@ -209,16 +209,16 @@ public class CommandUniformH4Polytope extends CommandTransform
     /*
      * Adding this to support a 4D quaternion.
      */
-    public Map setXml( Element xml, XmlSaveFormat format ) 
+    public AttributeMap setXml( Element xml, XmlSaveFormat format ) 
     {
-        Map attrs = super .setXml( xml, format );
+        AttributeMap attrs = super .setXml( xml, format );
         
         quaternionVector = format .parseRationalVector( xml, "quaternion" );
         
         return attrs;
     }
     
-    public void getXml( Element result, Map attributes )
+    public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
         	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );        
@@ -238,7 +238,7 @@ public class CommandUniformH4Polytope extends CommandTransform
             return true;
     }
     
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         AlgebraicNumber SCALE_DOWN_5 = field .createPower( -5 );
         
@@ -321,8 +321,8 @@ public class CommandUniformH4Polytope extends CommandTransform
             if ( ( renderEdges & ( 1 << mirror ) ) != 0 )
                 reflections[ mirror ] = symm .reflect( mirror, prototype );
 
-        Map vertices = new HashMap();
-        Set edges = new HashSet();
+        Map<AlgebraicVector, Point> vertices = new HashMap<>();
+        Set<Edge> edges = new HashSet<>();
         StringBuffer vefVertices = new StringBuffer();
         StringBuffer vefEdges = new StringBuffer();
         for ( int i = 0; i < mRoots.length; i++ ) 
@@ -331,7 +331,7 @@ public class CommandUniformH4Polytope extends CommandTransform
                 AlgebraicVector vertex = mRoots[ i ] .rightMultiply( prototype );
                 vertex = mRoots[ j ] .leftMultiply( vertex );
                 AlgebraicVector key = vertex;
-                Point p = (Point) vertices .get( key );
+                Point p = vertices .get( key );
                 boolean newVertex = p == null;
                 if ( newVertex ) {
                     AlgebraicVector projected = vertex;
@@ -365,7 +365,7 @@ public class CommandUniformH4Polytope extends CommandTransform
                         key = other;
                         if ( ! other .equals( vertex ) )
                         {
-                            Point p2 = (Point) vertices .get( key );
+                            Point p2 = vertices .get( key );
                             if ( p2 == null ) {
                                 AlgebraicVector projected = other;
                                 

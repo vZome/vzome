@@ -30,7 +30,7 @@ public class Recorder implements ZomicEventHandler
     
     protected Output mOutput;
     
-    protected final Stack mSaves = new Stack();
+    protected final Stack<Walk> mSaves = new Stack<>();
     
     public void setOutput( Output output )
     {
@@ -40,7 +40,7 @@ public class Recorder implements ZomicEventHandler
     public void record( ZomicStatement stmt )
     {
         if ( ! mSaves .isEmpty() )
-            ((Walk) mSaves .peek()) .addStatement( stmt );
+            mSaves .peek() .addStatement( stmt );
         else if ( mOutput != null )
             mOutput .statement( stmt );
     }
@@ -95,7 +95,7 @@ public class Recorder implements ZomicEventHandler
 
     public void restore( ZomicEventHandler changes, int variables )
     {
-        Walk walk = (Walk) mSaves .pop();
+        Walk walk = mSaves .pop();
         Save save = new Save( variables );
         save .setBody( walk );
         record( save );

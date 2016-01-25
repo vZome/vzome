@@ -96,7 +96,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
 	private final AlgebraicField mField;
 	
-	private final Map tools = new HashMap();
+	private final Map<String, Tool> tools = new HashMap<>();
 	
 	private Command.FailureChannel failures;
 
@@ -122,9 +122,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
 
-	private final Map commands;
+	private final Map<String, Object> commands; // TODO: DJH: Don't allow non-Command objects in this Map.
 
-    private Map<String,SymmetrySystem> symmetrySystems = new HashMap();
+    private Map<String,SymmetrySystem> symmetrySystems = new HashMap<>();
 
 	private final Lights sceneLighting;
 
@@ -226,8 +226,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			{
 				if ( "currentSnapshot" .equals( change .getPropertyName() ) )
 				{
-					int id = ((Integer) change .getNewValue()) .intValue();
-	                RenderedModel newSnapshot = (RenderedModel) snapshots[ id ];
+					int id = ((Integer) change .getNewValue());
+	                RenderedModel newSnapshot = snapshots[ id ];
 	                firePropertyChange( "currentSnapshot", null, newSnapshot );
 				}
 				else if ( "currentView" .equals( change .getPropertyName() ) )
@@ -358,7 +358,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 		else if ( "SelectSimilarSize".equals( name ) )
 		{
-		    SymmetrySystem symmetry = (SymmetrySystem) this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
+		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
             edit = new SelectSimilarSizeStruts( symmetry, null, null, this .mSelection, this .mRealizedModel );
 		}
 		else if ( "ValidateSelection".equals( name ) )
@@ -629,7 +629,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		if ( "ball" .equals( string ) )
 		{
 	    	Point ball = mEditorModel .getCenterPoint();
-	    	return ( (Point) ball ).getLocation() .toRealVector();
+	    	return ball .getLocation() .toRealVector();
 		}
 		return new RealVector( 0, 0, 0 );
 	}
@@ -677,7 +677,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         {
             public OrbitSet getGroup( String name )
             {
-                SymmetrySystem system = (SymmetrySystem) symmetrySystems .get( name );
+                SymmetrySystem system = symmetrySystems .get( name );
             	return system .getOrbits();
             }
 
@@ -693,12 +693,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             hist = (Element) mXML .getElementsByTagName( "editHistory" ) .item( 0 );
         int editNum = Integer.parseInt( hist .getAttribute( "editNumber" ) );
         
-        List implicitSnapshots = new ArrayList();
+        List<Integer> implicitSnapshots = new ArrayList<>();
 
         // if we're opening a template document, we don't want to inherit its lesson or saved views
         if ( !asTemplate )
         {
-        	Map viewPages = new HashMap();
+        	Map<String, ViewModel> viewPages = new HashMap<>();
             Element views = (Element) mXML .getElementsByTagName( "Viewing" ) .item( 0 );
             if ( views != null ) {
                 // make a notes page for each saved view
@@ -749,11 +749,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         UndoableEdit[] explicitSnapshots = null;
         if ( ! implicitSnapshots .isEmpty() )
         {
-            Integer highest = (Integer) implicitSnapshots .get( implicitSnapshots .size() - 1 );
+            Integer highest = implicitSnapshots .get( implicitSnapshots .size() - 1 );
             explicitSnapshots = new UndoableEdit[ highest .intValue() + 1 ];
             for (int i = 0; i < implicitSnapshots .size(); i++)
             {
-                Integer editNumInt = (Integer) implicitSnapshots .get( i );
+                Integer editNumInt = implicitSnapshots .get( i );
                 explicitSnapshots[ editNumInt .intValue() ] = new Snapshot( i, this );
             }
         }
@@ -882,7 +882,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
     public Tool getTool( String toolName )
     {
-    	return (Tool) tools .get( toolName );
+    	return tools .get( toolName );
     }
 
     public void useTool( Tool tool ) {}
@@ -1103,21 +1103,21 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     public void recordSnapshot( int id )
     {
     	RenderedModel snapshot = ( renderedModel == null )? null : renderedModel .snapshot();
-    	Logger logger = Logger.getLogger( "com.vzome.core.thumbnails" );
-    	if ( logger .isLoggable( Level.FINER ) )
-    		logger .finer( "recordSnapshot: " + id );
+    	Logger thumbnailLogger = Logger.getLogger( "com.vzome.core.thumbnails" );
+    	if ( thumbnailLogger .isLoggable( Level.FINER ) )
+    		thumbnailLogger .finer( "recordSnapshot: " + id );
     	numSnapshots = Math .max( numSnapshots, id + 1 );
     	if ( id >= snapshots.length )
     	{
     		int newLength = Math .max( 2 * snapshots .length, numSnapshots );
-    		snapshots = (RenderedModel[]) Arrays .copyOf( snapshots, newLength );
+    		snapshots = Arrays .copyOf( snapshots, newLength );
     	}
     	snapshots[ id ] = snapshot;
     }
 
 	public void actOnSnapshot( int id, SnapshotAction action )
 	{
-        RenderedModel snapshot = (RenderedModel) snapshots[ id ];
+        RenderedModel snapshot = snapshots[ id ];
         action .actOnSnapshot( snapshot );
 	}
 

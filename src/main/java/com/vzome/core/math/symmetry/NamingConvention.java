@@ -15,7 +15,7 @@ public class NamingConvention
 {
 	public final static String UNKNOWN_AXIS = "UNKNOWN AXIS";
 	
-	private final Map mNamings = new HashMap();
+	private final Map<String, DirectionNaming> mNamings = new HashMap<>();
 	
 	public void addDirectionNaming( DirectionNaming naming )
 	{
@@ -24,7 +24,7 @@ public class NamingConvention
 	
 	public Axis getAxis( String color, String name )
 	{
-		DirectionNaming naming = (DirectionNaming) mNamings .get( color );
+		DirectionNaming naming = mNamings .get( color );
         if ( naming == null )
             return null;
 		return naming .getAxis( name );

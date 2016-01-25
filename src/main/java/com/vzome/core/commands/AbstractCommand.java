@@ -27,9 +27,9 @@ public abstract class AbstractCommand implements Command
      * @param format
      * @return
      */
-    public Map setXml( Element xml, XmlSaveFormat format ) 
+    public AttributeMap setXml( Element xml, XmlSaveFormat format ) 
     {
-        Map attrs = format .loadCommandAttributes( xml );
+        AttributeMap attrs = format .loadCommandAttributes( xml );
         
         setFixedAttributes( attrs, format );
         
@@ -37,7 +37,7 @@ public abstract class AbstractCommand implements Command
     }
 
     
-    public void setFixedAttributes( Map attributes, XmlSaveFormat format )
+    public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         attributes .put( Command .FIELD_ATTR_NAME, format .getField() );
         attributes .put( Command .MODEL_ROOT_ATTR_NAME, format .getModelRoot() );
@@ -48,14 +48,14 @@ public abstract class AbstractCommand implements Command
      * @param attributes
      * @return
      */
-    public void getXml( Element result, Map attributes )
+    public void getXml( Element result, AttributeMap attributes )
     {
         if ( attributes == null )
             return;
-        for ( Iterator it = attributes .keySet() .iterator(); it .hasNext(); ) {
+        for ( Iterator<String> it = attributes .keySet() .iterator(); it .hasNext(); ) {
             // don't get confused... mAttrs is a set of "command attributes",
             //   each of which will be saved as an XML element with a "name" attribute.
-            String key = (String) it .next();
+            String key = it .next();
             // skip all of these... synthesized at load time
             if ( key .equals( Command.FIELD_ATTR_NAME ) )
                 continue;

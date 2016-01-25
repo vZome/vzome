@@ -10,14 +10,14 @@ import com.vzome.core.algebra.AlgebraicVector;
 
 public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 {
-    List mVertices;
+    List<AlgebraicVector> mVertices;
 
     /**
      * Create a panel from an iterator over AlgebraicVectors
      * 
      * @param vertices
      */
-    public Panel( List vertices )
+    public Panel( List<AlgebraicVector> vertices )
     {
         mVertices = vertices;
     }
@@ -27,19 +27,25 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         return null;
     }
 
-    public Iterator getVertices()
+    public Iterator<AlgebraicVector> getVertices()
     {
         return mVertices.iterator();
     }
+
+    @Override
+	public Iterator<AlgebraicVector> iterator()
+	{
+		return this.getVertices();
+	}
 
     public int hashCode()
     {
         int len = mVertices.size();
         if ( len == 0 )
         	return 0;
-        int val = ( (AlgebraicVector) mVertices.get( 0 ) ) .hashCode();
+        int val = ( mVertices.get( 0 ) ) .hashCode();
         for ( int i = 1; i < len; i++ )
-            val ^= ( (AlgebraicVector) mVertices.get( i ) ) .hashCode();
+            val ^= ( mVertices.get( i ) ) .hashCode();
         return val;
     }
 
@@ -104,9 +110,9 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 
     public AlgebraicVector getNormal( AlgebraicField field )
     {
-        AlgebraicVector v0 = (AlgebraicVector) mVertices.get( 0 );
-        AlgebraicVector v1 = (AlgebraicVector) mVertices.get( 1 );
-        AlgebraicVector v2 = (AlgebraicVector) mVertices.get( 2 );
+        AlgebraicVector v0 = mVertices.get( 0 );
+        AlgebraicVector v1 = mVertices.get( 1 );
+        AlgebraicVector v2 = mVertices.get( 2 );
         v1 = v1 .minus( v0 );
         v2 = v2 .minus( v0 );
         return v1 .cross( v2 );
@@ -124,9 +130,4 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         return buf.toString();
     }
 
-	@Override
-	public Iterator<AlgebraicVector> iterator()
-	{
-		return this.getVertices();
-	}
 }

@@ -12,9 +12,8 @@ import java.util.ArrayList;
 /**
  * A selection in the model.
  */
-public class ConstructionList extends ArrayList
-{
-    private static final Construction[] PROTOTYPE = new Construction[0];
+public class ConstructionList extends ArrayList<Construction>
+{;
     
     public ConstructionList addConstruction( Construction ball )
     {
@@ -30,7 +29,7 @@ public class ConstructionList extends ArrayList
     
     public Construction[] getConstructions()
     {
-        return (Construction[]) toArray( PROTOTYPE );
+        return toArray( new Construction[this.size()] );
     }
     
 }

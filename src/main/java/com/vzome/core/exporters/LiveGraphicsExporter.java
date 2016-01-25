@@ -61,7 +61,7 @@ public class LiveGraphicsExporter extends Exporter3d
 		    AlgebraicMatrix transform = rm .getOrientation();
             AlgebraicVector rmLoc = rm .getManifestation() .getLocation();
 
-            List vertices = poly .getVertexList();
+            List<AlgebraicVector> vertices = poly .getVertexList();
             output .println( "{" );
             for ( Iterator faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
                 Polyhedron.Face face = (Polyhedron.Face) faces .next();
@@ -71,8 +71,8 @@ public class LiveGraphicsExporter extends Exporter3d
                 for ( int j = 0; j < arity; j++ ){
                     if ( j > 0 )
                         output .print( ", " );
-                    Integer index = (Integer) face .get( reverseFaces? arity-j-1 : j );
-                    AlgebraicVector loc = (AlgebraicVector) vertices .get( index .intValue() );
+                    Integer index = face .get( reverseFaces? arity-j-1 : j );
+                    AlgebraicVector loc = vertices .get( index .intValue() );
                     
                     // TODO need a unit test... don't know if the transform should be right or left
                     //   (migrated to rational vectors, but not tested)

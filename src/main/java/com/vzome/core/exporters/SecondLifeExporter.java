@@ -55,7 +55,7 @@ public class SecondLifeExporter extends Exporter3d
         
         int numBalls = 0;
         StringBuffer vertices = new StringBuffer();
-        Map ballIndices = new HashMap( numBalls );
+        Map<AlgebraicVector, Integer> ballIndices = new HashMap<>( numBalls );
         boolean first = true;
         for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
         {
@@ -113,7 +113,7 @@ public class SecondLifeExporter extends Exporter3d
 //            Manifestation man = rm .getManifestation();
 //            if ( man instanceof Panel )
 //            {
-//                List vs = new ArrayList();
+//                List vs = new ArrayList<>();
 //                for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
 //                    vs .add( ballIndices .get( (GoldenVector) verts .next() ) );
 //                output .print( vs .size() );

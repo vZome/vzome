@@ -23,7 +23,7 @@ import com.vzome.core.zomic.program.ZomicStatement;
 public class CommandExecuteZomicScript extends AbstractCommand
 {
 	@Override
-    public void setFixedAttributes( Map attributes, XmlSaveFormat format )
+    public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         super.setFixedAttributes( attributes, format );
 
@@ -65,7 +65,7 @@ public class CommandExecuteZomicScript extends AbstractCommand
     }
 
 	@Override
-    public ConstructionList apply( ConstructionList parameters, Map attrs, ConstructionChanges effects )
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects )
     throws Command.Failure
     {
         String script = (String) attrs .get( SCRIPT_ATTR );
@@ -77,13 +77,13 @@ public class CommandExecuteZomicScript extends AbstractCommand
         ZomicASTCompiler compiler = new ZomicASTCompiler(symmetry);
         Walk program = compiler.compile( script, errorHandler );
         if ( !errors.isEmpty() ) {
-            throw new Failure( (String) errors.get(0) );
+            throw new Failure( errors.get(0) );
 		}
 
         ConstructionList result = new ConstructionList();
         if ( parameters .size() != 1 )
             throw new Failure( "start parameter must be a single connector" );
-        Construction c = (Construction) parameters .get( 0 );
+        Construction c = parameters .get( 0 );
         if ( ! ( c instanceof Point ) )
             throw new Failure( "start parameter must be a connector" );
 		

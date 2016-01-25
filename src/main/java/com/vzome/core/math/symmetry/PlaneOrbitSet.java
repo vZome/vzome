@@ -11,7 +11,7 @@ public class PlaneOrbitSet extends OrbitSet
 {
 	private final OrbitSet delegate;
 	private final AlgebraicVector normal;
-	private final Set<Axis> zones = new HashSet<Axis>();
+	private final Set<Axis> zones = new HashSet<>();
 
 	public PlaneOrbitSet( OrbitSet delegate, AlgebraicVector normal )
 	{
@@ -20,14 +20,12 @@ public class PlaneOrbitSet extends OrbitSet
 		
 		this .normal = normal;
 
-		@SuppressWarnings("unchecked")
 		Iterator<Direction> dirs = delegate .iterator();
         while ( dirs .hasNext() ) {
-            Direction dir = (Direction) dirs .next();
+            Direction dir = dirs .next();
             // now iterate over axes
-			for ( @SuppressWarnings("unchecked")
-			Iterator<Axis> axes = dir .getAxes(); axes .hasNext(); ) {
-				Axis axis = (Axis) axes .next();
+			for ( Iterator<Axis> axes = dir .getAxes(); axes .hasNext(); ) {
+				Axis axis = axes .next();
 				if ( axis .normal() .dot( this .normal ) .isZero() )
 					this .zones .add( axis );
 			}
@@ -45,7 +43,7 @@ public class PlaneOrbitSet extends OrbitSet
 		double maxCosine = - 1d;
 		Axis closest = null;
 		for ( Iterator<Axis> axes = this .zones .iterator(); axes .hasNext(); ) {
-			Axis axis = (Axis) axes .next();
+			Axis axis = axes .next();
 			RealVector axisV = axis .normal() .toRealVector();
 			double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
 			if ( cosine > maxCosine ) {

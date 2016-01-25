@@ -19,7 +19,7 @@ public class BookmarkTool extends ChangeManifestations implements Tool
 {
     private String name;
     
-    private final List bookmarkedConstructions = new ArrayList();
+    private final List<Construction> bookmarkedConstructions = new ArrayList<>();
         
     private Tool.Registry tools;
     

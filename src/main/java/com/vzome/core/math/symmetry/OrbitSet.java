@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 import com.vzome.core.math.RealVector;
 
-public class OrbitSet extends TreeSet implements Set
+public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
 {    
     public interface Field
     {

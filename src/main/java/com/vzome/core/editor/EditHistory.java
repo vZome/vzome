@@ -24,7 +24,7 @@ import com.vzome.core.model.Manifestation;
 
 public class EditHistory
 {	
-    private List mEdits = new ArrayList();
+    private List<UndoableEdit> mEdits = new ArrayList<>();
     
     // mEditNumber is the number of "redone" UndoableEdits in mEdits
     
@@ -191,14 +191,14 @@ public class EditHistory
         {
             if ( mEditNumber == mEdits .size() )
                 break;
-            UndoableEdit undoable = (UndoableEdit) mEdits .get( mEditNumber++ );
+            UndoableEdit undoable = mEdits .get( mEditNumber++ );
             undoable .redo();
         }
         while ( mEditNumber > editNum )
         {
             if ( mEditNumber == 0 )
                 break;
-            UndoableEdit undoable = (UndoableEdit) mEdits .get( --mEditNumber );
+            UndoableEdit undoable = mEdits .get( --mEditNumber );
             undoable .undo();
         }
     }
@@ -207,7 +207,7 @@ public class EditHistory
     {
         if ( mEditNumber == 0 )
             return null;
-        UndoableEdit undoable = (UndoableEdit) mEdits .get( --mEditNumber );
+        UndoableEdit undoable = mEdits .get( --mEditNumber );
         if ( undoable instanceof EndBlock )
         	return undoBlock();
         
@@ -234,7 +234,7 @@ public class EditHistory
     {
         if ( mEditNumber == mEdits .size() )
             return null;
-        UndoableEdit undoable = (UndoableEdit) mEdits .get( mEditNumber++ );
+        UndoableEdit undoable = mEdits .get( mEditNumber++ );
         if ( undoable instanceof BeginBlock )
             return redoBlock();
         
@@ -320,7 +320,7 @@ public class EditHistory
         if ( cursor == 0 )
             return;
         -- cursor;
-        UndoableEdit above = (UndoableEdit) mEdits .get( cursor );
+        UndoableEdit above = mEdits .get( cursor );
 
         if ( above instanceof ChangeManifestations )
             return;
@@ -331,7 +331,7 @@ public class EditHistory
         if ( cursor == 0 )
             return;
         -- cursor;
-        UndoableEdit below = (UndoableEdit) mEdits .get( cursor );
+        UndoableEdit below = mEdits .get( cursor );
 
         if ( below instanceof ChangeManifestations )
             return;
@@ -352,7 +352,7 @@ public class EditHistory
             boolean done = false;
             while ( ! done )
             {
-                UndoableEdit next = (UndoableEdit) mEdits .get( scan );
+                UndoableEdit next = mEdits .get( scan );
                 if ( next instanceof ChangeManifestations )
                     return;
                 if ( next instanceof ChangeSelection )
@@ -583,7 +583,7 @@ public class EditHistory
 	    
 	    mEditNumber = 0;
 	    int targetEdit = 0;
-	    List toRedo = new ArrayList();
+	    List<UndoableEdit> toRedo = new ArrayList<>();
 	    // here the edits are all still DeferredEdits
 	    for ( int i = 0; i < redoThreshold; i++ )
 	        if ( i < mEdits .size() )

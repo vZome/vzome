@@ -69,7 +69,7 @@ public class RunZomicScript extends ChangeManifestations
 		ZomicASTCompiler compiler = new ZomicASTCompiler(symm);
         Walk program = compiler.compile( script, errorHandler );
         if ( errors.size() > 0 )
-            throw new Failure( (String) errors .get(0) );
+            throw new Failure( errors .get(0) );
         return program;
     }
 

@@ -29,7 +29,7 @@ public class CommandAxialSymmetry extends CommandSymmetry
         super( symmetry );
     }
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         setSymmetry( attributes );
         

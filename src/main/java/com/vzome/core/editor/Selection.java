@@ -20,15 +20,16 @@ import com.vzome.core.model.ManifestationChanges;
  */
 public class Selection implements Iterable<Manifestation>
 {
-    private Collection mManifestations = new LinkedHashSet();
+    // Note that LinkedHashSet maintains insertion-order, which is significant in this case.
+    private Collection<Manifestation> mManifestations = new LinkedHashSet<>();
     
-    private final List mListeners = new ArrayList();
+    private final List<ManifestationChanges> mListeners = new ArrayList<>();
     
     private Group mSelectedGroup = null;  // when the selection is exactly one entire group
     
     private static final Logger logger = Logger .getLogger( "com.vzome.core.editor.selection" );
 
-    public void copy( List target )
+    public void copy( List<Manifestation> target )
     {
         target .addAll( mManifestations );
     }
@@ -54,7 +55,7 @@ public class Selection implements Iterable<Manifestation>
     	return mManifestations .isEmpty();
     }
     
-    public Iterator iterator()
+    public Iterator<Manifestation> iterator()
     {
         return mManifestations .iterator();
     }
@@ -152,13 +153,13 @@ public class Selection implements Iterable<Manifestation>
         }
     }
     
-    public Manifestation getSingleSelection( Class kind )
+    public Manifestation getSingleSelection( final Class<?> kind )
     {
         int count = 0;
         Manifestation result = null;
         for ( Iterator mans = mManifestations .iterator(); mans .hasNext(); ) {
             Manifestation next = (Manifestation) mans .next();
-            if ( kind .isAssignableFrom( next .getClass() ) ) {
+            if ( kind .isAssignableFrom( next.getClass() ) ) {
                 ++count;
                 result = next;                    
             }

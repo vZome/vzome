@@ -35,7 +35,7 @@ public class CommandConjugate extends AbstractCommand
         return ATTR_SIGNATURE;
     }
     
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         final Construction[] params = parameters .getConstructions();
         ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );

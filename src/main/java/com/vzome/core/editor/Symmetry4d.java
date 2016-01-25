@@ -61,7 +61,7 @@ public class Symmetry4d extends ChangeManifestations
     
     public void perform() throws Failure
     {
-        List<Construction> params = new ArrayList();
+        List<Construction> params = new ArrayList<>();
         for ( Iterator mans = mSelection .iterator(); mans .hasNext(); )
         {
             Manifestation man = (Manifestation) mans .next();

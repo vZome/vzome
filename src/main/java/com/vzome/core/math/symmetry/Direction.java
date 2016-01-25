@@ -24,7 +24,7 @@ public class Direction implements Comparable
     
     private final Axis[][] mAxes;
     
-    private final Map mVectors = new HashMap();
+    private final Map<AlgebraicVector, Axis> mVectors = new HashMap<>();
     
     private final Symmetry mSymmetryGroup;
     
@@ -106,7 +106,7 @@ public class Direction implements Comparable
         return mPrototype;
     }
     
-    public Iterator getAxes()
+    public Iterator<Axis> getAxes()
     {
         return mVectors .values() .iterator();
     }
@@ -163,7 +163,7 @@ public class Direction implements Comparable
         // largest cosine means smallest angle
         //  and cosine is (a . b ) / |a| |b|
         double vectorLength = vector .length();
-        Set<Axis> checked = new HashSet<Axis>();
+        Set<Axis> checked = new HashSet<>();
         int closestOrientation = 0;
         int closestSense = Symmetry.PLUS;
         Axis closestAxis = this .getCanonicalAxis( Symmetry.PLUS, 0 );
@@ -275,7 +275,7 @@ public class Direction implements Comparable
     public void createAxis( int orientation, int rotation, AlgebraicVector norm )
     {
         AlgebraicVector key = norm;
-        Axis axis = (Axis) mVectors .get( key );
+        Axis axis = mVectors .get( key );
         Permutation perm = mSymmetryGroup .getPermutation( rotation );
         if ( axis == null ) {
             axis = new Axis( this, orientation, Symmetry.PLUS, rotation, perm, norm );
@@ -287,7 +287,7 @@ public class Direction implements Comparable
         if ( perm != null )
             perm = perm .inverse();
         key = norm;
-        axis = (Axis) mVectors .get( key );
+        axis = mVectors .get( key );
         if ( axis == null ) {
             axis = new Axis( this, orientation, Symmetry.MINUS, rotation, perm, norm );
             mVectors .put( key, axis );

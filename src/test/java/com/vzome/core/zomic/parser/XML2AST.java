@@ -29,7 +29,7 @@ import com.vzome.core.zomic.program.Walk;
 @Deprecated
 public class XML2AST extends DefaultHandler
 {
-	protected final Stack m_stmts = new Stack();
+	protected final Stack<ZomicStatement> m_stmts = new Stack<>();
     
     private transient int ones, taus, denominator, scale;
     
@@ -47,7 +47,7 @@ public class XML2AST extends DefaultHandler
 
 	public ZomicStatement getProgram()
 	{
-		return (ZomicStatement) m_stmts .firstElement();
+		return m_stmts .firstElement();
 	}
 
 	public 
@@ -55,7 +55,7 @@ public class XML2AST extends DefaultHandler
 	String qName, Attributes atts ) throws SAXException
 	{
 		ZomicStatement newStmt = null;
-		ZomicStatement currStmt = (ZomicStatement) m_stmts .peek();
+		ZomicStatement currStmt = m_stmts .peek();
 		if ( "through" .equals( localName ) ) {
 			Permute permute = null;
 			if ( currStmt instanceof Symmetry ){

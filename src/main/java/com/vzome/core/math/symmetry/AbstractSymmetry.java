@@ -22,9 +22,9 @@ import com.vzome.core.math.RealVector;
  */
 public abstract class AbstractSymmetry implements Symmetry
 {
-    protected final Map mDirectionMap = new HashMap();
+    protected final Map<String, Direction> mDirectionMap = new HashMap<>();
     
-    protected final List mDirectionList = new ArrayList(); // TODO remove, redundant with orbitSet
+    protected final List<Direction> mDirectionList = new ArrayList<>(); // TODO remove, redundant with orbitSet
     
     protected final OrbitSet orbitSet = new OrbitSet( this );
 
@@ -365,23 +365,23 @@ public abstract class AbstractSymmetry implements Symmetry
 
 	public Direction getDirection( String color )
 	{
-		return (Direction) mDirectionMap .get( color );
+		return mDirectionMap .get( color );
 	}
     
     public String[] getDirectionNames()
     {
-        ArrayList list = new ArrayList();
+        ArrayList<String> list = new ArrayList<>();
         for ( int i = 0; i < mDirectionList .size(); i++ ) {
-            Direction dir = (Direction) mDirectionList .get( i );
+            Direction dir = mDirectionList .get( i );
             if ( ! dir .isAutomatic() )
                 list .add( dir .getName() );
         }
-        return (String[]) list .toArray( new String[]{} );
+        return list .toArray( new String[]{} );
     }
 
     public int[] closure( int[] perms )
     {
-        List newPerms = new ArrayList();
+        List<Permutation> newPerms = new ArrayList<>();
         Permutation[] closure = new Permutation[ mOrientations .length ];
         int closureSize = 0;
         
@@ -393,7 +393,7 @@ public abstract class AbstractSymmetry implements Symmetry
         }
         
         while ( !newPerms .isEmpty() ) {
-            Permutation perm = (Permutation) newPerms .remove(0);
+            Permutation perm = newPerms .remove(0);
             for ( int i = 0; i < closure.length; i++ ) 
                 if ( closure[i] != null ) {
                     Permutation composition = perm .compose( closure[i] );

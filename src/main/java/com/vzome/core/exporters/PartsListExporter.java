@@ -33,15 +33,17 @@ public class PartsListExporter extends Exporter3d
 	}
 
 
+    private class OrbitMap extends HashMap<Direction, Map<AlgebraicNumber, Integer> > {}
+    
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
 	    
         int numBalls = 0;
-		Map[] orbits = new Map[]{ new HashMap(), new HashMap() };
-		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+		OrbitMap[] orbits = new OrbitMap[]{ new OrbitMap(), new OrbitMap() };
+		for ( Iterator<RenderedManifestation> rms = mModel .getRenderedManifestations(); rms .hasNext(); )
 		{
-		    RenderedManifestation rm = (RenderedManifestation) rms .next();
+		    RenderedManifestation rm = rms .next();
 		    
 		    Manifestation m = rm .getManifestation();
 		    if ( m instanceof Connector ) {
@@ -51,14 +53,14 @@ public class PartsListExporter extends Exporter3d
 	            Polyhedron shape = rm .getShape();
 	            boolean flip = rm .reverseOrder(); // part is left-handed
 		        Direction orbit = shape .getOrbit();
-		        Map orbitHistogram = (Map) orbits[ flip?1:0 ] .get( orbit );
+		        Map<AlgebraicNumber, Integer> orbitHistogram = orbits[ flip?1:0 ] .get( orbit );
 		        if ( orbitHistogram == null )
 		        {
-		            orbitHistogram = new HashMap();
+		            orbitHistogram = new HashMap<>();
 		            orbits[ flip?1:0 ] .put( orbit, orbitHistogram );
 		        }
 		        AlgebraicNumber len = shape .getLength();
-                Integer lengthCount = (Integer) orbitHistogram .get( len );
+                Integer lengthCount = orbitHistogram .get( len );
                 if ( lengthCount == null )
                 {
                     lengthCount = new Integer( 1 );

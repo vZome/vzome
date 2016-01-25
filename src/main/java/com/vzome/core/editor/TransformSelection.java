@@ -30,9 +30,9 @@ public class TransformSelection extends ChangeManifestations
     
     public void perform()
     {
-        List inputs = new ArrayList();
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        List<Manifestation> inputs = new ArrayList<>();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             unselect( man );
             inputs .add( man );
         }
@@ -40,8 +40,8 @@ public class TransformSelection extends ChangeManifestations
         redo();  // get the unselects out of the way, if anything needs to be re-selected
         
         // now apply it to the input objects
-        for ( Iterator all = inputs .iterator(); all .hasNext(); ) {
-            Manifestation m = (Manifestation) all .next();
+        for ( Iterator<Manifestation> all = inputs .iterator(); all .hasNext(); ) {
+            Manifestation m = all .next();
             if ( m .getRenderedObject() == null )
                 continue;
             Construction c = (Construction) m .getConstructions() .next();

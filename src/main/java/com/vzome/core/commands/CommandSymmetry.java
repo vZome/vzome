@@ -34,7 +34,7 @@ public class CommandSymmetry extends CommandTransform
         return GROUP_ATTR_SIGNATURE;
     }
     
-    protected Point setSymmetry( Map attributes )
+    protected Point setSymmetry( AttributeMap attributes )
     {
         if ( mSymmetry == null )
             mSymmetry = (Symmetry) attributes .get( SYMMETRY_GROUP_ATTR_NAME );
@@ -48,7 +48,7 @@ public class CommandSymmetry extends CommandTransform
         return center;
     }
     
-    public void setFixedAttributes( Map attributes, XmlSaveFormat format )
+    public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         if ( ! attributes .containsKey( SYMMETRY_GROUP_ATTR_NAME ) )
         {
@@ -58,7 +58,7 @@ public class CommandSymmetry extends CommandTransform
         super .setFixedAttributes( attributes, format );
     }
 
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         Point center = setSymmetry( attributes );
         

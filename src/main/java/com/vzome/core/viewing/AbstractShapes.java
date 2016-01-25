@@ -21,9 +21,9 @@ import com.vzome.core.render.Shapes;
 
 public abstract class AbstractShapes implements Shapes
 {
-	private final Map strutShapesByLengthAndOrbit = new HashMap();
+	private final Map<Direction, Map<AlgebraicNumber, Polyhedron> > strutShapesByLengthAndOrbit = new HashMap<>();
 
-    private final Map strutGeometriesByOrbit = new HashMap();
+    private final Map<Direction, StrutGeometry> strutGeometriesByOrbit = new HashMap<>();
 
     protected final String mPkgName;
 
@@ -118,15 +118,15 @@ public abstract class AbstractShapes implements Shapes
 
     public Polyhedron getStrutShape( Direction orbit, AlgebraicNumber length )
     {
-        Map strutShapesByLength = (Map) strutShapesByLengthAndOrbit.get( orbit );
+        Map<AlgebraicNumber, Polyhedron> strutShapesByLength = strutShapesByLengthAndOrbit.get( orbit );
         if ( strutShapesByLength == null ) {
-            strutShapesByLength = new HashMap();
+            strutShapesByLength = new HashMap<>();
             strutShapesByLengthAndOrbit.put( orbit, strutShapesByLength );
         }
 //        int[] normSquared = mSymmetry .getField() .dot( offset, offset );
-        Polyhedron lengthShape = (Polyhedron) strutShapesByLength.get( length );
+        Polyhedron lengthShape = strutShapesByLength.get( length );
         if ( lengthShape == null ) {
-            StrutGeometry orbitStrutGeometry = (StrutGeometry) strutGeometriesByOrbit.get( orbit );
+            StrutGeometry orbitStrutGeometry = strutGeometriesByOrbit.get( orbit );
 
             if ( orbitStrutGeometry == null ) {
                 orbitStrutGeometry = createStrutGeometry( orbit );

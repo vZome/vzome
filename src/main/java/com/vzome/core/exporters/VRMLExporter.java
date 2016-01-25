@@ -28,7 +28,8 @@ import com.vzome.core.viewing.ViewModel;
  * Renders out to POV-Ray using #declare statements to reuse geometry.
  * @author vorth
  */
-public class VRMLExporter extends Exporter3d{
+public class VRMLExporter extends Exporter3d 
+{
 	
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/vrml/preamble.wrl";
 	
@@ -60,7 +61,8 @@ public class VRMLExporter extends Exporter3d{
 		output .println( " }}}" );
     }
 
-
+    private class ShapeMap extends HashMap<Polyhedron, String> {}
+    
     public void doExport( File directory, Writer writer, int height, int width ) throws Exception
     {
         output = new PrintWriter( writer );
@@ -82,8 +84,8 @@ public class VRMLExporter extends Exporter3d{
         AlgebraicField field = null;
         StringBuffer instances = new StringBuffer();
         int numShapes = 0;
-        Map[] shapes = new Map[]{ new HashMap(), new HashMap() };
-        Map colors = new HashMap();
+        ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
+        Map<Color, String> colors = new HashMap<>();
         for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
         {
             RenderedManifestation rm = (RenderedManifestation) rms .next();
@@ -91,7 +93,7 @@ public class VRMLExporter extends Exporter3d{
             if ( field == null )
                 field = shape .getField();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-            String shapeName = (String) shapes[ flip?1:0 ] .get( shape );
+            String shapeName = shapes[ flip?1:0 ] .get( shape );
             if ( shapeName == null ) {
                 shapeName = "shape" + numShapes++;
                 shapes[ flip?1:0 ] .put( shape, shapeName );
@@ -140,7 +142,7 @@ public class VRMLExporter extends Exporter3d{
             }
             
             Color color = rm .getColor();
-            String colorName = (String) colors .get( color );
+            String colorName = colors .get( color );
             if ( colorName == null ) {
                 colorName = "color_" + color .toString() .replace( ',', '_' );
                 colors .put( color, colorName );
@@ -175,7 +177,7 @@ public class VRMLExporter extends Exporter3d{
             Polyhedron.Face face = (Polyhedron.Face) faces .next();
             int arity = face .size();
             for ( int j = 0; j < arity; j++ ){
-                Integer index = (Integer) face .get( /*reverseFaces? arity-j-1 :*/ j );
+                Integer index = face .get( /*reverseFaces? arity-j-1 :*/ j );
                 output .print( index .intValue() + ", " );
             }
             output .println( "-1," );

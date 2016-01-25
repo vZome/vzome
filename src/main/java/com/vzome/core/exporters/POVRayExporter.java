@@ -56,6 +56,8 @@ public class POVRayExporter extends Exporter3d
         viewTrans .transform( vector );
     }
 
+    private class ShapeMap extends HashMap<Polyhedron, String> {}
+    
 	public void doExport( File povFile, File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
@@ -142,29 +144,29 @@ public class POVRayExporter extends Exporter3d
         instances = new StringBuffer();
         
 		int numShapes = 0, numTransforms = 0;
-		Map[] shapes = new Map[]{ new HashMap(), new HashMap() };
-		Map transforms = new HashMap();
-		Map colors = new HashMap();
+		ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
+		Map<AlgebraicMatrix, String> transforms = new HashMap<>();
+		Map<Color, String> colors = new HashMap<>();
 		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
 		{
 		    RenderedManifestation rm = (RenderedManifestation) rms .next();
 		    Polyhedron shape = rm .getShape();
 		    boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-		    String shapeName = (String) shapes[ flip?1:0 ] .get( shape );
+		    String shapeName = shapes[ flip?1:0 ] .get( shape );
 		    if ( shapeName == null ) {
 		        shapeName = "shape" + numShapes++;
 		        shapes[ flip?1:0 ] .put( shape, shapeName );
 		        exportShape( shapeName, shape, flip );
 		    }
 		    AlgebraicMatrix transform = rm .getOrientation();
-		    String transformName = (String) transforms .get( transform );
+		    String transformName = transforms .get( transform );
 		    if ( transformName == null ){
 		        transformName = "trans" + numTransforms++;
 		        transforms .put( transform, transformName );
 		        exportTransform( transformName, transform );
 		    }
 		    Color color = rm .getColor();
-		    String colorName = (String) colors .get( color );
+		    String colorName = colors .get( color );
 		    if ( colorName == null ){
 		    	colorName = nameColor( color );
 		    	colors .put( color, colorName );
@@ -282,10 +284,10 @@ public class POVRayExporter extends Exporter3d
     private void exportShape( String shapeName, Polyhedron poly, boolean reverseFaces )
     {
         output .print( "#declare " + shapeName + " = " );
-        List vertices = poly .getVertexList();
+        List<AlgebraicVector> vertices = poly .getVertexList();
         output .println( "union {" );
-        for ( Iterator faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
-            Polyhedron.Face face = (Polyhedron.Face) faces .next();
+        for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
+            Polyhedron.Face face = faces .next();
             int arity = face .size();
             int num = face .size() + 1;
             output .print( "polygon {" );
@@ -294,8 +296,8 @@ public class POVRayExporter extends Exporter3d
             for ( int j = 0; j <= arity; j++ ){
                 // POV-Ray requires that you explicitly repeat the first vertex to close the polygon
                 int m = j % arity;
-                Integer index = (Integer) face .get( reverseFaces? arity-m-1 : m );
-                AlgebraicVector loc = (AlgebraicVector) vertices .get( index .intValue() );
+                Integer index = face .get( reverseFaces? arity-m-1 : m );
+                AlgebraicVector loc = vertices .get( index .intValue() );
                 StringBuffer buf = new StringBuffer();
                 buf .append( "(<" );
                 appendLocation( loc, buf );

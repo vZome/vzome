@@ -15,9 +15,9 @@ import com.vzome.core.construction.Construction;
 /**
  * @author Scott Vorthmann
  */
-public abstract class Manifestation
+public abstract class Manifestation implements GroupElement
 {
-    protected final Set mManifests = new HashSet(5);
+    protected final Set<Construction> mManifests = new HashSet<>(5);
     
     protected Object mRendered = null;
     
@@ -88,6 +88,7 @@ public abstract class Manifestation
         return mContainer;
     }
     
+    @Override
     public void setContainer( Group container )
     {
         mContainer = container;

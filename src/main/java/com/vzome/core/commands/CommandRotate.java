@@ -19,7 +19,7 @@ import com.vzome.core.math.symmetry.Axis;
  */
 public class CommandRotate extends CommandSymmetry
 {
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         final Point center = setSymmetry( attributes );
         

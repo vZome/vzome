@@ -39,9 +39,9 @@ public abstract class AlgebraicField
 
     private final String name;
 
-    private final ArrayList symmetries = new ArrayList();
+    private final ArrayList<Symmetry> symmetries = new ArrayList<>();
     
-    private final Map quaternionSymmetries = new HashMap();
+    private final Map<String, QuaternionicSymmetry> quaternionSymmetries = new HashMap<>();
     
     private final AlgebraicNumber one = this .createRational( 1 );
 
@@ -52,12 +52,12 @@ public abstract class AlgebraicField
     /**
      * Positive powers of the first irrational.
      */
-	private ArrayList<AlgebraicNumber> positivePowers = new ArrayList<AlgebraicNumber>( 8 );
+	private ArrayList<AlgebraicNumber> positivePowers = new ArrayList<>( 8 );
 
     /**
      * Negative powers of the first irrational.
      */
-	private ArrayList<AlgebraicNumber> negativePowers = new ArrayList<AlgebraicNumber>( 8 );
+	private ArrayList<AlgebraicNumber> negativePowers = new ArrayList<>( 8 );
 
     public AlgebraicField( String name )
     {
@@ -210,7 +210,7 @@ public abstract class AlgebraicField
 
     public Symmetry[] getSymmetries()
     {
-        return (Symmetry[]) symmetries.toArray( new Symmetry[0] );
+        return symmetries.toArray( new Symmetry[symmetries.size()] );
     }
     
     public void addQuaternionSymmetry( QuaternionicSymmetry symm )
@@ -220,7 +220,7 @@ public abstract class AlgebraicField
 
     public QuaternionicSymmetry getQuaternionSymmetry( String name )
     {
-        return (QuaternionicSymmetry) quaternionSymmetries .get( name );
+        return quaternionSymmetries .get( name );
     }
 
     /**

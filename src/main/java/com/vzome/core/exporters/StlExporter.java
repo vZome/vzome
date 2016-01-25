@@ -57,21 +57,21 @@ public class StlExporter extends Exporter3d
             	RealVector loc = rm .getLocation();
             	boolean reverseFaces = rm .reverseOrder();
             	shape .getFaceSet();
-                List faceVertices = shape .getVertexList();
+                List <AlgebraicVector> faceVertices = shape .getVertexList();
                 for ( Iterator faces = shape .getFaceSet() .iterator(); faces.hasNext(); ) {
 
                     Polyhedron.Face face = (Polyhedron.Face) faces.next();
 
                     int arity = face .size();
 
-                    Integer index = (Integer) face .get( reverseFaces? arity-1 : 0 );
-                    AlgebraicVector gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                    Integer index = face .get( reverseFaces? arity-1 : 0 );
+                    AlgebraicVector gv = faceVertices .get( index .intValue() );
                     RealVector vert0 = gv .toRealVector();
-                    index = (Integer) face .get( reverseFaces? arity-2 : 1 );
-                    gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                    index = face .get( reverseFaces? arity-2 : 1 );
+                    gv = faceVertices .get( index .intValue() );
                     RealVector vert1 = gv .toRealVector();
-                    index = (Integer) face .get( reverseFaces? arity-3 : 2 );
-                    gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                    index = face .get( reverseFaces? arity-3 : 2 );
+                    gv = faceVertices .get( index .intValue() );
                     RealVector vert2 = gv .toRealVector();
                     RealVector edge1 = vert1 .minus( vert0 );
                     RealVector edge2 = vert2 .minus( vert1 );
@@ -79,8 +79,8 @@ public class StlExporter extends Exporter3d
                     
                     RealVector v0 = null, v1 = null;
                     for ( int j = 0; j < arity; j++ ){
-                        index = (Integer) face .get( reverseFaces? arity-j-1 : j );
-                        gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                        index = face .get( reverseFaces? arity-j-1 : j );
+                        gv = faceVertices .get( index .intValue() );
                         RealVector vertex = loc .plus( gv .toRealVector() );
                         vertex = vertex .scale( RZOME_INCH_SCALING );
 

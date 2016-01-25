@@ -21,7 +21,7 @@ import com.vzome.core.math.symmetry.Symmetry;
  */
 public abstract class CommandTransform extends AbstractCommand
 {
-    public void setFixedAttributes( Map attributes, XmlSaveFormat format )
+    public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         if ( format .getScale() != 0 )
             attributes .put( CommandTransform .SCALE_ATTR_NAME, new Integer( format .getScale() ) );
@@ -29,7 +29,7 @@ public abstract class CommandTransform extends AbstractCommand
         super.setFixedAttributes( attributes, format );
     }
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes, ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes, ConstructionChanges effects ) throws Failure
     {
         // TODO Auto-generated method stub
         return null;

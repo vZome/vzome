@@ -105,13 +105,13 @@ public class VefModelExporter implements Exporter
         balls .append( " " );
         balls .append( getVertexIndex( endpoint ) );
 
-        for ( Iterator faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
+        for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
+            Polyhedron.Face face = faces .next();
             ++ numPanels;
-            Polyhedron.Face face = (Polyhedron.Face) faces .next();
             List<Integer> vs = new ArrayList<>();
             int arity = face .size();
             for ( int j = 0; j < arity; j++ ){
-                Integer index = (Integer) face .get( /*reverseFaces? arity-j-1 :*/ j );
+                Integer index = face .get( /*reverseFaces? arity-j-1 :*/ j );
                 vs .add( vertexMapping[ index ] );
             }
             panels .append( vs .size() );

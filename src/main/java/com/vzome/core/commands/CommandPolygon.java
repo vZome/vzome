@@ -32,13 +32,13 @@ public class CommandPolygon extends AbstractCommand
         return ATTR_SIGNATURE;
     }
     
-    public ConstructionList apply( ConstructionList parameters, Map attrs, ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects ) throws Failure
     {
         Boolean loadingFile = ((Boolean) attrs .get( Command .LOADING_FROM_FILE ) );
         boolean failed = false;
         ConstructionList result = new ConstructionList();
         final Construction[] params = parameters .getConstructions();
-        List verticesList = new ArrayList();
+        List<Construction> verticesList = new ArrayList<>();
         
         AlgebraicVector normal = null, base = null;
         int numPoints = 0;
@@ -77,7 +77,7 @@ public class CommandPolygon extends AbstractCommand
                 throw new Failure( "A polygon requires at least three vertices." );
         }
         Point[] points = new Point[0];
-        PolygonFromVertices poly = new PolygonFromVertices( (Point[]) verticesList .toArray( points ) );
+        PolygonFromVertices poly = new PolygonFromVertices( verticesList .toArray( points ) );
         {
             
         }

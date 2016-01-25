@@ -35,8 +35,8 @@ public class PdbExporter extends Exporter3d
 
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
-        Map atoms = new HashMap();
-        List atomsList = new ArrayList();
+        Map<AlgebraicVector, Atom> atoms = new HashMap<>();
+        List<Atom> atomsList = new ArrayList<>();
         int indices = 0;
 
         for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
@@ -45,14 +45,14 @@ public class PdbExporter extends Exporter3d
             if ( man instanceof Strut ) {
                 AlgebraicVector startLoc = ((Strut) man) .getLocation();
                 AlgebraicVector endLoc = ((Strut) man) .getEnd();
-                Atom startAtom = (Atom) atoms .get( startLoc );
+                Atom startAtom = atoms .get( startLoc );
                 if ( startAtom == null )
                 {
                     startAtom = new Atom( startLoc, ++ indices );
                     atoms .put( startLoc, startAtom );
                     atomsList .add( startAtom );
                 }
-                Atom endAtom = (Atom) atoms .get( endLoc );
+                Atom endAtom = atoms .get( endLoc );
                 if ( endAtom == null )
                 {
                     endAtom = new Atom( endLoc, ++ indices );
@@ -109,7 +109,7 @@ public class PdbExporter extends Exporter3d
         }
         AlgebraicVector location;
         int index;
-        Set neighbors = new HashSet();
+        Set<Atom> neighbors = new HashSet<>();
     }
 }
 

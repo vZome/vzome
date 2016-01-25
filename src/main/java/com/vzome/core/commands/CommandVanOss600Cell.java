@@ -25,7 +25,7 @@ import com.vzome.core.math.VefParser;
 public class CommandVanOss600Cell extends CommandImportVEFData
 {
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes,
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
         try {

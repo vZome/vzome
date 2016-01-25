@@ -182,7 +182,7 @@ public class EditorModel
             return new NoOp();
     }
     
-    private final Set failedConstructions = new HashSet();
+    private final Set<Manifestation> failedConstructions = new HashSet<>();
 
     public void addFailedConstruction( Construction cons )
     {

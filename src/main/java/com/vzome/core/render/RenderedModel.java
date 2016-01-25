@@ -24,13 +24,13 @@ import com.vzome.core.model.Strut;
 
 public class RenderedModel implements ManifestationChanges
 {
-	protected List mListeners = new ArrayList();
+	protected List<RenderingChanges> mListeners = new ArrayList<>();
 	
 	private Shapes mPolyhedra;
 
 	private float mSelectionGlow = 0.8f;
 
-	protected final HashSet mRendered = new HashSet();
+	protected final HashSet<RenderedManifestation> mRendered = new HashSet<>();
 
 	private final AlgebraicField field;
 
@@ -150,7 +150,7 @@ public class RenderedModel implements ManifestationChanges
 	    if ( mainListener != null )
     	    mainListener .manifestationAdded( rm );
         for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .manifestationAdded( rm );
+            mListeners .get( i ) .manifestationAdded( rm );
 	}
 	
 	public void manifestationRemoved( Manifestation m )
@@ -165,7 +165,7 @@ public class RenderedModel implements ManifestationChanges
 	        return; // there was no way to render the shape
 	    
 	    for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .manifestationRemoved( rendered );
+            mListeners .get( i ) .manifestationRemoved( rendered );
 	    if ( mainListener != null )
             mainListener .manifestationRemoved( rendered );
 	    if ( ! mRendered .remove( rendered ) )
@@ -183,7 +183,7 @@ public class RenderedModel implements ManifestationChanges
         if ( mainListener != null )
             mainListener .glowChanged( rendered );
         for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .glowChanged( rendered );
+            mListeners .get( i ) .glowChanged( rendered );
     }
 
     
@@ -196,7 +196,7 @@ public class RenderedModel implements ManifestationChanges
         if ( mainListener != null )
             mainListener .colorChanged( rendered );
         for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .colorChanged( rendered );
+            mListeners .get( i ) .colorChanged( rendered );
     }
 
     
@@ -209,11 +209,11 @@ public class RenderedModel implements ManifestationChanges
         if ( mainListener != null )
             mainListener .colorChanged( rendered );
         for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .colorChanged( rendered );
+            mListeners .get( i ) .colorChanged( rendered );
     }
 	
 	
-	public Iterator getRenderedManifestations()
+	public Iterator<RenderedManifestation> getRenderedManifestations()
 	{
 	    return mRendered .iterator();
 	}
@@ -244,7 +244,7 @@ public class RenderedModel implements ManifestationChanges
             
 //            boolean didOneBall = false;
             
-            HashSet newSet = new HashSet();
+            HashSet<RenderedManifestation> newSet = new HashSet<>();
             for ( Iterator polys = mRendered .iterator(); polys .hasNext(); )
             {
                 RenderedManifestation rendered = (RenderedManifestation) polys .next();
@@ -260,13 +260,13 @@ public class RenderedModel implements ManifestationChanges
                 if ( mainListener != null )
                     mainListener .shapeChanged( rendered );
                 for ( int i = 0; i < mListeners .size(); i++ )
-                    ((RenderingChanges) mListeners .get( i )) .shapeChanged( rendered );
+                    mListeners .get( i ) .shapeChanged( rendered );
             }
             mRendered .addAll( newSet );
         } else {
 //            int yieldFreq = mRendered .size() / 20;
             int yieldCount = 0;
-            HashSet newSet = new HashSet();
+            HashSet<RenderedManifestation> newSet = new HashSet<>();
             for ( Iterator rms = mRendered .iterator(); rms .hasNext(); ) {
                 yieldCount = (++yieldCount) % 20;
                 if ( yieldCount == 0 )
@@ -281,7 +281,7 @@ public class RenderedModel implements ManifestationChanges
                     if ( mainListener != null )
                         mainListener .manifestationRemoved( rendered );
                     for ( int i = 0; i < mListeners .size(); i++ ) {
-                        RenderingChanges listener = (RenderingChanges) mListeners .get( i );
+                        RenderingChanges listener = mListeners .get( i );
                         listener .manifestationRemoved( rendered );
                     }
                 }
@@ -299,10 +299,10 @@ public class RenderedModel implements ManifestationChanges
                             mainListener .glowChanged( rendered );
                     }
                     for ( int i = 0; i < mListeners .size(); i++ ) {
-                        RenderingChanges listener = (RenderingChanges) mListeners .get( i );
+                        RenderingChanges listener = mListeners .get( i );
                         listener .manifestationAdded( rendered );
                         if ( glow != 0f )
-                            ((RenderingChanges) mListeners .get( i )) .glowChanged( rendered );
+                            mListeners .get( i ) .glowChanged( rendered );
                     }
                 }
             }
@@ -449,13 +449,17 @@ public class RenderedModel implements ManifestationChanges
     
     public static void renderChange( RenderedModel from, RenderedModel to, RenderingChanges changes )
     {
-        Set toRemove = (HashSet) from .mRendered .clone();
+        // TODO: Does clone() perform any better than new HashSet(), or is there any other reason to keep it?
+//        Set<RenderedManifestation> toRemove = (Set<RenderedManifestation>) from .mRendered .clone();
+        HashSet<RenderedManifestation> toRemove = new HashSet<>(from.mRendered);
         toRemove .removeAll( to .mRendered );
         for ( Iterator iterator = toRemove .iterator(); iterator .hasNext(); ) {
             RenderedManifestation rm = (RenderedManifestation) iterator .next();
             changes .manifestationRemoved( rm );
         }
-        Set toAdd = (HashSet) to .mRendered .clone();
+        // TODO: Does clone() perform any better than new HashSet(), or is there any other reason to keep it?
+//        Set<RenderedManifestation> toAdd = (Set<RenderedManifestation>) to .mRendered .clone();
+        HashSet<RenderedManifestation> toAdd = new HashSet<>(to.mRendered);
         toAdd .removeAll( from .mRendered );
         for ( Iterator iterator = toAdd .iterator(); iterator .hasNext(); ) {
             RenderedManifestation rm = (RenderedManifestation) iterator .next();

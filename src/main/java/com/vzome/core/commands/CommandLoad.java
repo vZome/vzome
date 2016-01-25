@@ -33,7 +33,7 @@ public class CommandLoad extends AbstractCommand
     }
 
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes,
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
                                     ConstructionChanges effects )
     throws Failure
     {

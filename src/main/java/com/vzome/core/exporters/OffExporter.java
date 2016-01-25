@@ -56,11 +56,11 @@ public class OffExporter extends Exporter3d
         }
         output .println( numBalls + " " + numPanels + " " + numStruts );
         
-        Map ballIndices = new HashMap( numBalls );
+        Map<AlgebraicVector, Integer> ballIndices = new HashMap<>( numBalls );
         numBalls = 0;
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .getRenderedManifestations(); rms .hasNext(); )
         {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+            Manifestation man = rms .next() .getManifestation();
             if ( man instanceof Connector ) {
                 AlgebraicVector loc = ((Connector) man) .getLocation();
                 RealVector rv = loc .toRealVector();
@@ -71,17 +71,17 @@ public class OffExporter extends Exporter3d
             }
         }
         
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .getRenderedManifestations(); rms .hasNext(); )
         {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+            RenderedManifestation rm = rms .next();
             Manifestation man = rm .getManifestation();
             if ( man instanceof Panel ) {
-                List vs = new ArrayList();
-                for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
+                List<Integer> vs = new ArrayList<>();
+                for ( Iterator<AlgebraicVector> verts = ((Panel) man) .getVertices(); verts .hasNext(); )
                     vs .add( ballIndices .get( verts .next() ) );
                 output .print( vs .size() );
                 for ( int i = 0; i < vs .size(); i++ )
-                    output .print( " " + ((Integer) vs .get( i ) ) .intValue() );
+                    output .print( " " + vs .get( i ) );
                 output .println();
             }
         }

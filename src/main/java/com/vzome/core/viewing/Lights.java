@@ -49,9 +49,9 @@ public class Lights //extends DefaultController
         }
     }
 
-    protected final List mDirectionalLightColors = new ArrayList(3);
+    protected final List<Color> mDirectionalLightColors = new ArrayList<>(3);
 
-	protected final List mDirectionalLightVectors = new ArrayList(3);
+	protected final List<Vector3f> mDirectionalLightVectors = new ArrayList<>(3);
 	
 	protected Color mAmbientLightColor;
     
@@ -119,8 +119,8 @@ public class Lights //extends DefaultController
 	
 	public Color getDirectionalLight( int i, Vector3f direction )
 	{
-		direction .set( (Vector3f) mDirectionalLightVectors .get( i ) );
-		return (Color) mDirectionalLightColors .get( i );
+		direction .set( mDirectionalLightVectors .get( i ) );
+		return mDirectionalLightColors .get( i );
 	}
     
     public Color getBackgroundColor()

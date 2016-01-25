@@ -27,7 +27,7 @@ public class CommandObliquePentagon extends AbstractCommand
     }
     
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes,
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
         throw new Failure( "Oblique pentagon should never be called." );

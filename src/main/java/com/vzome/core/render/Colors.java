@@ -42,9 +42,9 @@ public class Colors
 		DIRECTION = PREFIX + "direction.",
         PLANE = DIRECTION + "plane.";
     
-    private final Map mColors = new TreeMap();
+    private final Map<String, Color> mColors = new TreeMap<>(); // TreeMap is automatically ordered (sorted)
     
-    private final List mListeners = new ArrayList();
+    private final List<Changes> mListeners = new ArrayList<>();
     
     private final Properties properties;
 
@@ -84,7 +84,7 @@ public class Colors
         String pref = properties .getProperty( name );
         if ( pref == null || pref.equals( "" ) )
             return result;
-        result = (float[]) result.clone();
+        result = result.clone();
         StringTokenizer tokens = new StringTokenizer( pref, ", " );
         int i = 0;
         while ( tokens.hasMoreTokens() )
@@ -123,7 +123,7 @@ public class Colors
 
     public Color getColor( String name )
     {
-        Color color = (Color) mColors .get( name );
+        Color color = mColors .get( name );
         if ( color == null )
         {
             if ( name .startsWith( DIRECTION ) ) {

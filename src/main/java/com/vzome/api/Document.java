@@ -22,8 +22,8 @@ import com.vzome.core.viewing.ViewModel;
 public class Document
 {
 	final DocumentModel delegate;
-	private final Set<Ball> balls = new HashSet<Ball>();
-	private final Set<Strut> struts = new HashSet<Strut>();
+	private final Set<Ball> balls = new HashSet<>();
+	private final Set<Strut> struts = new HashSet<>();
 
 	public Document( DocumentModel delegate ) throws Failure
 	{

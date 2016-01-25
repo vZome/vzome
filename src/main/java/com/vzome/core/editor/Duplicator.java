@@ -22,7 +22,7 @@ import com.vzome.core.model.Strut;
 
 public class Duplicator
 {
-    private Map vertexData = new HashMap();
+    private Map<AlgebraicVector, Point> vertexData = new HashMap<>();
     private final ChangeManifestations edit;
     private final AlgebraicVector offset;
 
@@ -55,17 +55,17 @@ public class Duplicator
         }
         else if ( man instanceof Panel )
         {
-            List vs = new ArrayList();
-            for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
-                vs .add( getVertex( (AlgebraicVector) verts .next() ));
-            return new PolygonFromVertices( (Point[]) vs .toArray( new Point[0] ) );
+            List<Point> vs = new ArrayList<>();
+            for ( Iterator<AlgebraicVector> verts = ((Panel) man) .getVertices(); verts .hasNext(); )
+                vs .add( getVertex( verts .next() ));
+            return new PolygonFromVertices( vs .toArray( new Point[0] ) );
         }
         return null;
     }
         
     protected Point getVertex( AlgebraicVector vertexVector )
     {
-        Point result = (Point) vertexData .get( vertexVector);
+        Point result = vertexData .get( vertexVector);
         if ( result == null )
         {
             AlgebraicVector key = vertexVector;

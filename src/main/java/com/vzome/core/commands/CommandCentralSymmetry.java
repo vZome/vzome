@@ -21,7 +21,7 @@ public class CommandCentralSymmetry extends CommandTransform
         return ATTR_SIGNATURE;
     }
     
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         ConstructionList output = new ConstructionList();
         final Point center = (Point) attributes .get( SYMMETRY_CENTER_ATTR_NAME );

@@ -37,6 +37,7 @@ public class OpenGLExporter extends Exporter3d
 	    super( scene, colors, lights, model );
 	}
 
+    private class ShapeMap extends HashMap<Polyhedron, Integer> {}
 
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
@@ -58,20 +59,20 @@ public class OpenGLExporter extends Exporter3d
 		int numShapes = 0; // this is actually the number of ints written to shape_indices
 		int numTransforms = 0; // this is actually the number of arrays written to transformations
         int numVertices = 0;
-		Map[] shapes = new Map[]{ new HashMap(), new HashMap() };
-		Map transforms = new HashMap();
+		ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
+		Map<AlgebraicMatrix, Integer> transforms = new HashMap<>();
 		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
 		{
 		    RenderedManifestation rm = (RenderedManifestation) rms .next();
 		    Polyhedron shape = rm .getShape();
 		    boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-		    Integer shapeIndex = (Integer) shapes[ flip?1:0 ] .get( shape );
+		    Integer shapeIndex = shapes[ flip?1:0 ] .get( shape );
 		    if ( shapeIndex == null )
 		    {
                 shapeIndex = new Integer( numShapes );
                 shapes[ flip?1:0 ] .put( shape, shapeIndex );
                 
-		        List vertices = shape .getVertexList();
+		        List<AlgebraicVector> vertices = shape .getVertexList();
 		        Set faceSet = shape .getFaceSet();
 		        ++numShapes;
 		        shape_indices .append( faceSet .size() + ",\n" ); // TODO add a comment giving some idea of this shape
@@ -82,8 +83,8 @@ public class OpenGLExporter extends Exporter3d
 	                shape_indices .append( arity + ",   " );
 		            RealVector normal = face .getNormal() .toRealVector();
 		            for ( int j = 0; j < arity; j++ ){
-		                Integer index = (Integer) face .get( flip? arity-j-1 : j );
-		                AlgebraicVector loc = (AlgebraicVector) vertices .get( index .intValue() );
+		                Integer index = face .get( flip? arity-j-1 : j );
+		                AlgebraicVector loc = vertices .get( index .intValue() );
 		                RealVector vertex = loc .toRealVector();
                         shape_vertices .append( vertex + ",\n" );
                         shape_normals .append( normal + ",\n" );
@@ -94,7 +95,7 @@ public class OpenGLExporter extends Exporter3d
 		        }
 		    }
 		    AlgebraicMatrix transform = rm .getOrientation();
-		    Integer transformIndex = (Integer) transforms .get( transform );
+		    Integer transformIndex = transforms .get( transform );
 		    if ( transformIndex == null ){
 		        transformIndex = new Integer( numTransforms++ );
 		        transforms .put( transform, transformIndex );

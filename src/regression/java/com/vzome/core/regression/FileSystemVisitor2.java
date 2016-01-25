@@ -57,8 +57,8 @@ public class FileSystemVisitor2 {
 				Properties props = new Properties();
 				props .load( new FileInputStream( file ) );
 				//trim those values
-				for( Iterator entries = props .entrySet() .iterator(); entries .hasNext(); ) {
-					Map .Entry entry = (Map .Entry) entries.next();
+				for( Iterator<Map.Entry<Object, Object>> entries = props .entrySet() .iterator(); entries .hasNext(); ) {
+					Map.Entry<Object, Object> entry = entries.next();
 					String value = (String) entry .getValue();
 					if (value != value .trim())
 						entry .setValue( value .trim() );

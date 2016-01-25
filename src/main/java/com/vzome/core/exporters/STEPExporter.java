@@ -52,17 +52,18 @@ public class STEPExporter extends Exporter3d{
         super( scene, colors, lights, model );
     }
     
+    private class ShapeMap extends HashMap<Polyhedron, String> {}
 
     public void doExport( File directory, Writer writer, int height, int width ) throws Exception
     {
         int numShapes = 0;
-        Map[] shapes = new Map[]{ new HashMap(), new HashMap() };
+        ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
         for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
         {
             RenderedManifestation rm = (RenderedManifestation) rms .next();
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-            String shapeName = (String) shapes[ flip?1:0 ] .get( shape );
+            String shapeName = shapes[ flip?1:0 ] .get( shape );
             if ( shapeName == null )
             {
                 shapeName = shape .getName();
@@ -110,7 +111,7 @@ public class STEPExporter extends Exporter3d{
         int index = START_INDEX-1;
 
         // first, produce all the vertices
-        ArrayList realVectors = new ArrayList();
+        ArrayList<RealVector> realVectors = new ArrayList<>();
         for ( Iterator vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
             AlgebraicVector gv = (AlgebraicVector) vertices .next();
             if ( reverseFaces )
@@ -125,25 +126,25 @@ public class STEPExporter extends Exporter3d{
         }
         output .println();
 
-        ArrayList faceIndices = new ArrayList();
+        ArrayList<Integer> faceIndices = new ArrayList<>();
         for ( Iterator faces = poly .getFaceSet() .iterator(); faces .hasNext(); )
         {
             Polyhedron.Face face = (Polyhedron.Face) faces .next();
             int arity = face .size();
 
-            ArrayList edgeIndices = new ArrayList();
+            ArrayList<Integer> edgeIndices = new ArrayList<>();
             int point1 = 0;
             RealVector dir1 = null, dir2 = null;
             for ( int j = 0; j < arity; j++ )
             {
-                Integer vindex = (Integer) face .get( /*reverseFaces? arity-j-1 :*/ j );
+                Integer vindex = face .get( /*reverseFaces? arity-j-1 :*/ j );
                 int rv1index = vindex .intValue();
-                RealVector rv1 = (RealVector) realVectors .get( rv1index );
+                RealVector rv1 = realVectors .get( rv1index );
                 point1 = rv1index * 2 + START_INDEX;
                 int vertex1 = point1 + 1;
-                vindex = (Integer) face .get( /*reverseFaces? arity-j-1 :*/ (j+1)%arity );
+                vindex = face .get( /*reverseFaces? arity-j-1 :*/ (j+1)%arity );
                 int rv2index = vindex .intValue();
-                RealVector rv2 = (RealVector) realVectors .get( rv2index );
+                RealVector rv2 = realVectors .get( rv2index );
                 int vertex2 = rv2index * 2 + START_INDEX + 1;
 
                 int direction1 = ++index;   // TODO compute direction1

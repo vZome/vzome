@@ -21,7 +21,7 @@ public class ModuleTool extends ChangeManifestations implements Tool
 {
     private String name;
     
-    private final List bookmarkedSelection = new ArrayList();
+    private final List<Manifestation> bookmarkedSelection = new ArrayList<>();
         
     private Tool.Registry tools;
 
@@ -64,8 +64,8 @@ public class ModuleTool extends ChangeManifestations implements Tool
         Point p = (Point) c;
         AlgebraicVector loc = p .getLocation();
         Duplicator duper = new Duplicator( applyTool, loc );
-        for ( Iterator mans = bookmarkedSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = bookmarkedSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             duper .duplicateManifestation( man );
         }
         applyTool .redo();

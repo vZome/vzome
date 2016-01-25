@@ -25,6 +25,7 @@ import antlr.TokenStreamIOException;
 import antlr.TokenStreamRecognitionException;
 import antlr.collections.impl.BitSet;
 
+@SuppressWarnings( { "all", "warnings", "unchecked", "unused", "cast" } )
 public class ZomodLexer extends antlr.CharScanner implements ZomodParserTokenTypes, TokenStream
  {
 

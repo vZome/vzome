@@ -86,17 +86,17 @@ import com.vzome.core.viewing.OctahedralShapes;
 
 public class Application
 {
-    private final Map fields = new HashMap();
+    private final Map<String, AlgebraicField> fields = new HashMap<>();
 
-    private final Map<Symmetry,List<Shapes>> mStyles = new HashMap(); // key: Symmetry, value: List of
+    private final Map<Symmetry, List<Shapes> > mStyles = new HashMap<>();
         
-    private final Map mCommands = new HashMap();
+    private final Map<String, Object> mCommands = new HashMap<>(); // TODO: DJH: Don't allow non-Command objects in this Map.
 
     private final Colors mColors;
 
     private final Command.FailureChannel failures;
 
-    private Map exporters = new HashMap();
+    private Map<String, Exporter3d> exporters = new HashMap<>();
 
     private Lights mLights = new Lights();
     
@@ -134,7 +134,7 @@ public class Application
             field .addQuaternionSymmetry( H4_ROT );
             QuaternionicSymmetry T2 = new QuaternionicSymmetry( "2T", "com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef", field );
             field .addQuaternionSymmetry( T2 );
-            mStyles.put( symmetry, new ArrayList<Shapes>() );
+            mStyles.put( symmetry, new ArrayList<>() );
             defaultShapes = new ExportedVEFShapes( prefsFolder, "default", "solid connectors", symmetry );
             addStyle( defaultShapes );
             AbstractShapes lifelikeShapes = new ExportedVEFShapes( prefsFolder, "lifelike", "lifelike", symmetry, defaultShapes );
@@ -215,7 +215,7 @@ public class Application
                     createZoneOrbit( "turquoise", 0, NO_ROTATION, new int[] { 1, 1, 2, 1, 3, 1, 4, 1, 3, 1, 4, 1 } );
                 }
             };
-            mStyles.put( octaSymm, new ArrayList<Shapes>() );
+            mStyles.put( octaSymm, new ArrayList<>() );
             defaultShapes =  new ExportedVEFShapes( prefsFolder, "octahedral", "trapezoids", octaSymm, null );
             addStyle( defaultShapes );
             addStyle( new ExportedVEFShapes( prefsFolder, "octahedralFast", "small octahedra", octaSymm, null ) );
@@ -240,7 +240,7 @@ public class Application
                     createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 }, true );
                 }
             };
-            mStyles.put( symmetry, new ArrayList<Shapes>() );
+            mStyles.put( symmetry, new ArrayList<>() );
             defaultShapes =  new ExportedVEFShapes( prefsFolder, "rootTwoSmall", "small octahedra", "small connectors", symmetry );
             addStyle( defaultShapes );
             addStyle( new ExportedVEFShapes( prefsFolder, "rootTwo", "Tesseractix", symmetry, defaultShapes ) );
@@ -302,7 +302,7 @@ public class Application
                     createZoneOrbit( "brown", 0, NO_ROTATION, v, true );
             	}
             };
-            mStyles.put( symmetry, new ArrayList() );
+            mStyles.put( symmetry, new ArrayList<>() );
             defaultShapes =  new ExportedVEFShapes( prefsFolder, "rootTwoSmall", "small octahedra", symmetry, null );
             addStyle( new ExportedVEFShapes( prefsFolder, "rootTwoSmall", "small octahedra", symmetry, defaultShapes ) );
             addStyle( new ExportedVEFShapes( prefsFolder, "rootTwo", "Synestructics", symmetry, defaultShapes ) );
@@ -333,7 +333,7 @@ public class Application
                     createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 } );
                 }
             };
-            mStyles.put( symmetry, new ArrayList<Shapes>() );
+            mStyles.put( symmetry, new ArrayList<>() );
             addStyle( new ExportedVEFShapes( prefsFolder, "rootThreeOctaSmall", "small octahedra", "small connectors", symmetry ) );
             addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
 
@@ -346,7 +346,7 @@ public class Application
         }
         {
             Symmetry symmetry = new DodecagonalSymmetry( field, "prisms" );
-            mStyles.put( symmetry, new ArrayList<Shapes>() );
+            mStyles.put( symmetry, new ArrayList<>() );
             addStyle( new ExportedVEFShapes( prefsFolder, "dodecagon3d", "prisms", symmetry, null ) );
             addStyle( new DodecagonalShapes( "dodecagonal", "hexagons", "flat hexagons", symmetry ) );
             if ( enableCommands ) {
@@ -389,7 +389,7 @@ public class Application
                     createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, rationalVector( new int[]{ 8,0,0,4,-4,0,  0,-4,0,0,0,0,  0,0,0,0,0,0 } ), false, false, scale );
                 }
             };
-            mStyles.put( symmetry, new ArrayList<Shapes>() );
+            mStyles.put( symmetry, new ArrayList<>() );
             defaultShapes = new ExportedVEFShapes( prefsFolder, "default", "solid connectors", symmetry );
             addStyle( defaultShapes );
             addStyle( new ExportedVEFShapes( prefsFolder, "lifelike", "lifelike", symmetry, defaultShapes ) );
@@ -403,7 +403,7 @@ public class Application
         field = new HeptagonField();
         fields .put( field .getName(), field );
         OctahedralSymmetry symmetry = new OctahedralSymmetry( field, "blue", "octahedra" );
-        mStyles.put( symmetry, new ArrayList<Shapes>() );
+        mStyles.put( symmetry, new ArrayList<>() );
         addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
         mCommands .put( "octasymm-heptagon", new CommandSymmetry( symmetry ) );
         mCommands .put( "tetrasymm-heptagon", new CommandTetrahedralSymmetry( symmetry ) );
@@ -450,7 +450,7 @@ public class Application
     private void addStyle( Shapes shapes )
     {
         Symmetry symm = shapes.getSymmetry();
-        List<Shapes> styles = (List<Shapes>) mStyles.get( symm );
+        List<Shapes> styles = mStyles.get( symm );
         styles .add( shapes );
     }
     
@@ -499,14 +499,14 @@ public class Application
             fieldName = element .getAttributeNS( XmlSaveFormat.CURRENT_FORMAT, "field" );
         if ( fieldName .isEmpty() )
             fieldName = "golden";
-        AlgebraicField field = (AlgebraicField) fields .get( fieldName );
+        AlgebraicField field = fields .get( fieldName );
         
         return new DocumentModel( field, failures, element, this );
     }
 
 	public DocumentModel createDocument( String fieldName )
 	{
-		AlgebraicField field = (AlgebraicField) fields .get( fieldName );
+		AlgebraicField field = fields .get( fieldName );
 		return new DocumentModel( field, failures, null, this );
 	}
 
@@ -514,7 +514,7 @@ public class Application
 	{
 		String fieldName = "golden";
 		// TODO: use fieldName from VEF input
-		AlgebraicField field = (AlgebraicField) fields .get( fieldName );
+		AlgebraicField field = fields .get( fieldName );
 		DocumentModel result = new DocumentModel( field, failures, null, this );
 		result .doScriptAction( extension, content );
 		return result;
@@ -522,7 +522,7 @@ public class Application
 
 	public AlgebraicField getField( String name )
 	{
-		return (AlgebraicField) fields .get( name );
+		return fields .get( name );
 	}
     
     public static void main( String[] args )
@@ -533,7 +533,7 @@ public class Application
         Symmetry icosa = app .getField( "golden" ) .getSymmetry( "icosahedral" );
         Direction blue = icosa .getDirection( "blue" );
         
-        Map blueAngles = new HashMap();
+        Map<Float, Axis[]> blueAngles = new HashMap<>();
         RealVector baseRv = null;
         Axis baseZone = null;
         for (Iterator blues = blue .getAxes(); blues.hasNext(); )
@@ -559,7 +559,7 @@ public class Application
         for (Iterator angles = blueAngles .keySet() .iterator(); angles.hasNext(); ) {
             Float angle = (Float) angles.next();
             System .out. print( angle + "  " );
-            Axis[] zones = (Axis[]) blueAngles .get( angle );
+            Axis[] zones = blueAngles .get( angle );
             System .out .print( zones[0] .getOrientation() + " " );
             System .out .println( zones[1] .getOrientation() + " " );
         }
@@ -606,14 +606,14 @@ public class Application
 		return this .mColors;
 	}
 
-	public Map getCommands()
+	public Map<String, Object> getCommands()
 	{
 		return this .mCommands;
 	}
 
     public Exporter3d getExporter( String format )
     {
-        return (Exporter3d) this .exporters .get( format );
+        return this .exporters .get( format );
     }
 
 	public Lights getLights()

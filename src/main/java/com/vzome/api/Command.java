@@ -36,7 +36,7 @@ public class Command {
 	public Command( Delegate delegate )
 	{
 		this.delegate = delegate;
-		this.selection = new ArrayList<Object>();
+		this.selection = new ArrayList<>();
         for ( Iterator mans = delegate .getInputs() .iterator(); mans .hasNext(); ) {
             Manifestation man = (Manifestation) mans .next();
             if ( man instanceof Connector )

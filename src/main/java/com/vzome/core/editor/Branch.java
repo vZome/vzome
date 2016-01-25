@@ -26,7 +26,7 @@ public class Branch implements UndoableEdit
 		this .context = context;
 	}
 
-	private List edits = new ArrayList();
+	private List<UndoableEdit> edits = new ArrayList<>();
     private XmlSaveFormat format;
     private Element xml;
     
@@ -42,7 +42,7 @@ public class Branch implements UndoableEdit
 
     public void perform() throws Failure
     {
-        final Stack toUndo = new Stack();
+        final Stack<UndoableEdit> toUndo = new Stack<>();
         NodeList nodes = xml .getChildNodes();
         for ( int i = 0; i < nodes .getLength(); i++ ) {
             Node kid = nodes .item( i );
@@ -76,7 +76,7 @@ public class Branch implements UndoableEdit
         }
         while ( ! toUndo .isEmpty() )
         {
-            UndoableEdit edit = (UndoableEdit) toUndo .pop();
+            UndoableEdit edit = toUndo .pop();
             edit .undo();
         }
     }
