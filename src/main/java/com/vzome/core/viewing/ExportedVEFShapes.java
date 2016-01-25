@@ -53,7 +53,7 @@ public class ExportedVEFShapes extends AbstractShapes
         
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {
-    	this( prefsFolder, pkgName, name, null, symm, ( symm instanceof IcosahedralSymmetry )? new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) : null );
+    	this( prefsFolder, pkgName, name, alias, symm, ( symm instanceof IcosahedralSymmetry )? new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) : null );
     }
     
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
