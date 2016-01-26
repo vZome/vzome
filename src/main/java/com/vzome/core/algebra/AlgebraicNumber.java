@@ -34,8 +34,8 @@ public class AlgebraicNumber implements Fields.Element
     public final BigInteger getDivisor()
     {
         BigInteger lcm = BigInteger.ONE;
-        for ( int i = 0; i < this.factors.length; i++ ) {
-            BigInteger aDivisor = this.factors[ i ] .getDenominator();
+        for (BigRational factor : this.factors) {
+            BigInteger aDivisor = factor.getDenominator();
             lcm = lcm .multiply( aDivisor ) .abs() .divide( lcm .gcd( aDivisor ) );
         }
         return lcm;

@@ -5,7 +5,6 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -47,8 +46,7 @@ public class SymmetrySystem implements OrbitSource
 	public SymmetrySystem( Element symmXml, Symmetry symmetry, Colors colors, List<Shapes> styles, boolean allowNonstandard )
 	{
 		this .symmetry = symmetry;
-		for ( Iterator<Shapes> iterator = styles.iterator(); iterator.hasNext(); ) {
-            Shapes shape = iterator.next();
+        for (Shapes shape : styles) {
             String name = shape .getName();
             String alias = shape .getAlias();
             this .styleNames .add( name );
@@ -61,14 +59,12 @@ public class SymmetrySystem implements OrbitSource
 		orbits = new OrbitSet( symmetry );
 		if ( symmXml == null ) 
 		{
-	        for ( Iterator<Direction> dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
-	        {
-	            Direction dir = dirs .next();
-	            if ( dir .isStandard() || allowNonstandard )  // reader
-	            	orbits .add( dir );
-	            Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
-	            orbitColors .put( dir, color );
-	        }
+            for (Direction dir : symmetry .getOrbitSet()) {
+                if ( dir .isStandard() || allowNonstandard )  // reader
+                    orbits .add( dir );
+                Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
+                orbitColors .put( dir, color );
+            }
 		}
 		else
 		{
@@ -119,10 +115,8 @@ public class SymmetrySystem implements OrbitSource
 					}
 				}
 			}
-			// fill in the orbits that might be newer than what the file had
-            for ( Iterator<Direction> dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
-            {
-                Direction dir = dirs .next();
+            // fill in the orbits that might be newer than what the file had
+            for (Direction dir : symmetry .getOrbitSet()) {
                 if ( orbits .contains( dir ) )
                     continue;
                 if ( dir .isStandard() || allowNonstandard )  // reader
@@ -255,13 +249,11 @@ public class SymmetrySystem implements OrbitSource
         DomUtils .addAttribute( result, "name", this .getSymmetry() .getName() );
         DomUtils .addAttribute( result, "renderingStyle", this .shapes .getName() );
 
-        for ( Iterator<Direction> dirs = this .orbits .iterator(); dirs .hasNext(); )
-        {
-            Direction dir = dirs .next();
+        for (Direction dir : this .orbits) {
             Element dirElem = doc .createElement( "Direction" );
             if ( dir .isAutomatic() )
                 DomUtils .addAttribute( dirElem, "prototype", dir .getPrototype() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
-                DomUtils .addAttribute( dirElem, "name", dir .getName() );
+            DomUtils .addAttribute( dirElem, "name", dir .getName() );
             {
                 Color color = getColor( dir );
                 if ( color != null )

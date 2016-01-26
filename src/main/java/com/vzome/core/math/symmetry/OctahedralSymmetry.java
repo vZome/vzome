@@ -58,18 +58,22 @@ public class OctahedralSymmetry extends AbstractSymmetry
         map = new int[ORDER];
         int[][] cycles = new int[][] { { 0, 4, 8 }, { 1, 11, 17 }, { 2, 16, 22 }, { 3, 21, 5 }, { 6, 20, 14 }, { 7, 13, 9 },
                 { 10, 12, 18 }, { 19, 15, 23 } };
-        for ( int i = 0; i < cycles.length; i++ )
-            for ( int j = 0; j < cycles[i].length; j++ )
-                map[cycles[i][j]] = cycles[i][( j + 1 ) % 3];
+        for (int[] cycle : cycles) {
+            for (int j = 0; j < cycle.length; j++) {
+                map[cycle[j]] = cycle[( j + 1 ) % 3];
+            }
+        }
         mOrientations[4] = new Permutation( this, map );
 
         // finally, a rotation around a green axis...
         map = new int[ORDER];
         cycles = new int[][] { { 0, 5 }, { 1, 8 }, { 4, 9 }, { 15, 20 }, { 12, 19 }, { 16, 23 }, { 2, 17 }, { 13, 10 },
                 { 21, 6 }, { 22, 3 }, { 7, 14 }, { 11, 18 } };
-        for ( int i = 0; i < cycles.length; i++ )
-            for ( int j = 0; j < cycles[i].length; j++ )
-                map[cycles[i][j]] = cycles[i][( j + 1 ) % 2];
+        for (int[] cycle : cycles) {
+            for (int j = 0; j < cycle.length; j++) {
+                map[cycle[j]] = cycle[( j + 1 ) % 2];
+            }
+        }
         mOrientations[5] = new Permutation( this, map );
     }
 

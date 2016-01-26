@@ -4,7 +4,6 @@ package com.vzome.core.algebra;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -165,9 +164,11 @@ public abstract class AlgebraicField
 
 	public boolean isZero( BigRational[] e )
 	{
-    	for ( int i = 0; i < e.length; i++ )
-    		if ( ! e[ i ] .isZero() )
+    	for ( BigRational r : e ) {
+    		if ( ! r .isZero() ) {
     			return false;
+            }
+        }
 		return true;
 	}
 
@@ -200,8 +201,7 @@ public abstract class AlgebraicField
     
     public Symmetry getSymmetry( String name )
     {
-        for ( Iterator<Symmetry> iterator = symmetries.iterator(); iterator.hasNext(); ) {
-            Symmetry symm = iterator.next();
+        for (Symmetry symm : symmetries) {
             if ( symm .getName() .equals( name ) )
                 return symm;
         }

@@ -69,8 +69,7 @@ public class Selection implements Iterable<Manifestation>
         mManifestations .add( m );
         if ( logger .isLoggable( Level .FINER ) )
             logger .finer( "  select: " + m .toString() );
-        for ( Iterator<ManifestationChanges> ls = mListeners .iterator(); ls .hasNext(); ) {
-            ManifestationChanges mc = ls .next();
+        for (ManifestationChanges mc : mListeners) {
             mc .manifestationAdded( m );
         }
     }
@@ -81,8 +80,7 @@ public class Selection implements Iterable<Manifestation>
         {
             if ( logger .isLoggable( Level .FINER ) )
                 logger .finer( "deselect: " + m .toString() );
-            for ( Iterator<ManifestationChanges> ls = mListeners .iterator(); ls .hasNext(); ) {
-                ManifestationChanges mc = ls .next();
+            for (ManifestationChanges mc : mListeners) {
                 mc .manifestationRemoved( m );
             }
         }
@@ -122,8 +120,7 @@ public class Selection implements Iterable<Manifestation>
         mManifestations .add( m );
         if ( logger .isLoggable( Level .FINER ) )
             logger .finer( "  select: " + m .toString() );
-        for ( Iterator<ManifestationChanges> ls = mListeners .iterator(); ls .hasNext(); ) {
-            ManifestationChanges mc = ls .next();
+        for (ManifestationChanges mc : mListeners) {
             mc .manifestationAdded( m );
         }
     }
@@ -134,8 +131,7 @@ public class Selection implements Iterable<Manifestation>
         {
             if ( logger .isLoggable( Level .FINER ) )
                 logger .finer( "deselect: " + m .toString() );
-            for ( Iterator<ManifestationChanges> ls = mListeners .iterator(); ls .hasNext(); ) {
-                ManifestationChanges mc = ls .next();
+            for (ManifestationChanges mc : mListeners) {
                 mc .manifestationRemoved( m );
             }
         }
@@ -143,8 +139,7 @@ public class Selection implements Iterable<Manifestation>
     
     private void selectGroup( Group group )
     {
-        for ( Iterator<GroupElement> it = group .iterator(); it .hasNext(); ) {
-            GroupElement next = it .next();
+        for (GroupElement next : group) {
             if ( next instanceof Group )
                 selectGroup( (Group) next );
             else
@@ -154,8 +149,7 @@ public class Selection implements Iterable<Manifestation>
     
     private void unselectGroup( Group group )
     {
-        for ( Iterator<GroupElement> it = group .iterator(); it .hasNext(); ) {
-            GroupElement next = it .next();
+        for (GroupElement next : group) {
             if ( next instanceof Group )
                 unselectGroup( (Group) next );
             else
@@ -167,8 +161,7 @@ public class Selection implements Iterable<Manifestation>
     {
         int count = 0;
         Manifestation result = null;
-        for ( Iterator<Manifestation> mans = mManifestations .iterator(); mans .hasNext(); ) {
-            Manifestation next = mans .next();
+        for (Manifestation next : mManifestations) {
             if ( kind .isAssignableFrom( next.getClass() ) ) {
                 ++count;
                 result = next;                    
@@ -189,9 +182,7 @@ public class Selection implements Iterable<Manifestation>
     {
         Group selectedGroup = null;
         
-        for ( Iterator<Manifestation> ms = mManifestations .iterator(); ms .hasNext(); )
-        {
-            Manifestation m = ms .next();
+        for (Manifestation m : mManifestations) {
             if ( onlyOne && ( selectedGroup != null ) )
                 // should have already verified with isSelectionAGroup() that there
                 //  is only one group represented
@@ -229,9 +220,7 @@ public class Selection implements Iterable<Manifestation>
 //        
         Group newGroup = new Group();
         
-        for ( Iterator<Manifestation> ms = mManifestations .iterator(); ms .hasNext(); )
-        {
-            Manifestation m = ms .next();
+        for (Manifestation m : mManifestations) {
             Group group = biggestGroup( m );
             if ( group == newGroup )
                 ; // already added some ancestor group of m
@@ -269,19 +258,14 @@ public class Selection implements Iterable<Manifestation>
         
         mSelectedGroup = new Group();
         
-        for ( Iterator<Manifestation> ms = mManifestations .iterator(); ms .hasNext(); )
-        {
-            Manifestation m = ms .next();
+        for (Manifestation m : mManifestations) {
             Group group = biggestGroup( m );
             if ( group == null )
                 mSelectedGroup .add( m );
             else
                 mSelectedGroup .add( group );
         }
-
-        for ( Iterator<GroupElement> ms = mSelectedGroup .iterator(); ms .hasNext(); )
-        {
-            GroupElement next = ms .next();
+        for (GroupElement next : mSelectedGroup) {
             next .setContainer( mSelectedGroup );
         }
     }
@@ -301,26 +285,19 @@ public class Selection implements Iterable<Manifestation>
 
 	public void refresh( boolean on, Selection otherSelection )
 	{
-		for (Iterator<Manifestation> iterator = mManifestations.iterator(); iterator.hasNext();) {
-			Manifestation m = iterator.next();
-			if ( otherSelection == null || ! otherSelection .mManifestations .contains( m ) )
-			{
-			    if ( on ) 
-			    {
-                    for (Iterator<ManifestationChanges> ls = mListeners.iterator(); ls.hasNext();) {
-                        ManifestationChanges mc = ls.next();
+        for (Manifestation m : mManifestations) {
+            if (otherSelection == null || ! otherSelection .mManifestations .contains( m )) {
+                if (on) {
+                    for (ManifestationChanges mc : mListeners) {
                         mc.manifestationAdded( m );
                     }
-			    }
-			    else
-			    {
-			        for ( Iterator<ManifestationChanges> ls = mListeners .iterator(); ls .hasNext(); ) {
-                        ManifestationChanges mc = ls .next();
+                } else {
+                    for (ManifestationChanges mc : mListeners) {
                         mc  .manifestationRemoved( m );
                     }
-			    }
-			}
-		}
+                }
+            }
+        }
 	}
 
     public int size()

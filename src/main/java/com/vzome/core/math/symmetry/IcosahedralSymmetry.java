@@ -262,10 +262,13 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         // now, compute the rotation around the first octant
         map = new int[ORDER];
         int[][] starts = new int[][]{ {0,1,2}, {15,46,32}, {16,47,30}, {17,45,31} }; // NOTE: could even do this algorithmically!
-        for ( int i = 0; i < starts.length; i++ )
-            for ( int j = 0; j < starts[i].length; j++ )
-                for ( int k = 0; k < 5; k++ )
-                    map[ starts[i][j] + k*3 ] = starts[i][ (j+1)%3 ] + k*3;
+        for (int[] start : starts) {
+            for (int j = 0; j < start.length; j++) {
+                for (int k = 0; k < 5; k++) {
+                    map[start[j] + k*3] = start[(j+1)%3] + k*3;
+                }
+            }
+        }
         mOrientations[ 1 ] = new Permutation( this, map );
         // finally, a rotation around a red axis... this one cannot be done algorithmically
         map = new int[ORDER];
@@ -283,9 +286,11 @@ public class IcosahedralSymmetry extends AbstractSymmetry
                 { 25, 59, 51, 32, 34 },
                 { 28, 47, 54, 35, 37 }
                 };
-        for ( int i = 0; i < cycles.length; i++ )
-            for ( int j = 0; j < cycles[i].length; j++ )
-                    map[ cycles[i][j] ] = cycles[i][ (j+1)%5 ];
+        for (int[] cycle : cycles) {
+            for (int j = 0; j < cycle.length; j++) {
+                map[cycle[j]] = cycle[(j+1)%5];
+            }
+        }
         mOrientations[ 3 ] = new Permutation( this, map );
     }
 

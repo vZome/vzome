@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -70,9 +69,7 @@ public class JsonExporter extends Exporter3d
         transforms .put( identity, identityNum );
         exportTransform( identityNum, identity, orientations );
 
-        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-        {
-            RenderedManifestation rm = rms .next();
+        for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
             Integer shapeNum = shapes[ flip?1:0 ] .get( shape );
@@ -85,7 +82,7 @@ public class JsonExporter extends Exporter3d
             }
             AlgebraicMatrix transform = rm .getOrientation();
             if ( transform == null )
-            	transform = identity;
+                transform = identity;
             Integer transformNum = transforms .get( transform );
             if ( transformNum == null ){
                 if ( numTransforms > 0 )
@@ -167,8 +164,7 @@ public class JsonExporter extends Exporter3d
         StringBuffer triangles = new StringBuffer();
 
         List<AlgebraicVector> faceVertices = shape .getVertexList();
-        for ( Iterator<Polyhedron.Face> faces = shape .getFaceSet() .iterator(); faces.hasNext(); ) {
-            Polyhedron.Face face = faces.next();
+        for (Polyhedron.Face face : shape .getFaceSet()) {
             int arity = face .size();
             int index = face .get( reverseFaces? arity-1 : 0 );
             AlgebraicVector gv = faceVertices .get(index);
@@ -182,7 +178,6 @@ public class JsonExporter extends Exporter3d
             RealVector edge1 = vert1 .minus( vert0 );
             RealVector edge2 = vert2 .minus( vert1 );
             RealVector norm = edge1 .cross( edge2 ) .normalize();
-            
             int v0 = -1, v1 = -1;
             for ( int j = 0; j < arity; j++ ){
                 index = face .get( reverseFaces? arity-j-1 : j );

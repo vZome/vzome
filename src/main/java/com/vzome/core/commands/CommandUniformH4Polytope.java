@@ -4,7 +4,6 @@ package com.vzome.core.commands;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -258,8 +257,7 @@ public class CommandUniformH4Polytope extends CommandTransform
         else
         {
             int numSegs = 0;
-            for ( Iterator<Construction> params = parameters .iterator(); params .hasNext(); ) {
-                Construction cons = params .next();
+            for (Construction cons : parameters) {
                 if ( cons instanceof Segment ) {
                     Segment seg = (Segment) cons;
                     if ( ++numSegs == 1 )
@@ -325,11 +323,10 @@ public class CommandUniformH4Polytope extends CommandTransform
         Set<Edge> edges = new HashSet<>();
         StringBuffer vefVertices = new StringBuffer();
         StringBuffer vefEdges = new StringBuffer();
-        for ( int i = 0; i < mRoots.length; i++ ) 
-            for ( int j = 0; j < mRoots.length; j++ )
-            {
-                AlgebraicVector vertex = mRoots[ i ] .rightMultiply( prototype );
-                vertex = mRoots[ j ] .leftMultiply( vertex );
+        for (Quaternion outerRoot : mRoots) { 
+            for (Quaternion innerRoot : mRoots) {
+                AlgebraicVector vertex = outerRoot.rightMultiply(prototype);
+                vertex = innerRoot.leftMultiply(vertex);
                 AlgebraicVector key = vertex;
                 Point p = vertices .get( key );
                 boolean newVertex = p == null;
@@ -356,12 +353,10 @@ public class CommandUniformH4Polytope extends CommandTransform
                     
                     vertices .put( key, p );
                 }
-                
-                for ( int mirror = 0; mirror < 4; mirror++ )
-                    if ( reflections[ mirror ] != null )
-                    {
-                        AlgebraicVector other = mRoots[ i ] .rightMultiply( reflections[ mirror ] );
-                        other = mRoots[ j ] .leftMultiply( other );
+                for (int mirror = 0; mirror < 4; mirror++) {
+                    if (reflections[ mirror ] != null) {
+                        AlgebraicVector other = outerRoot.rightMultiply(reflections[ mirror ]);
+                        other = innerRoot.leftMultiply(other);
                         key = other;
                         if ( ! other .equals( vertex ) )
                         {
@@ -399,8 +394,8 @@ public class CommandUniformH4Polytope extends CommandTransform
                             effects .constructionAdded( segment );
                         }
                     }
+                }
             }
-
 //        try {
 //            String wythoff = Integer .toBinaryString( index );
 //            wythoff = "0000" .substring( wythoff .length() ) + wythoff;
@@ -413,6 +408,8 @@ public class CommandUniformH4Polytope extends CommandTransform
 //        } catch ( IOException e ) {
 //            e.printStackTrace();
 //        }
+        }
+            
     }
 
     private void printGoldenVector( AlgebraicVector gv, StringBuffer vefVertices )

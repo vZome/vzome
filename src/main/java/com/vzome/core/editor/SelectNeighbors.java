@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
@@ -28,8 +27,7 @@ public class SelectNeighbors extends ChangeSelection
         Set<Panel> panels = new HashSet<>();
         Set<Strut> struts = new HashSet<>();
         Set<Connector> balls = new HashSet<>();
-        for ( Iterator<Manifestation> mans = selection .iterator(); mans .hasNext(); ) {
-            Manifestation man = mans .next();
+        for (Manifestation man : selection) {
             if ( man instanceof Strut )
                 struts .add( (Strut) man );
             else if ( man instanceof Connector )
@@ -37,23 +35,20 @@ public class SelectNeighbors extends ChangeSelection
             else if ( withPanels && ( man instanceof Panel ) )
                 panels .add( (Panel) man );
         }
-        for ( Iterator<Connector> bs = balls .iterator(); bs .hasNext(); ) {
-            Connector ball = bs .next();
+        for (Connector ball : balls) {
             AlgebraicVector loc = ball .getLocation();
-            for ( Iterator<Manifestation> ms = model .iterator(); ms .hasNext(); ) {
-                Manifestation man = ms .next();
+            for (Manifestation man : model) {
                 if ( man .getRenderedObject() == null )
                     continue;  // hidden!
                 if ( man instanceof Strut && ! struts .contains( man ) ) {
                     Strut strut = (Strut) man;
                     if ( loc .equals( strut .getLocation() ) 
                             || loc .equals( strut .getEnd() ) )
-                    	select( strut );
+                        select( strut );
                 }
                 else if ( withPanels && ( man instanceof Panel ) && ! panels .contains( man ) ) {
                     Panel panel = (Panel) man;
-                    for (Iterator<AlgebraicVector> iterator = panel .iterator(); iterator.hasNext(); ) {
-                        AlgebraicVector vertex = iterator.next();
+                    for (AlgebraicVector vertex : panel) {
                         if ( loc .equals( vertex ) ) {
                             select( panel );
                             // no need to continue the loop since we have already selected this panel.
@@ -63,38 +58,35 @@ public class SelectNeighbors extends ChangeSelection
                 }
             }
         }
-        for ( Iterator<Strut> ss = struts .iterator(); ss .hasNext(); ) {
-            Strut strut = ss .next();
+        for (Strut strut : struts) {
             AlgebraicVector loc = strut .getLocation();
             AlgebraicVector end = strut .getEnd();
-            for ( Iterator<Manifestation> ms = model .iterator(); ms .hasNext(); ) {
-                Manifestation man = ms .next();
+            for (Manifestation man : model) {
                 if ( man .getRenderedObject() == null )
                     continue;  // hidden!
                 if ( man instanceof Connector && ! balls .contains( man ) ) {
                     AlgebraicVector bloc = man .getLocation();
                     if ( bloc .equals( loc ) || bloc .equals( end ) )
-                    	select( man );
+                        select( man );
                 }
             }
         }
-        if ( withPanels )
-            for ( Iterator<Panel> ss = panels .iterator(); ss .hasNext(); ) {
-                Panel panel = ss .next();
-                for (Iterator<AlgebraicVector> iterator = panel .iterator(); iterator.hasNext(); ) {
-                    AlgebraicVector loc = iterator.next();
-                    for ( Iterator<Manifestation> ms = model .iterator(); ms .hasNext(); ) {
-                        Manifestation man = ms .next();
-                        if ( man .getRenderedObject() == null )
-                            continue;  // hidden!
-                        if ( man instanceof Connector && ! balls .contains( man ) ) {
-                            AlgebraicVector bloc = man .getLocation();
-                            if ( bloc .equals( loc ) )
-                                select( man );
+        if ( withPanels ) {
+                for (Panel panel : panels) {
+                for (AlgebraicVector loc : panel) {
+                    for (Manifestation man : model) {
+                        if ( man .getRenderedObject() != null ) {// if not hidden!
+                            if ( man instanceof Connector && ! balls .contains( man ) ) {
+                                AlgebraicVector bloc = man .getLocation();
+                                if ( bloc .equals( loc ) ) {
+                                    select( man );
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
     }
 
     protected String getXmlElementName()

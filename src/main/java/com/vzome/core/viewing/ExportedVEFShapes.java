@@ -1,8 +1,5 @@
 /*
  * Created on Jun 25, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package com.vzome.core.viewing;
 
@@ -225,14 +222,10 @@ public class ExportedVEFShapes extends AbstractShapes
         public Polyhedron getConnectorPolyhedron()
         {
             Polyhedron result = new Polyhedron( mSymmetry .getField() );
-            for ( int i = 0; i < vertices .size(); i ++ )
-            {
-                AlgebraicVector vertex = vertices .get( i );
+            for (AlgebraicVector vertex : vertices) {
                 result .addVertex( vertex );
             }
-            for ( int j = 0; j < faces .size(); j ++ )
-            {
-                List<Integer> prototypeFace = faces .get( j );
+            for (List<Integer> prototypeFace : faces) {
                 Polyhedron.Face face = result .newFace();
                 face .addAll( prototypeFace );
                 result .addFace( face );

@@ -5,7 +5,6 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -56,8 +55,9 @@ public class Duplicator
         else if ( man instanceof Panel )
         {
             List<Point> vs = new ArrayList<>();
-            for ( Iterator<AlgebraicVector> verts = ((Panel) man) .iterator(); verts .hasNext(); )
-                vs .add( getVertex( verts .next() ));
+            for (AlgebraicVector v : ((Panel) man)) {
+                vs .add( getVertex( v ));
+            }
             return new PolygonFromVertices( vs .toArray( new Point[0] ) );
         }
         return null;

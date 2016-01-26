@@ -107,13 +107,8 @@ public abstract class Manifestation implements GroupElement
 
     public Element getXml( Document doc )
     {
-    	Iterator<Construction> cons = mManifests .iterator();
-    	if ( cons .hasNext() ) {
-            Construction repr = cons .next();
-            Element result = repr .getXml( doc );
-            return result;
-    	} else {
-    		return doc .createElement( "NoConstructions" );
-    	}
+    	return mManifests .isEmpty()
+                ? doc .createElement( "NoConstructions" )
+                : mManifests .iterator() .next() .getXml( doc );
     }
 }

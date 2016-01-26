@@ -138,8 +138,7 @@ public class Direction implements Comparable, Iterable<Axis>
      */
     public Axis getAxis( AlgebraicVector vector )
     {
-        for ( Iterator<Axis> lines = mVectors .values() .iterator(); lines .hasNext(); ) {
-            Axis axis = lines .next();
+        for (Axis axis : mVectors .values()) {
             AlgebraicVector normal = axis .normal();
             if ( normal .cross( vector ) .isOrigin() ) {
                 // parallel
@@ -147,8 +146,8 @@ public class Direction implements Comparable, Iterable<Axis>
                 if ( dotProd .evaluate() > 0 )
                     return axis;
                 else {
-                	int opp = ( axis .getSense() + 1 ) % 2;
-                	return getAxis( opp, axis .getOrientation() );
+                    int opp = ( axis .getSense() + 1 ) % 2;
+                    return getAxis( opp, axis .getOrientation() );
                 }
             }
         }

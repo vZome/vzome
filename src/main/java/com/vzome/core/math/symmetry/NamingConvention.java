@@ -3,7 +3,6 @@
 package com.vzome.core.math.symmetry;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 
@@ -32,11 +31,10 @@ public class NamingConvention
 	
 	public String getName( Axis axis )
 	{
-		for ( Iterator<DirectionNaming> namings = mNamings .values() .iterator(); namings .hasNext(); ) {
-			DirectionNaming naming = namings .next();
-			if ( naming .getDirection() .equals( axis .getDirection() ) )
-				return naming .getName( axis );
-		}
+        for (DirectionNaming naming : mNamings .values()) {
+            if ( naming .getDirection() .equals( axis .getDirection() ) )
+                return naming .getName( axis );
+        }
 		return UNKNOWN_AXIS;
 	}
 

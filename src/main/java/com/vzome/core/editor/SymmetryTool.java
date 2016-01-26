@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
@@ -51,8 +50,7 @@ public class SymmetryTool extends TransformationTool
         Strut axis = null;
         boolean correct = true;
         if ( ! isAutomatic() )
-            for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
-                Manifestation man = mans .next();
+            for (Manifestation man : mSelection) {
                 unselect( man );
                 if ( man instanceof Connector )
                 {
@@ -67,7 +65,7 @@ public class SymmetryTool extends TransformationTool
                     else
                         axis = (Strut) man;
                 }
-            }
+        }
         if ( center == null )
             center = this.originPoint;
         

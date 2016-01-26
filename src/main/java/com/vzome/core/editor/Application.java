@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -536,9 +535,7 @@ public class Application
         Map<Float, Axis[]> blueAngles = new HashMap<>();
         RealVector baseRv = null;
         Axis baseZone = null;
-        for (Iterator<Axis> blues = blue .iterator(); blues.hasNext(); )
-        {
-            Axis zone = blues .next();
+        for (Axis zone : blue) {
             RealVector rv = zone .normal() .toRealVector() .normalize();
             if ( baseRv == null )
             {
@@ -556,8 +553,7 @@ public class Application
                 }
             }
         }
-        for (Iterator<Float> angles = blueAngles .keySet() .iterator(); angles.hasNext(); ) {
-            Float angle = angles.next();
+        for (Float angle : blueAngles .keySet()) {
             System .out. print( angle + "  " );
             Axis[] zones = blueAngles .get( angle );
             System .out .print( zones[0] .getOrientation() + " " );
@@ -578,8 +574,7 @@ public class Application
 	public Shapes getGeometry( Symmetry symmetry, String styleName )
 	{
 	    List<Shapes> geoms = mStyles .get( symmetry );
-	    for ( Iterator<Shapes> iterator = geoms.iterator(); iterator.hasNext(); ) {
-            Shapes shapes = iterator.next();
+        for (Shapes shapes : geoms) {
             if ( shapes .getName() .equals( styleName ) )
                 return shapes;
         }

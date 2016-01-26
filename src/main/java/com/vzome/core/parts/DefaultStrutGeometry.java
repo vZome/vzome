@@ -37,8 +37,7 @@ public class DefaultStrutGeometry implements StrutGeometry
         for ( Iterator<Direction> orbits = symm .getDirections(); orbits .hasNext(); )
         {
             dir = orbits .next();
-            for ( Iterator<Axis> blues = dir .iterator(); blues .hasNext(); ) {
-                Axis ortho = blues .next();
+            for (Axis ortho : dir) {
                 AlgebraicNumber dot = ortho .normal() .dot( unitNormal );
                 double dotVal = Math .abs( dot .evaluate() );
                 if ( dotVal < minDot ) {

@@ -63,8 +63,9 @@ public class CommandSymmetry extends CommandTransform
         
         final Construction[] params = parameters .getConstructions();
         ConstructionList output = new ConstructionList();
-        for ( int j = 0; j < params .length; j++ )
-            output .addConstruction( params[j] );
+        for (Construction param : params) {
+            output.addConstruction(param);
+        }
         
         for ( int i = 1; i < mSymmetry .getChiralOrder(); i++ )
         {

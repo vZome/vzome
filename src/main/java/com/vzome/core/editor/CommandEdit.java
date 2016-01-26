@@ -87,16 +87,13 @@ public class CommandEdit extends ChangeManifestations
         }
 
         ConstructionList constrsBefore = new ConstructionList();
-        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); )
-        {
-            Manifestation man = mans .next();
-            
+        for (Manifestation man : mSelection) {
             if ( logger .isLoggable( Level .FINER ) ) {
                 logger .finer( "----------- manifestation: " + man .toString() );
                 for (Iterator<Construction> iterator = man .getConstructions(); iterator .hasNext();) {
-					Construction c = iterator.next();
-	                logger .finer( "   " + c .toString() );
-				}
+                    Construction c = iterator.next();
+                    logger .finer( "   " + c .toString() );
+                }
             }
 
             // SELECTION BUG: the unselect() below just plans the unselection, but... (search for the next SELECTION BUG comment)
@@ -163,13 +160,10 @@ public class CommandEdit extends ChangeManifestations
         else
             fail( "Too many objects in the selection." );
         
-        for ( Iterator<Construction> adds = news .iterator(); adds .hasNext(); ) {
-            Construction c = adds .next();
+        for (Construction c : news) {
             manifestConstruction( c );
         }
-        for ( int i = 0; i < selectionAfter .size(); i++ ) {
-            Construction cons = selectionAfter .get( i );
-
+        for (Construction cons : selectionAfter) {
             // here we accommodate model files that include failed edits in their history
             if ( cons .failed() )
             {
@@ -308,17 +302,13 @@ public class CommandEdit extends ChangeManifestations
             if ( selectedBefore .size() > mManifestations .size() / 2 )
             {
                 Collection<Manifestation> toUnselect = new ArrayList<>();
-                for ( Iterator<Manifestation> it = mManifestations .iterator(); it .hasNext(); )
-                {
-                    Manifestation m = it .next();
+                for (Manifestation m : mManifestations) {
                     if ( ! selectedBefore .contains( m ) )
                         toUnselect .add( m );
                 }
                 ChangeSelection edit = new SelectAll( mSelection, mManifestations, false );
                 context .performAndRecord( edit );
-                for ( Iterator<Manifestation> it = toUnselect .iterator(); it .hasNext(); )
-                {
-                    Manifestation m = it .next();
+                for (Manifestation m : toUnselect) {
                     edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
                     context .performAndRecord( edit );
                 }
@@ -326,9 +316,7 @@ public class CommandEdit extends ChangeManifestations
             else {
                 ChangeSelection edit = new DeselectAll( mSelection, false );
                 context .performAndRecord( edit );
-                for ( Iterator<Manifestation> it = selectedBefore .iterator(); it .hasNext(); )
-                {
-                    Manifestation m = it .next();
+                for (Manifestation m : selectedBefore) {
                     edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
                     context .performAndRecord( edit );
                 }

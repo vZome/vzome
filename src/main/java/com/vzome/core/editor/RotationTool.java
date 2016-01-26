@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -45,8 +44,7 @@ public class RotationTool extends SymmetryTool
         Segment axisStrut = null;
         boolean correct = true;
         if ( ! isAutomatic() )
-            for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
-                Manifestation man = mans .next();
+            for (Manifestation man : mSelection) {
                 unselect( man );
                 if ( man instanceof Connector )
                 {
@@ -66,7 +64,7 @@ public class RotationTool extends SymmetryTool
                     }
                     axisStrut = (Segment) ((Strut) man) .getConstructions() .next();
                 }
-            }
+        }
         
         if ( axisStrut == null )
         {

@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,9 +43,8 @@ public class OffExporter extends Exporter3d
 		FORMAT .setMaximumFractionDigits( 16 );
         
 		int numBalls = 0, numStruts = 0, numPanels = 0;
-        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-        {
-            Manifestation man = rms .next() .getManifestation();
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             if ( man instanceof Connector )
                 ++ numBalls;
             else if ( man instanceof Strut )
@@ -58,9 +56,8 @@ public class OffExporter extends Exporter3d
         
         Map<AlgebraicVector, Integer> ballIndices = new HashMap<>( numBalls );
         numBalls = 0;
-        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-        {
-            Manifestation man = rms .next() .getManifestation();
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             if ( man instanceof Connector ) {
                 AlgebraicVector loc = ((Connector) man) .getLocation();
                 RealVector rv = loc .toRealVector();
@@ -71,17 +68,18 @@ public class OffExporter extends Exporter3d
             }
         }
         
-        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-        {
-            RenderedManifestation rm = rms .next();
+        for (RenderedManifestation rm : mModel) {
             Manifestation man = rm .getManifestation();
-            if ( man instanceof Panel ) {
+            if (man instanceof Panel) {
+                Panel panel = (Panel) man;
                 List<Integer> vs = new ArrayList<>();
-                for ( Iterator<AlgebraicVector> verts = ((Panel) man) .iterator(); verts .hasNext(); )
-                    vs .add( ballIndices .get( verts .next() ) );
+                for (AlgebraicVector vert : panel) {
+                    vs .add( ballIndices .get( vert ) );
+                }
                 output .print( vs .size() );
-                for ( int i = 0; i < vs .size(); i++ )
-                    output .print( " " + vs .get( i ) );
+                for (Integer v : vs) {
+                    output.print(" " + v);
+                }
                 output .println();
             }
         }

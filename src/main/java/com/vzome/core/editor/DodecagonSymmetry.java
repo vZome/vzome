@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
@@ -35,8 +34,7 @@ public class DodecagonSymmetry extends ChangeManifestations
     {
         Transformation transform = new SymmetryTransformation( symmetry, 1, center );
         
-        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = mans .next();
+        for (Manifestation man : mSelection) {
             Construction c = man .getConstructions() .next();
 
             for ( int i = 0; i < 11; i++ )

@@ -10,7 +10,6 @@ import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -57,9 +56,7 @@ public class STEPExporter extends Exporter3d{
     {
         int numShapes = 0;
         ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
-        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-        {
-            RenderedManifestation rm = rms .next();
+        for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
             String shapeName = shapes[ flip?1:0 ] .get( shape );
@@ -73,7 +70,7 @@ public class STEPExporter extends Exporter3d{
 
                 writer = new FileWriter( new File( directory, shapeName + ".step" ) );
                 output = new PrintWriter( writer );
-
+                
                 
                 exportShape( shapeName, shape, flip );
 
@@ -111,8 +108,7 @@ public class STEPExporter extends Exporter3d{
 
         // first, produce all the vertices
         ArrayList<RealVector> realVectors = new ArrayList<>();
-        for ( Iterator<AlgebraicVector> vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
-            AlgebraicVector gv = vertices .next();
+        for (AlgebraicVector gv : poly .getVertexList()) {
             if ( reverseFaces )
                 gv = gv .negate();
             RealVector v = gv .toRealVector() .scale( SCALE );
@@ -126,11 +122,8 @@ public class STEPExporter extends Exporter3d{
         output .println();
 
         ArrayList<Integer> faceIndices = new ArrayList<>();
-        for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); )
-        {
-            Polyhedron.Face face = faces .next();
+        for (Polyhedron.Face face : poly .getFaceSet()) {
             int arity = face .size();
-
             ArrayList<Integer> edgeIndices = new ArrayList<>();
             int point1 = 0;
             RealVector dir1 = null, dir2 = null;
@@ -170,14 +163,12 @@ public class STEPExporter extends Exporter3d{
                 edgeIndices .add(orientedEdge);
                 output .println( "#" + orientedEdge + " = ORIENTED_EDGE ( 'NONE', *, *, #"+ edgeCurve + ", ." + ((j==0)?"T":"T") + ". ) ;" );
             }
-
             int edgeLoop = ++index;
             output .print( "#" + edgeLoop + " = EDGE_LOOP ( 'NONE', ( " );
-            for ( Iterator<Integer> it = edgeIndices .iterator(); it .hasNext(); )
-            {
-                output .print( "#" + it .next() );
-                if ( it .hasNext() )
-                    output .print( ", " );
+            String delim = "";
+            for ( Integer i : edgeIndices) {
+                output .print( delim + "#" + i );
+                delim = ", ";
             }
             output .println( " ) ) ;" );
             int direction1 = ++index;   // TODO compute direction1
@@ -197,15 +188,12 @@ public class STEPExporter extends Exporter3d{
         }
 
         output .print( "#299 = CLOSED_SHELL ( 'NONE', ( " );
-        for ( Iterator<Integer> it = faceIndices .iterator(); it .hasNext(); )
-        {
-            output .print( "#" + it .next() );
-            if ( it .hasNext() )
-                output .print( ", " );
+        String delim = "";
+        for ( Integer i : faceIndices ) {
+            output .print( delim + "#" + i );
+            delim = ", " ;
         }
         output .println( " ) ) ;" );
-
-        
         
         output .println( POSTLUDE );
         output .flush();

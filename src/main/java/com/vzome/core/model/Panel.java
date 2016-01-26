@@ -122,11 +122,9 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
     public String toString()
     {
         StringBuffer buf = new StringBuffer( "panel: " );
-        for ( Iterator<AlgebraicVector> iterator = mVertices.iterator(); iterator.hasNext(); ) {
-            AlgebraicVector vertex = iterator.next();
+        for (AlgebraicVector vertex : mVertices) {
             buf.append( vertex .toString() );
             buf.append( ", " );
-
         }
         return buf.toString();
     }

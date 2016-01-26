@@ -4,7 +4,6 @@ package com.vzome.core.commands;
 
 import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -184,8 +183,7 @@ public class CommandImportVEFData extends AbstractCommand
         
         protected void endEdges()
         {
-            for ( Iterator<Point> pts = mUsedPoints .iterator(); pts .hasNext(); ) {
-                Point point = pts .next();
+            for (Point point : mUsedPoints) {
                 mEffects .constructionAdded( point );
             }
         }

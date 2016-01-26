@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import com.vzome.core.commands.AttributeMap;
-import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

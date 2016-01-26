@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.ChangeOfBasis;
@@ -32,8 +31,7 @@ public class AffineTransformAll extends ChangeManifestations
     public void perform() throws Failure
     {
         Segment s1 = null, s2 = null, s3 = null;
-        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = mans .next();
+        for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Strut )
             {
@@ -54,8 +52,7 @@ public class AffineTransformAll extends ChangeManifestations
         Transformation transform = new ChangeOfBasis( s1, s2, s3, center, true );
 
         // now apply it to all objects
-        for ( Iterator<Manifestation> all = mManifestations .iterator(); all .hasNext(); ) {
-            Manifestation m = all .next();
+        for (Manifestation m : mManifestations) {
             if ( m .getRenderedObject() == null )
                 continue;
             Construction c = m .getConstructions() .next();

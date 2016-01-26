@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -29,11 +28,10 @@ public class BookmarkTool extends ChangeManifestations implements Tool
         this.name = name;
         this.tools = tools;
         Duplicator duper = new Duplicator( null, null );
-        for (Iterator<Manifestation> iterator = mSelection.iterator(); iterator.hasNext();) {
-			Manifestation man = iterator.next();
-			Construction result = duper .duplicateConstruction( man );
-	        bookmarkedConstructions .add( result );
-		}
+        for (Manifestation man : mSelection) {
+            Construction result = duper .duplicateConstruction( man );
+            bookmarkedConstructions .add( result );
+        }
     }
 
 	public boolean isSticky()
@@ -58,9 +56,8 @@ public class BookmarkTool extends ChangeManifestations implements Tool
 
     public void prepare( ChangeManifestations edit )
     {
-        for ( Iterator<Construction> cons = bookmarkedConstructions .iterator(); cons .hasNext(); ) {
-        	Construction con = cons .next();
-        	edit .manifestConstruction( con );
+        for (Construction con : bookmarkedConstructions) {
+            edit .manifestConstruction( con );
         }
         edit .redo();
     }

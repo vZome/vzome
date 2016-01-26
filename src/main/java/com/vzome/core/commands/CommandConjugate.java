@@ -42,18 +42,17 @@ public class CommandConjugate extends AbstractCommand
         PentagonField field = (PentagonField) root .getField();
         AlgebraicNumber up = field .createPower( 5 );
         
-        for ( int j = 0; j < params .length; j++ ){
+        for (Construction param : params) {
             Construction conjugate = null;
-            if ( params[ j ] instanceof Point ) {
-                AlgebraicVector loc = ((Point) params[ j ]) .getLocation();
+            if (param instanceof Point) {
+                AlgebraicVector loc = ((Point) param).getLocation();
                 loc = field .conjugate( loc );
                 conjugate = new FreePoint( loc .scale( up ) );
-            }
-            else if ( params[ j ] instanceof Segment ) {
-                AlgebraicVector loc = ((Segment) params[ j ]) .getStart();
+            } else if (param instanceof Segment) {
+                AlgebraicVector loc = ((Segment) param).getStart();
                 loc = field .conjugate( loc );
                 Point p1 = new FreePoint( loc .scale( up ) );
-                loc = ((Segment) params[ j ]) .getEnd();
+                loc = ((Segment) param).getEnd();
                 loc = field .conjugate( loc );
                 Point p2 = new FreePoint( loc .scale( up ) );
                 conjugate = new SegmentJoiningPoints( p1, p2 );

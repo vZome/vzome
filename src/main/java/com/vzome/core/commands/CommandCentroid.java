@@ -39,9 +39,11 @@ public class CommandCentroid extends AbstractCommand
         final Construction[] params = parameters .getConstructions();
         
         List<Point> verticesList = new ArrayList<>();
-        for ( int j = 0; j < params .length; j++ )
-            if ( params[j] instanceof Point )
-                verticesList .add( (Point) params[j] );
+        for (Construction param : params) {
+            if (param instanceof Point) {
+                verticesList.add((Point) param);
+            }
+        }
         // this test causes old files to fail to load
 //        if ( verticesList .size() < 2 )
 //            throw new Failure( "Select at least two balls to compute the centroid." );

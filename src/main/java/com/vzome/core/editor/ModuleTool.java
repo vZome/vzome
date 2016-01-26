@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -64,8 +63,7 @@ public class ModuleTool extends ChangeManifestations implements Tool
         Point p = (Point) c;
         AlgebraicVector loc = p .getLocation();
         Duplicator duper = new Duplicator( applyTool, loc );
-        for ( Iterator<Manifestation> mans = bookmarkedSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = mans .next();
+        for (Manifestation man : bookmarkedSelection) {
             duper .duplicateManifestation( man );
         }
         applyTool .redo();

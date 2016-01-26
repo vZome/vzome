@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
@@ -149,8 +148,7 @@ public abstract class ChangeSelection extends SideEffects
     
     private void selectGroup( Group group )
     {
-        for ( Iterator<GroupElement> it = group .iterator(); it .hasNext(); ) {
-            GroupElement next = it .next();
+        for (GroupElement next : group) {
             if ( next instanceof Group )
                 selectGroup( (Group) next );
             else
@@ -160,8 +158,7 @@ public abstract class ChangeSelection extends SideEffects
     
     private void unselectGroup( Group group )
     {
-        for ( Iterator<GroupElement> it = group .iterator(); it .hasNext(); ) {
-            GroupElement next = it .next();
+        for (GroupElement next : group) {
             if ( next instanceof Group )
                 unselectGroup( (Group) next );
             else

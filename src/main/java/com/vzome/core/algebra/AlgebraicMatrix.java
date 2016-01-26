@@ -11,9 +11,9 @@ public class AlgebraicMatrix
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		for (int i = 0; i < matrix.length; i++) {
-			result = prime * result + Arrays.hashCode( matrix[i] );
-		}
+        for (AlgebraicNumber[] m : matrix) {
+            result = prime * result + Arrays.hashCode(m);
+        }
 		return result;
 	}
 
@@ -65,9 +65,9 @@ public class AlgebraicMatrix
     @Override
     public String toString()
     {
-        StringBuffer buf = new StringBuffer();
-        for ( int i = 0; i < this .matrix .length; i++ ) {
-            buf .append( Arrays.toString( this.matrix[i] ) );
+        StringBuilder buf = new StringBuilder();
+        for (AlgebraicNumber[] m : this .matrix) {
+            buf.append(Arrays.toString(m));
             buf .append( ", " );
         }
         return "[ " + buf.toString() + " ]";

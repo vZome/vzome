@@ -4,8 +4,6 @@
 package com.vzome.core.editor;
 
 import com.vzome.core.commands.AttributeMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -47,8 +45,7 @@ public class SelectManifestation extends ChangeSelection
     public void perform()
     {
         if ( mReplace ) {
-            for ( Iterator<Manifestation> all = mSelection .iterator(); all .hasNext(); ) {
-                Manifestation man = all.next();
+            for (Manifestation man : mSelection) {
                 unselect( man, true );
             }
             select( mManifestation );

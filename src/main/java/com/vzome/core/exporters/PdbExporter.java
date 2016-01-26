@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,9 +38,8 @@ public class PdbExporter extends Exporter3d
         List<Atom> atomsList = new ArrayList<>();
         int indices = 0;
 
-        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-        {
-            Manifestation man = rms .next() .getManifestation();
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             if ( man instanceof Strut ) {
                 AlgebraicVector startLoc = ((Strut) man) .getLocation();
                 AlgebraicVector endLoc = ((Strut) man) .getEnd();
@@ -71,15 +69,13 @@ public class PdbExporter extends Exporter3d
 
         StringBuilder locations = new StringBuilder();
         StringBuilder neighbors = new StringBuilder();
-        for (Iterator<Atom> iterator = atomsList .iterator(); iterator .hasNext(); ) {
-            Atom atom = iterator .next();
+        for (Atom atom : atomsList) {
             RealVector rv = atom .location .toRealVector();
             System .out .println( atom .location .toString() );
             locations .append( String .format( "HETATM%5d He   UNK  0001     %7.3f %7.3f %7.3f\n",
-                atom .index, (float) rv.x * scaleFactor, (float) rv.y * scaleFactor, (float) rv.z * scaleFactor ) );
+                    atom .index, (float) rv.x * scaleFactor, (float) rv.y * scaleFactor, (float) rv.z * scaleFactor ) );
             neighbors .append( String .format( "CONECT%5d", atom .index ) );
-            for (Iterator<Atom> iterator2  = atom .neighbors .iterator(); iterator2 .hasNext(); ) {
-                Atom neighbor = iterator2 .next();
+            for (Atom neighbor : atom .neighbors) {
                 neighbors .append( String .format( "%5d", neighbor .index ) );
             }
             neighbors .append( "\n" );

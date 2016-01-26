@@ -8,7 +8,6 @@ import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -78,8 +77,7 @@ public class VefModelExporter implements Exporter
         //
         int[] vertexMapping = new int[ poly .getVertexList() .size() ];
         int vertexNum = 0;
-        for ( Iterator<AlgebraicVector> verts = poly .getVertexList() .iterator(); verts .hasNext(); ) {
-            AlgebraicVector vertexVector = verts .next();
+        for (AlgebraicVector vertexVector : poly .getVertexList()) {
             if ( reverseFaces )
                 vertexVector = vertexVector .negate();
             vertexVector = rotation .timesColumn( vertexVector );
@@ -92,7 +90,7 @@ public class VefModelExporter implements Exporter
                 vefIndex = index;
                 vertexData .put( key, vefIndex );
                 if ( scale != null )
-                    vertexVector = vertexVector .scale( scale );            
+                    vertexVector = vertexVector .scale( scale );
                 appendVector( this.vertices, order, vertexVector );            
                 this.vertices .append( "\n" );
                 ++ numBalls;
@@ -105,8 +103,7 @@ public class VefModelExporter implements Exporter
         balls .append( " " );
         balls .append( getVertexIndex( endpoint ) );
 
-        for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
-            Polyhedron.Face face = faces .next();
+        for (Polyhedron.Face face : poly .getFaceSet()) {
             ++ numPanels;
             List<Integer> vs = new ArrayList<>();
             int arity = face .size();
@@ -115,10 +112,10 @@ public class VefModelExporter implements Exporter
                 vs .add( vertexMapping[ index ] );
             }
             panels .append( vs .size() );
-			for (Integer v : vs) {
-				panels .append( " " );
-				panels .append(v);
-			}
+            for (Integer v : vs) {
+                panels .append( " " );
+                panels .append(v);
+            }
             panels .append( "\n" );
         }
     }
@@ -146,8 +143,9 @@ public class VefModelExporter implements Exporter
         {
             ++ numPanels;
             List<Integer> vs = new ArrayList<>();
-            for ( Iterator<AlgebraicVector> verts = ((Panel) man) .iterator(); verts .hasNext(); )
-                vs .add( getVertexIndex( verts .next() ) );
+            for (AlgebraicVector vertex : ((Panel) man)) {
+                vs .add( getVertexIndex( vertex ) );
+            }
             panels .append( vs .size() );
 			for (Integer v : vs) {
 				panels .append( " " );
@@ -181,11 +179,11 @@ public class VefModelExporter implements Exporter
         else if ( man instanceof Panel ) {
         	if ( this .middleVertices .isEmpty() )
         		output .print( "middle" );
-            for ( Iterator<AlgebraicVector> verts = ((Panel) man) .iterator(); verts .hasNext(); ) {
-                Integer index = getVertexIndex( verts .next() );
+            for (AlgebraicVector vertex : ((Panel) man)) {
+                Integer index = getVertexIndex( vertex );
                 if ( ! this .middleVertices .contains( index ) ) {
                     this .middleVertices .add( index );
-                	output .print( " " + index );
+                    output .print( " " + index );
                 }
             }
         }

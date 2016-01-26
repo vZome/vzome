@@ -1,8 +1,5 @@
 /*
  * Created on Jul 22, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package com.vzome.core.viewing;
 
@@ -102,6 +99,11 @@ public class Lights //extends DefaultController
         }
     }
 
+    public int size() {
+        verifyListSizesMatch();
+        return mDirectionalLightVectors.size();
+    }
+    
     private void verifyListSizesMatch() {
         if( mDirectionalLightVectors.size() != mDirectionalLightColors.size() ) {
             throw new IllegalStateException("List sizes should match." 

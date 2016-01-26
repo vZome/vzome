@@ -1,7 +1,6 @@
 package com.vzome.core.math.symmetry;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
@@ -20,15 +19,11 @@ public class PlaneOrbitSet extends OrbitSet
 		
 		this .normal = normal;
 
-		Iterator<Direction> dirs = delegate .iterator();
-        while ( dirs .hasNext() ) {
-            Direction dir = dirs .next();
-            // now iterate over axes
-			for ( Iterator<Axis> axes = dir .iterator(); axes .hasNext(); ) {
-				Axis axis = axes .next();
-				if ( axis .normal() .dot( this .normal ) .isZero() )
-					this .zones .add( axis );
-			}
+        for (Direction dir : delegate) {
+            for (Axis axis : dir) {
+                if ( axis .normal() .dot( this .normal ) .isZero() )
+                    this .zones .add( axis );
+            }
         }
 	}
 
@@ -42,15 +37,14 @@ public class PlaneOrbitSet extends OrbitSet
 		//  and cosine is (a . b ) / |a| |b|
 		double maxCosine = - 1d;
 		Axis closest = null;
-		for ( Iterator<Axis> axes = this .zones .iterator(); axes .hasNext(); ) {
-			Axis axis = axes .next();
-			RealVector axisV = axis .normal() .toRealVector();
-			double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
-			if ( cosine > maxCosine ) {
-				maxCosine = cosine;
-				closest = axis;
-			}
-		}
+        for (Axis axis : this .zones) {
+            RealVector axisV = axis .normal() .toRealVector();
+            double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
+            if ( cosine > maxCosine ) {
+                maxCosine = cosine;
+                closest = axis;
+            }
+        }
 		return closest;
 	}
 

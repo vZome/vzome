@@ -396,17 +396,16 @@ public class ZomicASTTest extends TestCase
 			ArrayList<String> list = new ArrayList<>();
 			boolean hasNegativeAxes = false;
 			boolean isChiral = false;
-			for ( Iterator<Axis> axes = direction.iterator(); axes.hasNext(); ) {
-				Axis axis = axes.next();
-				String indexName = namingConvention.getName(axis);
-				if (NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
-					break; 
-				} else {
-					list.add(indexName);
-					if(indexName.startsWith("-")) { hasNegativeAxes = true; }
-					if(indexName.endsWith("+") || indexName.endsWith("-")) { isChiral = true; }
-				}
-			}
+            for (Axis axis : direction) {
+                String indexName = namingConvention.getName(axis);
+                if (NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
+                    break;
+                } else {
+                    list.add(indexName);
+                    if(indexName.startsWith("-")) { hasNegativeAxes = true; }
+                    if(indexName.endsWith("+") || indexName.endsWith("-")) { isChiral = true; }
+                }
+            }
 			if(!list.isEmpty()) {
 				//System.out.println(color + " " + (isChiral ? "has" : "does NOT have") + " Chiral Axes.");
 				//System.out.println(color + " " + (hasNegativeAxes ? "knows" : "does NOT know") + " about Negative Axes.");

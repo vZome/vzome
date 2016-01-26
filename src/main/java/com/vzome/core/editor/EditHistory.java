@@ -1,8 +1,5 @@
 /*
  * Created on Jul 3, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package com.vzome.core.editor;
 
@@ -270,14 +267,12 @@ public class EditHistory implements Iterable<UndoableEdit>
         DomUtils .addAttribute( result, "editNumber", Integer.toString( this .mEditNumber ) );
         
         int edits = 0, lastStickyEdit=-1;
-        for ( Iterator<UndoableEdit> it = this .iterator(); it .hasNext(); )
-        {
-            UndoableEdit undoable = it .next();
+        for (UndoableEdit undoable : this) {
             Element edit = undoable .getDetailXml( doc );
             ++ edits;
             DomUtils .addAttribute( edit, "editNumber", Integer.toString( edits ) );
             if ( logger .isLoggable( Level.FINEST ) )
-            	logger .finest( "side-effect: " + DomUtils .getXmlString( edit ) );
+                logger .finest( "side-effect: " + DomUtils .getXmlString( edit ) );
             result .appendChild( edit );
             if ( undoable .isSticky() )
                 lastStickyEdit = edits;

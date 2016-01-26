@@ -61,8 +61,9 @@ public class LessonModel implements Iterable<PageModel>
         Element result = doc .createElement( "notes" );
         result .setAttribute( "xmlns:xml", "http://www.w3.org/XML/1998/namespace" );
 
-        for ( Iterator<PageModel> it = pages .iterator(); it .hasNext(); )
-            result .appendChild( it .next() .getXml( doc ) );
+        for (PageModel page : pages) {
+            result .appendChild( page .getXml( doc ) );
+        }
         return result;
     }
 

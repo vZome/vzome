@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
@@ -37,8 +36,7 @@ public class SelectSimilarSizeStruts extends ChangeSelection
 
     public void perform() throws Failure
     {
-        for ( Iterator<Manifestation> ms = model .iterator(); ms .hasNext(); ) {
-            Manifestation man = ms .next();
+        for (Manifestation man : model) {
             if ( man .getRenderedObject() == null )
                 continue;  // hidden!
             if ( man instanceof Strut ) {

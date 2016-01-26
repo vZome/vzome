@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Map;
 
 import org.w3c.dom.Element;
 

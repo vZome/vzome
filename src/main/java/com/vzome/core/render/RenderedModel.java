@@ -148,8 +148,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    mRendered .add( rm );
 	    if ( mainListener != null )
     	    mainListener .manifestationAdded( rm );
-        for ( int i = 0; i < mListeners .size(); i++ )
-            mListeners .get( i ) .manifestationAdded( rm );
+        for (RenderingChanges listener : mListeners) {
+            listener .manifestationAdded( rm );
+        }
 	}
 	
 	public void manifestationRemoved( Manifestation m )
@@ -163,8 +164,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    if ( rendered == null )
 	        return; // there was no way to render the shape
 	    
-	    for ( int i = 0; i < mListeners .size(); i++ )
-            mListeners .get( i ) .manifestationRemoved( rendered );
+	    for (RenderingChanges listener : mListeners) {
+            listener .manifestationRemoved( rendered );
+        }
 	    if ( mainListener != null )
             mainListener .manifestationRemoved( rendered );
 	    if ( ! mRendered .remove( rendered ) )
@@ -181,8 +183,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         rendered .setGlow( on? mSelectionGlow : 0f );
         if ( mainListener != null )
             mainListener .glowChanged( rendered );
-        for ( int i = 0; i < mListeners .size(); i++ )
-            mListeners .get( i ) .glowChanged( rendered );
+        for (RenderingChanges listener : mListeners) {
+            listener .glowChanged( rendered );
+        }
     }
 
     
@@ -194,8 +197,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         rendered .setColor( color );
         if ( mainListener != null )
             mainListener .colorChanged( rendered );
-        for ( int i = 0; i < mListeners .size(); i++ )
-            mListeners .get( i ) .colorChanged( rendered );
+        for (RenderingChanges listener : mListeners) {
+            listener .colorChanged( rendered );
+        }
     }
 
     
@@ -207,8 +211,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         rendered .setTransparency( on? mSelectionGlow : 0f );
         if ( mainListener != null )
             mainListener .colorChanged( rendered );
-        for ( int i = 0; i < mListeners .size(); i++ )
-            mListeners .get( i ) .colorChanged( rendered );
+        for (RenderingChanges listener : mListeners) {
+            listener .colorChanged( rendered );
+        }
     }
 	
     @Override
@@ -261,10 +266,12 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 //                }
                 resetAttributes( rendered, false );
                 newSet .add( rendered );  // must re-hash, since shape has changed
-                if ( mainListener != null )
+                if ( mainListener != null ) {
                     mainListener .shapeChanged( rendered );
-                for ( int i = 0; i < mListeners .size(); i++ )
-                    mListeners .get( i ) .shapeChanged( rendered );
+                }
+                for (RenderingChanges listener : mListeners) {
+                    listener .shapeChanged( rendered );
+                }
             }
             mRendered .addAll( newSet );
         } else {
@@ -282,10 +289,10 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                     continue;
                 if ( rendered .getShape() != null )
                 {
-                    if ( mainListener != null )
+                    if ( mainListener != null ) {
                         mainListener .manifestationRemoved( rendered );
-                    for ( int i = 0; i < mListeners .size(); i++ ) {
-                        RenderingChanges listener = mListeners .get( i );
+                    }
+                    for (RenderingChanges listener : mListeners) {
                         listener .manifestationRemoved( rendered );
                     }
                 }
@@ -302,11 +309,10 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                         if ( glow != 0f )
                             mainListener .glowChanged( rendered );
                     }
-                    for ( int i = 0; i < mListeners .size(); i++ ) {
-                        RenderingChanges listener = mListeners .get( i );
+                    for (RenderingChanges listener : mListeners) {
                         listener .manifestationAdded( rendered );
                         if ( glow != 0f )
-                            mListeners .get( i ) .glowChanged( rendered );
+                            listener .glowChanged( rendered );
                     }
                 }
             }
@@ -412,10 +418,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     private Polyhedron makePanelPolyhedron( Panel panel )
     {
         Polyhedron poly = new Polyhedron( this .field );
-        Iterator<AlgebraicVector> vertices = panel .iterator();
         int arity = 0;
-        while ( vertices .hasNext() ) {
-            AlgebraicVector gv = vertices .next();
+        for( AlgebraicVector gv : panel) {
             arity++;
             poly .addVertex( gv );            
         }
@@ -443,8 +447,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     public RenderedModel snapshot()
     {
         RenderedModel snapshot = new RenderedModel( this .field, false );
-        for (Iterator<RenderedManifestation> iterator = mRendered .iterator(); iterator.hasNext(); ) {
-            RenderedManifestation rm = iterator.next();
+        for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
             snapshot .mRendered .add( copy );
         }
@@ -457,22 +460,18 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 //        Set<RenderedManifestation> toRemove = (Set<RenderedManifestation>) from .mRendered .clone();
         HashSet<RenderedManifestation> toRemove = new HashSet<>(from.mRendered);
         toRemove .removeAll( to .mRendered );
-        for ( Iterator<RenderedManifestation> iterator = toRemove .iterator(); iterator .hasNext(); ) {
-            RenderedManifestation rm = iterator .next();
+        for ( RenderedManifestation rm : toRemove ) {
             changes .manifestationRemoved( rm );
         }
         // TODO: Does clone() perform any better than new HashSet(), or is there any other reason to keep it?
 //        Set<RenderedManifestation> toAdd = (Set<RenderedManifestation>) to .mRendered .clone();
         HashSet<RenderedManifestation> toAdd = new HashSet<>(to.mRendered);
         toAdd .removeAll( from .mRendered );
-        for ( Iterator<RenderedManifestation> iterator = toAdd .iterator(); iterator .hasNext(); ) {
-            RenderedManifestation rm = iterator .next();
+        for ( RenderedManifestation rm : toAdd ) {
             changes .manifestationAdded( rm );
         }
-        for ( Iterator<RenderedManifestation> froms = from .mRendered .iterator(); froms .hasNext(); ) {
-            RenderedManifestation fromRm = froms .next();
-            for ( Iterator<RenderedManifestation> tos = to .mRendered .iterator(); tos .hasNext(); ) {
-                RenderedManifestation toRm = tos .next();
+        for ( RenderedManifestation fromRm : from .mRendered ) {
+            for ( RenderedManifestation toRm : to .mRendered ) {
                 if ( fromRm .equals( toRm ) )
                 {
                     changes .manifestationSwitched( fromRm, toRm );

@@ -6,7 +6,6 @@ import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -37,10 +36,8 @@ public class SegExporter extends Exporter3d
         if (format instanceof DecimalFormat) {
             ((DecimalFormat) format) .applyPattern( "0.0000" );
         }		
-        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-        {
-            Manifestation man = rms .next() .getManifestation();
-            
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             if ( man instanceof Strut )
             {
                 Strut strut = (Strut) man;

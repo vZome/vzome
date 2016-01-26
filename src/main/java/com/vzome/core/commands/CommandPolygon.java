@@ -41,24 +41,23 @@ public class CommandPolygon extends AbstractCommand
         
         AlgebraicVector normal = null, base = null;
         int numPoints = 0;
-        for ( int j = 0; j < params .length; j++ ){
-            if ( params[j] instanceof Point ) {
+        for (Construction param : params) {
+            if (param instanceof Point) {
                 ++numPoints;
-                verticesList .add( params[j] );
-                if ( numPoints == 1 ) {
+                verticesList.add(param);
+                if (numPoints == 1) {
                     base = ((Point) verticesList .get( 0 ) ) .getLocation();
-                } else if ( numPoints == 3 ) {
-                    
+                } else if (numPoints == 3) {
                     AlgebraicVector v1 = ((Point) verticesList .get( 1 ) ) .getLocation() .minus( base );
-                    AlgebraicVector v2 = ((Point) params[j] ) .getLocation() .minus( base );
+                    AlgebraicVector v2 = ((Point) param).getLocation().minus(base);
                     normal = v1 .cross( v2 );
                     if ( normal .isOrigin() )
                         if ( loadingFile != null )
                             failed = true;
                         else
                             throw new Failure( "points are colinear" );
-                } else if ( numPoints > 3 ) {
-                    AlgebraicVector loc = ((Point) params[j] ) .getLocation() .minus( base );
+                } else if (numPoints > 3) {
+                    AlgebraicVector loc = ((Point) param).getLocation().minus(base);
                     AlgebraicNumber dotProd = loc .dot( normal );
                     if ( ! dotProd .isZero() )
                         if ( loadingFile != null )

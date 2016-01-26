@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.commands.Command;
@@ -20,8 +19,7 @@ public class Centroid extends ChangeManifestations
     public void perform() throws Command.Failure
     {
         List<Point> verticesList = new ArrayList<>();
-        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = mans .next();
+        for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Connector )
             {

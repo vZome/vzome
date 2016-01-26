@@ -268,22 +268,20 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
         }
         Direction canonicalOrbit = this .getSpecialOrbit( SpecialOrbit.BLACK );
         if ( canonicalOrbit == null )
-            // the old, brute-force approach
-            for ( Iterator<Direction> dirs = orbits .iterator(); dirs .hasNext(); ) {
-                Direction dir = dirs .next();
-                Axis candidate = dir .getAxis( vector );
-                if ( candidate != null )
-                {
-                    return candidate;
-                }
+                        // the old, brute-force approach
+        for (Direction dir : orbits) {
+            Axis candidate = dir .getAxis( vector );
+            if ( candidate != null )
+            {
+                return candidate;
             }
+        }
         else {
             // smarter: find the orientation first, then check orbits
             Axis zone = canonicalOrbit .getAxis( vector .toRealVector() );
             int orientation = zone .getOrientation();
             int sense = zone .getSense();
-            for ( Iterator<Direction> iterator = orbits .iterator(); iterator .hasNext(); ) {
-                Direction orbit = iterator.next();
+            for (Direction orbit : orbits) {
                 Axis candidate = orbit .getCanonicalAxis( sense, orientation );
                 if ( candidate .normal() .cross( vector ) .isOrigin() )
                     return candidate;
@@ -321,19 +319,14 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
 	        sense = closestChiralAxis .getSense();
 		}
 		
-		Iterator<Direction> dirs = orbitSet .iterator();
-		if ( dirMask != null )
-		    dirs = dirMask .iterator();
+		Iterator<Direction> dirs = dirMask == null 
+                ? orbitSet .iterator() 
+                : dirMask .iterator();
         while ( dirs .hasNext() ) {
             Direction dir = dirs .next();
-            Axis axis = null;
-            if ( orientation >= 0 ) {
-                // we found the orientation above, so we don't need to iterate over the whole orbit
-                axis = dir .getCanonicalAxis( sense, orientation );
-            } else {
-                // iterate over zones in the orbit
-                axis = dir .getAxisBruteForce( vector );
-            }
+            Axis axis = ( orientation >= 0 )
+                ? dir .getCanonicalAxis( sense, orientation ) // we found the orientation above, so we don't need to iterate over the whole orbit
+                : dir .getAxisBruteForce( vector ); // iterate over zones in the orbit
             RealVector axisV = axis .normal() .toRealVector();
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {
@@ -377,8 +370,7 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
     public String[] getDirectionNames()
     {
         ArrayList<String> list = new ArrayList<>();
-        for ( int i = 0; i < mDirectionList .size(); i++ ) {
-            Direction dir = mDirectionList .get( i );
+        for (Direction dir : mDirectionList) {
             if ( ! dir .isAutomatic() )
                 list .add( dir .getName() );
         }
@@ -388,42 +380,45 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
     public int[] closure( int[] perms )
     {
         List<Permutation> newPerms = new ArrayList<>();
-        Permutation[] closure = new Permutation[ mOrientations .length ];
+        Permutation[] closures = new Permutation[ mOrientations .length ];
         int closureSize = 0;
         
         for ( int i = 0; i < perms.length; i++ ) {
             Permutation perm = mOrientations[ perms[i] ];
-            closure[ perms[i] ] = perm;
+            closures[ perms[i] ] = perm;
             newPerms .add( perm );
             ++ closureSize;
         }
         
         while ( !newPerms .isEmpty() ) {
             Permutation perm = newPerms .remove(0);
-            for ( int i = 0; i < closure.length; i++ ) 
-                if ( closure[i] != null ) {
-                    Permutation composition = perm .compose( closure[i] );
+            for (Permutation closure : closures) {
+                if (closure != null) {
+                    Permutation composition = perm.compose(closure);
                     int j = composition .mapIndex( 0 );
-                    if ( closure[ j ] == null ) {
+                    if ( closures[ j ] == null ) {
                         newPerms .add( composition );
-                        closure[ j ] = composition;
+                        closures[ j ] = composition;
                         ++ closureSize;
                     }
-                    composition = closure[i] .compose( perm );
+                    composition = closure.compose(perm);
                     j = composition .mapIndex( 0 );
-                    if ( closure[ j ] == null ) {
+                    if ( closures[ j ] == null ) {
                         newPerms .add( composition );
-                        closure[ j ] = composition;
+                        closures[ j ] = composition;
                         ++ closureSize;
                     }
                 }
+            }
         }
         
         int[] result = new int[ closureSize ];
         int j = 0;
-        for ( int i = 0; i < closure.length; i++ )
-            if ( closure[ i ] != null )
+        for (int i = 0; i < closures.length; i++ ) {
+            if ( closures[ i ] != null ) {
                 result[ j++ ] = i;
+            }
+        }
         return result;
     }
 

@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,8 +30,7 @@ public class ColorManifestations extends ChangeManifestations
     private void initialize( Color color )
     {
         this.color = color;
-        for ( Iterator<Manifestation> all = mSelection .iterator(); all .hasNext(); ) {
-            Manifestation m = all .next();
+        for (Manifestation m : mSelection) {
             RenderedManifestation rm = m .getRenderedObject();
             if ( rm != null )
                 plan( new ColorManifestation( m, color ) );

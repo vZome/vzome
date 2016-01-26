@@ -2,7 +2,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -22,8 +21,7 @@ public class HeptagonSubdivision extends ChangeManifestations
     public void perform() throws Command.Failure
     {
         Point p1 = null;
-        for ( Iterator<Manifestation> mans = mSelection.iterator(); mans.hasNext(); ) {
-            Manifestation man = mans.next();
+        for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Connector ) {
                 Point nextPoint = (Point) ( (Connector) man ).getConstructions().next();

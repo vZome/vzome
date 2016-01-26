@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
@@ -23,8 +22,7 @@ public class ShowVertices extends ChangeManifestations
 
 	public void perform() throws Failure
     {
-        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = mans .next();
+        for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Strut )
             {
@@ -39,9 +37,9 @@ public class ShowVertices extends ChangeManifestations
                 Polygon polygon = (Polygon) ((Panel) man) .getConstructions() .next();
                 AlgebraicVector[] vertices = polygon .getVertices();
                 for (int i = 0; i < vertices.length; i++) {
-					PolygonVertex v = new PolygonVertex( polygon, i );
-	                select( manifestConstruction( v ) );
-				}
+                    PolygonVertex v = new PolygonVertex( polygon, i );
+                    select( manifestConstruction( v ) );
+                }
             }
         }
         redo();

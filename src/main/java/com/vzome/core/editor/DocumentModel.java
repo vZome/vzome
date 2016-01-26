@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -163,8 +162,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .mRealizedModel = new RealizedModel( field, new Projection.Default( field ) );
 
         Symmetry[] symms = field .getSymmetries();
-        for ( int i = 0; i < symms .length; i++ ) {
-            SymmetrySystem osm = new SymmetrySystem( null, symms[i], app .getColors(), app .getGeometries( symms[i] ), true );
+        for (Symmetry symm : symms) {
+            SymmetrySystem osm = new SymmetrySystem(null, symm, app .getColors(), app.getGeometries(symm), true);
             // one of these will be overwritten below, if we are loading from a file that has it set
             this .symmetrySystems .put( osm .getName(), osm );
         }
@@ -436,10 +435,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	{
 		StringWriter out = new StringWriter();
 		Exporter exporter = new VefModelExporter( out, mField, null );
-		for (Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
-			Manifestation man = mans .next();
-			exporter .exportManifestation( man );
-		}
+        for (Manifestation man : mSelection) {
+            exporter .exportManifestation( man );
+        }
 		exporter .finish();
 		return out .toString();
 	}
@@ -642,8 +640,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     public Color getSelectionColor()
     {
     	Manifestation last = null;
-        for ( Iterator<Manifestation> all = mSelection .iterator(); all .hasNext(); ) {
-            Manifestation man = all .next();
+        for (Manifestation man : mSelection) {
             last = man;
         }
         return last == null ? null : last .getRenderedObject() .getColor();
@@ -723,22 +720,18 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             	lesson .setXml( notesXml, editNum, this .defaultView );
             
             // add migrated views to the end of the lesson
-            for (Iterator< Entry<String, ViewModel> > iterator = viewPages .entrySet() .iterator(); iterator.hasNext();) {
-				Entry<String, ViewModel> namedView = iterator.next();
-				lesson .addPage( namedView .getKey(), "This page was a saved view created by an older version of vZome.", namedView .getValue(), -editNum );
-			}
-            
-            for (Iterator<PageModel> iterator = lesson .iterator(); iterator.hasNext(); ) {
-            	PageModel page = iterator.next();
+            for (Entry<String, ViewModel> namedView : viewPages .entrySet()) {
+                lesson .addPage( namedView .getKey(), "This page was a saved view created by an older version of vZome.", namedView .getValue(), -editNum );
+            }
+            for (PageModel page : lesson) {
                 int snapshot = page .getSnapshot();
                 if ( ( snapshot < 0 ) && ( ! implicitSnapshots .contains(-snapshot) ) )
-                	implicitSnapshots .add(-snapshot);
+                    implicitSnapshots .add(-snapshot);
             }
 
             Collections .sort( implicitSnapshots );
             
-            for (Iterator<PageModel> iterator = lesson .iterator(); iterator.hasNext(); ) {
-            	PageModel page = iterator.next();
+            for (PageModel page : lesson) {
                 int snapshot = page .getSnapshot();
                 if ( snapshot < 0 )
                     page .setSnapshot( implicitSnapshots .indexOf(-snapshot) );
@@ -810,9 +803,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         {
             childElement = mHistory .getXml( doc );
             int edits = 0, lastStickyEdit=-1;
-            for ( Iterator<UndoableEdit> it = mHistory .iterator(); it .hasNext(); )
-            {
-                UndoableEdit undoable = it .next();
+            for (UndoableEdit undoable : mHistory) {
                 childElement .appendChild( undoable .getXml( doc ) );
                 ++ edits;
                 if ( undoable .isSticky() )

@@ -56,9 +56,9 @@ public abstract class Polygon extends Construction
 
     public void getXml( Element result, String vertexChildName )
     {
-        for ( int i = 0; i < mVertices .length; i++ ) {
+        for (AlgebraicVector vertex : mVertices) {
             Element child = result .getOwnerDocument() .createElement( vertexChildName );
-            DomUtils .addAttribute( child, "at",  mVertices[ i ] .getVectorExpression( AlgebraicField.ZOMIC_FORMAT ) );
+            DomUtils.addAttribute(child, "at", vertex.getVectorExpression(AlgebraicField.ZOMIC_FORMAT));
             result .appendChild( child );
         }
     }

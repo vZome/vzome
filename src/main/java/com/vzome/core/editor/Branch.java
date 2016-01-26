@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -93,8 +92,7 @@ public class Branch implements UndoableEdit
     public Element getXml( Document doc )
     {
         Element branch = doc .createElement( "Branch" );
-        for (Iterator<UndoableEdit> iterator = edits .iterator(); iterator.hasNext(); ) {
-            UndoableEdit edit = iterator.next();
+        for (UndoableEdit edit : edits) {
             branch .appendChild( edit .getXml( doc ) );
         }
         return branch;
@@ -104,8 +102,7 @@ public class Branch implements UndoableEdit
     public Element getDetailXml( Document doc )
     {
         Element branch = doc .createElement( "Branch" );
-        for (Iterator<UndoableEdit> iterator = edits .iterator(); iterator.hasNext(); ) {
-            UndoableEdit edit = iterator.next();
+        for (UndoableEdit edit : edits) {
             branch .appendChild( edit .getDetailXml( doc ) );
         }
         return branch;

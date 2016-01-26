@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -18,8 +17,7 @@ public class ShowHidden extends ChangeManifestations
     
     public void perform()
     {
-        for ( Iterator<Manifestation> all = mManifestations .iterator(); all .hasNext(); ) {
-            Manifestation m = all .next();
+        for (Manifestation m : mManifestations) {
             if ( ! m .isRendered() )
             {
                 showManifestation( m );

@@ -3,7 +3,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Iterator;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -51,10 +50,10 @@ public abstract class AbstractCommand implements Command
     {
         if ( attributes == null )
             return;
-        for ( Iterator<String> it = attributes .keySet() .iterator(); it .hasNext(); ) {
+        for (String key : attributes .keySet()) {
             // don't get confused... mAttrs is a set of "command attributes",
             //   each of which will be saved as an XML element with a "name" attribute.
-            String key = it .next();
+            //
             // skip all of these... synthesized at load time
             if ( key .equals( Command.FIELD_ATTR_NAME ) )
                 continue;

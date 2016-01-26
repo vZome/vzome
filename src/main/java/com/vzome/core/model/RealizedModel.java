@@ -45,8 +45,7 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
     public Set<Manifestation> moreVisibleThan( RealizedModel other )
     {
         Set<Manifestation> result = new HashSet<>();
-        for ( Iterator<Manifestation> iterator = mManifestations .values() .iterator(); iterator .hasNext(); ) {
-            Manifestation man = iterator .next();
+        for (Manifestation man : mManifestations .values()) {
             if ( man .isHidden() )
                 continue;
             Manifestation doppel = other .mManifestations .get( man );
@@ -101,8 +100,9 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
             Polygon p = (Polygon) c;
             List<AlgebraicVector> vertices = new ArrayList<>();
             AlgebraicVector[] vertexArray = p .getVertices();
-            for ( int i = 0; i < vertexArray .length; i++ )
-                vertices .add( mProjection .projectImage( vertexArray[ i ], true ) );
+            for (AlgebraicVector source : vertexArray) {
+                vertices .add( mProjection .projectImage( source, true ) );
+            }
         
             m = new Panel( vertices );
         }
@@ -128,14 +128,13 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
     
     public void refresh( boolean on, RealizedModel unused )
     {
-        for ( Iterator<Manifestation> iterator = mManifestations .keySet() .iterator(); iterator.hasNext(); ) {
-            Manifestation man = iterator.next();
+        for (Manifestation man : mManifestations .keySet()) {
             if ( ! man .isHidden() )
             {
-            	if ( on )
-            		show( man );
-            	else
-            		hide( man );
+                if ( on )
+                    show( man );
+                else
+                    hide( man );
             }
         }
     }
@@ -159,8 +158,7 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
     private void privateShow( Manifestation m )
     {
         if ( ! m .isRendered() ) {
-            for ( Iterator<ManifestationChanges> listeners = mListeners .iterator(); listeners .hasNext(); ) {
-                ManifestationChanges next = listeners .next();
+            for (ManifestationChanges next : mListeners) {
                 next .manifestationAdded( m );
                 // one side-effect will be to set the rendered object
             }
@@ -186,8 +184,7 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
     private void privateHide( Manifestation m )
     {
         if ( m .isRendered() ) {
-            for ( Iterator<ManifestationChanges> listeners = mListeners .iterator(); listeners .hasNext(); ) {
-                ManifestationChanges next = listeners .next();
+            for (ManifestationChanges next : mListeners) {
                 next .manifestationRemoved( m );
             }
         }
@@ -196,8 +193,7 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
     public void setColor( Manifestation m, Color color )
     {
         if ( m .isRendered() ) {
-            for ( Iterator<ManifestationChanges> listeners = mListeners .iterator(); listeners .hasNext(); ) {
-                ManifestationChanges next = listeners .next();
+            for (ManifestationChanges next : mListeners) {
                 next .manifestationColored( m, color );
             }
         }
@@ -258,9 +254,10 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
 
         if ( this.size() != that.size() )
             return false;
-        for ( Iterator<Manifestation> it = mManifestations .keySet() .iterator(); it .hasNext(); ) {
-            if ( ! that .mManifestations .keySet() .contains( it .next() ) )
+        for (Manifestation man : mManifestations .keySet()) {
+            if ( ! that .mManifestations .keySet() .contains( man ) ) {
                 return false;
+            }
         }
         return true;
     }
@@ -285,12 +282,10 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
 
     public void endBatch()
     {
-        for (Iterator<Manifestation> iterator = removals .iterator(); iterator.hasNext(); ) {
-            Manifestation m = iterator.next();
+        for (Manifestation m : removals) {
             privateHide( m );
         }
-        for (Iterator<Manifestation> iterator = additions .iterator(); iterator.hasNext(); ) {
-            Manifestation m = iterator.next();
+        for (Manifestation m : additions) {
             privateShow( m );
         }
         additions .clear();

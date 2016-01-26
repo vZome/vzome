@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -86,9 +85,7 @@ public class VRMLExporter extends Exporter3d
         int numShapes = 0;
         ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
         Map<Color, String> colors = new HashMap<>();
-        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-        {
-            RenderedManifestation rm = rms .next();
+        for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
             if ( field == null )
                 field = shape .getField();
@@ -165,16 +162,14 @@ public class VRMLExporter extends Exporter3d
         output .println( "PROTO " + shapeName + " [] { IndexedFaceSet{ solid FALSE convex FALSE colorPerVertex FALSE" );
         output .println( "   coord Coordinate{ point [" );
         
-        for ( Iterator<AlgebraicVector> vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
-            AlgebraicVector gv = vertices .next();
+        for (AlgebraicVector gv : poly .getVertexList()) {
             if ( reverseFaces )
                 gv = gv  .negate();
             RealVector v = gv .toRealVector();
             output .println( v .scale( SCALE ) .spacedString() + "," );
         }
         output .println( "] } coordIndex [" );
-        for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
-            Polyhedron.Face face = faces .next();
+        for (Polyhedron.Face face : poly .getFaceSet()) {
             int arity = face .size();
             for ( int j = 0; j < arity; j++ ){
                 Integer index = face .get( /*reverseFaces? arity-j-1 :*/ j );

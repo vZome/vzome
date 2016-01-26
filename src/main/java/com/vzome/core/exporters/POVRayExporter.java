@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -147,32 +146,30 @@ public class POVRayExporter extends Exporter3d
 		ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
 		Map<AlgebraicMatrix, String> transforms = new HashMap<>();
 		Map<Color, String> colors = new HashMap<>();
-		for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-		{
-		    RenderedManifestation rm = rms .next();
-		    Polyhedron shape = rm .getShape();
-		    boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-		    String shapeName = shapes[ flip?1:0 ] .get( shape );
-		    if ( shapeName == null ) {
-		        shapeName = "shape" + numShapes++;
-		        shapes[ flip?1:0 ] .put( shape, shapeName );
-		        exportShape( shapeName, shape, flip );
-		    }
-		    AlgebraicMatrix transform = rm .getOrientation();
-		    String transformName = transforms .get( transform );
-		    if ( transformName == null ){
-		        transformName = "trans" + numTransforms++;
-		        transforms .put( transform, transformName );
-		        exportTransform( transformName, transform );
-		    }
-		    Color color = rm .getColor();
-		    String colorName = colors .get( color );
-		    if ( colorName == null ){
-		    	colorName = nameColor( color );
-		    	colors .put( color, colorName );
-		        exportColor( colorName, color );
-		    }
-			instances .append( "object { " + shapeName + " transform " + transformName + " translate " );
+        for (RenderedManifestation rm : mModel) {
+            Polyhedron shape = rm .getShape();
+            boolean flip = rm .reverseOrder(); // need to reverse face vertex order
+            String shapeName = shapes[ flip?1:0 ] .get( shape );
+            if ( shapeName == null ) {
+                shapeName = "shape" + numShapes++;
+                shapes[ flip?1:0 ] .put( shape, shapeName );
+                exportShape( shapeName, shape, flip );
+            }
+            AlgebraicMatrix transform = rm .getOrientation();
+            String transformName = transforms .get( transform );
+            if ( transformName == null ){
+                transformName = "trans" + numTransforms++;
+                transforms .put( transform, transformName );
+                exportTransform( transformName, transform );
+            }
+            Color color = rm .getColor();
+            String colorName = colors .get( color );
+            if ( colorName == null ){
+                colorName = nameColor( color );
+                colors .put( color, colorName );
+                exportColor( colorName, color );
+            }
+            instances .append( "object { " + shapeName + " transform " + transformName + " translate " );
             instances .append( "(<" );
             Manifestation man = rm .getManifestation();
             if ( man != null )
@@ -187,9 +184,9 @@ public class POVRayExporter extends Exporter3d
                 appendLocation( rm .getLocation(), instances );
             }
             instances .append( ">)" );
-			instances .append( " transform anim texture { " + colorName + " } }" );
-			instances .append( System .getProperty( "line.separator" ) );
-		}
+            instances .append( " transform anim texture { " + colorName + " } }" );
+            instances .append( System .getProperty( "line.separator" ) );
+        }
 
 		output .println( instances .toString() );
 		output .flush();
@@ -286,8 +283,7 @@ public class POVRayExporter extends Exporter3d
         output .print( "#declare " + shapeName + " = " );
         List<AlgebraicVector> vertices = poly .getVertexList();
         output .println( "union {" );
-        for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
-            Polyhedron.Face face = faces .next();
+        for (Polyhedron.Face face : poly .getFaceSet()) {
             int arity = face .size();
             int num = face .size() + 1;
             output .print( "polygon {" );

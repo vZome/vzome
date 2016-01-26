@@ -51,8 +51,7 @@ public class Colors implements Iterable<String>
     public void addColor( String name, Color color )
     {
         mColors .put( name, color );
-        for ( Iterator<Changes> it = mListeners .iterator(); it .hasNext(); ) {
-            Changes next = it .next();
+        for (Changes next : mListeners) {
             next .colorAdded( name, color );
         }
     }
@@ -60,8 +59,7 @@ public class Colors implements Iterable<String>
     public void setColor( String name, Color color )
     {
         mColors .put( name, color );
-        for ( Iterator<Changes> it = mListeners .iterator(); it .hasNext(); ) {
-            Changes next = it .next();
+        for (Changes next : mListeners) {
             next .colorChanged( name, color );
         }
     }

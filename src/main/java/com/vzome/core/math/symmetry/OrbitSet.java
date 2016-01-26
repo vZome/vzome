@@ -4,7 +4,6 @@
 package com.vzome.core.math.symmetry;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -38,9 +37,7 @@ public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
     
     public Direction getDirection( String name )
     {
-        for ( Iterator<Direction> dirs = this.iterator(); dirs .hasNext(); )
-        {
-            Direction dir = dirs .next();
+        for (Direction dir : this) {
             if ( dir .getName() .equals( name ) )
                 return dir;
         }

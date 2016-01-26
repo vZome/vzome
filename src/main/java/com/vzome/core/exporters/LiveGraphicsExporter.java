@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,23 +48,24 @@ public class LiveGraphicsExporter extends Exporter3d
 		
 		FORMAT .setMaximumFractionDigits( 3 );
 		
-		for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-		{
+        String faceFormdelim = "";
+        for (RenderedManifestation rm : mModel) {
+            output .println(faceFormdelim);
             output .print( "{FaceForm[" );
-            RenderedManifestation rm = rms .next();
             printColor( rm .getColor() );
             output .println( "]," );
             
-		    Polyhedron poly = rm .getShape();
-		    boolean reverseFaces = rm .reverseOrder(); // need to reverse face vertex order
-		    AlgebraicMatrix transform = rm .getOrientation();
+            Polyhedron poly = rm .getShape();
+            boolean reverseFaces = rm .reverseOrder(); // need to reverse face vertex order
+            AlgebraicMatrix transform = rm .getOrientation();
             AlgebraicVector rmLoc = rm .getManifestation() .getLocation();
 
             List<AlgebraicVector> vertices = poly .getVertexList();
             output .println( "{" );
-            for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
-                Polyhedron.Face face = faces .next();
+            String polygonDelim = "";
+            for (Polyhedron.Face face : poly .getFaceSet()) {
                 int arity = face .size();
+                output .print( polygonDelim );
                 output .print( "Polygon[{" );
                 
                 for ( int j = 0; j < arity; j++ ){
@@ -85,18 +85,12 @@ public class LiveGraphicsExporter extends Exporter3d
                     output .print( "}" );
                 }
                 output .print( "}]" );
-                if ( faces .hasNext() )
-                    output .println( "," );
-                else
-                    output .println();
+                polygonDelim = ",";
             }
             output .print( "}}" );
-            if ( rms .hasNext() )
-                output .println( "," );
-            else
-                output .println();
             output .flush();
-		}
+            faceFormdelim = ",";
+        }
 
 		output .println( "},{Boxed -> False, Lighting -> False, DefaultColor -> GrayLevel[0]}]" );
 		output .flush();

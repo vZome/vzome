@@ -23,9 +23,7 @@ public abstract class SideEffects implements UndoableEdit
         Element result = this .getXml( doc );
         Element effects = doc .createElement( "effects" );
         
-        for ( int i = 0; i < mItems .size(); i++ )
-        {
-            SideEffect se = mItems .get( i );
+        for (SideEffect se : mItems) {
             if ( se != null )
             {
                 Element effect = se .getXml( doc );

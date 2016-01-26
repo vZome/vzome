@@ -61,14 +61,14 @@ public abstract class CommandTransform extends AbstractCommand
     {
         final ConstructionList output = new ConstructionList();
         effects .constructionAdded( transform );
-        for ( int j = 0; j < params .length; j++ ){
+        for (Construction param : params) {
             Construction result = null;
-            if ( params[j] instanceof Point ) {
-                result = new TransformedPoint( transform, (Point) params[j] );
-            } else if ( params[j] instanceof Segment ) {
-                result = new TransformedSegment( transform, (Segment) params[j] );
-            } else if ( params[j] instanceof Polygon ) {
-                result = new TransformedPolygon( transform, (Polygon) params[j] );
+            if (param instanceof Point) {
+                result = new TransformedPoint(transform, (Point) param);
+            } else if (param instanceof Segment) {
+                result = new TransformedSegment(transform, (Segment) param);
+            } else if (param instanceof Polygon) {
+                result = new TransformedPolygon(transform, (Polygon) param);
             } else {
                 // TODO handle other constructions 
             }

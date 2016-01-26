@@ -1,7 +1,6 @@
 
 package com.vzome.core.zomic.program;
 
-import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.symmetry.Axis;
@@ -34,10 +33,9 @@ public interface Visitor{
 	public class Default extends Object implements Visitor{
 
 		public  void visitWalk( Walk walk ) throws ZomicException {
-			for ( Iterator<ZomicStatement> it = walk .iterator(); it .hasNext();  ) {
-				ZomicStatement stmt = it .next();
-				stmt .accept( this );
-			}
+            for (ZomicStatement stmt : walk) {
+                stmt .accept( this );
+            }
 		}
 
 		public void visitLabel( String id ){}

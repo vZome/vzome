@@ -62,9 +62,7 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
             }
             result .addVertex( vertex );
         }
-        for ( int j = 0; j < prototypeFaces .size(); j ++ )
-        {
-            List<Integer> prototypeFace = prototypeFaces .get( j );
+        for (List<Integer> prototypeFace : prototypeFaces) {
             Polyhedron.Face face = result .newFace();
             face .addAll( prototypeFace );
             result .addFace( face );

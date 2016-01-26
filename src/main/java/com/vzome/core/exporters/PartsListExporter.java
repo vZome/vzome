@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -40,25 +39,22 @@ public class PartsListExporter extends Exporter3d
 	    
         int numBalls = 0;
 		OrbitMap[] orbits = new OrbitMap[]{ new OrbitMap(), new OrbitMap() };
-		for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
-		{
-		    RenderedManifestation rm = rms .next();
-		    
-		    Manifestation m = rm .getManifestation();
-		    if ( m instanceof Connector ) {
-		        ++ numBalls;
-		    }
-		    else if ( m instanceof Strut ) {
-	            Polyhedron shape = rm .getShape();
-	            boolean flip = rm .reverseOrder(); // part is left-handed
-		        Direction orbit = shape .getOrbit();
-		        Map<AlgebraicNumber, Integer> orbitHistogram = orbits[ flip?1:0 ] .get( orbit );
-		        if ( orbitHistogram == null )
-		        {
-		            orbitHistogram = new HashMap<>();
-		            orbits[ flip?1:0 ] .put( orbit, orbitHistogram );
-		        }
-		        AlgebraicNumber len = shape .getLength();
+        for (RenderedManifestation rm : mModel) {
+            Manifestation m = rm .getManifestation();
+            if ( m instanceof Connector ) {
+                ++ numBalls;
+            }
+            else if ( m instanceof Strut ) {
+                Polyhedron shape = rm .getShape();
+                boolean flip = rm .reverseOrder(); // part is left-handed
+                Direction orbit = shape .getOrbit();
+                Map<AlgebraicNumber, Integer> orbitHistogram = orbits[ flip?1:0 ] .get( orbit );
+                if ( orbitHistogram == null )
+                {
+                    orbitHistogram = new HashMap<>();
+                    orbits[ flip?1:0 ] .put( orbit, orbitHistogram );
+                }
+                AlgebraicNumber len = shape .getLength();
                 Integer lengthCount = orbitHistogram .get( len );
                 if ( lengthCount == null )
                 {
@@ -67,21 +63,19 @@ public class PartsListExporter extends Exporter3d
                 else
                     lengthCount = lengthCount + 1;
                 orbitHistogram .put( len, lengthCount );
-		    }
-		}
+            }
+        }
         output .println( "balls" );
         output .println( "  " + numBalls );
 		
-		for ( int i = 0; i < orbits.length; i++ ) {
-            for ( Iterator<Direction> iterator = orbits[i].keySet().iterator(); iterator.hasNext(); ) {
-                Direction orbit = iterator.next();
+        for ( int i = 0; i < orbits.length; i++ ) {
+            for (Direction orbit : orbits[i].keySet()) {
                 output .print( orbit .getName() );
                 if ( i == 1 )
                     output .print( " (lefty)" );
                 output .println();
                 Map<AlgebraicNumber, Integer> histogram = orbits[i] .get( orbit );
-                for ( Iterator<AlgebraicNumber> iterator2 = histogram .keySet().iterator(); iterator2.hasNext(); ) {
-                    AlgebraicNumber key = iterator2.next();
+                for (AlgebraicNumber key : histogram .keySet()) {
                     output .println( "  " + key .toString() + " : " + histogram .get( key ) );
                 }
             }
