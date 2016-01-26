@@ -29,8 +29,8 @@ public class AffinePentagon extends ChangeManifestations
     {
         AlgebraicField field = root .getField();
         Segment s1 = null, s2 = null;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             unselect( man );
             if ( man instanceof Strut )
             {
@@ -71,8 +71,8 @@ public class AffinePentagon extends ChangeManifestations
 
         // now, find the corresponding points
         Point p1 = null, p2 = null;
-        for ( Iterator all = mManifestations .getAllManifestations(); all .hasNext(); ) {
-            Manifestation m = (Manifestation) all .next();
+        for ( Iterator<Manifestation> all = mManifestations .iterator(); all .hasNext(); ) {
+            Manifestation m = all .next();
             if ( m instanceof Connector )
             {
                 AlgebraicVector loc = ((Connector) m) .getLocation();

@@ -124,7 +124,7 @@ public class EditorModel
             kind = null;
         Manifestation focus = mSelection .getSingleSelection( kind );
         if ( focus != null )
-            return (Construction) focus .getConstructions() .next();
+            return focus .getConstructions() .next();
         return null;
     }
 

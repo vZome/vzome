@@ -56,7 +56,7 @@ public class Duplicator
         else if ( man instanceof Panel )
         {
             List<Point> vs = new ArrayList<>();
-            for ( Iterator<AlgebraicVector> verts = ((Panel) man) .getVertices(); verts .hasNext(); )
+            for ( Iterator<AlgebraicVector> verts = ((Panel) man) .iterator(); verts .hasNext(); )
                 vs .add( getVertex( verts .next() ));
             return new PolygonFromVertices( vs .toArray( new Point[0] ) );
         }

@@ -31,9 +31,9 @@ public class ColorManifestations extends ChangeManifestations
     private void initialize( Color color )
     {
         this.color = color;
-        for ( Iterator all = mSelection .iterator(); all .hasNext(); ) {
-            Manifestation m = (Manifestation) all .next();
-            RenderedManifestation rm = (RenderedManifestation) m .getRenderedObject();
+        for ( Iterator<Manifestation> all = mSelection .iterator(); all .hasNext(); ) {
+            Manifestation m = all .next();
+            RenderedManifestation rm = m .getRenderedObject();
             if ( rm != null )
                 plan( new ColorManifestation( m, color ) );
             unselect( m, true );
@@ -76,7 +76,7 @@ public class ColorManifestations extends ChangeManifestations
         {
             mManifestation = manifestation;
             this .newColor = color;
-            RenderedManifestation rm = (RenderedManifestation) manifestation .getRenderedObject();
+            RenderedManifestation rm = manifestation .getRenderedObject();
             if ( rm != null ) {
             	oldColor = rm .getColor();
             }

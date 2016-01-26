@@ -39,8 +39,8 @@ public class ScalingTool extends SymmetryTool
         Segment s1 = null, s2 = null;
         Point center = null;
         boolean correct = true;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             unselect( man );
             if ( man instanceof Connector )
             {

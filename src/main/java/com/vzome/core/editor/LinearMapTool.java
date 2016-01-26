@@ -39,8 +39,8 @@ public class LinearMapTool extends TransformationTool
         int index = 0;
         boolean correct = true;
         Point center = null;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             unselect( man );
             if ( man instanceof Connector )
             {

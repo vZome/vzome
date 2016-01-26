@@ -35,9 +35,9 @@ public class DodecagonSymmetry extends ChangeManifestations
     {
         Transformation transform = new SymmetryTransformation( symmetry, 1, center );
         
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
-            Construction c = (Construction) man .getConstructions() .next();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
+            Construction c = man .getConstructions() .next();
 
             for ( int i = 0; i < 11; i++ )
             {

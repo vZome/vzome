@@ -3,6 +3,7 @@
 
 package com.vzome.core.editor;
 
+import com.vzome.core.commands.AttributeMap;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -60,7 +61,7 @@ public class SymmetryAxisChange implements UndoableEdit
         }
         else
         {
-            Map attrs = format .loadCommandAttributes( xml );
+            AttributeMap attrs = format .loadCommandAttributes( xml );
             mNewAxis = (Segment) attrs .get( "new" );
         }
         

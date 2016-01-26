@@ -44,7 +44,7 @@ public class TransformSelection extends ChangeManifestations
             Manifestation m = all .next();
             if ( m .getRenderedObject() == null )
                 continue;
-            Construction c = (Construction) m .getConstructions() .next();
+            Construction c = m .getConstructions() .next();
             Construction result = null;
             if ( c instanceof Point ) {
                 result = new TransformedPoint( transform, (Point) c );

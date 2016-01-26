@@ -5,7 +5,6 @@ package com.vzome.core.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;

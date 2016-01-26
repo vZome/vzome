@@ -200,8 +200,8 @@ public abstract class AlgebraicField
     
     public Symmetry getSymmetry( String name )
     {
-        for ( Iterator iterator = symmetries.iterator(); iterator.hasNext(); ) {
-            Symmetry symm = (Symmetry) iterator.next();
+        for ( Iterator<Symmetry> iterator = symmetries.iterator(); iterator.hasNext(); ) {
+            Symmetry symm = iterator.next();
             if ( symm .getName() .equals( name ) )
                 return symm;
         }

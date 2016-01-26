@@ -37,8 +37,8 @@ public class Command {
 	{
 		this.delegate = delegate;
 		this.selection = new ArrayList<>();
-        for ( Iterator mans = delegate .getInputs() .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = delegate .getInputs() .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             if ( man instanceof Connector )
             {
                 this .selection .add( new Ball( (Connector) man ) );

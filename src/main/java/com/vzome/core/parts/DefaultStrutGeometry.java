@@ -34,11 +34,11 @@ public class DefaultStrutGeometry implements StrutGeometry
         Symmetry symm = dir .getSymmetry();
         AlgebraicVector x = unitVector( field, field .basisVector( 3, AlgebraicVector.Z ) );  // just a default
         double minDot = 99d;
-        for ( Iterator orbits = symm .getDirections(); orbits .hasNext(); )
+        for ( Iterator<Direction> orbits = symm .getDirections(); orbits .hasNext(); )
         {
-            dir = (Direction) orbits .next();
-            for ( Iterator blues = dir .getAxes(); blues .hasNext(); ) {
-                Axis ortho = (Axis) blues .next();
+            dir = orbits .next();
+            for ( Iterator<Axis> blues = dir .iterator(); blues .hasNext(); ) {
+                Axis ortho = blues .next();
                 AlgebraicNumber dot = ortho .normal() .dot( unitNormal );
                 double dotVal = Math .abs( dot .evaluate() );
                 if ( dotVal < minDot ) {
@@ -101,13 +101,13 @@ public class DefaultStrutGeometry implements StrutGeometry
         for ( int i = 0; i < 4; i++ ) {
             Polyhedron.Face face = poly .newFace();
             int j = i*2 + 1;
-            face .add( new Integer( j ) );
+            face .add(j);
             --j;
-            face .add( new Integer( j ) );
+            face .add(j);
             j = (j+2) % 8;
-            face .add( new Integer( j ) );
+            face .add(j);
             ++j;
-            face .add( new Integer( j ) );
+            face .add(j);
             poly .addFace( face );
         }
         

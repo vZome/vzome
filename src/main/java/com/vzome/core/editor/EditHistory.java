@@ -22,7 +22,7 @@ import com.vzome.core.editor.UndoableEdit.Context;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
 
-public class EditHistory
+public class EditHistory implements Iterable<UndoableEdit>
 {	
     private List<UndoableEdit> mEdits = new ArrayList<>();
     
@@ -62,8 +62,8 @@ public class EditHistory
             // first, find the last isSticky() edit in the dead edits being removed.
             int lastStickyEdit = mEditNumber - 1;
             int deadEditIndex = mEditNumber;
-            for ( Iterator deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
-                UndoableEdit dead = (UndoableEdit) deadEdits .next();
+            for ( Iterator<UndoableEdit> deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
+                UndoableEdit dead = deadEdits .next();
                 if ( dead .isSticky() )
                 {
                     makeBranch = true;
@@ -73,8 +73,8 @@ public class EditHistory
             }
             Branch branch = makeBranch? new Branch( context ) : null;
             deadEditIndex = mEditNumber;
-            for ( Iterator deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
-                UndoableEdit removed = (UndoableEdit) deadEdits .next();
+            for ( Iterator<UndoableEdit> deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
+                UndoableEdit removed = deadEdits .next();
                 deadEdits .remove();
                 if ( deadEditIndex <= lastStickyEdit )
                 {
@@ -270,9 +270,9 @@ public class EditHistory
         DomUtils .addAttribute( result, "editNumber", Integer.toString( this .mEditNumber ) );
         
         int edits = 0, lastStickyEdit=-1;
-        for ( Iterator it = this .iterator(); it .hasNext(); )
+        for ( Iterator<UndoableEdit> it = this .iterator(); it .hasNext(); )
         {
-            UndoableEdit undoable = (UndoableEdit) it .next();
+            UndoableEdit undoable = it .next();
             Element edit = undoable .getDetailXml( doc );
             ++ edits;
             DomUtils .addAttribute( edit, "editNumber", Integer.toString( edits ) );
@@ -294,9 +294,9 @@ public class EditHistory
         return result;
         // edits are now serialized in calling EditorController
         
-//        for ( Iterator it = mEdits .iterator(); it .hasNext(); )
+//        for ( Iterator<UndoableEdit> it = mEdits .iterator(); it .hasNext(); )
 //        {
-//            UndoableEdit undoable = (UndoableEdit) it .next();
+//            UndoableEdit undoable = it .next();
 //            
 //            Context newContext = undoable .getContext();
 //            if ( context != undoable .getContext() )
@@ -651,7 +651,8 @@ public class EditHistory
         this .addEdit( edit, context );
     }
 
-    public Iterator iterator()
+    @Override
+    public Iterator<UndoableEdit> iterator()
     {
         return this .mEdits .iterator();
     }

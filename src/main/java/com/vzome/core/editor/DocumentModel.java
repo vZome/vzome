@@ -70,7 +70,6 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.viewing.Lights;
@@ -437,8 +436,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	{
 		StringWriter out = new StringWriter();
 		Exporter exporter = new VefModelExporter( out, mField, null );
-		for (Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-			Manifestation man = (Manifestation) mans .next();
+		for (Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+			Manifestation man = mans .next();
 			exporter .exportManifestation( man );
 		}
 		exporter .finish();
@@ -643,11 +642,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     public Color getSelectionColor()
     {
     	Manifestation last = null;
-        for ( Iterator all = mSelection .iterator(); all .hasNext(); ) {
-            last = (Manifestation) all .next();
+        for ( Iterator<Manifestation> all = mSelection .iterator(); all .hasNext(); ) {
+            Manifestation man = all .next();
+            last = man;
         }
-        RenderedManifestation rm = (RenderedManifestation) last .getRenderedObject();
-        return rm .getColor();
+        return last == null ? null : last .getRenderedObject() .getColor();
     }
     
     public void finishLoading( boolean openUndone, boolean asTemplate ) throws Command.Failure
@@ -724,25 +723,25 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             	lesson .setXml( notesXml, editNum, this .defaultView );
             
             // add migrated views to the end of the lesson
-            for (Iterator iterator = viewPages .entrySet() .iterator(); iterator.hasNext();) {
-				Entry namedView = (Entry) iterator.next();
-				lesson .addPage( (String) namedView .getKey(), "This page was a saved view created by an older version of vZome.", (ViewModel) namedView .getValue(), -editNum );
+            for (Iterator< Entry<String, ViewModel> > iterator = viewPages .entrySet() .iterator(); iterator.hasNext();) {
+				Entry<String, ViewModel> namedView = iterator.next();
+				lesson .addPage( namedView .getKey(), "This page was a saved view created by an older version of vZome.", namedView .getValue(), -editNum );
 			}
             
-            for (Iterator iterator = lesson .iterator(); iterator.hasNext(); ) {
-            	PageModel page = (PageModel) iterator.next();
+            for (Iterator<PageModel> iterator = lesson .iterator(); iterator.hasNext(); ) {
+            	PageModel page = iterator.next();
                 int snapshot = page .getSnapshot();
-                if ( ( snapshot < 0 ) && ( ! implicitSnapshots .contains( new Integer( -snapshot ) ) ) )
-                	implicitSnapshots .add( new Integer( -snapshot ) );
+                if ( ( snapshot < 0 ) && ( ! implicitSnapshots .contains(-snapshot) ) )
+                	implicitSnapshots .add(-snapshot);
             }
 
             Collections .sort( implicitSnapshots );
             
-            for (Iterator iterator = lesson .iterator(); iterator.hasNext(); ) {
-            	PageModel page = (PageModel) iterator.next();
+            for (Iterator<PageModel> iterator = lesson .iterator(); iterator.hasNext(); ) {
+            	PageModel page = iterator.next();
                 int snapshot = page .getSnapshot();
                 if ( snapshot < 0 )
-                    page .setSnapshot( implicitSnapshots .indexOf( new Integer( -snapshot ) ) );
+                    page .setSnapshot( implicitSnapshots .indexOf(-snapshot) );
             }
         }
 
@@ -750,11 +749,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         if ( ! implicitSnapshots .isEmpty() )
         {
             Integer highest = implicitSnapshots .get( implicitSnapshots .size() - 1 );
-            explicitSnapshots = new UndoableEdit[ highest .intValue() + 1 ];
+            explicitSnapshots = new UndoableEdit[ highest + 1 ];
             for (int i = 0; i < implicitSnapshots .size(); i++)
             {
                 Integer editNumInt = implicitSnapshots .get( i );
-                explicitSnapshots[ editNumInt .intValue() ] = new Snapshot( i, this );
+                explicitSnapshots[ editNumInt ] = new Snapshot( i, this );
             }
         }
         
@@ -811,9 +810,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         {
             childElement = mHistory .getXml( doc );
             int edits = 0, lastStickyEdit=-1;
-            for ( Iterator it = mHistory .iterator(); it .hasNext(); )
+            for ( Iterator<UndoableEdit> it = mHistory .iterator(); it .hasNext(); )
             {
-                UndoableEdit undoable = (UndoableEdit) it .next();
+                UndoableEdit undoable = it .next();
                 childElement .appendChild( undoable .getXml( doc ) );
                 ++ edits;
                 if ( undoable .isSticky() )

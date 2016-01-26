@@ -30,9 +30,6 @@ public interface Symmetry
     
     String TETRAHEDRAL = "tetrahedral", PYRITOHEDRAL = "pyritohedral";
     
-    /**
-     * @return
-     */
     int getChiralOrder();
     
     String getName();
@@ -41,31 +38,19 @@ public interface Symmetry
     
     Axis getAxis( AlgebraicVector vector, OrbitSet orbits );
 
-    Axis getAxis( RealVector vector, Set filter );
+    Axis getAxis( RealVector vector, Set<Direction> filter );
     
     int getMapping( int from, int to );
 
-    /**
-     * @param i
-     * @return
-     */
     Permutation getPermutation( int i );
 
-    /**
-     * @param i
-     * @return
-     */
     AlgebraicMatrix getMatrix( int i );
 
-	/**
-	 * @param rotation
-	 * @return
-	 */
 	int inverse(int orientation);
 	
     String[] getDirectionNames();
 
-    Iterator getDirections();
+    Iterator<Direction> getDirections();
     
 	Direction getDirection( String name );
     

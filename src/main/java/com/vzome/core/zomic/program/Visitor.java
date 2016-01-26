@@ -34,8 +34,8 @@ public interface Visitor{
 	public class Default extends Object implements Visitor{
 
 		public  void visitWalk( Walk walk ) throws ZomicException {
-			for ( Iterator it = walk .getStatements(); it .hasNext();  ) {
-				ZomicStatement stmt = (ZomicStatement) it .next();
+			for ( Iterator<ZomicStatement> it = walk .iterator(); it .hasNext();  ) {
+				ZomicStatement stmt = it .next();
 				stmt .accept( this );
 			}
 		}

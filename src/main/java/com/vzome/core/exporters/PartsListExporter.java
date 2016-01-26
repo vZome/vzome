@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
@@ -41,7 +40,7 @@ public class PartsListExporter extends Exporter3d
 	    
         int numBalls = 0;
 		OrbitMap[] orbits = new OrbitMap[]{ new OrbitMap(), new OrbitMap() };
-		for ( Iterator<RenderedManifestation> rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+		for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
 		{
 		    RenderedManifestation rm = rms .next();
 		    
@@ -63,10 +62,10 @@ public class PartsListExporter extends Exporter3d
                 Integer lengthCount = orbitHistogram .get( len );
                 if ( lengthCount == null )
                 {
-                    lengthCount = new Integer( 1 );
+                    lengthCount = 1;
                 }
                 else
-                    lengthCount = new Integer( lengthCount .intValue() + 1 );
+                    lengthCount = lengthCount + 1;
                 orbitHistogram .put( len, lengthCount );
 		    }
 		}
@@ -74,16 +73,16 @@ public class PartsListExporter extends Exporter3d
         output .println( "  " + numBalls );
 		
 		for ( int i = 0; i < orbits.length; i++ ) {
-            for ( Iterator iterator = orbits[i].keySet().iterator(); iterator.hasNext(); ) {
-                Direction orbit = (Direction) iterator.next();
+            for ( Iterator<Direction> iterator = orbits[i].keySet().iterator(); iterator.hasNext(); ) {
+                Direction orbit = iterator.next();
                 output .print( orbit .getName() );
                 if ( i == 1 )
                     output .print( " (lefty)" );
                 output .println();
-                Map histogram = (Map) orbits[i] .get( orbit );
-                for ( Iterator iterator2 = histogram .keySet().iterator(); iterator2.hasNext(); ) {
-                    AlgebraicVector key = (AlgebraicVector) iterator2.next();
-                    output .println( "  " + key .toString() + " : " + (Integer) histogram .get( key ) );
+                Map<AlgebraicNumber, Integer> histogram = orbits[i] .get( orbit );
+                for ( Iterator<AlgebraicNumber> iterator2 = histogram .keySet().iterator(); iterator2.hasNext(); ) {
+                    AlgebraicNumber key = iterator2.next();
+                    output .println( "  " + key .toString() + " : " + histogram .get( key ) );
                 }
             }
         }

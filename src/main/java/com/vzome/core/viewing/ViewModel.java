@@ -459,7 +459,7 @@ public class ViewModel implements Renderable
         str = viewElem .getAttribute( "stereoAngle" );
         this .mStereoAngle = Double .parseDouble( str );
         str = viewElem .getAttribute( "parallel" );
-        this .mOrthographic = Boolean .valueOf( str ) .booleanValue();
+        this .mOrthographic = Boolean .valueOf( str );
         {
             Element child = (Element) viewElem .getElementsByTagName( "LookAtPoint" ) .item( 0 );
             str = child .getAttribute( "x" );

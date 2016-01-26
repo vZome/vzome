@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 
-public class Colors
+public class Colors implements Iterable<String>
 {
     public Colors( Properties props )
     {
@@ -51,15 +51,19 @@ public class Colors
     public void addColor( String name, Color color )
     {
         mColors .put( name, color );
-        for ( Iterator it = mListeners .iterator(); it .hasNext(); )
-            ((Changes) it .next()) .colorAdded( name, color );
+        for ( Iterator<Changes> it = mListeners .iterator(); it .hasNext(); ) {
+            Changes next = it .next();
+            next .colorAdded( name, color );
+        }
     }
 
     public void setColor( String name, Color color )
     {
         mColors .put( name, color );
-        for ( Iterator it = mListeners .iterator(); it .hasNext(); )
-            ((Changes) it .next()) .colorChanged( name, color );
+        for ( Iterator<Changes> it = mListeners .iterator(); it .hasNext(); ) {
+            Changes next = it .next();
+            next .colorChanged( name, color );
+        }
     }
 	
 	public void addListener( Changes changes )
@@ -175,9 +179,16 @@ public class Colors
 		return color;
     }
 	
-    public Iterator getColorNames()
+    @Override
+    public Iterator<String> iterator()
     {
         return mColors .keySet() .iterator();
+    }
+
+    @Deprecated
+    public Iterator<String> getColorNames()
+    {
+        return this .iterator();
     }
 
     public void reset()

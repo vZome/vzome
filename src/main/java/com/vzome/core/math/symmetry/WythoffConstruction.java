@@ -109,7 +109,7 @@ public class WythoffConstruction
 
         public Object addEdge( Object p1, Object p2 )
         {
-            vefEdges .append( ((Integer) p1) .intValue() + "\t" + ((Integer) p2) .intValue() + "\n" );
+            vefEdges .append( ((Integer) p1) + "\t" + ((Integer) p2) + "\n" );
             ++numEdges;
             return null;
         }
@@ -125,7 +125,7 @@ public class WythoffConstruction
             gv .getVectorExpression( vefVertices, AlgebraicField .VEF_FORMAT );  // TODO not finished replacing the lines below
             vefVertices .append( "\n" );
             
-            return new Integer( numVertices++ );
+            return numVertices++;
         }
         
         public void print( PrintWriter out )

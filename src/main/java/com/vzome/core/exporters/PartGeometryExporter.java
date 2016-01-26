@@ -40,9 +40,9 @@ public class PartGeometryExporter extends VefExporter
         AlgebraicNumber scale = field .createPower( -5 );
         VefModelExporter exporter = new VefModelExporter( writer, field, scale );
         
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+            Manifestation man = rms .next() .getManifestation();
             
             exporter .exportManifestation( man );
         }

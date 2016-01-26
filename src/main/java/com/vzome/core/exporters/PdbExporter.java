@@ -39,9 +39,9 @@ public class PdbExporter extends Exporter3d
         List<Atom> atomsList = new ArrayList<>();
         int indices = 0;
 
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+            Manifestation man = rms .next() .getManifestation();
             if ( man instanceof Strut ) {
                 AlgebraicVector startLoc = ((Strut) man) .getLocation();
                 AlgebraicVector endLoc = ((Strut) man) .getEnd();
@@ -71,16 +71,16 @@ public class PdbExporter extends Exporter3d
 
         StringBuilder locations = new StringBuilder();
         StringBuilder neighbors = new StringBuilder();
-        for (Iterator iterator = atomsList .iterator(); iterator .hasNext(); ) {
-            Atom atom = (Atom) iterator .next();
+        for (Iterator<Atom> iterator = atomsList .iterator(); iterator .hasNext(); ) {
+            Atom atom = iterator .next();
             RealVector rv = atom .location .toRealVector();
             System .out .println( atom .location .toString() );
             locations .append( String .format( "HETATM%5d He   UNK  0001     %7.3f %7.3f %7.3f\n",
-                new Object[]{ new Integer(atom .index), new Float( rv.x * scaleFactor ), new Float( rv.y * scaleFactor ), new Float( rv.z * scaleFactor ) } ) );
-            neighbors .append( String .format( "CONECT%5d", new Object[]{ new Integer( atom .index ) } ) );
-            for (Iterator iterator2  = atom .neighbors .iterator(); iterator2 .hasNext(); ) {
-                Atom neighbor = (Atom) iterator2 .next();
-                neighbors .append( String .format( "%5d", new Object[]{ new Integer( neighbor .index ) } ) );
+                atom .index, (float) rv.x * scaleFactor, (float) rv.y * scaleFactor, (float) rv.z * scaleFactor ) );
+            neighbors .append( String .format( "CONECT%5d", atom .index ) );
+            for (Iterator<Atom> iterator2  = atom .neighbors .iterator(); iterator2 .hasNext(); ) {
+                Atom neighbor = iterator2 .next();
+                neighbors .append( String .format( "%5d", neighbor .index ) );
             }
             neighbors .append( "\n" );
         }

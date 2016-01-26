@@ -147,9 +147,9 @@ public class POVRayExporter extends Exporter3d
 		ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
 		Map<AlgebraicMatrix, String> transforms = new HashMap<>();
 		Map<Color, String> colors = new HashMap<>();
-		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+		for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
 		{
-		    RenderedManifestation rm = (RenderedManifestation) rms .next();
+		    RenderedManifestation rm = rms .next();
 		    Polyhedron shape = rm .getShape();
 		    boolean flip = rm .reverseOrder(); // need to reverse face vertex order
 		    String shapeName = shapes[ flip?1:0 ] .get( shape );
@@ -296,8 +296,8 @@ public class POVRayExporter extends Exporter3d
             for ( int j = 0; j <= arity; j++ ){
                 // POV-Ray requires that you explicitly repeat the first vertex to close the polygon
                 int m = j % arity;
-                Integer index = face .get( reverseFaces? arity-m-1 : m );
-                AlgebraicVector loc = vertices .get( index .intValue() );
+                int index = face .get( reverseFaces? arity-m-1 : m );
+                AlgebraicVector loc = vertices .get( index );
                 StringBuffer buf = new StringBuffer();
                 buf .append( "(<" );
                 appendLocation( loc, buf );

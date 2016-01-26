@@ -2,10 +2,8 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,15 +87,14 @@ public class CommandEdit extends ChangeManifestations
         }
 
         ConstructionList constrsBefore = new ConstructionList();
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); )
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); )
         {
-            Manifestation man = (Manifestation) mans .next();
+            Manifestation man = mans .next();
             
             if ( logger .isLoggable( Level .FINER ) ) {
                 logger .finer( "----------- manifestation: " + man .toString() );
-                for (Iterator iterator = man .getConstructions(); iterator
-						.hasNext();) {
-					Construction c = (Construction) iterator.next();
+                for (Iterator<Construction> iterator = man .getConstructions(); iterator .hasNext();) {
+					Construction c = iterator.next();
 	                logger .finer( "   " + c .toString() );
 				}
             }
@@ -107,10 +104,10 @@ public class CommandEdit extends ChangeManifestations
             if ( isHide )
                 hideManifestation( man );
             else {
-                Iterator cs = man .getConstructions();
+                Iterator<Construction> cs = man .getConstructions();
                 if ( ! cs .hasNext() )
                     throw new Command.Failure( "No construction for this manifestation" );
-                constrsBefore .add( (Construction) cs .next() );  // yes, just using the first one
+                constrsBefore .add( cs .next() );  // yes, just using the first one
             }
         }
         
@@ -166,8 +163,8 @@ public class CommandEdit extends ChangeManifestations
         else
             fail( "Too many objects in the selection." );
         
-        for ( Iterator adds = news .iterator(); adds .hasNext(); ) {
-            Construction c = (Construction) adds .next();
+        for ( Iterator<Construction> adds = news .iterator(); adds .hasNext(); ) {
+            Construction c = adds .next();
             manifestConstruction( c );
         }
         for ( int i = 0; i < selectionAfter .size(); i++ ) {
@@ -311,17 +308,17 @@ public class CommandEdit extends ChangeManifestations
             if ( selectedBefore .size() > mManifestations .size() / 2 )
             {
                 Collection<Manifestation> toUnselect = new ArrayList<>();
-                for ( Iterator it = mManifestations .getAllManifestations(); it .hasNext(); )
+                for ( Iterator<Manifestation> it = mManifestations .iterator(); it .hasNext(); )
                 {
-                    Manifestation m = (Manifestation) it .next();
+                    Manifestation m = it .next();
                     if ( ! selectedBefore .contains( m ) )
                         toUnselect .add( m );
                 }
                 ChangeSelection edit = new SelectAll( mSelection, mManifestations, false );
                 context .performAndRecord( edit );
-                for ( Iterator it = toUnselect .iterator(); it .hasNext(); )
+                for ( Iterator<Manifestation> it = toUnselect .iterator(); it .hasNext(); )
                 {
-                    Manifestation m = (Manifestation) it .next();
+                    Manifestation m = it .next();
                     edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
                     context .performAndRecord( edit );
                 }
@@ -329,9 +326,9 @@ public class CommandEdit extends ChangeManifestations
             else {
                 ChangeSelection edit = new DeselectAll( mSelection, false );
                 context .performAndRecord( edit );
-                for ( Iterator it = selectedBefore .iterator(); it .hasNext(); )
+                for ( Iterator<Manifestation> it = selectedBefore .iterator(); it .hasNext(); )
                 {
-                    Manifestation m = (Manifestation) it .next();
+                    Manifestation m = it .next();
                     edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
                     context .performAndRecord( edit );
                 }

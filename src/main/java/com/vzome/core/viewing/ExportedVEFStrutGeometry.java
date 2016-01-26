@@ -55,9 +55,9 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
         for ( int i = 0; i < prototypeVertices .size(); i ++ )
         {
             AlgebraicVector vertex = prototypeVertices .get( i );
-            if ( fullScaleVertices .contains( new Integer( i ) ) ) {
+            if ( fullScaleVertices .contains(i) ) {
                 vertex = vertex .plus( tipVertex );
-            } else if ( halfScaleVertices != null && halfScaleVertices .contains( new Integer( i ) ) ) {
+            } else if ( halfScaleVertices != null && halfScaleVertices .contains(i) ) {
                 vertex = vertex .plus( midpoint );
             }
             result .addVertex( vertex );

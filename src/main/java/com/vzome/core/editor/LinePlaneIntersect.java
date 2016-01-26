@@ -32,8 +32,8 @@ public class LinePlaneIntersect extends ChangeManifestations
         Polygon panel = null;
         Segment segment = null;
         Point p0 = null, p1 = null, p2 = null;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             unselect( man );
             if ( ( man instanceof Connector ) && ( p2 == null ) )
             {

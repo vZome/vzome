@@ -49,10 +49,10 @@ public class LiveGraphicsExporter extends Exporter3d
 		
 		FORMAT .setMaximumFractionDigits( 3 );
 		
-		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+		for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
 		{
             output .print( "{FaceForm[" );
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+            RenderedManifestation rm = rms .next();
             printColor( rm .getColor() );
             output .println( "]," );
             
@@ -63,16 +63,16 @@ public class LiveGraphicsExporter extends Exporter3d
 
             List<AlgebraicVector> vertices = poly .getVertexList();
             output .println( "{" );
-            for ( Iterator faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
-                Polyhedron.Face face = (Polyhedron.Face) faces .next();
+            for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
+                Polyhedron.Face face = faces .next();
                 int arity = face .size();
                 output .print( "Polygon[{" );
                 
                 for ( int j = 0; j < arity; j++ ){
                     if ( j > 0 )
                         output .print( ", " );
-                    Integer index = face .get( reverseFaces? arity-j-1 : j );
-                    AlgebraicVector loc = vertices .get( index .intValue() );
+                    int index = face .get( reverseFaces? arity-j-1 : j );
+                    AlgebraicVector loc = vertices .get( index );
                     
                     // TODO need a unit test... don't know if the transform should be right or left
                     //   (migrated to rational vectors, but not tested)

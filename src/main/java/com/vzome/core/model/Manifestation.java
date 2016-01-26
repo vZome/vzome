@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
+import com.vzome.core.render.RenderedManifestation;
 
 /**
  * @author Scott Vorthmann
@@ -19,7 +20,7 @@ public abstract class Manifestation implements GroupElement
 {
     protected final Set<Construction> mManifests = new HashSet<>(5);
     
-    protected Object mRendered = null;
+    protected RenderedManifestation mRendered = null;
     
     private boolean hidden = false;
     
@@ -52,7 +53,7 @@ public abstract class Manifestation implements GroupElement
         mManifests .remove( c );
     }
     
-    public Iterator getConstructions()
+    public Iterator<Construction> getConstructions()
     {
         return mManifests .iterator();
     }
@@ -62,14 +63,14 @@ public abstract class Manifestation implements GroupElement
         return mManifests .isEmpty();
     }
     
-    public void setRenderedObject( Object obj )
+    public void setRenderedObject( RenderedManifestation obj )
     {
         mRendered = obj;
 //        if ( obj != null )
 //            System .out.println( "set rendered object" );
     }
     
-    public Object getRenderedObject()
+    public RenderedManifestation getRenderedObject()
     {
         return mRendered;
     }
@@ -106,9 +107,9 @@ public abstract class Manifestation implements GroupElement
 
     public Element getXml( Document doc )
     {
-    	Iterator cons = mManifests .iterator();
+    	Iterator<Construction> cons = mManifests .iterator();
     	if ( cons .hasNext() ) {
-            Construction repr = (Construction) cons .next();
+            Construction repr = cons .next();
             Element result = repr .getXml( doc );
             return result;
     	} else {

@@ -44,9 +44,9 @@ public class OffExporter extends Exporter3d
 		FORMAT .setMaximumFractionDigits( 16 );
         
 		int numBalls = 0, numStruts = 0, numPanels = 0;
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+            Manifestation man = rms .next() .getManifestation();
             if ( man instanceof Connector )
                 ++ numBalls;
             else if ( man instanceof Strut )
@@ -58,7 +58,7 @@ public class OffExporter extends Exporter3d
         
         Map<AlgebraicVector, Integer> ballIndices = new HashMap<>( numBalls );
         numBalls = 0;
-        for ( Iterator<RenderedManifestation> rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
             Manifestation man = rms .next() .getManifestation();
             if ( man instanceof Connector ) {
@@ -67,17 +67,17 @@ public class OffExporter extends Exporter3d
                 output .print( FORMAT.format( rv .x ) + " " );
                 output .print( FORMAT.format( rv .y ) + " " );
                 output .println( FORMAT.format( rv .z ) );
-                ballIndices .put( loc, new Integer( numBalls++ ) );
+                ballIndices .put(loc, numBalls++);
             }
         }
         
-        for ( Iterator<RenderedManifestation> rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
             RenderedManifestation rm = rms .next();
             Manifestation man = rm .getManifestation();
             if ( man instanceof Panel ) {
                 List<Integer> vs = new ArrayList<>();
-                for ( Iterator<AlgebraicVector> verts = ((Panel) man) .getVertices(); verts .hasNext(); )
+                for ( Iterator<AlgebraicVector> verts = ((Panel) man) .iterator(); verts .hasNext(); )
                     vs .add( ballIndices .get( verts .next() ) );
                 output .print( vs .size() );
                 for ( int i = 0; i < vs .size(); i++ )

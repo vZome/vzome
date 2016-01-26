@@ -47,23 +47,23 @@ public class SymmetrySystem implements OrbitSource
 	public SymmetrySystem( Element symmXml, Symmetry symmetry, Colors colors, List<Shapes> styles, boolean allowNonstandard )
 	{
 		this .symmetry = symmetry;
-		for ( Iterator iterator = styles.iterator(); iterator.hasNext(); ) {
-            Shapes shapes = (Shapes) iterator.next();
-            String name = shapes .getName();
-            String alias = shapes .getAlias();
+		for ( Iterator<Shapes> iterator = styles.iterator(); iterator.hasNext(); ) {
+            Shapes shape = iterator.next();
+            String name = shape .getName();
+            String alias = shape .getAlias();
             this .styleNames .add( name );
-            this .styles .put( name, shapes );
-            this .styles .put( shapes .getPackage(), shapes );
+            this .styles .put( name, shape );
+            this .styles .put( shape .getPackage(), shape );
             if ( alias != null && ! alias .equals( name ) )
-                this .styles .put( alias, shapes );
+                this .styles .put( alias, shape );
         }
         String styleName = symmetry .getDefaultStyle();
 		orbits = new OrbitSet( symmetry );
 		if ( symmXml == null ) 
 		{
-	        for ( Iterator dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
+	        for ( Iterator<Direction> dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
 	        {
-	            Direction dir = (Direction) dirs .next();
+	            Direction dir = dirs .next();
 	            if ( dir .isStandard() || allowNonstandard )  // reader
 	            	orbits .add( dir );
 	            Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
@@ -120,9 +120,9 @@ public class SymmetrySystem implements OrbitSource
 				}
 			}
 			// fill in the orbits that might be newer than what the file had
-            for ( Iterator dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
+            for ( Iterator<Direction> dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
             {
-                Direction dir = (Direction) dirs .next();
+                Direction dir = dirs .next();
                 if ( orbits .contains( dir ) )
                     continue;
                 if ( dir .isStandard() || allowNonstandard )  // reader
@@ -255,9 +255,9 @@ public class SymmetrySystem implements OrbitSource
         DomUtils .addAttribute( result, "name", this .getSymmetry() .getName() );
         DomUtils .addAttribute( result, "renderingStyle", this .shapes .getName() );
 
-        for ( Iterator dirs = this .orbits .iterator(); dirs .hasNext(); )
+        for ( Iterator<Direction> dirs = this .orbits .iterator(); dirs .hasNext(); )
         {
-            Direction dir = (Direction) dirs .next();
+            Direction dir = dirs .next();
             Element dirElem = doc .createElement( "Direction" );
             if ( dir .isAutomatic() )
                 DomUtils .addAttribute( dirElem, "prototype", dir .getPrototype() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );

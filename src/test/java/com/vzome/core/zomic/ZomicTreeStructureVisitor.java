@@ -57,7 +57,7 @@ public class ZomicTreeStructureVisitor
 	{
 		println("Walk" );
 		if ( walk .size() == 1 ) {
-			((ZomicStatement) walk .getStatements() .next()) .accept( this );
+			walk .iterator().next() .accept( this );
 			return;
 		}
 		println( "{" );

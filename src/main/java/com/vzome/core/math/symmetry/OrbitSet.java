@@ -38,9 +38,9 @@ public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
     
     public Direction getDirection( String name )
     {
-        for ( Iterator dirs = this.iterator(); dirs .hasNext(); )
+        for ( Iterator<Direction> dirs = this.iterator(); dirs .hasNext(); )
         {
-            Direction dir = (Direction) dirs .next();
+            Direction dir = dirs .next();
             if ( dir .getName() .equals( name ) )
                 return dir;
         }

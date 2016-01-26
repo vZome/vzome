@@ -93,8 +93,8 @@ public class Branch implements UndoableEdit
     public Element getXml( Document doc )
     {
         Element branch = doc .createElement( "Branch" );
-        for (Iterator iterator = edits .iterator(); iterator.hasNext(); ) {
-            UndoableEdit edit = (UndoableEdit) iterator.next();
+        for (Iterator<UndoableEdit> iterator = edits .iterator(); iterator.hasNext(); ) {
+            UndoableEdit edit = iterator.next();
             branch .appendChild( edit .getXml( doc ) );
         }
         return branch;
@@ -104,8 +104,8 @@ public class Branch implements UndoableEdit
     public Element getDetailXml( Document doc )
     {
         Element branch = doc .createElement( "Branch" );
-        for (Iterator iterator = edits .iterator(); iterator.hasNext(); ) {
-            UndoableEdit edit = (UndoableEdit) iterator.next();
+        for (Iterator<UndoableEdit> iterator = edits .iterator(); iterator.hasNext(); ) {
+            UndoableEdit edit = iterator.next();
             branch .appendChild( edit .getDetailXml( doc ) );
         }
         return branch;

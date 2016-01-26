@@ -258,8 +258,8 @@ public class CommandUniformH4Polytope extends CommandTransform
         else
         {
             int numSegs = 0;
-            for ( Iterator params = parameters .iterator(); params .hasNext(); ) {
-                Construction cons = (Construction) params .next();
+            for ( Iterator<Construction> params = parameters .iterator(); params .hasNext(); ) {
+                Construction cons = params .next();
                 if ( cons instanceof Segment ) {
                     Segment seg = (Segment) cons;
                     if ( ++numSegs == 1 )
@@ -283,14 +283,14 @@ public class CommandUniformH4Polytope extends CommandTransform
 //        final Integer scaleObj = (Integer) attributes .get( SCALE_ATTR_NAME );
 //        int scale = 5;
 //        if ( scaleObj != null )
-//            scale += scaleObj .intValue();
+//            scale += scaleObj;
         if ( mPolytopeIndex < 0 ) {
             Integer indexObj = (Integer) attributes .get( POLYTOPE_INDEX_ATTR_NAME );
-            mPolytopeIndex = indexObj .intValue();
+            mPolytopeIndex = indexObj;
         }
         else
             // make sure the attr is set, so it get saved with the file
-            attributes .put( POLYTOPE_INDEX_ATTR_NAME, new Integer( mPolytopeIndex ) );
+            attributes .put(POLYTOPE_INDEX_ATTR_NAME, mPolytopeIndex);
         
         generate( proj, mPolytopeIndex, mPolytopeIndex, null, effects );
         

@@ -20,7 +20,7 @@ import com.vzome.core.math.symmetry.Axis;
  */
 public class CommandBuildAnchoredSegment extends AbstractCommand
 {
-    public void getXml( Element xml, Map attributes )
+    public void getXml( Element xml, AttributeMap attributes )
     {
         XmlSaveFormat .serializeAxis( xml, "symm", "dir", "index", "sense", (Axis) attributes .get( "axis" ) );
         XmlSaveFormat .serializeNumber( xml, "len", (AlgebraicNumber) attributes .get( "length" ) );

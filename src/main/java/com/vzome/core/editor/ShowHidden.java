@@ -18,8 +18,8 @@ public class ShowHidden extends ChangeManifestations
     
     public void perform()
     {
-        for ( Iterator all = mManifestations .getAllManifestations(); all .hasNext(); ) {
-            Manifestation m = (Manifestation) all .next();
+        for ( Iterator<Manifestation> all = mManifestations .iterator(); all .hasNext(); ) {
+            Manifestation m = all .next();
             if ( ! m .isRendered() )
             {
                 showManifestation( m );

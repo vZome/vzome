@@ -38,9 +38,9 @@ public class DxfExporter extends Exporter3d
         NumberFormat format = NumberFormat .getNumberInstance( Locale .US );
         format .setMaximumFractionDigits( 6 );
 
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+            Manifestation man = rms .next() .getManifestation();
             if ( man instanceof Strut ) {
                 output .println( "0" );
                 output .println( "LINE" );

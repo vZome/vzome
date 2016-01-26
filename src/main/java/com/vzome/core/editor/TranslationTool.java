@@ -34,8 +34,8 @@ public class TranslationTool extends TransformationTool
         Point p1 = null, p2 = null;
         boolean correct = true;
         if ( ! isAutomatic() )
-            for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-                Manifestation man = (Manifestation) mans .next();
+            for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+                Manifestation man = mans .next();
                 unselect( man );
                 if ( man instanceof Connector )
                 {

@@ -3,6 +3,7 @@
 
 package com.vzome.core.editor;
 
+import com.vzome.core.commands.AttributeMap;
 import java.util.Map;
 
 import org.w3c.dom.Element;
@@ -38,7 +39,7 @@ public class ShowPoint extends ChangeManifestations
             this.point = format .parsePoint( xml, "point" );
         else
         {
-            Map attrs = format .loadCommandAttributes( xml );
+            AttributeMap attrs = format .loadCommandAttributes( xml );
             this.point = (Point) attrs .get( "point" );
         }
     }

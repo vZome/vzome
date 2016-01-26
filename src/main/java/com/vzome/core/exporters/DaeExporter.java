@@ -51,17 +51,17 @@ public class DaeExporter extends Exporter3d
         StringBuffer triangles = new StringBuffer();
         StringBuffer lines = new StringBuffer();
         
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+            Manifestation man = rms .next() .getManifestation();
             if ( man instanceof Panel )
             {
                 Panel panel = (Panel) man;
                 RealVector norm = panel .getNormal( field ) .toRealVector() .normalize();
                 int v0 = -1, v1 = -1, n0 = -1, n1 = -1;
-                for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
+                for ( Iterator<AlgebraicVector> verts = panel .iterator(); verts .hasNext(); )
                 {
-                    RealVector vertex = ((AlgebraicVector) verts .next()) .toRealVector();
+                    RealVector vertex = verts .next() .toRealVector();
                     // This scale factor corresponds to a vZome model that uses a long blue as the radius of a ball.
                     //  norm squared of diameter in vZome: 1967.87  => diameter == 44.36
                     //  nominal ball diameter in rZome: .700 in

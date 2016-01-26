@@ -8,6 +8,7 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.commands.AttributeMap;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Point;
@@ -58,7 +59,7 @@ public class StrutCreation extends ChangeManifestations
         }
         else
         {
-            Map attrs = format .loadCommandAttributes( xml, /*projectTo3d*/ true );
+            AttributeMap attrs = format .loadCommandAttributes( xml, /*projectTo3d*/ true );
             mAnchor = (Point) attrs .get( "anchor" );
             mAxis = (Axis) attrs .get( "axis" );
             mLength = (AlgebraicNumber) attrs .get( "len" );

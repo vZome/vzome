@@ -62,8 +62,8 @@ public class LoadVEF extends ChangeManifestations
     {
         AlgebraicVector offset = null;
         boolean pointFound = false;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             if ( man instanceof Connector )
             {
                 Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();

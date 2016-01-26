@@ -32,8 +32,8 @@ public class AffineTransformAll extends ChangeManifestations
     public void perform() throws Failure
     {
         Segment s1 = null, s2 = null, s3 = null;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             unselect( man );
             if ( man instanceof Strut )
             {
@@ -54,11 +54,11 @@ public class AffineTransformAll extends ChangeManifestations
         Transformation transform = new ChangeOfBasis( s1, s2, s3, center, true );
 
         // now apply it to all objects
-        for ( Iterator all = mManifestations .getAllManifestations(); all .hasNext(); ) {
-            Manifestation m = (Manifestation) all .next();
+        for ( Iterator<Manifestation> all = mManifestations .iterator(); all .hasNext(); ) {
+            Manifestation m = all .next();
             if ( m .getRenderedObject() == null )
                 continue;
-            Construction c = (Construction) m .getConstructions() .next();
+            Construction c = m .getConstructions() .next();
             Construction result = null;
             if ( c instanceof Point ) {
                 result = new TransformedPoint( transform, (Point) c );

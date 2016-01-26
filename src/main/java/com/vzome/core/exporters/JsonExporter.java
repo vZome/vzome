@@ -66,20 +66,20 @@ public class JsonExporter extends Exporter3d
         ShapeMap[] shapes = new ShapeMap[] { new ShapeMap(), new ShapeMap() };
         Map<AlgebraicMatrix, Integer> transforms = new HashMap<>();
         AlgebraicMatrix identity = this .field .identityMatrix( 3 );
-        Integer identityNum = new Integer(0);
+        Integer identityNum = 0;
         transforms .put( identity, identityNum );
         exportTransform( identityNum, identity, orientations );
 
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+            RenderedManifestation rm = rms .next();
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
             Integer shapeNum = shapes[ flip?1:0 ] .get( shape );
             if ( shapeNum == null ) {
                 if ( numShapes != 0 )
                     output .print( ",\n\n" );
-                shapeNum = new Integer( numShapes++ );
+                shapeNum = numShapes++;
                 shapes[ flip?1:0 ] .put( shape, shapeNum );
                 exportShape( shapeNum, shape, flip );
             }
@@ -90,7 +90,7 @@ public class JsonExporter extends Exporter3d
             if ( transformNum == null ){
                 if ( numTransforms > 0 )
                     orientations .append( ",\n" );
-                transformNum = new Integer( numTransforms++ );
+                transformNum = numTransforms++;
                 transforms .put( transform, transformNum );
                 exportTransform( transformNum, transform, orientations );
             }
@@ -106,7 +106,7 @@ public class JsonExporter extends Exporter3d
             instances .append( FORMAT .format( loc.x ) + "," );
             instances .append( FORMAT .format( loc.y ) + "," );
             instances .append( FORMAT .format( loc.z ) );
-            instances .append( "], \"orientation\" : " + transformNum .intValue() );
+            instances .append( "], \"orientation\" : " + transformNum );
             instances .append( ", \"shape\" : " + shapeNum );
             instances .append( ", \"color\" : [" );
             instances .append( FORMAT .format( rgb[0] ) + "," );
@@ -167,20 +167,17 @@ public class JsonExporter extends Exporter3d
         StringBuffer triangles = new StringBuffer();
 
         List<AlgebraicVector> faceVertices = shape .getVertexList();
-        for ( Iterator faces = shape .getFaceSet() .iterator(); faces.hasNext(); ) {
-
-            Polyhedron.Face face = (Polyhedron.Face) faces.next();
-
+        for ( Iterator<Polyhedron.Face> faces = shape .getFaceSet() .iterator(); faces.hasNext(); ) {
+            Polyhedron.Face face = faces.next();
             int arity = face .size();
-
-            Integer index = face .get( reverseFaces? arity-1 : 0 );
-            AlgebraicVector gv = faceVertices .get( index .intValue() );
+            int index = face .get( reverseFaces? arity-1 : 0 );
+            AlgebraicVector gv = faceVertices .get(index);
             RealVector vert0 = gv .toRealVector();
             index = face .get( reverseFaces? arity-2 : 1 );
-            gv = faceVertices .get( index .intValue() );
+            gv = faceVertices .get(index);
             RealVector vert1 = gv .toRealVector( );
             index = face .get( reverseFaces? arity-3 : 2 );
-            gv = faceVertices .get( index .intValue() );
+            gv = faceVertices .get(index);
             RealVector vert2 = gv .toRealVector( );
             RealVector edge1 = vert1 .minus( vert0 );
             RealVector edge2 = vert2 .minus( vert1 );
@@ -189,7 +186,7 @@ public class JsonExporter extends Exporter3d
             int v0 = -1, v1 = -1;
             for ( int j = 0; j < arity; j++ ){
                 index = face .get( reverseFaces? arity-j-1 : j );
-                gv = faceVertices .get( index .intValue() );
+                gv = faceVertices .get(index);
                 RealVector vertex = gv .toRealVector( );
 
                 if ( v0 == -1 )

@@ -396,8 +396,8 @@ public class ZomicASTTest extends TestCase
 			ArrayList<String> list = new ArrayList<>();
 			boolean hasNegativeAxes = false;
 			boolean isChiral = false;
-			for ( Iterator axes = direction.getAxes(); axes.hasNext(); ) {
-				Axis axis = (Axis) axes.next();
+			for ( Iterator<Axis> axes = direction.iterator(); axes.hasNext(); ) {
+				Axis axis = axes.next();
 				String indexName = namingConvention.getName(axis);
 				if (NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
 					break; 
@@ -436,8 +436,8 @@ public class ZomicASTTest extends TestCase
 	public void testOK_ZomicNamingConvention() {
 		for (String color : symmetry.getDirectionNames()) {
 			Direction direction = symmetry.getDirection(color);
-			for (Iterator axes = direction.getAxes(); axes.hasNext();) {
-				Axis symmetryAxis = (Axis) axes.next();
+			for (Iterator<Axis> axes = direction.getAxes(); axes.hasNext();) {
+				Axis symmetryAxis = axes.next();
 				String indexName = namingConvention.getName(symmetryAxis);
 				Axis namingAxis = namingConvention.getAxis(color, indexName);
 				if (namingAxis == null || NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
@@ -551,9 +551,9 @@ public class ZomicASTTest extends TestCase
 	public void testOK_StrutDefaultValues() {
 		Walk program = compileAndCompare("red 0 /* test StrutDefaultValues */");
 		assertProgramSize(1, program);
-		Iterator it = program .getStatements(); 
+		Iterator<ZomicStatement> it = program .getStatements(); 
 		while( it.hasNext() ) {
-			ZomicStatement stmt = (ZomicStatement) it.next();
+			ZomicStatement stmt = it.next();
 			if(stmt instanceof Move) {
 				Move m = (Move)stmt;
 				AlgebraicField algebraicField = m.getLength().getField();

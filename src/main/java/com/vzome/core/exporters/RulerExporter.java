@@ -29,9 +29,9 @@ public class RulerExporter extends Exporter3d
     {
         double maxX = 0, maxY = 0, maxZ = 0;
 
-        for ( Iterator rms = this .mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = this .mModel .iterator(); rms .hasNext(); )
         {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+            RenderedManifestation rm = rms .next();
             Manifestation man = rm .getManifestation();
             if ( man instanceof Connector )
             {

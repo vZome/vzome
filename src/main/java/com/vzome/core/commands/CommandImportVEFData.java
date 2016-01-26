@@ -5,7 +5,6 @@ package com.vzome.core.commands;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -126,7 +125,7 @@ public class CommandImportVEFData extends AbstractCommand
         if ( quaternion != null )
             quaternion = quaternion .scale( field .createPower( -5 ) );
         
-        if ( noInversion != null && noInversion .booleanValue() )
+        if ( noInversion != null && noInversion )
             new VefToModelNoInversion( quaternion, root, effects ) .parseVEF( vefData, field );
         else
             new VefToModel( quaternion, effects, field .createPower( 5 ), null ) .parseVEF( vefData, field );
@@ -185,8 +184,10 @@ public class CommandImportVEFData extends AbstractCommand
         
         protected void endEdges()
         {
-            for ( Iterator pts = mUsedPoints .iterator(); pts .hasNext(); )
-                mEffects .constructionAdded( (Point) pts .next() );
+            for ( Iterator<Point> pts = mUsedPoints .iterator(); pts .hasNext(); ) {
+                Point point = pts .next();
+                mEffects .constructionAdded( point );
+            }
         }
     }
 }

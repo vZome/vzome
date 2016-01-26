@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
@@ -24,7 +23,7 @@ public abstract class CommandTransform extends AbstractCommand
     public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         if ( format .getScale() != 0 )
-            attributes .put( CommandTransform .SCALE_ATTR_NAME, new Integer( format .getScale() ) );
+            attributes .put(CommandTransform .SCALE_ATTR_NAME, format .getScale());
 
         super.setFixedAttributes( attributes, format );
     }

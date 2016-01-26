@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -275,11 +274,11 @@ public class XmlSaveFormat
             value = parseAlgebraicVector( val );
         else if ( valName .equals( "Boolean" ) ) {
             String gnum = val .getAttribute( "value" );
-            value = new Boolean( Boolean .getBoolean( gnum ) );
+            value = Boolean .getBoolean( gnum );
         }
         else if ( valName .equals( "Integer" ) ) {
             String gnum = val .getAttribute( "value" );
-            value = new Integer( Integer .parseInt( gnum ) );
+            value = Integer .parseInt( gnum );
         }
         else if ( valName .equals( "GoldenNumber" )
                 || valName .equals( "IntegralNumber" ) ) {
@@ -364,9 +363,9 @@ public class XmlSaveFormat
         return c;
     }
     
-//    public Map loadCommandAttributesOld( Element editElem )
+//    public AttributeMap loadCommandAttributesOld( Element editElem )
 //    {
-//        Map attrs = new HashMap<>();
+//        AttributeMap attrs = new AttributeMap();
 //        for ( int j = 0; j < editElem .getChildCount(); j++ ) {
 //            Node kid2 = editElem .getChild( j );
 //            if ( kid2 instanceof Element ) {

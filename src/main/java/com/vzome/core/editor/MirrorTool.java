@@ -45,8 +45,8 @@ public class MirrorTool extends TransformationTool
             axis = new SegmentJoiningPoints( center, p2 );
         }
         else
-            for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-                Manifestation man = (Manifestation) mans .next();
+            for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+                Manifestation man = mans .next();
                 unselect( man );
                 if ( man instanceof Connector )
                 {

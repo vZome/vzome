@@ -123,8 +123,8 @@ public abstract class ChangeManifestations extends ChangeSelection
 
 	public boolean showsManifestation( Manifestation man )
 	{
-		for (Iterator iterator = this .getEffects(); iterator.hasNext();) {
-			SideEffect effect = (SideEffect) iterator.next();
+		for (Iterator<SideEffect> iterator = this .getEffects(); iterator.hasNext();) {
+			SideEffect effect = iterator.next();
 			if ( effect instanceof ManifestConstruction ) {
 				ManifestConstruction show = (ManifestConstruction) effect;
 				if ( show .showsManifestation( man ) )

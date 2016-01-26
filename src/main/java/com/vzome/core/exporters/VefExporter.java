@@ -30,9 +30,9 @@ public class VefExporter extends Exporter3d
         AlgebraicNumber scale = field .createPower( -5 );
 	    Exporter exporter = new VefModelExporter( writer, field, scale );
 		
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+            Manifestation man = rms .next() .getManifestation();
             
             exporter .exportManifestation( man );
         }

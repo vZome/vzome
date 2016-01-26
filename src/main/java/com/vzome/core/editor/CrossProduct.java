@@ -23,8 +23,8 @@ public class CrossProduct extends ChangeManifestations
         Point p1 = null, p2 = null;
         Segment s1 = null;
         boolean success = false;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             unselect( man );
             if ( man instanceof Connector )
             {

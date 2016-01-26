@@ -37,9 +37,9 @@ public class SegExporter extends Exporter3d
         if (format instanceof DecimalFormat) {
             ((DecimalFormat) format) .applyPattern( "0.0000" );
         }		
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+            Manifestation man = rms .next() .getManifestation();
             
             if ( man instanceof Strut )
             {
@@ -78,7 +78,7 @@ public class SegExporter extends Exporter3d
         {
             AlgebraicVector key = vertexVector;
             int index = vertexData .size();
-            val = new Integer( index );
+            val = index;
             vertexData .put( key, val );
             vertices .append( "v " );
             RealVector vertex =  vertexVector .toRealVector();

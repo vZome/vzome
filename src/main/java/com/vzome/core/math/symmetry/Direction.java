@@ -18,7 +18,7 @@ import com.vzome.core.math.RealVector;
 /**
  * @author Scott Vorthmann
  */
-public class Direction implements Comparable
+public class Direction implements Comparable, Iterable<Axis>
 {
     private String mName;
     
@@ -106,12 +106,17 @@ public class Direction implements Comparable
         return mPrototype;
     }
     
-    public Iterator<Axis> getAxes()
+    public Iterator<Axis> iterator()
     {
         return mVectors .values() .iterator();
     }
     
-    
+    @Deprecated
+    public Iterator<Axis> getAxes()
+    {
+        return this .iterator();
+    }
+        
     public Symmetry getSymmetry()
     {
         return mSymmetryGroup;
@@ -133,8 +138,8 @@ public class Direction implements Comparable
      */
     public Axis getAxis( AlgebraicVector vector )
     {
-        for ( Iterator lines = mVectors .values() .iterator(); lines .hasNext(); ) {
-            Axis axis = (Axis) lines .next();
+        for ( Iterator<Axis> lines = mVectors .values() .iterator(); lines .hasNext(); ) {
+            Axis axis = lines .next();
             AlgebraicVector normal = axis .normal();
             if ( normal .cross( vector ) .isOrigin() ) {
                 // parallel
@@ -214,8 +219,8 @@ public class Direction implements Comparable
     {        
         Axis closestAxis = null;
         double maxCosine = -1d;
-        for ( Iterator axes = this .getAxes(); axes .hasNext(); ) {
-            Axis axis = (Axis) axes .next();
+        for ( Iterator<Axis> axes = this .getAxes(); axes .hasNext(); ) {
+            Axis axis = axes .next();
             RealVector axisV = axis .normal() .toRealVector();
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {

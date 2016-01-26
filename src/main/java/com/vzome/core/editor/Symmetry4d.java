@@ -62,19 +62,19 @@ public class Symmetry4d extends ChangeManifestations
     public void perform() throws Failure
     {
         List<Construction> params = new ArrayList<>();
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); )
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); )
         {
-            Manifestation man = (Manifestation) mans .next();
+            Manifestation man = mans .next();
             // avoid SELECTION BUG: the unselect() below just plans the unselection, but... (search for the next SELECTION BUG comment)
             unselect( man );
             
             // here is the difference from CommandQuaternionSymmetry
-            Iterator cs = man .getConstructions();
+            Iterator<Construction> cs = man .getConstructions();
             Construction useThis = null;
             if ( ! cs .hasNext() )
             	throw new Command.Failure( "No construction for this manifestation" );
-            for (Iterator iterator = man .getConstructions(); iterator.hasNext();) {
-				Construction construction = (Construction) iterator.next();
+            for (Iterator<Construction> iterator = man .getConstructions(); iterator.hasNext();) {
+				Construction construction = iterator.next();
 				if ( construction instanceof Point ) {
 					Point p = (Point) construction;
 					if ( ! inW0hyperplane( p .getLocation() ) )
@@ -113,8 +113,8 @@ public class Symmetry4d extends ChangeManifestations
         Quaternion[] rightRoots = this .right .getRoots();
         for ( int i = 0; i < leftRoots.length; i++ ) 
             for ( int j = 0; j < rightRoots.length; j++ )
-            	for ( Iterator iterator = params .iterator(); iterator .hasNext(); ) {
-					Construction construction = (Construction) iterator.next();
+            	for ( Iterator<Construction> iterator = params .iterator(); iterator .hasNext(); ) {
+					Construction construction = iterator.next();
 
                     Construction result = null;
                     if ( construction instanceof Point ) {

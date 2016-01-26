@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -58,9 +57,9 @@ public class STEPExporter extends Exporter3d{
     {
         int numShapes = 0;
         ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+            RenderedManifestation rm = rms .next();
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
             String shapeName = shapes[ flip?1:0 ] .get( shape );
@@ -112,8 +111,8 @@ public class STEPExporter extends Exporter3d{
 
         // first, produce all the vertices
         ArrayList<RealVector> realVectors = new ArrayList<>();
-        for ( Iterator vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
-            AlgebraicVector gv = (AlgebraicVector) vertices .next();
+        for ( Iterator<AlgebraicVector> vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
+            AlgebraicVector gv = vertices .next();
             if ( reverseFaces )
                 gv = gv .negate();
             RealVector v = gv .toRealVector() .scale( SCALE );
@@ -127,9 +126,9 @@ public class STEPExporter extends Exporter3d{
         output .println();
 
         ArrayList<Integer> faceIndices = new ArrayList<>();
-        for ( Iterator faces = poly .getFaceSet() .iterator(); faces .hasNext(); )
+        for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); )
         {
-            Polyhedron.Face face = (Polyhedron.Face) faces .next();
+            Polyhedron.Face face = faces .next();
             int arity = face .size();
 
             ArrayList<Integer> edgeIndices = new ArrayList<>();
@@ -138,12 +137,12 @@ public class STEPExporter extends Exporter3d{
             for ( int j = 0; j < arity; j++ )
             {
                 Integer vindex = face .get( /*reverseFaces? arity-j-1 :*/ j );
-                int rv1index = vindex .intValue();
+                int rv1index = vindex;
                 RealVector rv1 = realVectors .get( rv1index );
                 point1 = rv1index * 2 + START_INDEX;
                 int vertex1 = point1 + 1;
                 vindex = face .get( /*reverseFaces? arity-j-1 :*/ (j+1)%arity );
-                int rv2index = vindex .intValue();
+                int rv2index = vindex;
                 RealVector rv2 = realVectors .get( rv2index );
                 int vertex2 = rv2index * 2 + START_INDEX + 1;
 
@@ -168,13 +167,13 @@ public class STEPExporter extends Exporter3d{
                 int edgeCurve = ++index;
                 output .println( "#" + edgeCurve + " = EDGE_CURVE ( 'NONE', #"+ vertex1 + ", #"+ vertex2 + ", #"+ line + ", .T. ) ;" );
                 int orientedEdge = ++index;
-                edgeIndices .add( new Integer( orientedEdge ) );
+                edgeIndices .add(orientedEdge);
                 output .println( "#" + orientedEdge + " = ORIENTED_EDGE ( 'NONE', *, *, #"+ edgeCurve + ", ." + ((j==0)?"T":"T") + ". ) ;" );
             }
 
             int edgeLoop = ++index;
             output .print( "#" + edgeLoop + " = EDGE_LOOP ( 'NONE', ( " );
-            for ( Iterator it = edgeIndices .iterator(); it .hasNext(); )
+            for ( Iterator<Integer> it = edgeIndices .iterator(); it .hasNext(); )
             {
                 output .print( "#" + it .next() );
                 if ( it .hasNext() )
@@ -194,11 +193,11 @@ public class STEPExporter extends Exporter3d{
             int advancedFace = ++index;
             output .println( "#" + advancedFace + " = ADVANCED_FACE ( 'NONE', ( #"+ faceOuterBound + " ), #"+ plane + ", .T. ) ;" );
             output .println();
-            faceIndices .add( new Integer( advancedFace ) );
+            faceIndices .add(advancedFace);
         }
 
         output .print( "#299 = CLOSED_SHELL ( 'NONE', ( " );
-        for ( Iterator it = faceIndices .iterator(); it .hasNext(); )
+        for ( Iterator<Integer> it = faceIndices .iterator(); it .hasNext(); )
         {
             output .print( "#" + it .next() );
             if ( it .hasNext() )

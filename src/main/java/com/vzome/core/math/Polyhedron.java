@@ -84,8 +84,8 @@ public class Polyhedron {
 			m_faces .add( face );
 			
 //			System .out .println( "--------face" );
-//			for ( Iterator vertices = face .iterator(); vertices .hasNext(); )
-//			    System .out .println( m_vertexList .get(((Integer) vertices.next()) .intValue()) );
+//			for ( Iterator<Integer> vertices = face .iterator(); vertices .hasNext(); )
+//			    System .out .println( m_vertexList .get(vertices.next() ) );
 		}
 	}
 	

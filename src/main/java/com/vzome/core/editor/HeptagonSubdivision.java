@@ -22,8 +22,8 @@ public class HeptagonSubdivision extends ChangeManifestations
     public void perform() throws Command.Failure
     {
         Point p1 = null;
-        for ( Iterator mans = mSelection.iterator(); mans.hasNext(); ) {
-            Manifestation man = (Manifestation) mans.next();
+        for ( Iterator<Manifestation> mans = mSelection.iterator(); mans.hasNext(); ) {
+            Manifestation man = mans.next();
             unselect( man );
             if ( man instanceof Connector ) {
                 Point nextPoint = (Point) ( (Connector) man ).getConstructions().next();

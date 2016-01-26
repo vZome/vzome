@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -22,7 +21,7 @@ import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
-public class RenderedModel implements ManifestationChanges
+public class RenderedModel implements ManifestationChanges, Iterable<RenderedManifestation>
 {
 	protected List<RenderingChanges> mListeners = new ArrayList<>();
 	
@@ -160,7 +159,7 @@ public class RenderedModel implements ManifestationChanges
 			return;
 		}
 		
-	    RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
+	    RenderedManifestation rendered = m .getRenderedObject();
 	    if ( rendered == null )
 	        return; // there was no way to render the shape
 	    
@@ -176,7 +175,7 @@ public class RenderedModel implements ManifestationChanges
 
 	public void setManifestationGlow( Manifestation m, boolean on )
 	{
-        RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
+        RenderedManifestation rendered = m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setGlow( on? mSelectionGlow : 0f );
@@ -189,7 +188,7 @@ public class RenderedModel implements ManifestationChanges
     
     public void setManifestationColor( Manifestation m, Color color )
     {
-        RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
+        RenderedManifestation rendered = m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setColor( color );
@@ -202,7 +201,7 @@ public class RenderedModel implements ManifestationChanges
     
     public void setManifestationTransparency( Manifestation m, boolean on )
     {
-        RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
+        RenderedManifestation rendered = m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setTransparency( on? mSelectionGlow : 0f );
@@ -212,12 +211,17 @@ public class RenderedModel implements ManifestationChanges
             mListeners .get( i ) .colorChanged( rendered );
     }
 	
-	
-	public Iterator<RenderedManifestation> getRenderedManifestations()
+    @Override
+	public Iterator<RenderedManifestation> iterator()
 	{
 	    return mRendered .iterator();
 	}
 
+    @Deprecated
+	public Iterator<RenderedManifestation> getRenderedManifestations()
+	{
+	    return mRendered .iterator();
+	}
 
 	public OrbitSource getOrbitSource()
 	{
@@ -245,9 +249,9 @@ public class RenderedModel implements ManifestationChanges
 //            boolean didOneBall = false;
             
             HashSet<RenderedManifestation> newSet = new HashSet<>();
-            for ( Iterator polys = mRendered .iterator(); polys .hasNext(); )
+            for ( Iterator<RenderedManifestation> polys = mRendered .iterator(); polys .hasNext(); )
             {
-                RenderedManifestation rendered = (RenderedManifestation) polys .next();
+                RenderedManifestation rendered = polys .next();
                 polys .remove();
 //                if ( rendered .getManifestation() instanceof Connector ) {
 //                    if ( didOneBall )
@@ -267,11 +271,11 @@ public class RenderedModel implements ManifestationChanges
 //            int yieldFreq = mRendered .size() / 20;
             int yieldCount = 0;
             HashSet<RenderedManifestation> newSet = new HashSet<>();
-            for ( Iterator rms = mRendered .iterator(); rms .hasNext(); ) {
+            for ( Iterator<RenderedManifestation> rms = mRendered .iterator(); rms .hasNext(); ) {
                 yieldCount = (++yieldCount) % 20;
                 if ( yieldCount == 0 )
                     Thread .yield();
-                RenderedManifestation rendered = (RenderedManifestation) rms .next();
+                RenderedManifestation rendered = rms .next();
                 rms .remove();
                 Manifestation m = rendered .getManifestation();
                 if ( m .isHidden() )
@@ -408,10 +412,10 @@ public class RenderedModel implements ManifestationChanges
     private Polyhedron makePanelPolyhedron( Panel panel )
     {
         Polyhedron poly = new Polyhedron( this .field );
-        Iterator vertices = panel .getVertices();
+        Iterator<AlgebraicVector> vertices = panel .iterator();
         int arity = 0;
         while ( vertices .hasNext() ) {
-            AlgebraicVector gv = (AlgebraicVector) vertices .next();
+            AlgebraicVector gv = vertices .next();
             arity++;
             poly .addVertex( gv );            
         }
@@ -420,7 +424,7 @@ public class RenderedModel implements ManifestationChanges
         Polyhedron.Face front = poly .newFace();
         Polyhedron.Face back = poly .newFace();
         for ( int i = 0; i < arity; i++ ) {
-            Integer j = new Integer( i );
+            Integer j = i;
             front .add( j );
             back .add( 0, j );
         }
@@ -439,8 +443,8 @@ public class RenderedModel implements ManifestationChanges
     public RenderedModel snapshot()
     {
         RenderedModel snapshot = new RenderedModel( this .field, false );
-        for (Iterator iterator = mRendered .iterator(); iterator.hasNext(); ) {
-            RenderedManifestation rm = (RenderedManifestation) iterator.next();
+        for (Iterator<RenderedManifestation> iterator = mRendered .iterator(); iterator.hasNext(); ) {
+            RenderedManifestation rm = iterator.next();
             RenderedManifestation copy = rm .copy();
             snapshot .mRendered .add( copy );
         }
@@ -453,22 +457,22 @@ public class RenderedModel implements ManifestationChanges
 //        Set<RenderedManifestation> toRemove = (Set<RenderedManifestation>) from .mRendered .clone();
         HashSet<RenderedManifestation> toRemove = new HashSet<>(from.mRendered);
         toRemove .removeAll( to .mRendered );
-        for ( Iterator iterator = toRemove .iterator(); iterator .hasNext(); ) {
-            RenderedManifestation rm = (RenderedManifestation) iterator .next();
+        for ( Iterator<RenderedManifestation> iterator = toRemove .iterator(); iterator .hasNext(); ) {
+            RenderedManifestation rm = iterator .next();
             changes .manifestationRemoved( rm );
         }
         // TODO: Does clone() perform any better than new HashSet(), or is there any other reason to keep it?
 //        Set<RenderedManifestation> toAdd = (Set<RenderedManifestation>) to .mRendered .clone();
         HashSet<RenderedManifestation> toAdd = new HashSet<>(to.mRendered);
         toAdd .removeAll( from .mRendered );
-        for ( Iterator iterator = toAdd .iterator(); iterator .hasNext(); ) {
-            RenderedManifestation rm = (RenderedManifestation) iterator .next();
+        for ( Iterator<RenderedManifestation> iterator = toAdd .iterator(); iterator .hasNext(); ) {
+            RenderedManifestation rm = iterator .next();
             changes .manifestationAdded( rm );
         }
-        for ( Iterator froms = from .mRendered .iterator(); froms .hasNext(); ) {
-            RenderedManifestation fromRm = (RenderedManifestation) froms .next();
-            for ( Iterator tos = to .mRendered .iterator(); tos .hasNext(); ) {
-                RenderedManifestation toRm = (RenderedManifestation) tos .next();
+        for ( Iterator<RenderedManifestation> froms = from .mRendered .iterator(); froms .hasNext(); ) {
+            RenderedManifestation fromRm = froms .next();
+            for ( Iterator<RenderedManifestation> tos = to .mRendered .iterator(); tos .hasNext(); ) {
+                RenderedManifestation toRm = tos .next();
                 if ( fromRm .equals( toRm ) )
                 {
                     changes .manifestationSwitched( fromRm, toRm );

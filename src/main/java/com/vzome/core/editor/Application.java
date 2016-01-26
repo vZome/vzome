@@ -158,8 +158,8 @@ public class Application
                 mCommands .put( "IxTsymmetry", new CommandQuaternionSymmetry( H4, T2 ) );
                 mCommands .put( "TxTsymmetry", new CommandQuaternionSymmetry( T2, T2 ) );
                 mCommands .put( "vanOss600cell", new CommandVanOss600Cell() );
-                mCommands .put( "runZomicScript", new Boolean( true ) );
-                mCommands .put( "runPythonScript", new Boolean( true ) );
+                mCommands .put("runZomicScript", true);
+                mCommands .put("runPythonScript", true);
                 for ( int p = 0x1; p <= 0xF; p++ ) {
                     String dynkin = Integer.toString( p, 2 );
                     dynkin = "0000" .substring( dynkin.length() ) + dynkin;
@@ -536,9 +536,9 @@ public class Application
         Map<Float, Axis[]> blueAngles = new HashMap<>();
         RealVector baseRv = null;
         Axis baseZone = null;
-        for (Iterator blues = blue .getAxes(); blues.hasNext(); )
+        for (Iterator<Axis> blues = blue .iterator(); blues.hasNext(); )
         {
-            Axis zone = (Axis) blues .next();
+            Axis zone = blues .next();
             RealVector rv = zone .normal() .toRealVector() .normalize();
             if ( baseRv == null )
             {
@@ -556,8 +556,8 @@ public class Application
                 }
             }
         }
-        for (Iterator angles = blueAngles .keySet() .iterator(); angles.hasNext(); ) {
-            Float angle = (Float) angles.next();
+        for (Iterator<Float> angles = blueAngles .keySet() .iterator(); angles.hasNext(); ) {
+            Float angle = angles.next();
             System .out. print( angle + "  " );
             Axis[] zones = blueAngles .get( angle );
             System .out .print( zones[0] .getOrientation() + " " );
@@ -570,7 +570,7 @@ public class Application
 		return mStyles .get( symmetry );
 	}
 
-	public Set getFieldNames()
+	public Set<String> getFieldNames()
 	{
 		return fields .keySet();
 	}
@@ -578,8 +578,8 @@ public class Application
 	public Shapes getGeometry( Symmetry symmetry, String styleName )
 	{
 	    List<Shapes> geoms = mStyles .get( symmetry );
-	    for ( Iterator iterator = geoms.iterator(); iterator.hasNext(); ) {
-            Shapes shapes = (Shapes) iterator.next();
+	    for ( Iterator<Shapes> iterator = geoms.iterator(); iterator.hasNext(); ) {
+            Shapes shapes = iterator.next();
             if ( shapes .getName() .equals( styleName ) )
                 return shapes;
         }

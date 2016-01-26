@@ -3,6 +3,7 @@
 
 package com.vzome.core.editor;
 
+import com.vzome.core.commands.AttributeMap;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -61,7 +62,7 @@ public class SymmetryCenterChange implements UndoableEdit
         }
         else
         {
-            Map attrs = format .loadCommandAttributes( xml );
+            AttributeMap attrs = format .loadCommandAttributes( xml );
             Point center = (Point) attrs .get( "new" );
             mNewCenter = new FreePoint( center .getLocation() .projectTo3d( true ) );
         }

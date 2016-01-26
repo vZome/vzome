@@ -23,7 +23,7 @@ import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.core.viewing.ViewModel;
 
 
-public class LessonModel
+public class LessonModel implements Iterable<PageModel>
 {
     private List<PageModel> pages = new ArrayList<>( 5 );
     
@@ -61,8 +61,8 @@ public class LessonModel
         Element result = doc .createElement( "notes" );
         result .setAttribute( "xmlns:xml", "http://www.w3.org/XML/1998/namespace" );
 
-        for ( Iterator it = pages .iterator(); it .hasNext(); )
-            result .appendChild( ((PageModel) it .next() ) .getXml( doc ) );
+        for ( Iterator<PageModel> it = pages .iterator(); it .hasNext(); )
+            result .appendChild( it .next() .getXml( doc ) );
         return result;
     }
 
@@ -104,7 +104,8 @@ public class LessonModel
         pageNum = 0;
 	}
 
-	public Iterator iterator()
+    @Override
+	public Iterator<PageModel> iterator()
 	{
 		return pages .iterator();
 	}

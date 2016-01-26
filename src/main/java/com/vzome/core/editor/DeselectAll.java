@@ -13,8 +13,10 @@ public class DeselectAll extends ChangeSelection
     {
         super( selection, groupInSelection );
         
-        for ( Iterator all = selection .iterator(); all .hasNext(); )
-            unselect( (Manifestation) all .next(), true );
+        for ( Iterator<Manifestation> all = selection .iterator(); all .hasNext(); ) {
+            Manifestation man = all.next();
+            unselect( man, true );
+        }
     }
 
     protected String getXmlElementName()

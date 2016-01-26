@@ -23,8 +23,8 @@ public class ShowVertices extends ChangeManifestations
 
 	public void perform() throws Failure
     {
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = mSelection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             unselect( man );
             if ( man instanceof Strut )
             {

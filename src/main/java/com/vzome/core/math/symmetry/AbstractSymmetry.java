@@ -20,7 +20,7 @@ import com.vzome.core.math.RealVector;
  * @author Scott Vorthmann
  *
  */
-public abstract class AbstractSymmetry implements Symmetry
+public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
 {
     protected final Map<String, Direction> mDirectionMap = new HashMap<>();
     
@@ -242,9 +242,16 @@ public abstract class AbstractSymmetry implements Symmetry
         }
     }
 
-    public Iterator getDirections()
+    @Override
+    public Iterator<Direction> iterator()
     {
         return mDirectionList .iterator();
+    }
+    
+    @Deprecated
+    public Iterator<Direction> getDirections()
+    {
+        return this .iterator();
     }
     
     
@@ -262,8 +269,8 @@ public abstract class AbstractSymmetry implements Symmetry
         Direction canonicalOrbit = this .getSpecialOrbit( SpecialOrbit.BLACK );
         if ( canonicalOrbit == null )
             // the old, brute-force approach
-            for ( Iterator dirs = orbits .iterator(); dirs .hasNext(); ) {
-                Direction dir = (Direction) dirs .next();
+            for ( Iterator<Direction> dirs = orbits .iterator(); dirs .hasNext(); ) {
+                Direction dir = dirs .next();
                 Axis candidate = dir .getAxis( vector );
                 if ( candidate != null )
                 {
@@ -275,9 +282,8 @@ public abstract class AbstractSymmetry implements Symmetry
             Axis zone = canonicalOrbit .getAxis( vector .toRealVector() );
             int orientation = zone .getOrientation();
             int sense = zone .getSense();
-            for ( Iterator iterator = orbits .iterator(); iterator
-                    .hasNext(); ) {
-                Direction orbit = (Direction) iterator.next();
+            for ( Iterator<Direction> iterator = orbits .iterator(); iterator .hasNext(); ) {
+                Direction orbit = iterator.next();
                 Axis candidate = orbit .getCanonicalAxis( sense, orientation );
                 if ( candidate .normal() .cross( vector ) .isOrigin() )
                     return candidate;
@@ -292,7 +298,7 @@ public abstract class AbstractSymmetry implements Symmetry
 	 * subject to the mask of directions to accept.
 	 *
 	 */
-	public Axis getAxis( RealVector vector, Set dirMask )
+	public Axis getAxis( RealVector vector, Set<Direction> dirMask )
 	{
 		if ( RealVector .ORIGIN .equals( vector ) ) {
 			return null;
@@ -315,11 +321,11 @@ public abstract class AbstractSymmetry implements Symmetry
 	        sense = closestChiralAxis .getSense();
 		}
 		
-		Iterator dirs = orbitSet .iterator();
+		Iterator<Direction> dirs = orbitSet .iterator();
 		if ( dirMask != null )
 		    dirs = dirMask .iterator();
         while ( dirs .hasNext() ) {
-            Direction dir = (Direction) dirs .next();
+            Direction dir = dirs .next();
             Axis axis = null;
             if ( orientation >= 0 ) {
                 // we found the orientation above, so we don't need to iterate over the whole orbit

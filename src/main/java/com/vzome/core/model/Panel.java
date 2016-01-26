@@ -27,15 +27,16 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         return null;
     }
 
+    @Deprecated
     public Iterator<AlgebraicVector> getVertices()
     {
-        return mVertices.iterator();
+        return this.iterator();
     }
 
     @Override
 	public Iterator<AlgebraicVector> iterator()
 	{
-		return this.getVertices();
+		return mVertices.iterator();
 	}
 
     public int hashCode()
@@ -121,8 +122,8 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
     public String toString()
     {
         StringBuffer buf = new StringBuffer( "panel: " );
-        for ( Iterator iterator = mVertices.iterator(); iterator.hasNext(); ) {
-            AlgebraicVector vertex = (AlgebraicVector) iterator.next();
+        for ( Iterator<AlgebraicVector> iterator = mVertices.iterator(); iterator.hasNext(); ) {
+            AlgebraicVector vertex = iterator.next();
             buf.append( vertex .toString() );
             buf.append( ", " );
 

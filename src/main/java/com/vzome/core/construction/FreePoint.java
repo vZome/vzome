@@ -25,7 +25,7 @@ public class FreePoint extends Point
         return true;
     }
     
-//    public static Construction load( Element elem, Map index )
+//    public static Construction load( Element elem, Map<String, Construction> index )
 //    {
 //        String idStr = elem .getAttributeValue( "id" );
 //        int id = Integer .parseInt( idStr );

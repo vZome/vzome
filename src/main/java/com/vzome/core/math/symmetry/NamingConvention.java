@@ -32,8 +32,8 @@ public class NamingConvention
 	
 	public String getName( Axis axis )
 	{
-		for ( Iterator namings = mNamings .values() .iterator(); namings .hasNext(); ) {
-			DirectionNaming naming = (DirectionNaming) namings .next();
+		for ( Iterator<DirectionNaming> namings = mNamings .values() .iterator(); namings .hasNext(); ) {
+			DirectionNaming naming = namings .next();
 			if ( naming .getDirection() .equals( axis .getDirection() ) )
 				return naming .getName( axis );
 		}

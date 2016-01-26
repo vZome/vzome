@@ -24,9 +24,9 @@ public class DeselectByClass extends ChangeSelection
     
     public void perform()
     {
-        for ( Iterator all = mSelection .iterator(); all .hasNext(); )
+        for ( Iterator<Manifestation> all = mSelection .iterator(); all .hasNext(); )
         {
-        	Manifestation man = (Manifestation) all .next();
+        	Manifestation man = all .next();
         	if ( balls )
         	{
         		if ( man instanceof Connector )

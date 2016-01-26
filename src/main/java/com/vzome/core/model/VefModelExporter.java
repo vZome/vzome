@@ -78,8 +78,8 @@ public class VefModelExporter implements Exporter
         //
         int[] vertexMapping = new int[ poly .getVertexList() .size() ];
         int vertexNum = 0;
-        for ( Iterator verts = poly .getVertexList() .iterator(); verts .hasNext(); ) {
-            AlgebraicVector vertexVector = (AlgebraicVector) verts .next();
+        for ( Iterator<AlgebraicVector> verts = poly .getVertexList() .iterator(); verts .hasNext(); ) {
+            AlgebraicVector vertexVector = verts .next();
             if ( reverseFaces )
                 vertexVector = vertexVector .negate();
             vertexVector = rotation .timesColumn( vertexVector );
@@ -146,8 +146,8 @@ public class VefModelExporter implements Exporter
         {
             ++ numPanels;
             List<Integer> vs = new ArrayList<>();
-            for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
-                vs .add( getVertexIndex( (AlgebraicVector) verts .next() ));
+            for ( Iterator<AlgebraicVector> verts = ((Panel) man) .iterator(); verts .hasNext(); )
+                vs .add( getVertexIndex( verts .next() ) );
             panels .append( vs .size() );
 			for (Integer v : vs) {
 				panels .append( " " );
@@ -181,8 +181,8 @@ public class VefModelExporter implements Exporter
         else if ( man instanceof Panel ) {
         	if ( this .middleVertices .isEmpty() )
         		output .print( "middle" );
-            for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); ) {
-                Integer index = getVertexIndex( (AlgebraicVector) verts .next() );
+            for ( Iterator<AlgebraicVector> verts = ((Panel) man) .iterator(); verts .hasNext(); ) {
+                Integer index = getVertexIndex( verts .next() );
                 if ( ! this .middleVertices .contains( index ) ) {
                     this .middleVertices .add( index );
                 	output .print( " " + index );

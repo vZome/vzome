@@ -24,7 +24,7 @@ public class PlaneOrbitSet extends OrbitSet
         while ( dirs .hasNext() ) {
             Direction dir = dirs .next();
             // now iterate over axes
-			for ( Iterator<Axis> axes = dir .getAxes(); axes .hasNext(); ) {
+			for ( Iterator<Axis> axes = dir .iterator(); axes .hasNext(); ) {
 				Axis axis = axes .next();
 				if ( axis .normal() .dot( this .normal ) .isZero() )
 					this .zones .add( axis );

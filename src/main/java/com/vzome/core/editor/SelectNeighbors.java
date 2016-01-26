@@ -28,8 +28,8 @@ public class SelectNeighbors extends ChangeSelection
         Set<Panel> panels = new HashSet<>();
         Set<Strut> struts = new HashSet<>();
         Set<Connector> balls = new HashSet<>();
-        for ( Iterator mans = selection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for ( Iterator<Manifestation> mans = selection .iterator(); mans .hasNext(); ) {
+            Manifestation man = mans .next();
             if ( man instanceof Strut )
                 struts .add( (Strut) man );
             else if ( man instanceof Connector )
@@ -40,7 +40,7 @@ public class SelectNeighbors extends ChangeSelection
         for ( Iterator<Connector> bs = balls .iterator(); bs .hasNext(); ) {
             Connector ball = bs .next();
             AlgebraicVector loc = ball .getLocation();
-            for ( Iterator<Manifestation> ms = model .getAllManifestations(); ms .hasNext(); ) {
+            for ( Iterator<Manifestation> ms = model .iterator(); ms .hasNext(); ) {
                 Manifestation man = ms .next();
                 if ( man .getRenderedObject() == null )
                     continue;  // hidden!
@@ -52,7 +52,7 @@ public class SelectNeighbors extends ChangeSelection
                 }
                 else if ( withPanels && ( man instanceof Panel ) && ! panels .contains( man ) ) {
                     Panel panel = (Panel) man;
-                    for (Iterator<AlgebraicVector> iterator = panel .getVertices(); iterator.hasNext(); ) {
+                    for (Iterator<AlgebraicVector> iterator = panel .iterator(); iterator.hasNext(); ) {
                         AlgebraicVector vertex = iterator.next();
                         if ( loc .equals( vertex ) ) {
                             select( panel );
@@ -67,8 +67,8 @@ public class SelectNeighbors extends ChangeSelection
             Strut strut = ss .next();
             AlgebraicVector loc = strut .getLocation();
             AlgebraicVector end = strut .getEnd();
-            for ( Iterator ms = model .getAllManifestations(); ms .hasNext(); ) {
-                Manifestation man = (Manifestation) ms .next();
+            for ( Iterator<Manifestation> ms = model .iterator(); ms .hasNext(); ) {
+                Manifestation man = ms .next();
                 if ( man .getRenderedObject() == null )
                     continue;  // hidden!
                 if ( man instanceof Connector && ! balls .contains( man ) ) {
@@ -81,10 +81,10 @@ public class SelectNeighbors extends ChangeSelection
         if ( withPanels )
             for ( Iterator<Panel> ss = panels .iterator(); ss .hasNext(); ) {
                 Panel panel = ss .next();
-                for (Iterator iterator = panel .getVertices(); iterator.hasNext(); ) {
-                    int[] loc = (int[]) iterator.next();
-                    for ( Iterator ms = model .getAllManifestations(); ms .hasNext(); ) {
-                        Manifestation man = (Manifestation) ms .next();
+                for (Iterator<AlgebraicVector> iterator = panel .iterator(); iterator.hasNext(); ) {
+                    AlgebraicVector loc = iterator.next();
+                    for ( Iterator<Manifestation> ms = model .iterator(); ms .hasNext(); ) {
+                        Manifestation man = ms .next();
                         if ( man .getRenderedObject() == null )
                             continue;  // hidden!
                         if ( man instanceof Connector && ! balls .contains( man ) ) {

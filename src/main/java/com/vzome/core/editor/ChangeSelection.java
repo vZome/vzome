@@ -13,6 +13,7 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Group;
+import com.vzome.core.model.GroupElement;
 import com.vzome.core.model.Manifestation;
 
 public abstract class ChangeSelection extends SideEffects
@@ -148,8 +149,8 @@ public abstract class ChangeSelection extends SideEffects
     
     private void selectGroup( Group group )
     {
-        for ( Iterator it = group .iterator(); it .hasNext(); ) {
-            Object next = it .next();
+        for ( Iterator<GroupElement> it = group .iterator(); it .hasNext(); ) {
+            GroupElement next = it .next();
             if ( next instanceof Group )
                 selectGroup( (Group) next );
             else
@@ -159,8 +160,8 @@ public abstract class ChangeSelection extends SideEffects
     
     private void unselectGroup( Group group )
     {
-        for ( Iterator it = group .iterator(); it .hasNext(); ) {
-            Object next = it .next();
+        for ( Iterator<GroupElement> it = group .iterator(); it .hasNext(); ) {
+            GroupElement next = it .next();
             if ( next instanceof Group )
                 unselectGroup( (Group) next );
             else

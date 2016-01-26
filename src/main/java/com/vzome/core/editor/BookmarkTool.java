@@ -29,8 +29,8 @@ public class BookmarkTool extends ChangeManifestations implements Tool
         this.name = name;
         this.tools = tools;
         Duplicator duper = new Duplicator( null, null );
-        for (Iterator iterator = mSelection.iterator(); iterator.hasNext();) {
-			Manifestation man = (Manifestation) iterator.next();
+        for (Iterator<Manifestation> iterator = mSelection.iterator(); iterator.hasNext();) {
+			Manifestation man = iterator.next();
 			Construction result = duper .duplicateConstruction( man );
 	        bookmarkedConstructions .add( result );
 		}
@@ -58,8 +58,8 @@ public class BookmarkTool extends ChangeManifestations implements Tool
 
     public void prepare( ChangeManifestations edit )
     {
-        for ( Iterator cons = bookmarkedConstructions .iterator(); cons .hasNext(); ) {
-        	Construction con = (Construction) cons .next();
+        for ( Iterator<Construction> cons = bookmarkedConstructions .iterator(); cons .hasNext(); ) {
+        	Construction con = cons .next();
         	edit .manifestConstruction( con );
         }
         edit .redo();

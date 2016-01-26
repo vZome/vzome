@@ -210,9 +210,9 @@ public class ExportedVEFShapes extends AbstractShapes
             {
                 AlgebraicVector originalVertex = vertices .get( i );
                 // first, subtract the tipVertex if appropriate
-                if ( tipVertexIndices .contains( new Integer( i ) ) )
+                if ( tipVertexIndices .contains(i) )
                     originalVertex = originalVertex .minus( tipVertex );
-                else if ( midpointVertexIndices .contains( new Integer( i ) ) )
+                else if ( midpointVertexIndices .contains(i) )
                 	originalVertex = originalVertex .minus( midpoint );
                 // then, rotate to align with the 0-index zone for this orbit
                 AlgebraicVector adjustedVertex = adjustment .timesColumn( originalVertex );
@@ -245,7 +245,7 @@ public class ExportedVEFShapes extends AbstractShapes
             List<Integer> face = new ArrayList<>();
             for ( int i = 0; i < verts.length; i++ ) {
                 int j = verts[i];
-                face .add( new Integer( j ) );
+                face .add(j);
             }
             faces .add( face );
         }
@@ -258,7 +258,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
         protected void addBall( int index, int vertex )
         {
-        	tipVertexIndices .add( new Integer( vertex ) );
+        	tipVertexIndices .add(vertex);
         }
 
         protected void endFile( StringTokenizer tokens )
@@ -297,7 +297,7 @@ public class ExportedVEFShapes extends AbstractShapes
                 } catch ( NumberFormatException e ) {
                     throw new RuntimeException( "VEF format error: middle vertex index (\"" + token + "\") must be an integer", e );
                 }                
-        		midpointVertexIndices .add( new Integer( vertexIndex ) );
+        		midpointVertexIndices .add(vertexIndex);
             }
         }
 

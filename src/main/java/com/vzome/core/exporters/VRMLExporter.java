@@ -86,9 +86,9 @@ public class VRMLExporter extends Exporter3d
         int numShapes = 0;
         ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
         Map<Color, String> colors = new HashMap<>();
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+            RenderedManifestation rm = rms .next();
             Polyhedron shape = rm .getShape();
             if ( field == null )
                 field = shape .getField();
@@ -165,20 +165,20 @@ public class VRMLExporter extends Exporter3d
         output .println( "PROTO " + shapeName + " [] { IndexedFaceSet{ solid FALSE convex FALSE colorPerVertex FALSE" );
         output .println( "   coord Coordinate{ point [" );
         
-        for ( Iterator vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
-            AlgebraicVector gv = (AlgebraicVector) vertices .next();
+        for ( Iterator<AlgebraicVector> vertices = poly .getVertexList() .iterator(); vertices .hasNext(); ) {
+            AlgebraicVector gv = vertices .next();
             if ( reverseFaces )
                 gv = gv  .negate();
             RealVector v = gv .toRealVector();
             output .println( v .scale( SCALE ) .spacedString() + "," );
         }
         output .println( "] } coordIndex [" );
-        for ( Iterator faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
-            Polyhedron.Face face = (Polyhedron.Face) faces .next();
+        for ( Iterator<Polyhedron.Face> faces = poly .getFaceSet() .iterator(); faces .hasNext(); ){
+            Polyhedron.Face face = faces .next();
             int arity = face .size();
             for ( int j = 0; j < arity; j++ ){
                 Integer index = face .get( /*reverseFaces? arity-j-1 :*/ j );
-                output .print( index .intValue() + ", " );
+                output .print( index + ", " );
             }
             output .println( "-1," );
         }

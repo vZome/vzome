@@ -57,15 +57,15 @@ public class SecondLifeExporter extends Exporter3d
         StringBuffer vertices = new StringBuffer();
         Map<AlgebraicVector, Integer> ballIndices = new HashMap<>( numBalls );
         boolean first = true;
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+            Manifestation man = rms .next() .getManifestation();
             if ( man instanceof Connector )
             {
                 AlgebraicVector loc = ((Connector) man) .getLocation();
                 if ( ballIndices .containsKey( loc ) )
                     continue;
-                ballIndices .put( loc, new Integer( numBalls++ ) );
+                ballIndices .put(loc, numBalls++);
                 loc = loc .scale( scale );
                 RealVector rv = loc .toRealVector();
                 if ( first )
@@ -90,9 +90,9 @@ public class SecondLifeExporter extends Exporter3d
         output .println( VERTEX_POSTLUDE );
 
         first = true;
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+        for ( Iterator<RenderedManifestation> rms = mModel .iterator(); rms .hasNext(); )
         {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+            RenderedManifestation rm = rms .next();
             Manifestation man = rm .getManifestation();
             if ( man instanceof Strut )
             {
@@ -107,18 +107,19 @@ public class SecondLifeExporter extends Exporter3d
         }
 //        
 //        output .println( "\n" );
-//        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
+//        for ( Iterator<RenderedManifestation> rms = mModel .getRenderedManifestations(); rms .hasNext(); )
 //        {
-//            RenderedManifestation rm = (RenderedManifestation) rms .next();
+//            RenderedManifestation rm = rms .next();
 //            Manifestation man = rm .getManifestation();
 //            if ( man instanceof Panel )
 //            {
-//                List vs = new ArrayList<>();
-//                for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
-//                    vs .add( ballIndices .get( (GoldenVector) verts .next() ) );
+//                List<Integer> vs = new ArrayList<>();
+//                for ( Iterator<AlgebraicVector> verts = ((Panel) man) .iterator(); verts .hasNext(); )
+//                    vs .add( ballIndices .get( verts .next() ) );
 //                output .print( vs .size() );
-//                for ( int i = 0; i < vs .size(); i++ )
-//                    output .print( " " + ((Integer) vs .get( i ) ) .intValue() );
+//                for (Integer v : vs) {
+//                    output.print(" " + (v));
+//                }
 //                output .println();
 //            }
 //        }

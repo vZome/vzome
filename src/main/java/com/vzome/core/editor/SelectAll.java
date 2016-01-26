@@ -13,8 +13,8 @@ public class SelectAll extends ChangeSelection
     public SelectAll( Selection selection, RealizedModel model, boolean groupInSelection )
     {
         super( selection, groupInSelection );
-        for ( Iterator all = model .getAllManifestations(); all .hasNext(); ) {
-            Manifestation m = (Manifestation) all .next();
+        for ( Iterator<Manifestation> all = model .iterator(); all .hasNext(); ) {
+            Manifestation m = all .next();
             if ( m .getRenderedObject() != null )
             {
                 if ( ! selection .manifestationSelected( m ) )

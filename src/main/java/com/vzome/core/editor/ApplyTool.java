@@ -47,17 +47,17 @@ public class ApplyTool extends ChangeManifestations
     	// now, any manifested constructions are outputs
         if ( tool .needsInput() )
         {
-        	for ( Iterator mans = inputs .iterator(); mans .hasNext(); ) {
-        		Manifestation man = (Manifestation) mans .next();
-        		Construction c = (Construction) man .getConstructions() .next();
+        	for ( Iterator<Manifestation> mans = inputs .iterator(); mans .hasNext(); ) {
+        		Manifestation man = mans .next();
+        		Construction c = man .getConstructions() .next();
 
         		tool .performEdit( c, this );
         	}
         }
         else
         {
-        	for ( Iterator mans = mManifestations .getAllManifestations(); mans .hasNext(); ) {
-        		Manifestation man = (Manifestation) mans .next();
+        	for ( Iterator<Manifestation> mans = mManifestations .iterator(); mans .hasNext(); ) {
+        		Manifestation man = mans .next();
         		tool .performSelect( man, this );
         	}
         }
