@@ -184,7 +184,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     private LengthController getLengthController( Direction dir )
     {
         LengthController result = (LengthController) orbitLengths .get( dir );
-        if ( result == null )
+        if ( result == null && dir != null )
         {
         	result = new LengthController( dir );
         	result .setNextController( buildController );

@@ -34,40 +34,41 @@ import org.vorthmann.ui.Controller;
 public class NewLengthPanel extends JPanel implements PropertyChangeListener, ActionListener
 {
     private final JButton scaleUp, scaleDown, superShortScale, shortScale, mediumScale, longScale;
-    
+
     private final JCheckBox halfCheckbox;
-    
+
     private final CardPanel halfCardPanel;
-        
+
     private final JLabel unitText, lengthText, sliderLabel;
-    
+
     private final JSlider scaleSlider;
-    
+
     private final JPanel coloredBackground, sliderPanel;
-        
+
     private final JComponent upDownButtons, scaleButtons;
-        
+
     private final JPanel lengthDisplay;
-    
+
     private boolean emitSliderEvents = true;
-    
+
     /**
-     * properties: unit, multiplier 
-     * 
+     * properties: unit, multiplier
+     *
      * graphics: selectedOrbit
      */
     protected Controller controller;
-    
+
     private LengthDialog lengthDialog;
-    
+
     private final JFrame frame;
 
+    @Override
     public void actionPerformed( ActionEvent e )
     {
         controller .actionPerformed( e );
         renderLength();
     }
-    
+
     public void setController( Controller controller )
     {
         if ( this .controller != null )
@@ -90,7 +91,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
     public NewLengthPanel( JFrame frame )
     {
         this .frame = frame;
-        
+
         this .setLayout( new BorderLayout() );
         {
             coloredBackground = new JPanel( new BorderLayout() );
@@ -101,6 +102,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                 {
                     scaleUp = createButton( "scaleUp", new ActionListener()
                     {
+                        @Override
                         public void actionPerformed( ActionEvent e )
                         {
                             int value = scaleSlider .getValue();
@@ -111,6 +113,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                     upDownButtons .add( scaleUp );
                     scaleDown = createButton( "scaleDown", new ActionListener()
                     {
+                        @Override
                         public void actionPerformed( ActionEvent e )
                         {
                             int value = scaleSlider .getValue();
@@ -124,7 +127,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
             }
             {
                 // center: scale slider
-                
+
                 sliderPanel = new JPanel( new BorderLayout() );
                 sliderPanel .setBorder( BorderFactory .createEmptyBorder( 15, 15, 15, 15 ) );
                 // scale slider
@@ -132,8 +135,9 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                 scaleSlider .setMajorTickSpacing( 1 );
                 scaleSlider .setPaintTicks( true );
                 sliderLabel = new JLabel( "unit" );
-                Hashtable labelTable = new Hashtable();
-                labelTable .put( new Integer( 0 ), sliderLabel );
+                @SuppressWarnings("UseOfObsoleteCollectionType")
+                Hashtable<Integer, JComponent > labelTable = new Hashtable<>();
+                labelTable .put( 0, sliderLabel );
                 scaleSlider .setLabelTable( labelTable );
 
                 scaleSlider .setPaintLabels( true );
@@ -143,6 +147,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                 scaleSlider .setSnapToTicks( true );
                 scaleSlider .addChangeListener( new ChangeListener()
                 {
+                    @Override
                     public  void stateChanged( ChangeEvent e )
                     {
                         // it is essential to report state changes only when they are initiated here,
@@ -175,6 +180,14 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                     shortScale = createButton( "short", "b1", this );
                     mediumScale = createButton( "medium", "b2", this );
                     longScale = createButton( "long", "b3", this );
+                    // set preferred width wide enough that the buttons don't resize
+                    // when the button text changes (e.g. from "b0" to "shorter")
+                    Dimension preferredSize = superShortScale.getPreferredSize();
+                    preferredSize.width = 80;
+                    superShortScale.setPreferredSize(preferredSize);
+                    shortScale.setPreferredSize(preferredSize);
+                    mediumScale.setPreferredSize(preferredSize);
+                    longScale.setPreferredSize(preferredSize);
                     scaleButtons .add( longScale );
                     scaleButtons .add( mediumScale );
                     scaleButtons .add( shortScale );
@@ -214,8 +227,9 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                     JButton editButton = new JButton( "custom" );
 //                    editButton .setEnabled( false );
                     editButton .setToolTipText( "customize the unit length" );
-                    editButton .addActionListener( new ActionListener(){
-
+                    editButton .addActionListener( new ActionListener()
+                    {
+                        @Override
                         public void actionPerformed( ActionEvent e )
                         {
                             lengthDialog .resync( controller );
@@ -234,7 +248,6 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
             lengthDisplay .setVisible( false );
         }
     }
-        
 
     protected static JButton createButton( String actionCommand, ActionListener listener )
     {
@@ -258,7 +271,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
         return button;
     }
 
-    private final void switchOrbit()
+    private void switchOrbit()
     {
         if ( "true" .equals( controller .getProperty( "halfSizes" ) ) )
             halfCardPanel .showCard( "half" );
@@ -279,11 +292,11 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
             upDownButtons .setBackground( color );
             sliderPanel .setBorder( BorderFactory .createMatteBorder( 15, 15, 15, 15, color ) );
         }
-        
+
         repaint();
     }
-    
-    private final void renderLength()
+
+    private void renderLength()
     {
         halfCheckbox .setSelected( "true" .equals( controller .getProperty( "half" ) ) );
 
@@ -302,22 +315,25 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
         }
     }
 
+    @Override
     public void propertyChange( PropertyChangeEvent e )
     {
-        if ( "length" .equals( e .getPropertyName() ) )
-            renderLength();
-        
-        else if ( "selectedOrbit" .equals( e .getPropertyName() ) )
-        {
-        	// this first one should fall "up" to the symmetry controller
-        	Controller newController = controller .getSubController( "buildOrbits" );
-        	newController = controller .getSubController( "currentLength" );
-        	// we didn't set this.controller directly, since we need to disconnect from it first
-            setController( newController );
+        switch (e.getPropertyName()) {
+            case "length":
+                renderLength();
+                break;
+            case "selectedOrbit":
+                Controller newController = controller .getSubController( "currentLength" );
+                // newController will be null if all directions are disabled.
+                // in that case, just retain the controller from the previously selected orbit.
+                if(newController != null) {
+                    // we didn't set this.controller directly, since we need to disconnect from it first
+                    setController( newController );
+                }	break;
+            case "showStrutScales":
+                lengthDisplay .setVisible((Boolean) e.getNewValue());
+                break;
         }
-        
-        else if ( "showStrutScales" .equals( e .getPropertyName() ) )
-            lengthDisplay .setVisible( ((Boolean) e .getNewValue()) .booleanValue() );
     }
 
 }
