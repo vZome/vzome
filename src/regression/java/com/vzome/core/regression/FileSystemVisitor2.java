@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -56,13 +55,12 @@ public class FileSystemVisitor2 {
 			else if ( fileHasProperties( extension ) ){
 				Properties props = new Properties();
 				props .load( new FileInputStream( file ) );
-				//trim those values
-				for( Iterator entries = props .entrySet() .iterator(); entries .hasNext(); ) {
-					Map .Entry entry = (Map .Entry) entries.next();
-					String value = (String) entry .getValue();
-					if (value != value .trim())
-						entry .setValue( value .trim() );
-				}
+                //trim those values
+                for (Map.Entry<Object, Object> entry : props .entrySet()) {
+                    String value = (String) entry .getValue();
+                    if (value != value .trim())
+                        entry .setValue( value .trim() );
+                }
 				actOnPropertiesFile( file, props, visitor );
 			}
 		}
@@ -138,11 +136,11 @@ public class FileSystemVisitor2 {
 	public void visitFolder( File directory, Actor actor ) throws IOException
 	{
 		String[] files = directory .list();
-        if (files != null)
-            for ( int i = 0; i < files .length; i++ ) {
-                File file = new File( directory, files[i] );
-                actor .actOnFileOrFolder( file, this );
+        if (files != null) {
+            for (String fileName : files) {
+                actor .actOnFileOrFolder( new File( directory, fileName ), this );
             }
+        }
 	}
 	
 	

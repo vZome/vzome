@@ -10,7 +10,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.editor.ApiEdit;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -22,8 +21,8 @@ import com.vzome.core.viewing.ViewModel;
 public class Document
 {
 	final DocumentModel delegate;
-	private final Set<Ball> balls = new HashSet<Ball>();
-	private final Set<Strut> struts = new HashSet<Strut>();
+	private final Set<Ball> balls = new HashSet<>();
+	private final Set<Strut> struts = new HashSet<>();
 
 	public Document( DocumentModel delegate ) throws Failure
 	{

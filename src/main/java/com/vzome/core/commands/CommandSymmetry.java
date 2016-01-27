@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
@@ -34,7 +33,7 @@ public class CommandSymmetry extends CommandTransform
         return GROUP_ATTR_SIGNATURE;
     }
     
-    protected Point setSymmetry( Map attributes )
+    protected Point setSymmetry( AttributeMap attributes )
     {
         if ( mSymmetry == null )
             mSymmetry = (Symmetry) attributes .get( SYMMETRY_GROUP_ATTR_NAME );
@@ -48,7 +47,7 @@ public class CommandSymmetry extends CommandTransform
         return center;
     }
     
-    public void setFixedAttributes( Map attributes, XmlSaveFormat format )
+    public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         if ( ! attributes .containsKey( SYMMETRY_GROUP_ATTR_NAME ) )
         {
@@ -58,14 +57,15 @@ public class CommandSymmetry extends CommandTransform
         super .setFixedAttributes( attributes, format );
     }
 
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         Point center = setSymmetry( attributes );
         
         final Construction[] params = parameters .getConstructions();
         ConstructionList output = new ConstructionList();
-        for ( int j = 0; j < params .length; j++ )
-            output .addConstruction( params[j] );
+        for (Construction param : params) {
+            output.addConstruction(param);
+        }
         
         for ( int i = 1; i < mSymmetry .getChiralOrder(); i++ )
         {

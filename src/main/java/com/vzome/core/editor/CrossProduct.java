@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.ModelRoot;
@@ -23,8 +22,7 @@ public class CrossProduct extends ChangeManifestations
         Point p1 = null, p2 = null;
         Segment s1 = null;
         boolean success = false;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Connector )
             {
@@ -33,7 +31,7 @@ public class CrossProduct extends ChangeManifestations
                     p1 = nextPoint;
                 else if ( s1 == null )
                 {
-                	p2 = nextPoint;
+                    p2 = nextPoint;
                     s1 = new SegmentJoiningPoints( p1, nextPoint );
                 }
                 else 

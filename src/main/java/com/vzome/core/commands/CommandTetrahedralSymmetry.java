@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
@@ -38,7 +37,7 @@ public class CommandTetrahedralSymmetry extends CommandSymmetry
         return ATTR_SIGNATURE;
     }
     
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         final Point center = setSymmetry( attributes );
                 
@@ -46,8 +45,9 @@ public class CommandTetrahedralSymmetry extends CommandSymmetry
         
         final Construction[] params = parameters .getConstructions();
         ConstructionList output = new ConstructionList();
-        for ( int j = 0; j < params .length; j++ )
-            output .addConstruction( params[j] );
+        for (Construction param : params) {
+            output.addConstruction(param);
+        }
         
         for ( int i = 1; i < closure .length; i++ ) {
             

@@ -396,17 +396,16 @@ public class ZomicASTTest extends TestCase
 			ArrayList<String> list = new ArrayList<>();
 			boolean hasNegativeAxes = false;
 			boolean isChiral = false;
-			for ( Iterator axes = direction.getAxes(); axes.hasNext(); ) {
-				Axis axis = (Axis) axes.next();
-				String indexName = namingConvention.getName(axis);
-				if (NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
-					break; 
-				} else {
-					list.add(indexName);
-					if(indexName.startsWith("-")) { hasNegativeAxes = true; }
-					if(indexName.endsWith("+") || indexName.endsWith("-")) { isChiral = true; }
-				}
-			}
+            for (Axis axis : direction) {
+                String indexName = namingConvention.getName(axis);
+                if (NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
+                    break;
+                } else {
+                    list.add(indexName);
+                    if(indexName.startsWith("-")) { hasNegativeAxes = true; }
+                    if(indexName.endsWith("+") || indexName.endsWith("-")) { isChiral = true; }
+                }
+            }
 			if(!list.isEmpty()) {
 				//System.out.println(color + " " + (isChiral ? "has" : "does NOT have") + " Chiral Axes.");
 				//System.out.println(color + " " + (hasNegativeAxes ? "knows" : "does NOT know") + " about Negative Axes.");
@@ -436,8 +435,8 @@ public class ZomicASTTest extends TestCase
 	public void testOK_ZomicNamingConvention() {
 		for (String color : symmetry.getDirectionNames()) {
 			Direction direction = symmetry.getDirection(color);
-			for (Iterator axes = direction.getAxes(); axes.hasNext();) {
-				Axis symmetryAxis = (Axis) axes.next();
+			for (Iterator<Axis> axes = direction.getAxes(); axes.hasNext();) {
+				Axis symmetryAxis = axes.next();
 				String indexName = namingConvention.getName(symmetryAxis);
 				Axis namingAxis = namingConvention.getAxis(color, indexName);
 				if (namingAxis == null || NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
@@ -551,9 +550,9 @@ public class ZomicASTTest extends TestCase
 	public void testOK_StrutDefaultValues() {
 		Walk program = compileAndCompare("red 0 /* test StrutDefaultValues */");
 		assertProgramSize(1, program);
-		Iterator it = program .getStatements(); 
+		Iterator<ZomicStatement> it = program .getStatements(); 
 		while( it.hasNext() ) {
-			ZomicStatement stmt = (ZomicStatement) it.next();
+			ZomicStatement stmt = it.next();
 			if(stmt instanceof Move) {
 				Move m = (Move)stmt;
 				AlgebraicField algebraicField = m.getLength().getField();

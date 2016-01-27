@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,9 +43,8 @@ public class OffExporter extends Exporter3d
 		FORMAT .setMaximumFractionDigits( 16 );
         
 		int numBalls = 0, numStruts = 0, numPanels = 0;
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             if ( man instanceof Connector )
                 ++ numBalls;
             else if ( man instanceof Strut )
@@ -56,32 +54,32 @@ public class OffExporter extends Exporter3d
         }
         output .println( numBalls + " " + numPanels + " " + numStruts );
         
-        Map ballIndices = new HashMap( numBalls );
+        Map<AlgebraicVector, Integer> ballIndices = new HashMap<>( numBalls );
         numBalls = 0;
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             if ( man instanceof Connector ) {
                 AlgebraicVector loc = ((Connector) man) .getLocation();
                 RealVector rv = loc .toRealVector();
                 output .print( FORMAT.format( rv .x ) + " " );
                 output .print( FORMAT.format( rv .y ) + " " );
                 output .println( FORMAT.format( rv .z ) );
-                ballIndices .put( loc, new Integer( numBalls++ ) );
+                ballIndices .put(loc, numBalls++);
             }
         }
         
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+        for (RenderedManifestation rm : mModel) {
             Manifestation man = rm .getManifestation();
-            if ( man instanceof Panel ) {
-                List vs = new ArrayList();
-                for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
-                    vs .add( ballIndices .get( verts .next() ) );
+            if (man instanceof Panel) {
+                Panel panel = (Panel) man;
+                List<Integer> vs = new ArrayList<>();
+                for (AlgebraicVector vert : panel) {
+                    vs .add( ballIndices .get( vert ) );
+                }
                 output .print( vs .size() );
-                for ( int i = 0; i < vs .size(); i++ )
-                    output .print( " " + ((Integer) vs .get( i ) ) .intValue() );
+                for (Integer v : vs) {
+                    output.print(" " + v);
+                }
                 output .println();
             }
         }

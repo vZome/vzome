@@ -62,7 +62,7 @@ public class VefToModelTest extends TestCase
         assertEquals( expected, v1 );
     }
 
-    private static class NewConstructions extends ArrayList implements ConstructionChanges
+    private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
     {
         public void constructionAdded( Construction c )
         {

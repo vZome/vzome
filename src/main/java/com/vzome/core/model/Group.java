@@ -5,7 +5,7 @@ package com.vzome.core.model;
 
 import java.util.ArrayList;
 
-public class Group extends ArrayList
+public class Group extends ArrayList<GroupElement> implements GroupElement
 {
     private Group mContainer;
     
@@ -14,6 +14,7 @@ public class Group extends ArrayList
         return mContainer;
     }
     
+    @Override
     public void setContainer( Group container )
     {
         mContainer = container;

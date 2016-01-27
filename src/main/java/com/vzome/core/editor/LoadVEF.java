@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -62,8 +61,7 @@ public class LoadVEF extends ChangeManifestations
     {
         AlgebraicVector offset = null;
         boolean pointFound = false;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for (Manifestation man : mSelection) {
             if ( man instanceof Connector )
             {
                 Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();

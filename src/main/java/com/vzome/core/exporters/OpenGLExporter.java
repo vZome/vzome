@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +36,7 @@ public class OpenGLExporter extends Exporter3d
 	    super( scene, colors, lights, model );
 	}
 
+    private class ShapeMap extends HashMap<Polyhedron, Integer> {}
 
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
@@ -58,47 +58,42 @@ public class OpenGLExporter extends Exporter3d
 		int numShapes = 0; // this is actually the number of ints written to shape_indices
 		int numTransforms = 0; // this is actually the number of arrays written to transformations
         int numVertices = 0;
-		Map[] shapes = new Map[]{ new HashMap(), new HashMap() };
-		Map transforms = new HashMap();
-		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-		{
-		    RenderedManifestation rm = (RenderedManifestation) rms .next();
-		    Polyhedron shape = rm .getShape();
-		    boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-		    Integer shapeIndex = (Integer) shapes[ flip?1:0 ] .get( shape );
-		    if ( shapeIndex == null )
-		    {
-                shapeIndex = new Integer( numShapes );
+		ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
+		Map<AlgebraicMatrix, Integer> transforms = new HashMap<>();
+        for (RenderedManifestation rm : mModel) {
+            Polyhedron shape = rm .getShape();
+            boolean flip = rm .reverseOrder(); // need to reverse face vertex order
+            Integer shapeIndex = shapes[ flip?1:0 ] .get( shape );
+            if (shapeIndex == null) {
+                shapeIndex = numShapes;
                 shapes[ flip?1:0 ] .put( shape, shapeIndex );
-                
-		        List vertices = shape .getVertexList();
-		        Set faceSet = shape .getFaceSet();
-		        ++numShapes;
-		        shape_indices .append( faceSet .size() + ",\n" ); // TODO add a comment giving some idea of this shape
-		        for ( Iterator faces = shape .getFaceSet() .iterator(); faces .hasNext(); ){
-		            Polyhedron.Face face = (Polyhedron.Face) faces .next();
-		            int arity = face .size();
-		            ++numShapes;
-	                shape_indices .append( arity + ",   " );
-		            RealVector normal = face .getNormal() .toRealVector();
-		            for ( int j = 0; j < arity; j++ ){
-		                Integer index = (Integer) face .get( flip? arity-j-1 : j );
-		                AlgebraicVector loc = (AlgebraicVector) vertices .get( index .intValue() );
-		                RealVector vertex = loc .toRealVector();
+                List<AlgebraicVector> vertices = shape .getVertexList();
+                Set<Polyhedron.Face> faceSet = shape .getFaceSet();
+                ++numShapes;
+                shape_indices .append( faceSet .size() + ",\n" ); // TODO add a comment giving some idea of this shape
+                for (Polyhedron.Face face : shape .getFaceSet()) {
+                    int arity = face .size();
+                    ++numShapes;
+                    shape_indices .append( arity + ",   " );
+                    RealVector normal = face .getNormal() .toRealVector();
+                    for ( int j = 0; j < arity; j++ ){
+                        int index = face .get( flip? arity-j-1 : j );
+                        AlgebraicVector loc = vertices .get( index );
+                        RealVector vertex = loc .toRealVector();
                         shape_vertices .append( vertex + ",\n" );
                         shape_normals .append( normal + ",\n" );
                         ++numShapes;
                         shape_indices .append( (numVertices++) + "," );
-		            }
+                    }
                     shape_indices .append( "\n" );
-		        }
-		    }
-		    AlgebraicMatrix transform = rm .getOrientation();
-		    Integer transformIndex = (Integer) transforms .get( transform );
-		    if ( transformIndex == null ){
-		        transformIndex = new Integer( numTransforms++ );
-		        transforms .put( transform, transformIndex );
-		        
+                }
+            }
+            AlgebraicMatrix transform = rm .getOrientation();
+            Integer transformIndex = transforms .get( transform );
+            if ( transformIndex == null ){
+                transformIndex = numTransforms++;
+                transforms .put( transform, transformIndex );
+                
                 transformations .append( FORMAT .format( transform .getElement( 0, 0 ) .evaluate() ) );
                 transformations .append( ", " );
                 transformations .append( FORMAT .format( transform .getElement( 1, 0 ) .evaluate() ) );
@@ -117,14 +112,13 @@ public class OpenGLExporter extends Exporter3d
                 transformations .append( ", " );
                 transformations .append( FORMAT .format( transform .getElement( 2, 2 ) .evaluate() ) );
                 transformations .append( ", 0, 0, 0, 0, 1,\n" );
-		    }
-			
+            }
             instance_transforms .append( transformIndex + ",\n" );
-			instance_shapes .append( shapeIndex + ",\n" );
-			instance_offsets .append( rm .getLocation() + ",\n" );
+            instance_shapes .append( shapeIndex + ",\n" );
+            instance_offsets .append( rm .getLocation() + ",\n" );
             appendColor( rm .getColor(), instance_colors );
             ++ num_instances;
-		}
+        }
 
         output .println( transformations .toString() );
         output .println( "};\n" );

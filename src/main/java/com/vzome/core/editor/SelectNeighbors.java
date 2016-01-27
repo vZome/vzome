@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
@@ -25,73 +24,69 @@ public class SelectNeighbors extends ChangeSelection
     {
         super( selection, groupInSelection ); 
         
-        Set panels = new HashSet();
-        Set struts = new HashSet();
-        Set balls = new HashSet();
-        for ( Iterator mans = selection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        Set<Panel> panels = new HashSet<>();
+        Set<Strut> struts = new HashSet<>();
+        Set<Connector> balls = new HashSet<>();
+        for (Manifestation man : selection) {
             if ( man instanceof Strut )
-                struts .add( man );
+                struts .add( (Strut) man );
             else if ( man instanceof Connector )
-                balls .add( man );
+                balls .add( (Connector) man );
             else if ( withPanels && ( man instanceof Panel ) )
-                panels .add( man );
+                panels .add( (Panel) man );
         }
-        for ( Iterator bs = balls .iterator(); bs .hasNext(); ) {
-            Connector ball = (Connector) bs .next();
+        for (Connector ball : balls) {
             AlgebraicVector loc = ball .getLocation();
-            for ( Iterator ms = model .getAllManifestations(); ms .hasNext(); ) {
-                Manifestation man = (Manifestation) ms .next();
+            for (Manifestation man : model) {
                 if ( man .getRenderedObject() == null )
                     continue;  // hidden!
                 if ( man instanceof Strut && ! struts .contains( man ) ) {
                     Strut strut = (Strut) man;
                     if ( loc .equals( strut .getLocation() ) 
                             || loc .equals( strut .getEnd() ) )
-                    	select( strut );
+                        select( strut );
                 }
                 else if ( withPanels && ( man instanceof Panel ) && ! panels .contains( man ) ) {
                     Panel panel = (Panel) man;
-                    for (Iterator iterator = panel .getVertices(); iterator.hasNext(); ) {
-                        int[] vertex = (int[]) iterator.next();
-                        if ( loc .equals( vertex ) )
+                    for (AlgebraicVector vertex : panel) {
+                        if ( loc .equals( vertex ) ) {
                             select( panel );
+                            // no need to continue the loop since we have already selected this panel.
+                            break;
+                        }
                     }
                 }
             }
         }
-        for ( Iterator ss = struts .iterator(); ss .hasNext(); ) {
-            Strut strut = (Strut) ss .next();
+        for (Strut strut : struts) {
             AlgebraicVector loc = strut .getLocation();
             AlgebraicVector end = strut .getEnd();
-            for ( Iterator ms = model .getAllManifestations(); ms .hasNext(); ) {
-                Manifestation man = (Manifestation) ms .next();
+            for (Manifestation man : model) {
                 if ( man .getRenderedObject() == null )
                     continue;  // hidden!
                 if ( man instanceof Connector && ! balls .contains( man ) ) {
                     AlgebraicVector bloc = man .getLocation();
                     if ( bloc .equals( loc ) || bloc .equals( end ) )
-                    	select( man );
+                        select( man );
                 }
             }
         }
-        if ( withPanels )
-            for ( Iterator ss = panels .iterator(); ss .hasNext(); ) {
-                Panel panel = (Panel) ss .next();
-                for (Iterator iterator = panel .getVertices(); iterator.hasNext(); ) {
-                    int[] loc = (int[]) iterator.next();
-                    for ( Iterator ms = model .getAllManifestations(); ms .hasNext(); ) {
-                        Manifestation man = (Manifestation) ms .next();
-                        if ( man .getRenderedObject() == null )
-                            continue;  // hidden!
-                        if ( man instanceof Connector && ! balls .contains( man ) ) {
-                            AlgebraicVector bloc = man .getLocation();
-                            if ( bloc .equals( loc ) )
-                                select( man );
+        if ( withPanels ) {
+                for (Panel panel : panels) {
+                for (AlgebraicVector loc : panel) {
+                    for (Manifestation man : model) {
+                        if ( man .getRenderedObject() != null ) {// if not hidden!
+                            if ( man instanceof Connector && ! balls .contains( man ) ) {
+                                AlgebraicVector bloc = man .getLocation();
+                                if ( bloc .equals( loc ) ) {
+                                    select( man );
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
     }
 
     protected String getXmlElementName()

@@ -18,13 +18,13 @@ import com.vzome.core.math.RealVector;
 /**
  * @author Scott Vorthmann
  */
-public class Direction implements Comparable
+public class Direction implements Comparable, Iterable<Axis>
 {
     private String mName;
     
     private final Axis[][] mAxes;
     
-    private final Map mVectors = new HashMap();
+    private final Map<AlgebraicVector, Axis> mVectors = new HashMap<>();
     
     private final Symmetry mSymmetryGroup;
     
@@ -106,12 +106,17 @@ public class Direction implements Comparable
         return mPrototype;
     }
     
-    public Iterator getAxes()
+    public Iterator<Axis> iterator()
     {
         return mVectors .values() .iterator();
     }
     
-    
+    @Deprecated
+    public Iterator<Axis> getAxes()
+    {
+        return this .iterator();
+    }
+        
     public Symmetry getSymmetry()
     {
         return mSymmetryGroup;
@@ -133,8 +138,7 @@ public class Direction implements Comparable
      */
     public Axis getAxis( AlgebraicVector vector )
     {
-        for ( Iterator lines = mVectors .values() .iterator(); lines .hasNext(); ) {
-            Axis axis = (Axis) lines .next();
+        for (Axis axis : mVectors .values()) {
             AlgebraicVector normal = axis .normal();
             if ( normal .cross( vector ) .isOrigin() ) {
                 // parallel
@@ -142,8 +146,8 @@ public class Direction implements Comparable
                 if ( dotProd .evaluate() > 0 )
                     return axis;
                 else {
-                	int opp = ( axis .getSense() + 1 ) % 2;
-                	return getAxis( opp, axis .getOrientation() );
+                    int opp = ( axis .getSense() + 1 ) % 2;
+                    return getAxis( opp, axis .getOrientation() );
                 }
             }
         }
@@ -163,7 +167,7 @@ public class Direction implements Comparable
         // largest cosine means smallest angle
         //  and cosine is (a . b ) / |a| |b|
         double vectorLength = vector .length();
-        Set<Axis> checked = new HashSet<Axis>();
+        Set<Axis> checked = new HashSet<>();
         int closestOrientation = 0;
         int closestSense = Symmetry.PLUS;
         Axis closestAxis = this .getCanonicalAxis( Symmetry.PLUS, 0 );
@@ -214,8 +218,8 @@ public class Direction implements Comparable
     {        
         Axis closestAxis = null;
         double maxCosine = -1d;
-        for ( Iterator axes = this .getAxes(); axes .hasNext(); ) {
-            Axis axis = (Axis) axes .next();
+        for ( Iterator<Axis> axes = this .getAxes(); axes .hasNext(); ) {
+            Axis axis = axes .next();
             RealVector axisV = axis .normal() .toRealVector();
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {
@@ -275,7 +279,7 @@ public class Direction implements Comparable
     public void createAxis( int orientation, int rotation, AlgebraicVector norm )
     {
         AlgebraicVector key = norm;
-        Axis axis = (Axis) mVectors .get( key );
+        Axis axis = mVectors .get( key );
         Permutation perm = mSymmetryGroup .getPermutation( rotation );
         if ( axis == null ) {
             axis = new Axis( this, orientation, Symmetry.PLUS, rotation, perm, norm );
@@ -287,7 +291,7 @@ public class Direction implements Comparable
         if ( perm != null )
             perm = perm .inverse();
         key = norm;
-        axis = (Axis) mVectors .get( key );
+        axis = mVectors .get( key );
         if ( axis == null ) {
             axis = new Axis( this, orientation, Symmetry.MINUS, rotation, perm, norm );
             mVectors .put( key, axis );

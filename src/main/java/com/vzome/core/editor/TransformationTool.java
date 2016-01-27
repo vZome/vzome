@@ -78,15 +78,14 @@ public abstract class TransformationTool extends ChangeManifestations implements
 
     public void performEdit( Construction c, ChangeManifestations applyTool )
     {
-        for ( int i = 0; i < transforms .length; i++ )
-        {
+        for (Transformation transform : transforms) {
             Construction result = null;
-            if ( c instanceof Point ) {
-                result = new TransformedPoint( transforms[ i ], (Point) c );
-            } else if ( c instanceof Segment ) {
-                result = new TransformedSegment( transforms[ i ], (Segment) c );
-            } else if ( c instanceof Polygon ) {
-                result = new TransformedPolygon( transforms[ i ], (Polygon) c );
+            if (c instanceof Point) {
+                result = new TransformedPoint(transform, (Point) c);
+            } else if (c instanceof Segment) {
+                result = new TransformedSegment(transform, (Segment) c);
+            } else if (c instanceof Polygon) {
+                result = new TransformedPolygon(transform, (Polygon) c);
             } else {
                 // TODO handle other constructions 
             }

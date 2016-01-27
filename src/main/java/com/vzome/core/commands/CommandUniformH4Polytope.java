@@ -4,7 +4,6 @@ package com.vzome.core.commands;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -33,12 +32,12 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
  */
 public class CommandUniformH4Polytope extends CommandTransform
 {
-    public void setFixedAttributes( Map attributes, XmlSaveFormat format )
+    public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         super.setFixedAttributes( attributes, format );
 
         this.field = format .getField();
-        this.symm = (H4Symmetry) h4Symms .get( field );
+        this.symm = h4Symms .get( field );
         if ( symm == null )
         {
             symm = new H4Symmetry( field );
@@ -47,7 +46,7 @@ public class CommandUniformH4Polytope extends CommandTransform
         this .mRoots = format .getQuaternionicSymmetry( "H_4" ) .getRoots();
     }
     
-    private final Map h4Symms = new HashMap();
+    private final Map<AlgebraicField, H4Symmetry> h4Symms = new HashMap<>();
 
     public static final String POLYTOPE_INDEX_ATTR_NAME = "polytope.index";
         
@@ -209,16 +208,16 @@ public class CommandUniformH4Polytope extends CommandTransform
     /*
      * Adding this to support a 4D quaternion.
      */
-    public Map setXml( Element xml, XmlSaveFormat format ) 
+    public AttributeMap setXml( Element xml, XmlSaveFormat format ) 
     {
-        Map attrs = super .setXml( xml, format );
+        AttributeMap attrs = super .setXml( xml, format );
         
         quaternionVector = format .parseRationalVector( xml, "quaternion" );
         
         return attrs;
     }
     
-    public void getXml( Element result, Map attributes )
+    public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
         	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );        
@@ -238,7 +237,7 @@ public class CommandUniformH4Polytope extends CommandTransform
             return true;
     }
     
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         AlgebraicNumber SCALE_DOWN_5 = field .createPower( -5 );
         
@@ -258,8 +257,7 @@ public class CommandUniformH4Polytope extends CommandTransform
         else
         {
             int numSegs = 0;
-            for ( Iterator params = parameters .iterator(); params .hasNext(); ) {
-                Construction cons = (Construction) params .next();
+            for (Construction cons : parameters) {
                 if ( cons instanceof Segment ) {
                     Segment seg = (Segment) cons;
                     if ( ++numSegs == 1 )
@@ -283,14 +281,14 @@ public class CommandUniformH4Polytope extends CommandTransform
 //        final Integer scaleObj = (Integer) attributes .get( SCALE_ATTR_NAME );
 //        int scale = 5;
 //        if ( scaleObj != null )
-//            scale += scaleObj .intValue();
+//            scale += scaleObj;
         if ( mPolytopeIndex < 0 ) {
             Integer indexObj = (Integer) attributes .get( POLYTOPE_INDEX_ATTR_NAME );
-            mPolytopeIndex = indexObj .intValue();
+            mPolytopeIndex = indexObj;
         }
         else
             // make sure the attr is set, so it get saved with the file
-            attributes .put( POLYTOPE_INDEX_ATTR_NAME, new Integer( mPolytopeIndex ) );
+            attributes .put(POLYTOPE_INDEX_ATTR_NAME, mPolytopeIndex);
         
         generate( proj, mPolytopeIndex, mPolytopeIndex, null, effects );
         
@@ -321,17 +319,16 @@ public class CommandUniformH4Polytope extends CommandTransform
             if ( ( renderEdges & ( 1 << mirror ) ) != 0 )
                 reflections[ mirror ] = symm .reflect( mirror, prototype );
 
-        Map vertices = new HashMap();
-        Set edges = new HashSet();
+        Map<AlgebraicVector, Point> vertices = new HashMap<>();
+        Set<Edge> edges = new HashSet<>();
         StringBuffer vefVertices = new StringBuffer();
         StringBuffer vefEdges = new StringBuffer();
-        for ( int i = 0; i < mRoots.length; i++ ) 
-            for ( int j = 0; j < mRoots.length; j++ )
-            {
-                AlgebraicVector vertex = mRoots[ i ] .rightMultiply( prototype );
-                vertex = mRoots[ j ] .leftMultiply( vertex );
+        for (Quaternion outerRoot : mRoots) { 
+            for (Quaternion innerRoot : mRoots) {
+                AlgebraicVector vertex = outerRoot.rightMultiply(prototype);
+                vertex = innerRoot.leftMultiply(vertex);
                 AlgebraicVector key = vertex;
-                Point p = (Point) vertices .get( key );
+                Point p = vertices .get( key );
                 boolean newVertex = p == null;
                 if ( newVertex ) {
                     AlgebraicVector projected = vertex;
@@ -356,16 +353,14 @@ public class CommandUniformH4Polytope extends CommandTransform
                     
                     vertices .put( key, p );
                 }
-                
-                for ( int mirror = 0; mirror < 4; mirror++ )
-                    if ( reflections[ mirror ] != null )
-                    {
-                        AlgebraicVector other = mRoots[ i ] .rightMultiply( reflections[ mirror ] );
-                        other = mRoots[ j ] .leftMultiply( other );
+                for (int mirror = 0; mirror < 4; mirror++) {
+                    if (reflections[ mirror ] != null) {
+                        AlgebraicVector other = outerRoot.rightMultiply(reflections[ mirror ]);
+                        other = innerRoot.leftMultiply(other);
                         key = other;
                         if ( ! other .equals( vertex ) )
                         {
-                            Point p2 = (Point) vertices .get( key );
+                            Point p2 = vertices .get( key );
                             if ( p2 == null ) {
                                 AlgebraicVector projected = other;
                                 
@@ -399,8 +394,8 @@ public class CommandUniformH4Polytope extends CommandTransform
                             effects .constructionAdded( segment );
                         }
                     }
+                }
             }
-
 //        try {
 //            String wythoff = Integer .toBinaryString( index );
 //            wythoff = "0000" .substring( wythoff .length() ) + wythoff;
@@ -413,6 +408,8 @@ public class CommandUniformH4Polytope extends CommandTransform
 //        } catch ( IOException e ) {
 //            e.printStackTrace();
 //        }
+        }
+            
     }
 
     private void printGoldenVector( AlgebraicVector gv, StringBuffer vefVertices )

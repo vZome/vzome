@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
@@ -24,19 +23,17 @@ public class DeselectByClass extends ChangeSelection
     
     public void perform()
     {
-        for ( Iterator all = mSelection .iterator(); all .hasNext(); )
-        {
-        	Manifestation man = (Manifestation) all .next();
-        	if ( balls )
-        	{
-        		if ( man instanceof Connector )
-        			unselect( man, true );
-        	}
-        	else
-        	{
-        		if ( ! ( man instanceof Connector ) )
-        			unselect( man, true );
-        	}
+        for (Manifestation man : mSelection) {
+            if ( balls )
+            {
+                if ( man instanceof Connector )
+                    unselect( man, true );
+            }
+            else
+            {
+                if ( ! ( man instanceof Connector ) )
+                    unselect( man, true );
+            }
         }
         redo();
     }

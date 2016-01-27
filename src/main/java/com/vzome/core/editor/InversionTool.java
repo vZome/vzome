@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
@@ -24,8 +23,7 @@ public class InversionTool extends TransformationTool
     {
         Point center = null;
         if ( ! isAutomatic() )
-            for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-                Manifestation man = (Manifestation) mans .next();
+            for (Manifestation man : mSelection) {
                 unselect( man );
                 if ( man instanceof Connector )
                 {
@@ -33,7 +31,7 @@ public class InversionTool extends TransformationTool
                         throw new Command.Failure( "more than one center selected" );
                     center = (Point) ((Connector) man) .getConstructions() .next();
                 }
-            }
+        }
         
         if ( center == null )
             center = originPoint;

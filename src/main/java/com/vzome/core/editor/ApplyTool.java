@@ -5,7 +5,6 @@ package com.vzome.core.editor;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -26,9 +25,8 @@ public class ApplyTool extends ChangeManifestations
         //  If the tool does not need input, it operates just on its parameters and
         //  the entire realized model, but it still may add to or replace the current
         //  selection.
-        List inputs = new ArrayList();
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        List<Manifestation> inputs = new ArrayList<>();
+        for (Manifestation man : mSelection) {
             if ( hideInputs && tool .needsInput() )
             {
                 super .unselect( man, true );
@@ -37,7 +35,7 @@ public class ApplyTool extends ChangeManifestations
             else if ( ! selectInputs )
                 super .unselect( man, true );
             if ( tool .needsInput() )
-            	inputs .add( man );
+                inputs .add( man );
         }
         
         redo();  // get the unselects out of the way, if anything needs to be re-selected
@@ -47,19 +45,17 @@ public class ApplyTool extends ChangeManifestations
     	// now, any manifested constructions are outputs
         if ( tool .needsInput() )
         {
-        	for ( Iterator mans = inputs .iterator(); mans .hasNext(); ) {
-        		Manifestation man = (Manifestation) mans .next();
-        		Construction c = (Construction) man .getConstructions() .next();
-
-        		tool .performEdit( c, this );
-        	}
+            for (Manifestation man : inputs) {
+                Construction c = man .getConstructions() .next();
+                
+                tool .performEdit( c, this );
+            }
         }
         else
         {
-        	for ( Iterator mans = mManifestations .getAllManifestations(); mans .hasNext(); ) {
-        		Manifestation man = (Manifestation) mans .next();
-        		tool .performSelect( man, this );
-        	}
+            for (Manifestation man : mManifestations) {
+                tool .performSelect( man, this );
+            }
         }
     	tool. complete( this );
 

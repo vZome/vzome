@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Iterator;
 import java.util.Locale;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -51,17 +50,15 @@ public class DaeExporter extends Exporter3d
         StringBuffer triangles = new StringBuffer();
         StringBuffer lines = new StringBuffer();
         
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             if ( man instanceof Panel )
             {
                 Panel panel = (Panel) man;
                 RealVector norm = panel .getNormal( field ) .toRealVector() .normalize();
                 int v0 = -1, v1 = -1, n0 = -1, n1 = -1;
-                for ( Iterator verts = ((Panel) man) .getVertices(); verts .hasNext(); )
-                {
-                    RealVector vertex = ((AlgebraicVector) verts .next()) .toRealVector();
+                for (AlgebraicVector av : panel) {
+                    RealVector vertex = av .toRealVector();
                     // This scale factor corresponds to a vZome model that uses a long blue as the radius of a ball.
                     //  norm squared of diameter in vZome: 1967.87  => diameter == 44.36
                     //  nominal ball diameter in rZome: .700 in

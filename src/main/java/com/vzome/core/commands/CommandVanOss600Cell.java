@@ -6,7 +6,6 @@ package com.vzome.core.commands;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -25,7 +24,7 @@ import com.vzome.core.math.VefParser;
 public class CommandVanOss600Cell extends CommandImportVEFData
 {
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes,
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
         try {

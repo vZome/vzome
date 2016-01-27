@@ -30,7 +30,7 @@ public class Panel {
 
 	public List<Vector> vertices()
 	{
-		ArrayList<Vector> list = new ArrayList<Vector>();
+		ArrayList<Vector> list = new ArrayList<>();
 		for ( AlgebraicVector vertex : this .manifestation ) {
 			list .add( new Vector( vertex ) );
 		}

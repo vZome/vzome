@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -26,7 +25,7 @@ public class Branch implements UndoableEdit
 		this .context = context;
 	}
 
-	private List edits = new ArrayList();
+	private List<UndoableEdit> edits = new ArrayList<>();
     private XmlSaveFormat format;
     private Element xml;
     
@@ -42,7 +41,7 @@ public class Branch implements UndoableEdit
 
     public void perform() throws Failure
     {
-        final Stack toUndo = new Stack();
+        final Stack<UndoableEdit> toUndo = new Stack<>();
         NodeList nodes = xml .getChildNodes();
         for ( int i = 0; i < nodes .getLength(); i++ ) {
             Node kid = nodes .item( i );
@@ -76,7 +75,7 @@ public class Branch implements UndoableEdit
         }
         while ( ! toUndo .isEmpty() )
         {
-            UndoableEdit edit = (UndoableEdit) toUndo .pop();
+            UndoableEdit edit = toUndo .pop();
             edit .undo();
         }
     }
@@ -93,8 +92,7 @@ public class Branch implements UndoableEdit
     public Element getXml( Document doc )
     {
         Element branch = doc .createElement( "Branch" );
-        for (Iterator iterator = edits .iterator(); iterator.hasNext(); ) {
-            UndoableEdit edit = (UndoableEdit) iterator.next();
+        for (UndoableEdit edit : edits) {
             branch .appendChild( edit .getXml( doc ) );
         }
         return branch;
@@ -104,8 +102,7 @@ public class Branch implements UndoableEdit
     public Element getDetailXml( Document doc )
     {
         Element branch = doc .createElement( "Branch" );
-        for (Iterator iterator = edits .iterator(); iterator.hasNext(); ) {
-            UndoableEdit edit = (UndoableEdit) iterator.next();
+        for (UndoableEdit edit : edits) {
             branch .appendChild( edit .getDetailXml( doc ) );
         }
         return branch;

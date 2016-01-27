@@ -145,16 +145,17 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 		{
 			String[] files = directory .list();
 			if (files != null)
-				for ( int i = 0; i < files .length; i++ )
-					if ( files[i] .toLowerCase() .endsWith( ".testsuite" ) ) {
-						File linksFile = new File( directory, files[i] );
-						if ( linksFile .isDirectory() )
-							// don't act on it, that would make another layer of suite
-							super .visitFolder( linksFile, actor );
-						else 
-							actor .actOnFile( linksFile, "testsuite", this );
-						return;
-					}
+				for (String file : files) {
+                if (file.toLowerCase().endsWith(".testsuite")) {
+                    File linksFile = new File(directory, file);
+                    if ( linksFile .isDirectory() )
+                        // don't act on it, that would make another layer of suite
+                        super .visitFolder( linksFile, actor );
+                    else
+                        actor .actOnFile( linksFile, "testsuite", this );
+                    return;
+                }
+            }
 			super .visitFolder( directory, actor );
 		}
 	}	

@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Line;
@@ -25,8 +24,7 @@ public class StrutIntersection extends ChangeManifestations
     public void perform() throws Failure
     {
         Strut s1 = null, s2 = null;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Strut )
                 if ( s1 == null )

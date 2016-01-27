@@ -6,7 +6,6 @@ import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -37,10 +36,8 @@ public class SegExporter extends Exporter3d
         if (format instanceof DecimalFormat) {
             ((DecimalFormat) format) .applyPattern( "0.0000" );
         }		
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
-            
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             if ( man instanceof Strut )
             {
                 Strut strut = (Strut) man;
@@ -61,7 +58,7 @@ public class SegExporter extends Exporter3d
         return "seg";
     }
 
-    private Map vertexData = new HashMap();
+    private Map<AlgebraicVector, Integer> vertexData = new HashMap<>();
     
     private transient StringBuffer vertices;
 
@@ -73,13 +70,13 @@ public class SegExporter extends Exporter3d
 
 	protected Integer getVertexIndex( AlgebraicVector vertexVector )
     {
-        Integer obj = (Integer) vertexData .get( vertexVector );
-        if ( obj == null )
+        Integer val = vertexData .get( vertexVector );
+        if ( val == null )
         {
             AlgebraicVector key = vertexVector;
             int index = vertexData .size();
-            obj = new Integer( index );
-            vertexData .put( key, obj );
+            val = index;
+            vertexData .put( key, val );
             vertices .append( "v " );
             RealVector vertex =  vertexVector .toRealVector();
             vertices .append( format .format( vertex.x ) + " " );
@@ -87,7 +84,7 @@ public class SegExporter extends Exporter3d
             vertices .append( format .format( vertex.z ) + " " );
             vertices .append( "\n" );
         }
-        return obj;
+        return val;
     }
 
 }

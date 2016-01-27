@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
@@ -21,13 +20,14 @@ public class CommandCentralSymmetry extends CommandTransform
         return ATTR_SIGNATURE;
     }
     
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         ConstructionList output = new ConstructionList();
         final Point center = (Point) attributes .get( SYMMETRY_CENTER_ATTR_NAME );
         final Construction[] params = parameters .getConstructions();
-        for ( int j = 0; j < params .length; j++ )
-            output .addConstruction( params[j] );
+        for (Construction param : params) {
+            output.addConstruction(param);
+        }
         
         Transformation transform = new PointReflection( center );
         effects .constructionAdded( transform );

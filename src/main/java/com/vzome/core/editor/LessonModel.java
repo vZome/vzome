@@ -23,9 +23,9 @@ import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.core.viewing.ViewModel;
 
 
-public class LessonModel
+public class LessonModel implements Iterable<PageModel>
 {
-    private List pages = new ArrayList( 5 );
+    private List<PageModel> pages = new ArrayList<>( 5 );
     
     private int pageNum = -1;
 
@@ -61,8 +61,9 @@ public class LessonModel
         Element result = doc .createElement( "notes" );
         result .setAttribute( "xmlns:xml", "http://www.w3.org/XML/1998/namespace" );
 
-        for ( Iterator it = pages .iterator(); it .hasNext(); )
-            result .appendChild( ((PageModel) it .next() ) .getXml( doc ) );
+        for (PageModel page : pages) {
+            result .appendChild( page .getXml( doc ) );
+        }
         return result;
     }
 
@@ -104,7 +105,8 @@ public class LessonModel
         pageNum = 0;
 	}
 
-	public Iterator iterator()
+    @Override
+	public Iterator<PageModel> iterator()
 	{
 		return pages .iterator();
 	}
@@ -112,7 +114,7 @@ public class LessonModel
     public void goToPage( final int newPageNum )
     {
         pageNum = newPageNum;
-        final PageModel newPage = (PageModel) pages .get( newPageNum );
+        final PageModel newPage = pages .get( newPageNum );
         
         ViewModel newView = newPage .getView();
         firePropertyChange( "currentView", null, newView );
@@ -127,7 +129,7 @@ public class LessonModel
 	public void duplicatePage( ViewModel view )
 	{
         int newPageNum = pageNum + 1;
-        PageModel page = (PageModel) pages .get( pageNum );
+        PageModel page = pages .get( pageNum );
         int snap = page .getSnapshot();
         page = new PageModel( "", "", view, snap );
         pages .add( newPageNum, page );
@@ -171,7 +173,7 @@ public class LessonModel
 
 	public void movePage( int fromNum, int toNum )
 	{
-		PageModel moving = (PageModel) pages .remove( fromNum );
+		PageModel moving = pages .remove( fromNum );
         pages .add( toNum, moving );
         goToPage( toNum );
 	}
@@ -198,25 +200,25 @@ public class LessonModel
 
 	public String getTitle()
 	{
-        PageModel page = (PageModel) pages .get( pageNum );
+        PageModel page = pages .get( pageNum );
 		return page .getTitle();
 	}
 
 	public String getContent()
 	{
-        PageModel page = (PageModel) pages .get( pageNum );
+        PageModel page = pages .get( pageNum );
 		return page .getContent();
 	}
 
 	public void setTitle( String string )
 	{
-        PageModel page = (PageModel) pages .get( pageNum );
+        PageModel page = pages .get( pageNum );
         page .setTitle( string );
 	}
 
 	public void setContent( String string )
 	{
-        PageModel page = (PageModel) pages .get( pageNum );
+        PageModel page = pages .get( pageNum );
         page .setContent( string );
 	}
 
@@ -244,7 +246,7 @@ public class LessonModel
 
 	public void setView( ViewModel view )
 	{
-        PageModel page = (PageModel) pages .get( pageNum );
+        PageModel page = pages .get( pageNum );
         page .setView( view );
         page .setThumbnailCurrent( false );
         goToPage( pageNum );
@@ -259,7 +261,7 @@ public class LessonModel
 
 	public ViewModel getPageView( int num )
 	{
-        PageModel page = (PageModel) pages .get( num );
+        PageModel page = pages .get( num );
         return page .getView();
 	}
 
@@ -271,7 +273,7 @@ public class LessonModel
     public void updateThumbnail( final int pageNum, final Snapshot.Recorder recorder, final ThumbnailRenderer renderer )
     {
         firePropertyChange( "has.pages", false, true );
-        final PageModel page = (PageModel) pages .get( pageNum );
+        final PageModel page = pages .get( pageNum );
         if ( page .thumbnailIsCurrent() )
             return;
         page .setThumbnailCurrent( true );

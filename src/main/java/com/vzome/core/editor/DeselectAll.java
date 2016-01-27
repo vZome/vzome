@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.model.Manifestation;
 
@@ -13,8 +12,9 @@ public class DeselectAll extends ChangeSelection
     {
         super( selection, groupInSelection );
         
-        for ( Iterator all = selection .iterator(); all .hasNext(); )
-            unselect( (Manifestation) all .next(), true );
+        for (Manifestation man : selection) {
+            unselect( man, true );
+        }
     }
 
     protected String getXmlElementName()

@@ -3,8 +3,7 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
-import java.util.Map;
+import com.vzome.core.commands.AttributeMap;
 
 import org.w3c.dom.Element;
 
@@ -39,15 +38,16 @@ public class SelectManifestation extends ChangeSelection
         {
             // must record the construction for save, because if this gets undone, there's no
             //  guarantee that the manifestation will have any constructions!
-            construction = (Construction) mManifestation .getConstructions() .next();
+            construction = mManifestation .getConstructions() .next();
         }
     }
     
     public void perform()
     {
         if ( mReplace ) {
-            for ( Iterator all = mSelection .iterator(); all .hasNext(); )
-                unselect( (Manifestation) all .next(), true );
+            for (Manifestation man : mSelection) {
+                unselect( man, true );
+            }
             select( mManifestation );
         }
         else if ( mSelection .manifestationSelected( mManifestation ) )
@@ -88,10 +88,10 @@ public class SelectManifestation extends ChangeSelection
         }
         else
         {
-            Map attrs = format .loadCommandAttributes( xml );
+            AttributeMap attrs = format .loadCommandAttributes( xml );
             construction = (Construction) attrs .get( "manifestation" );
             Boolean replaceVal = (Boolean) attrs .get( "replace" );
-            if ( replaceVal != null && replaceVal .booleanValue() )
+            if ( replaceVal != null && replaceVal )
                 mReplace = true;
         }
         mManifestation = mRealized .getManifestation( construction );

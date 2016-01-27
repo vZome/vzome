@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -30,7 +29,7 @@ public class CommandJoinPoints extends AbstractCommand
         return ATTR_SIGNATURE;
     }
     
-    public ConstructionList apply( ConstructionList parameters, Map attrs, ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();
         if ( parameters == null || parameters .size() != 2 )

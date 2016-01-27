@@ -5,11 +5,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
@@ -33,55 +31,52 @@ public class PartsListExporter extends Exporter3d
 	}
 
 
+    private class OrbitMap extends HashMap<Direction, Map<AlgebraicNumber, Integer> > {}
+    
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
 	    
         int numBalls = 0;
-		Map[] orbits = new Map[]{ new HashMap(), new HashMap() };
-		for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-		{
-		    RenderedManifestation rm = (RenderedManifestation) rms .next();
-		    
-		    Manifestation m = rm .getManifestation();
-		    if ( m instanceof Connector ) {
-		        ++ numBalls;
-		    }
-		    else if ( m instanceof Strut ) {
-	            Polyhedron shape = rm .getShape();
-	            boolean flip = rm .reverseOrder(); // part is left-handed
-		        Direction orbit = shape .getOrbit();
-		        Map orbitHistogram = (Map) orbits[ flip?1:0 ] .get( orbit );
-		        if ( orbitHistogram == null )
-		        {
-		            orbitHistogram = new HashMap();
-		            orbits[ flip?1:0 ] .put( orbit, orbitHistogram );
-		        }
-		        AlgebraicNumber len = shape .getLength();
-                Integer lengthCount = (Integer) orbitHistogram .get( len );
+		OrbitMap[] orbits = new OrbitMap[]{ new OrbitMap(), new OrbitMap() };
+        for (RenderedManifestation rm : mModel) {
+            Manifestation m = rm .getManifestation();
+            if ( m instanceof Connector ) {
+                ++ numBalls;
+            }
+            else if ( m instanceof Strut ) {
+                Polyhedron shape = rm .getShape();
+                boolean flip = rm .reverseOrder(); // part is left-handed
+                Direction orbit = shape .getOrbit();
+                Map<AlgebraicNumber, Integer> orbitHistogram = orbits[ flip?1:0 ] .get( orbit );
+                if ( orbitHistogram == null )
+                {
+                    orbitHistogram = new HashMap<>();
+                    orbits[ flip?1:0 ] .put( orbit, orbitHistogram );
+                }
+                AlgebraicNumber len = shape .getLength();
+                Integer lengthCount = orbitHistogram .get( len );
                 if ( lengthCount == null )
                 {
-                    lengthCount = new Integer( 1 );
+                    lengthCount = 1;
                 }
                 else
-                    lengthCount = new Integer( lengthCount .intValue() + 1 );
+                    lengthCount = lengthCount + 1;
                 orbitHistogram .put( len, lengthCount );
-		    }
-		}
+            }
+        }
         output .println( "balls" );
         output .println( "  " + numBalls );
 		
-		for ( int i = 0; i < orbits.length; i++ ) {
-            for ( Iterator iterator = orbits[i].keySet().iterator(); iterator.hasNext(); ) {
-                Direction orbit = (Direction) iterator.next();
+        for ( int i = 0; i < orbits.length; i++ ) {
+            for (Direction orbit : orbits[i].keySet()) {
                 output .print( orbit .getName() );
                 if ( i == 1 )
                     output .print( " (lefty)" );
                 output .println();
-                Map histogram = (Map) orbits[i] .get( orbit );
-                for ( Iterator iterator2 = histogram .keySet().iterator(); iterator2.hasNext(); ) {
-                    AlgebraicVector key = (AlgebraicVector) iterator2.next();
-                    output .println( "  " + key .toString() + " : " + (Integer) histogram .get( key ) );
+                Map<AlgebraicNumber, Integer> histogram = orbits[i] .get( orbit );
+                for (AlgebraicNumber key : histogram .keySet()) {
+                    output .println( "  " + key .toString() + " : " + histogram .get( key ) );
                 }
             }
         }

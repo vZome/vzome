@@ -36,7 +36,7 @@ public interface ANTLR2XML {
     @Deprecated
 	public abstract class Default extends Object implements ANTLR2XML {
 
-        private Stack m_elementNames = new Stack();
+        private Stack<String> m_elementNames = new Stack<>();
 
         protected antlr.Parser m_parser;
 
@@ -53,7 +53,7 @@ public interface ANTLR2XML {
         }
 
         protected String topElementName() {
-            return (String) m_elementNames.peek();
+            return m_elementNames.peek();
         }
 
         protected int getDepth() {

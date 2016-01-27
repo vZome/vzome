@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
@@ -19,7 +18,7 @@ import com.vzome.core.construction.Transformation;
  */
 public class CommandMirrorSymmetry extends CommandTransform
 {
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         final Point center = (Point) attributes .get( SYMMETRY_CENTER_ATTR_NAME );
         final Segment norm = (Segment) attributes .get( SYMMETRY_AXIS_ATTR_NAME );

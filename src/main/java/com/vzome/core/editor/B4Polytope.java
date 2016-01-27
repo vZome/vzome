@@ -3,13 +3,13 @@
 
 package com.vzome.core.editor;
 
-import java.util.Map;
 
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.commands.AttributeMap;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.ModelRoot;
@@ -66,7 +66,7 @@ public class B4Polytope extends ChangeManifestations
             this.symmAxis = format .parseSegment( xml, "start", "end" );
         else
         {
-            Map attrs = format .loadCommandAttributes( xml );
+            AttributeMap attrs = format .loadCommandAttributes( xml );
             this.symmAxis = (Segment) attrs .get( "rotation" );
         }
     }

@@ -61,47 +61,40 @@ public class Symmetry4d extends ChangeManifestations
     
     public void perform() throws Failure
     {
-        List<Construction> params = new ArrayList();
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); )
-        {
-            Manifestation man = (Manifestation) mans .next();
+        List<Construction> params = new ArrayList<>();
+        for (Manifestation man : mSelection) {
             // avoid SELECTION BUG: the unselect() below just plans the unselection, but... (search for the next SELECTION BUG comment)
             unselect( man );
-            
             // here is the difference from CommandQuaternionSymmetry
-            Iterator cs = man .getConstructions();
+            Iterator<Construction> cs = man .getConstructions();
             Construction useThis = null;
             if ( ! cs .hasNext() )
-            	throw new Command.Failure( "No construction for this manifestation" );
-            for (Iterator iterator = man .getConstructions(); iterator.hasNext();) {
-				Construction construction = (Construction) iterator.next();
-				if ( construction instanceof Point ) {
-					Point p = (Point) construction;
-					if ( ! inW0hyperplane( p .getLocation() ) )
-		            	throw new Command.Failure( "Some ball is not in the W=0 hyperplane." );
-				}
-				else if ( construction instanceof Segment ) {
-					Segment s = (Segment) construction;
-					if ( ! inW0hyperplane( s .getStart()  ) )
-		            	throw new Command.Failure( "Some strut end is not in the W=0 hyperplane." );
-					if ( ! inW0hyperplane( s .getEnd() ) )
-		            	throw new Command.Failure( "Some strut end is not in the W=0 hyperplane." );
-				}
-				else if ( construction instanceof Polygon ) {
-					Polygon p = (Polygon) construction;
-					AlgebraicVector[] vertices = p .getVertices();
-					for (int i = 0; i < vertices.length; i++) {
-						if ( ! inW0hyperplane( vertices[ i ] ) ) {
-			            	throw new Command.Failure( "Some panel vertex is not in the W=0 hyperplane." );
-						}
-					}
-				}
-				else {
-	            	throw new Command.Failure( "Unknown construction type." );
-				}
-				useThis = construction;
-			}
-            
+                throw new Command.Failure( "No construction for this manifestation" );
+            for (Iterator<Construction> iterator = man .getConstructions(); iterator.hasNext();) {
+                Construction construction = iterator.next();
+                if (construction instanceof Point) {
+                    Point p = (Point) construction;
+                    if ( ! inW0hyperplane( p .getLocation() ) )
+                        throw new Command.Failure( "Some ball is not in the W=0 hyperplane." );
+                } else if (construction instanceof Segment) {
+                    Segment s = (Segment) construction;
+                    if ( ! inW0hyperplane( s .getStart()  ) )
+                        throw new Command.Failure( "Some strut end is not in the W=0 hyperplane." );
+                    if ( ! inW0hyperplane( s .getEnd() ) )
+                        throw new Command.Failure( "Some strut end is not in the W=0 hyperplane." );
+                } else if (construction instanceof Polygon) {
+                    Polygon p = (Polygon) construction;
+                    AlgebraicVector[] vertices = p .getVertices();
+                    for (AlgebraicVector vertice : vertices) {
+                        if (!inW0hyperplane(vertice)) {
+                            throw new Command.Failure( "Some panel vertex is not in the W=0 hyperplane." );
+                        }
+                    }
+                } else {
+                    throw new Command.Failure( "Unknown construction type." );
+                }
+                useThis = construction;
+            }
             if ( useThis != null )
             	params .add( useThis );
         }
@@ -111,25 +104,26 @@ public class Symmetry4d extends ChangeManifestations
 
         Quaternion[] leftRoots = this .left .getRoots();
         Quaternion[] rightRoots = this .right .getRoots();
-        for ( int i = 0; i < leftRoots.length; i++ ) 
-            for ( int j = 0; j < rightRoots.length; j++ )
-            	for ( Iterator iterator = params .iterator(); iterator .hasNext(); ) {
-					Construction construction = (Construction) iterator.next();
-
+        for (Quaternion leftRoot : leftRoots) {
+            for (Quaternion rightRoot : rightRoots) {
+                for (Construction construction : params) {
                     Construction result = null;
-                    if ( construction instanceof Point ) {
-                        result = new PointRotated4D( leftRoots[i], rightRoots[j], (Point) construction );
-                    } else if ( construction instanceof Segment ) {
-                        result = new SegmentRotated4D( leftRoots[i], rightRoots[j], (Segment) construction );
-                    } else if ( construction instanceof Polygon ) {
-                        result = new PolygonRotated4D( leftRoots[i], rightRoots[j], (Polygon) construction );
+                    if (construction instanceof Point) {
+                        result = new PointRotated4D(leftRoot, rightRoot, (Point) construction);
+                    } else if (construction instanceof Segment) {
+                        result = new SegmentRotated4D(leftRoot, rightRoot, (Segment) construction);
+                    } else if (construction instanceof Polygon) {
+                        result = new PolygonRotated4D(leftRoot, rightRoot, (Polygon) construction);
                     } else {
                         // TODO handle other constructions 
+                        // TODO handle other constructions
                     }
                     if ( result == null )
                         continue;
-        			manifestConstruction( result );
-            	}
+                    manifestConstruction( result );
+                }
+            }
+        }
         redo();
     }
     

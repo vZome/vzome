@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -70,7 +69,6 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.viewing.Lights;
@@ -96,7 +94,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
 	private final AlgebraicField mField;
 	
-	private final Map tools = new HashMap();
+	private final Map<String, Tool> tools = new HashMap<>();
 	
 	private Command.FailureChannel failures;
 
@@ -122,9 +120,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
 
-	private final Map commands;
+	private final Map<String, Object> commands; // TODO: DJH: Don't allow non-Command objects in this Map.
 
-    private Map<String,SymmetrySystem> symmetrySystems = new HashMap();
+    private Map<String,SymmetrySystem> symmetrySystems = new HashMap<>();
 
 	private final Lights sceneLighting;
 
@@ -164,8 +162,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .mRealizedModel = new RealizedModel( field, new Projection.Default( field ) );
 
         Symmetry[] symms = field .getSymmetries();
-        for ( int i = 0; i < symms .length; i++ ) {
-            SymmetrySystem osm = new SymmetrySystem( null, symms[i], app .getColors(), app .getGeometries( symms[i] ), true );
+        for (Symmetry symm : symms) {
+            SymmetrySystem osm = new SymmetrySystem(null, symm, app .getColors(), app.getGeometries(symm), true);
             // one of these will be overwritten below, if we are loading from a file that has it set
             this .symmetrySystems .put( osm .getName(), osm );
         }
@@ -226,8 +224,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			{
 				if ( "currentSnapshot" .equals( change .getPropertyName() ) )
 				{
-					int id = ((Integer) change .getNewValue()) .intValue();
-	                RenderedModel newSnapshot = (RenderedModel) snapshots[ id ];
+					int id = ((Integer) change .getNewValue());
+	                RenderedModel newSnapshot = snapshots[ id ];
 	                firePropertyChange( "currentSnapshot", null, newSnapshot );
 				}
 				else if ( "currentView" .equals( change .getPropertyName() ) )
@@ -358,7 +356,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 		else if ( "SelectSimilarSize".equals( name ) )
 		{
-		    SymmetrySystem symmetry = (SymmetrySystem) this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
+		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
             edit = new SelectSimilarSizeStruts( symmetry, null, null, this .mSelection, this .mRealizedModel );
 		}
 		else if ( "ValidateSelection".equals( name ) )
@@ -437,10 +435,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	{
 		StringWriter out = new StringWriter();
 		Exporter exporter = new VefModelExporter( out, mField, null );
-		for (Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-			Manifestation man = (Manifestation) mans .next();
-			exporter .exportManifestation( man );
-		}
+        for (Manifestation man : mSelection) {
+            exporter .exportManifestation( man );
+        }
 		exporter .finish();
 		return out .toString();
 	}
@@ -629,7 +626,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		if ( "ball" .equals( string ) )
 		{
 	    	Point ball = mEditorModel .getCenterPoint();
-	    	return ( (Point) ball ).getLocation() .toRealVector();
+	    	return ball .getLocation() .toRealVector();
 		}
 		return new RealVector( 0, 0, 0 );
 	}
@@ -643,11 +640,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     public Color getSelectionColor()
     {
     	Manifestation last = null;
-        for ( Iterator all = mSelection .iterator(); all .hasNext(); ) {
-            last = (Manifestation) all .next();
+        for (Manifestation man : mSelection) {
+            last = man;
         }
-        RenderedManifestation rm = (RenderedManifestation) last .getRenderedObject();
-        return rm .getColor();
+        return last == null ? null : last .getRenderedObject() .getColor();
     }
     
     public void finishLoading( boolean openUndone, boolean asTemplate ) throws Command.Failure
@@ -677,7 +673,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         {
             public OrbitSet getGroup( String name )
             {
-                SymmetrySystem system = (SymmetrySystem) symmetrySystems .get( name );
+                SymmetrySystem system = symmetrySystems .get( name );
             	return system .getOrbits();
             }
 
@@ -693,12 +689,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             hist = (Element) mXML .getElementsByTagName( "editHistory" ) .item( 0 );
         int editNum = Integer.parseInt( hist .getAttribute( "editNumber" ) );
         
-        List implicitSnapshots = new ArrayList();
+        List<Integer> implicitSnapshots = new ArrayList<>();
 
         // if we're opening a template document, we don't want to inherit its lesson or saved views
         if ( !asTemplate )
         {
-        	Map viewPages = new HashMap();
+        	Map<String, ViewModel> viewPages = new HashMap<>();
             Element views = (Element) mXML .getElementsByTagName( "Viewing" ) .item( 0 );
             if ( views != null ) {
                 // make a notes page for each saved view
@@ -724,37 +720,33 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             	lesson .setXml( notesXml, editNum, this .defaultView );
             
             // add migrated views to the end of the lesson
-            for (Iterator iterator = viewPages .entrySet() .iterator(); iterator.hasNext();) {
-				Entry namedView = (Entry) iterator.next();
-				lesson .addPage( (String) namedView .getKey(), "This page was a saved view created by an older version of vZome.", (ViewModel) namedView .getValue(), -editNum );
-			}
-            
-            for (Iterator iterator = lesson .iterator(); iterator.hasNext(); ) {
-            	PageModel page = (PageModel) iterator.next();
+            for (Entry<String, ViewModel> namedView : viewPages .entrySet()) {
+                lesson .addPage( namedView .getKey(), "This page was a saved view created by an older version of vZome.", namedView .getValue(), -editNum );
+            }
+            for (PageModel page : lesson) {
                 int snapshot = page .getSnapshot();
-                if ( ( snapshot < 0 ) && ( ! implicitSnapshots .contains( new Integer( -snapshot ) ) ) )
-                	implicitSnapshots .add( new Integer( -snapshot ) );
+                if ( ( snapshot < 0 ) && ( ! implicitSnapshots .contains(-snapshot) ) )
+                    implicitSnapshots .add(-snapshot);
             }
 
             Collections .sort( implicitSnapshots );
             
-            for (Iterator iterator = lesson .iterator(); iterator.hasNext(); ) {
-            	PageModel page = (PageModel) iterator.next();
+            for (PageModel page : lesson) {
                 int snapshot = page .getSnapshot();
                 if ( snapshot < 0 )
-                    page .setSnapshot( implicitSnapshots .indexOf( new Integer( -snapshot ) ) );
+                    page .setSnapshot( implicitSnapshots .indexOf(-snapshot) );
             }
         }
 
         UndoableEdit[] explicitSnapshots = null;
         if ( ! implicitSnapshots .isEmpty() )
         {
-            Integer highest = (Integer) implicitSnapshots .get( implicitSnapshots .size() - 1 );
-            explicitSnapshots = new UndoableEdit[ highest .intValue() + 1 ];
+            Integer highest = implicitSnapshots .get( implicitSnapshots .size() - 1 );
+            explicitSnapshots = new UndoableEdit[ highest + 1 ];
             for (int i = 0; i < implicitSnapshots .size(); i++)
             {
-                Integer editNumInt = (Integer) implicitSnapshots .get( i );
-                explicitSnapshots[ editNumInt .intValue() ] = new Snapshot( i, this );
+                Integer editNumInt = implicitSnapshots .get( i );
+                explicitSnapshots[ editNumInt ] = new Snapshot( i, this );
             }
         }
         
@@ -811,9 +803,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         {
             childElement = mHistory .getXml( doc );
             int edits = 0, lastStickyEdit=-1;
-            for ( Iterator it = mHistory .iterator(); it .hasNext(); )
-            {
-                UndoableEdit undoable = (UndoableEdit) it .next();
+            for (UndoableEdit undoable : mHistory) {
                 childElement .appendChild( undoable .getXml( doc ) );
                 ++ edits;
                 if ( undoable .isSticky() )
@@ -882,7 +872,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
     public Tool getTool( String toolName )
     {
-    	return (Tool) tools .get( toolName );
+    	return tools .get( toolName );
     }
 
     public void useTool( Tool tool ) {}
@@ -1103,21 +1093,21 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     public void recordSnapshot( int id )
     {
     	RenderedModel snapshot = ( renderedModel == null )? null : renderedModel .snapshot();
-    	Logger logger = Logger.getLogger( "com.vzome.core.thumbnails" );
-    	if ( logger .isLoggable( Level.FINER ) )
-    		logger .finer( "recordSnapshot: " + id );
+    	Logger thumbnailLogger = Logger.getLogger( "com.vzome.core.thumbnails" );
+    	if ( thumbnailLogger .isLoggable( Level.FINER ) )
+    		thumbnailLogger .finer( "recordSnapshot: " + id );
     	numSnapshots = Math .max( numSnapshots, id + 1 );
     	if ( id >= snapshots.length )
     	{
     		int newLength = Math .max( 2 * snapshots .length, numSnapshots );
-    		snapshots = (RenderedModel[]) Arrays .copyOf( snapshots, newLength );
+    		snapshots = Arrays .copyOf( snapshots, newLength );
     	}
     	snapshots[ id ] = snapshot;
     }
 
 	public void actOnSnapshot( int id, SnapshotAction action )
 	{
-        RenderedModel snapshot = (RenderedModel) snapshots[ id ];
+        RenderedModel snapshot = snapshots[ id ];
         action .actOnSnapshot( snapshot );
 	}
 

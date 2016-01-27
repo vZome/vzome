@@ -50,11 +50,16 @@ public class Color
 
     public float[] getRGBColorComponents( float[] rgb )
     {
+        int len = rgb.length;
+        if(len < 3 || len > 4) {
+            throw new IllegalArgumentException("Expected rgb.length to be 3 or 4. Found " + len + ".");
+        }
         rgb[0] = red / 255f;
         rgb[1] = green / 255f;
         rgb[2] = blue / 255f;
-        if ( rgb.length == 4 )
+        if ( len == 4 ) {
             rgb[3] = alpha / 255f;
+        }
         return rgb;
     }
     

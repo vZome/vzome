@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -31,21 +30,18 @@ public class RealizeMetaParts extends ChangeManifestations
     {
         AlgebraicField field = this.root .getField();
 		AlgebraicNumber scale = field .createPower( 5 ); // .times( field .createRational( 2 ));
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for (Manifestation man : mSelection) {
             unselect( man );
-            RenderedManifestation rm = (RenderedManifestation) man .getRenderedObject();
-            if ( rm != null ) {
+            RenderedManifestation rm = man .getRenderedObject();
+            if (rm != null) {
                 Polyhedron shape = rm .getShape();
                 AlgebraicMatrix orientation = rm .getOrientation();
                 List<AlgebraicVector> vertexList = shape .getVertexList();
-                for ( Iterator iterator = shape .getVertexList() .iterator(); iterator.hasNext(); ) {
-                    AlgebraicVector vertex = (AlgebraicVector) iterator.next();
+                for (AlgebraicVector vertex : shape .getVertexList()) {
                     Point vertexPt = transformVertex( vertex, man .getLocation(), scale, orientation );
                     select( manifestConstruction( vertexPt ) );
                 }
-                for ( Iterator iterator = shape .getFaceSet() .iterator(); iterator .hasNext(); ) {
-                    Polyhedron.Face face = (Polyhedron.Face) iterator.next();
+                for (Polyhedron.Face face : shape .getFaceSet()) {
                     Point[] vertices = new Point[ face .size() ];
                     for ( int i = 0; i < vertices.length; i++ ) {
                         int vertexIndex = face .getVertex( i );

@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
@@ -19,7 +18,7 @@ import com.vzome.core.math.symmetry.Axis;
  */
 public class CommandRotate extends CommandSymmetry
 {
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         final Point center = setSymmetry( attributes );
         

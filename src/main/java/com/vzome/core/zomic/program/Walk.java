@@ -5,9 +5,10 @@ import java.util .*;
 
 import com.vzome.core.zomic.ZomicException;
 
-public class Walk extends ZomicStatement{
+public class Walk extends ZomicStatement implements Iterable<ZomicStatement>
+{
 
-	private List stmts = new ArrayList();
+	private List<ZomicStatement> stmts = new ArrayList<>();
 
 	public  void accept( Visitor visitor ) throws ZomicException {
 		visitor .visitWalk( this );
@@ -17,8 +18,15 @@ public class Walk extends ZomicStatement{
 		stmts .add( stmt );
 	}
 
-	public Iterator getStatements() {
-		return stmts .iterator();
+    @Override
+	public Iterator<ZomicStatement> iterator()
+	{
+	    return stmts .iterator();
+	}
+
+    @Deprecated	
+    public Iterator<ZomicStatement> getStatements() {
+		return this .iterator();
 	}
 	
 	public int size(){

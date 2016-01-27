@@ -2,10 +2,8 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +14,7 @@ import org.w3c.dom.NodeList;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AbstractCommand;
+import com.vzome.core.commands.AttributeMap;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.CommandHide;
@@ -49,7 +48,7 @@ public class CommandEdit extends ChangeManifestations
     
     private ModelRoot modelRoot;
     
-    private Map mAttrs;
+    private AttributeMap mAttrs;
 
     private final Logger logger = Logger .getLogger( "com.vzome.core.editor.CommandEdit" );
 
@@ -88,17 +87,13 @@ public class CommandEdit extends ChangeManifestations
         }
 
         ConstructionList constrsBefore = new ConstructionList();
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); )
-        {
-            Manifestation man = (Manifestation) mans .next();
-            
+        for (Manifestation man : mSelection) {
             if ( logger .isLoggable( Level .FINER ) ) {
                 logger .finer( "----------- manifestation: " + man .toString() );
-                for (Iterator iterator = man .getConstructions(); iterator
-						.hasNext();) {
-					Construction c = (Construction) iterator.next();
-	                logger .finer( "   " + c .toString() );
-				}
+                for (Iterator<Construction> iterator = man .getConstructions(); iterator .hasNext();) {
+                    Construction c = iterator.next();
+                    logger .finer( "   " + c .toString() );
+                }
             }
 
             // SELECTION BUG: the unselect() below just plans the unselection, but... (search for the next SELECTION BUG comment)
@@ -106,10 +101,10 @@ public class CommandEdit extends ChangeManifestations
             if ( isHide )
                 hideManifestation( man );
             else {
-                Iterator cs = man .getConstructions();
+                Iterator<Construction> cs = man .getConstructions();
                 if ( ! cs .hasNext() )
                     throw new Command.Failure( "No construction for this manifestation" );
-                constrsBefore .add( (Construction) cs .next() );  // yes, just using the first one
+                constrsBefore .add( cs .next() );  // yes, just using the first one
             }
         }
         
@@ -120,7 +115,7 @@ public class CommandEdit extends ChangeManifestations
             return;
 
         if ( mAttrs == null )
-            mAttrs = new HashMap();
+            mAttrs = new AttributeMap();
         Segment symmAxis = mEditorModel .getSymmetrySegment();
         if ( symmAxis != null )
             mAttrs .put( CommandTransform .SYMMETRY_AXIS_ATTR_NAME, symmAxis );
@@ -151,10 +146,10 @@ public class CommandEdit extends ChangeManifestations
             ConstructionList partial;
             selectionAfter = new ConstructionList();
             for ( int i = 0; i < actualsLen; i++ ) {
-                Object param = constrsBefore .get( i );
-                if ( ((Class) signature[0][1]) .isAssignableFrom( param .getClass() ) ) {
+                Construction param = constrsBefore .get( i );
+                if ( ((Class<?>) signature[0][1]) .isAssignableFrom( param .getClass() ) ) {
                     ConstructionList single = new ConstructionList();
-                    single .addConstruction( (Construction) param );
+                    single .addConstruction( param );
                     partial = mCommand .apply( single, mAttrs, news );
                     selectionAfter .addAll( partial );
                 }
@@ -165,13 +160,10 @@ public class CommandEdit extends ChangeManifestations
         else
             fail( "Too many objects in the selection." );
         
-        for ( Iterator adds = news .iterator(); adds .hasNext(); ) {
-            Construction c = (Construction) adds .next();
+        for (Construction c : news) {
             manifestConstruction( c );
         }
-        for ( int i = 0; i < selectionAfter .size(); i++ ) {
-            Construction cons = (Construction) selectionAfter .get( i );
-
+        for (Construction cons : selectionAfter) {
             // here we accommodate model files that include failed edits in their history
             if ( cons .failed() )
             {
@@ -192,7 +184,7 @@ public class CommandEdit extends ChangeManifestations
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context )
             throws Failure
     {
-        Logger logger = Logger .getLogger( "com.vzome.core.editor.CommandEdit.loadAndPerform" );
+        Logger loadAndPerformLgger = Logger .getLogger( "com.vzome.core.editor.CommandEdit.loadAndPerform" );
         String cmdName = null;
         if ( format .selectionsNotSaved() )  //&& ! format .interim210format() )
             cmdName = xml .getLocalName();
@@ -206,7 +198,7 @@ public class CommandEdit extends ChangeManifestations
             Class clazz = Class .forName( "com.vzome.core.commands." + cmdName );
             mCommand = (AbstractCommand) clazz .newInstance();
         } catch ( Exception e ) {
-            logger .log( Level.SEVERE, "error creating command: " + xml .getLocalName(), e );
+            loadAndPerformLgger .log( Level.SEVERE, "error creating command: " + xml .getLocalName(), e );
             throw new Failure( UNKNOWN_COMMAND );
         }
 
@@ -216,7 +208,7 @@ public class CommandEdit extends ChangeManifestations
             Set<Manifestation> selectedBefore = new LinkedHashSet<>();
             context .performAndRecord( new BeginBlock() );
 
-            mAttrs = new HashMap();
+            mAttrs = new AttributeMap();
 
             NodeList nodes = xml .getChildNodes();
             for ( int j = 0; j < nodes .getLength(); j++ ) {
@@ -295,7 +287,7 @@ public class CommandEdit extends ChangeManifestations
                             Manifestation m = getManifestation( c );
                             if ( m == null || m .isUnnecessary() )
                             {
-                                logger .severe( "CommandEdit parameter: " + attrOrParam .toString() );
+                                loadAndPerformLgger .severe( "CommandEdit parameter: " + attrOrParam .toString() );
                                 throw new Command.Failure( "no manifestation to be selected." );
                             }
                             if ( ! selectedBefore .contains( m ) ) // expensive, but we must use an ordered list, and avoid duplicates
@@ -309,18 +301,14 @@ public class CommandEdit extends ChangeManifestations
 
             if ( selectedBefore .size() > mManifestations .size() / 2 )
             {
-                Collection toUnselect = new ArrayList();
-                for ( Iterator it = mManifestations .getAllManifestations(); it .hasNext(); )
-                {
-                    Manifestation m = (Manifestation) it .next();
+                Collection<Manifestation> toUnselect = new ArrayList<>();
+                for (Manifestation m : mManifestations) {
                     if ( ! selectedBefore .contains( m ) )
                         toUnselect .add( m );
                 }
                 ChangeSelection edit = new SelectAll( mSelection, mManifestations, false );
                 context .performAndRecord( edit );
-                for ( Iterator it = toUnselect .iterator(); it .hasNext(); )
-                {
-                    Manifestation m = (Manifestation) it .next();
+                for (Manifestation m : toUnselect) {
                     edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
                     context .performAndRecord( edit );
                 }
@@ -328,9 +316,7 @@ public class CommandEdit extends ChangeManifestations
             else {
                 ChangeSelection edit = new DeselectAll( mSelection, false );
                 context .performAndRecord( edit );
-                for ( Iterator it = selectedBefore .iterator(); it .hasNext(); )
-                {
-                    Manifestation m = (Manifestation) it .next();
+                for (Manifestation m : selectedBefore) {
                     edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
                     context .performAndRecord( edit );
                 }
@@ -356,7 +342,7 @@ public class CommandEdit extends ChangeManifestations
             super.loadAndPerform( xml, format, context );
     }
 
-    private static class NewConstructions extends ArrayList implements ConstructionChanges
+    private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
     {
         public void constructionAdded( Construction c )
         {

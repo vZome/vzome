@@ -16,7 +16,7 @@ class ZomodDirectionNaming extends DirectionNaming
 	{
 		private final int[] mMapping;
 		
-		private final Map mBackMap = new HashMap();
+		private final Map<Axis, String> mBackMap = new HashMap<>();
 		
 		ZomodDirectionNaming( Direction dir, int[] mapping )
 		{
@@ -51,6 +51,6 @@ class ZomodDirectionNaming extends DirectionNaming
 		
 		public String getName( Axis axis )
 		{
-		    return (String) mBackMap .get( axis );
+		    return mBackMap .get( axis );
 		}
 	}

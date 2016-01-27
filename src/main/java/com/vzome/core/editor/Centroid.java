@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.commands.Command;
@@ -19,9 +18,8 @@ public class Centroid extends ChangeManifestations
 {
     public void perform() throws Command.Failure
     {
-        List verticesList = new ArrayList();
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        List<Point> verticesList = new ArrayList<>();
+        for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Connector )
             {
@@ -33,7 +31,7 @@ public class Centroid extends ChangeManifestations
             throw new Failure( "Select at least two balls to compute the centroid." );
 
         Point[] points = new Point[0];
-        CentroidPoint centroid = new CentroidPoint( (Point[]) verticesList .toArray( points ) );
+        CentroidPoint centroid = new CentroidPoint( verticesList .toArray( points ) );
         manifestConstruction( centroid );
 
         redo();

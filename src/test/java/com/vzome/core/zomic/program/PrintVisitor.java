@@ -47,11 +47,11 @@ public class PrintVisitor extends Visitor .Default{
         	if ( body instanceof Walk ){
         		Walk walk = (Walk) body;
         		if ( walk .size() == 2 ){
-        			Iterator it = walk .getStatements();
-        			ZomicStatement stmt = (ZomicStatement) it .next();
+        			Iterator<ZomicStatement> it = walk .iterator();
+        			ZomicStatement stmt = it .next();
         			if ( stmt instanceof Build
         			&& ((Build) stmt) .justMoving() ) {
-        				stmt = (ZomicStatement) it .next();
+        				stmt = it .next();
         				print( "from " );
         				stmt .accept( this );
         				return;
@@ -83,7 +83,7 @@ public class PrintVisitor extends Visitor .Default{
 	public  void visitWalk( Walk walk ) throws ZomicException
 	{
 		if ( walk .size() == 1 ) {
-			((ZomicStatement) walk .getStatements() .next()) .accept( this );
+			walk .iterator().next() .accept( this );
 			return;
 		}
 		println( "{" );

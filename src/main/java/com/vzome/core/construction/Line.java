@@ -55,8 +55,8 @@ public abstract class Line extends Construction
         // try to find some cleaner vector to use for the line direction, to reduce the likelihood
         //   of ill-conditioned intersection computations
         Symmetry[] symms = getField() .getSymmetries();
-        for ( int i = 0; i < symms.length; i++ ) {
-            Axis axis = symms[ i ] .getAxis( norm );
+        for (Symmetry symm : symms) {
+            Axis axis = symm.getAxis(norm);
             if ( axis != null )
             {
                 if ( ! axis .getDirection() .isAutomatic() )

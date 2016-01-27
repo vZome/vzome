@@ -22,7 +22,7 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
 
     protected transient Polyhedron.Face m_face;
 
-    protected transient Map m_labels;
+    protected transient Map<String, Integer> m_labels;
 
     private static class LocationTracker extends AbstractZomicEventHandler
     {
@@ -120,7 +120,7 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
     {
         if ( UNIT_START.equals( id ) ) {
             m_face = null;
-            m_labels = new HashMap();
+            m_labels = new HashMap<>();
             return;
         }
         if ( UNIT_FACE.equals( id ) ) {
@@ -141,7 +141,7 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
             m_labels.put( id, vertexObj );
             // System .out .println ( id + " = " + loc );
         } else {
-            Integer vertexObj = (Integer) m_labels.get( id );
+            Integer vertexObj = m_labels.get( id );
             if ( ((LocationTracker) mEvents).isLeftHanded() )
                 m_face.add( 0, vertexObj );
             else

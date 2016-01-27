@@ -2,8 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Iterator;
-import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
@@ -29,7 +27,7 @@ public class CommandAxialSymmetry extends CommandSymmetry
         super( symmetry );
     }
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         setSymmetry( attributes );
         
@@ -50,12 +48,14 @@ public class CommandAxialSymmetry extends CommandSymmetry
         int order = rotation .getOrder(); // TODO should get this from Direction
         CommandRotate rotate = new CommandRotate();
         for ( int i = 1; i < order; i++ ) {
-            for ( Iterator params = parameters .iterator(); params .hasNext(); )
-                output .addConstruction( (Construction) params .next() );
+            for (Construction param : parameters) {
+                output .addConstruction( param );
+            }
             parameters = rotate .apply( parameters, attributes, effects );
         }
-        for ( Iterator params = parameters .iterator(); params .hasNext(); )
-            output .addConstruction( (Construction) params .next() );
+        for (Construction param : parameters) {
+            output .addConstruction( param );
+        }
         return output;
     }
 }

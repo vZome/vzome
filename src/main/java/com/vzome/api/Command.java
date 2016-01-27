@@ -4,7 +4,6 @@
 package com.vzome.api;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -36,9 +35,8 @@ public class Command {
 	public Command( Delegate delegate )
 	{
 		this.delegate = delegate;
-		this.selection = new ArrayList<Object>();
-        for ( Iterator mans = delegate .getInputs() .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+		this.selection = new ArrayList<>();
+        for (Manifestation man : delegate .getInputs()) {
             if ( man instanceof Connector )
             {
                 this .selection .add( new Ball( (Connector) man ) );

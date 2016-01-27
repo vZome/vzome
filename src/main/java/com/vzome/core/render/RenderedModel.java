@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -22,15 +21,15 @@ import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
-public class RenderedModel implements ManifestationChanges
+public class RenderedModel implements ManifestationChanges, Iterable<RenderedManifestation>
 {
-	protected List mListeners = new ArrayList();
+	protected List<RenderingChanges> mListeners = new ArrayList<>();
 	
 	private Shapes mPolyhedra;
 
 	private float mSelectionGlow = 0.8f;
 
-	protected final HashSet mRendered = new HashSet();
+	protected final HashSet<RenderedManifestation> mRendered = new HashSet<>();
 
 	private final AlgebraicField field;
 
@@ -149,8 +148,9 @@ public class RenderedModel implements ManifestationChanges
 	    mRendered .add( rm );
 	    if ( mainListener != null )
     	    mainListener .manifestationAdded( rm );
-        for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .manifestationAdded( rm );
+        for (RenderingChanges listener : mListeners) {
+            listener .manifestationAdded( rm );
+        }
 	}
 	
 	public void manifestationRemoved( Manifestation m )
@@ -160,12 +160,13 @@ public class RenderedModel implements ManifestationChanges
 			return;
 		}
 		
-	    RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
+	    RenderedManifestation rendered = m .getRenderedObject();
 	    if ( rendered == null )
 	        return; // there was no way to render the shape
 	    
-	    for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .manifestationRemoved( rendered );
+	    for (RenderingChanges listener : mListeners) {
+            listener .manifestationRemoved( rendered );
+        }
 	    if ( mainListener != null )
             mainListener .manifestationRemoved( rendered );
 	    if ( ! mRendered .remove( rendered ) )
@@ -176,48 +177,56 @@ public class RenderedModel implements ManifestationChanges
 
 	public void setManifestationGlow( Manifestation m, boolean on )
 	{
-        RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
+        RenderedManifestation rendered = m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setGlow( on? mSelectionGlow : 0f );
         if ( mainListener != null )
             mainListener .glowChanged( rendered );
-        for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .glowChanged( rendered );
+        for (RenderingChanges listener : mListeners) {
+            listener .glowChanged( rendered );
+        }
     }
 
     
     public void setManifestationColor( Manifestation m, Color color )
     {
-        RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
+        RenderedManifestation rendered = m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setColor( color );
         if ( mainListener != null )
             mainListener .colorChanged( rendered );
-        for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .colorChanged( rendered );
+        for (RenderingChanges listener : mListeners) {
+            listener .colorChanged( rendered );
+        }
     }
 
     
     public void setManifestationTransparency( Manifestation m, boolean on )
     {
-        RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
+        RenderedManifestation rendered = m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setTransparency( on? mSelectionGlow : 0f );
         if ( mainListener != null )
             mainListener .colorChanged( rendered );
-        for ( int i = 0; i < mListeners .size(); i++ )
-            ((RenderingChanges) mListeners .get( i )) .colorChanged( rendered );
+        for (RenderingChanges listener : mListeners) {
+            listener .colorChanged( rendered );
+        }
     }
 	
-	
-	public Iterator getRenderedManifestations()
+    @Override
+	public Iterator<RenderedManifestation> iterator()
 	{
 	    return mRendered .iterator();
 	}
 
+    @Deprecated
+	public Iterator<RenderedManifestation> getRenderedManifestations()
+	{
+	    return mRendered .iterator();
+	}
 
 	public OrbitSource getOrbitSource()
 	{
@@ -244,10 +253,10 @@ public class RenderedModel implements ManifestationChanges
             
 //            boolean didOneBall = false;
             
-            HashSet newSet = new HashSet();
-            for ( Iterator polys = mRendered .iterator(); polys .hasNext(); )
+            HashSet<RenderedManifestation> newSet = new HashSet<>();
+            for ( Iterator<RenderedManifestation> polys = mRendered .iterator(); polys .hasNext(); )
             {
-                RenderedManifestation rendered = (RenderedManifestation) polys .next();
+                RenderedManifestation rendered = polys .next();
                 polys .remove();
 //                if ( rendered .getManifestation() instanceof Connector ) {
 //                    if ( didOneBall )
@@ -257,31 +266,33 @@ public class RenderedModel implements ManifestationChanges
 //                }
                 resetAttributes( rendered, false );
                 newSet .add( rendered );  // must re-hash, since shape has changed
-                if ( mainListener != null )
+                if ( mainListener != null ) {
                     mainListener .shapeChanged( rendered );
-                for ( int i = 0; i < mListeners .size(); i++ )
-                    ((RenderingChanges) mListeners .get( i )) .shapeChanged( rendered );
+                }
+                for (RenderingChanges listener : mListeners) {
+                    listener .shapeChanged( rendered );
+                }
             }
             mRendered .addAll( newSet );
         } else {
 //            int yieldFreq = mRendered .size() / 20;
             int yieldCount = 0;
-            HashSet newSet = new HashSet();
-            for ( Iterator rms = mRendered .iterator(); rms .hasNext(); ) {
+            HashSet<RenderedManifestation> newSet = new HashSet<>();
+            for ( Iterator<RenderedManifestation> rms = mRendered .iterator(); rms .hasNext(); ) {
                 yieldCount = (++yieldCount) % 20;
                 if ( yieldCount == 0 )
                     Thread .yield();
-                RenderedManifestation rendered = (RenderedManifestation) rms .next();
+                RenderedManifestation rendered = rms .next();
                 rms .remove();
                 Manifestation m = rendered .getManifestation();
                 if ( m .isHidden() )
                     continue;
                 if ( rendered .getShape() != null )
                 {
-                    if ( mainListener != null )
+                    if ( mainListener != null ) {
                         mainListener .manifestationRemoved( rendered );
-                    for ( int i = 0; i < mListeners .size(); i++ ) {
-                        RenderingChanges listener = (RenderingChanges) mListeners .get( i );
+                    }
+                    for (RenderingChanges listener : mListeners) {
                         listener .manifestationRemoved( rendered );
                     }
                 }
@@ -298,11 +309,10 @@ public class RenderedModel implements ManifestationChanges
                         if ( glow != 0f )
                             mainListener .glowChanged( rendered );
                     }
-                    for ( int i = 0; i < mListeners .size(); i++ ) {
-                        RenderingChanges listener = (RenderingChanges) mListeners .get( i );
+                    for (RenderingChanges listener : mListeners) {
                         listener .manifestationAdded( rendered );
                         if ( glow != 0f )
-                            ((RenderingChanges) mListeners .get( i )) .glowChanged( rendered );
+                            listener .glowChanged( rendered );
                     }
                 }
             }
@@ -408,10 +418,8 @@ public class RenderedModel implements ManifestationChanges
     private Polyhedron makePanelPolyhedron( Panel panel )
     {
         Polyhedron poly = new Polyhedron( this .field );
-        Iterator vertices = panel .getVertices();
         int arity = 0;
-        while ( vertices .hasNext() ) {
-            AlgebraicVector gv = (AlgebraicVector) vertices .next();
+        for( AlgebraicVector gv : panel) {
             arity++;
             poly .addVertex( gv );            
         }
@@ -420,7 +428,7 @@ public class RenderedModel implements ManifestationChanges
         Polyhedron.Face front = poly .newFace();
         Polyhedron.Face back = poly .newFace();
         for ( int i = 0; i < arity; i++ ) {
-            Integer j = new Integer( i );
+            Integer j = i;
             front .add( j );
             back .add( 0, j );
         }
@@ -439,8 +447,7 @@ public class RenderedModel implements ManifestationChanges
     public RenderedModel snapshot()
     {
         RenderedModel snapshot = new RenderedModel( this .field, false );
-        for (Iterator iterator = mRendered .iterator(); iterator.hasNext(); ) {
-            RenderedManifestation rm = (RenderedManifestation) iterator.next();
+        for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
             snapshot .mRendered .add( copy );
         }
@@ -449,22 +456,22 @@ public class RenderedModel implements ManifestationChanges
     
     public static void renderChange( RenderedModel from, RenderedModel to, RenderingChanges changes )
     {
-        Set toRemove = (HashSet) from .mRendered .clone();
+        // TODO: Does clone() perform any better than new HashSet(), or is there any other reason to keep it?
+//        Set<RenderedManifestation> toRemove = (Set<RenderedManifestation>) from .mRendered .clone();
+        HashSet<RenderedManifestation> toRemove = new HashSet<>(from.mRendered);
         toRemove .removeAll( to .mRendered );
-        for ( Iterator iterator = toRemove .iterator(); iterator .hasNext(); ) {
-            RenderedManifestation rm = (RenderedManifestation) iterator .next();
+        for ( RenderedManifestation rm : toRemove ) {
             changes .manifestationRemoved( rm );
         }
-        Set toAdd = (HashSet) to .mRendered .clone();
+        // TODO: Does clone() perform any better than new HashSet(), or is there any other reason to keep it?
+//        Set<RenderedManifestation> toAdd = (Set<RenderedManifestation>) to .mRendered .clone();
+        HashSet<RenderedManifestation> toAdd = new HashSet<>(to.mRendered);
         toAdd .removeAll( from .mRendered );
-        for ( Iterator iterator = toAdd .iterator(); iterator .hasNext(); ) {
-            RenderedManifestation rm = (RenderedManifestation) iterator .next();
+        for ( RenderedManifestation rm : toAdd ) {
             changes .manifestationAdded( rm );
         }
-        for ( Iterator froms = from .mRendered .iterator(); froms .hasNext(); ) {
-            RenderedManifestation fromRm = (RenderedManifestation) froms .next();
-            for ( Iterator tos = to .mRendered .iterator(); tos .hasNext(); ) {
-                RenderedManifestation toRm = (RenderedManifestation) tos .next();
+        for ( RenderedManifestation fromRm : from .mRendered ) {
+            for ( RenderedManifestation toRm : to .mRendered ) {
                 if ( fromRm .equals( toRm ) )
                 {
                     changes .manifestationSwitched( fromRm, toRm );

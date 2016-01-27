@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
@@ -19,7 +18,7 @@ import com.vzome.core.construction.Translation;
 public class CommandTranslate extends CommandTransform
 {
     
-    public ConstructionList apply( ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         final Segment norm = (Segment) attributes .get( SYMMETRY_AXIS_ATTR_NAME );
         if ( norm == null ) {

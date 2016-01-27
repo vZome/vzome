@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 
-public class Colors
+public class Colors implements Iterable<String>
 {
     public Colors( Properties props )
     {
@@ -42,24 +42,26 @@ public class Colors
 		DIRECTION = PREFIX + "direction.",
         PLANE = DIRECTION + "plane.";
     
-    private final Map mColors = new TreeMap();
+    private final Map<String, Color> mColors = new TreeMap<>(); // TreeMap is automatically ordered (sorted)
     
-    private final List mListeners = new ArrayList();
+    private final List<Changes> mListeners = new ArrayList<>();
     
     private final Properties properties;
 
     public void addColor( String name, Color color )
     {
         mColors .put( name, color );
-        for ( Iterator it = mListeners .iterator(); it .hasNext(); )
-            ((Changes) it .next()) .colorAdded( name, color );
+        for (Changes next : mListeners) {
+            next .colorAdded( name, color );
+        }
     }
 
     public void setColor( String name, Color color )
     {
         mColors .put( name, color );
-        for ( Iterator it = mListeners .iterator(); it .hasNext(); )
-            ((Changes) it .next()) .colorChanged( name, color );
+        for (Changes next : mListeners) {
+            next .colorChanged( name, color );
+        }
     }
 	
 	public void addListener( Changes changes )
@@ -84,7 +86,7 @@ public class Colors
         String pref = properties .getProperty( name );
         if ( pref == null || pref.equals( "" ) )
             return result;
-        result = (float[]) result.clone();
+        result = result.clone();
         StringTokenizer tokens = new StringTokenizer( pref, ", " );
         int i = 0;
         while ( tokens.hasMoreTokens() )
@@ -123,7 +125,7 @@ public class Colors
 
     public Color getColor( String name )
     {
-        Color color = (Color) mColors .get( name );
+        Color color = mColors .get( name );
         if ( color == null )
         {
             if ( name .startsWith( DIRECTION ) ) {
@@ -175,9 +177,16 @@ public class Colors
 		return color;
     }
 	
-    public Iterator getColorNames()
+    @Override
+    public Iterator<String> iterator()
     {
         return mColors .keySet() .iterator();
+    }
+
+    @Deprecated
+    public Iterator<String> getColorNames()
+    {
+        return this .iterator();
     }
 
     public void reset()

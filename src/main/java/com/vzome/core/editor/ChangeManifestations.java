@@ -23,7 +23,8 @@ public abstract class ChangeManifestations extends ChangeSelection
         super( selection, groupInSelection );
         
         mManifestations = realized;
-        mManifestedNow = new HashMap();
+        // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
+        mManifestedNow = new HashMap<>();
     }
     
     /**
@@ -33,12 +34,14 @@ public abstract class ChangeManifestations extends ChangeSelection
      * 
      * TODO: look at implications for unmanifestConstruction
      */
-    private transient Map mManifestedNow;  // used only while calling manifest
+    // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
+    private transient Map<Manifestation, Manifestation> mManifestedNow;  // used only while calling manifest
     
     public void redo()
     {
         if ( mManifestedNow != null )
-            mManifestedNow = new HashMap();
+            // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
+            mManifestedNow = new HashMap<>();
         super .redo();
 //        System.out.print( " manifestations: " + mManifestations .size() );
     }
@@ -64,10 +67,11 @@ public abstract class ChangeManifestations extends ChangeSelection
         Manifestation m = mManifestations .findConstruction( c );
         if ( m == null )
             return null;
-        Manifestation made = (Manifestation) mManifestedNow .get( m );
+        Manifestation made = mManifestedNow .get( m );
         if ( made != null )
         	return made;
         if ( m .isUnnecessary() )  { // just manifested, not added yet
+            // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
         	mManifestedNow .put( m, m );
         	plan( new ManifestConstruction( c, m, true ) );
         }
@@ -119,8 +123,8 @@ public abstract class ChangeManifestations extends ChangeSelection
 
 	public boolean showsManifestation( Manifestation man )
 	{
-		for (Iterator iterator = this .getEffects(); iterator.hasNext();) {
-			SideEffect effect = (SideEffect) iterator.next();
+		for (Iterator<SideEffect> iterator = this .getEffects(); iterator.hasNext();) {
+			SideEffect effect = iterator.next();
 			if ( effect instanceof ManifestConstruction ) {
 				ManifestConstruction show = (ManifestConstruction) effect;
 				if ( show .showsManifestation( man ) )

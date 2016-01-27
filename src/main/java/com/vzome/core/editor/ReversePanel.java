@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.List;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.ModelRoot;
@@ -30,7 +29,6 @@ public class ReversePanel extends ChangeManifestations
                 unselect( panel );
             Polygon polygon = (Polygon) panel .getConstructions() .next();
             unmanifestConstruction( polygon );
-            List vertices = null;
             // TODO complete this
         }
         redo();

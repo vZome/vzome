@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
@@ -37,19 +36,18 @@ public class SelectSimilarSizeStruts extends ChangeSelection
 
     public void perform() throws Failure
     {
-        for ( Iterator ms = model .getAllManifestations(); ms .hasNext(); ) {
-            Manifestation man = (Manifestation) ms .next();
+        for (Manifestation man : model) {
             if ( man .getRenderedObject() == null )
                 continue;  // hidden!
             if ( man instanceof Strut ) {
                 Strut strut = (Strut) man;
                 AlgebraicVector offset = strut .getOffset();
                 Axis zone = symmetry .getAxis( offset );
-                Direction orbit = zone .getOrbit();
-                if ( orbit != this .orbit )
+                Direction zoneOrbit = zone .getOrbit();
+                if ( zoneOrbit != this .orbit )
                     continue;
-                AlgebraicNumber length = zone .getLength( offset );
-                if ( this .length .equals( length ) )
+                AlgebraicNumber zoneLength = zone .getLength( offset );
+                if ( this .length .equals( zoneLength ) )
                     select( strut );
             }
         }

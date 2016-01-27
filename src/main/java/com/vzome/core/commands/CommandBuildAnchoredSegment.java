@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -20,15 +19,15 @@ import com.vzome.core.math.symmetry.Axis;
  */
 public class CommandBuildAnchoredSegment extends AbstractCommand
 {
-    public void getXml( Element xml, Map attributes )
+    public void getXml( Element xml, AttributeMap attributes )
     {
         XmlSaveFormat .serializeAxis( xml, "symm", "dir", "index", "sense", (Axis) attributes .get( "axis" ) );
         XmlSaveFormat .serializeNumber( xml, "len", (AlgebraicNumber) attributes .get( "length" ) );
     }
 
-    public Map setXml( Element xml, XmlSaveFormat format )
+    public AttributeMap setXml( Element xml, XmlSaveFormat format )
     {
-        Map attrs = super .setXml( xml, format );
+        AttributeMap attrs = super .setXml( xml, format );
         
         if ( format .commandEditsCompacted() )
         {
@@ -58,7 +57,7 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
         return ATTR_SIGNATURE;
     }
     
-    public ConstructionList apply( ConstructionList parameters, Map attrs, ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();
         if ( parameters == null || parameters .size() != 1 )

@@ -101,9 +101,10 @@ public final class AlgebraicVector
 
     public boolean isOrigin()
     {
-        for ( int i = 0; i < this .coordinates .length; i++ ) {
-            if ( ! this .coordinates[ i ] .isZero() )
+        for (AlgebraicNumber coordinate : this .coordinates) {
+            if (!coordinate.isZero()) {
                 return false;
+            }
         }
         return true;
     }

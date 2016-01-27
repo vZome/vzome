@@ -1,8 +1,5 @@
 /*
  * Created on Jul 3, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package com.vzome.core.editor;
 
@@ -22,9 +19,9 @@ import com.vzome.core.editor.UndoableEdit.Context;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
 
-public class EditHistory
+public class EditHistory implements Iterable<UndoableEdit>
 {	
-    private List mEdits = new ArrayList();
+    private List<UndoableEdit> mEdits = new ArrayList<>();
     
     // mEditNumber is the number of "redone" UndoableEdits in mEdits
     
@@ -62,8 +59,8 @@ public class EditHistory
             // first, find the last isSticky() edit in the dead edits being removed.
             int lastStickyEdit = mEditNumber - 1;
             int deadEditIndex = mEditNumber;
-            for ( Iterator deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
-                UndoableEdit dead = (UndoableEdit) deadEdits .next();
+            for ( Iterator<UndoableEdit> deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
+                UndoableEdit dead = deadEdits .next();
                 if ( dead .isSticky() )
                 {
                     makeBranch = true;
@@ -73,8 +70,8 @@ public class EditHistory
             }
             Branch branch = makeBranch? new Branch( context ) : null;
             deadEditIndex = mEditNumber;
-            for ( Iterator deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
-                UndoableEdit removed = (UndoableEdit) deadEdits .next();
+            for ( Iterator<UndoableEdit> deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
+                UndoableEdit removed = deadEdits .next();
                 deadEdits .remove();
                 if ( deadEditIndex <= lastStickyEdit )
                 {
@@ -191,14 +188,14 @@ public class EditHistory
         {
             if ( mEditNumber == mEdits .size() )
                 break;
-            UndoableEdit undoable = (UndoableEdit) mEdits .get( mEditNumber++ );
+            UndoableEdit undoable = mEdits .get( mEditNumber++ );
             undoable .redo();
         }
         while ( mEditNumber > editNum )
         {
             if ( mEditNumber == 0 )
                 break;
-            UndoableEdit undoable = (UndoableEdit) mEdits .get( --mEditNumber );
+            UndoableEdit undoable = mEdits .get( --mEditNumber );
             undoable .undo();
         }
     }
@@ -207,7 +204,7 @@ public class EditHistory
     {
         if ( mEditNumber == 0 )
             return null;
-        UndoableEdit undoable = (UndoableEdit) mEdits .get( --mEditNumber );
+        UndoableEdit undoable = mEdits .get( --mEditNumber );
         if ( undoable instanceof EndBlock )
         	return undoBlock();
         
@@ -234,7 +231,7 @@ public class EditHistory
     {
         if ( mEditNumber == mEdits .size() )
             return null;
-        UndoableEdit undoable = (UndoableEdit) mEdits .get( mEditNumber++ );
+        UndoableEdit undoable = mEdits .get( mEditNumber++ );
         if ( undoable instanceof BeginBlock )
             return redoBlock();
         
@@ -270,14 +267,12 @@ public class EditHistory
         DomUtils .addAttribute( result, "editNumber", Integer.toString( this .mEditNumber ) );
         
         int edits = 0, lastStickyEdit=-1;
-        for ( Iterator it = this .iterator(); it .hasNext(); )
-        {
-            UndoableEdit undoable = (UndoableEdit) it .next();
+        for (UndoableEdit undoable : this) {
             Element edit = undoable .getDetailXml( doc );
             ++ edits;
             DomUtils .addAttribute( edit, "editNumber", Integer.toString( edits ) );
             if ( logger .isLoggable( Level.FINEST ) )
-            	logger .finest( "side-effect: " + DomUtils .getXmlString( edit ) );
+                logger .finest( "side-effect: " + DomUtils .getXmlString( edit ) );
             result .appendChild( edit );
             if ( undoable .isSticky() )
                 lastStickyEdit = edits;
@@ -294,9 +289,9 @@ public class EditHistory
         return result;
         // edits are now serialized in calling EditorController
         
-//        for ( Iterator it = mEdits .iterator(); it .hasNext(); )
+//        for ( Iterator<UndoableEdit> it = mEdits .iterator(); it .hasNext(); )
 //        {
-//            UndoableEdit undoable = (UndoableEdit) it .next();
+//            UndoableEdit undoable = it .next();
 //            
 //            Context newContext = undoable .getContext();
 //            if ( context != undoable .getContext() )
@@ -320,7 +315,7 @@ public class EditHistory
         if ( cursor == 0 )
             return;
         -- cursor;
-        UndoableEdit above = (UndoableEdit) mEdits .get( cursor );
+        UndoableEdit above = mEdits .get( cursor );
 
         if ( above instanceof ChangeManifestations )
             return;
@@ -331,7 +326,7 @@ public class EditHistory
         if ( cursor == 0 )
             return;
         -- cursor;
-        UndoableEdit below = (UndoableEdit) mEdits .get( cursor );
+        UndoableEdit below = mEdits .get( cursor );
 
         if ( below instanceof ChangeManifestations )
             return;
@@ -352,7 +347,7 @@ public class EditHistory
             boolean done = false;
             while ( ! done )
             {
-                UndoableEdit next = (UndoableEdit) mEdits .get( scan );
+                UndoableEdit next = mEdits .get( scan );
                 if ( next instanceof ChangeManifestations )
                     return;
                 if ( next instanceof ChangeSelection )
@@ -583,7 +578,7 @@ public class EditHistory
 	    
 	    mEditNumber = 0;
 	    int targetEdit = 0;
-	    List toRedo = new ArrayList();
+	    List<UndoableEdit> toRedo = new ArrayList<>();
 	    // here the edits are all still DeferredEdits
 	    for ( int i = 0; i < redoThreshold; i++ )
 	        if ( i < mEdits .size() )
@@ -651,7 +646,8 @@ public class EditHistory
         this .addEdit( edit, context );
     }
 
-    public Iterator iterator()
+    @Override
+    public Iterator<UndoableEdit> iterator()
     {
         return this .mEdits .iterator();
     }

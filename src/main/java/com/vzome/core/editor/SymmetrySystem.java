@@ -5,7 +5,6 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -36,39 +35,36 @@ public class SymmetrySystem implements OrbitSource
     
 	private final Symmetry symmetry;
     private final OrbitSet orbits;
-    private final Map orbitColors = new HashMap();
-    private final Map<String,Shapes> styles = new HashMap();
-    private final List<String> styleNames = new ArrayList<String>();
+    private final Map<Direction, Color> orbitColors = new HashMap<>();
+    private final Map<String,Shapes> styles = new HashMap<>();
+    private final List<String> styleNames = new ArrayList<>();
     private Shapes shapes;
-    private Map<AlgebraicVector,Axis> vectorToAxis = new HashMap();
+    private Map<AlgebraicVector,Axis> vectorToAxis = new HashMap<>();
 
     private boolean noKnownDirections = false;
 
 	public SymmetrySystem( Element symmXml, Symmetry symmetry, Colors colors, List<Shapes> styles, boolean allowNonstandard )
 	{
 		this .symmetry = symmetry;
-		for ( Iterator iterator = styles.iterator(); iterator.hasNext(); ) {
-            Shapes shapes = (Shapes) iterator.next();
-            String name = shapes .getName();
-            String alias = shapes .getAlias();
+        for (Shapes shape : styles) {
+            String name = shape .getName();
+            String alias = shape .getAlias();
             this .styleNames .add( name );
-            this .styles .put( name, shapes );
-            this .styles .put( shapes .getPackage(), shapes );
+            this .styles .put( name, shape );
+            this .styles .put( shape .getPackage(), shape );
             if ( alias != null && ! alias .equals( name ) )
-                this .styles .put( alias, shapes );
+                this .styles .put( alias, shape );
         }
         String styleName = symmetry .getDefaultStyle();
 		orbits = new OrbitSet( symmetry );
 		if ( symmXml == null ) 
 		{
-	        for ( Iterator dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
-	        {
-	            Direction dir = (Direction) dirs .next();
-	            if ( dir .isStandard() || allowNonstandard )  // reader
-	            	orbits .add( dir );
-	            Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
-	            orbitColors .put( dir, color );
-	        }
+            for (Direction dir : symmetry .getOrbitSet()) {
+                if ( dir .isStandard() || allowNonstandard )  // reader
+                    orbits .add( dir );
+                Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
+                orbitColors .put( dir, color );
+            }
 		}
 		else
 		{
@@ -119,10 +115,8 @@ public class SymmetrySystem implements OrbitSource
 					}
 				}
 			}
-			// fill in the orbits that might be newer than what the file had
-            for ( Iterator dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
-            {
-                Direction dir = (Direction) dirs .next();
+            // fill in the orbits that might be newer than what the file had
+            for (Direction dir : symmetry .getOrbitSet()) {
                 if ( orbits .contains( dir ) )
                     continue;
                 if ( dir .isStandard() || allowNonstandard )  // reader
@@ -224,7 +218,7 @@ public class SymmetrySystem implements OrbitSource
 	{
 		Color shapeColor = this .shapes .getColor( orbit ); // usually null, but see ExportedVEFShapes
 		if ( shapeColor == null ) // the usual case
-			shapeColor = (Color) orbitColors .get( orbit );
+			shapeColor = orbitColors .get( orbit );
 		return shapeColor;
 	}
 
@@ -255,13 +249,11 @@ public class SymmetrySystem implements OrbitSource
         DomUtils .addAttribute( result, "name", this .getSymmetry() .getName() );
         DomUtils .addAttribute( result, "renderingStyle", this .shapes .getName() );
 
-        for ( Iterator dirs = this .orbits .iterator(); dirs .hasNext(); )
-        {
-            Direction dir = (Direction) dirs .next();
+        for (Direction dir : this .orbits) {
             Element dirElem = doc .createElement( "Direction" );
             if ( dir .isAutomatic() )
                 DomUtils .addAttribute( dirElem, "prototype", dir .getPrototype() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
-                DomUtils .addAttribute( dirElem, "name", dir .getName() );
+            DomUtils .addAttribute( dirElem, "name", dir .getName() );
             {
                 Color color = getColor( dir );
                 if ( color != null )
@@ -279,7 +271,7 @@ public class SymmetrySystem implements OrbitSource
 
     public String[] getStyleNames()
     {
-        return (String[]) this .styleNames .toArray( new String[]{} );
+        return this .styleNames .toArray( new String[]{} );
     }
 
     public Shapes getStyle()

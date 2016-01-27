@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.ChangeOfBasis;
@@ -39,8 +38,7 @@ public class LinearMapTool extends TransformationTool
         int index = 0;
         boolean correct = true;
         Point center = null;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Connector )
             {

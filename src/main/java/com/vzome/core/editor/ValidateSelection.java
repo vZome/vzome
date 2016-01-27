@@ -10,7 +10,7 @@ public class ValidateSelection extends ChangeSelection
 {
     public void perform() throws Failure
     {
-        if ( ! mSelection .iterator() .hasNext() )
+        if ( mSelection .isEmpty() )
             throw new Failure( "selection is empty" );
     }
 

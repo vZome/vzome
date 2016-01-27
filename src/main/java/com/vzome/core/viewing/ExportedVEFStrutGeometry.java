@@ -13,17 +13,17 @@ import com.vzome.core.parts.StrutGeometry;
 
 public class ExportedVEFStrutGeometry implements StrutGeometry
 {    
-    private final List prototypeVertices;  // the polyhedron from which others are derived
+    private final List<AlgebraicVector> prototypeVertices;  // the polyhedron from which others are derived
     
-    private final List prototypeFaces;
+    private final List< List<Integer> > prototypeFaces;
     
     private final AlgebraicField field;
     
     private final AlgebraicVector prototypeVector; // the prototype strut vector from the symmetry group
     
-    private final Set fullScaleVertices, halfScaleVertices;  // the polyhedron vertices that must adjust for different strut lengths
+    private final Set<Integer> fullScaleVertices, halfScaleVertices;  // the polyhedron vertices that must adjust for different strut lengths
     
-    public ExportedVEFStrutGeometry( List vertices, List faces, AlgebraicVector prototype, Set fullScaleVertices, Set halfScaleVertices, AlgebraicField field )
+    public ExportedVEFStrutGeometry( List<AlgebraicVector> vertices, List< List<Integer> > faces, AlgebraicVector prototype, Set<Integer> fullScaleVertices, Set<Integer> halfScaleVertices, AlgebraicField field )
     {
         prototypeVertices = vertices;
         prototypeFaces = faces;
@@ -33,7 +33,7 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
         this.field = field;
     }
 
-    public ExportedVEFStrutGeometry( List vertices, List faces, AlgebraicVector prototype, Set fullScaleVertices, AlgebraicField field )
+    public ExportedVEFStrutGeometry( List<AlgebraicVector> vertices, List< List<Integer> > faces, AlgebraicVector prototype, Set<Integer> fullScaleVertices, AlgebraicField field )
     {
     	this( vertices, faces, prototype, fullScaleVertices, null, field );
     }
@@ -54,17 +54,15 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
         Polyhedron result = new Polyhedron( field );
         for ( int i = 0; i < prototypeVertices .size(); i ++ )
         {
-            AlgebraicVector vertex = (AlgebraicVector) prototypeVertices .get( i );
-            if ( fullScaleVertices .contains( new Integer( i ) ) ) {
+            AlgebraicVector vertex = prototypeVertices .get( i );
+            if ( fullScaleVertices .contains(i) ) {
                 vertex = vertex .plus( tipVertex );
-            } else if ( halfScaleVertices != null && halfScaleVertices .contains( new Integer( i ) ) ) {
+            } else if ( halfScaleVertices != null && halfScaleVertices .contains(i) ) {
                 vertex = vertex .plus( midpoint );
             }
             result .addVertex( vertex );
         }
-        for ( int j = 0; j < prototypeFaces .size(); j ++ )
-        {
-            List prototypeFace = (List) prototypeFaces .get( j );
+        for (List<Integer> prototypeFace : prototypeFaces) {
             Polyhedron.Face face = result .newFace();
             face .addAll( prototypeFace );
             result .addFace( face );

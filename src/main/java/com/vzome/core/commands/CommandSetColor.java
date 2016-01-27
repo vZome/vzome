@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -30,7 +29,7 @@ public class CommandSetColor extends AbstractCommand
         return ATTR_SIGNATURE;
     }
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes,
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
 //        Manifestation man = (Manifestation) attributes .get( MANIFESTATION_ATTR );

@@ -115,9 +115,11 @@ public class VefToModel extends VefParser
 
     protected void endFile( StringTokenizer tokens )
     {
-        if ( noBallsSection )
-            for ( int i = 0; i < mVertices.length; i++ )
-                mEffects .constructionAdded( mVertices[ i ] );
+        if ( noBallsSection ) {
+            for (Point vertex : mVertices) {
+                mEffects.constructionAdded(vertex);
+            }
+        }
     }
     
 }

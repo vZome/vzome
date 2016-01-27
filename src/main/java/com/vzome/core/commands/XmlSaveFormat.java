@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,7 +57,7 @@ public class XmlSaveFormat
     
     private final String version;
     
-    private final Set capabilities = new HashSet();
+    private final Set<String> capabilities = new HashSet<>();
 
     private Properties properties;
         
@@ -73,7 +72,7 @@ public class XmlSaveFormat
                                 COMPACTED_COMMAND_EDITS = "compacted-command-edits",
                                 MULTIPLE_DESIGNS = "multiple-designs";
     
-    private static final Map FORMATS = new HashMap();
+    private static final Map<String, XmlSaveFormat> FORMATS = new HashMap<>();
     
     static Logger logger = Logger .getLogger( "com.vzome.core.commands.XmlSaveFormat" );
 
@@ -101,7 +100,7 @@ public class XmlSaveFormat
     
     public static XmlSaveFormat getFormat( String namespace )
     {
-        XmlSaveFormat format = (XmlSaveFormat) FORMATS .get( namespace );
+        XmlSaveFormat format = FORMATS .get( namespace );
         return format;
     }
         
@@ -275,11 +274,11 @@ public class XmlSaveFormat
             value = parseAlgebraicVector( val );
         else if ( valName .equals( "Boolean" ) ) {
             String gnum = val .getAttribute( "value" );
-            value = new Boolean( Boolean .getBoolean( gnum ) );
+            value = Boolean .getBoolean( gnum );
         }
         else if ( valName .equals( "Integer" ) ) {
             String gnum = val .getAttribute( "value" );
-            value = new Integer( Integer .parseInt( gnum ) );
+            value = Integer .parseInt( gnum );
         }
         else if ( valName .equals( "GoldenNumber" )
                 || valName .equals( "IntegralNumber" ) ) {
@@ -364,9 +363,9 @@ public class XmlSaveFormat
         return c;
     }
     
-//    public Map loadCommandAttributesOld( Element editElem )
+//    public AttributeMap loadCommandAttributesOld( Element editElem )
 //    {
-//        Map attrs = new HashMap();
+//        AttributeMap attrs = new AttributeMap();
 //        for ( int j = 0; j < editElem .getChildCount(); j++ ) {
 //            Node kid2 = editElem .getChild( j );
 //            if ( kid2 instanceof Element ) {
@@ -391,14 +390,14 @@ public class XmlSaveFormat
 //        return attrs;
 //    }
 
-    public Map loadCommandAttributes( Element editElem )
+    public AttributeMap loadCommandAttributes( Element editElem )
     {
     	return this .loadCommandAttributes( editElem, false );
     }
     
-    public Map loadCommandAttributes( Element editElem, boolean projectTo3d )
+    public AttributeMap loadCommandAttributes( Element editElem, boolean projectTo3d )
     {
-        Map attrs = new TreeMap(); // need this to be ordered for the purpose of regression testing
+        AttributeMap attrs = new AttributeMap(); // need this to be ordered for the purpose of regression testing
         NodeList kids = editElem .getChildNodes();
         for ( int j = 0; j < kids .getLength(); j++ )
         {
@@ -413,7 +412,7 @@ public class XmlSaveFormat
                 attrName = attrElem .getAttribute( "name" );
                 Element elemKid = DomUtils .getFirstChildElement( attrElem );
                 if ( elemKid != null ) {
-            		attrElem = (Element) elemKid;
+            		attrElem = elemKid;
                     elemName = attrElem .getLocalName();
                 }
             }

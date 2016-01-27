@@ -1,6 +1,5 @@
 package com.vzome.core.commands;
 
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +38,7 @@ public interface Command
     Object[][] getAttributeSignature();
     
     
-    ConstructionList apply( ConstructionList parameters, Map attributes, ConstructionChanges effects )
+    ConstructionList apply( ConstructionList parameters, AttributeMap attributes, ConstructionChanges effects )
     	throws Failure;
 
     
@@ -93,5 +92,5 @@ public interface Command
             super( cause );
             logger .log( Level.INFO, "command failure", cause );
         }
-}
+    }
 }

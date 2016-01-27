@@ -23,9 +23,7 @@ public abstract class SideEffects implements UndoableEdit
         Element result = this .getXml( doc );
         Element effects = doc .createElement( "effects" );
         
-        for ( int i = 0; i < mItems .size(); i++ )
-        {
-            SideEffect se = (SideEffect) mItems .get( i );
+        for (SideEffect se : mItems) {
             if ( se != null )
             {
                 Element effect = se .getXml( doc );
@@ -46,7 +44,7 @@ public abstract class SideEffects implements UndoableEdit
         return false;
     }
 
-    private List mItems = new ArrayList();
+    private List<SideEffect> mItems = new ArrayList<>();
     
     /**
      * This lets us use this pattern:
@@ -110,7 +108,7 @@ public abstract class SideEffects implements UndoableEdit
     {
         for ( int i = redone; i < mItems .size(); i++ )
         {
-            SideEffect se = (SideEffect) mItems .get( i );
+            SideEffect se = mItems .get( i );
             if ( se != null )
                 se .redo();
         }
@@ -121,7 +119,7 @@ public abstract class SideEffects implements UndoableEdit
     {
         for ( int i = mItems .size(); i > 0; i-- )
         {
-            SideEffect se = (SideEffect) mItems .get( i-1 );
+            SideEffect se = mItems .get( i-1 );
             if ( se != null )
                 se .undo();
         }

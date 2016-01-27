@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.ConstructionChanges;
@@ -29,7 +28,7 @@ public class CommandFreePoint extends AbstractCommand
         return ATTRS;
     }
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes,
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();

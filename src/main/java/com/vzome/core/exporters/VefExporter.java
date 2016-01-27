@@ -3,7 +3,6 @@ package com.vzome.core.exporters;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -30,10 +29,8 @@ public class VefExporter extends Exporter3d
         AlgebraicNumber scale = field .createPower( -5 );
 	    Exporter exporter = new VefModelExporter( writer, field, scale );
 		
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
-            
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             exporter .exportManifestation( man );
         }
         

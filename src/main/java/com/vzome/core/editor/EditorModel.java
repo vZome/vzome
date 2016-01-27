@@ -124,7 +124,7 @@ public class EditorModel
             kind = null;
         Manifestation focus = mSelection .getSingleSelection( kind );
         if ( focus != null )
-            return (Construction) focus .getConstructions() .next();
+            return focus .getConstructions() .next();
         return null;
     }
 
@@ -182,7 +182,7 @@ public class EditorModel
             return new NoOp();
     }
     
-    private final Set failedConstructions = new HashSet();
+    private final Set<Manifestation> failedConstructions = new HashSet<>();
 
     public void addFailedConstruction( Construction cons )
     {

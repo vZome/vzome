@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
-import java.util.Iterator;
 import java.util.Locale;
 
 import com.vzome.core.algebra.AlgebraicVector;
@@ -38,9 +37,8 @@ public class DxfExporter extends Exporter3d
         NumberFormat format = NumberFormat .getNumberInstance( Locale .US );
         format .setMaximumFractionDigits( 6 );
 
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            Manifestation man = ((RenderedManifestation) rms .next()) .getManifestation();
+        for (RenderedManifestation rm : mModel) {
+            Manifestation man = rm .getManifestation();
             if ( man instanceof Strut ) {
                 output .println( "0" );
                 output .println( "LINE" );

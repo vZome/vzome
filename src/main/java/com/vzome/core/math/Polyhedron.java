@@ -18,11 +18,11 @@ public class Polyhedron {
 
 	protected int numVertices = 0;
 
-	protected final Map m_vertices = new HashMap();
+	protected final Map<AlgebraicVector, Integer> m_vertices = new HashMap<>();
     
-	protected final List m_vertexList = new ArrayList();
+	protected final List<AlgebraicVector> m_vertexList = new ArrayList<>();
 
-	protected final Set m_faces = new HashSet();
+	protected final Set<Face> m_faces = new HashSet<>();
     
     private final AlgebraicField field;
 
@@ -67,11 +67,11 @@ public class Polyhedron {
 	 */
     public Integer addIndexedVertex( AlgebraicVector location )
     {
-        Integer vertexObj = (Integer) m_vertices.get( location );
+        Integer vertexObj = m_vertices.get( location );
         if ( vertexObj == null ) {
             m_vertexList .add( location );
             // IMPORTANT: the incremented value is not returned
-            m_vertices .put( location, vertexObj = new Integer( numVertices++ ) );
+            m_vertices .put( location, vertexObj = numVertices++ );
         }
         return vertexObj;
     }
@@ -84,22 +84,16 @@ public class Polyhedron {
 			m_faces .add( face );
 			
 //			System .out .println( "--------face" );
-//			for ( Iterator vertices = face .iterator(); vertices .hasNext(); )
-//			    System .out .println( m_vertexList .get(((Integer) vertices.next()) .intValue()) );
+//			for ( Iterator<Integer> vertices = face .iterator(); vertices .hasNext(); )
+//			    System .out .println( m_vertexList .get(vertices.next() ) );
 		}
 	}
 	
-	/**
-	 * @return a list of int[]s
-	 */
-	public List getVertexList(){
+	public List<AlgebraicVector> getVertexList(){
 		return m_vertexList;
 	}
 
-	/**
-	 * @return a set of Faces
-	 */
-	public Set getFaceSet(){
+	public Set<Face> getFaceSet(){
 		return m_faces;
 	}
 
@@ -110,7 +104,7 @@ public class Polyhedron {
     }
 	
 
-	public class Face extends ArrayList
+	public class Face extends ArrayList<Integer>
     {
         private AlgebraicVector mNormal;
         
@@ -123,14 +117,14 @@ public class Polyhedron {
                 Logger .getLogger( "com.vzome.core.math.Polyhedron" ) .severe( "index larger than Face size" );
                 throw new IllegalStateException( "index larger than Face size" );
             }
-			return ((Integer) get( index )) .intValue();
+			return get( index );
 		}
         
-        public void computeNormal( List vertices )
+        public void computeNormal( List<AlgebraicVector> vertices )
         {
-            AlgebraicVector v0 = (AlgebraicVector) vertices .get( getVertex( 0 ) );
-            AlgebraicVector v1 = (AlgebraicVector) vertices .get( getVertex( 1 ) );
-            AlgebraicVector v2 = (AlgebraicVector) vertices .get( getVertex( 2 ) );
+            AlgebraicVector v0 = vertices .get( getVertex( 0 ) );
+            AlgebraicVector v1 = vertices .get( getVertex( 1 ) );
+            AlgebraicVector v2 = vertices .get( getVertex( 2 ) );
             v1 = v1 .minus( v0 );
             v2 = v2 .minus( v0 );
             mNormal = v1 .cross( v2 );
@@ -146,7 +140,7 @@ public class Polyhedron {
 					minVertex = getVertex(i);
 					minIndex = i;
 				}
-			Object[] temp = new Object[ sz ];	
+			Integer[] temp = new Integer[ sz ];	
 			for ( int j = 0; j < sz; j++  ) {
 				temp[j] = get( (j+minIndex) % sz );
 			}

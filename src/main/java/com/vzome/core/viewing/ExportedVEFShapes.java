@@ -1,8 +1,5 @@
 /*
  * Created on Jun 25, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package com.vzome.core.viewing;
 
@@ -53,7 +50,7 @@ public class ExportedVEFShapes extends AbstractShapes
         
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {
-    	this( prefsFolder, pkgName, name, null, symm, ( symm instanceof IcosahedralSymmetry )? new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) : null );
+    	this( prefsFolder, pkgName, name, alias, symm, ( symm instanceof IcosahedralSymmetry )? new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) : null );
     }
     
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
@@ -181,15 +178,15 @@ public class ExportedVEFShapes extends AbstractShapes
     
     private class VefToShape extends VefParser
     {                
-        private Set tipVertexIndices = new HashSet();
+        private Set<Integer> tipVertexIndices = new HashSet<>();
         
-        private Set midpointVertexIndices = new HashSet();
+        private Set<Integer> midpointVertexIndices = new HashSet<>();
         
         private AlgebraicVector tipVertex;
         
-        private List vertices = new ArrayList();
+        private List<AlgebraicVector> vertices = new ArrayList<>();
         
-        private List faces = new ArrayList();
+        private List< List<Integer> > faces = new ArrayList<>();
                 
         public StrutGeometry getStrutGeometry( AlgebraicVector prototype )
         {
@@ -205,14 +202,14 @@ public class ExportedVEFShapes extends AbstractShapes
             AlgebraicMatrix adjustment = mSymmetry .getMatrix( orientation );
             
             // now, adjust the vertex data
-            List newVertices = new ArrayList();
+            List<AlgebraicVector> newVertices = new ArrayList<>();
             for ( int i = 0; i < vertices .size(); i++ )
             {
-                AlgebraicVector originalVertex = (AlgebraicVector) vertices .get( i );
+                AlgebraicVector originalVertex = vertices .get( i );
                 // first, subtract the tipVertex if appropriate
-                if ( tipVertexIndices .contains( new Integer( i ) ) )
+                if ( tipVertexIndices .contains(i) )
                     originalVertex = originalVertex .minus( tipVertex );
-                else if ( midpointVertexIndices .contains( new Integer( i ) ) )
+                else if ( midpointVertexIndices .contains(i) )
                 	originalVertex = originalVertex .minus( midpoint );
                 // then, rotate to align with the 0-index zone for this orbit
                 AlgebraicVector adjustedVertex = adjustment .timesColumn( originalVertex );
@@ -225,14 +222,10 @@ public class ExportedVEFShapes extends AbstractShapes
         public Polyhedron getConnectorPolyhedron()
         {
             Polyhedron result = new Polyhedron( mSymmetry .getField() );
-            for ( int i = 0; i < vertices .size(); i ++ )
-            {
-                AlgebraicVector vertex = (AlgebraicVector) vertices .get( i );
+            for (AlgebraicVector vertex : vertices) {
                 result .addVertex( vertex );
             }
-            for ( int j = 0; j < faces .size(); j ++ )
-            {
-                List prototypeFace = (List) faces .get( j );
+            for (List<Integer> prototypeFace : faces) {
                 Polyhedron.Face face = result .newFace();
                 face .addAll( prototypeFace );
                 result .addFace( face );
@@ -242,10 +235,10 @@ public class ExportedVEFShapes extends AbstractShapes
         
         protected void addFace( int index, int[] verts )
         {
-            List face = new ArrayList();
+            List<Integer> face = new ArrayList<>();
             for ( int i = 0; i < verts.length; i++ ) {
                 int j = verts[i];
-                face .add( new Integer( j ) );
+                face .add(j);
             }
             faces .add( face );
         }
@@ -258,7 +251,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
         protected void addBall( int index, int vertex )
         {
-        	tipVertexIndices .add( new Integer( vertex ) );
+        	tipVertexIndices .add(vertex);
         }
 
         protected void endFile( StringTokenizer tokens )
@@ -281,7 +274,7 @@ public class ExportedVEFShapes extends AbstractShapes
                 throw new RuntimeException( "VEF format error: strut tip vertex index (\"" + token + "\") must be an integer", e );
             }
             
-            this .tipVertex = (AlgebraicVector) vertices .get( tipIndex );
+            this .tipVertex = vertices .get( tipIndex );
 
             if ( ! tokens .hasMoreTokens() )
                 return;
@@ -297,7 +290,7 @@ public class ExportedVEFShapes extends AbstractShapes
                 } catch ( NumberFormatException e ) {
                     throw new RuntimeException( "VEF format error: middle vertex index (\"" + token + "\") must be an integer", e );
                 }                
-        		midpointVertexIndices .add( new Integer( vertexIndex ) );
+        		midpointVertexIndices .add(vertexIndex);
             }
         }
 

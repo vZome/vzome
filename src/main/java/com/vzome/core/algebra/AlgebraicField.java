@@ -4,7 +4,6 @@ package com.vzome.core.algebra;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -39,9 +38,9 @@ public abstract class AlgebraicField
 
     private final String name;
 
-    private final ArrayList symmetries = new ArrayList();
+    private final ArrayList<Symmetry> symmetries = new ArrayList<>();
     
-    private final Map quaternionSymmetries = new HashMap();
+    private final Map<String, QuaternionicSymmetry> quaternionSymmetries = new HashMap<>();
     
     private final AlgebraicNumber one = this .createRational( 1 );
 
@@ -52,12 +51,12 @@ public abstract class AlgebraicField
     /**
      * Positive powers of the first irrational.
      */
-	private ArrayList<AlgebraicNumber> positivePowers = new ArrayList<AlgebraicNumber>( 8 );
+	private ArrayList<AlgebraicNumber> positivePowers = new ArrayList<>( 8 );
 
     /**
      * Negative powers of the first irrational.
      */
-	private ArrayList<AlgebraicNumber> negativePowers = new ArrayList<AlgebraicNumber>( 8 );
+	private ArrayList<AlgebraicNumber> negativePowers = new ArrayList<>( 8 );
 
     public AlgebraicField( String name )
     {
@@ -165,9 +164,11 @@ public abstract class AlgebraicField
 
 	public boolean isZero( BigRational[] e )
 	{
-    	for ( int i = 0; i < e.length; i++ )
-    		if ( ! e[ i ] .isZero() )
+    	for ( BigRational r : e ) {
+    		if ( ! r .isZero() ) {
     			return false;
+            }
+        }
 		return true;
 	}
 
@@ -200,8 +201,7 @@ public abstract class AlgebraicField
     
     public Symmetry getSymmetry( String name )
     {
-        for ( Iterator iterator = symmetries.iterator(); iterator.hasNext(); ) {
-            Symmetry symm = (Symmetry) iterator.next();
+        for (Symmetry symm : symmetries) {
             if ( symm .getName() .equals( name ) )
                 return symm;
         }
@@ -210,7 +210,7 @@ public abstract class AlgebraicField
 
     public Symmetry[] getSymmetries()
     {
-        return (Symmetry[]) symmetries.toArray( new Symmetry[0] );
+        return symmetries.toArray( new Symmetry[symmetries.size()] );
     }
     
     public void addQuaternionSymmetry( QuaternionicSymmetry symm )
@@ -220,7 +220,7 @@ public abstract class AlgebraicField
 
     public QuaternionicSymmetry getQuaternionSymmetry( String name )
     {
-        return (QuaternionicSymmetry) quaternionSymmetries .get( name );
+        return quaternionSymmetries .get( name );
     }
 
     /**

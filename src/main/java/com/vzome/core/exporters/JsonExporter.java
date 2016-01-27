@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -45,6 +44,7 @@ public class JsonExporter extends Exporter3d
 		this .doExport(writer);
 	}
 
+    private class ShapeMap extends HashMap<Polyhedron, Integer> {};
 
 	public void doExport( Writer writer ) throws IOException
 	{
@@ -62,34 +62,32 @@ public class JsonExporter extends Exporter3d
         StringBuffer instances = new StringBuffer();
         StringBuffer orientations = new StringBuffer();
         int numShapes = 0, numTransforms = 1;
-        Map[] shapes = new Map[]{ new HashMap(), new HashMap() };
-        Map transforms = new HashMap();
+        ShapeMap[] shapes = new ShapeMap[] { new ShapeMap(), new ShapeMap() };
+        Map<AlgebraicMatrix, Integer> transforms = new HashMap<>();
         AlgebraicMatrix identity = this .field .identityMatrix( 3 );
-        Integer identityNum = new Integer(0);
+        Integer identityNum = 0;
         transforms .put( identity, identityNum );
         exportTransform( identityNum, identity, orientations );
 
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+        for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-            Integer shapeNum = (Integer) shapes[ flip?1:0 ] .get( shape );
+            Integer shapeNum = shapes[ flip?1:0 ] .get( shape );
             if ( shapeNum == null ) {
                 if ( numShapes != 0 )
                     output .print( ",\n\n" );
-                shapeNum = new Integer( numShapes++ );
+                shapeNum = numShapes++;
                 shapes[ flip?1:0 ] .put( shape, shapeNum );
                 exportShape( shapeNum, shape, flip );
             }
             AlgebraicMatrix transform = rm .getOrientation();
             if ( transform == null )
-            	transform = identity;
-            Integer transformNum = (Integer) transforms .get( transform );
+                transform = identity;
+            Integer transformNum = transforms .get( transform );
             if ( transformNum == null ){
                 if ( numTransforms > 0 )
                     orientations .append( ",\n" );
-                transformNum = new Integer( numTransforms++ );
+                transformNum = numTransforms++;
                 transforms .put( transform, transformNum );
                 exportTransform( transformNum, transform, orientations );
             }
@@ -105,7 +103,7 @@ public class JsonExporter extends Exporter3d
             instances .append( FORMAT .format( loc.x ) + "," );
             instances .append( FORMAT .format( loc.y ) + "," );
             instances .append( FORMAT .format( loc.z ) );
-            instances .append( "], \"orientation\" : " + transformNum .intValue() );
+            instances .append( "], \"orientation\" : " + transformNum );
             instances .append( ", \"shape\" : " + shapeNum );
             instances .append( ", \"color\" : [" );
             instances .append( FORMAT .format( rgb[0] ) + "," );
@@ -120,7 +118,7 @@ public class JsonExporter extends Exporter3d
         this .background .getRGBColorComponents( rgb );
         output .print( FORMAT .format( rgb[0] ) + "," );
         output .print( FORMAT .format( rgb[1] ) + "," );
-        output .print( FORMAT .format( rgb[1] ) + ",1.0" );
+        output .print( FORMAT .format( rgb[2] ) + ",1.0" );
         output .print( " ],\n\n\"instances\" :\n[\n" );
         output .print( instances );
         output .print( "\n],\n\n\"orientations\" :\n[\n" );
@@ -129,14 +127,17 @@ public class JsonExporter extends Exporter3d
 	}
 
 
+    // TODO: Get rid of the unused parameter
     private void exportTransform( Integer num, AlgebraicMatrix transform, StringBuffer buf )
     {
-        AlgebraicField field = mModel .getField();
+        // TODO: Any reason we can't just use this.field instead of mModel.getField()?
+        AlgebraicField modelField = mModel .getField();
+        
         // Now we generate the transpose of the transform matrix... I don't recall why.
         //  Perhaps something to do with POV-Ray's left-handed coordinate system.
         for ( int i = 0; i < 3; i++ )
         {
-            AlgebraicVector columnSelect = field .basisVector( 3, i );
+            AlgebraicVector columnSelect = modelField .basisVector( 3, i );
             AlgebraicVector columnI = transform .timesColumn( columnSelect );
             RealVector colRV = columnI .toRealVector();
             if ( i > 0 )
@@ -152,6 +153,7 @@ public class JsonExporter extends Exporter3d
     }
     
 
+    // TODO: Get rid of the unused parameter
     private void exportShape( Integer shapeNum, Polyhedron shape, boolean reverseFaces )
     {
         int vertexCount = 0;
@@ -161,30 +163,25 @@ public class JsonExporter extends Exporter3d
         StringBuffer normals = new StringBuffer();
         StringBuffer triangles = new StringBuffer();
 
-        List faceVertices = shape .getVertexList();
-        for ( Iterator faces = shape .getFaceSet() .iterator(); faces.hasNext(); ) {
-
-            Polyhedron.Face face = (Polyhedron.Face) faces.next();
-
+        List<AlgebraicVector> faceVertices = shape .getVertexList();
+        for (Polyhedron.Face face : shape .getFaceSet()) {
             int arity = face .size();
-
-            Integer index = (Integer) face .get( reverseFaces? arity-1 : 0 );
-            AlgebraicVector gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+            int index = face .get( reverseFaces? arity-1 : 0 );
+            AlgebraicVector gv = faceVertices .get(index);
             RealVector vert0 = gv .toRealVector();
-            index = (Integer) face .get( reverseFaces? arity-2 : 1 );
-            gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+            index = face .get( reverseFaces? arity-2 : 1 );
+            gv = faceVertices .get(index);
             RealVector vert1 = gv .toRealVector( );
-            index = (Integer) face .get( reverseFaces? arity-3 : 2 );
-            gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+            index = face .get( reverseFaces? arity-3 : 2 );
+            gv = faceVertices .get(index);
             RealVector vert2 = gv .toRealVector( );
             RealVector edge1 = vert1 .minus( vert0 );
             RealVector edge2 = vert2 .minus( vert1 );
             RealVector norm = edge1 .cross( edge2 ) .normalize();
-            
             int v0 = -1, v1 = -1;
             for ( int j = 0; j < arity; j++ ){
-                index = (Integer) face .get( reverseFaces? arity-j-1 : j );
-                gv = (AlgebraicVector) faceVertices .get( index .intValue() );
+                index = face .get( reverseFaces? arity-j-1 : j );
+                gv = faceVertices .get(index);
                 RealVector vertex = gv .toRealVector( );
 
                 if ( v0 == -1 )

@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -45,8 +44,7 @@ public class MirrorTool extends TransformationTool
             axis = new SegmentJoiningPoints( center, p2 );
         }
         else
-            for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-                Manifestation man = (Manifestation) mans .next();
+            for (Manifestation man : mSelection) {
                 unselect( man );
                 if ( man instanceof Connector )
                 {
@@ -72,7 +70,7 @@ public class MirrorTool extends TransformationTool
                     }
                     mirrorPanel = (Polygon) ((Panel) man) .getConstructions() .next();
                 }
-            }
+        }
         if ( center == null )
             center = this.originPoint;
         

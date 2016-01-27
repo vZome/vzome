@@ -3,7 +3,6 @@
 
 package com.vzome.core.editor;
 
-import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -29,8 +28,7 @@ public class AffinePentagon extends ChangeManifestations
     {
         AlgebraicField field = root .getField();
         Segment s1 = null, s2 = null;
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Strut )
             {
@@ -71,8 +69,7 @@ public class AffinePentagon extends ChangeManifestations
 
         // now, find the corresponding points
         Point p1 = null, p2 = null;
-        for ( Iterator all = mManifestations .getAllManifestations(); all .hasNext(); ) {
-            Manifestation m = (Manifestation) all .next();
+        for (Manifestation m : mManifestations) {
             if ( m instanceof Connector )
             {
                 AlgebraicVector loc = ((Connector) m) .getLocation();

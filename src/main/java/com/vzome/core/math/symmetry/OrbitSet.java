@@ -4,13 +4,12 @@
 package com.vzome.core.math.symmetry;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
 import com.vzome.core.math.RealVector;
 
-public class OrbitSet extends TreeSet implements Set
+public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
 {    
     public interface Field
     {
@@ -38,9 +37,7 @@ public class OrbitSet extends TreeSet implements Set
     
     public Direction getDirection( String name )
     {
-        for ( Iterator dirs = this.iterator(); dirs .hasNext(); )
-        {
-            Direction dir = (Direction) dirs .next();
+        for (Direction dir : this) {
             if ( dir .getName() .equals( name ) )
                 return dir;
         }

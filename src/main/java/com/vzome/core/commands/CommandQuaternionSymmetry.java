@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.construction.Construction;
@@ -21,7 +20,7 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
  */
 public class CommandQuaternionSymmetry extends CommandTransform
 {
-    public void setFixedAttributes( Map attributes, XmlSaveFormat format )
+    public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         super.setFixedAttributes( attributes, format );
         if ( ! attributes .containsKey( LEFT_SYMMETRY_GROUP_ATTR_NAME ) )
@@ -54,7 +53,7 @@ public class CommandQuaternionSymmetry extends CommandTransform
         return GROUP_ATTR_SIGNATURE;
     }
 
-    public ConstructionList apply( final ConstructionList parameters, Map attributes, final ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         // accommodate bugs fixed in 2.1 beta 14... this was in AbstractCommand.setXmlAttributes(), and needs to go somewhere else
         // TODO put this in QuaternionCommandEdit somehow
@@ -75,21 +74,23 @@ public class CommandQuaternionSymmetry extends CommandTransform
         
         final Construction[] params = parameters .getConstructions();
         ConstructionList output = new ConstructionList();
-        for ( int j = 0; j < params .length; j++ )
-            output .addConstruction( params[j] );
-
-        for ( int i = 0; i < leftRoots.length; i++ ) 
-            for ( int j = 0; j < rightRoots.length; j++ ) {
-                for ( int k = 0; k < params .length; k++ ){
+        for (Construction param : params) {
+            output.addConstruction(param);
+        }
+        for (Quaternion leftRoot : leftRoots) {
+            for (Quaternion rightRoot : rightRoots) {
+                for (Construction param : params) {
                     Construction result = null;
-                    if ( params[k] instanceof Point ) {
-                        result = new PointRotated4D( leftRoots[i], rightRoots[j], (Point) params[k] );
-                    } else if ( params[k] instanceof Segment ) {
-                        result = new SegmentRotated4D( leftRoots[i], rightRoots[j], (Segment) params[k] );
-                    } else if ( params[k] instanceof Polygon ) {
-                        result = new PolygonRotated4D( leftRoots[i], rightRoots[j], (Polygon) params[k] );
+                    if (param instanceof Point) {
+                        result = new PointRotated4D(leftRoot, rightRoot, (Point) param);
+                    } else if (param instanceof Segment) {
+                        result = new SegmentRotated4D(leftRoot, rightRoot, (Segment) param);
+                    } else if (param instanceof Polygon) {
+                        result = new PolygonRotated4D(leftRoot, rightRoot, (Polygon) param);
                     } else {
                         // TODO handle other constructions 
+                        // TODO handle other constructions
+                        // TODO handle other constructions
                     }
                     if ( result == null )
                         continue;
@@ -97,6 +98,7 @@ public class CommandQuaternionSymmetry extends CommandTransform
                     output .addConstruction( result );
                 }
             }
+        }
         return output;
     }
 }

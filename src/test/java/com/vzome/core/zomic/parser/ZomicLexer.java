@@ -23,6 +23,7 @@ import antlr.TokenStreamIOException;
 import antlr.TokenStreamRecognitionException;
 import antlr.collections.impl.BitSet;
 
+@SuppressWarnings( { "all", "warnings", "unchecked", "unused", "cast" } )
 public class ZomicLexer extends antlr.CharScanner implements ZomicParserTokenTypes, TokenStream
  {
 public ZomicLexer(InputStream in) {
@@ -39,42 +40,42 @@ public ZomicLexer(LexerSharedInputState state) {
 	caseSensitiveLiterals = true;
 	setCaseSensitive(false);
 	literals = new Hashtable();
-	literals.put(new ANTLRHashString("triangle", this), new Integer(45));
-	literals.put(new ANTLRHashString("through", this), new Integer(20));
-	literals.put(new ANTLRHashString("rect", this), new Integer(41));
-	literals.put(new ANTLRHashString("short", this), new Integer(30));
-	literals.put(new ANTLRHashString("orange", this), new Integer(34));
-	literals.put(new ANTLRHashString("blue", this), new Integer(40));
-	literals.put(new ANTLRHashString("black", this), new Integer(36));
-	literals.put(new ANTLRHashString("label", this), new Integer(6));
-	literals.put(new ANTLRHashString("build", this), new Integer(12));
-	literals.put(new ANTLRHashString("destroy", this), new Integer(13));
-	literals.put(new ANTLRHashString("purple", this), new Integer(35));
-	literals.put(new ANTLRHashString("center", this), new Integer(21));
-	literals.put(new ANTLRHashString("move", this), new Integer(14));
-	literals.put(new ANTLRHashString("location", this), new Integer(25));
-	literals.put(new ANTLRHashString("scale", this), new Integer(8));
-	literals.put(new ANTLRHashString("medium", this), new Integer(31));
-	literals.put(new ANTLRHashString("pent", this), new Integer(38));
-	literals.put(new ANTLRHashString("all", this), new Integer(27));
-	literals.put(new ANTLRHashString("pentagon", this), new Integer(39));
-	literals.put(new ANTLRHashString("repeat", this), new Integer(22));
-	literals.put(new ANTLRHashString("orientation", this), new Integer(26));
-	literals.put(new ANTLRHashString("tri", this), new Integer(44));
-	literals.put(new ANTLRHashString("reflect", this), new Integer(17));
-	literals.put(new ANTLRHashString("green", this), new Integer(33));
-	literals.put(new ANTLRHashString("rotate", this), new Integer(15));
-	literals.put(new ANTLRHashString("branch", this), new Integer(23));
-	literals.put(new ANTLRHashString("from", this), new Integer(18));
-	literals.put(new ANTLRHashString("around", this), new Integer(16));
-	literals.put(new ANTLRHashString("size", this), new Integer(29));
-	literals.put(new ANTLRHashString("half", this), new Integer(28));
-	literals.put(new ANTLRHashString("yellow", this), new Integer(43));
-	literals.put(new ANTLRHashString("red", this), new Integer(37));
-	literals.put(new ANTLRHashString("long", this), new Integer(32));
-	literals.put(new ANTLRHashString("save", this), new Integer(24));
-	literals.put(new ANTLRHashString("symmetry", this), new Integer(19));
-	literals.put(new ANTLRHashString("rectangle", this), new Integer(42));
+	literals.put(new ANTLRHashString("triangle", this), 45);
+	literals.put(new ANTLRHashString("through", this), 20);
+	literals.put(new ANTLRHashString("rect", this), 41);
+	literals.put(new ANTLRHashString("short", this), 30);
+	literals.put(new ANTLRHashString("orange", this), 34);
+	literals.put(new ANTLRHashString("blue", this), 40);
+	literals.put(new ANTLRHashString("black", this), 36);
+	literals.put(new ANTLRHashString("label", this), 6);
+	literals.put(new ANTLRHashString("build", this), 12);
+	literals.put(new ANTLRHashString("destroy", this), 13);
+	literals.put(new ANTLRHashString("purple", this), 35);
+	literals.put(new ANTLRHashString("center", this), 21);
+	literals.put(new ANTLRHashString("move", this), 14);
+	literals.put(new ANTLRHashString("location", this), 25);
+	literals.put(new ANTLRHashString("scale", this), 8);
+	literals.put(new ANTLRHashString("medium", this), 31);
+	literals.put(new ANTLRHashString("pent", this), 38);
+	literals.put(new ANTLRHashString("all", this), 27);
+	literals.put(new ANTLRHashString("pentagon", this), 39);
+	literals.put(new ANTLRHashString("repeat", this), 22);
+	literals.put(new ANTLRHashString("orientation", this), 26);
+	literals.put(new ANTLRHashString("tri", this), 44);
+	literals.put(new ANTLRHashString("reflect", this), 17);
+	literals.put(new ANTLRHashString("green", this), 33);
+	literals.put(new ANTLRHashString("rotate", this), 15);
+	literals.put(new ANTLRHashString("branch", this), 23);
+	literals.put(new ANTLRHashString("from", this), 18);
+	literals.put(new ANTLRHashString("around", this), 16);
+	literals.put(new ANTLRHashString("size", this), 29);
+	literals.put(new ANTLRHashString("half", this), 28);
+	literals.put(new ANTLRHashString("yellow", this), 43);
+	literals.put(new ANTLRHashString("red", this), 37);
+	literals.put(new ANTLRHashString("long", this), 32);
+	literals.put(new ANTLRHashString("save", this), 24);
+	literals.put(new ANTLRHashString("symmetry", this), 19);
+	literals.put(new ANTLRHashString("rectangle", this), 42);
 }
 
 public Token nextToken() throws TokenStreamException {

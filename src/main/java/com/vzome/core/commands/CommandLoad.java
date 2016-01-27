@@ -1,7 +1,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -33,7 +32,7 @@ public class CommandLoad extends AbstractCommand
     }
 
 
-    public ConstructionList apply( ConstructionList parameters, Map attributes,
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
                                     ConstructionChanges effects )
     throws Failure
     {
@@ -42,7 +41,7 @@ public class CommandLoad extends AbstractCommand
 //        Element element = (Element) attributes .get( XML_ATTR );
 //        ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );
 //
-//        Map index = new HashMap();
+//        Map<String, ModelRoot> index = new HashMap<>();
 //        index .put( "root", root );
 //        
 //        Elements children = element .getChildElements();

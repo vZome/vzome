@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.construction.Construction;
@@ -30,21 +29,18 @@ public class TransformSelection extends ChangeManifestations
     
     public void perform()
     {
-        List inputs = new ArrayList();
-        for ( Iterator mans = mSelection .iterator(); mans .hasNext(); ) {
-            Manifestation man = (Manifestation) mans .next();
+        List<Manifestation> inputs = new ArrayList<>();
+        for (Manifestation man : mSelection) {
             unselect( man );
             inputs .add( man );
         }
         
         redo();  // get the unselects out of the way, if anything needs to be re-selected
-        
         // now apply it to the input objects
-        for ( Iterator all = inputs .iterator(); all .hasNext(); ) {
-            Manifestation m = (Manifestation) all .next();
+        for (Manifestation m : inputs) {
             if ( m .getRenderedObject() == null )
                 continue;
-            Construction c = (Construction) m .getConstructions() .next();
+            Construction c = m .getConstructions() .next();
             Construction result = null;
             if ( c instanceof Point ) {
                 result = new TransformedPoint( transform, (Point) c );

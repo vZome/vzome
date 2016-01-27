@@ -2,7 +2,6 @@
 
 package com.vzome.core.commands;
 
-import java.util.Map;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
@@ -36,7 +35,7 @@ public class CommandLinePlaneIntersect extends AbstractCommand
         return ATTR_SIGNATURE;
     }
     
-    public ConstructionList apply( ConstructionList parameters, Map attrs, ConstructionChanges effects ) throws Failure
+    public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();
         if ( parameters == null || parameters .size() != 2 )
@@ -44,7 +43,7 @@ public class CommandLinePlaneIntersect extends AbstractCommand
         try {
             Polygon panel;
             Segment segment;
-            Construction first = (Construction) parameters .get( 0 );
+            Construction first = parameters .get( 0 );
             if ( first instanceof Polygon ) {
                 panel = (Polygon) first;
                 segment = (Segment) parameters .get( 1 );
