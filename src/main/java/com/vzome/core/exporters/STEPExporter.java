@@ -50,12 +50,11 @@ public class STEPExporter extends Exporter3d{
         super( scene, colors, lights, model );
     }
     
-    private class ShapeMap extends HashMap<Polyhedron, String> {}
-
+    @Override
     public void doExport( File directory, Writer writer, int height, int width ) throws Exception
     {
         int numShapes = 0;
-        ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
+        HashMap<Polyhedron, String>[] shapes = TwoMaps.inAnArray();
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
@@ -199,12 +198,10 @@ public class STEPExporter extends Exporter3d{
         output .flush();
     }
 
-
+    @Override
     public String getFileExtension()
     {
         return "step";
     }
 	
 }
-
-

@@ -248,6 +248,9 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
         return mDirectionList .iterator();
     }
     
+    /**
+    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
+    */
     @Deprecated
     public Iterator<Direction> getDirections()
     {

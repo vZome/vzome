@@ -36,8 +36,7 @@ public class OpenGLExporter extends Exporter3d
 	    super( scene, colors, lights, model );
 	}
 
-    private class ShapeMap extends HashMap<Polyhedron, Integer> {}
-
+    @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
@@ -58,7 +57,7 @@ public class OpenGLExporter extends Exporter3d
 		int numShapes = 0; // this is actually the number of ints written to shape_indices
 		int numTransforms = 0; // this is actually the number of arrays written to transformations
         int numVertices = 0;
-		ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
+		HashMap<Polyhedron, Integer>[] shapes = TwoMaps.inAnArray();
 		Map<AlgebraicMatrix, Integer> transforms = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();

@@ -18,7 +18,7 @@ import com.vzome.core.math.RealVector;
 /**
  * @author Scott Vorthmann
  */
-public class Direction implements Comparable, Iterable<Axis>
+public class Direction implements Comparable<Direction>, Iterable<Axis>
 {
     private String mName;
     
@@ -36,7 +36,7 @@ public class Direction implements Comparable, Iterable<Axis>
     
     private AlgebraicNumber unitLength, unitLengthReciprocal;
     
-    public void setAutomatic( boolean auto )
+    public final void setAutomatic( boolean auto )
     {
         mAutomatic = auto;
     }
@@ -82,6 +82,7 @@ public class Direction implements Comparable, Iterable<Axis>
         }
     }
     
+    @Override
     public String toString()
     {
         return mSymmetryGroup .getName() + " " + this .mName;
@@ -106,11 +107,15 @@ public class Direction implements Comparable, Iterable<Axis>
         return mPrototype;
     }
     
+    @Override
     public Iterator<Axis> iterator()
     {
         return mVectors .values() .iterator();
     }
     
+    /**
+    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
+    */
     @Deprecated
     public Iterator<Axis> getAxes()
     {
@@ -122,20 +127,11 @@ public class Direction implements Comparable, Iterable<Axis>
         return mSymmetryGroup;
     }
     
-    
-    /**
-     * @return
-     */
-    public String getName()
+        public String getName()
     {
         return mName;
     }
     
-    
-    /**
-     * @param vector
-     * @return
-     */
     public Axis getAxis( AlgebraicVector vector )
     {
         for (Axis axis : mVectors .values()) {
@@ -229,8 +225,6 @@ public class Direction implements Comparable, Iterable<Axis>
         }
         return closestAxis;
     }
-
-
     
     public Axis getAxis( int sense, int index )
     {
@@ -258,11 +252,10 @@ public class Direction implements Comparable, Iterable<Axis>
     {
         if ( this.canonicalize != 0 )
         {
-            int canonicalize = Math.abs( this .canonicalize );
             if ( this .canonicalize < 0 )
                 sense = ( sense + 1 ) % 2;
             Permutation target = this .mSymmetryGroup .getPermutation( index );
-            index = target .mapIndex( canonicalize );
+            index = target .mapIndex( Math.abs( this .canonicalize ) );
         }
         return this .getAxis( sense, index );
     }
@@ -276,7 +269,7 @@ public class Direction implements Comparable, Iterable<Axis>
      * @param orientation the index of this axis (zone) in its Direction (orbit)
      * @param rotation the index of the permutation that is a rotation around this axis, or NO_ROTATION
      */
-    public void createAxis( int orientation, int rotation, AlgebraicVector norm )
+    public final void createAxis( int orientation, int rotation, AlgebraicVector norm )
     {
         AlgebraicVector key = norm;
         Axis axis = mVectors .get( key );
@@ -299,9 +292,10 @@ public class Direction implements Comparable, Iterable<Axis>
         mAxes[ Symmetry.MINUS ][ orientation ] = axis;
     }
 
-    public int compareTo( Object arg0 )
+    @Override
+    public int compareTo( Direction other )
     {
-        return this.index - ((Direction) arg0).index;
+        return this.index - other.index;
     }
     
     public void setHalfSizes( boolean value )

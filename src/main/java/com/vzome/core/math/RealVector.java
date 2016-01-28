@@ -58,6 +58,7 @@ public class RealVector {
 	/**
 		 * Return a string representing this vector in the form "x,y,z".
 		 */
+    @Override
 	public String toString()
 	{
 		return FORMAT .format(x) + "," + FORMAT .format(y) + "," + FORMAT .format(z);
@@ -130,6 +131,7 @@ public class RealVector {
 //	    System .out .println( x + "   " + y + "   " + z );
 	}
 
+    @Override
 	public  boolean equals( Object other ) {
 		if ( other == null ) {
 			return false;
@@ -137,14 +139,19 @@ public class RealVector {
 		if ( other == this ) {
 			return true;
 		}
-		try  {
-			RealVector v = (RealVector) other;
-			return x == v .x && y == v .y && z == v .z;
-		} catch( ClassCastException cce ) {
+        if ( ! ( other instanceof RealVector ) )
 			return false;
-		}
+		RealVector v = (RealVector) other;
+		return x == v .x && y == v .y && z == v .z;
 	}
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
+        return hash;
+    }
+
 }
-
-

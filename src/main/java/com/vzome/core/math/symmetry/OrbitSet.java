@@ -44,22 +44,23 @@ public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
         return null;
     }
     
-    public class OrbitComparator implements Comparator
+    public class OrbitComparator implements Comparator<Direction>
     {
-        private String[] names = getSymmetry() .getDirectionNames();
+        private final String[] names = getSymmetry() .getDirectionNames();
 
-        public int compare( Object arg1, Object arg2 )
+        @Override
+        public int compare( Direction dir1, Direction dir2 )
         {
-            String name1 = ((Direction) arg1) .getName();
-            String name2 = ((Direction) arg2) .getName();
+            String name1 = dir1 .getName();
+            String name2 = dir2 .getName();
             int i1 = -1, i2 = -1;
-            for ( int i = 0; i < names.length; i++ )
+            for ( int i = 0; i < names.length; i++ ) {
                 if ( name1 .equals( names[ i ] ) )
                     i1 = i;
                 else if ( name2 .equals( names[ i ] ) )
                     i2 = i;
+            }
             return i2-i1;
         }
-        
     }
 }

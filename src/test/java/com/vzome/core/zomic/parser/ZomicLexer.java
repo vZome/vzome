@@ -23,7 +23,7 @@ import antlr.TokenStreamIOException;
 import antlr.TokenStreamRecognitionException;
 import antlr.collections.impl.BitSet;
 
-@SuppressWarnings( { "all", "warnings", "unchecked", "unused", "cast" } )
+@SuppressWarnings( { "all", "warnings", "unchecked", "unused", "cast", "rawtypes" } )
 public class ZomicLexer extends antlr.CharScanner implements ZomicParserTokenTypes, TokenStream
  {
 public ZomicLexer(InputStream in) {

@@ -60,8 +60,7 @@ public class VRMLExporter extends Exporter3d
 		output .println( " }}}" );
     }
 
-    private class ShapeMap extends HashMap<Polyhedron, String> {}
-    
+    @Override
     public void doExport( File directory, Writer writer, int height, int width ) throws Exception
     {
         output = new PrintWriter( writer );
@@ -83,7 +82,7 @@ public class VRMLExporter extends Exporter3d
         AlgebraicField field = null;
         StringBuffer instances = new StringBuffer();
         int numShapes = 0;
-        ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
+        HashMap<Polyhedron, String>[] shapes = TwoMaps.inAnArray();
         Map<Color, String> colors = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
@@ -181,12 +180,10 @@ public class VRMLExporter extends Exporter3d
         output .flush();
     }
 
-
+    @Override
     public String getFileExtension()
     {
         return "wrl";
     }
 	
 }
-
-

@@ -74,13 +74,19 @@ dependencies {
 gradle.projectsEvaluated {
 	tasks.withType(JavaCompile) {
 		options.compilerArgs \
+		<< "-Xlint:all" \
 		<< "-Xlint:cast" \
 		<< "-Xlint:divzero" \
 		<< "-Xlint:empty" \
 		<< "-Xlint:fallthrough" \
 		<< "-Xlint:finally" \
+		<< "-Xlint:overrides" \
 		<< "-Xlint:path" \
-		<< "-Xlint:unchecked"
+		<< "-Xlint:rawtypes" \
+		<< "-Xlint:unchecked" \
+		<< "-Xlint:-serial" 
+		// TODO: Enable the serial warning and look into fixing the ~11 issues. 
+		// Most of them are classes which extend a generic Collection or Exception.
 	}
 }
 // It seems that the settings below are the starting point
@@ -91,9 +97,6 @@ gradle.projectsEvaluated {
 compileJava {
     options.compilerArgs \
 	<< "-Xlint:deprecation" \
-	<< "-Xlint:-overrides" \
-	<< "-Xlint:-serial" // TODO: Enable these two warnings and look into fixing the issues
-	// A minus sign following the colon removes these checks.
 }
 
 // This applies only to the 'test' java project
@@ -102,10 +105,7 @@ compileTestJava {
 	// which we don't plan to maintain 
 	// except for regression and backward compatibility testing.
     options.compilerArgs \
-	<< "-Xlint:-deprecation" \
-	<< "-Xlint:overrides" \
-	<< "-Xlint:-serial" 
-	// A minus sign following the colon removes these checks.
+	<< "-Xlint:-deprecation" /* A minus sign following the colon removes that check. */
 }
 
 // Successive runs of 'test' tasks will not be executed 

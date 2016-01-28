@@ -5,6 +5,7 @@ package com.vzome.core.math.symmetry;
  * @author Scott Vorthmann
  *
  */
+@Deprecated
 public interface Constants{
 
 	int RED = 0, YELLOW = 1, BLUE = 2, GREEN = 3, ORANGE = 4, PURPLE = 5, BLACK = 6, NO_AXIS = 7;

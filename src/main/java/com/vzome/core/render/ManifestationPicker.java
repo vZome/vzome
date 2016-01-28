@@ -8,5 +8,5 @@ public interface ManifestationPicker
 {
     public RenderedManifestation pickManifestation( MouseEvent e );
     
-    public Collection pickCube();
+    public Collection<RenderedManifestation> pickCube();
 }

@@ -54,7 +54,7 @@ public class ZomicASTCompiler
 	private final IcosahedralSymmetry icosaSymmetry;
 	private final ZomicNamingConvention namingConvention ;
 	private final Stack<ZomicStatement> statements = new Stack<>();
-	private final Stack<ZomicStatementTemplate> templates = new Stack<>();
+	private final Stack<ZomicStatementTemplate<? extends ZomicStatement> > templates = new Stack<>();
 
 	public static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
     private static final Logger logger = Logger .getLogger( loggerClassName );
@@ -226,7 +226,7 @@ public class ZomicASTCompiler
 		return Integer.parseInt( token.getText() );
 	}
 
-	protected void prepareTemplate( ZomicStatementTemplate template ) {
+	protected void prepareTemplate( ZomicStatementTemplate<? extends ZomicStatement> template ) {
 		templates.push(template);
 	}
 	
