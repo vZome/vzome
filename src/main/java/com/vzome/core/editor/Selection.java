@@ -157,7 +157,7 @@ public class Selection implements Iterable<Manifestation>
         }
     }
     
-    public Manifestation getSingleSelection( final Class<?> kind )
+    public Manifestation getSingleSelection( final Class<? extends Manifestation> kind )
     {
         int count = 0;
         Manifestation result = null;

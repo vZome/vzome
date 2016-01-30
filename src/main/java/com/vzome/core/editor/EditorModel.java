@@ -114,15 +114,16 @@ public class EditorModel
 
     private final boolean oldGroups;
 
-    public Construction getSelectedConstruction( Class kind )
+    public Construction getSelectedConstruction( Class<? extends Construction > kind )
     {
+        Class<? extends Manifestation> manifestationClass;
         if ( kind == Point .class )
-            kind = Connector.class;
+            manifestationClass = Connector.class;
         else if ( kind == Segment .class )
-            kind = Strut .class;
+            manifestationClass = Strut .class;
         else
-            kind = null;
-        Manifestation focus = mSelection .getSingleSelection( kind );
+            return null;
+        Manifestation focus = mSelection .getSingleSelection( manifestationClass );
         if ( focus != null )
             return focus .getConstructions() .next();
         return null;

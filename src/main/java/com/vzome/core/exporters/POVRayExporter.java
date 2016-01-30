@@ -54,9 +54,8 @@ public class POVRayExporter extends Exporter3d
         viewTrans .invert();
         viewTrans .transform( vector );
     }
-
-    private class ShapeMap extends HashMap<Polyhedron, String> {}
     
+    @Override
 	public void doExport( File povFile, File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
@@ -143,7 +142,7 @@ public class POVRayExporter extends Exporter3d
         instances = new StringBuffer();
         
 		int numShapes = 0, numTransforms = 0;
-		ShapeMap[] shapes = new ShapeMap[]{ new ShapeMap(), new ShapeMap() };
+		HashMap<Polyhedron, String>[] shapes = TwoMaps.inAnArray();
 		Map<AlgebraicMatrix, String> transforms = new HashMap<>();
 		Map<Color, String> colors = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
@@ -218,7 +217,7 @@ public class POVRayExporter extends Exporter3d
    
     private String printTuple3d( Tuple3d t )
     {
-    	StringBuffer buf = new StringBuffer( "<" );
+    	StringBuilder buf = new StringBuilder( "<" );
     	buf .append( FORMAT.format(t.x) );
     	buf .append( "," );
     	buf .append( FORMAT.format(t.y) );
@@ -326,13 +325,13 @@ public class POVRayExporter extends Exporter3d
         output .flush();
     }
     
-
+    @Override
     public String getFileExtension()
     {
         return "pov";
     }
 
-
+    @Override
     public void doExport( File directory, Writer writer, int height, int width )
             throws Exception
     {

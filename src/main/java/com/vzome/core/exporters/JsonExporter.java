@@ -38,13 +38,11 @@ public class JsonExporter extends Exporter3d
 	    super( scene, colors, lights, model );
 	}
 
-
+    @Override
 	public void doExport( File directoryUnused, Writer writer, int height, int width ) throws IOException
 	{
 		this .doExport(writer);
 	}
-
-    private class ShapeMap extends HashMap<Polyhedron, Integer> {};
 
 	public void doExport( Writer writer ) throws IOException
 	{
@@ -62,7 +60,7 @@ public class JsonExporter extends Exporter3d
         StringBuffer instances = new StringBuffer();
         StringBuffer orientations = new StringBuffer();
         int numShapes = 0, numTransforms = 1;
-        ShapeMap[] shapes = new ShapeMap[] { new ShapeMap(), new ShapeMap() };
+        HashMap<Polyhedron, Integer>[] shapes = TwoMaps.inAnArray();
         Map<AlgebraicMatrix, Integer> transforms = new HashMap<>();
         AlgebraicMatrix identity = this .field .identityMatrix( 3 );
         Integer identityNum = 0;
@@ -230,11 +228,13 @@ public class JsonExporter extends Exporter3d
         output .flush();
     }
 	
+    @Override
 	public String getFileExtension()
     {
         return "json";
     }
 
+    @Override
     public String getContentType()
     {
         return "application/json";

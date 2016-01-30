@@ -21,5 +21,6 @@ import java.util.TreeMap;
 public class AttributeMap
 // XmlSaveFormat.loadCommandAttributes() needs this to be ordered for the purpose of regression testing
 extends TreeMap<String, Object>
-{    
+{
+    private static final long serialVersionUID = 1;
 }

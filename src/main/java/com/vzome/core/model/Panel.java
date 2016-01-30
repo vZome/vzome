@@ -22,11 +22,15 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         mVertices = vertices;
     }
 
+    @Override
     public AlgebraicVector getLocation()
     {
         return null;
     }
 
+    /**
+    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
+    */
     @Deprecated
     public Iterator<AlgebraicVector> getVertices()
     {

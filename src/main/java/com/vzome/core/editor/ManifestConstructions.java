@@ -7,7 +7,7 @@ import com.vzome.core.construction.ConstructionChanges;
 
 // TODO use this in CommandEdit as well
 //
-public class ManifestConstructions extends ArrayList implements ConstructionChanges
+public class ManifestConstructions extends ArrayList<Construction> implements ConstructionChanges
 {
 	private final ChangeManifestations edit;
 
@@ -16,6 +16,7 @@ public class ManifestConstructions extends ArrayList implements ConstructionChan
 		this .edit = edit;
 	}
 
+    @Override
     public void constructionAdded( Construction c )
     {
     	this .edit .manifestConstruction( c );

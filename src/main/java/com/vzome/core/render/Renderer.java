@@ -13,10 +13,9 @@ public abstract class Renderer
     
     public void render( Renderable renderable )
     {
-        Class clazz = renderable .getClass();
         try {
-            Method method = this .getClass() .getDeclaredMethod( "render", new Class[]{ clazz } );
-            method .invoke( this, new Object[]{ renderable } );
+            Method method = this .getClass() .getDeclaredMethod( "render", renderable .getClass() );
+            method .invoke( this, renderable );
         } catch ( Exception e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * A selection in the model.
  */
 public class ConstructionList extends ArrayList<Construction>
-{;
+{
     
     public ConstructionList addConstruction( Construction ball )
     {

@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.render.Renderable;
+import java.util.Objects;
 
 public class ViewModel implements Renderable
 {
@@ -44,7 +45,7 @@ public class ViewModel implements Renderable
     
 	private double mStereoAngle = 0d;
 
-
+    @Override
     public boolean equals( Object object )
     {
         if ( object == null )
@@ -72,9 +73,22 @@ public class ViewModel implements Renderable
             return false;
         if ( ! this.mUpDirection .equals( that.mUpDirection ) )
             return false;
-        if ( ! this.mLookDirection .equals( that.mLookDirection ) )
-            return false;
-        return true;
+        return this.mLookDirection .equals( that.mLookDirection );
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + Objects.hashCode(this.mLookAtPoint);
+        hash = 83 * hash + (int) (Double.doubleToLongBits(this.mNear) ^ (Double.doubleToLongBits(this.mNear) >>> 32));
+        hash = 83 * hash + (int) (Double.doubleToLongBits(this.mFar) ^ (Double.doubleToLongBits(this.mFar) >>> 32));
+        hash = 83 * hash + (int) (Double.doubleToLongBits(this.mWidth) ^ (Double.doubleToLongBits(this.mWidth) >>> 32));
+        hash = 83 * hash + (int) (Double.doubleToLongBits(this.mDistance) ^ (Double.doubleToLongBits(this.mDistance) >>> 32));
+        hash = 83 * hash + Objects.hashCode(this.mUpDirection);
+        hash = 83 * hash + Objects.hashCode(this.mLookDirection);
+        hash = 83 * hash + (this.mOrthographic ? 1 : 0);
+        hash = 83 * hash + (int) (Double.doubleToLongBits(this.mStereoAngle) ^ (Double.doubleToLongBits(this.mStereoAngle) >>> 32));
+        return hash;
     }
 
     public ViewModel()

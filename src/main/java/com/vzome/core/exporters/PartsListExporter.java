@@ -29,16 +29,14 @@ public class PartsListExporter extends Exporter3d
 	{
 	    super( scene, colors, lights, model );
 	}
-
-
-    private class OrbitMap extends HashMap<Direction, Map<AlgebraicNumber, Integer> > {}
     
+    @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
 	    
         int numBalls = 0;
-		OrbitMap[] orbits = new OrbitMap[]{ new OrbitMap(), new OrbitMap() };
+        HashMap<Direction, Map<AlgebraicNumber, Integer> >[] orbits = TwoMaps.inAnArray();
         for (RenderedManifestation rm : mModel) {
             Manifestation m = rm .getManifestation();
             if ( m instanceof Connector ) {
@@ -84,11 +82,10 @@ public class PartsListExporter extends Exporter3d
 		output .close();
 	}
 
+    @Override
     public String getFileExtension()
     {
         return "txt";
     }
 
 }
-
-
