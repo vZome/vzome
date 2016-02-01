@@ -240,7 +240,8 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
             super();
         }
 
-        public Component getListCellRendererComponent( JList list,
+        @Override
+        public Component getListCellRendererComponent( JList<?> list,
                 Object value, int index, boolean isSelected, boolean hasFocus )
         {
             isTargetCell = (value == dropTargetCell);

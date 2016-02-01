@@ -1,7 +1,6 @@
 package org.vorthmann.zome.render.java3d;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.media.j3d.Appearance;

@@ -134,7 +134,7 @@ gradle.projectsEvaluated {
 		<< "-Xlint:finally" \
 		<< "-Xlint:overrides" \
 		<< "-Xlint:path" \
-		<< "-Xlint:-rawtypes" \
+		<< "-Xlint:rawtypes" \
 		<< "-Xlint:unchecked" \
 		<< "-Xlint:-serial" 
 		// TODO: Enable the serial warning and look into fixing any issues. 

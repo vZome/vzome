@@ -5,7 +5,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.media.j3d.Transform3D;
@@ -20,6 +19,7 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.Polyhedron.Face;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
@@ -104,7 +104,7 @@ public class Java2dExporter extends Exporter3d
                 continue;
             }
             
-            List vertices = shape .getVertexList();
+            List<AlgebraicVector> vertices = shape .getVertexList();
             AlgebraicMatrix partOrientation = rm .getOrientation();
             RealVector location = rm .getLocation();  // should *2?
             
@@ -115,20 +115,17 @@ public class Java2dExporter extends Exporter3d
             mappedVertices .clear();
             for ( int i = 0; i < vertices .size(); i++ )
             {
-                AlgebraicVector gv = (AlgebraicVector) vertices .get( i );
+                AlgebraicVector gv = vertices .get( i );
                 gv = partOrientation .timesColumn( gv );
                 RealVector rv = location .plus( gv .toRealVector() );
                 Vector3f v = mapCoordinates( rv, height, width, field, view );
                 mappedVertices .add( v );
             }
             
-            for ( Iterator faces = shape .getFaceSet() .iterator(); faces .hasNext(); ){
-                Polyhedron.Face face = (Polyhedron.Face) faces .next();
+            for (Face face : shape .getFaceSet()) {
                 int arity = face .size();
-
                 Java2dSnapshot.Polygon path = new Java2dSnapshot.Polygon( color );
                 boolean backFacing = false;
-                
                 Vector3f v1 = null, v2 = null;
                 for ( int j = 0; j < arity; j++ ){
                     Integer index = face .get( flip? arity-j-1 : j );
@@ -156,7 +153,6 @@ public class Java2dExporter extends Exporter3d
                             break;
                     }
                 }
-
                 path .close();
                 if ( ! backFacing )
                 {

@@ -755,8 +755,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             			usedOrbits .add( orbit );
 				}
             	symmetryController .availableController .doAction( "setNoDirections", null );
-            	for ( Iterator iterator = usedOrbits.iterator(); iterator.hasNext(); ) {
-            		Direction orbit = (Direction) iterator.next();
+            	for ( Direction orbit : usedOrbits ) {
             		symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
             	}
             }

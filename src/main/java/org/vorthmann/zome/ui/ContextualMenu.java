@@ -5,7 +5,6 @@ package org.vorthmann.zome.ui;
 
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.JMenuItem;

@@ -60,7 +60,7 @@ public class PartsPanel extends JPanel
             controller .addPropertyListener( this );
         }
         
-        public Class getColumnClass( int c )
+        public Class<?> getColumnClass( int c )
         {
             return getValueAt( 0, c ) .getClass();
         }

@@ -66,8 +66,8 @@ public class Snapshot2dFrame extends JFrame
             @Override
             public void actionPerformed( ActionEvent e )
             {
-                JComboBox cb = (JComboBox) e .getSource();
-                String drawStyle = (String) cb .getSelectedItem();
+                JComboBox<?> cb = (JComboBox<?>) e .getSource();
+                String drawStyle = cb .getSelectedItem().toString();
                 actions .actionPerformed( new ActionEvent( cb, 0, "setDrawStyle." + drawStyle ) );
             }
         } );

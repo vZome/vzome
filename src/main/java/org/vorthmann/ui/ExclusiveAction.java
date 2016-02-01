@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +27,7 @@ public abstract class ExclusiveAction implements ActionListener
 {
     public static class Excluder
     {
-        private final List mListeners = new ArrayList(40);
+        private final List<Component> mListeners = new ArrayList<>(40);
         
         private final PropertyChangeListener statusListener;
         
@@ -53,18 +52,15 @@ public abstract class ExclusiveAction implements ActionListener
         public void grab()
         {
         	this .busy = true;
-            for ( Iterator listeners = mListeners .iterator(); listeners .hasNext(); )
-            {
-                Component component = (Component) listeners .next();
-                component .setEnabled( false );
+            for (Component listener : mListeners) {
+                listener .setEnabled( false );
             }
         }
 
         public void release()
         {
-            for ( Iterator listeners = mListeners .iterator(); listeners .hasNext(); )
-            {
-                ((Component) listeners .next()) .setEnabled( true );
+            for (Component listener : mListeners) { 
+                listener .setEnabled( true );
             }
         	this .statusListener .propertyChange( new PropertyChangeEvent( this, "command.status", "busy...", "" ) );
             this .busy = false;

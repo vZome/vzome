@@ -187,9 +187,8 @@ public class Java2dSnapshot extends DefaultController
         if ( mLineDrawing ) {
             g2d .setStroke( new BasicStroke( 3*mStrokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND ) );
             g2d .setPaint( java.awt.Color.BLACK );
-            Iterator lines = mLines .iterator();
-            while ( lines .hasNext() ) {
-                Java2dSnapshot.LineSegment line = (Java2dSnapshot.LineSegment) lines .next();
+            
+            for (LineSegment line : mLines) {
                 if ( monochrome )
                     if ( mShowBackground )
                         g2d .setPaint( java.awt.Color.WHITE );
@@ -202,8 +201,7 @@ public class Java2dSnapshot extends DefaultController
         }
         else {
             g2d .setStroke( new BasicStroke( mStrokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND ) );
-            for ( Iterator polys = mPolygons .iterator(); polys .hasNext(); ){
-                Java2dSnapshot.Polygon poly = (Java2dSnapshot.Polygon) polys .next();
+            for ( Java2dSnapshot.Polygon poly : mPolygons ){
                 g2d .setPaint( poly .getColor() );
                 g2d .fill( poly .getPath() );
                 if ( this .doOutlines ) {
@@ -404,12 +402,12 @@ public class Java2dSnapshot extends DefaultController
         }
     }
 
-    public Iterator getLines()
+    public Iterator<LineSegment> getLines()
     {
         return mLines .iterator();
     }
 
-    public Iterator getPolygons()
+    public Iterator<Polygon> getPolygons()
     {
         return mPolygons .iterator();
     }

@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.vorthmann.ui.Controller;
@@ -77,9 +76,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         renderOrbits = new OrbitSet( symmetry );
         snapper = new SymmetrySnapper( snapOrbits );
         boolean haveLoneBuildOrbit = false;
-        for ( Iterator dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
-        {
-            Direction dir = (Direction) dirs .next();
+        for (Direction dir : symmetry .getOrbitSet()) {
             if ( dir .isStandard() )
             {
                 availableOrbits .add( dir );
@@ -102,9 +99,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         renderController .setNextController( this );
 
-        for ( Iterator dirs = this .symmetrySystem .getOrbits() .iterator(); dirs .hasNext(); )
-        {
-            Direction dir = (Direction) dirs .next();
+        for (Direction dir : this .symmetrySystem .getOrbits()) {
             LengthController lengthModel = new LengthController( dir );
             lengthModel .setNextController( buildController );
             orbitLengths .put( dir, lengthModel );
@@ -154,8 +149,10 @@ public class SymmetryController extends DefaultController// implements RenderedM
         {
             String[] result = new String[ this .symmetrySystem .getOrbits() .size() ];
             int i = 0;
-            for ( Iterator orbits = this .symmetrySystem .getOrbits() .iterator(); orbits .hasNext(); i++ )
-                result[ i ] = ((Direction) orbits .next()) .getName();
+            for (Direction orbit : this .symmetrySystem .getOrbits()) {
+                result[ i ] = orbit .getName();
+                i++;
+            }
             return result;
         }
         if ( "tool.templates" .equals( listName ) )
