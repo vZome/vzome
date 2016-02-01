@@ -33,6 +33,8 @@ import org.vorthmann.ui.Controller;
 
 public class NewLengthPanel extends JPanel implements PropertyChangeListener, ActionListener
 {
+    private static final Logger logger = Logger .getLogger( "org.vorthmann.zome.ui" );
+    
     private final JButton scaleUp, scaleDown, superShortScale, shortScale, mediumScale, longScale;
 
     private final JCheckBox halfCheckbox;
@@ -135,7 +137,6 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                 scaleSlider .setMajorTickSpacing( 1 );
                 scaleSlider .setPaintTicks( true );
                 sliderLabel = new JLabel( "unit" );
-//                @SuppressWarnings("UseOfObsoleteCollectionType")
                 Hashtable<Integer, JComponent > labelTable = new Hashtable<>();
                 labelTable .put( 0, sliderLabel );
                 scaleSlider .setLabelTable( labelTable );
@@ -257,7 +258,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
         if ( imgURL != null )
             button .setIcon( new ImageIcon( imgURL ) );
         else
-            Logger .getLogger( "org.vorthmann.zome.ui" ) .log( Level.WARNING, "Couldn't find resource: " + iconPath );
+            logger .log( Level.WARNING, "Couldn't find resource: " + iconPath );
         button .addActionListener( listener );
         button .setActionCommand( actionCommand );
         return button;

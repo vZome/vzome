@@ -109,7 +109,7 @@ public class CapturingCanvas3D extends Canvas3D
                 params.add( 0.0f );// x translate
                 params.add( 0.0f );// y translate
 
-                Map map = new HashMap();
+                Map<RenderingHints.Key, Object> map = new HashMap<>();
                 map.put( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
                 map.put( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY );
                 map.put( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );

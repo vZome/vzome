@@ -34,15 +34,16 @@ public class PolytopesDialog extends EscapeDialog
         
         String[] groupNames = controller .getCommandList( "groups" );
         String defaultGroup = controller .getProperty( "group" );
-        JComboBox groups = new JComboBox( groupNames );
+        JComboBox<String> groups = new JComboBox<String>( groupNames );
         groups .setSelectedItem( defaultGroup );
         groups .setMaximumRowCount( 6 );
         groups .addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed( ActionEvent e )
             {
-                JComboBox cb = (JComboBox) e.getSource();
-                String command = "setGroup." + (String) cb .getSelectedItem();
+                JComboBox<?> combo = (JComboBox<?>) e.getSource();
+                String command = "setGroup." + combo .getSelectedItem().toString();
                 controller .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
             }
         } );

@@ -59,7 +59,7 @@ public class Snapshot2dFrame extends JFrame
         buttonPanel .add( button );
 
         String[] drawStyles = controller .getCommandList( "draw.styles" );
-        JComboBox<String> drawStylesCombo = new JComboBox( drawStyles );
+        JComboBox<String> drawStylesCombo = new JComboBox<>( drawStyles );
         drawStylesCombo .setSelectedItem( controller .getProperty( "drawStyle" ) );
         drawStylesCombo .addActionListener( new ActionListener()
         {
@@ -79,7 +79,7 @@ public class Snapshot2dFrame extends JFrame
         checkbox .addActionListener( actions );        
         buttonPanel .add( checkbox );
 
-        final JComboBox<String> formatsCombo = new JComboBox( FORMATS );
+        final JComboBox<String> formatsCombo = new JComboBox<>( FORMATS );
         final JButton saveButton = new JButton( "Save..." );
         saveButton .addActionListener( new ActionListener()
         {            

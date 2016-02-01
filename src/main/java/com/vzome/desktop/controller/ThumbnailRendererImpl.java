@@ -20,7 +20,7 @@ public class ThumbnailRendererImpl implements ThumbnailRenderer
     private final RenderingViewer viewer;
     private final CameraController vpm;
     
-    private static Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
+    private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
 
     public ThumbnailRendererImpl( RenderingViewer.Factory rvFactory, Lights sceneLighting )
     {

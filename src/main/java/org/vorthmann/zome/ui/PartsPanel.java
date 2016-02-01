@@ -52,8 +52,8 @@ public class PartsPanel extends JPanel
         private String[] columnNames = { "count", "color", "name", "length" };
         
         private int balls = 1;
-        private Map struts = new HashMap();
-        private List index = new ArrayList();
+        private Map<String, Object[]> struts = new HashMap<>();
+        private List<String> index = new ArrayList<>();
 
         public PartsTableModel( Controller controller )
         {
@@ -93,7 +93,7 @@ public class PartsPanel extends JPanel
             {
                 switch ( col ) {
                 case 0:
-                    return new Integer( balls );
+                    return balls;
                     
                 case 1:
                     return Color .white;
@@ -107,8 +107,8 @@ public class PartsPanel extends JPanel
             }
             else
             {
-                String key = (String) index .get( row - 1 );
-                Object[] rowData = (Object[]) struts .get( key );
+                String key = index .get( row - 1 );
+                Object[] rowData = struts .get( key );
                 return rowData[ col ];
             }
         }
@@ -135,12 +135,12 @@ public class PartsPanel extends JPanel
                 String nameStr = tokens .nextToken();
                 String lengthStr = tokens .nextToken();
                 String key = orbitStr + ":" + nameStr + ":" + lengthStr;
-                Object[] row = (Object[]) struts .get( key );
+                Object[] row = struts .get( key );
                 if ( row == null )
                 {
                     int rgb = Integer .parseInt( rgbStr );
                     Color color = new Color( rgb );
-                    row = new Object[]{ new Integer(1), color, nameStr, lengthStr };
+                    row = new Object[]{ 1, color, nameStr, lengthStr };
                     struts .put( key, row );
                     index .add( key );
                     Collections .sort( index );
@@ -161,7 +161,7 @@ public class PartsPanel extends JPanel
                 String nameStr = tokens .nextToken();
                 String lengthStr = tokens .nextToken();
                 String key = orbitStr + ":" + nameStr + ":" + lengthStr;
-                Object[] row = (Object[]) struts .get( key );
+                Object[] row = struts .get( key );
                 int count = ((Integer) row[ 0 ]) .intValue() - 1;
                 if ( count == 0 )
                 {

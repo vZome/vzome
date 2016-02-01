@@ -31,7 +31,7 @@ public class NewToolDialog extends EscapeDialog implements ListSelectionListener
     private final JTextField namePanel;
     private final JTextArea description;
     private final Controller controller;
-    private final JList toolsList;
+    private final JList<String> toolsList;
     private int toolNum;
     private String toolId;
 
@@ -43,7 +43,7 @@ public class NewToolDialog extends EscapeDialog implements ListSelectionListener
 
         this .controller = controller;
         {
-            toolsList = new JList( controller .getCommandList( "tool.templates" ) );
+            toolsList = new JList<>( controller .getCommandList( "tool.templates" ) );
             {
                 toolsList .addListSelectionListener( this );
                 toolsList .setPreferredSize( new Dimension( 150, 300 ) );
@@ -136,7 +136,7 @@ public class NewToolDialog extends EscapeDialog implements ListSelectionListener
     
     private void adjustText()
     {
-        String groupName = (String) toolsList .getSelectedValue();
+        String groupName = toolsList .getSelectedValue();
         toolId = groupName + "." + toolNum;
         namePanel .setText( toolId );
         // TODO set description, parameters using a subcontroller

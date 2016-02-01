@@ -46,7 +46,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
 
     double xMax = 0d, yMax = 0d;
     
-    private final Map orbitDots = new HashMap();
+    private final Map<Direction, OrbitState> orbitDots = new HashMap<>();
     
     private final MouseTool mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
     {
@@ -127,9 +127,9 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         {
         	lastOrbitChanged = true;
             if ( ! orbits .isEmpty() )
-                lastOrbit = (Direction) orbits .last();
+                lastOrbit = orbits .last();
             else if ( ! orbitDots .isEmpty() )
-                lastOrbit = (Direction) orbitDots .keySet() .iterator() .next();
+                lastOrbit = orbitDots .keySet() .iterator() .next();
             else
                 lastOrbit = null;
         }
@@ -370,7 +370,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             for ( Iterator it = orbitDots .keySet() .iterator(); it .hasNext(); )
             {
                 Direction dir = (Direction) it .next();
-                OrbitState orbit = (OrbitState) orbitDots .get( dir );
+                OrbitState orbit = orbitDots .get( dir );
                 Color color = colorSource .getColor( dir );
                 int x = LEFT +  (int) Math .round( orbit.dotY * scaleY );
 //                if ( allOrbits .getSymmetry() == OctahedralSymmetry .GOLDEN_INSTANCE ) {
@@ -405,7 +405,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         for ( Iterator it = orbitDots .keySet() .iterator(); it .hasNext(); )
         {
             Direction dir = (Direction) it .next();
-            OrbitState orbit = (OrbitState) orbitDots .get( dir );
+            OrbitState orbit = orbitDots .get( dir );
             double dist = Math.sqrt( Math.pow( click.getX()-orbit.dotXint, 2 ) + Math.pow( click.getY()-orbit.dotYint, 2 ) );
             if ( dist < (double) RADIUS*4 )
             {

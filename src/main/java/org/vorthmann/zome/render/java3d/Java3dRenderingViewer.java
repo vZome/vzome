@@ -216,7 +216,7 @@ public class Java3dRenderingViewer implements RenderingViewer
         //mCanvas .m_imageHandler = null; mCanvas .maxImageSize = -1; // will be done by canvas, on another thread
     }
 
-    public Collection pickCube()
+    public Collection<RenderedManifestation> pickCube()
     {
         PickResult[] pickResult = null;
         try  {
@@ -225,7 +225,7 @@ public class Java3dRenderingViewer implements RenderingViewer
         } catch( Throwable t ) {
             t .printStackTrace();
         }
-        Collection result = new ArrayList();
+        Collection<RenderedManifestation> result = new ArrayList<>();
         for ( int i = 0; i < pickResult.length; i++ )
         {
             Node node = pickResult[ i ] .getObject();

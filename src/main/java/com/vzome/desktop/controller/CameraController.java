@@ -48,7 +48,7 @@ public class CameraController extends DefaultController
 
     private Camera copied = null;
     
-	protected final List mViewers = new ArrayList();
+	protected final List<CameraController.Viewer> mViewers = new ArrayList<>();
 	
 	private final Camera initialCamera;
 
@@ -146,17 +146,17 @@ public class CameraController extends DefaultController
 		model .getViewTransform( trans, 0d );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            ((CameraController.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .MONOCULAR );
+            mViewers .get( i ) .setViewTransformation( trans, Viewer .MONOCULAR );
 		
         model .getStereoViewTransform( trans, Viewer .LEFT_EYE );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            ((CameraController.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .LEFT_EYE );
+            mViewers .get( i ) .setViewTransformation( trans, Viewer .LEFT_EYE );
         
         model .getStereoViewTransform( trans, Viewer .RIGHT_EYE );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            ((CameraController.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .RIGHT_EYE );
+            mViewers .get( i ) .setViewTransformation( trans, Viewer .RIGHT_EYE );
 	}
 	
 	private void updateViewersProjection()
@@ -168,12 +168,12 @@ public class CameraController extends DefaultController
 		if ( ! model .isPerspective() ) {
 			double edge = model .getWidth() / 2;
             for ( int i = 0; i < mViewers .size(); i++ )
-                ((CameraController.Viewer) mViewers .get( i )) .setOrthographic( edge, near, far );
+                mViewers .get( i ) .setOrthographic( edge, near, far );
 		}
 		else {
 			double field = model .getFieldOfView();
             for ( int i = 0; i < mViewers .size(); i++ )
-                ((CameraController.Viewer) mViewers .get( i )) .setPerspective( field, 1.0d, near, far );
+                mViewers .get( i ) .setPerspective( field, 1.0d, near, far );
 		}
 
         // TODO - make aspect ratio track the screen window shape
@@ -242,7 +242,7 @@ public class CameraController extends DefaultController
 	}
 
     
-    private final LinkedList recentViews = new LinkedList();
+    private final LinkedList<Camera> recentViews = new LinkedList<>();
     
     private Camera baselineView = model;  // invariant: baselineView .equals( mParameters) whenever the view
                                                     // is "at rest" (not rolling or zooming), AND baselineView equals the latest recentView
@@ -330,7 +330,7 @@ public class CameraController extends DefaultController
         {
             if ( currentRecentView >= recentViews .size() )
                 return;
-            restoreView( (Camera) recentViews .get( ++currentRecentView ) );
+            restoreView( recentViews .get( ++currentRecentView ) );
         }
         else if ( action .equals( "goBack" ) )
         {
@@ -339,7 +339,7 @@ public class CameraController extends DefaultController
             boolean wasZooming = saveBaselineView(); // might have been zooming
             if ( ( currentRecentView == recentViews .size() ) && wasZooming ) // we're not browsing recent views
                 --currentRecentView; //    skip over the view we just saved
-            restoreView( (Camera) recentViews .get( --currentRecentView ) );
+            restoreView( recentViews .get( --currentRecentView ) );
         }
         else if ( action .equals( "initialView" ) )
         {

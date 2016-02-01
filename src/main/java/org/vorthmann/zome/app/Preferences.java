@@ -85,7 +85,7 @@ public class Preferences
         String pref = getPreference( name );
         if ( pref == null || pref.equals( "" ) )
             return result;
-        result = (float[]) result.clone();
+        result = result.clone();
         StringTokenizer tokens = new StringTokenizer( pref, ", " );
         int i = 0;
         while ( tokens.hasMoreTokens() )

@@ -24,15 +24,20 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
-public class ReorderableJList extends JList implements DragSourceListener,
+public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
         DropTargetListener, DragGestureListener
 {
 
+    // Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
+    private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
+    private static final Logger logger = Logger.getLogger(loggerClassName);
+    
     static DataFlavor localObjectFlavor;
     static {
         try {
@@ -55,10 +60,12 @@ public class ReorderableJList extends JList implements DragSourceListener,
     
     private final ListMoveListener moves;
 
+    private final Class<E> elementClass;
 
-    public ReorderableJList( DefaultListModel listModel, ListMoveListener moves )
+    public ReorderableJList ( DefaultListModel<E> listModel, ListMoveListener moves, Class<E> listElementClass )
     {
         super();
+        this.elementClass = listElementClass;
         this .moves = moves;
         setCellRenderer( new ReorderableListCellRenderer() );
         setModel( listModel );
@@ -148,14 +155,23 @@ public class ReorderableJList extends JList implements DragSourceListener,
             }
             dtde.acceptDrop( DnDConstants.ACTION_MOVE );
 //            System.out.println( "accepted" );
-            Object dragged = dtde.getTransferable().getTransferData( localObjectFlavor );
+            Object draggedObj =  dtde.getTransferable().getTransferData( localObjectFlavor );
+            Class<?> draggedObjClass = draggedObj.getClass();
+            if(!elementClass.isAssignableFrom(draggedObjClass)) {
+                String msg = "Unsupported type " + draggedObjClass.getName() + " was dropped. Expected " + elementClass.getName();
+                logger.fine(msg);
+//                System.out.println( msg );
+                dtde.rejectDrop();
+                return;
+            }
+            E dragged = elementClass.cast(draggedObj);
             // move items - note that indicies for insert will
             // change if [removed] source was before target
 //            System.out.println( "drop " + draggedIndex + " to " + index );
             boolean sourceBeforeTarget = (draggedIndex < index);
 //            System.out.println( "source is" + (sourceBeforeTarget ? "" : " not") + " before target" );
 //            System.out.println( "insert at " + (sourceBeforeTarget ? index - 1 : index) );
-            DefaultListModel mod = (DefaultListModel) getModel();
+            DefaultListModel<E> mod = (DefaultListModel<E>) getModel();
             
       // an alternative, from ListDataListener tutorial
 //            Object aObject = listModel.getElementAt(a);

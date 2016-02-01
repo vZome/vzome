@@ -85,10 +85,8 @@ public class Java2dExporter extends Exporter3d
         mSnapshot .setStrokeWidth( 0.5f );
         mSnapshot .setRect( new Rectangle2D.Float( 0f, 0f, width, height ) );
 
-        List mappedVertices = new ArrayList( 60 );
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+        List<Vector3f> mappedVertices = new ArrayList<>( 60 );
+        for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
             com.vzome.core.render.Color c = rm .getColor();
@@ -111,8 +109,8 @@ public class Java2dExporter extends Exporter3d
             RealVector location = rm .getLocation();  // should *2?
             
             if ( location == null )
-            	// avoid NPE reported by Antonio Montero
-            	continue;
+                // avoid NPE reported by Antonio Montero
+                continue;
             
             mappedVertices .clear();
             for ( int i = 0; i < vertices .size(); i++ )
@@ -133,8 +131,8 @@ public class Java2dExporter extends Exporter3d
                 
                 Vector3f v1 = null, v2 = null;
                 for ( int j = 0; j < arity; j++ ){
-                    Integer index = (Integer) face .get( flip? arity-j-1 : j );
-                    Vector3f v = (Vector3f) mappedVertices .get( index .intValue() );
+                    Integer index = face .get( flip? arity-j-1 : j );
+                    Vector3f v = mappedVertices .get( index );
                     path .addVertex( v );
                     switch ( path .size() ) {
                         case 1 :

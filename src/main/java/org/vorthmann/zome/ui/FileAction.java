@@ -29,7 +29,7 @@ public abstract class FileAction implements ActionListener
     protected final String mExtension;
     protected final String mTitle;
     
-    private static Logger logger = Logger.getLogger( "org.vorthmann.zome.ui" );
+    private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui" );
     
     public FileAction( FileDialog chooser, boolean open, String extension, String title )
     {

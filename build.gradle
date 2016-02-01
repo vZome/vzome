@@ -117,14 +117,30 @@ jar {
     }
 }
 
-// Don't necessarily want to turn on these warnings yet, but here's the code to do it eventually.
-//gradle.projectsEvaluated {
-//	tasks.withType(JavaCompile) {
-//		options.compilerArgs \
-//		<< "-Xlint:unchecked" \
-//		<< "-Xlint:deprecation"
-//	}
-//}
+// These options apply to all java projects
+// More info at http://www.javaworld.com/article/2073587/javac-s--xlint-options.html
+// I'm turning on most of the warnings 
+// ...except that the test project ignores deprecation 
+// and they all ignore serial for now.
+gradle.projectsEvaluated {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs \
+		/* << "-Xlint:all" */ \
+		<< "-Xlint:cast" \
+		<< "-Xlint:deprecation" \
+		<< "-Xlint:divzero" \
+		<< "-Xlint:empty" \
+		<< "-Xlint:fallthrough" \
+		<< "-Xlint:finally" \
+		<< "-Xlint:overrides" \
+		<< "-Xlint:path" \
+		<< "-Xlint:-rawtypes" \
+		<< "-Xlint:unchecked" \
+		<< "-Xlint:-serial" 
+		// TODO: Enable the serial warning and look into fixing any issues. 
+		// Most of them are classes which extend a generic Collection or Exception.
+	}
+}
 
 // The mainClass property is needed to run a Gradle project from the Netbeans IDE (and maybe others too).
 if (!hasProperty('mainClass')) {

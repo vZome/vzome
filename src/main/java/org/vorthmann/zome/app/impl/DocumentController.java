@@ -768,7 +768,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 
                 Symmetry symmetry = symmetryController.getSymmetry();
                 if ( "icosahedral" .equals( group ) || "octahedral" .equals( group ) )
-                    symmetry = ((SymmetryController) symmetries .get( group )) .getSymmetry();
+                    symmetry = symmetries .get( group ) .getSymmetry();
                 
                 documentModel .createTool( name, group, toolsController, symmetry );
             }
@@ -1243,7 +1243,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
 		default:
 	        if ( name.startsWith( "symmetry." ) )
-	            return (SymmetryController) this.symmetries.get( name.substring( "symmetry.".length() ) );
+	            return this.symmetries.get( name.substring( "symmetry.".length() ) );
 	        else
 	        	return null;
 		}
@@ -1297,7 +1297,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             all .addAll( genericTools );
             List<String> symmTools = Arrays .asList( symmetryController .getCommandList( listName ) );
             all .addAll( symmTools );
-            return (String[]) all .toArray( new String[0] );
+            return all .toArray( new String[all.size()] );
         }
         return super.getCommandList( listName );
     }
@@ -1306,7 +1306,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 	{
         Construction singleConstruction = null;
         if ( pickedManifestation != null )
-            singleConstruction = (Construction) pickedManifestation .getConstructions().next();
+            singleConstruction = pickedManifestation .getConstructions().next();
 
         try {
             switch ( action ) {
@@ -1393,7 +1393,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
 		case "objectColor":
 			if ( pickedManifestation != null ) {
-                RenderedManifestation rm = (RenderedManifestation) pickedManifestation .getRenderedObject();
+                RenderedManifestation rm = pickedManifestation .getRenderedObject();
                 String colorStr = rm .getColor() .toString();
 				pickedManifestation = null;
 				return colorStr;

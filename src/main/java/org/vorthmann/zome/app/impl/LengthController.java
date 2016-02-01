@@ -49,10 +49,10 @@ public class LengthController extends DefaultController
                 setScale( this .scale + 1 );
             else if ( "scaleDown" .equals( action ) )
                 setScale( this .scale - 1 );
-            else if ( "factor" .equals( action ) )
-                ; // TODO factor as many of these out of the lengthModel as you can
-            else if ( "zero" .equals( action ) )
-                ; // TODO multiply this value into the lengthModel, and zero this value
+//            else if ( "factor" .equals( action ) )
+//                ; // TODO factor as many of these out of the lengthModel as you can
+//            else if ( "zero" .equals( action ) )
+//                ; // TODO multiply this value into the lengthModel, and zero this value
             super.doAction( action, e );
         }
 

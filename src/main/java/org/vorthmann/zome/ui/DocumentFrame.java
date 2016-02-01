@@ -148,7 +148,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
                     errorCode = ( (Exception) arguments[0] ).getMessage();
                     logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
-                    errorCode = "internal error, see vZomeLog0.log in your home directory";
+                    errorCode = "internal error, see vZome50_*_*.log in your home or logs directory";
                 } else {
                     logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
                     // TODO use resources
@@ -311,7 +311,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 	break;
                 
                 case "configureShapes":
-                    JDialog shapesDialog = (JDialog) shapesDialogs.get( system );
+                    JDialog shapesDialog = shapesDialogs.get( system );
                     if ( shapesDialog == null ) {
                     	delegate = mController .getSubController( "symmetry." + system );
                         shapesDialog = new ShapesDialog( DocumentFrame.this, delegate );
@@ -321,7 +321,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 	break;
                 
                 case "configureDirections":
-                    JDialog symmetryDialog = (JDialog) directionsDialogs.get( system );
+                    JDialog symmetryDialog = directionsDialogs.get( system );
                     if ( symmetryDialog == null ) {
                     	delegate = mController .getSubController( "symmetry." + system );
                         symmetryDialog = new SymmetryDialog( DocumentFrame.this, delegate );

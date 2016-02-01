@@ -4,7 +4,6 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +15,11 @@ import com.vzome.core.editor.TransformationTool;
 
 public class ToolsController extends DefaultController implements Tool.Registry
 {
+    private final Map<String, Tool> tools = new HashMap<>();
+    
+    private final Map<String, Tool> categories = new HashMap<>();
+        
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
     	// TODO first-class support for modes in ToolEvent
@@ -30,17 +34,17 @@ public class ToolsController extends DefaultController implements Tool.Registry
         if ( action .startsWith( "last-tool/" ) )
         {
             String category = action .substring( "last-tool/" .length() );
-            Tool tool = (Tool) categories .get( category );
+            Tool tool = categories .get( category );
             if ( tool == null )
             {
                 super .doAction( "newTool/default." + category + ".auto/" + TransformationTool.DEFAULT_NAME_TRIGGER, e );
-                tool = (Tool) categories .get( category );
+                tool = categories .get( category );
             }
             if ( tool == null )
                 throw new Command.Failure( "No tool in the category \"" + category + "\" has been applied yet, or the last-used was removed." );
             super .doAction( "applyTool", new ToolEvent( tool, modifiers, this, e ) );
         }
-        else if ( toolNames .contains( action ) )
+        else if ( tools.keySet() .contains( action ) )
         {
             Tool tool = getTool( action );
             super .doAction( "applyTool", new ToolEvent( tool, modifiers, this, e ) );
@@ -49,51 +53,47 @@ public class ToolsController extends DefaultController implements Tool.Registry
             super .doAction( action, e );
     }
 
+    @Override
     public String[] getCommandList( String listName )
     {
         if ( "tool.instances" .equals( listName ) )
-            return (String[]) toolNames .toArray( new String[]{} );
+            return tools.keySet().toArray( new String[tools.keySet().size()] );
 
         return super .getCommandList( listName );
     }
 
-    private final ArrayList toolNames = new ArrayList();
-    
-    private final Map tools = new HashMap();
-    
-    private final Map categories = new HashMap();
-        
+    @Override
     public void addTool( Tool tool )
     {
         String name = tool .getName();
         tools .put( name, tool );
-        toolNames .add( name );
         useTool( tool );
         properties() .firePropertyChange( "tool.instances", null, name );
     }
 
+    @Override
     public void removeTool( Tool tool )
     {
         String name = tool .getName();
         tools .remove( name );
-        toolNames .remove( name );
         categories .remove( tool .getCategory() );
         properties() .firePropertyChange( "tool.instances", name, null );
     }
 
+    @Override
     public Tool getTool( String toolName )
     {
-        return (Tool) tools .get( toolName );
+        return tools .get( toolName );
     }
 
+    @Override
     public void useTool( Tool tool )
     {
-        String category = tool .getCategory();
-        categories .put( category, tool );
+        categories .put( tool .getCategory(), tool );
     }
 
     public Tool getLastInCategory( String category )
     {
-        return (Tool) categories .get( category );
+        return categories .get( category );
     }
 }

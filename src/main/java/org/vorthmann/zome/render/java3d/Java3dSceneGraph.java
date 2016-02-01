@@ -58,6 +58,8 @@ import com.vzome.core.viewing.Lights;
  */
 public class Java3dSceneGraph implements RenderingChanges
 {
+    private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.render.java3d" );
+
     private final Locale mLocale;
 
     protected BranchGroup mScene, mRoot;
@@ -470,8 +472,6 @@ public class Java3dSceneGraph implements RenderingChanges
         // TODO Auto-generated method stub
 
     }
-
-    private static Logger logger = Logger.getLogger( "org.vorthmann.zome.render.java3d" );
 
     public void shapeChanged( RenderedManifestation rm )
     {

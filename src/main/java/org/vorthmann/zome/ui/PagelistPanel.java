@@ -37,9 +37,11 @@ import org.vorthmann.ui.ReorderableJList;
 
 public class PagelistPanel extends JPanel implements PropertyChangeListener
 {
-    private final JList list;
+    private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
 
-    private DefaultListModel listModel;
+    private final JList<ImageIcon> list;
+
+    private DefaultListModel<ImageIcon> listModel;
     
     private final Controller controller;
 
@@ -93,7 +95,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
     }
 
 
-    private class ThumbnailSelectionRenderer extends JLabel implements ListCellRenderer
+    private class ThumbnailSelectionRenderer extends JLabel implements ListCellRenderer<ImageIcon>
     {
         public ThumbnailSelectionRenderer()
         {
@@ -108,7 +110,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
          * to the selected value and returns the label, set up
          * to display the text and image.
          */
-        public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
+        public Component getListCellRendererComponent( JList<? extends ImageIcon> list, ImageIcon value, int index, boolean isSelected, boolean cellHasFocus )
         {
             if (isSelected) {
                 setBackground( list .getSelectionBackground() );
@@ -117,7 +119,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
                 setBackground( list .getBackground() );
                 setForeground( list .getForeground() );
             }
-            setIcon( (ImageIcon) value );
+            setIcon( value );
             return this;
         }
     }
@@ -149,7 +151,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             if ( e.isPopupTrigger() ) {
                 Object source = e .getSource();
                 popupItem = list .locationToIndex( e.getPoint() );
-                e .setSource( new Integer( popupItem ) );
+                e .setSource( popupItem );
                 pickerPopup .enableActions( controller, e );
                 e .setSource( source );
                 pickerPopup .show( e.getComponent(), e.getX(), e.getY() );
@@ -209,7 +211,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         
         MouseListener pageviewPopup = new ContextualMenuMouseListener( controller, pageviewPopupMenu );
 
-        listModel = new DefaultListModel();
+        listModel = new DefaultListModel<>();
         int initialCount = Integer .parseInt( controller .getProperty( "num.pages" ) );
         for ( int i = 0; i < initialCount; i++ )
         {
@@ -221,7 +223,9 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         listModel .addListDataListener( moves );
 
         // Create the list and put it in a scroll pane.
-        list = isEditor? new ReorderableJList( listModel, moves ) : new JList( listModel );
+        list = isEditor 
+                ? new ReorderableJList<>( listModel, moves, ImageIcon.class ) 
+                : new JList<>( listModel );
         list .setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         list .setSelectedIndex( 0 );
         list .setVisibleRowCount( 12 );
@@ -319,7 +323,6 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             final int num = Integer .parseInt( editNumber );
             BufferedImage iconImage = (BufferedImage) evt .getNewValue();
 
-            Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
             if ( logger .isLoggable( Level.FINER ) )
                 logger .finer( "thumbnailRendered: " + iconImage + " for page " + num );
 

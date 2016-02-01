@@ -54,7 +54,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     public OrbitSetController buildController;
     public OrbitSetController renderController;
     
-    public Map orbitLengths = new HashMap();
+    public Map<Direction, LengthController> orbitLengths = new HashMap<>();
         
     public Symmetry getSymmetry()
     {
@@ -183,7 +183,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     
     private LengthController getLengthController( Direction dir )
     {
-        LengthController result = (LengthController) orbitLengths .get( dir );
+        LengthController result = orbitLengths .get( dir );
         if ( result == null && dir != null )
         {
         	result = new LengthController( dir );

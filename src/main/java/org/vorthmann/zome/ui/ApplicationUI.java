@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
+import org.vorthmann.zome.app.impl.ApplicationController;
 
 /**
  * Top-level UI class for vZome.
@@ -171,13 +172,12 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         return theUI;
     }
     
-
     private static class InitializationWorker implements Runnable
     {
-    	private ApplicationUI ui;
-		private String[] args;
-		private URL codebase;
-		private SplashScreen splash;
+    	private final ApplicationUI ui;
+		private final String[] args;
+		private final URL codebase;
+		private final SplashScreen splash;
 
 		public InitializationWorker( ApplicationUI ui, String[] args, URL codebase, SplashScreen splash )
     	{
@@ -210,17 +210,9 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 	        configuration .putAll( loadBuildProperties() );
 			logConfig( configuration );
 
-	        String controllerClassName = "org.vorthmann.zome.app.impl.ApplicationController";
-	        try {
-	            Class controllerClass = Class .forName( controllerClassName );
-	            Constructor<?> constructor = controllerClass .getConstructor( new Class<?>[] { ActionListener.class, Properties.class } );
-	            ui .mController = (Controller) constructor .newInstance( new Object[] { ui, configuration } );
-	        } catch ( Exception e ) {
-	            logger .log( Level.SEVERE, "controller class could not instantiate: " + controllerClassName, e );
-	            System .exit( 0 );
-	        }
+	        ui .mController = new ApplicationController( ui, configuration );
 
-	        ui.errors =  new Controller.ErrorChannel()
+            ui.errors =  new Controller.ErrorChannel()
 	        {
 				@Override
 	            public void reportError( String errorCode, Object[] arguments )

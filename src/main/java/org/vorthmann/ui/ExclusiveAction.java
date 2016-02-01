@@ -96,7 +96,7 @@ public abstract class ExclusiveAction implements ActionListener
     
     private final Excluder mExcluder;
     
-    private static Logger logger = Logger .getLogger( "org.vorthmann.ui.background" );
+    private static final Logger logger = Logger .getLogger( "org.vorthmann.ui.background" );
     
     public ExclusiveAction( Excluder excluder )
     {

@@ -35,7 +35,9 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
     
     private JScrollPane scroller;
     
-    private List toolIDs;
+    private List<String> toolIDs;
+    
+    private static final Logger logger = Logger .getLogger( "org.vorthmann.zome.ui" );
 
     public ToolsPanel( final JFrame frame, final Controller controller )
     {
@@ -68,7 +70,7 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
 //        instances .setLayout( new BoxLayout( instances, BoxLayout .Y_AXIS ) );
         instances .setLayout( new GridLayout( 0,4 ) );
         {
-            toolIDs = new ArrayList();
+            toolIDs = new ArrayList<>();
             Collections .addAll( toolIDs, this .controller .getCommandList( "tool.instances" ) );
         }
         JPanel instancesBorder = new JPanel( new BorderLayout() );
@@ -92,7 +94,7 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
             button .setIcon( new ImageIcon( imgURL ) );
         else {
             button .setText( name );
-            Logger .getLogger( "org.vorthmann.zome.ui" ) .log( Level.WARNING, "Couldn't find resource: " + iconPath );
+            logger .warning( "Couldn't find resource: " + iconPath );
         }
         button .addActionListener( listener );
         button .setActionCommand( action );

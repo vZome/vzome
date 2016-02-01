@@ -222,9 +222,9 @@ public class Java2dSnapshot extends DefaultController
     
     private boolean current;
     	
-	private List mPolygons = new ArrayList();
+	private List<Polygon> mPolygons = new ArrayList<>();
     
-    private List mLines = new ArrayList(); // list of int[]
+    private List<LineSegment> mLines = new ArrayList<>();
 	
 	private Rectangle2D mRect;
 	
@@ -293,7 +293,7 @@ public class Java2dSnapshot extends DefaultController
         return new Dimension( (int) mRect .getWidth(), (int) mRect .getHeight() ) ;
     }
 
-    public static class LineSegment implements Comparable
+    public static class LineSegment implements Comparable<LineSegment>
     {
         private final GeneralPath mPath;
         private float mDepth;
@@ -318,9 +318,8 @@ public class Java2dSnapshot extends DefaultController
             return mPolyColor;
         }
 
-        public int compareTo( Object o )
+        public int compareTo( LineSegment other )
         {
-            LineSegment other = (LineSegment) o;
             double otherZ = other .mDepth;
             if ( mDepth > otherZ )
                 return 1;
@@ -330,7 +329,7 @@ public class Java2dSnapshot extends DefaultController
         }
     }
 
-	public static class Polygon implements Comparable
+	public static class Polygon implements Comparable<Polygon>
 	{
 		private final GeneralPath mPath;
 		private float mDepth;
@@ -377,12 +376,8 @@ public class Java2dSnapshot extends DefaultController
 			return mPolyColor;
 		}
 		
-		/* (non-Javadoc)
-		 * @see java.lang.Comparable#compareTo(java.lang.Object)
-		 */
-		public int compareTo( Object o )
+		public int compareTo( Polygon other )
 		{
-			Polygon other = (Polygon) o;
 			double otherZ = other .mDepth;
 			if ( mDepth > otherZ )
 				return 1;
