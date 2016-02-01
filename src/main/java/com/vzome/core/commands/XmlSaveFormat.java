@@ -32,8 +32,6 @@ import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.DomUtils;
-//import com.vzome.core.math.GoldenField;
-//import com.vzome.core.math.RootTwoField;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
@@ -74,7 +72,7 @@ public class XmlSaveFormat
     
     private static final Map<String, XmlSaveFormat> FORMATS = new HashMap<>();
     
-    static Logger logger = Logger .getLogger( "com.vzome.core.commands.XmlSaveFormat" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.commands.XmlSaveFormat" );
 
     public static final String UNKNOWN_COMMAND = "unknown.command";
     

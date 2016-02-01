@@ -58,7 +58,7 @@ public abstract class SideEffects implements UndoableEdit
      */
     private int redone = 0;
 
-    public static final Logger BUG_ACCOMMODATION_LOGGER = Logger.getLogger( "com.vzome.core.bug.accommodations" );
+    private static final Logger BUG_ACCOMMODATION_LOGGER = Logger.getLogger( "com.vzome.core.bug.accommodations" );
 
     public static void logBugAccommodation( String accommodation )
     {

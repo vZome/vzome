@@ -43,7 +43,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     private boolean colorPanels = true;
     
-    static Logger logger = Logger.getLogger( "com.vzome.core.render.RenderedModel" );
+    private static final Logger logger = Logger.getLogger( "com.vzome.core.render.RenderedModel" );
 
     public interface OrbitSource
     {

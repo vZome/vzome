@@ -50,7 +50,8 @@ public class CommandEdit extends ChangeManifestations
     
     private AttributeMap mAttrs;
 
-    private final Logger logger = Logger .getLogger( "com.vzome.core.editor.CommandEdit" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.editor.CommandEdit" );
+    private static final Logger loadAndPerformLgger = Logger .getLogger( "com.vzome.core.editor.CommandEdit.loadAndPerform" );
 
 	public CommandEdit( AbstractCommand cmd, EditorModel editor, ModelRoot derivationModel, boolean groupInSelection )
     {
@@ -184,7 +185,6 @@ public class CommandEdit extends ChangeManifestations
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context )
             throws Failure
     {
-        Logger loadAndPerformLgger = Logger .getLogger( "com.vzome.core.editor.CommandEdit.loadAndPerform" );
         String cmdName = null;
         if ( format .selectionsNotSaved() )  //&& ! format .interim210format() )
             cmdName = xml .getLocalName();

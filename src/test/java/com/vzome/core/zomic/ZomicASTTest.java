@@ -47,6 +47,10 @@ import com.vzome.core.zomic.program.ZomicStatement;
 
 public class ZomicASTTest extends TestCase
 {
+    // Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
+    private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
+    private static final Logger logger = Logger.getLogger(loggerClassName);
+    
 	public void testNoOpAlwaysPasses() { 
 		// This is here just so the test framework always finds 
 		// at least one test to run, 
@@ -172,7 +176,7 @@ public class ZomicASTTest extends TestCase
 			FileInputStream fileInputStream = new FileInputStream( file );
 			oldProgram = Parser.parse( fileInputStream, symmetry );
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+			logger .log(Level.SEVERE, null, ex);
 		}
 		assertNotNull("Assume that Parser.parse() should never return null", oldProgram);
 		Walk program = (Walk) oldProgram;
@@ -218,7 +222,7 @@ public class ZomicASTTest extends TestCase
 		try {
 			oldProgram = Parser.parse( new ByteArrayInputStream( input.getBytes("UTF8") ), symmetry );
 		} catch (UnsupportedEncodingException ex) {
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+			logger.log(Level.SEVERE, null, ex);
 		}
 		assertNotNull("Assume that Parser.parse() should never return null", oldProgram);
 		Walk program = (Walk) oldProgram;

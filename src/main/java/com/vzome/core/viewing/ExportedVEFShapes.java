@@ -46,7 +46,7 @@ public class ExportedVEFShapes extends AbstractShapes
     
     private final Properties colors = new Properties();
     
-    static Logger logger = Logger.getLogger( "com.vzome.core.viewing.shapes" );
+    private static final Logger logger = Logger.getLogger( "com.vzome.core.viewing.shapes" );
         
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {

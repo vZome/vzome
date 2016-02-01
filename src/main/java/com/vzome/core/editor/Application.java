@@ -99,7 +99,7 @@ public class Application
 
     private Lights mLights = new Lights();
     
-    static Logger logger = Logger.getLogger( "com.vzome.core.editor" );
+    private static final Logger logger = Logger.getLogger( "com.vzome.core.editor" );
 
     public Application( boolean enableCommands, Command.FailureChannel failures, Properties overrides )
     {

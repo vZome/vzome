@@ -1,6 +1,5 @@
 package com.vzome.core.generic;
 
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.BigRational;
 import java.util.ArrayList;
 import org.junit.Test;

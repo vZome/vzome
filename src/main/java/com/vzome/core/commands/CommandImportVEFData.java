@@ -42,7 +42,7 @@ public class CommandImportVEFData extends AbstractCommand
     private static final Object[][] ATTR_SIGNATURE =
         new Object[][]{ { VEF_STRING_ATTR_NAME, String.class }, { Command.FIELD_ATTR_NAME, InputStream.class }, { NO_INVERSION_ATTR_NAME, InputStream.class } };
 
-    static Logger logger = Logger .getLogger( "com.vzome.core.commands.importVEF" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.commands.importVEF" );
 
     public Object[][] getParameterSignature()
     {

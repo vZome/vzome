@@ -30,7 +30,7 @@ public class VefToModel extends VefParser
     
     protected boolean noBallsSection = true;
 
-    static Logger logger = Logger .getLogger( "com.vzome.core.construction.VefToModel" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.construction.VefToModel" );
 
     
     public VefToModel( AlgebraicVector quaternion, ConstructionChanges effects, AlgebraicNumber scale, AlgebraicVector offset )

@@ -29,7 +29,8 @@ public class EditHistory implements Iterable<UndoableEdit>
     
     private boolean breakpointHit = false;
     
-    private final Logger logger = Logger .getLogger( "com.vzome.core.EditHistory" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.EditHistory" );
+    private static final Logger breakpointLogger = Logger .getLogger( "com.vzome.core.editor.Breakpoint" );
 
     public interface Listener
     {
@@ -382,8 +383,6 @@ public class EditHistory implements Iterable<UndoableEdit>
     
     public class Breakpoint implements UndoableEdit
     {
-        Logger logger = Logger .getLogger( "com.vzome.core.editor.Breakpoint" );
-
         public Element getXml( Document doc )
         {
             return doc .createElement( "Breakpoint" );
@@ -402,7 +401,7 @@ public class EditHistory implements Iterable<UndoableEdit>
 
         public void perform() throws Failure
         {
-            logger .info( "hit a Breakpoint at " + mEditNumber );
+            breakpointLogger .info( "hit a Breakpoint at " + mEditNumber );
             breakpointHit = true;
         }
 

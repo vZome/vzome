@@ -54,7 +54,7 @@ public class CommandUniformH4Polytope extends CommandTransform
 
     private int mPolytopeIndex = -1;
     
-    private static Logger logger = Logger .getLogger( "com.vzome.core.commands.h4polytope" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.commands.h4polytope" );
 
     public static class H4Symmetry
     {

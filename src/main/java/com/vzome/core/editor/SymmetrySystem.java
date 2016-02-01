@@ -31,6 +31,7 @@ import com.vzome.core.render.Shapes;
 
 public class SymmetrySystem implements OrbitSource
 {
+    private static Logger logger = Logger .getLogger( "com.vzome.core.editor" );
     private static int NEXT_NEW_AXIS = 0;
     
 	private final Symmetry symmetry;
@@ -128,7 +129,7 @@ public class SymmetrySystem implements OrbitSource
         this .shapes = this .styles .get( styleName );
         
         if ( this .shapes == null ) {
-        	Logger .getLogger( "com.vzome.core.editor" ) .warning( "UNKNOWN STYLE NAME: " + styleName );
+        	logger .warning( "UNKNOWN STYLE NAME: " + styleName );
             this .shapes = this .styles .get( symmetry .getDefaultStyle() );
         }
 	}

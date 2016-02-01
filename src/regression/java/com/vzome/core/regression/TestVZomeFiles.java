@@ -42,6 +42,8 @@ import com.vzome.core.commands.Command.Failure;
  */
 public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 {
+    private static final Logger logger = Logger.getLogger("");
+    
     public static void main( String[] args )
     {
     	TestVZomeFiles tester = new TestVZomeFiles( args[0], args[1] );
@@ -192,7 +194,6 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
             System .out .println( suiteName );
             testCase .addAttribute( new Attribute( "name", testName ) );
             
-            Logger logger = Logger .getLogger( "" );
             final Element stderr = new Element( "system-err" );
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             Handler handler = new StreamHandler( bos, new SimpleFormatter() );

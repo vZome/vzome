@@ -54,11 +54,8 @@ public interface Command
 
     public static class Failure extends Exception
     {
-        private static Logger logger = Logger .getLogger( "org.vorthmann.zome.commands" );
+        private static final Logger logger = Logger .getLogger( "org.vorthmann.zome.commands" );
         
-            /**
-         * 
-         */
         public Failure()
         {
             super();

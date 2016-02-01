@@ -108,7 +108,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	
 	private Camera defaultView;
 
-    static Logger logger = Logger .getLogger( "com.vzome.core.editor" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.editor" );
+    private static final Logger thumbnailLogger = Logger.getLogger( "com.vzome.core.thumbnails" );
 
     // 2013-05-26
     //  I thought about leaving these two in EditorModel, but reconsidered.  Although they are in-memory
@@ -1093,7 +1094,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     public void recordSnapshot( int id )
     {
     	RenderedModel snapshot = ( renderedModel == null )? null : renderedModel .snapshot();
-    	Logger thumbnailLogger = Logger.getLogger( "com.vzome.core.thumbnails" );
     	if ( thumbnailLogger .isLoggable( Level.FINER ) )
     		thumbnailLogger .finer( "recordSnapshot: " + id );
     	numSnapshots = Math .max( numSnapshots, id + 1 );

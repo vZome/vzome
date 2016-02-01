@@ -15,7 +15,8 @@ import com.vzome.core.math.symmetry.Direction;
 
 
 public class Polyhedron {
-
+    private static Logger logger = Logger .getLogger( "com.vzome.core.math.Polyhedron" );
+    
 	protected int numVertices = 0;
 
 	protected final Map<AlgebraicVector, Integer> m_vertices = new HashMap<>();
@@ -114,8 +115,9 @@ public class Polyhedron {
         {
             if ( index >= size() )
             {
-                Logger .getLogger( "com.vzome.core.math.Polyhedron" ) .severe( "index larger than Face size" );
-                throw new IllegalStateException( "index larger than Face size" );
+                String msg = "index larger than Face size";
+                logger .severe( msg );
+                throw new IllegalStateException( msg );
             }
 			return get( index );
 		}
