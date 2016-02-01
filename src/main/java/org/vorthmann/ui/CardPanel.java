@@ -52,6 +52,7 @@ public class CardPanel extends JPanel
 	 * iff it's the only CardPanel child.
 	 * @see java.awt.Component#setName
 	 */
+    @Override
 	public void addLayoutComponent(String name, Component child) {
 	    if (name != null) {
 		child.setName(name);
@@ -63,6 +64,7 @@ public class CardPanel extends JPanel
 	 * If this child was visible, then make the first remaining
 	 * child visible.
 	 */
+    @Override
 	public void removeLayoutComponent(Component child) {
 	    if (child.isVisible()) {
 		Container parent = child.getParent();
@@ -75,6 +77,7 @@ public class CardPanel extends JPanel
 	/**
 	 * @return the maximum preferred width/height + the parents insets
 	 */
+    @Override
 	public Dimension preferredLayoutSize(Container parent) {
 	    int nChildren = parent.getComponentCount();
 	    Insets insets = parent.getInsets();
@@ -96,6 +99,7 @@ public class CardPanel extends JPanel
 	/**
 	 * @return the maximum minimum width/height + the parents insets
 	 */
+    @Override
 	public Dimension minimumLayoutSize(Container parent) {
 	    int nChildren = parent.getComponentCount();
 	    Insets insets = parent.getInsets();
@@ -114,6 +118,7 @@ public class CardPanel extends JPanel
 	    return new Dimension(width, height);
 	}
 
+    @Override
 	public void layoutContainer(Container parent) {
 	    int nChildren = parent.getComponentCount();
 	    Insets insets = parent.getInsets();

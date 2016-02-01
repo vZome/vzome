@@ -60,11 +60,13 @@ public class PartsPanel extends JPanel
             controller .addPropertyListener( this );
         }
         
+        @Override
         public Class<?> getColumnClass( int c )
         {
             return getValueAt( 0, c ) .getClass();
         }
         
+        @Override
         public boolean isCellEditable( int row, int col )
         {
             //Note that the data/cell address is constant,
@@ -72,21 +74,25 @@ public class PartsPanel extends JPanel
             return false;
         }
 
+        @Override
         public String getColumnName( int col )
         {
             return columnNames[ col ];
         }
  
+        @Override
         public int getColumnCount()
         {
             return 4;
         }
 
+        @Override
         public int getRowCount()
         {
             return struts .size() + 1;
         }
 
+        @Override
         public Object getValueAt( int row, int col )
         {
             if ( row == 0 )
@@ -113,6 +119,7 @@ public class PartsPanel extends JPanel
             }
         }
 
+        @Override
         public void propertyChange( PropertyChangeEvent evt )
         {
             String name = evt .getPropertyName();
@@ -191,6 +198,7 @@ public class PartsPanel extends JPanel
             setOpaque(true); //MUST do this for background to show up.
         }
      
+        @Override
         public Component getTableCellRendererComponent(
                                 JTable table, Object color,
                                 boolean isSelected, boolean hasFocus,

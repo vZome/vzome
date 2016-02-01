@@ -1,8 +1,5 @@
 /*
  * Created on Dec 7, 2003
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package org.vorthmann.j3d;
 
@@ -10,14 +7,12 @@ import java.awt.event.MouseEvent;
 
 /**
  * @author vorth
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class MouseListenerSwitch14 extends MouseListenerSwitch
 {
 	protected boolean firstButton;
 
+    @Override
 	public void mouseClicked( MouseEvent e )
 	{
  	    if ( e .getButton() == MouseEvent .BUTTON1 )
@@ -26,6 +21,7 @@ public class MouseListenerSwitch14 extends MouseListenerSwitch
 		    second .mouseClicked( e );
 	}
 
+    @Override
 	public  void mousePressed( MouseEvent e )
 	{
 		lastPosition = e;
@@ -37,6 +33,7 @@ public class MouseListenerSwitch14 extends MouseListenerSwitch
 			second .mousePressed( e );
 	}
 
+    @Override
 	public  void mouseDragged( MouseEvent e )
 	{
 		lastPosition = e;
@@ -47,6 +44,7 @@ public class MouseListenerSwitch14 extends MouseListenerSwitch
 			second .mouseDragged( e );
 	}
 
+    @Override
 	public  void mouseMoved( MouseEvent e )
 	{
 		if ( firstButton )
@@ -55,6 +53,7 @@ public class MouseListenerSwitch14 extends MouseListenerSwitch
 			second .mouseMoved( e );
 	}
 
+    @Override
 	public  void mouseReleased( MouseEvent e )
 	{
 		lastPosition = e;

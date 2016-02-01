@@ -96,6 +96,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
                             panel .setBorder( BorderFactory .createTitledBorder( "page content" ) );
                             contentArea .getDocument() .addUndoableEditListener( new UndoableEditListener() {
 
+                                @Override
                                 public void undoableEditHappened( UndoableEditEvent e )
                                 {
                                     e .getEdit();
@@ -163,9 +164,11 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
             this.whichField = whichField;
         }
         
+        @Override
         public void changedUpdate( DocumentEvent e )
         {}
 
+        @Override
         public void insertUpdate( DocumentEvent e )
         {
             int start = e .getOffset();
@@ -181,6 +184,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
             }
         }
 
+        @Override
         public void removeUpdate( DocumentEvent e )
         {
             int start = e .getOffset();
@@ -193,6 +197,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
         }
     }
 
+    @Override
     public void propertyChange( PropertyChangeEvent e )
     {
         if ( e .getPropertyName() .equals( "currentPage" ) )

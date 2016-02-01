@@ -44,9 +44,11 @@ public class PartsController extends DefaultController implements RenderingChang
         return orbit .getName() + ":" + color .getRGB() + ":" + buf;
     }
 
+    @Override
     public void reset()
     {}
 
+    @Override
     public void manifestationAdded( RenderedManifestation rendered )
     {
         Manifestation m = rendered .getManifestation();
@@ -60,6 +62,7 @@ public class PartsController extends DefaultController implements RenderingChang
             properties() .firePropertyChange( "addBall", null, null );
     }
 
+    @Override
     public void manifestationRemoved( RenderedManifestation rendered )
     {
         Manifestation m = rendered .getManifestation();
@@ -78,27 +81,35 @@ public class PartsController extends DefaultController implements RenderingChang
         }
     }
 
+    @Override
     public void manifestationSwitched( RenderedManifestation from, RenderedManifestation to )
     {}
 
+    @Override
     public void glowChanged( RenderedManifestation manifestation )
     {}
 
+    @Override
     public void colorChanged( RenderedManifestation manifestation )
     {}
 
+    @Override
     public void locationChanged( RenderedManifestation manifestation )
     {}
 
+    @Override
     public void orientationChanged( RenderedManifestation manifestation )
     {}
 
+    @Override
     public void shapeChanged( RenderedManifestation manifestation )
     {}
 
+    @Override
     public void enableFrameLabels()
     {}
 
+    @Override
     public void disableFrameLabels()
     {}
 

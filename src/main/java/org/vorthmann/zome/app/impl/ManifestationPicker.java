@@ -26,6 +26,7 @@ public class ManifestationPicker extends MouseToolDefault
         this .viewer = viewer;
     }
 
+    @Override
     public void mousePressed( MouseEvent e )
     {
         super.mousePressed( e );
@@ -46,6 +47,7 @@ public class ManifestationPicker extends MouseToolDefault
         return targetManifestation;
     }
 
+    @Override
     public void mouseReleased( MouseEvent e )
     {
         Manifestation target = pick( e );
@@ -55,6 +57,7 @@ public class ManifestationPicker extends MouseToolDefault
     protected void dragFinished( Manifestation target, boolean b )
     {}
 
+    @Override
     public void mouseClicked( MouseEvent e )
     {
         Manifestation target = pick( e );

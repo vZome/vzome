@@ -41,6 +41,7 @@ public class PolytopesController extends DefaultController
         }
     }
 
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( "generate".equals( action ) )
@@ -78,11 +79,13 @@ public class PolytopesController extends DefaultController
             super.doAction( action, e );
     }
 
+    @Override
     public String[] getCommandList( String listName )
     {
     	return this .groups;
     }
 
+    @Override
     public String getProperty( String propName )
     {
         if ( "group" .equals( propName ) )

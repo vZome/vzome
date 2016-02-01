@@ -485,6 +485,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         this.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
         this.addWindowListener( new WindowAdapter()
         {
+            @Override
             public void windowClosing( WindowEvent we )
             {
                 closeWindow();
@@ -616,6 +617,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         };
     }
     
+    @Override
     public AbstractButton setButtonAction( String command, AbstractButton control )
     {
     	control .setActionCommand( command );
@@ -740,6 +742,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     	return control;
     }
     
+    @Override
     public JMenuItem setMenuAction( String command, JMenuItem menuItem )
     {
     	return (JMenuItem) this .setButtonAction( command, menuItem );

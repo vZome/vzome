@@ -57,6 +57,7 @@ public interface Controller extends ActionListener
 
     boolean[] enableContextualCommands( String[] menu, MouseEvent e );
 
+    @Override
     void actionPerformed( ActionEvent e );
 
     void doAction( String action, ActionEvent e ) throws Exception;

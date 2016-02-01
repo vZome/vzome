@@ -14,7 +14,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.vorthmann.j3d.MouseTool;
@@ -50,6 +49,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     
     private final MouseTool mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
     {
+        @Override
         public void mouseClicked( MouseEvent click )
         {
             Direction pickedDir = pickDirection( click );
@@ -135,6 +135,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         	properties() .firePropertyChange( "selectedOrbit", null, lastOrbit == null? null : lastOrbit .getName() );
     }
     
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( action .equals( "refreshDots" ) )
@@ -212,6 +213,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         properties() .firePropertyChange( "orbits", true, false );
     }
 
+    @Override
     public void propertyChange( PropertyChangeEvent evt )
     {
         if ( "length" .equals( evt .getPropertyName() )
@@ -245,6 +247,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             throw new IllegalStateException( "could not toggle direction " + dir .getName() );
     }
 
+    @Override
     public Controller getSubController( String name )
     {
         if ( "currentLength" .equals( name ) )
@@ -252,6 +255,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         return super .getSubController( name );
     }
 
+    @Override
     public String getProperty( String string )
     {
         if ( "oneAtATime" .equals( string ) )
@@ -292,6 +296,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         return super .getProperty( string );
     }
 
+    @Override
     public void setProperty( String cmd, Object value )
     {
         if ( "oneAtATime" .equals( cmd ) )
@@ -309,6 +314,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     private static int TOP = 30;
     private static int LEFT = TOP;
 
+    @Override
     public void repaintGraphics( String panelName, Graphics graphics, Dimension size )
     {
         if ( panelName .startsWith( "oneOrbit." ) )
@@ -442,6 +448,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         return result;
     }
 
+    @Override
     public String[] getCommandList( String listName )
     {
         if ( listName .equals( "orbits" ) )

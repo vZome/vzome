@@ -16,6 +16,7 @@ public class LoggingErrorChannel implements Controller .ErrorChannel
         this.logger = logger;
     }
 
+    @Override
     public void reportError( String errorCode, Object[] arguments )
     {
         if ( Controller.USER_ERROR_CODE .equals( errorCode ) )
@@ -37,6 +38,7 @@ public class LoggingErrorChannel implements Controller .ErrorChannel
         logger .severe( "unable to open model file" );
     }
 
+    @Override
     public void clearError()
     {}
 }

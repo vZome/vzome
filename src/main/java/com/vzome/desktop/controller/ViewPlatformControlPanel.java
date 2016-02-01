@@ -72,6 +72,7 @@ public class ViewPlatformControlPanel extends JPanel {
         zslider = new JSlider( JSlider .VERTICAL, nearTicks, farTicks, startTicks );
         zslider .addChangeListener( new ChangeListener()
         {
+            @Override
             public  void stateChanged( ChangeEvent e )
             {
                 controller .setProperty( "magnification", Float .toString( ticksToMag( zslider .getValue() ) ) );
@@ -135,6 +136,7 @@ public class ViewPlatformControlPanel extends JPanel {
         
         this .addMouseWheelListener( new MouseWheelListener()
         {
+            @Override
             public void mouseWheelMoved( MouseWheelEvent e )
             {
                 int amt = e .getWheelRotation();
@@ -151,6 +153,7 @@ public class ViewPlatformControlPanel extends JPanel {
 
         controller .addPropertyListener( new PropertyChangeListener()
             {
+                @Override
                 public void propertyChange( PropertyChangeEvent e )
                 {
                 	if ( "magnification" .equals(  e .getPropertyName() ) ) {

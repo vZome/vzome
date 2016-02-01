@@ -66,6 +66,7 @@ public class PolytopesDialog extends EscapeDialog
             checkbox .setActionCommand( "edge." + i );
             checkbox .addActionListener( new ActionListener()
             {
+                @Override
                 public void actionPerformed( ActionEvent e )
                 {
                     controller .actionPerformed( e );
@@ -112,6 +113,7 @@ public class PolytopesDialog extends EscapeDialog
         JButton cancel = new JButton( "Cancel" );
         cancel .addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed( ActionEvent e )
             {
                 PolytopesDialog.this .setVisible( false );
@@ -123,6 +125,7 @@ public class PolytopesDialog extends EscapeDialog
         build .setActionCommand( "generate" );
         build .addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed( ActionEvent e )
             {
                 PolytopesDialog.this .setVisible( false );

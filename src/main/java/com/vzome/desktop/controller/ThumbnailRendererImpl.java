@@ -53,6 +53,7 @@ public class ThumbnailRendererImpl implements ThumbnailRenderer
         }
         viewer .captureImage( 80, new RenderingViewer.ImageCapture()
         {
+            @Override
             public void captureImage( RenderedImage image )
             {
                 callback .thumbnailReady( image );

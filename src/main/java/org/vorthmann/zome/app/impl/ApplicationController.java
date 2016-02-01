@@ -371,6 +371,7 @@ public class ApplicationController extends DefaultController
 		}
     }
 
+    @Override
     public Controller getSubController( final String name )
     {
     	return docControllers .get( name );

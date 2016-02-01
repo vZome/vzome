@@ -44,6 +44,7 @@ public class MouseListenerSwitch extends MouseAdapter implements MouseTool {
 	}
 	
 
+    @Override
     public void attach( Component component )
     {
         component .addMouseListener( this );
@@ -51,6 +52,7 @@ public class MouseListenerSwitch extends MouseAdapter implements MouseTool {
 		component .addMouseWheelListener( this );
     }
     
+    @Override
     public void detach( Component component )
     {
         component .removeMouseListener( this );
@@ -63,6 +65,7 @@ public class MouseListenerSwitch extends MouseAdapter implements MouseTool {
         return ( e .getModifiers() & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0;
     }
     
+    @Override
     public void mouseClicked( MouseEvent e )
     {
 		lastPosition = e;
@@ -72,6 +75,7 @@ public class MouseListenerSwitch extends MouseAdapter implements MouseTool {
 		    first .mouseClicked( e );
     }
 
+    @Override
     public  void mousePressed( MouseEvent e )
     {
         lastPosition = e;
@@ -83,6 +87,7 @@ public class MouseListenerSwitch extends MouseAdapter implements MouseTool {
 		    first .mousePressed( e );
 	}
 
+    @Override
     public  void mouseDragged( MouseEvent e )
     {
 		lastPosition = e;
@@ -105,12 +110,14 @@ public class MouseListenerSwitch extends MouseAdapter implements MouseTool {
 		}
 	}
 
+    @Override
 	public  void mouseMoved( MouseEvent e )
 	{
 		lastPosition = e;
 		first .mouseMoved( e );
 	}
 
+    @Override
 	public  void mouseReleased( MouseEvent e )
 	{
 		lastPosition = e;
@@ -136,6 +143,7 @@ public class MouseListenerSwitch extends MouseAdapter implements MouseTool {
     /* (non-Javadoc)
      * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
      */
+    @Override
     public void mouseWheelMoved( MouseWheelEvent e )
     {
         wasSecond = isSecondButton( e );

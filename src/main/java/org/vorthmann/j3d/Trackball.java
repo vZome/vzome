@@ -63,18 +63,21 @@ public abstract class Trackball extends MouseToolDefault {
         mModal = value;    
     }
 
+    @Override
     public  void mousePressed( MouseEvent e )
     {
         oldX = e .getX();
         oldY = e .getY();
     }
 
+    @Override
     public  void mouseDragged( MouseEvent e )
     {
         if ( mModal )
             trackballRolled( e );
     }
 
+    @Override
     public  void mouseMoved( MouseEvent e )
     {
         if ( ! mModal )

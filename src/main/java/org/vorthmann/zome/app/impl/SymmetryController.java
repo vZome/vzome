@@ -25,6 +25,7 @@ import com.vzome.desktop.controller.CameraController;
 
 public class SymmetryController extends DefaultController// implements RenderedModel.OrbitSource
 {
+    @Override
     public String getProperty( String string )
     {
         if ( "renderingStyle" .equals( string ) )
@@ -109,6 +110,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
 
         availableController .addPropertyListener( new PropertyChangeListener()
         {
+            @Override
             public void propertyChange( PropertyChangeEvent event )
             {
                 if ( "orbits" .equals( event .getPropertyName() ) )
@@ -120,6 +122,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     }
     
 
+    @Override
     public Controller getSubController( String name )
     {
         if ( name .equals( "availableOrbits" ) )
@@ -139,6 +142,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         return null;
     }
     
+    @Override
     public String[] getCommandList( String listName )
     {
         if ( "styles" .equals( listName ) )
@@ -162,6 +166,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         return new String[0];
     }
 
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( action .equals( "rZomeOrbits" )

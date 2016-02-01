@@ -59,6 +59,7 @@ public class PreviewStrut implements PropertyChangeListener
 
         zoneBall = new ZoneVectorBall( viewPlatform )
         {
+            @Override
             protected void zoneChanged( Axis oldZone, Axis newZone )
             {
                 if ( length != null )
@@ -164,6 +165,7 @@ public class PreviewStrut implements PropertyChangeListener
         strut .perform();
     }
 
+    @Override
     public void propertyChange( PropertyChangeEvent evt )
     {
         // mousewheel ticked over enough to trigger a scale change in the LengthModel

@@ -105,6 +105,7 @@ public final class SplashScreen extends Frame {
        setLocation((screen.width - window.width) / 2, (screen.height - window.height) / 2);
        setVisible(true);
     }
+    @Override
     public void paint(Graphics graphics) {
       if (fImage != null) {
         graphics.drawImage(fImage,0,0,this);

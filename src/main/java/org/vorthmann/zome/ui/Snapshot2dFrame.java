@@ -39,6 +39,7 @@ public class Snapshot2dFrame extends JFrame
         
         final ActionListener actions = new ActionListener()
         {
+            @Override
             public void actionPerformed( ActionEvent ae )
             {
                 controller .actionPerformed( ae );
@@ -169,6 +170,7 @@ public class Snapshot2dFrame extends JFrame
         controller .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "refresh.2d" ) );
     }
 
+    @Override
     public void repaint()
     {
         this .snapshotPanel .repaint();
@@ -176,6 +178,7 @@ public class Snapshot2dFrame extends JFrame
     
     private class Snapshot2dPanel extends JPanel
     {
+        @Override
         protected void paintComponent( Graphics g )
         {
             controller .repaintGraphics( "snapshot.2d", g, getSize() );

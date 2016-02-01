@@ -95,6 +95,7 @@ public class NewToolDialog extends EscapeDialog implements ListSelectionListener
                         getRootPane() .setDefaultButton( okButton );
                         okButton .addActionListener( new ActionListener(){
 
+                            @Override
                             public void actionPerformed( ActionEvent e )
                             {
                                 String toolName = namePanel .getText();
@@ -109,6 +110,7 @@ public class NewToolDialog extends EscapeDialog implements ListSelectionListener
                         JButton cancelButton = new JButton( "Cancel" );
                         cancelButton .addActionListener( new ActionListener(){
 
+                            @Override
                             public void actionPerformed( ActionEvent e )
                             {
                                 NewToolDialog.this .setVisible( false );
@@ -128,6 +130,7 @@ public class NewToolDialog extends EscapeDialog implements ListSelectionListener
         setLocationRelativeTo( frame );
     }
 
+    @Override
     public void valueChanged( ListSelectionEvent e )
     {
         if ( e. getValueIsAdjusting() == false)

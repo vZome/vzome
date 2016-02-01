@@ -13,6 +13,7 @@ import javax.swing.event.MouseInputAdapter;
  */
 public class MouseToolDefault extends MouseInputAdapter implements MouseTool
 {
+    @Override
     public void attach( Component canvas )
     {
         canvas .addMouseListener( this );
@@ -20,6 +21,7 @@ public class MouseToolDefault extends MouseInputAdapter implements MouseTool
         canvas .addMouseWheelListener( this );
     }
     
+    @Override
     public void detach( Component canvas )
     {
         canvas .removeMouseListener( this );
@@ -27,6 +29,7 @@ public class MouseToolDefault extends MouseInputAdapter implements MouseTool
         canvas .removeMouseWheelListener( this );
     }
 
+    @Override
     public void mouseWheelMoved( MouseWheelEvent arg0 )
     {}
 

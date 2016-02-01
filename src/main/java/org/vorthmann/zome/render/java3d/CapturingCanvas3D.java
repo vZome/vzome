@@ -47,6 +47,7 @@ public class CapturingCanvas3D extends Canvas3D
     //            System .out .println( "canvas3d " + x + " " + y + " " + width + " " + height );
     //        }
 
+    @Override
     public void postSwap()
     {
         if( m_imageHandler != null ) {

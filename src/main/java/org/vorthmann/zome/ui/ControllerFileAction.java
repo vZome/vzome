@@ -22,11 +22,13 @@ public class ControllerFileAction extends FileAction
         mCommand = command;
     }
 
+    @Override
     protected void actOnFile( File file )
     {
         mController .doFileAction( mCommand, file );
     }
 
+    @Override
     protected void openApplication( File file )
     {
         String script = mController .getProperty( "export.script" );

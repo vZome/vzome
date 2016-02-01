@@ -75,6 +75,7 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
     }
 
     // DragGestureListener
+    @Override
     public void dragGestureRecognized( DragGestureEvent dge )
     {
 //        System.out.println( "dragGestureRecognized" );
@@ -90,6 +91,7 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
     }
 
     // DragSourceListener events
+    @Override
     public void dragDropEnd( DragSourceDropEvent dsde )
     {
 //        System.out.println( "dragDropEnd()" );
@@ -98,15 +100,20 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
         repaint();
     }
 
+    @Override
     public void dragEnter( DragSourceDragEvent dsde ) {}
 
+    @Override
     public void dragExit( DragSourceEvent dse ) {}
 
+    @Override
     public void dragOver( DragSourceDragEvent dsde ) {}
 
+    @Override
     public void dropActionChanged( DragSourceDragEvent dsde ) {}
 
     // DropTargetListener events
+    @Override
     public void dragEnter( DropTargetDragEvent dtde )
     {
 //        System.out.println( "dragEnter" );
@@ -118,8 +125,10 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
         }
     }
 
+    @Override
     public void dragExit( DropTargetEvent dte ) {}
 
+    @Override
     public void dragOver( DropTargetDragEvent dtde )
     {
         // figure out which cell it's over, no drag to self
@@ -134,6 +143,7 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
         repaint();
     }
 
+    @Override
     public void drop( DropTargetDropEvent dtde )
     {
 //        System.out.println( "drop()!" );
@@ -191,6 +201,7 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
         dtde.dropComplete( dropped );
     }
 
+    @Override
     public void dropActionChanged( DropTargetDragEvent dtde ) {}
 
     public interface ListMoveListener
@@ -209,6 +220,7 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
             object = o;
         }
 
+        @Override
         public Object getTransferData( DataFlavor df )
                 throws UnsupportedFlavorException, IOException
         {
@@ -218,11 +230,13 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
                 throw new UnsupportedFlavorException( df );
         }
 
+        @Override
         public boolean isDataFlavorSupported( DataFlavor df )
         {
             return (df.equals( localObjectFlavor ));
         }
 
+        @Override
         public DataFlavor[] getTransferDataFlavors()
         {
             return supportedFlavors;
@@ -250,6 +264,7 @@ public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
             return super.getListCellRendererComponent( list, value, index, showSelected, hasFocus );
         }
 
+        @Override
         public void paintComponent( Graphics g )
         {
             super.paintComponent( g );

@@ -105,6 +105,7 @@ public class Java3dSceneGraph implements RenderingChanges
 
         lights .addPropertyListener( new PropertyChangeListener(){
 
+            @Override
             public void propertyChange( PropertyChangeEvent chg )
             {
                 if ( "backgroundColor" .equals( chg .getPropertyName() ) )
@@ -117,12 +118,14 @@ public class Java3dSceneGraph implements RenderingChanges
         
         mFactory.getColors().addListener( new Colors.Changes()
         {
+            @Override
             public void colorChanged( String name, Color newColor )
             {
                 if ( name.equals( Colors.BACKGROUND ) )
                     backgroundColorChanged( newColor );
             }
 
+            @Override
             public void colorAdded( String name, Color color )
             {
             }
@@ -284,11 +287,13 @@ public class Java3dSceneGraph implements RenderingChanges
         mLocale.addBranchGraph( mRoot );
     }
     
+    @Override
     public void enableFrameLabels()
     {
         mRoot .addChild( frameLabels );
     }
     
+    @Override
     public void disableFrameLabels()
     {
         mRoot .removeChild( frameLabels );
@@ -303,6 +308,7 @@ public class Java3dSceneGraph implements RenderingChanges
      * @param userData
      * @return
      */
+    @Override
     public void manifestationAdded( RenderedManifestation rm )
     {
 //        int[] /* AlgebraicVector */location = rm.getManifestation().getLocation();
@@ -378,11 +384,13 @@ public class Java3dSceneGraph implements RenderingChanges
             rm.setGraphicsObject( group );
     }
     
+    @Override
     public void reset()
     {
         mScene.removeAllChildren();
     }
 
+    @Override
     public void manifestationSwitched( RenderedManifestation from, RenderedManifestation to )
     {
         BranchGroup target = (BranchGroup) from .getGraphicsObject();
@@ -399,6 +407,7 @@ public class Java3dSceneGraph implements RenderingChanges
         }
     }
 
+    @Override
     public void manifestationRemoved( RenderedManifestation rm )
     {
         BranchGroup target = (BranchGroup) rm.getGraphicsObject();
@@ -427,6 +436,7 @@ public class Java3dSceneGraph implements RenderingChanges
         throw new RuntimeException( "polyhedron not in scene!" );
     }
 
+    @Override
     public void glowChanged( RenderedManifestation rm )
     {
         boolean glowOn = rm.getGlow() > 0f;
@@ -440,6 +450,7 @@ public class Java3dSceneGraph implements RenderingChanges
         colorChanged( rm );
     }
 
+    @Override
     public void colorChanged( RenderedManifestation rm )
     {
         Group group = (Group) rm.getGraphicsObject();
@@ -458,18 +469,21 @@ public class Java3dSceneGraph implements RenderingChanges
         }
     }
 
+    @Override
     public void locationChanged( RenderedManifestation manifestation )
     {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     public void orientationChanged( RenderedManifestation manifestation )
     {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     public void shapeChanged( RenderedManifestation rm )
     {
         Group group = (Group) rm.getGraphicsObject();

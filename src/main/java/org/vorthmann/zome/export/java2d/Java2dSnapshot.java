@@ -53,6 +53,7 @@ public class Java2dSnapshot extends DefaultController
             return super .getCommandList( listName );
     }
 
+    @Override
     public String getProperty( String propName )
     {
         if ( "showBackground" .equals( propName ) )
@@ -79,6 +80,7 @@ public class Java2dSnapshot extends DefaultController
         return super.getProperty( propName );
     }
 
+    @Override
     public void actionPerformed( ActionEvent e )
     {
         String action = e .getActionCommand();
@@ -141,6 +143,7 @@ public class Java2dSnapshot extends DefaultController
 //        mSnapshot .setBackgroundColor( new java.awt.Color( colors .getColor( Colors.BACKGROUND ) .getRGB() ) );    
 //    }
 
+    @Override
     public void doFileAction( String command, File file )
     {
         try {
@@ -160,6 +163,7 @@ public class Java2dSnapshot extends DefaultController
         }
     }
 
+    @Override
     public void repaintGraphics( String panelName, Graphics graphics, Dimension size )
     {
         if ( ! current )
@@ -316,6 +320,7 @@ public class Java2dSnapshot extends DefaultController
             return mPolyColor;
         }
 
+        @Override
         public int compareTo( LineSegment other )
         {
             double otherZ = other .mDepth;
@@ -374,6 +379,7 @@ public class Java2dSnapshot extends DefaultController
 			return mPolyColor;
 		}
 		
+        @Override
 		public int compareTo( Polygon other )
 		{
 			double otherZ = other .mDepth;

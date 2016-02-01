@@ -198,11 +198,13 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         selectionRendering = new ManifestationChanges()
         {
+            @Override
         	public void manifestationAdded( Manifestation m )
         	{
         		mRenderedModel .setManifestationGlow( m, true );
         	}
 
+            @Override
         	public void manifestationRemoved( Manifestation m )
         	{
         		mRenderedModel .setManifestationGlow( m, false );
@@ -215,6 +217,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         this .articleChanges = new PropertyChangeListener()
         {   
+            @Override
         	public void propertyChange( PropertyChangeEvent change )
         	{
         		if ( "currentSnapshot" .equals( change .getPropertyName() ) )
@@ -244,6 +247,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         };
         this .modelChanges = new PropertyChangeListener()
         {   
+            @Override
         	public void propertyChange( PropertyChangeEvent change )
         	{
         		if ( "current.edit.xml" .equals( change .getPropertyName() ) )
@@ -314,6 +318,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         mRenderedModel .addListener( partsController );
     }
 
+    @Override
     public Component createJ3dComponent( String name )
     {
         if ( name.startsWith( "mainViewer" ) )
@@ -346,6 +351,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             // these are for the model viewer (article mode)
             MouseTool mouseTool = new MouseToolDefault()
             {
+                @Override
                 public void mouseClicked( MouseEvent e )
                 {
                     actionPerformed( new ActionEvent( e .getSource(), ActionEvent.ACTION_PERFORMED, "nextPage" ) );
@@ -357,6 +363,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
             mouseTool = new MouseToolFilter( mViewPlatform .getZoomScroller() )
             {
+                @Override
                 public void mouseWheelMoved( MouseWheelEvent e )
                 {
                     LengthController length = previewStrut .getLengthModel();
@@ -394,6 +401,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             {
                 boolean live = false;
 
+                @Override
                 public void mousePressed( MouseEvent e )
                 {
                     RenderedManifestation rm = imageCaptureViewer .pickManifestation( e );
@@ -404,12 +412,14 @@ public class DocumentController extends DefaultController implements J3dComponen
                     }
                 }
 
+                @Override
                 public void mouseDragged( MouseEvent e )
                 {
                     if ( live )
                         super .mouseDragged( e );
                 }
 
+                @Override
                 public void mouseReleased( MouseEvent e )
                 {
                     this .live = false;
@@ -426,6 +436,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             // clicks become select or deselect all
             mouseTool = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
             {
+                @Override
                 protected void manifestationPicked( Manifestation target, boolean shiftKey )
                 {
                     mErrors .clearError();
@@ -451,6 +462,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             //   only works when drag starts over a ball
             mouseTool = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
             {                
+                @Override
                 protected void dragStarted( Manifestation target, boolean b )
                 {
                     if ( target instanceof Connector )
@@ -464,6 +476,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                     }
                 }
 
+                @Override
 				protected void dragFinished( Manifestation target, boolean b )
                 {
                     previewStrut .finishPreview( documentModel );
@@ -477,6 +490,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             // trackball to adjust the preview strut (when it is rendered)
             mouseTool = new LeftMouseDragAdapter( new Trackball()
             {
+                @Override
                 protected void trackballRolled( Quat4d roll )
                 {
                     previewStrut .trackballRolled( roll );
@@ -578,6 +592,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             previewStrut .setSymmetryController( symmetryController );
     }
 
+    @Override
     public void doAction( String action, ActionEvent e ) throws Failure
     {
         if ( "finish.load".equals( action ) ) {

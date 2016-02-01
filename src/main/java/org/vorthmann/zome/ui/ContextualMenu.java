@@ -37,6 +37,7 @@ public class ContextualMenu extends JPopupMenu
         }
     }
 
+    @Override
     public JMenuItem add( JMenuItem item )
     {
         String action = item .getActionCommand();

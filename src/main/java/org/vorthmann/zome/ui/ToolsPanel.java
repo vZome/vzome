@@ -50,6 +50,7 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
             JButton newButton = new JButton( "+" );
             newButton .addActionListener( new ActionListener() {
 
+                @Override
                 public void actionPerformed( ActionEvent arg0 )
                 {
                     final NewToolDialog newToolDialog = new NewToolDialog( frame, controller );
@@ -115,6 +116,7 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
         return button;
     }
 
+    @Override
     public void propertyChange( PropertyChangeEvent evt )
     {
         if ( evt .getPropertyName() .equals( "tool.instances" ) )

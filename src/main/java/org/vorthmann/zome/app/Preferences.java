@@ -1,8 +1,5 @@
 /*
  * Created on Jun 9, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package org.vorthmann.zome.app;
 
@@ -14,9 +11,6 @@ import com.vzome.core.render.Color;
 
 /**
  * @author vorth
- * 
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class Preferences
 {

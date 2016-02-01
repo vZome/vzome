@@ -78,6 +78,7 @@ public class Java2dExporter extends Exporter3d
         this.mSnapshot = snapshot;
     }
 
+    @Override
     public void doExport( File directory, Writer writer, int height, int width ) throws Exception
     {
         AlgebraicField field = mModel .getField();
@@ -225,6 +226,7 @@ public class Java2dExporter extends Exporter3d
         return new Vector3f( vr.x, vr.y, vr.z );
     }
 
+    @Override
     public String getFileExtension()
     {
         return "java2d";  // this should never get called

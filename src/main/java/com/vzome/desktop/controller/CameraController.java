@@ -1,8 +1,5 @@
 /*
  * Created on Jun 30, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package com.vzome.desktop.controller;
 
@@ -14,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.vecmath.Matrix4d;
-//import javax.media.j3d.Transform3D;
 import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
@@ -295,6 +291,7 @@ public class CameraController extends DefaultController
 		setViewDirection( Z, Y );
 	}
 
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( action .equals( "toggleSnap" ) )
@@ -354,12 +351,14 @@ public class CameraController extends DefaultController
     {
         return new Trackball()
         {
+            @Override
             public void mousePressed( MouseEvent e )
             {
                 saveBaselineView(); // might have been zooming
                 super .mousePressed( e );
             }
             
+            @Override
             public void trackballRolled( Quat4d roll )
             {
                 Quat4d copy = new Quat4d( roll );
@@ -371,6 +370,7 @@ public class CameraController extends DefaultController
                 // TODO give will-snap feedback when drag paused
             }
             
+            @Override
             public void mouseReleased( MouseEvent e )
             {
                 if ( mSnapping )
@@ -398,6 +398,7 @@ public class CameraController extends DefaultController
     {
         return new MouseToolDefault()
         {
+            @Override
             public void mouseWheelMoved( MouseWheelEvent e )
             {
                 int amt = e .getWheelRotation();
@@ -411,6 +412,7 @@ public class CameraController extends DefaultController
         };
     }
 
+    @Override
     public String getProperty( String propName )
     {
 		if ( "magnification" .equals( propName ) )
@@ -429,6 +431,7 @@ public class CameraController extends DefaultController
     private long lastZoom = 0;
     
     
+    @Override
     public void setProperty( String propName, Object value )
     {
     	if ( "magnification" .equals( propName ) )

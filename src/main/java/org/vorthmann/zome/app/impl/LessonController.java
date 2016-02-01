@@ -33,6 +33,7 @@ public class LessonController extends DefaultController
 //        pages .add( new PageController( "How to save notes", DEFAULT_CONTENT, vpm .getView() ) );
         model .addPropertyChangeListener( new PropertyChangeListener()
         {	
+            @Override
 			public void propertyChange( PropertyChangeEvent change )
 			{
                 properties() .firePropertyChange( change ); // forward to the view
@@ -40,6 +41,7 @@ public class LessonController extends DefaultController
 		} );
     }
     
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( ! listening )
@@ -155,6 +157,7 @@ public class LessonController extends DefaultController
             super.doAction( action, e );
     }
     
+    @Override
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
     {
         Integer item = (Integer) e .getSource();
@@ -173,6 +176,7 @@ public class LessonController extends DefaultController
         return result;
     }
 
+    @Override
     public String getProperty( String propName )
     {
         if ( "has.pages" .equals( propName ) )
@@ -208,6 +212,7 @@ public class LessonController extends DefaultController
     {
         SwingWorker worker = new SwingWorker()
         {
+            @Override
             public Object construct()
             {
                 synchronized ( renderer )
@@ -219,6 +224,7 @@ public class LessonController extends DefaultController
                 }
                 return null;
             };
+            @Override
             public void finished() {}
         };
         worker .start();  //Start the background thread

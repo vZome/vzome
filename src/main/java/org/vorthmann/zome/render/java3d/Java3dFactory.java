@@ -62,6 +62,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         outlines .setColoringAttributes( new ColoringAttributes( new Color3f( Color.BLACK ), ColoringAttributes .SHADE_FLAT ) );
     }
     
+    @Override
     public RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas )
     {
         if ( canvas == null ) // this viewer is for offscreen rendering
@@ -85,6 +86,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     }
 
 
+    @Override
 	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode )
 	{
 		return new Java3dSceneGraph( this, lights, isSticky, outlineMode );
@@ -242,6 +244,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         return mHasEmissiveColor;
     }
 
+    @Override
     public Component createJ3dComponent( String name )
     {
         GraphicsConfigTemplate3D gct = new GraphicsConfigTemplate3D();

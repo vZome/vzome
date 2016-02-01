@@ -1,8 +1,5 @@
 /*
  * Created on Jan 2, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package org.vorthmann.zome.export.java2d;
 
@@ -48,12 +45,14 @@ public abstract class SnapshotExporter {
 			super( writer );
 		}
 		
+        @Override
 		public void write( char[] buf, int offset, int len )
 		{
 			super .write( buf, offset, len );
 			mTotal += len;
 		}
 		
+        @Override
 		public void write( String str )
 		{
 			super .write( str );

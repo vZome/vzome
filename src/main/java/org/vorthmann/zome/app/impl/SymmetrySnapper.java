@@ -17,6 +17,7 @@ public class SymmetrySnapper implements CameraController.Snapper
         this.orbitSet = orbitSet;
     }
 
+    @Override
     public void snapDirections( Vector3f lookDir, Vector3f upDir )
     {
         RealVector vector = new RealVector( lookDir .x, lookDir .y, lookDir .z );

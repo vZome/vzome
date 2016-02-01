@@ -61,6 +61,7 @@ public class StrutBuilderPanel extends JPanel
 
         this .controller .addPropertyListener( new PropertyChangeListener()
         {
+            @Override
             public void propertyChange( PropertyChangeEvent event )
             {
             	switch ( event .getPropertyName() ) {

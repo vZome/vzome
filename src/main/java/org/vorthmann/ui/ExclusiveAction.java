@@ -100,6 +100,7 @@ public abstract class ExclusiveAction implements ActionListener
         mExcluder = excluder;
     }
 
+    @Override
     public void actionPerformed( final ActionEvent e )
     {
     	if ( this .mExcluder .isBusy() ) {
@@ -110,6 +111,7 @@ public abstract class ExclusiveAction implements ActionListener
     	
         final SwingWorker worker = new SwingWorker()
         {            
+            @Override
             public Object construct()
             {
                 try {
@@ -121,6 +123,7 @@ public abstract class ExclusiveAction implements ActionListener
                 }
             }
             
+            @Override
             public void finished()
             {
                 Object error = get();
