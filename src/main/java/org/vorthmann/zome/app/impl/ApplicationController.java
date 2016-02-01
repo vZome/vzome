@@ -201,9 +201,6 @@ public class ApplicationController extends DefaultController
 	public void doAction( String action, ActionEvent event )
 	{
 		try {
-            if ("new".equals(action)) {
-                action = "new-golden";
-            }
 			if( action .equals( "showAbout" ) 
              || action .equals( "openURL" ) 
 			 || action .equals( "quit" ) 
@@ -230,6 +227,11 @@ public class ApplicationController extends DefaultController
 	                }
 	                return;
 	            }
+                action = "new";
+            }
+
+            if ("new".equals(action)) {
+                action = "new-golden";
             }
 
             if ( action .startsWith( "new-" ) )
