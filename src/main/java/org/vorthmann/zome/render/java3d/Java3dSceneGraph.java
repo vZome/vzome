@@ -1,8 +1,5 @@
 /*
  * Created on Jun 30, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package org.vorthmann.zome.render.java3d;
 
@@ -52,9 +49,6 @@ import com.vzome.core.viewing.Lights;
 
 /**
  * @author vorth
- * 
- *         To change the template for this generated type comment go to
- *         Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class Java3dSceneGraph implements RenderingChanges
 {
@@ -165,7 +159,10 @@ public class Java3dSceneGraph implements RenderingChanges
         fixedAmbient.setEnable( true );
         mLights.addChild( fixedAmbient );
 
-        for ( int i = 0; i < 3; i++ ) {
+        if(lights.size() <= 0) {
+            throw new IllegalArgumentException("Expected lights.size() to be greater than 0.");
+        }
+        for ( int i = 0; i < lights.size(); i++ ) {
             Vector3f direction = new Vector3f();
             color = new Color3f( lights.getDirectionalLight( i, direction ).getRGBColorComponents( rgb ) );
             Light light = new DirectionalLight( color, direction );
