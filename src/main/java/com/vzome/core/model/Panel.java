@@ -2,7 +2,6 @@
 
 package com.vzome.core.model;
 
-import com.vzome.core.algebra.AlgebraicField;
 import java.util.Iterator;
 import java.util.List;
 
@@ -115,7 +114,7 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         return true;
     }
 
-    public AlgebraicVector getNormal( AlgebraicField field )
+    public AlgebraicVector getNormal( )
     {
         AlgebraicVector v0 = mVertices.get( 0 );
         AlgebraicVector v1 = mVertices.get( 1 );

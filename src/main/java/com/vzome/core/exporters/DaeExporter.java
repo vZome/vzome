@@ -8,7 +8,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
@@ -34,8 +33,6 @@ public class DaeExporter extends Exporter3d
     @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
-	    AlgebraicField field = this .mModel .getField();
-
 	    if (FORMAT instanceof DecimalFormat) {
             ((DecimalFormat) FORMAT) .applyPattern( "0.0000" );
         }
@@ -56,7 +53,7 @@ public class DaeExporter extends Exporter3d
             if ( man instanceof Panel )
             {
                 Panel panel = (Panel) man;
-                RealVector norm = panel .getNormal( field ) .toRealVector() .normalize();
+                RealVector norm = panel .getNormal() .toRealVector() .normalize();
                 int v0 = -1, v1 = -1, n0 = -1, n1 = -1;
                 for (AlgebraicVector av : panel) {
                     RealVector vertex = av .toRealVector();

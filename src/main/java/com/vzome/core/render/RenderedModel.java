@@ -345,7 +345,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             Polyhedron shape = makePanelPolyhedron( panel );
             if ( shape == null )
                 return;
-            AlgebraicVector normal = panel .getNormal( field );
+            AlgebraicVector normal = panel .getNormal();
             if ( normal .isOrigin() )
                 return;
             rm .setShape( shape );  
