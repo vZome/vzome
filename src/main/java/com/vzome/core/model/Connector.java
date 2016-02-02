@@ -46,12 +46,12 @@ public class Connector extends Manifestation implements Comparable<Connector>, C
 
 	@Override
 	public int compareTo(Connector other) {
-		if ( other == null )
-			return -1;
-		if ( this == other )
-			return 0;
-		if ( this.equals(other) )
-			return 0;
+        if ( this == other ) {
+            return 0;
+        }
+        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
+            return 0;
+        }
 		return this.getLocation().compareTo( other.getLocation() );
 	}
 	

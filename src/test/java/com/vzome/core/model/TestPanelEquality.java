@@ -18,10 +18,10 @@ public class TestPanelEquality extends TestCase
     public void testEqualsObject()
     {
         AlgebraicField field = new PentagonField();
-        AlgebraicNumber w = field .createRational( new int[]{ 0,1 } );
-        AlgebraicNumber x = field .createRational( new int[]{ 1,1 } );
-        AlgebraicNumber y = field .createRational( new int[]{ 2,1 } );
-        AlgebraicNumber z = field .createRational( new int[]{ 3,1 } );
+        AlgebraicNumber w = field .createRational( 0 );
+        AlgebraicNumber x = field .createRational( 1 );
+        AlgebraicNumber y = field .createRational( 2 );
+        AlgebraicNumber z = field .createRational( 3 );
         AlgebraicVector a = new AlgebraicVector(w, x, y);
         AlgebraicVector b = new AlgebraicVector(z, w, x);
         AlgebraicVector c = new AlgebraicVector(y, z, w);

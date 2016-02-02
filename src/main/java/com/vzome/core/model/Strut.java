@@ -50,12 +50,12 @@ public class Strut extends Manifestation implements Comparable<Strut>, Comparato
 	
 	@Override
 	public int compareTo(Strut other) {
-		if ( other == null )
-			return -1;
-		if ( this == other )
-			return 0;
-		if ( this.equals(other) )
-			return 0;
+        if ( this == other ) {
+            return 0;
+        }
+        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
+            return 0;
+        }
         AlgebraicVector thisFirst = this.getCanonicalLesserEnd();
         AlgebraicVector thisLast = this.getCanonicalGreaterEnd();
         AlgebraicVector otherFirst = other.getCanonicalLesserEnd();

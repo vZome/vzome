@@ -13,9 +13,13 @@ public abstract class ComparableTest<T extends Comparable<T>>
 	protected abstract T[] get3OrderedValues();
 	
 	public void testComparableToEquivalent() { 
+        int i = 0;
 		for(T e : getTestValues()) {
 			verifyComparableToEquivalent(e, e); 
+            i++;
 		}
+        assertTrue(i > 0);
+        assertTrue(i == getTestValues().length);
 	}
 	protected void verifyComparableToEquivalent(T o1, T o2) {
 		assertNotNull(o1);
@@ -27,11 +31,16 @@ public abstract class ComparableTest<T extends Comparable<T>>
 
 	public void testComparableToDifferent() 
 	{ 
+        int i = 0;
 		for(T j : getTestValues()) {
 			for(T k : getDiffValues()) {
 				verifyComparableToDifferent(j, k); 
+                i++;
 			}
 		}
+        assertTrue(i > 0);
+        assertTrue(i == getTestValues().length * getDiffValues().length);
+
 	}
 	protected void verifyComparableToDifferent(T o1, T o2) {
 		assertNotNull(o1);
@@ -59,6 +68,7 @@ public abstract class ComparableTest<T extends Comparable<T>>
 		assertNotNull(o2);
 		assertTrue( (o1.compareTo(o2)==0) == (o1.equals(o2)) );
 		assertTrue( (o2.compareTo(o1)==0) == (o2.equals(o1)) );
+		assertTrue( (o1.compareTo(o2)==0) == (o2.compareTo(o1)==0) );
 	}
 	
 	/**
@@ -94,10 +104,10 @@ public abstract class ComparableTest<T extends Comparable<T>>
 			assertTrue(x_z < 0);
 		}
 		else {
-			String msg = "Unable to verify Transitive property for the given objects: " 
-					+ x.toString() + ", "
-					+ y.toString() + ", "
-					+ z.toString() + ". "
+			String msg = "Comparison of "
+                    + x.toString() + ", "
+					+ y.toString() + " and "
+					+ z.toString() + " is NOT Transitive. "
 					+ "Y must be 'between' X and Z.";
 			assertTrue(msg, false);
 		}

@@ -23,14 +23,14 @@ public class ComparableAlgebraicVectorTest extends ComparableTest<AlgebraicVecto
 	public ComparableAlgebraicVectorTest() {
         AlgebraicField field = new PentagonField();
 		ArrayList<AlgebraicVector> list = new ArrayList<>();
-        AlgebraicNumber s = field .createRational( new int[]{ 7,1 } );
-        AlgebraicNumber t = field .createRational( new int[]{ 6,1 } );
-        AlgebraicNumber u = field .createRational( new int[]{ 5,1 } );
-        AlgebraicNumber v = field .createRational( new int[]{ 4,1 } );
-        AlgebraicNumber w = field .createRational( new int[]{ 3,1 } );
-        AlgebraicNumber x = field .createRational( new int[]{ 2,1 } );
-        AlgebraicNumber y = field .createRational( new int[]{ 1,1 } );
-        AlgebraicNumber z = field .createRational( new int[]{ 0,1 } );
+        AlgebraicNumber s = field .createRational( 7 );
+        AlgebraicNumber t = field .createRational( 6 );
+        AlgebraicNumber u = field .createRational( 5 );
+        AlgebraicNumber v = field .createRational( 4 );
+        AlgebraicNumber w = field .createRational( 3 );
+        AlgebraicNumber x = field .createRational( 2 );
+        AlgebraicNumber y = field .createRational( 1 );
+        AlgebraicNumber z = field .createRational( 0 );
 		
         AlgebraicVector a = new AlgebraicVector(w, x, y);
         AlgebraicVector b = new AlgebraicVector(z, w, x);
@@ -46,20 +46,20 @@ public class ComparableAlgebraicVectorTest extends ComparableTest<AlgebraicVecto
         list .add( b );
         list .add( c );
         list .add( d );
-		testValues = list.toArray(new AlgebraicVector[]{});
+		testValues = list.toArray(new AlgebraicVector[list.size()]);
 
 		list.clear();
         list .add( e );
         list .add( f );
         list .add( g );
         list .add( h );
-		diffValues = list.toArray(new AlgebraicVector[]{});
+		diffValues = list.toArray(new AlgebraicVector[list.size()]);
 
 		list.clear();
         list .add( b );
         list .add( h );
         list .add( i );
-		ordered3Values = list.toArray(new AlgebraicVector[]{});
+		ordered3Values = list.toArray(new AlgebraicVector[list.size()]);
 	}
 
 	@Override
@@ -80,15 +80,15 @@ public class ComparableAlgebraicVectorTest extends ComparableTest<AlgebraicVecto
 	@Test
 	public void testMismatchedFieldThrowsException() {
 		AlgebraicField field = new RootTwoField();
-        AlgebraicNumber u = field .createRational( new int[]{ 2,1 } );
-        AlgebraicNumber v = field .createRational( new int[]{ 1,1 } );
-        AlgebraicNumber w = field .createRational( new int[]{ 0,1 } );
+        AlgebraicNumber u = field .createRational( 2 );
+        AlgebraicNumber v = field .createRational( 1 );
+        AlgebraicNumber w = field .createRational( 0 );
         AlgebraicVector o1 = new AlgebraicVector(u, v, w);
 		
 		field = new RootThreeField();
-        AlgebraicNumber x = field .createRational( new int[]{ 2,1 } );
-        AlgebraicNumber y = field .createRational( new int[]{ 1,1 } );
-        AlgebraicNumber z = field .createRational( new int[]{ 0,1 } );
+        AlgebraicNumber x = field .createRational( 2 );
+        AlgebraicNumber y = field .createRational( 1 );
+        AlgebraicNumber z = field .createRational( 0 );
         AlgebraicVector o2 = new AlgebraicVector(x, y, z);
 
 		try {

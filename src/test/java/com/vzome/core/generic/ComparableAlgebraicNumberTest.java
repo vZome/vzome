@@ -22,26 +22,25 @@ public class ComparableAlgebraicNumberTest extends ComparableTest<AlgebraicNumbe
 	public ComparableAlgebraicNumberTest() {
 		AlgebraicField field = new PentagonField();
 		ArrayList<AlgebraicNumber> list = new ArrayList<>();
-        list.add(field.createRational( new int[]{ 0,1 } ));
-        list.add(field.createRational( new int[]{ 1,1 } ));
-        list.add(field.createRational( new int[]{ 2,1 } ));
-        list.add(field.createRational( new int[]{ 3,1 } ));
-        list.add(field.createRational( new int[]{ 5,2 } ));
-        list.add(field.createRational( new int[]{ 5,2 } ));
-		testValues = list.toArray(new AlgebraicNumber[]{});
+        list.add(field.createRational( 1 ) );
+        list.add(field.createRational( 2 ) );
+        list.add(field.createRational( 3 ) );
+        list.add(field.createRational( 4,2 ) );
+        list.add(field.createRational( 5,2 ) );
+		testValues = list.toArray(new AlgebraicNumber[list.size()]);
 
 		list.clear();
-		list.add(field.createRational( new int[]{ -1,1 } ));
-        list.add(field.createRational( new int[]{ -2,1 } ));
-        list.add(field.createRational( new int[]{ -3,1 } ));
-        list.add(field.createRational( new int[]{ -4,1 } ));
-        diffValues = list.toArray(new AlgebraicNumber[]{});
+        list.add(field.createRational( -1 ) );
+        list.add(field.createRational( -2 ) );
+        list.add(field.createRational( -3 ) );
+        list.add(field.createRational( -4 ) );
+        diffValues = list.toArray(new AlgebraicNumber[list.size()]);
 		
 		list.clear();
-        list.add(field.createRational( new int[]{ 1,2 } ));
-        list.add(field.createRational( new int[]{ 3,2 } ));
-        list.add(field.createRational( new int[]{ 5,2 } ));
-        ordered3Values = list.toArray(new AlgebraicNumber[]{});
+        list.add(field.createRational( -11 ) );
+        list.add(field.createRational( 3 ) );
+        list.add(field.createRational( 57 ) );
+        ordered3Values = list.toArray(new AlgebraicNumber[list.size()]);
 	}
 
 	@Override
@@ -61,8 +60,8 @@ public class ComparableAlgebraicNumberTest extends ComparableTest<AlgebraicNumbe
 
 	@Test
 	public void testMismatchedFieldThrowsException() { 
-		AlgebraicNumber o1 = new RootTwoField().createRational( new int[]{ 0,1 } );
-		AlgebraicNumber o2 = new RootThreeField().createRational( new int[]{ 0,1 } );
+		AlgebraicNumber o1 = new RootTwoField().createRational( 1 );
+		AlgebraicNumber o2 = new RootThreeField().createRational( 1 );
 		assertNotNull(o1);
 		assertNotNull(o2);
 		try {
