@@ -137,6 +137,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
     
     // return string representation of (this)
+    @Override
     public String toString()
     {
         if ( this.bigNum == null )
@@ -161,6 +162,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
 
     // return { -1, 0, + 1 } if a < b, a = b, or a > b
+    @Override
     public int compareTo( BigRational b )
     {
         BigRational a = this;
@@ -194,13 +196,16 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
 
     // is this BigRational negative, zero, or positive?
+    @Override
     public boolean isZero()     { return this .equals(ZERO); }
     public boolean isPositive() { return compareTo(ZERO)  > 0; }
     public boolean isNegative() { return compareTo(ZERO)  < 0; }
 
+    @Override
     public boolean isOne() { return this.equals(ONE); }
 
     // is this Rational object equal to y?
+    @Override
     public boolean equals( Object y )
     {
         if ( y == this ) return true;
@@ -211,6 +216,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
         
     // hashCode consistent with equals() and compareTo()
+    @Override
     public int hashCode()
     {
         return this .toString() .hashCode();
@@ -289,6 +295,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
     
     // return -a
+    @Override
     public BigRational negate()
     {
         if ( this .equals( ZERO ) )
@@ -313,6 +320,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
 
     // return 1 / a
+    @Override
     public BigRational reciprocal()
     {
         if ( this .equals( ONE ) )

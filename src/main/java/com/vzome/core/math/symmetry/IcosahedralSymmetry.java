@@ -102,6 +102,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     }
     
     
+    @Override
     public String getName()
     {
         return "icosahedral";
@@ -149,6 +150,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return result;
     }
 
+    @Override
     public Direction getSpecialOrbit( SpecialOrbit which )
     {
         switch ( which ) {
@@ -167,6 +169,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         }
     }
 
+    @Override
     protected void createFrameOrbit( String frameColor )
     {
         AlgebraicVector xAxis = mField .basisVector( 3, AlgebraicVector .X );
@@ -199,6 +202,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         }
     }
     
+    @Override
     protected void createOtherOrbits()
     {
         
@@ -246,6 +250,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     }
 
 
+    @Override
     protected void createInitialPermutations()
     {
         final int ORDER = 60;
@@ -299,6 +304,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     private final int[] yellowTetrahedral = new int[ 60 ];
     private final int[] blueTetrahedral = new int[ 60 ];
     
+    @Override
     public int[] subgroup( String name )
     {
         if ( TETRAHEDRAL .equals( name ) )
@@ -306,7 +312,8 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return null;
     }
 
-    public Direction getDirection( String color )
+    @Override
+    public final Direction getDirection( String color )
     {
         if ( "spring" .equals( color ) )
             color = "apple";

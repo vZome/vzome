@@ -31,6 +31,7 @@ public class StrutCreation extends ChangeManifestations
         mLength = len;
     }
     
+    @Override
     public void perform()
     {
         Segment segment = new AnchoredSegment( mAxis, mLength, mAnchor );
@@ -41,6 +42,7 @@ public class StrutCreation extends ChangeManifestations
         redo();
     }
 
+    @Override
     protected void getXmlAttributes( Element xml )
     {
         XmlSaveFormat .serializePoint( xml, "anchor", mAnchor );
@@ -48,6 +50,7 @@ public class StrutCreation extends ChangeManifestations
         XmlSaveFormat .serializeNumber( xml, "len", mLength );
     }
 
+    @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format )
     {
         if ( format .rationalVectors() )
@@ -65,6 +68,7 @@ public class StrutCreation extends ChangeManifestations
         }
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "StrutCreation";

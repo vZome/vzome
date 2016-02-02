@@ -15,11 +15,13 @@ import com.vzome.core.construction.Transformation;
  */
 public class CommandCentralSymmetry extends CommandTransform
 {   
+    @Override
     public Object[][] getAttributeSignature()
     {
         return ATTR_SIGNATURE;
     }
     
+    @Override
     public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         ConstructionList output = new ConstructionList();

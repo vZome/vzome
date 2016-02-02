@@ -41,6 +41,7 @@ public abstract class Point extends Construction
         return mLocation;
     }
 
+    @Override
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "point" );

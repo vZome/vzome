@@ -50,6 +50,7 @@ public abstract class AbstractShapes implements Shapes
 		return null;
 	}
     
+    @Override
     public boolean hasColors()
     {
     	return false;
@@ -60,21 +61,25 @@ public abstract class AbstractShapes implements Shapes
         return new FastDefaultStrutGeometry( dir );
     }
 
+    @Override
     public String getName()
     {
         return mName;
     }
 
+    @Override
     public String getAlias()
     {
         return this.alias;
     }
 
+    @Override
     public String getPackage()
     {
         return mPkgName;
     }
 
+    @Override
     public Polyhedron getConnectorShape()
     {
         if ( mConnectorGeometry == null ) {
@@ -113,6 +118,7 @@ public abstract class AbstractShapes implements Shapes
      * just described above.
      */
 
+    @Override
     public Polyhedron getStrutShape( Direction orbit, AlgebraicNumber length )
     {
         Map<AlgebraicNumber, Polyhedron> strutShapesByLength = strutShapesByLengthAndOrbit.get( orbit );
@@ -148,12 +154,15 @@ public abstract class AbstractShapes implements Shapes
 
     // no changes are ever generated
 
+    @Override
     public void addListener( Changes changes )
     {}
 
+    @Override
     public void removeListener( Changes changes )
     {}
 
+    @Override
     public Symmetry getSymmetry()
     {
         return mSymmetry;

@@ -21,6 +21,7 @@ import com.vzome.core.model.RealizedModel;
  */
 public class ReversePanel extends ChangeManifestations
 {
+    @Override
     public void perform() throws Failure
     {
         if ( panel != null )
@@ -48,6 +49,7 @@ public class ReversePanel extends ChangeManifestations
         this .root = derivationModel;
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "ReversePanel";

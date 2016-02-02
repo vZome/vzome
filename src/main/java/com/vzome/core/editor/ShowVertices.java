@@ -20,6 +20,7 @@ public class ShowVertices extends ChangeManifestations
 {
     public static final String NAME = "ShowVertices";
 
+    @Override
 	public void perform() throws Failure
     {
         for (Manifestation man : mSelection) {
@@ -50,6 +51,7 @@ public class ShowVertices extends ChangeManifestations
         super( selection, realized, false );
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return NAME;

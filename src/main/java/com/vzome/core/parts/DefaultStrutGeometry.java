@@ -73,6 +73,7 @@ public class DefaultStrutGeometry implements StrutGeometry
     /* (non-Javadoc)
      * @see com.vzome.core.parts.StrutGeometry#getStrutPolyhedron(com.vzome.core.math.AlgebraicNumber)
      */
+    @Override
     public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
     {
         AlgebraicField field = mAxis .getDirection() .getSymmetry() .getField();

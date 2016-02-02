@@ -43,6 +43,7 @@ public class SecondLifeExporter extends Exporter3d
         "\n];";
 
 
+    @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
         output = new PrintWriter( writer );
@@ -124,6 +125,7 @@ public class SecondLifeExporter extends Exporter3d
 	}
 
 
+    @Override
     public String getFileExtension()
     {
         return "2life";

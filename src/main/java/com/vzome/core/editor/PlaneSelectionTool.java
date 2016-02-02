@@ -45,11 +45,13 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         this .tools = tools;
     }
 
+    @Override
 	public boolean isSticky()
     {
         return true;
     }
 
+    @Override
     public void perform() throws Failure
     {
         AlgebraicVector p1 = null, p2 = null, p3 = null;
@@ -95,17 +97,22 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         tools .addTool( this );
     }
 
+    @Override
     public void prepare( ChangeManifestations applyTool ) {}
 
+    @Override
 	public void complete( ChangeManifestations applyTool ) {}
 
+    @Override
     public boolean needsInput()
     {
     	return false;
     }
 
+    @Override
     public void performEdit( Construction c, ChangeManifestations applyTool ) {}
 
+    @Override
 	public void performSelect( Manifestation man, ChangeManifestations applyTool )
 	{
 	    if ( man .isHidden() )
@@ -181,6 +188,7 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
 		}
 	}
 
+    @Override
     public void redo()
     {
         // TODO manifest a symmetry construction... that is why this class extends ChangeConstructions
@@ -188,27 +196,32 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
 //        tools .addTool( this );
     }
 
+    @Override
     public void undo()
     {
         // this edit is now sticky (not really undoable)
 //        tools .removeTool( this );
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "PlaneSelectionTool";
     }
     
+    @Override
     protected void getXmlAttributes( Element element )
     {
         element .setAttribute( "name", this.name );
     }
 
+    @Override
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         this.name = element .getAttribute( "name" );
@@ -235,6 +248,7 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         }
     }
 
+    @Override
     public String getCategory()
     {
         return "plane";

@@ -107,6 +107,7 @@ public class WythoffConstruction
             this .field = field2;
         }
 
+        @Override
         public Object addEdge( Object p1, Object p2 )
         {
             vefEdges .append( ((Integer) p1) + "\t" + ((Integer) p2) + "\n" );
@@ -114,12 +115,14 @@ public class WythoffConstruction
             return null;
         }
 
+        @Override
         public Object addFace( Object[] vertices )
         {
             // TODO Auto-generated method stub
             return null;
         }
 
+        @Override
         public Object addVertex( AlgebraicVector gv )
         {
             gv .getVectorExpression( vefVertices, AlgebraicField .VEF_FORMAT );  // TODO not finished replacing the lines below

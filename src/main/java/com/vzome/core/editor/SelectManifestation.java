@@ -42,6 +42,7 @@ public class SelectManifestation extends ChangeSelection
         }
     }
     
+    @Override
     public void perform()
     {
         if ( mReplace ) {
@@ -57,6 +58,7 @@ public class SelectManifestation extends ChangeSelection
         redo();
     }
 
+    @Override
     protected void getXmlAttributes( Element result )
     {        
         if ( construction instanceof Point )
@@ -70,6 +72,7 @@ public class SelectManifestation extends ChangeSelection
         	DomUtils .addAttribute( result, "replace", "true" );
     }
 
+    @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format )
     {
         if ( format .rationalVectors() )
@@ -107,6 +110,7 @@ public class SelectManifestation extends ChangeSelection
         }
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "SelectManifestation";

@@ -80,11 +80,13 @@ public class Polytope4d extends ChangeManifestations
         }
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "Polytope4d";
     }
 
+    @Override
     public void getXmlAttributes( Element xml )
     {
         if ( symmAxis != null )
@@ -97,6 +99,7 @@ public class Polytope4d extends ChangeManifestations
         	DomUtils .addAttribute( xml, "renderGroup", this.renderGroupName );
     }
 
+    @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format )
     {
         String binary = xml .getAttribute( "wythoff" );
@@ -117,6 +120,7 @@ public class Polytope4d extends ChangeManifestations
     }
     
     
+    @Override
     public void perform()
     {
         if ( symmAxis == null )
@@ -127,8 +131,9 @@ public class Polytope4d extends ChangeManifestations
         {
             QuaternionicSymmetry qsymm = field .getQuaternionSymmetry( "H_4" ); 
             CommandUniformH4Polytope h4Builder = new CommandUniformH4Polytope( field, qsymm, 0 );
-            h4Builder .generate( this .proj, this .index, this .edgesToRender, this .edgeScales, new ConstructionChanges()
+            h4Builder .generate(this .proj, this .index, this .edgesToRender, this .edgeScales, new ConstructionChanges()
             {
+                @Override
                 public void constructionAdded( Construction c )
                 {
                     // TODO refactor to replace this with a WythoffListener
@@ -159,6 +164,7 @@ public class Polytope4d extends ChangeManifestations
         private int numVertices = 0;
         Map<AlgebraicVector, Point> vertices = new HashMap<>();
 
+        @Override
         public Object addEdge( Object p1, Object p2 )
         {
             Segment edge = new SegmentJoiningPoints( (Point) p1, (Point) p2 );
@@ -166,11 +172,13 @@ public class Polytope4d extends ChangeManifestations
             return edge;
         }
 
+        @Override
         public Object addFace( Object[] vertices )
         {
             return null;
         }
 
+        @Override
         public Object addVertex( AlgebraicVector vertex )
         {
             Point p = vertices .get( vertex );

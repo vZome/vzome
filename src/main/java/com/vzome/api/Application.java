@@ -25,6 +25,7 @@ public class Application
 	{
 		this( new Command.FailureChannel() {
 			
+            @Override
 			public void reportFailure( Command.Failure f )
 			{
 				f .printStackTrace();

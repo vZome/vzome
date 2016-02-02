@@ -37,7 +37,7 @@ public class ZomicTreeStructureVisitor
 		println("");
 	}
 	
-	protected void println( String string )
+	protected final void println( String string )
     {
 		for ( int i = 0; i < indent; i++ ) {
 			m_out.print( "    " );

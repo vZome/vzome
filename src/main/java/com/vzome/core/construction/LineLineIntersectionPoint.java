@@ -134,7 +134,8 @@ public class LineLineIntersectionPoint extends Point
 //    }
 //
 //    */
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         AlgebraicVector p1 = line1 .getStart();
         AlgebraicVector p21 = line1 .getDirection();

@@ -81,11 +81,13 @@ public class D4Group implements CoxeterGroup
         WEIGHTS[ 3 ] .setComponent( AlgebraicVector.W4, half );
     }
     
+    @Override
     public int getOrder()
     {
         return 24*8;
     }
 
+    @Override
     public AlgebraicVector groupAction( AlgebraicVector model, int element )
     {
         // all perms, even sign changes
@@ -111,26 +113,31 @@ public class D4Group implements CoxeterGroup
         return result;
     }
 
+    @Override
     public AlgebraicVector getOrigin()
     {
         return this.field .origin( 4 );
     }
 
+    @Override
     public AlgebraicVector getWeight( int i )
     {
         return WEIGHTS[ i ];
     }
 
+    @Override
     public AlgebraicVector getSimpleRoot( int i )
     {
         return ROOTS[ i ];
     }
 
+    @Override
     public AlgebraicField getField()
     {
         return field;
     }
 
+    @Override
     public AlgebraicVector chiralSubgroupAction( AlgebraicVector model, int element )
     {
         // even perms, even sign changes

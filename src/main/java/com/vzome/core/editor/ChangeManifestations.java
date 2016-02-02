@@ -37,6 +37,7 @@ public abstract class ChangeManifestations extends ChangeSelection
     // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
     private transient Map<Manifestation, Manifestation> mManifestedNow;  // used only while calling manifest
     
+    @Override
     public void redo()
     {
         if ( mManifestedNow != null )
@@ -46,6 +47,7 @@ public abstract class ChangeManifestations extends ChangeSelection
 //        System.out.print( " manifestations: " + mManifestations .size() );
     }
     
+    @Override
     public void undo()
     {
         if ( mManifestedNow != null )
@@ -154,6 +156,7 @@ public abstract class ChangeManifestations extends ChangeSelection
             mShowing = showing;
         }
 
+        @Override
         public void redo()
         {
             if ( mShowing ) {
@@ -172,6 +175,7 @@ public abstract class ChangeManifestations extends ChangeSelection
             }
         }
 
+        @Override
         public void undo()
         {
             if ( mShowing ) {
@@ -217,6 +221,7 @@ public abstract class ChangeManifestations extends ChangeSelection
             mShowing = showing;
         }
 
+        @Override
         public void redo()
         {
         	mManifestation .setHidden( ! mShowing );
@@ -226,6 +231,7 @@ public abstract class ChangeManifestations extends ChangeSelection
                 mManifestations .hide( mManifestation );
         }
 
+        @Override
         public void undo()
         {
         	mManifestation .setHidden( mShowing );

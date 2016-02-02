@@ -17,6 +17,7 @@ public class DeselectAll extends ChangeSelection
         }
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "DeselectAll";

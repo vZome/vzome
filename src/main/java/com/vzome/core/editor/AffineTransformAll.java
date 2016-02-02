@@ -28,6 +28,7 @@ public class AffineTransformAll extends ChangeManifestations
         this .center = center;
     }
     
+    @Override
     public void perform() throws Failure
     {
         Segment s1 = null, s2 = null, s3 = null;
@@ -71,6 +72,7 @@ public class AffineTransformAll extends ChangeManifestations
         redo();
     }
     
+    @Override
     protected String getXmlElementName()
     {
         return "AffineTransformAll";

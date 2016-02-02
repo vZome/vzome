@@ -19,11 +19,13 @@ public final class PentagonField extends AlgebraicField
 
     private static final int ONES_PLACE = 0, PHIS_PLACE = 1;
     
+    @Override
     double evaluateNumber( BigRational[] factors )
     {
         return factors[ ONES_PLACE ] .getReal() + PHI_VALUE * factors[ PHIS_PLACE ] .getReal();
     }
 
+    @Override
     public int getOrder()
     {
         return 2;
@@ -31,6 +33,7 @@ public final class PentagonField extends AlgebraicField
 
     private final AlgebraicNumber defaultStrutScaling;
     
+    @Override
     public final BigRational[] multiply( BigRational[] v1, BigRational[] v2 )
     {
     	BigRational phis = v1[PHIS_PLACE] .times( v2[ONES_PLACE] ) .plus( v1[ONES_PLACE] .times( v2[PHIS_PLACE] ) ) .plus( v1[PHIS_PLACE] .times( v2[PHIS_PLACE] ) );
@@ -39,6 +42,7 @@ public final class PentagonField extends AlgebraicField
     	return new BigRational[]{ ones, phis };
     }
 
+    @Override
     protected BigRational[] reciprocal( BigRational[] v2 )
     {
         BigRational denominator = v2[0].times(v2[0]) .plus( v2[0].times(v2[1]) ) .minus( v2[1].times(v2[1]) );
@@ -49,16 +53,19 @@ public final class PentagonField extends AlgebraicField
         return new BigRational[]{ ones, phis };
     }
 
+    @Override
     public void defineMultiplier( StringBuffer buf, int which )
     {
         buf.append( "phi = ( 1 + sqrt(5) ) / 2" );
     }
 
+    @Override
     public AlgebraicNumber getDefaultStrutScaling()
     {
         return defaultStrutScaling;
     }
 
+    @Override
     public String getIrrational( int which )
     {
         return this .getIrrational( which, DEFAULT_FORMAT );
@@ -105,6 +112,7 @@ public final class PentagonField extends AlgebraicField
         return component;
     }
 
+    @Override
     public AlgebraicNumber parseLegacyNumber( String string )
     {
         int div = 1;

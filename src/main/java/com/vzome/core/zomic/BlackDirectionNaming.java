@@ -38,7 +38,8 @@ public class BlackDirectionNaming extends DirectionNaming
 
 		}
     	
-    	protected int getInteger( String axisName )
+        @Override
+    	protected final int getInteger( String axisName )
     	{
     	    if ( axisName .endsWith( "-" ) || axisName .endsWith( "+" ) )
     	        axisName = axisName .substring( 0, axisName .length() - 1 );
@@ -47,6 +48,7 @@ public class BlackDirectionNaming extends DirectionNaming
     	    return Integer .parseInt( axisName );
     	}
 		
+        @Override
 		public Axis getAxis( String axisName )
 		{
 		    boolean minused = axisName .endsWith( "-" );
@@ -58,7 +60,8 @@ public class BlackDirectionNaming extends DirectionNaming
 		    return axis;
 		}
 		
-		public String getName( Axis axis )
+        @Override
+		public final String getName( Axis axis )
 		{
 			int orn = axis .getOrientation();
 		    Axis redNeighbor = mRedNames .getDirection() .getAxis( axis .getSense(), orn );

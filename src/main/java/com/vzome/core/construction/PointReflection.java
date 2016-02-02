@@ -24,7 +24,8 @@ public class PointReflection extends Transformation
         mapParamsToState();
     }
     
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mCenter .isImpossible() )
             setStateVariables( null, null, true );
@@ -32,6 +33,7 @@ public class PointReflection extends Transformation
         return setStateVariables( null, loc, false );
     }
     
+    @Override
     public AlgebraicVector transform( AlgebraicVector arg )
     {
         arg = arg .minus( mOffset );

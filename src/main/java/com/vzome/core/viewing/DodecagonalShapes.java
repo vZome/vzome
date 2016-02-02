@@ -40,6 +40,7 @@ public class DodecagonalShapes extends AbstractShapes
     private final AlgebraicVector V6;
     private final AlgebraicVector V7;
 
+    @Override
     protected Polyhedron buildConnectorShape( String pkgName )
     {
         Polyhedron hex = new Polyhedron( mSymmetry .getField() );
@@ -68,6 +69,7 @@ public class DodecagonalShapes extends AbstractShapes
         return hex;
     }
     
+    @Override
     protected StrutGeometry createStrutGeometry( Direction dir )
     {
         if ( dir .getName() .equals( "blue" ) )
@@ -80,6 +82,7 @@ public class DodecagonalShapes extends AbstractShapes
         
     private final class BlueStrutGeometry implements StrutGeometry
     {
+        @Override
         public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
         {
             AlgebraicField field = mSymmetry .getField();
@@ -114,6 +117,7 @@ public class DodecagonalShapes extends AbstractShapes
     
     private final class GreenStrutGeometry implements StrutGeometry
     {
+        @Override
         public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
         {
             AlgebraicField field = mSymmetry .getField();

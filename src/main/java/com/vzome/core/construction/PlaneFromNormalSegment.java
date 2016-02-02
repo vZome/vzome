@@ -18,7 +18,8 @@ public class PlaneFromNormalSegment extends Plane
         mapParamsToState();
     }
     
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mNormal .isImpossible() || mIntersection .isImpossible() )
             return setStateVariables( null, null, true );

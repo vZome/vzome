@@ -39,6 +39,7 @@ public abstract class SideEffects implements UndoableEdit
         return result;
     }
 
+    @Override
     public boolean isSticky()
     {
         return false;
@@ -75,11 +76,13 @@ public abstract class SideEffects implements UndoableEdit
         public void redo();
     }
     
+    @Override
     public boolean isVisible()
     {
     	return true;
     }
 
+    @Override
     public boolean isDestructive()
     {
         return true;
@@ -90,6 +93,7 @@ public abstract class SideEffects implements UndoableEdit
         mItems .add( se );
     }
     
+    @Override
     public void perform() throws Command.Failure
     {
         // this default assumes that the constructor has already planned the SideEffects.
@@ -104,6 +108,7 @@ public abstract class SideEffects implements UndoableEdit
         throw new Command.Failure( message );
     }
 
+    @Override
     public void redo()
     {
         for ( int i = redone; i < mItems .size(); i++ )
@@ -115,6 +120,7 @@ public abstract class SideEffects implements UndoableEdit
         redone = mItems .size();
     }
 
+    @Override
     public void undo()
     {
         for ( int i = mItems .size(); i > 0; i-- )

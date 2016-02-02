@@ -7,6 +7,7 @@ public class Nested extends ZomicStatement{
 
 	protected  ZomicStatement m_body;
 
+    @Override
 	public  void accept( Visitor visitor ) throws ZomicException {
 		visitor .visitNested( this );
 	}

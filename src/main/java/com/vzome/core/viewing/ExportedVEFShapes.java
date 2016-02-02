@@ -81,6 +81,7 @@ public class ExportedVEFShapes extends AbstractShapes
         }
     }
     
+    @Override
     protected Polyhedron buildConnectorShape( String pkgName )
     {
     	String vefData = loadVefData( NODE_MODEL );
@@ -95,6 +96,7 @@ public class ExportedVEFShapes extends AbstractShapes
             throw new IllegalStateException( "missing connector shape: " + pkgName );
     }
 
+    @Override
     protected StrutGeometry createStrutGeometry( Direction dir )
     {
     	String vefData = loadVefData( dir .getName() );
@@ -142,6 +144,7 @@ public class ExportedVEFShapes extends AbstractShapes
         return null;
     }
     
+    @Override
     public boolean hasColors()
     {
     	return ! this .colors .isEmpty();
@@ -233,6 +236,7 @@ public class ExportedVEFShapes extends AbstractShapes
             return result;
         }
         
+        @Override
         protected void addFace( int index, int[] verts )
         {
             List<Integer> face = new ArrayList<>();
@@ -243,17 +247,20 @@ public class ExportedVEFShapes extends AbstractShapes
             faces .add( face );
         }
 
+        @Override
         protected void addVertex( int index, AlgebraicVector location )
         {
             AlgebraicVector vertex = mSymmetry .getField() .projectTo3d( location, wFirst() );
             vertices .add( vertex );
         }
 
+        @Override
         protected void addBall( int index, int vertex )
         {
         	tipVertexIndices .add(vertex);
         }
 
+        @Override
         protected void endFile( StringTokenizer tokens )
         {
             if ( ! tokens .hasMoreTokens() )
@@ -294,18 +301,23 @@ public class ExportedVEFShapes extends AbstractShapes
             }
         }
 
+        @Override
         protected void startBalls( int numVertices )
         {}
         
+        @Override
         protected void startEdges( int numEdges )
         {}
 
+        @Override
         protected void addEdge( int index, int v1, int v2 )
         {}
 
+        @Override
         protected void startFaces( int numFaces )
         {}
 
+        @Override
         protected void startVertices( int numVertices )
         {}
     }    

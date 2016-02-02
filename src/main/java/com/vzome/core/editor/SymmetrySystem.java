@@ -223,6 +223,7 @@ public class SymmetrySystem implements OrbitSource
 		return shapeColor;
 	}
 
+    @Override
 	public Symmetry getSymmetry()
 	{
 		return this .symmetry;

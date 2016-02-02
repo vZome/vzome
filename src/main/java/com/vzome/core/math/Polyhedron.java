@@ -150,6 +150,7 @@ public class Polyhedron {
 				set( k, temp[k] );
 		}
 		
+        @Override
 		public int hashCode()
 		{
 			int tot = 0;
@@ -158,6 +159,7 @@ public class Polyhedron {
 			return tot;
 		}
 		
+        @Override
 		public boolean equals( Object other )
 		{
 			if( other == null )

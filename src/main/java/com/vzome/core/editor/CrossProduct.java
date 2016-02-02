@@ -17,6 +17,7 @@ import com.vzome.core.model.RealizedModel;
 
 public class CrossProduct extends ChangeManifestations
 {
+    @Override
     public void perform() throws Command.Failure
     {
         Point p1 = null, p2 = null;
@@ -57,6 +58,7 @@ public class CrossProduct extends ChangeManifestations
         super( selection, realized, groupInSelection );
     }
         
+    @Override
     protected String getXmlElementName()
     {
         return "CrossProduct";

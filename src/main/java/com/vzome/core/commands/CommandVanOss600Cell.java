@@ -24,6 +24,7 @@ import com.vzome.core.math.VefParser;
 public class CommandVanOss600Cell extends CommandImportVEFData
 {
 
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
@@ -67,6 +68,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             mEffects = effects;
         }
 
+        @Override
         protected void startVertices( int numVertices )
         {
             mVertices = new Point[ numVertices ];
@@ -74,11 +76,13 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             mProjection = null;
         }
 
+        @Override
         protected void addVertex( int index, AlgebraicVector location )
         {
             mLocations[ index ] = location;
         }
 
+        @Override
         protected void endVertices()
         {
             AlgebraicField field = getField();
@@ -134,6 +138,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             }
         }
 
+        @Override
         protected void addEdge( int index, int v1, int v2 )
         {
             if ( 2 == 1 ) return;
@@ -146,18 +151,23 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             mEffects .constructionAdded( seg );
         }
 
+        @Override
         protected void startEdges( int numEdges )
         {}
 
+        @Override
         protected void startFaces( int numFaces )
         {}
 
+        @Override
         protected void addFace( int index, int[] verts )
         {}
 
+        @Override
         protected void addBall( int index, int vertex )
         {}
 
+        @Override
         protected void startBalls( int numVertices )
         {}
     }

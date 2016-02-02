@@ -23,11 +23,13 @@ public class TranslationTool extends TransformationTool
         super( name, selection, realized, tools, originPoint );
     }
     
+    @Override
     public String getDefaultName( String baseName )
     {
         return "translation along X axis";
     }
 
+    @Override
     public void perform() throws Command.Failure
     {
         Point p1 = null, p2 = null;
@@ -81,11 +83,13 @@ public class TranslationTool extends TransformationTool
         defineTool();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "TranslationTool";
     }
 
+    @Override
     public String getCategory()
     {
         return "translation";

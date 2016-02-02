@@ -8,6 +8,7 @@ public class Rotate extends Permute{
 
 	private  int steps;
 
+    @Override
 	public  void accept( Visitor visitor ) throws ZomicException
 	{
 		visitor .visitRotate( getAxis(), steps );

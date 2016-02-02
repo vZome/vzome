@@ -219,11 +219,13 @@ public class A4Group implements CoxeterGroup
     }
     
 
+    @Override
     public int getOrder()
     {
         return S5_PERMS.length;
     }
 
+    @Override
     public AlgebraicVector groupAction( AlgebraicVector model, int element )
     {
         AlgebraicVector result = field .origin( 4 );
@@ -237,26 +239,31 @@ public class A4Group implements CoxeterGroup
         return result .scale( field .createPower( -1 ) );
     }
 
+    @Override
     public AlgebraicVector getOrigin()
     {
         return field .origin( 5 );
     }
 
+    @Override
     public AlgebraicVector getWeight( int i )
     {
         return WEIGHTS[ i ];
     }
 
+    @Override
     public AlgebraicVector getSimpleRoot( int i )
     {
         return ROOTS[ i ];
     }
 
+    @Override
     public AlgebraicField getField()
     {
         return field;
     }
 
+    @Override
     public AlgebraicVector chiralSubgroupAction( AlgebraicVector model, int element )
     {
         if ( element >= 60 )

@@ -22,7 +22,8 @@ public class PolygonVertex extends Point
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if (  polygon .isImpossible() )
             return setStateVariable( null, true );

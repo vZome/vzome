@@ -46,7 +46,8 @@ public class ChangeOfBasis extends Transformation
         mapParamsToState();
     }
     
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
 //        if ( 3d == Math.PI /* TODO test orthogonality */ )
 //            setStateVariables( null, null, true );

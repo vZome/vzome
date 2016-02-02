@@ -34,6 +34,7 @@ public class Permutation extends Object {
 		}
 	}
 	
+    @Override
 	public String toString()
 	{
 	    return "permutation #"  + mapIndex( 0 );

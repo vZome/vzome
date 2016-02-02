@@ -24,21 +24,25 @@ public class SymmetryAxisChange implements UndoableEdit
         mEditor = editor;
     }
     
+    @Override
     public boolean isVisible()
     {
     	return false;
     }
 
+    @Override
     public void redo()
     {
         mEditor .setSymmetrySegment( mNewAxis );
     }
 
+    @Override
     public void undo()
     {
         mEditor .setSymmetrySegment( mOldAxis );
     }
 
+    @Override
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "SymmetryAxisChange" );
@@ -52,6 +56,7 @@ public class SymmetryAxisChange implements UndoableEdit
         return getXml( doc );
     }
 
+    @Override
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         if ( format .rationalVectors() )
@@ -67,16 +72,19 @@ public class SymmetryAxisChange implements UndoableEdit
         context .performAndRecord( this );
     }
 
+    @Override
     public void perform()
     {
         redo();
     }
 
+    @Override
     public boolean isDestructive()
     {
         return true;
     }
 
+    @Override
     public boolean isSticky()
     {
         return false;

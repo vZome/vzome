@@ -17,6 +17,7 @@ import com.vzome.core.model.RealizedModel;
 
 public class ApplyTool extends ChangeManifestations
 {
+    @Override
     public void perform() throws Failure
     {
         registry .useTool( tool );
@@ -93,6 +94,7 @@ public class ApplyTool extends ChangeManifestations
         this .redundantOutputs = redundantOutputs;
     }
 
+    @Override
     protected String getXmlElementName()
     {
     	if ( this .redundantOutputs ) 
@@ -101,6 +103,7 @@ public class ApplyTool extends ChangeManifestations
     		return "ToolApplied";
     }
     
+    @Override
     protected void getXmlAttributes( Element element )
     {
         element .setAttribute( "name", this.tool .getName() );
@@ -114,6 +117,7 @@ public class ApplyTool extends ChangeManifestations
             element .setAttribute( "hideInputs", "true" );
     }
 
+    @Override
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         String toolName = element .getAttribute( "name" );
@@ -130,6 +134,7 @@ public class ApplyTool extends ChangeManifestations
         return value != null && value .equals( "true" );
     }
     
+    @Override
     public Manifestation manifestConstruction( Construction c )
     {
     	Manifestation m = getManifestation( c );
@@ -154,6 +159,7 @@ public class ApplyTool extends ChangeManifestations
     /**
      * This will be called on any manifestation that should be (shown and) selected in the output.
      */
+    @Override
     public void select( Manifestation m )
     {
     	if ( this .tool .needsInput() )
@@ -164,16 +170,19 @@ public class ApplyTool extends ChangeManifestations
         super .select( m, true /* safe to ignore groups, they won't exist */ );
     }
     
+    @Override
     public void unselect( Manifestation man )
     {
     	throw new UnsupportedOperationException( "unselect is not supported within Tool.performEdit" );
     }
 
+    @Override
     protected void showManifestation( Manifestation m )
     {
     	throw new UnsupportedOperationException( "showManifestation is not supported within Tool.performEdit" );
     }
     
+    @Override
     protected void hideManifestation( Manifestation m )
     {
     	throw new UnsupportedOperationException( "hideManifestation is not supported within Tool.performEdit" );

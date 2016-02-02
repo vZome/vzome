@@ -21,16 +21,19 @@ public class CommandCentroid extends AbstractCommand
 
     private static final Object[][] ATTR_SIGNATURE = new Object[][]{};
 
+    @Override
     public Object[][] getParameterSignature()
     {
         return PARAM_SIGNATURE;
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return ATTR_SIGNATURE;
     }
     
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();

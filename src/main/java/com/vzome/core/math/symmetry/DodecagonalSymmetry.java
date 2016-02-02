@@ -23,6 +23,7 @@ public class DodecagonalSymmetry extends AbstractSymmetry
         super( ORDER, field, "blue", defaultStyle );
     }
     
+    @Override
     protected void createInitialPermutations()
     {
         mOrientations[ 0 ] = IDENTITY;
@@ -33,6 +34,7 @@ public class DodecagonalSymmetry extends AbstractSymmetry
         mOrientations[ 1 ] = new Permutation( this, map );
     }
     
+    @Override
     protected void createFrameOrbit( String frameColor )
     {
         AlgebraicVector xAxis = this .mField .createVector( new int[]{ 1,1,0,1, 0,1,0,1, 0,1,0,1 } );
@@ -68,12 +70,14 @@ public class DodecagonalSymmetry extends AbstractSymmetry
         }
     }
     
+    @Override
     protected void createOtherOrbits()
     {
         createZoneOrbit( "green", 0, NO_ROTATION, new int[]{ 1,1, 1,2, 1,2, 0,1, 0,1, 0,1 }, true );
         createZoneOrbit( "red", 0, NO_ROTATION, new int[]{ 0,1,0,1, 0,1,0,1, 1,1,0,1 }, true );
     }
     
+    @Override
     public Direction getSpecialOrbit( SpecialOrbit which )
     {
         switch ( which ) {
@@ -92,11 +96,13 @@ public class DodecagonalSymmetry extends AbstractSymmetry
         }
     }
 
+    @Override
     public String getName()
     {
         return "dodecagonal";
     }
 
+    @Override
     public int[] subgroup( String name )
     {
         return null;

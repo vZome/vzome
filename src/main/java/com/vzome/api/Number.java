@@ -47,6 +47,7 @@ public class Number
 		return new Number( this.number .dividedBy( that.number ), false );
 	}
 	
+    @Override
 	public boolean equals( Object other )
 	{
 		if ( other == null )
@@ -61,6 +62,7 @@ public class Number
 		}
 	}
 
+    @Override
 	public int hashCode()
 	{
 	    return this .number .hashCode();
@@ -76,6 +78,7 @@ public class Number
 		return this .number;
 	}
 	
+    @Override
 	public String toString()
 	{
 		return this .number .toString();

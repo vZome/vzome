@@ -61,6 +61,7 @@ public class CommandEdit extends ChangeManifestations
         mCommand = cmd;
     }
 
+    @Override
     protected String getXmlElementName()
     {
         String cmdName = mCommand .getClass() .getName();
@@ -68,17 +69,20 @@ public class CommandEdit extends ChangeManifestations
         return cmdName .substring( lastDot + 1 + "Command".length() );
     }
 
+    @Override
     public void getXmlAttributes( Element result )
     {
         mCommand .getXml( result, mAttrs );
     }
     
+    @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Command.Failure
     {        
         mAttrs = mCommand .setXml( xml, format );
         mAttrs .put( Command .LOADING_FROM_FILE, Boolean .TRUE );
     }
 
+    @Override
     public void perform() throws Command.Failure
     {
         boolean isHide = mCommand instanceof CommandHide;
@@ -182,6 +186,7 @@ public class CommandEdit extends ChangeManifestations
         redo();
     }
     
+    @Override
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context )
             throws Failure
     {
@@ -344,6 +349,7 @@ public class CommandEdit extends ChangeManifestations
 
     private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
     {
+        @Override
         public void constructionAdded( Construction c )
         {
             add( c );

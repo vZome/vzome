@@ -23,6 +23,7 @@ public class PerspectiveProjection implements Projection
     private AlgebraicNumber minDenom;
     private double minDenomValue;
 
+    @Override
     public AlgebraicVector projectImage( AlgebraicVector source, boolean wFirst )
     {
         /*

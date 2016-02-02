@@ -73,6 +73,7 @@ public class Vector {
 		return this .vector .cross( other .vector ) .isOrigin();
 	}
 
+    @Override
 	public boolean equals( Object other )
 	{
 		if ( other == null )
@@ -87,11 +88,13 @@ public class Vector {
 		}
 	}
 
+    @Override
 	public int hashCode()
 	{
 	    return this .vector .hashCode();
 	}
 	
+    @Override
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();

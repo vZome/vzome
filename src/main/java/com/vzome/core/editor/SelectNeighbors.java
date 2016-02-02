@@ -89,6 +89,7 @@ public class SelectNeighbors extends ChangeSelection
         }
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "SelectNeighbors";

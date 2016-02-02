@@ -188,6 +188,7 @@ public class Application
                     }
                 }
 
+                @Override
                 protected void createOtherOrbits()
                 {
                     createZoneOrbit( "yellow", 0, 4, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 }, true, false, mField
@@ -231,6 +232,7 @@ public class Application
         {
             Symmetry symmetry = new OctahedralSymmetry( field, "blue", "small octahedra" ){
                 
+                @Override
                 protected void createOtherOrbits()
                 {
                     createZoneOrbit( "yellow", 0, 4, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1 }, true );
@@ -264,6 +266,7 @@ public class Application
             final AlgebraicField fField = field;
             symmetry = new OctahedralSymmetry( field, "orange", "Synestructics" )
             {
+                @Override
                 public String getName()
                 {
                     return "synestructics";
@@ -288,6 +291,7 @@ public class Application
                     }
                 }
 
+                @Override
                 protected void createOtherOrbits()
             	{
                     AlgebraicVector v = new AlgebraicVector( fField .one(), fField .one(), fField .one() );
@@ -320,6 +324,7 @@ public class Application
         {
             Symmetry symmetry = new OctahedralSymmetry( field, "blue", "small octahedra" ){
                 
+                @Override
                 protected void createOtherOrbits()
                 {
                     super .createOtherOrbits();
@@ -359,6 +364,7 @@ public class Application
         {
             IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" ){
                 
+                @Override
                 protected void createOtherOrbits()
                 {
                     super .createOtherOrbits();

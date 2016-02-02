@@ -32,6 +32,7 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
  */
 public class CommandUniformH4Polytope extends CommandTransform
 {
+    @Override
     public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         super.setFixedAttributes( attributes, format );
@@ -200,6 +201,7 @@ public class CommandUniformH4Polytope extends CommandTransform
     /**
      * Only called when migrating a 2.0 model file.
      */
+    @Override
     public void setQuaternion( AlgebraicVector offset )
     {
         quaternionVector = offset;
@@ -208,6 +210,7 @@ public class CommandUniformH4Polytope extends CommandTransform
     /*
      * Adding this to support a 4D quaternion.
      */
+    @Override
     public AttributeMap setXml( Element xml, XmlSaveFormat format ) 
     {
         AttributeMap attrs = super .setXml( xml, format );
@@ -217,6 +220,7 @@ public class CommandUniformH4Polytope extends CommandTransform
         return attrs;
     }
     
+    @Override
     public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
@@ -224,11 +228,13 @@ public class CommandUniformH4Polytope extends CommandTransform
         super .getXml( result, attributes );
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return GROUP_ATTR_SIGNATURE;
     }
     
+    @Override
     public boolean attributeIs3D( String attrName )
     {
         if ( "symmetry.axis.segment" .equals( attrName ) )
@@ -237,6 +243,7 @@ public class CommandUniformH4Polytope extends CommandTransform
             return true;
     }
     
+    @Override
     public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         AlgebraicNumber SCALE_DOWN_5 = field .createPower( -5 );
@@ -441,6 +448,7 @@ public class CommandUniformH4Polytope extends CommandTransform
             this.p2 = p2;
         }
 
+        @Override
         public boolean equals( Object obj )
         {
             if ( super.equals( obj ) )
@@ -455,6 +463,7 @@ public class CommandUniformH4Polytope extends CommandTransform
             return false;
         }
 
+        @Override
         public int hashCode()
         {
             return p1 ^ p2;

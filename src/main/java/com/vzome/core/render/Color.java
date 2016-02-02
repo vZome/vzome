@@ -63,11 +63,13 @@ public class Color
         return rgb;
     }
     
+    @Override
     public int hashCode()
     {
         return getRGBA();
     }
     
+    @Override
     public boolean equals( Object other )
     {
         if ( this == other )
@@ -103,6 +105,7 @@ public class Color
         return red * 0x010000 + green * 0x0100 + blue;
     }
     
+    @Override
     public String toString()
     {
         return red + "," + green + "," + blue + ( (alpha<0xFF)? ","+alpha : "" );

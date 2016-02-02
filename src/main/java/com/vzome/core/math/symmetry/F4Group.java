@@ -97,11 +97,13 @@ public class F4Group extends B4Group
         A = new AlgebraicMatrix( col1, col2, col3, col4 );
     }
     
+    @Override
     public int getOrder()
     {
         return 3 * super .getOrder();
     }
 
+    @Override
     public AlgebraicVector groupAction( AlgebraicVector model, int element )
     {
         int b4Order = super .getOrder();
@@ -125,11 +127,13 @@ public class F4Group extends B4Group
         return null;
     }
 
+    @Override
     public AlgebraicVector getWeight( int i )
     {
         return WEIGHTS[ i ];
     }
 
+    @Override
     public AlgebraicVector getSimpleRoot( int i )
     {
         return ROOTS[ i ];

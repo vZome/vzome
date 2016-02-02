@@ -101,11 +101,13 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
 
     protected abstract void createInitialPermutations();
     
+    @Override
     public String getDefaultStyle()
     {
         return this .defaultStyle;
     }
 
+    @Override
     public AlgebraicField getField()
     {
         return mField;
@@ -162,6 +164,7 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
         return dir;
     }
     
+    @Override
     public Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm )
     {
         return new Direction( name, this, prototype, rotatedPrototype, norm, false ) .withCorrection();
@@ -171,6 +174,7 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
 
     // =================== public stuff =========================================
 
+    @Override
     public OrbitSet getOrbitSet()
     {
         return this.orbitSet;
@@ -181,6 +185,7 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
 	 * @param rot
 	 * @return
 	 */
+    @Override
 	public int getMapping( int from, int to )
 	{
 	    if ( to == NO_ROTATION )
@@ -252,18 +257,21 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
     * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
     */
     @Deprecated
+    @Override
     public Iterator<Direction> getDirections()
     {
         return this .iterator();
     }
     
     
+    @Override
     public Axis getAxis( AlgebraicVector vector )
     {
     	return this .getAxis( vector, this .orbitSet );
     }
     
     
+    @Override
     public Axis getAxis( AlgebraicVector vector, OrbitSet orbits )
     {
         if ( vector .isOrigin() ) {
@@ -299,6 +307,7 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
 	 * subject to the mask of directions to accept.
 	 *
 	 */
+    @Override
 	public Axis getAxis( RealVector vector, Set<Direction> dirMask )
 	{
 		if ( RealVector .ORIGIN .equals( vector ) ) {
@@ -340,11 +349,13 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
 		return closest;
 	}
 
+    @Override
     public int getChiralOrder()
     {
         return mOrientations .length;
     }
 
+    @Override
     public Permutation getPermutation( int i )
     {
     	if ( ( i < 0 ) || ( i > mOrientations .length ) )
@@ -353,11 +364,13 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
     }
 
 
+    @Override
 	public AlgebraicMatrix getMatrix(int i)
 	{
 		return mMatrices[ i ];
 	}
 
+    @Override
 	public int inverse( int orientation )
 	{
     	if ( ( orientation < 0 ) || ( orientation > mOrientations .length ) )
@@ -365,11 +378,13 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
 		return mOrientations[ orientation ] .inverse() .mapIndex( 0 );
 	}
 
+    @Override
 	public Direction getDirection( String color )
 	{
 		return mDirectionMap .get( color );
 	}
     
+    @Override
     public String[] getDirectionNames()
     {
         ArrayList<String> list = new ArrayList<>();
@@ -380,6 +395,7 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
         return list .toArray( new String[]{} );
     }
 
+    @Override
     public int[] closure( int[] perms )
     {
         List<Permutation> newPerms = new ArrayList<>();
@@ -425,6 +441,7 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
         return result;
     }
 
+    @Override
     public int[] getIncidentOrientations( int orientation )
     {
         return null;

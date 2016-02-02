@@ -10,6 +10,7 @@ public class Walk extends ZomicStatement implements Iterable<ZomicStatement>
 
 	private List<ZomicStatement> stmts = new ArrayList<>();
 
+    @Override
 	public  void accept( Visitor visitor ) throws ZomicException {
 		visitor .visitWalk( this );
 	}

@@ -45,11 +45,13 @@ public class B4Polytope extends ChangeManifestations
         this.symmAxis = symmAxis;
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "B4Polytope";
     }
 
+    @Override
     public void getXmlAttributes( Element result )
     {
         DomUtils .addAttribute( result, "dynkin", Integer .toString( this.index, 2 ) );
@@ -57,6 +59,7 @@ public class B4Polytope extends ChangeManifestations
             XmlSaveFormat .serializeSegment( result, "start", "end", symmAxis );
     }
 
+    @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format )
     {
         String binary = xml .getAttribute( "dynkin" );
@@ -71,6 +74,7 @@ public class B4Polytope extends ChangeManifestations
         }
     }
     
+    @Override
     public void perform()
     {
         AlgebraicField field = root .getField();
@@ -104,6 +108,7 @@ public class B4Polytope extends ChangeManifestations
             this.scale = field .createPower( 5 );
         }
 
+        @Override
         public Object addEdge( Object p1, Object p2 )
         {
             Segment edge = new SegmentJoiningPoints( (Point) p1, (Point) p2 );
@@ -111,11 +116,13 @@ public class B4Polytope extends ChangeManifestations
             return edge;
         }
 
+        @Override
         public Object addFace( Object[] vertices )
         {
             return null;
         }
 
+        @Override
         public Object addVertex( AlgebraicVector vertex )
         {
             AlgebraicVector projected = vertex;

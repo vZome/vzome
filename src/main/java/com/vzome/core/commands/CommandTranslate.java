@@ -18,6 +18,7 @@ import com.vzome.core.construction.Translation;
 public class CommandTranslate extends CommandTransform
 {
     
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         final Segment norm = (Segment) attributes .get( SYMMETRY_AXIS_ATTR_NAME );

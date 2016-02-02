@@ -282,11 +282,13 @@ public class LessonModel implements Iterable<PageModel>
 
         recorder .actOnSnapshot( page .getSnapshot(), new SnapshotAction() {
 			
+            @Override
 			public void actOnSnapshot( RenderedModel snapshot )
 			{
 //		        firePropertyChange( "newElementAddedAt-" + pageNum, false, true );
-				renderer .captureSnapshot( snapshot, page .getView(), 80, new ThumbnailRenderer.Listener()
+				renderer .captureSnapshot(snapshot, page .getView(), 80, new ThumbnailRenderer.Listener()
 				{
+                    @Override
 					public void thumbnailReady( Object thumbnail )
 					{
 		                if ( logger .isLoggable( Level.FINER ) )

@@ -27,7 +27,8 @@ public class SegmentTauDivision extends Point
     
     final AlgebraicNumber shrink;
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mSegment .isImpossible() )
             return setStateVariable( null, true );

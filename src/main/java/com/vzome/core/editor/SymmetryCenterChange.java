@@ -25,21 +25,25 @@ public class SymmetryCenterChange implements UndoableEdit
         mEditor = editor;
     }
     
+    @Override
     public boolean isVisible()
     {
     	return false;
     }
 
+    @Override
     public void redo()
     {
         mEditor .setCenterPoint( mNewCenter );
     }
 
+    @Override
     public void undo()
     {
         mEditor .setCenterPoint( mOldCenter );
     }
 
+    @Override
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "SymmetryCenterChange" );
@@ -53,6 +57,7 @@ public class SymmetryCenterChange implements UndoableEdit
         return getXml( doc );
     }
 
+    @Override
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         if ( format .rationalVectors() )
@@ -69,16 +74,19 @@ public class SymmetryCenterChange implements UndoableEdit
         context .performAndRecord( this );
     }
 
+    @Override
     public void perform()
     {
         redo();
     }
 
+    @Override
     public boolean isDestructive()
     {
         return true;
     }
 
+    @Override
     public boolean isSticky()
     {
         return false;

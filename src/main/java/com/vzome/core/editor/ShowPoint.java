@@ -21,17 +21,20 @@ public class ShowPoint extends ChangeManifestations
         this.point = point;
     }
     
+    @Override
     public void perform()
     {
         manifestConstruction( point );
         redo();
     }
 
+    @Override
     public void getXmlAttributes( Element xml )
     {
         XmlSaveFormat .serializePoint( xml, "point", this.point );
     }
 
+    @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format )
     {
         if ( format .commandEditsCompacted() )
@@ -43,6 +46,7 @@ public class ShowPoint extends ChangeManifestations
         }
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "ShowPoint";

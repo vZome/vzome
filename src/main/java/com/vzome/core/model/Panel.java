@@ -43,6 +43,7 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 		return mVertices.iterator();
 	}
 
+    @Override
     public int hashCode()
     {
         int len = mVertices.size();

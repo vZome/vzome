@@ -31,7 +31,8 @@ public class AnchoredSegment extends Segment
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mAnchor .isImpossible() || mLength .isZero() )
             return setStateVariables( null, null, true );

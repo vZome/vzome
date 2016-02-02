@@ -32,11 +32,13 @@ public class CommandTetrahedralSymmetry extends CommandSymmetry
         this( null );
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return ATTR_SIGNATURE;
     }
     
+    @Override
     public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         final Point center = setSymmetry( attributes );

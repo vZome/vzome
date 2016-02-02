@@ -27,6 +27,7 @@ public class CommandAxialSymmetry extends CommandSymmetry
         super( symmetry );
     }
 
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         setSymmetry( attributes );

@@ -35,6 +35,7 @@ public class StlExporter extends Exporter3d
 	}
 
 
+    @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    AlgebraicField field = this .mModel .getField();
@@ -127,6 +128,7 @@ public class StlExporter extends Exporter3d
 		output .flush();
 	}
 		
+    @Override
     public String getFileExtension()
     {
         return "stl";

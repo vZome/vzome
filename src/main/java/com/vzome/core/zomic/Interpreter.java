@@ -30,21 +30,25 @@ public class Interpreter extends Visitor.Default
         mSymmetry = symmetry;
     }
 
+    @Override
     public void visitMove( Axis axis, AlgebraicNumber length )
     {
         mEvents.step( axis, length );
     }
 
+    @Override
     public void visitRotate( Axis axis, int steps )
     {
         mEvents.rotate( axis, steps );
     }
 
+    @Override
     public void visitReflect( Axis blueAxis )
     {
         mEvents.reflect( blueAxis );
     }
 
+    @Override
     public void visitSymmetry( final Symmetry model, Permute permute )
             throws ZomicException
     {
@@ -92,16 +96,19 @@ public class Interpreter extends Visitor.Default
         mEvents = saved;
     }
 
+    @Override
     public void visitSave( Save stmt, int state ) throws ZomicException
     {
         saveAndNest( stmt, state );
     }
 
+    @Override
     public void visitScale( AlgebraicNumber size )
     {
         mEvents.scale( size );
     }
 
+    @Override
     public void visitBuild( boolean build, boolean destroy )
     {
         int action = ZomicEventHandler.JUST_MOVE;

@@ -32,19 +32,23 @@ public interface Visitor{
 
 	public class Default extends Object implements Visitor{
 
+        @Override
 		public  void visitWalk( Walk walk ) throws ZomicException {
             for (ZomicStatement stmt : walk) {
                 stmt .accept( this );
             }
 		}
 
+        @Override
 		public void visitLabel( String id ){}
 
+        @Override
 		public 
 		void visitNested( Nested compound ) throws ZomicException {
 			compound .getBody() .accept( this );
 		}
 
+        @Override
 		public 
 		void visitRepeat( Repeat repeated, int repetitions ) throws ZomicException {
 			for ( int i = 0; i < repetitions; i++ ) {
@@ -52,31 +56,39 @@ public interface Visitor{
 			}
 		}
 
+        @Override
 		public 
 		void visitRotate( Axis axis, int steps ){}
 
+        @Override
 		public 
 		void visitReflect( Axis blueAxis ) {}
 
+        @Override
 		public 
 		void visitMove( Axis axis, AlgebraicNumber length ) throws ZomicException {}
 
+        @Override
 		public 
 		void visitSymmetry( final Symmetry model, Permute permute ) throws ZomicException {
 			visitNested( model );
 		}
 
+        @Override
 		public 
 		void visitSave( Save stmt, int state ) throws ZomicException {
 			this .visitNested( stmt );
 		}
 
+        @Override
         public 
         void visitScale( AlgebraicNumber size ) {}
 
+        @Override
         public 
         void visitBuild( boolean build, boolean destroy ) {}
         
+        @Override
         public
 		void visitUntranslatable( String message ) {}
 

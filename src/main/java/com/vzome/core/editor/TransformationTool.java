@@ -20,20 +20,25 @@ import com.vzome.core.model.RealizedModel;
 
 public abstract class TransformationTool extends ChangeManifestations implements Tool
 {
+    @Override
     public void prepare( ChangeManifestations applyTool ) {}
 
+    @Override
 	public void complete( ChangeManifestations applyTool ) {}
 
+    @Override
 	public boolean isSticky()
     {
         return true;
     }
     
+    @Override
     public boolean needsInput()
     {
     	return true;
     }
 
+    @Override
     public void perform() throws Failure
     {
         defineTool();
@@ -48,7 +53,7 @@ public abstract class TransformationTool extends ChangeManifestations implements
     
     protected Transformation[] transforms;
     
-    private Tool.Registry tools;
+    private final Tool.Registry tools;
     
     protected Point originPoint;
 
@@ -76,6 +81,7 @@ public abstract class TransformationTool extends ChangeManifestations implements
         return ".auto" .equals( id );
     }
 
+    @Override
     public void performEdit( Construction c, ChangeManifestations applyTool )
     {
         for (Transformation transform : transforms) {
@@ -96,8 +102,10 @@ public abstract class TransformationTool extends ChangeManifestations implements
         applyTool .redo();
     }
     
+    @Override
 	public void performSelect( Manifestation man, ChangeManifestations applyTool ) {};
 
+    @Override
     public void redo()
     {
         // TODO manifest a symmetry construction... that is why this class extends ChangeConstructions
@@ -105,22 +113,26 @@ public abstract class TransformationTool extends ChangeManifestations implements
 //        tools .addTool( this );
     }
 
+    @Override
     public void undo()
     {
         // this edit is now sticky (not really undoable)
 //        tools .removeTool( this );
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
     
+    @Override
     protected void getXmlAttributes( Element element )
     {
         element .setAttribute( "name", this.name );
     }
 
+    @Override
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         this.name = element .getAttribute( "name" );

@@ -73,11 +73,13 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         	private final Symmetry symmetry = field .getSymmetries() [0];
         	private final OrbitSet orbits = new OrbitSet( symmetry );
         	
+            @Override
 			public Color getColor( Direction orbit )
 			{
 				return new Color( 128, 123, 128 );
 			}
 			
+            @Override
 			public Axis getAxis( AlgebraicVector vector )
 			{
 				return this .symmetry .getAxis( vector );
@@ -129,6 +131,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             mListeners .remove( listener );
     }
 
+    @Override
 	public void manifestationAdded( Manifestation m )
 	{
 		if ( ! this .enabled )
@@ -153,6 +156,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         }
 	}
 	
+    @Override
 	public void manifestationRemoved( Manifestation m )
 	{
 		if ( ! this .enabled ) {
@@ -441,6 +445,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         return poly;
     }
 
+    @Override
     public void manifestationColored( Manifestation m, Color color )
     {
 		if ( this .enabled )

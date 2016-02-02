@@ -20,6 +20,7 @@ public class Parser extends com.vzome.core.zomic.parser.Parser{
         // TODO Auto-generated constructor stub
     }
 
+    @Override
     protected void parse( InputStream input, ANTLR2XML xml, ErrorHandler errors, String version )
     throws RecognitionException, TokenStreamException
     {

@@ -28,6 +28,7 @@ public class Snapshot implements UndoableEdit
     private int id;
     private Recorder recorder;
 
+    @Override
     public void perform() throws Failure
     {
         this .recorder .recordSnapshot( this .id );
@@ -39,20 +40,25 @@ public class Snapshot implements UndoableEdit
         this .recorder = controller;
     }
 
+    @Override
     public void undo() {}
 
+    @Override
     public void redo() {}
 
+    @Override
     public boolean isVisible()
     {
         return false;
     }
 
+    @Override
     public boolean isDestructive()
     {
         return false;
     }
 
+    @Override
     public Element getXml( Document doc )
     {
         Element xml = doc .createElement( "Snapshot" );
@@ -66,6 +72,7 @@ public class Snapshot implements UndoableEdit
         return getXml( doc );
     }
 
+    @Override
     public void loadAndPerform( Element xml, XmlSaveFormat format,
             Context context ) throws Failure
     {
@@ -74,6 +81,7 @@ public class Snapshot implements UndoableEdit
         context .performAndRecord( this );
     }
 
+    @Override
     public boolean isSticky()
     {
         return true;

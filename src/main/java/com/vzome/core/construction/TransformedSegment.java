@@ -23,7 +23,8 @@ public class TransformedSegment extends Segment
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mTransform .isImpossible() || mPrototype .isImpossible() )
             return setStateVariables( null, null, true );

@@ -12,7 +12,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 public class SegmentJoiningPoints extends Segment
 {
     // parameters
-    private Point mStart, mEnd;
+    private final Point mStart, mEnd;
     
     public SegmentJoiningPoints( Point p1, Point p2 )
     {
@@ -22,7 +22,8 @@ public class SegmentJoiningPoints extends Segment
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mStart .isImpossible() || mEnd .isImpossible() )
             return setStateVariables( null, null, true );

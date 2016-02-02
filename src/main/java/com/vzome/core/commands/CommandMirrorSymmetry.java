@@ -18,6 +18,7 @@ import com.vzome.core.construction.Transformation;
  */
 public class CommandMirrorSymmetry extends CommandTransform
 {
+    @Override
     public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         final Point center = (Point) attributes .get( SYMMETRY_CENTER_ATTR_NAME );

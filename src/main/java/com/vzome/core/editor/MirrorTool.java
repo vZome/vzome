@@ -30,6 +30,7 @@ public class MirrorTool extends TransformationTool
         super( name, selection, realized, tools, originPoint );
     }
 
+    @Override
     public void perform() throws Command.Failure
     {
         Point center = null;
@@ -89,16 +90,19 @@ public class MirrorTool extends TransformationTool
         defineTool();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "MirrorTool";
     }
 
+    @Override
     public String getCategory()
     {
         return "mirror";
     }
 
+    @Override
     public String getDefaultName( String baseName )
     {
         return "reflect through X axis";

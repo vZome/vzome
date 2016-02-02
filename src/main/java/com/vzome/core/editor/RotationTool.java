@@ -28,6 +28,7 @@ public class RotationTool extends SymmetryTool
         return "rotation around Z axis";
     }
 
+    @Override
     public String getCategory()
     {
         return "rotation";
@@ -38,6 +39,7 @@ public class RotationTool extends SymmetryTool
         super( name, symmetry, selection, realized, tools, originPoint );
     }
 
+    @Override
     public void perform() throws Command.Failure
     {
         Point center = null;
@@ -98,6 +100,7 @@ public class RotationTool extends SymmetryTool
         defineTool();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "RotationTool";

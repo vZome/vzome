@@ -47,16 +47,19 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
             m_variableLength = prototype.m_variableLength;
         }
 
+        @Override
         protected AbstractZomicEventHandler copyLocation()
         {
             return new LocationTracker( this );
         }
 
+        @Override
         protected void restoreLocation( AbstractZomicEventHandler changed )
         {
             mLocation = ((LocationTracker) changed).mLocation;
         }
 
+        @Override
         public void step( Axis axis, AlgebraicNumber length )
         {
             axis = mOrientation.permute( axis, mHandedNess );
@@ -116,6 +119,7 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
     public static final String STRIP_START = "strip.start",
             STRIP_END = "strip.end";
     
+    @Override
     public void visitLabel( String id )
     {
         if ( UNIT_START.equals( id ) ) {

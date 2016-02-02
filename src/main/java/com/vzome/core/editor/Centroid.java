@@ -16,6 +16,7 @@ import com.vzome.core.model.RealizedModel;
 
 public class Centroid extends ChangeManifestations
 {
+    @Override
     public void perform() throws Command.Failure
     {
         List<Point> verticesList = new ArrayList<>();
@@ -42,6 +43,7 @@ public class Centroid extends ChangeManifestations
         super( selection, realized, groupInSelection );
     }
         
+    @Override
     protected String getXmlElementName()
     {
         return "NewCentroid";

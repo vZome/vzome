@@ -24,6 +24,7 @@ public class AffinePentagon extends ChangeManifestations
 {
     private final ModelRoot root;
     
+    @Override
     public void perform() throws Command.Failure
     {
         AlgebraicField field = root .getField();
@@ -107,6 +108,7 @@ public class AffinePentagon extends ChangeManifestations
         this.root = root;
     }
         
+    @Override
     protected String getXmlElementName()
     {
         return "AffinePentagon";

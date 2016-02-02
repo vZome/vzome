@@ -30,7 +30,8 @@ public class SegmentRotated4D extends Segment
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if (  mPrototype .isImpossible() )
             return setStateVariables( null, null, true );

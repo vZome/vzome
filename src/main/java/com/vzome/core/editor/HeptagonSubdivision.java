@@ -18,6 +18,7 @@ import com.vzome.core.model.RealizedModel;
 
 public class HeptagonSubdivision extends ChangeManifestations
 {
+    @Override
     public void perform() throws Command.Failure
     {
         Point p1 = null;
@@ -56,6 +57,7 @@ public class HeptagonSubdivision extends ChangeManifestations
         super( selection, realized, groupInSelection );
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "HeptagonSubdivision";

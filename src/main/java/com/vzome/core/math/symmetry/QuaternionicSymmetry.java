@@ -81,6 +81,7 @@ public class QuaternionicSymmetry
             HALF = field .createRational( 1, 2 );
         }
 
+        @Override
         protected void startVertices( int numVertices )
         {
             mRoots = new Quaternion[ numVertices ];
@@ -93,29 +94,37 @@ public class QuaternionicSymmetry
 
         private final AlgebraicNumber HALF;
         
+        @Override
         protected void addVertex( int index, AlgebraicVector location )
         {
             mRoots[ index ] = new Quaternion( field, location .scale( HALF ) );
         }
 
+        @Override
         protected void startEdges( int numEdges )
         {}
 
+        @Override
         protected void addEdge( int index, int v1, int v2 )
         {}
 
+        @Override
         protected void startFaces( int numFaces )
         {}
 
+        @Override
         protected void addFace( int index, int[] verts )
         {}
 
+        @Override
         protected void addBall( int index, int vertex )
         {}
 
+        @Override
         protected void startBalls( int numVertices )
         {}
 
+        @Override
         protected void endFile( StringTokenizer tokens )
         {}
         

@@ -45,6 +45,7 @@ public class VefToModel extends VefParser
             logger .finest( "quaternion = " + quaternion .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
     }
 
+    @Override
     protected void startVertices( int numVertices )
     {
         mVertices = new Point[ numVertices ];
@@ -58,6 +59,7 @@ public class VefToModel extends VefParser
         }
     }
 
+    @Override
     protected void addVertex( int index, AlgebraicVector location )
     {
         logger .finest( "addVertex location = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
@@ -78,9 +80,11 @@ public class VefToModel extends VefParser
         mVertices[ index ] .setIndex( index );
     }
 
+    @Override
     protected void startEdges( int numEdges )
     {}
 
+    @Override
     protected void addEdge( int index, int v1, int v2 )
     {
         Point p1 = mVertices[ v1 ], p2 = mVertices[ v2 ];
@@ -90,9 +94,11 @@ public class VefToModel extends VefParser
         mEffects .constructionAdded( seg );
     }
 
+    @Override
     protected void startFaces( int numFaces )
     {}
 
+    @Override
     protected void addFace( int index, int[] verts )
     {
         Point[] points = new Point[ verts.length ];
@@ -103,16 +109,19 @@ public class VefToModel extends VefParser
         mEffects .constructionAdded( panel );
     }
 
+    @Override
     protected void addBall( int index, int vertex )
     {
         mEffects .constructionAdded( mVertices[ vertex ] );
     }
 
+    @Override
     protected void startBalls( int numVertices )
     {
         noBallsSection = false;
     }
 
+    @Override
     protected void endFile( StringTokenizer tokens )
     {
         if ( noBallsSection ) {

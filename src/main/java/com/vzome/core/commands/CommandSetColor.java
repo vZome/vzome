@@ -19,16 +19,19 @@ public class CommandSetColor extends AbstractCommand
     private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { MANIFESTATION_ATTR, Manifestation.class },
         { COLOR_ATTR, Color.class } };
 
+    @Override
     public Object[][] getParameterSignature()
     {
         return PARAM_SIGNATURE;
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return ATTR_SIGNATURE;
     }
 
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {

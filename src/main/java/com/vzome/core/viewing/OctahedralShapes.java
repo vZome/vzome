@@ -15,6 +15,7 @@ public class OctahedralShapes extends AbstractShapes
         super( pkgName, name, symm );
     }
 
+    @Override
     protected Polyhedron buildConnectorShape( String pkgName )
     {
         AlgebraicField field = mSymmetry.getField();

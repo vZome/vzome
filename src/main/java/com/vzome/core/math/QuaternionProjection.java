@@ -40,6 +40,7 @@ public class QuaternionProjection implements Projection
         this.field = field;
     }
 
+    @Override
     public AlgebraicVector projectImage( AlgebraicVector source, boolean wFirst )
     {
         if ( mRightQuat != null ) // the correct projection, drop first coordinate

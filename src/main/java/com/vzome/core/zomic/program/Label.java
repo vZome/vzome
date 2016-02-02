@@ -19,6 +19,7 @@ public class Label extends ZomicStatement {
 	/* (non-Javadoc)
 	 * @see com.vzome.core.zomic.program.ZomicProgram#accept(com.vzome.core.zomic.program.Visitor)
 	 */
+    @Override
 	public void accept(Visitor visitor) {
 		
 		visitor .visitLabel( mLabel );

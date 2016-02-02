@@ -22,17 +22,20 @@ public class CommandExecutePythonScript extends AbstractCommand
 
     private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { SCRIPT_ATTR, String.class } };
 
+    @Override
     public Object[][] getParameterSignature()
     {
         return PARAM_SIGNATURE;
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return ATTR_SIGNATURE;
     }
     
 
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects )
     throws Command.Failure
     {

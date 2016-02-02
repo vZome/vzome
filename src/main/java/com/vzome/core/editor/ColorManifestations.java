@@ -38,6 +38,7 @@ public class ColorManifestations extends ChangeManifestations
         }
     }
 
+    @Override
     public void getXmlAttributes( Element result )
     {
         result .setAttribute( "red", "" + color .getRed() );
@@ -48,6 +49,7 @@ public class ColorManifestations extends ChangeManifestations
             result .setAttribute( "alpha", "" + alpha );
     }
 
+    @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Failure
     {
         if ( format .loadToRender() )
@@ -82,11 +84,13 @@ public class ColorManifestations extends ChangeManifestations
             	oldColor = Color .GREY_TRANSPARENT; // TODO fix this case
         }
 
+        @Override
         public void redo()
         {
             mManifestations .setColor( mManifestation, newColor );
         }
 
+        @Override
         public void undo()
         {
             mManifestations .setColor( mManifestation, oldColor );
@@ -104,6 +108,7 @@ public class ColorManifestations extends ChangeManifestations
     }
 
 
+    @Override
     protected String getXmlElementName()
     {
         return "setItemColor";

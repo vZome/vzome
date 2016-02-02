@@ -69,11 +69,13 @@ public class B4Group implements CoxeterGroup
         }
     }
     
+    @Override
     public int getOrder()
     {
         return 24*16;
     }
 
+    @Override
     public AlgebraicVector groupAction( AlgebraicVector model, int element )
     {
         
@@ -119,26 +121,31 @@ public class B4Group implements CoxeterGroup
         return result;
     }
 
+    @Override
     public AlgebraicVector getOrigin()
     {
         return this.field .origin( 4 );
     }
 
+    @Override
     public AlgebraicVector getWeight( int i )
     {
         return WEIGHTS[ i ];
     }
 
+    @Override
     public AlgebraicVector getSimpleRoot( int i )
     {
         return ROOTS[ i ];
     }
 
+    @Override
     public AlgebraicField getField()
     {
         return field;
     }
 
+    @Override
     public AlgebraicVector chiralSubgroupAction( AlgebraicVector model, int element )
     {
         AlgebraicVector result = field .basisVector( 4, AlgebraicVector.X4 );

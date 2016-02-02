@@ -23,6 +23,7 @@ import com.vzome.core.model.Strut;
 
 public class ScalingTool extends SymmetryTool
 {
+    @Override
     public String getCategory()
     {
         return "scaling";
@@ -33,6 +34,7 @@ public class ScalingTool extends SymmetryTool
         super( name, symmetry, selection, realized, tools, originPoint );
     }
 
+    @Override
     public void perform() throws Command.Failure
     {
         Segment s1 = null, s2 = null;
@@ -82,11 +84,13 @@ public class ScalingTool extends SymmetryTool
         defineTool();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "ScalingTool";
     }
 
+    @Override
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         String symmName = element .getAttribute( "symmetry" );

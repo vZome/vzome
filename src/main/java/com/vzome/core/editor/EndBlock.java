@@ -16,6 +16,7 @@ import com.vzome.core.commands.Command.Failure;
  */
 public class EndBlock implements UndoableEdit
 {
+    @Override
 	public Element getXml( Document doc )
     {
         return doc .createElement( "EndBlock" );
@@ -27,30 +28,37 @@ public class EndBlock implements UndoableEdit
         return getXml( doc );
     }
 
+    @Override
     public boolean isVisible()
     {
     	return false;
     }
 
+    @Override
     public boolean isDestructive()
     {
         return false;
     }
 
+    @Override
     public void redo()
     {}
 
+    @Override
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         context .performAndRecord( this );
     }
 
+    @Override
     public void undo()
     {}
 
+    @Override
     public void perform()
     {}
 
+    @Override
     public boolean isSticky()
     {
         return false;

@@ -21,7 +21,8 @@ public class CentroidPoint extends Point
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         // TODO implement impossibility
 //        if ( mStart .isImpossible() || mEnd .isImpossible() )
