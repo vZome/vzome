@@ -33,7 +33,7 @@ public class CentroidPoint extends Point
             centroid = centroid .plus( mPoints[i] .getLocation() );
             num++;
         }
-        centroid = centroid .scale( field .createRational( new int[]{ 1, num } ) );
+        centroid = centroid .scale( field .createRational( 1, num ) );
         
         return setStateVariable( centroid, false );
     }

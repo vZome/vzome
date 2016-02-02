@@ -198,6 +198,42 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
         }
     }
 
+    /**
+     * @param wholeNumber becomes the numerator with 1 as the denominator
+     * @return AlgebraicNumber
+     */
+    public final AlgebraicNumber createRational( int wholeNumber )
+    {
+        return createRational( wholeNumber, 1 );
+    }
+
+    /**
+     * @param numerator
+     * @param denominator
+     * @return AlgebraicNumber
+     */
+    public final AlgebraicNumber createRational( int numerator, int denominator )
+    {
+        return createAlgebraicNumber( numerator, 0, denominator, 0 );
+    }
+    
+    /**
+    * @deprecated As of 2/1/2016: Use {@link #createRational( int wholeNumber )} 
+    * or {@link #createRational( int numerator, int denominator )} instead
+    * since they provide compile-time enforcement of the number of parameters 
+    * as well as improved readability. 
+    * 
+    * For example:
+    * <code> createRational( new int[]{ 0, 1 } ); </code> becomes:
+    * <code> createRational( 0 ); </code> 
+    * and 
+    * <code> createRational( new int[]{ 1, 2 } ); </code> becomes:
+    * <code> createRational( 1, 2 ); </code>.
+    * 
+    * When all references to this varargs overload have been replaced, 
+    *   then this overload should be removed.
+    */
+    @Deprecated
     public final AlgebraicNumber createRational( int... value )
     {
         int denom = value.length == 2 ? value[ 1 ] : 1;

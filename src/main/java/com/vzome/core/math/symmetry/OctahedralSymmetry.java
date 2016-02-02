@@ -95,7 +95,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
         AlgebraicVector zAxis = mField.basisVector( 3, AlgebraicVector.Z );
         Direction dir;
         if ( mField instanceof PentagonField )
-            dir = createZoneOrbit( frameColor, 0, 1, xAxis, true, true, mField .createRational( new int[] { 2, 1 } ) );
+            dir = createZoneOrbit( frameColor, 0, 1, xAxis, true, true, mField .createRational( 2 ) );
         else
             dir = createZoneOrbit( frameColor, 0, 1, xAxis, true );
 

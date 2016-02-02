@@ -85,7 +85,7 @@ public class DodecagonalShapes extends AbstractShapes
             AlgebraicField field = mSymmetry .getField();
             Polyhedron hex = new Polyhedron( field );
             AlgebraicVector strut = field .basisVector( 3, 0 ) .scale( length );
-            final AlgebraicNumber THIRD = field .createRational( new int[]{ 1, 3 } );
+            final AlgebraicNumber THIRD = field .createRational( 1, 3 );
             hex .addVertex( strut .plus( V5 .scale( THIRD ) .minus( TWO ) ) );
             hex .addVertex( strut .plus( V0 .scale( THIRD ) .minus( TWO ) ) );
             hex .addVertex( strut .plus( V1 .scale( THIRD ) .minus( TWO ) ) );

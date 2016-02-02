@@ -53,7 +53,7 @@ public class D4Group implements CoxeterGroup
     public D4Group( AlgebraicField field )
     {
         this.field = field;
-        AlgebraicNumber neg_one = field .createRational( new int[]{ -1, 1 } );
+        AlgebraicNumber neg_one = field .createRational( -1 );
         
         ROOTS[ 0 ] = field .basisVector( 4, AlgebraicVector.X4 ); // ( 0, 1, -1, 0 );
         ROOTS[ 0 ] .setComponent( AlgebraicVector.Y4, neg_one );
@@ -65,8 +65,8 @@ public class D4Group implements CoxeterGroup
         ROOTS[ 3 ] .setComponent( AlgebraicVector.W4, field .createPower( 0 ) );
 
         AlgebraicVector y = field .basisVector( 4, AlgebraicVector.Y4 );
-        AlgebraicNumber half = field .createRational( new int[]{ 1, 2 } );
-        AlgebraicNumber neg_half = field .createRational( new int[]{ -1, 2 } );
+        AlgebraicNumber half = field .createRational( 1, 2 );
+        AlgebraicNumber neg_half = field .createRational( -1, 2 );
         WEIGHTS[ 0 ] = field .basisVector( 4, AlgebraicVector.X4 ); // ( 0, 1, 0, 0 );
         WEIGHTS[ 1 ] = WEIGHTS[ 0 ] .plus( y ); // ( 0, 1, 1, 0 );
         WEIGHTS[ 2 ] = field .basisVector( 4, AlgebraicVector.X4 ); // ( -1/2, 1/2, 1/2, 1/2 );

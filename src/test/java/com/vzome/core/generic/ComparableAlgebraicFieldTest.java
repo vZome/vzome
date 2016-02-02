@@ -75,4 +75,20 @@ public class ComparableAlgebraicFieldTest {
 		int result = field1.compareTo(field2);
 		assertEquals(expected, signum(result));
 	}
+    
+    
+    /**
+     * This doesn't have anything to do with Comparable, 
+     * but this was a convenient place to throw in this fundamental assertion.
+     */
+    @Test
+	public void testOrder() {
+        int pass = 0;
+        for(AlgebraicField field : fields) {
+            assertTrue(field.getOrder() >= 2);
+            pass++;
+        }
+        assertEquals(fields.size(), pass);
+	}    
+
 }

@@ -83,8 +83,8 @@ public class CommandVanOss600Cell extends CommandImportVEFData
         {
             AlgebraicField field = getField();
 
-            AlgebraicNumber half = field .createRational( new int[]{ 1,2 } );
-            AlgebraicNumber quarter = field .createRational( new int[]{ 1,4 } );
+            AlgebraicNumber half = field .createRational( 1, 2 );
+            AlgebraicNumber quarter = field .createRational( 1, 4 );
 
             AlgebraicVector centroid = mLocations[0] .plus( mLocations[48] ) .plus( mLocations[50] ) .plus( mLocations[64] ) .scale( quarter );
             AlgebraicVector edgeCenter = mLocations[0] .plus( mLocations[48] ) .scale( half );  // center of one edge

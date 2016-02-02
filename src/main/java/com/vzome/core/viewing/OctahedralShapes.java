@@ -20,7 +20,7 @@ public class OctahedralShapes extends AbstractShapes
         AlgebraicField field = mSymmetry.getField();
         Polyhedron cube = new Polyhedron( field );
         AlgebraicNumber scale = field.createPower( - 2 );
-        scale = field.createRational( new int[] { 2, 1 } ) .times( scale );
+        scale = field.createRational( 2 ) .times( scale );
         AlgebraicVector x = field.basisVector( 3, AlgebraicVector.X );
         AlgebraicVector y = field.basisVector( 3, AlgebraicVector.Y );
         AlgebraicVector z = field.basisVector( 3, AlgebraicVector.Z );

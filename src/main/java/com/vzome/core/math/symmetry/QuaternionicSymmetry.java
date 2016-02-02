@@ -78,7 +78,7 @@ public class QuaternionicSymmetry
         RootParser( AlgebraicField field )
         {
             this.field = field;
-            HALF = field .createRational( new int[]{1,2} );
+            HALF = field .createRational( 1, 2 );
         }
 
         protected void startVertices( int numVertices )

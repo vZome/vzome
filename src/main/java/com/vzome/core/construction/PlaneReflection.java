@@ -45,7 +45,7 @@ public class PlaneReflection extends Transformation
         arg = arg .minus( mBase );
         // x' = x - 2 ((x.y)/(y.y)) y
         AlgebraicNumber xy = arg .dot( mNormal );
-        xy = xy .times( field .createRational( new int[]{ 2,1 } ) );
+        xy = xy .times( field .createRational( 2 ) );
         arg = arg .minus( mNormal .scale( xy .times( mNormDotReciprocal ) ) );
         return arg .plus( mBase );
     }

@@ -145,12 +145,12 @@ public class A4Group implements CoxeterGroup
     {
         this.field = field;
         
-        ONE_FIFTH = field .createRational( new int[]{ 1,5 } );
-        TWO_FIFTHS = field .createRational( new int[]{ 2,5 } );
-        THREE_FIFTHS = field .createRational( new int[]{ 3,5 } );
-        FOUR_FIFTHS = field .createRational( new int[]{ 4,5 } );
+        ONE_FIFTH    = field .createRational( 1, 5 );
+        TWO_FIFTHS   = field .createRational( 2, 5 );
+        THREE_FIFTHS = field .createRational( 3, 5 );
+        FOUR_FIFTHS  = field .createRational( 4, 5 );
 
-        AlgebraicNumber neg_one = field .createRational( new int[]{ -1, 1 } );
+        AlgebraicNumber neg_one = field .createRational( -1 );
 
         ROOTS[ 0 ] = field .basisVector( 5, 0 ); // ( 1, -1, 0, 0, 0 );
         ROOTS[ 0 ] .setComponent( 1, neg_one );
@@ -192,8 +192,8 @@ public class A4Group implements CoxeterGroup
         WEIGHTS[ 3 ] .setComponent( 3, ONE_FIFTH );
         WEIGHTS[ 3 ] .setComponent( 4, FOUR_FIFTHS .negate() );
 
-        AlgebraicNumber two = field .createRational( new int[]{ 2, 1 } );
-        AlgebraicNumber two_neg = field .createRational( new int[]{ -2, 1 } );
+        AlgebraicNumber two = field .createRational( 2 );
+        AlgebraicNumber two_neg = field .createRational( -2 );
         
         ROOTS_R4[ 0 ] = field .basisVector( 4, 1 );
         ROOTS_R4[ 0 ] .setComponent( 1, two );
@@ -227,7 +227,7 @@ public class A4Group implements CoxeterGroup
     public AlgebraicVector groupAction( AlgebraicVector model, int element )
     {
         AlgebraicVector result = field .origin( 4 );
-        AlgebraicNumber sum = field .createRational( new int[]{ 0, 1 } );
+        AlgebraicNumber sum = field .createRational( 0 );
         for ( int c = 0; c < 4; c++ ) {
             AlgebraicNumber source = model .getComponent( S5_PERMS[ element ][ c ] );
             sum = sum .plus( source );
@@ -262,7 +262,7 @@ public class A4Group implements CoxeterGroup
         if ( element >= 60 )
             return null;
         AlgebraicVector result = field .origin( 4 );
-        AlgebraicNumber sum = field .createRational( new int[]{ 0, 1 } );
+        AlgebraicNumber sum = field .createRational( 0 );
         for ( int c = 0; c < 4; c++ ) {
             AlgebraicNumber source = model .getComponent( S5_PERMS[ element ][ c ] );
             sum = sum .plus( source );

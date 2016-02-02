@@ -194,7 +194,7 @@ public class Application
                             .createPower( - 1 ) );
 
                     createZoneOrbit( "green", 1, 8, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 }, true, true, mField
-                            .createRational( new int[] { 2, 1 } ) );
+                            .createRational( 2 ) );
 
                     createZoneOrbit( "lavender", 0, NO_ROTATION, new int[] { 2, 1, - 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
 
@@ -210,7 +210,7 @@ public class Application
                             .createPower( - 1 ) );
 
                     createZoneOrbit( "black", 0, NO_ROTATION, new int[] { 1, 2, 0, 1, 0, 1, 1, 2, - 1, 2, 1, 2 }, false, false, mField
-                            .createRational( new int[] { 2, 1 } ) );
+                            .createRational( 2 ) );
 
                     createZoneOrbit( "turquoise", 0, NO_ROTATION, new int[] { 1, 1, 2, 1, 3, 1, 4, 1, 3, 1, 4, 1 } );
                 }
@@ -294,7 +294,7 @@ public class Application
                     createZoneOrbit( "yellow", 0, 4, v, true );
 
                     AlgebraicNumber sqrt2 = fField .createPower( 1 );
-                    AlgebraicNumber half = fField .createRational( new int[]{ 1, 2 } );
+                    AlgebraicNumber half = fField .createRational( 1, 2 );
                     v = new AlgebraicVector( sqrt2, sqrt2, fField .zero() ) .scale( half );
                     createZoneOrbit( "magenta", 1, 8, v, true );
 

@@ -28,7 +28,7 @@ public class SegmentMidpoint extends Point
     {
         if ( mSegment .isImpossible() )
             return setStateVariable( null, true );
-        AlgebraicNumber half = field .createRational( new int[]{ 1,2 } );
+        AlgebraicNumber half = field .createRational( 1, 2 );
         AlgebraicVector loc = mSegment .getStart();
         loc = loc .plus( mSegment .getOffset() .scale( half ) );
         return setStateVariable( loc, false );

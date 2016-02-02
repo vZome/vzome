@@ -25,12 +25,12 @@ public class F4Group extends B4Group
     {
         super( field );
 
-        AlgebraicNumber one = field .createRational( new int[]{ 1, 1 } );
-        AlgebraicNumber two = field .createRational( new int[]{ 2, 1 } );
-        AlgebraicNumber three = field .createRational( new int[]{ 3, 1 } );
-        AlgebraicNumber four = field .createRational( new int[]{ 4, 1 } );
-        AlgebraicNumber neg_one = field .createRational( new int[]{ -1, 1 } );
-        AlgebraicNumber neg_two = field .createRational( new int[]{ -2, 1 } );
+        AlgebraicNumber one     = field .createRational( 1 );
+        AlgebraicNumber two     = field .createRational( 2 );
+        AlgebraicNumber three   = field .createRational( 3 );
+        AlgebraicNumber four    = field .createRational( 4 );
+        AlgebraicNumber neg_one = field .createRational( -1 );
+        AlgebraicNumber neg_two = field .createRational( -2 );
 
         ROOTS[ 0 ] = field .basisVector( 4, AlgebraicVector.X4 ); // ( 2, -2, 0, 0 );
         ROOTS[ 0 ] .setComponent( AlgebraicVector.X4, two );
@@ -72,8 +72,8 @@ public class F4Group extends B4Group
          *  1/2 -1/2  1/2 -1/2
          * -1/2  1/2  1/2 -1/2
          */
-        AlgebraicNumber half = field .createRational( new int[]{ 1, 2 } );
-        AlgebraicNumber neg_half = field .createRational( new int[]{ -1, 2 } );
+        AlgebraicNumber half = field .createRational( 1, 2 );
+        AlgebraicNumber neg_half = field .createRational( -1, 2 );
         AlgebraicVector col1 = field .basisVector( 4, AlgebraicVector.X4 );
         col1 .setComponent( AlgebraicVector.X4, half );
         col1 .setComponent( AlgebraicVector.Y4, half );

@@ -30,7 +30,7 @@ public class SegmentCrossProduct extends Segment
         AlgebraicVector v2 = seg2 .getOffset();
         v2 = v1 .cross( v2 );
         v2 = v2 .scale( field .createPower( -4 ) );
-        v2 = v2 .scale( field .createRational( new int[]{ 1,2 } ) );
+        v2 = v2 .scale( field .createRational( 1, 2 ) );
         return setStateVariables( seg1 .getEnd(), v2, false );
     }
 }

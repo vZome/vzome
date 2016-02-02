@@ -32,7 +32,7 @@ public class ChangeOfBasis extends Transformation
         if ( originalScaling )
             this .scale = field .createPower( -5 );
         else
-            this .scale = field .createRational( new int[]{ 1,2 } ) .times( field .createPower( -3 ) );
+            this .scale = field .createRational( 1, 2 ) .times( field .createPower( -3 ) );
         mapParamsToState();
     }
 
@@ -42,7 +42,7 @@ public class ChangeOfBasis extends Transformation
         mOld = oldBasis;
         mNew = newBasis;
         mKernel = kernel;
-        this .scale = field .createRational( new int[]{ 2,1 } ) .times( field .createPower( -7 ) );
+        this .scale = field .createRational( 2 ) .times( field .createPower( -7 ) );
         mapParamsToState();
     }
     

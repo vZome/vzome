@@ -80,9 +80,9 @@ public class CommandUniformH4Polytope extends CommandTransform
         coRoots[ 0 ] = new GoldenNumberVector( B, ONE, ZERO, A.neg() );
              */
 
-            final AlgebraicNumber ONE = field .createRational( new int[]{ 1,1 } );
-            final AlgebraicNumber NEG_ONE = field .createRational( new int[]{ -1,1 } );
-            final AlgebraicNumber TWO = field .createRational( new int[]{ 2,1 } );
+            final AlgebraicNumber ONE = field .createRational( 1 );
+            final AlgebraicNumber NEG_ONE = field .createRational( -1 );
+            final AlgebraicNumber TWO = field .createRational( 2 );
             final AlgebraicNumber A = field .createAlgebraicNumber( 1, -1, 1, 0 );
             final AlgebraicNumber B = field .createAlgebraicNumber( 0, 1, 1, 0 );
 

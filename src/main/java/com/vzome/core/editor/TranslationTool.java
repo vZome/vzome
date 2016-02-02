@@ -57,7 +57,7 @@ public class TranslationTool extends TransformationTool
                 AlgebraicField field = originPoint .getField();
                 AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
                 AlgebraicNumber scale = field .createPower( 3 );
-                scale = scale .times( field .createRational( new int[]{ 2, 1 } ) );
+                scale = scale .times( field .createRational( 2 ) );
                 xAxis = xAxis .scale( scale );
                 p2 = new FreePoint( xAxis );
             }

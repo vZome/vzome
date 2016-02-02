@@ -353,7 +353,7 @@ public class ZomeCADImporter
         if ( Math .abs( value - 1f ) < EPSILON )
             result = this .field .one();
         else if ( Math .abs( value - 0.5f ) < EPSILON )
-            result = this .field .createRational( new int[]{ 1, 2 } );
+            result = this .field .createRational( 1, 2 );
         else {
             int sign = Float .compare( value, 1f );
             for ( int i = 1; i < 13; i++ )
@@ -377,7 +377,7 @@ public class ZomeCADImporter
             for ( int i = 1; i < 13; i++ )
             {
                 AlgebraicNumber candidate = field .createPower( sign * i );
-                candidate = candidate .times( field .createRational( new int[]{ 1,2 } ) );
+                candidate = candidate .times( field .createRational( 1, 2 ) );
                 double real = candidate .evaluate();
                 if ( Math .abs( value - real ) < EPSILON )
                 {
@@ -396,7 +396,7 @@ public class ZomeCADImporter
             for ( int i = 1; i < 13; i++ )
             {
                 AlgebraicNumber candidate = field .createPower( sign * i );
-                candidate = candidate .times( field .createRational( new int[]{ 1,4 } ) );
+                candidate = candidate .times( field .createRational( 1, 4 ) );
                 double real = candidate .evaluate();
                 if ( Math .abs( value - real ) < EPSILON )
                 {

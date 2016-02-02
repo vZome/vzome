@@ -136,7 +136,7 @@ public class ZomicPolyhedronModelInterpreter extends Interpreter
         }
         if ( m_face == null ) {
             AlgebraicVector loc = ((LocationTracker) mEvents).getLocation();
-            AlgebraicVector halfLoc = loc .scale( mPolyhedron .getField() .createRational( new int[]{ 1, 2 } ) );
+            AlgebraicVector halfLoc = loc .scale( mPolyhedron .getField() .createRational( 1, 2 ) );
             Integer vertexObj = mPolyhedron.addIndexedVertex( halfLoc );
             m_labels.put( id, vertexObj );
             // System .out .println ( id + " = " + loc );
