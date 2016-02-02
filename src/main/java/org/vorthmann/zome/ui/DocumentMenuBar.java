@@ -24,13 +24,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
 	private static final int COMMAND_SHIFT = COMMAND | InputEvent.SHIFT_MASK;
 
-	private static final int CONTROL = InputEvent.ALT_MASK;
+	private static final int CONTROL = InputEvent.CTRL_MASK;
 	
 	private static final int CONTROL_OPTION = InputEvent.CTRL_MASK | InputEvent.ALT_MASK;
 	
-    private JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, pythonMenuItem;
+    private final JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, pythonMenuItem;
 
-    private JMenu import3dSubmenu;
+    private final JMenu import3dSubmenu;
 
 	private final ControlActions actions;
 	
