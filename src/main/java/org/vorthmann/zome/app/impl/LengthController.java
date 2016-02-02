@@ -410,7 +410,7 @@ public class LengthController extends DefaultController
         // TODO push part of this into AlgebraicField somehow?
         AlgebraicNumber result = this .unitFactor .times( this .fixedFactor );
         if ( half )
-            result = result .times( field .createRational( new int[]{ 1,2 } ) );
+            result = result .times( field .createRational( 1, 2 ) );
         
         // TODO support more than one scaling, like rho and sigma for heptagons
         int realScale = currentScale .getScale() + SCALE_OFFSET;
