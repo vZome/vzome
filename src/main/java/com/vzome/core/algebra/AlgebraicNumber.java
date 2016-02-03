@@ -5,10 +5,8 @@ package com.vzome.core.algebra;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Comparator;
 
-
-public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumber>, Comparator<AlgebraicNumber>
+public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumber>
 {
     private final AlgebraicField field;
     private final BigRational[] factors;
@@ -53,8 +51,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         final int prime = 31;
         int result = 1;
         result = prime * result 
-                + Arrays.hashCode( factors )
-                + field.hashCode();
+                + Arrays.hashCode( factors );
         return result;
     }
 
@@ -68,9 +65,16 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         if ( getClass() != obj.getClass() )
             return false;
         AlgebraicNumber other = (AlgebraicNumber) obj;
-        if ( !Arrays.equals( factors, other.factors ) )
-            return false;
-        return field.equals( other.field );
+        if(!field.equals( other.field )) {
+            String reason  = "Invalid comparison of " 
+                    + getClass().getSimpleName() + "s"
+                    + "with different fields: "
+                    + field.getName()
+                    + " and "
+                    + other.field.getName();
+            throw new IllegalStateException(reason);
+        }
+        return Arrays.equals( factors, other.factors );
     }
 
     @Override
@@ -78,14 +82,10 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         if (this == other) {
             return 0;
         }
-        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
+        if (other.equals(this)) { 
+            // intentionally throws a NullPointerException if other is null
+            // or an IllegalStateException if fields are different
             return 0;
-        }
-        if (0 != field.compareTo( other.field )) {
-            // Should never get here...
-            String reason = "Invalid field comparison: " + field.getName()
-                + " and " + other.field.getName() + ".";
-            throw new IllegalStateException(reason);
         }
         int comparison = Integer.compare(factors.length, other.factors.length);
         if (comparison != 0) {
@@ -100,13 +100,6 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
             }
         }
         return comparison;
-    }
-
-    @Override
-    public int compare(AlgebraicNumber o1, AlgebraicNumber o2) {
-        return (o1 == null)
-                ? ((o2 == null) ? 0 : -1)
-                : o1.compareTo(o2);
     }
 
     public AlgebraicField getField()

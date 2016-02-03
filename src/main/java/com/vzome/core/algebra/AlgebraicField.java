@@ -9,9 +9,8 @@ import java.util.StringTokenizer;
 
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import java.util.Comparator;
 
-public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comparator<AlgebraicField>
+public abstract class AlgebraicField
 {
     public abstract AlgebraicNumber getDefaultStrutScaling();
 
@@ -96,38 +95,7 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        AlgebraicField other = (AlgebraicField) obj;
-        if(! this.name.equals(other.name)) {
-            String reason = "All instances of " + getClass().getSimpleName() + " must have the same name."
-                    + " Found '" + this.name + "' and '" + other.name + "'.";
-            throw new IllegalStateException(reason);
-        }
-        return true;
-    }
-
-    @Override
-    public int compareTo(AlgebraicField other) {
-        if (this == other) {
-            return 0;
-        }
-        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
-            return 0;
-        }
-        // Should never get here...
-        String reason = "Invalid comparison of " + this.getClass().getSimpleName()
-                + " with " + other.getClass().getSimpleName() + ".";
-        throw new IllegalStateException(reason);
-
-    }
-
-    @Override
-    public int compare(AlgebraicField o1, AlgebraicField o2) {
-        return (o1 == null)
-                ? ((o2 == null) ? 0 : -1)
-                : o1.compareTo(o2);
+        return getClass().equals(obj.getClass());
     }
 
     public AlgebraicField getSubfield()
@@ -220,8 +188,7 @@ public abstract class AlgebraicField implements Comparable<AlgebraicField>, Comp
     /**
     * @deprecated As of 2/1/2016: Use {@link #createRational( int wholeNumber )} 
     * or {@link #createRational( int numerator, int denominator )} instead
-    * since they provide compile-time enforcement of the number of parameters 
-    * as well as improved readability. 
+    * since the new methods ensure that there are exactly one or two parameters at compile-time.
     * 
     * For example:
     * <code> createRational( new int[]{ 0, 1 } ); </code> becomes:

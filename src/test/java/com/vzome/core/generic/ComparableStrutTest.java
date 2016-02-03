@@ -23,7 +23,7 @@ public class ComparableStrutTest extends ComparableTest<Strut> {
         AlgebraicNumber s = field .createRational( 7 );
         AlgebraicNumber t = field .createRational( 6 );
         AlgebraicNumber u = field .createRational( 5 );
-        AlgebraicNumber v = field .createRational( 5 );
+        AlgebraicNumber v = field .createRational( 4 );
         AlgebraicNumber w = field .createRational( 3 );
         AlgebraicNumber x = field .createRational( 2 );
         AlgebraicNumber ONE  = field .createRational( 1 );
@@ -71,6 +71,7 @@ public class ComparableStrutTest extends ComparableTest<Strut> {
         list .add( sf );
         list .add( sg );
         list .add( sh );
+        list .add( si );
 		diffValues = list.toArray(new Strut[list.size()]);
 
 		list.clear();

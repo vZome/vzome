@@ -1,13 +1,11 @@
 package com.vzome.core.model;
 
 import com.vzome.core.algebra.AlgebraicVector;
-import java.util.Comparator;
-
 
 /**
  * @author Scott Vorthmann
  */
-public class Connector extends Manifestation implements Comparable<Connector>, Comparator<Connector>
+public class Connector extends Manifestation implements Comparable<Connector>
 {
 
 	public Connector( AlgebraicVector loc )
@@ -53,13 +51,6 @@ public class Connector extends Manifestation implements Comparable<Connector>, C
             return 0;
         }
 		return this.getLocation().compareTo( other.getLocation() );
-	}
-	
-	@Override
-	public int compare(Connector o1, Connector o2) {
-		return (o1 == null)
-				? ((o2 == null) ? 0 : -1)
-				: o1.compareTo(o2);
 	}
 	
 	@Override

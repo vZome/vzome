@@ -1,16 +1,13 @@
 package com.vzome.core.algebra;
 
 import java.util.Arrays;
-
 import com.vzome.core.math.RealVector;
-import java.util.Comparator;
-
 
 /**
  * @author vorth
  *
  */
-public final class AlgebraicVector implements Comparable<AlgebraicVector>, Comparator<AlgebraicVector>
+public final class AlgebraicVector implements Comparable<AlgebraicVector>
 {
     public static final int X = 0, Y = 1, Z = 2;
 
@@ -43,8 +40,7 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>, Compa
         final int prime = 31;
         int result = 1;
         result = prime * result 
-                + Arrays.hashCode( coordinates )
-                + field.hashCode();
+                + Arrays.hashCode( coordinates );
         return result;
     }
 
@@ -58,9 +54,16 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>, Compa
         if ( getClass() != obj.getClass() )
             return false;
         AlgebraicVector other = (AlgebraicVector) obj;
-        if ( !Arrays.equals( coordinates, other.coordinates ) )
-            return false;
-        return field.equals( other.field );
+        if(!field.equals( other.field )) {
+            String reason  = "Invalid comparison of " 
+                    + getClass().getSimpleName() + "s"
+                    + "with different fields: "
+                    + field.getName()
+                    + " and "
+                    + other.field.getName();
+            throw new IllegalStateException(reason);
+        }
+        return Arrays.equals( coordinates, other.coordinates );
     }
 
     @Override
@@ -68,14 +71,10 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>, Compa
         if ( this == other ) {
             return 0;
         }
-        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
+        if (other.equals(this)) {
+            // intentionally throws a NullPointerException if other is null
+            // or an IllegalStateException if fields are different
             return 0;
-        }
-        if (0 != field.compareTo( other.field )) {
-            // Should never get here...
-            String reason = "Invalid field comparison: " + field.getName()
-                + " and " + other.field.getName() + ".";
-            throw new IllegalStateException(reason);
         }
         int comparison = Integer.compare(coordinates.length, other.coordinates.length);
         if(comparison != 0) {
@@ -90,13 +89,6 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>, Compa
             }
         }
         return comparison;
-    }
-
-    @Override
-    public int compare(AlgebraicVector o1, AlgebraicVector o2) {
-        return (o1 == null)
-                ? ((o2 == null) ? 0 : -1)
-                : o1.compareTo(o2);
     }
 
     public final RealVector toRealVector()

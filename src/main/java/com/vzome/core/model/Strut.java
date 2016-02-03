@@ -1,13 +1,11 @@
 package com.vzome.core.model;
 
 import com.vzome.core.algebra.AlgebraicVector;
-import java.util.Comparator;
-
 
 /**
  * @author Scott Vorthmann
  */
-public class Strut extends Manifestation implements Comparable<Strut>, Comparator<Strut>
+public class Strut extends Manifestation implements Comparable<Strut>
 {
 	private final AlgebraicVector m_end1, m_end2;
 
@@ -73,13 +71,6 @@ public class Strut extends Manifestation implements Comparable<Strut>, Comparato
 
 	public AlgebraicVector getCanonicalGreaterEnd() {
 		return (m_end1.compareTo(m_end2) > 0) ? m_end1 : m_end2;
-	}
-
-	@Override
-	public int compare(Strut o1, Strut o2) {
-		return (o1 == null)
-				? ((o2 == null) ? 0 : -1)
-				: o1.compareTo(o2);
 	}
 
 	@Override
