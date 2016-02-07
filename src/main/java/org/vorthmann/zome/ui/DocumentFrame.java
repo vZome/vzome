@@ -45,6 +45,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.desktop.controller.ViewPlatformControlPanel;
+import static org.vorthmann.zome.ui.ApplicationUI.getLogFileName;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {
@@ -148,7 +149,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
                     errorCode = ( (Exception) arguments[0] ).getMessage();
                     logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
-                    errorCode = "internal error, see vZome50_*_*.log in your home or logs directory";
+                    errorCode = "internal error, see the log file at " + getLogFileName();
                 } else {
                     logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
                     // TODO use resources

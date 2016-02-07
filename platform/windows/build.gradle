@@ -75,9 +75,11 @@ launch4j {
 	jreRuntimeBits = '64'
 
 	opt = '-Xmx3048M'
-	// Most of the rootProject.jvmArgs have apple in the name, but I'm going to include all of them anyway for now...
+	// Most of the rootProject.jvmArgs have apple in the name. Exclude those...
 	rootProject.jvmArgs.each { entry ->
-		opt = opt + " -D${entry.key}=${entry.value}"
+		if(!entry.key.contains("apple.")) {
+			opt = opt + " -D${entry.key}=${entry.value}"
+		}
 	}
 	cmdLine = ''
 	def sp = ''
