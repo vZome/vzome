@@ -55,10 +55,10 @@ public class CommandPolygon extends AbstractCommand
                     AlgebraicVector v1 = verticesList .get( 1 ) .getLocation() .minus( base );
                     AlgebraicVector v2 = point.getLocation().minus(base);
                     normal = v1 .cross( v2 );
-                    if ( normal .isOrigin() )
-                        if ( loadingFile != null )
+                    if ( normal .isOrigin() ) {
+                        if ( loadingFile != null ) {
                             failed = true;
-                        else
+                        } else {
                             // DJH: As far as I can tell, the only problem with any of vertices being collinear
                             // is that Panel.getNormal and Face.getNormal both use the first three vertices 
                             // to calculate their normals. At this point, even if they were changed 
@@ -74,19 +74,21 @@ public class CommandPolygon extends AbstractCommand
                             // since the Panel and Face classes don't check for the first three to be non-collinear. 
                             // They expect the caller to have done that checking.
                             throw new Failure( "First 3 points cannot be collinear." );
+                        }
+                    }
                 } else if (numPoints > 3) {
                     AlgebraicVector loc = point.getLocation().minus(base);
                     AlgebraicNumber dotProd = loc .dot( normal );
-                    if ( ! dotProd .isZero() )
+                    if ( ! dotProd .isZero() ) {
                         if ( loadingFile != null )
                             failed = true;
                         else
                             throw new Failure( "Points are not coplanar." );
+                    }
                 }
             }
         }
-        if ( numPoints < 3 )
-        {
+        if ( numPoints < 3 ) {
             if ( loadingFile != null )
                 failed = true;
             else
