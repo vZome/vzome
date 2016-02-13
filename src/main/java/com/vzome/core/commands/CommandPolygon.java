@@ -40,33 +40,48 @@ public class CommandPolygon extends AbstractCommand
         boolean failed = false;
         ConstructionList result = new ConstructionList();
         final Construction[] params = parameters .getConstructions();
-        List<Construction> verticesList = new ArrayList<>();
+        List<Point> verticesList = new ArrayList<>();
         
         AlgebraicVector normal = null, base = null;
         int numPoints = 0;
         for (Construction param : params) {
             if (param instanceof Point) {
+                Point point = (Point) param;
                 ++numPoints;
-                verticesList.add(param);
+                verticesList.add(point);
                 if (numPoints == 1) {
-                    base = ((Point) verticesList .get( 0 ) ) .getLocation();
+                    base = point.getLocation();
                 } else if (numPoints == 3) {
-                    AlgebraicVector v1 = ((Point) verticesList .get( 1 ) ) .getLocation() .minus( base );
-                    AlgebraicVector v2 = ((Point) param).getLocation().minus(base);
+                    AlgebraicVector v1 = verticesList .get( 1 ) .getLocation() .minus( base );
+                    AlgebraicVector v2 = point.getLocation().minus(base);
                     normal = v1 .cross( v2 );
                     if ( normal .isOrigin() )
                         if ( loadingFile != null )
                             failed = true;
                         else
-                            throw new Failure( "points are colinear" );
+                            // DJH: As far as I can tell, the only problem with any of vertices being collinear
+                            // is that Panel.getNormal and Face.getNormal both use the first three vertices 
+                            // to calculate their normals. At this point, even if they were changed 
+                            // to use any three points that are non-collinear (rather than just the first three points),
+                            // they would generate files that are not readable by older versions of vzome
+                            // unless we also automatically "rotate" the points around the perimeter 
+                            // until the first three are non-collinear. Until then, it's necessary to keep this constraint.
+                            // However, a polygon with the same collinear points in a different order 
+                            // is OK, just as long as the first three are not collinear.
+                            // This message should imply the option of reordering the points.
+                            // Also note that test cases, which construct Panels or Faces 
+                            // outside of this command must be careful not to introduce this problem 
+                            // since the Panel and Face classes don't check for the first three to be non-collinear. 
+                            // They expect the caller to have done that checking.
+                            throw new Failure( "First 3 points cannot be collinear." );
                 } else if (numPoints > 3) {
-                    AlgebraicVector loc = ((Point) param).getLocation().minus(base);
+                    AlgebraicVector loc = point.getLocation().minus(base);
                     AlgebraicNumber dotProd = loc .dot( normal );
                     if ( ! dotProd .isZero() )
                         if ( loadingFile != null )
                             failed = true;
                         else
-                            throw new Failure( "points not coplanar" );
+                            throw new Failure( "Points are not coplanar." );
                 }
             }
         }
@@ -77,11 +92,7 @@ public class CommandPolygon extends AbstractCommand
             else
                 throw new Failure( "A polygon requires at least three vertices." );
         }
-        Point[] points = new Point[0];
-        PolygonFromVertices poly = new PolygonFromVertices( verticesList .toArray( points ) );
-        {
-            
-        }
+        PolygonFromVertices poly = new PolygonFromVertices( verticesList .toArray( new Point[verticesList.size()] ) );
         if ( failed )
             poly .setFailed(); // and don't add it to effects for rendering
         else
