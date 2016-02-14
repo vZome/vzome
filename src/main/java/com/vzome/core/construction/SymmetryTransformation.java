@@ -10,7 +10,7 @@ import com.vzome.core.math.symmetry.Symmetry;
 /**
  * @author Scott Vorthmann
  */
-public class SymmetryTransformation extends Transformation
+public final class SymmetryTransformation extends Transformation
 {
     // parameters
     private Point mCenter;
@@ -31,6 +31,7 @@ public class SymmetryTransformation extends Transformation
         mapParamsToState();
     }
     
+    @Override
     protected boolean mapParamsToState()
     {
         if ( mCenter .isImpossible() )

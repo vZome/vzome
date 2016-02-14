@@ -17,6 +17,7 @@ public class InvertSelection extends ChangeSelection
         mManifestations = model;
     }
     
+    @Override
     public void perform()
     {
         for (Manifestation m : mManifestations) {
@@ -31,6 +32,7 @@ public class InvertSelection extends ChangeSelection
         redo();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "InvertSelection";

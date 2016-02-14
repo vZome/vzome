@@ -26,6 +26,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
         tetrahedralSubgroup = closure( new int[] { 0, 2, 4 } );
     }
     
+    @Override
     public Direction getSpecialOrbit( SpecialOrbit which )
     {
         switch ( which ) {
@@ -44,6 +45,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
         }
     }
 
+    @Override
     protected void createInitialPermutations()
     {
         mOrientations[0] = IDENTITY;
@@ -77,6 +79,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
         mOrientations[5] = new Permutation( this, map );
     }
 
+    @Override
     protected void createOtherOrbits()
     {
         AlgebraicVector xAxis = mField.basisVector( 3, AlgebraicVector.X );
@@ -88,6 +91,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
         createZoneOrbit( "yellow", 0, 4, yellow, true );
     }
 
+    @Override
     protected void createFrameOrbit( String frameColor )
     {
         AlgebraicVector xAxis = mField.basisVector( 3, AlgebraicVector.X );
@@ -95,7 +99,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
         AlgebraicVector zAxis = mField.basisVector( 3, AlgebraicVector.Z );
         Direction dir;
         if ( mField instanceof PentagonField )
-            dir = createZoneOrbit( frameColor, 0, 1, xAxis, true, true, mField .createRational( new int[] { 2, 1 } ) );
+            dir = createZoneOrbit( frameColor, 0, 1, xAxis, true, true, mField .createRational( 2 ) );
         else
             dir = createZoneOrbit( frameColor, 0, 1, xAxis, true );
 
@@ -129,6 +133,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
         }
     }
 
+    @Override
     public String getName()
     {
         return "octahedral";
@@ -136,6 +141,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
 
     private final int[] tetrahedralSubgroup;
 
+    @Override
     public int[] subgroup( String name )
     {
         if ( TETRAHEDRAL.equals( name ) )

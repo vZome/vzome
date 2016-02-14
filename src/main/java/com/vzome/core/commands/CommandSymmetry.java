@@ -28,6 +28,7 @@ public class CommandSymmetry extends CommandTransform
         mSymmetry = symmetry;
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return GROUP_ATTR_SIGNATURE;
@@ -47,6 +48,7 @@ public class CommandSymmetry extends CommandTransform
         return center;
     }
     
+    @Override
     public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         if ( ! attributes .containsKey( SYMMETRY_GROUP_ATTR_NAME ) )
@@ -57,6 +59,7 @@ public class CommandSymmetry extends CommandTransform
         super .setFixedAttributes( attributes, format );
     }
 
+    @Override
     public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         Point center = setSymmetry( attributes );

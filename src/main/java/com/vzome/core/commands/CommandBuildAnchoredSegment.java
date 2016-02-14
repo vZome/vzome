@@ -19,12 +19,14 @@ import com.vzome.core.math.symmetry.Axis;
  */
 public class CommandBuildAnchoredSegment extends AbstractCommand
 {
+    @Override
     public void getXml( Element xml, AttributeMap attributes )
     {
         XmlSaveFormat .serializeAxis( xml, "symm", "dir", "index", "sense", (Axis) attributes .get( "axis" ) );
         XmlSaveFormat .serializeNumber( xml, "len", (AlgebraicNumber) attributes .get( "length" ) );
     }
 
+    @Override
     public AttributeMap setXml( Element xml, XmlSaveFormat format )
     {
         AttributeMap attrs = super .setXml( xml, format );
@@ -47,16 +49,19 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
     private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { AXIS_ATTR, Axis.class },
             														{ LENGTH_ATTR, int[].class } };
 
+    @Override
     public Object[][] getParameterSignature()
     {
         return PARAM_SIGNATURE;
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return ATTR_SIGNATURE;
     }
     
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();

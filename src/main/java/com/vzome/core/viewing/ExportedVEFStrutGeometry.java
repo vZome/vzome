@@ -38,6 +38,7 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
     	this( vertices, faces, prototype, fullScaleVertices, null, field );
     }
 
+    @Override
     public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
     {
         AlgebraicVector tipVertex = prototypeVector .scale( length );

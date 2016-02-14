@@ -25,7 +25,8 @@ public class SegmentOnLine extends Segment
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mLine .isImpossible() )
             return setStateVariables( null, null, true );

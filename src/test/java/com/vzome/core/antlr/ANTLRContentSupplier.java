@@ -21,6 +21,7 @@ public class ANTLRContentSupplier extends ANTLR2XML .Default{
 
 	private  boolean m_startIsPending = false;
 
+    @Override
 	public 
 	void startElement( String name ) throws RecognitionException {
 		try  {
@@ -32,11 +33,13 @@ public class ANTLRContentSupplier extends ANTLR2XML .Default{
 		}
 	}
 
+    @Override
 	public 
 	void attribute( String name, String value ) throws RecognitionException {
 		m_attrBuffer .addAttribute( null, name, name, null, value );
 	}
 
+    @Override
 	public  void endElement() throws RecognitionException {
 		try  {
 			flushPendingStart();

@@ -25,7 +25,7 @@ public class B4Group implements CoxeterGroup
     public B4Group( AlgebraicField field )
     {
         this.field = field;
-        AlgebraicNumber neg_one = field .createRational( new int[]{ -1, 1 } );
+        AlgebraicNumber neg_one = field .createRational( -1 );
         
         /* in vZome 2.1 source:
          *                                       X      Y       Z      W
@@ -55,7 +55,7 @@ public class B4Group implements CoxeterGroup
         WEIGHTS[ 1 ] = WEIGHTS[ 0 ] .plus( y ); // ( 0, 1, 1, 0 );
         WEIGHTS[ 2 ] = WEIGHTS[ 1 ] .plus( z ); // ( 0, 1, 1, 1 );
         WEIGHTS[ 3 ] = field .basisVector( 4, AlgebraicVector.X4 ); // ( 1/2, 1/2, 1/2, 1/2 );
-        AlgebraicNumber half = field .createRational( new int[]{ 1, 2 } );
+        AlgebraicNumber half = field .createRational( 1, 2 );
         WEIGHTS[ 3 ] .setComponent( AlgebraicVector.X4, half );
         WEIGHTS[ 3 ] .setComponent( AlgebraicVector.Y4, half );
         WEIGHTS[ 3 ] .setComponent( AlgebraicVector.Z4, half );
@@ -69,11 +69,13 @@ public class B4Group implements CoxeterGroup
         }
     }
     
+    @Override
     public int getOrder()
     {
         return 24*16;
     }
 
+    @Override
     public AlgebraicVector groupAction( AlgebraicVector model, int element )
     {
         
@@ -119,26 +121,31 @@ public class B4Group implements CoxeterGroup
         return result;
     }
 
+    @Override
     public AlgebraicVector getOrigin()
     {
         return this.field .origin( 4 );
     }
 
+    @Override
     public AlgebraicVector getWeight( int i )
     {
         return WEIGHTS[ i ];
     }
 
+    @Override
     public AlgebraicVector getSimpleRoot( int i )
     {
         return ROOTS[ i ];
     }
 
+    @Override
     public AlgebraicField getField()
     {
         return field;
     }
 
+    @Override
     public AlgebraicVector chiralSubgroupAction( AlgebraicVector model, int element )
     {
         AlgebraicVector result = field .basisVector( 4, AlgebraicVector.X4 );

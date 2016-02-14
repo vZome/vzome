@@ -46,6 +46,7 @@ public class Symmetry4d extends ChangeManifestations
 		right = rightSymm;
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "Symmetry4d";
@@ -59,6 +60,7 @@ public class Symmetry4d extends ChangeManifestations
     		return true;
     }
     
+    @Override
     public void perform() throws Failure
     {
         List<Construction> params = new ArrayList<>();

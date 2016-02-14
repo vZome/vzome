@@ -24,6 +24,7 @@ import com.vzome.core.math.VefParser;
 public class CommandVanOss600Cell extends CommandImportVEFData
 {
 
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
@@ -67,6 +68,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             mEffects = effects;
         }
 
+        @Override
         protected void startVertices( int numVertices )
         {
             mVertices = new Point[ numVertices ];
@@ -74,17 +76,19 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             mProjection = null;
         }
 
+        @Override
         protected void addVertex( int index, AlgebraicVector location )
         {
             mLocations[ index ] = location;
         }
 
+        @Override
         protected void endVertices()
         {
             AlgebraicField field = getField();
 
-            AlgebraicNumber half = field .createRational( new int[]{ 1,2 } );
-            AlgebraicNumber quarter = field .createRational( new int[]{ 1,4 } );
+            AlgebraicNumber half = field .createRational( 1, 2 );
+            AlgebraicNumber quarter = field .createRational( 1, 4 );
 
             AlgebraicVector centroid = mLocations[0] .plus( mLocations[48] ) .plus( mLocations[50] ) .plus( mLocations[64] ) .scale( quarter );
             AlgebraicVector edgeCenter = mLocations[0] .plus( mLocations[48] ) .scale( half );  // center of one edge
@@ -134,6 +138,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             }
         }
 
+        @Override
         protected void addEdge( int index, int v1, int v2 )
         {
             if ( 2 == 1 ) return;
@@ -146,18 +151,23 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             mEffects .constructionAdded( seg );
         }
 
+        @Override
         protected void startEdges( int numEdges )
         {}
 
+        @Override
         protected void startFaces( int numFaces )
         {}
 
+        @Override
         protected void addFace( int index, int[] verts )
         {}
 
+        @Override
         protected void addBall( int index, int vertex )
         {}
 
+        @Override
         protected void startBalls( int numVertices )
         {}
     }

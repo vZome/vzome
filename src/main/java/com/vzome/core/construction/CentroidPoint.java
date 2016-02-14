@@ -21,7 +21,8 @@ public class CentroidPoint extends Point
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         // TODO implement impossibility
 //        if ( mStart .isImpossible() || mEnd .isImpossible() )
@@ -33,7 +34,7 @@ public class CentroidPoint extends Point
             centroid = centroid .plus( mPoints[i] .getLocation() );
             num++;
         }
-        centroid = centroid .scale( field .createRational( new int[]{ 1, num } ) );
+        centroid = centroid .scale( field .createRational( 1, num ) );
         
         return setStateVariable( centroid, false );
     }

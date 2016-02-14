@@ -37,6 +37,7 @@ public abstract class ChangeSelection extends SideEffects
     
     protected abstract String getXmlElementName();
     
+    @Override
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( getXmlElementName() );
@@ -50,6 +51,7 @@ public abstract class ChangeSelection extends SideEffects
      * Any subclass can override to alter loading, or migrate (insert other edits), etc.
      * ALWAYS DO SOME INSERT, or all trace of the command will disappear!
      */
+    @Override
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         String grouping = xml .getAttribute( "grouping" );
@@ -179,6 +181,7 @@ public abstract class ChangeSelection extends SideEffects
             logger .finest( "constructing SelectManifestation" );
         }
 
+        @Override
         public void redo()
         {
             if ( groupingDoneInSelection ) {
@@ -194,6 +197,7 @@ public abstract class ChangeSelection extends SideEffects
                     mSelection .unselect( mMan );
         }
 
+        @Override
         public void undo()
         {
             if ( groupingDoneInSelection ) {

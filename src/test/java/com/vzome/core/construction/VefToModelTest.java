@@ -64,6 +64,7 @@ public class VefToModelTest extends TestCase
 
     private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
     {
+        @Override
         public void constructionAdded( Construction c )
         {
             add( c );

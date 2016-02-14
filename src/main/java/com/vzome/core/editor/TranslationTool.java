@@ -23,11 +23,13 @@ public class TranslationTool extends TransformationTool
         super( name, selection, realized, tools, originPoint );
     }
     
+    @Override
     public String getDefaultName( String baseName )
     {
         return "translation along X axis";
     }
 
+    @Override
     public void perform() throws Command.Failure
     {
         Point p1 = null, p2 = null;
@@ -57,7 +59,7 @@ public class TranslationTool extends TransformationTool
                 AlgebraicField field = originPoint .getField();
                 AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
                 AlgebraicNumber scale = field .createPower( 3 );
-                scale = scale .times( field .createRational( new int[]{ 2, 1 } ) );
+                scale = scale .times( field .createRational( 2 ) );
                 xAxis = xAxis .scale( scale );
                 p2 = new FreePoint( xAxis );
             }
@@ -81,11 +83,13 @@ public class TranslationTool extends TransformationTool
         defineTool();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "TranslationTool";
     }
 
+    @Override
     public String getCategory()
     {
         return "translation";

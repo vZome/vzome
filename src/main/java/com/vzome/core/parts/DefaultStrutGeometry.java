@@ -64,7 +64,7 @@ public class DefaultStrutGeometry implements StrutGeometry
         int len = (int) Math .floor( length );
         if ( len >= 1 )
         {
-            AlgebraicNumber fraction = field .createRational( new int[]{ 1, len } );
+            AlgebraicNumber fraction = field .createRational( 1, len );
             unitNormal = vector .scale( fraction );
         }
         return unitNormal;
@@ -73,6 +73,7 @@ public class DefaultStrutGeometry implements StrutGeometry
     /* (non-Javadoc)
      * @see com.vzome.core.parts.StrutGeometry#getStrutPolyhedron(com.vzome.core.math.AlgebraicNumber)
      */
+    @Override
     public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
     {
         AlgebraicField field = mAxis .getDirection() .getSymmetry() .getField();

@@ -25,6 +25,7 @@ public class GroupSelection implements UndoableEdit
         recursiveGroups = true;
     }
 
+    @Override
     public Element getXml( Document doc )
     {
         Element elem = doc .createElement( "GroupSelection" );
@@ -39,6 +40,7 @@ public class GroupSelection implements UndoableEdit
         return getXml( doc );
     }
 
+    @Override
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         String grouping = xml .getAttribute( "grouping" );
@@ -49,16 +51,19 @@ public class GroupSelection implements UndoableEdit
         context .performAndRecord( this );
     }
 
+    @Override
     public boolean isDestructive()
     {
         return true;
     }
 
+    @Override
     public boolean isVisible()
     {
         return true;
     }
 
+    @Override
     public void redo()
     {
         if ( mGrouping )
@@ -73,6 +78,7 @@ public class GroupSelection implements UndoableEdit
                 mSelection .scatterGroup211();
     }
 
+    @Override
     public void undo()
     {
         if ( !mGrouping )
@@ -87,11 +93,13 @@ public class GroupSelection implements UndoableEdit
                 mSelection .scatterGroup211();
     }
 
+    @Override
     public void perform()
     {
         redo();
     }
 
+    @Override
     public boolean isSticky()
     {
         return false;

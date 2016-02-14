@@ -21,13 +21,15 @@ public class LineExtensionOfSegment extends Line
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mSegment .isImpossible() )
             return setStateVariables( null, null, true );
         return setStateVariables( mSegment .getStart(), mSegment .getOffset(), false );
     }
 
+    @Override
 	public Bivector3dHomogeneous getHomogeneous()
 	{
 		Vector3dHomogeneous v1 = new Vector3dHomogeneous( mSegment .getStart(), this .getField() );

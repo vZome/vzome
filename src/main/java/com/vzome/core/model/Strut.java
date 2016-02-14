@@ -2,13 +2,12 @@ package com.vzome.core.model;
 
 import com.vzome.core.algebra.AlgebraicVector;
 
-
 /**
  * @author Scott Vorthmann
  */
-public class Strut extends Manifestation
+public class Strut extends Manifestation implements Comparable<Strut>
 {
-	private AlgebraicVector m_end1, m_end2;
+	private final AlgebraicVector m_end1, m_end2;
 
     public Strut( AlgebraicVector end1, AlgebraicVector end2 )
     {
@@ -18,23 +17,26 @@ public class Strut extends Manifestation
         m_end2 = end2;
     }
 
+	@Override
 	public int hashCode()
 	{
         int result = m_end1 .hashCode() ^ m_end2 .hashCode();
         return result;
 	}
 
-	public boolean equals( Object other )
+	@Override
+	public boolean equals( Object obj )
 	{
-        if ( other == null )
+        if ( obj == null )
             return false;
-        if ( other == this )
+        if ( obj == this )
             return true;
-        if ( ! ( other instanceof Strut ) )
+        if ( ! ( obj instanceof Strut ) )
             return false;
-        Strut strut = (Strut) other;
-        AlgebraicVector otherStart = strut .m_end1;
-        AlgebraicVector otherEnd = strut .m_end2;
+        Strut other = (Strut) obj;
+        AlgebraicVector otherStart = other .m_end1;
+        AlgebraicVector otherEnd = other .m_end2;
+		// A strut from J to K should be considered equal to a strut from K to J.
         if ( otherStart .equals( m_end1 ) ) 
             return otherEnd .equals( m_end2 );
         else
@@ -43,7 +45,35 @@ public class Strut extends Manifestation
             else
                 return false;
 	}
+	
+	@Override
+	public int compareTo(Strut other) {
+        if ( this == other ) {
+            return 0;
+        }
+        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
+            return 0;
+        }
+        AlgebraicVector thisFirst = this.getCanonicalLesserEnd();
+        AlgebraicVector thisLast = this.getCanonicalGreaterEnd();
+        AlgebraicVector otherFirst = other.getCanonicalLesserEnd();
+        AlgebraicVector otherLast = other.getCanonicalGreaterEnd();
+        int comparison = thisFirst.compareTo( otherFirst );
+		// A strut from J to K should be considered equal to a strut from K to J.
+        return ( comparison  == 0 ) 
+            ? thisLast.compareTo( otherLast )
+			: comparison;
+	}
+	
+	public AlgebraicVector getCanonicalLesserEnd() {
+		return (m_end1.compareTo(m_end2) < 0) ? m_end1 : m_end2;
+	}
 
+	public AlgebraicVector getCanonicalGreaterEnd() {
+		return (m_end1.compareTo(m_end2) > 0) ? m_end1 : m_end2;
+	}
+
+	@Override
     public AlgebraicVector getLocation()
     {
         return m_end1;
@@ -59,10 +89,9 @@ public class Strut extends Manifestation
         return m_end2 .minus( m_end1 );
     }
 
+	@Override
     public String toString()
     {
         return "strut from " + m_end1 .toString() + " to " + m_end2 .toString();
     }
 }
-
-

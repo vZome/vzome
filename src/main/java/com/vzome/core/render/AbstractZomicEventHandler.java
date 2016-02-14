@@ -1,8 +1,5 @@
 /*
  * Created on Aug 8, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 
 package com.vzome.core.render;
@@ -15,9 +12,6 @@ import com.vzome.core.math.symmetry.Symmetry;
 
 /**
  * @author vorth
- * 
- * To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Generation - Code and Comments
  */
 public abstract class AbstractZomicEventHandler implements ZomicEventHandler
 {
@@ -48,12 +42,14 @@ public abstract class AbstractZomicEventHandler implements ZomicEventHandler
         return mSymmetry .getDirection( name );
     }
 
+    @Override
 	public void permute( Permutation permutation, int sense )
 	{
 	    mOrientation = permutation .compose( mOrientation );
 	    mHandedNess = ( mHandedNess + sense ) % 2;
 	}
 	
+    @Override
     public void rotate( Axis axis, int steps )
     {
         axis = mOrientation .permute( axis, mHandedNess );
@@ -62,6 +58,7 @@ public abstract class AbstractZomicEventHandler implements ZomicEventHandler
         permute( axis .getRotationPermutation() .power( steps ), Symmetry .PLUS );
 	}
 
+    @Override
     public void reflect( Axis blueAxis )
     {
     	if ( blueAxis == null )
@@ -72,11 +69,13 @@ public abstract class AbstractZomicEventHandler implements ZomicEventHandler
     	}
 	}
 
+    @Override
     public void scale( AlgebraicNumber scale )
     {
         mScale = mScale .times( scale );
     }
 
+    @Override
     public void action( int action )
     {
         mAction = action;
@@ -86,6 +85,7 @@ public abstract class AbstractZomicEventHandler implements ZomicEventHandler
     
     protected abstract void restoreLocation( AbstractZomicEventHandler changed );
 
+    @Override
     public ZomicEventHandler save( int variables )
     {
         AbstractZomicEventHandler newVM = copyLocation();
@@ -96,6 +96,7 @@ public abstract class AbstractZomicEventHandler implements ZomicEventHandler
         return newVM;
     }
 
+    @Override
     public void restore( ZomicEventHandler changes, int variables )
     {
         AbstractZomicEventHandler changedVM = (AbstractZomicEventHandler) changes;

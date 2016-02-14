@@ -20,6 +20,7 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
  */
 public class CommandQuaternionSymmetry extends CommandTransform
 {
+    @Override
     public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         super.setFixedAttributes( attributes, format );
@@ -48,11 +49,13 @@ public class CommandQuaternionSymmetry extends CommandTransform
     
     public CommandQuaternionSymmetry() {}
     
+    @Override
     public Object[][] getAttributeSignature()
     {
         return GROUP_ATTR_SIGNATURE;
     }
 
+    @Override
     public ConstructionList apply( final ConstructionList parameters, AttributeMap attributes, final ConstructionChanges effects ) throws Failure
     {
         // accommodate bugs fixed in 2.1 beta 14... this was in AbstractCommand.setXmlAttributes(), and needs to go somewhere else

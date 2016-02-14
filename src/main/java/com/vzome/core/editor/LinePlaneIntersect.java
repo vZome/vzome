@@ -26,6 +26,7 @@ public class LinePlaneIntersect extends ChangeManifestations
         super( selection, realized, groupInSelection );
     }
     
+    @Override
     public void perform()
     {
         Polygon panel = null;
@@ -71,6 +72,7 @@ public class LinePlaneIntersect extends ChangeManifestations
         redo();
     }
     
+    @Override
     protected String getXmlElementName()
     {
         return "LinePlaneIntersect";

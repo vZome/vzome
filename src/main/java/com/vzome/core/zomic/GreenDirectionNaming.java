@@ -34,6 +34,7 @@ public class GreenDirectionNaming extends DirectionNaming
             }
 		}
 		
+        @Override
 		public Axis getAxis( String axisName )
 		{
 			int sense = getSign( axisName );
@@ -44,6 +45,7 @@ public class GreenDirectionNaming extends DirectionNaming
 			return axis;
 		}
 		
+        @Override
 		public String getName( Axis axis )
 		{
 		    Axis redNeighbor = mRedNames .getDirection() .getAxis( axis .getSense(), axis .getOrientation() );

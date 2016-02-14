@@ -24,7 +24,8 @@ public class PolygonRotated4D extends Polygon
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if (  mPrototype .isImpossible() )
             return setStateVariable( null, true );

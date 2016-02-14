@@ -7,6 +7,7 @@ public class Symmetry extends Nested
 {
 	private Permute permute;
 
+    @Override
 	public  void accept( Visitor visitor ) throws ZomicException {
 		visitor .visitSymmetry( this, permute );
 	}

@@ -1,15 +1,13 @@
 package com.vzome.core.algebra;
 
 import java.util.Arrays;
-
 import com.vzome.core.math.RealVector;
-
 
 /**
  * @author vorth
  *
  */
-public final class AlgebraicVector
+public final class AlgebraicVector implements Comparable<AlgebraicVector>
 {
     public static final int X = 0, Y = 1, Z = 2;
 
@@ -17,7 +15,7 @@ public final class AlgebraicVector
 
     private final AlgebraicNumber[] coordinates;
     private final AlgebraicField field;
-    
+
     public AlgebraicVector( AlgebraicNumber... n )
     {
         coordinates = new AlgebraicNumber[ n.length ];
@@ -26,7 +24,7 @@ public final class AlgebraicVector
         }
         this .field = n[ 0 ] .getField();
     }
-    
+
     public AlgebraicVector( AlgebraicField field, int dims )
     {
         coordinates = new AlgebraicNumber[ dims ];
@@ -41,7 +39,8 @@ public final class AlgebraicVector
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + Arrays.hashCode( coordinates );
+        result = prime * result 
+                + Arrays.hashCode( coordinates );
         return result;
     }
 
@@ -55,17 +54,60 @@ public final class AlgebraicVector
         if ( getClass() != obj.getClass() )
             return false;
         AlgebraicVector other = (AlgebraicVector) obj;
-        if ( !Arrays.equals( coordinates, other.coordinates ) )
-            return false;
-        return true;
+        if(!field.equals( other.field )) {
+            String reason  = "Invalid comparison of " 
+                    + getClass().getSimpleName() + "s"
+                    + "with different fields: "
+                    + field.getName()
+                    + " and "
+                    + other.field.getName();
+            throw new IllegalStateException(reason);
+        }
+        return Arrays.equals( coordinates, other.coordinates );
     }
-    
+
+    @Override
+    public int compareTo(AlgebraicVector other) {
+        if ( this == other ) {
+            return 0;
+        }
+        if (other.equals(this)) {
+            // intentionally throws a NullPointerException if other is null
+            // or an IllegalStateException if fields are different
+            return 0;
+        }
+        int comparison = Integer.compare(coordinates.length, other.coordinates.length);
+        if(comparison != 0) {
+            return comparison;
+        }
+        for(int i=0; i < coordinates.length; i++) {
+            AlgebraicNumber n1 = this. coordinates[i];
+            AlgebraicNumber n2 = other.coordinates[i];
+            comparison = n1.compareTo(n2);
+            if (comparison != 0) {
+                return comparison;
+            }
+        }
+        return comparison;
+    }
+
     public final RealVector toRealVector()
     {
         // TODO assert this is 3d
         return new RealVector( this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() );
     }
-    
+
+    /**
+     * @return Returns a String with no extended characters so it's suitable for writing 
+     * to an 8 bit stream such as System.out or an ASCII text log file in Windows.
+     * Contrast this with {@link toString()} which contains extended characters (e.g. \u03C4 (phi))
+     */
+    public final String toASCIIString()
+    {
+        return this .getVectorExpression( AlgebraicField .EXPRESSION_FORMAT );
+    }
+
+    @Override
     public final String toString()
     {
         return this .getVectorExpression( AlgebraicField .DEFAULT_FORMAT );
@@ -135,7 +177,7 @@ public final class AlgebraicVector
     public AlgebraicVector cross( AlgebraicVector that )
     {
         AlgebraicNumber[] result = new AlgebraicNumber[ this .coordinates .length ];
-        
+
         for ( int i = 0; i < result.length; i++ ) {
             int j = ( i + 1 ) % 3;
             int k = ( i + 2 ) % 3;
@@ -161,8 +203,8 @@ public final class AlgebraicVector
 
     public AlgebraicVector projectTo3d( boolean wFirst )
     {
-    	if ( dimension() == 3 )
-    		return this;
+        if ( dimension() == 3 )
+            return this;
         if ( wFirst )
             return new AlgebraicVector( this .coordinates[ 1 ], this .coordinates[ 2 ], this .coordinates[ 3 ] );
         else
@@ -211,8 +253,9 @@ public final class AlgebraicVector
         throw new IllegalStateException( "vector is the origin!" );
     }
 
-	public AlgebraicField getField()
-	{
-		return this .field;
-	}
+    public AlgebraicField getField()
+    {
+        return this .field;
+    }
+
 }

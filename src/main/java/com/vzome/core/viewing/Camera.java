@@ -394,7 +394,7 @@ public class Camera implements Renderable
 		mWidth = mWidth * ratio;
 	}
 
-	public void setMagnification( float exp )
+	public final void setMagnification( float exp )
 	{
 		setViewpointDistance( (float) ( ORIG_DISTANCE * Math .pow( Math.E, exp ) ) );
 	}
@@ -509,18 +509,21 @@ public class Camera implements Renderable
     private Object renderedObject = null;
 
 
+    @Override
     public Object getRenderedObject()
     {
         // TODO Auto-generated method stub
         return renderedObject;
     }
 
+    @Override
     public void render( Object renderer )
     {
         // TODO Auto-generated method stub
         
     }
 
+    @Override
     public void setRenderedObject( Object renderedObject )
     {
         this.renderedObject = renderedObject;

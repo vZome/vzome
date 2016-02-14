@@ -22,7 +22,7 @@ public class Quaternion
         this.field = field;
         this.vector = vector;
         int w_offset = 0;
-        AlgebraicNumber factor = field .createRational( new int[]{ 0,1 } );
+        AlgebraicNumber factor = field .createRational( 0 );
         if ( vector .dimension() > 3 ) // a 4D vector
         {
             factor = vector .getComponent( 0 );
@@ -55,7 +55,7 @@ public class Quaternion
         if ( w_offset == 1 ) // a 4D vector
             factor = vector .getComponent( 0 );
         else
-            factor = field .createRational( new int[]{ 0,1 } );
+            factor = field .createRational( 0 );
 
         transpose = field .identityMatrix( 4 ) .timesScalar( factor );
         

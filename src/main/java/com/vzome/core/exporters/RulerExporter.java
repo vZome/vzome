@@ -23,6 +23,7 @@ public class RulerExporter extends Exporter3d
         super( scene, colors, lights, model );
     }
 
+    @Override
     public void doExport( File directory, Writer writer, int height, int width )
             throws Exception
     {
@@ -52,6 +53,7 @@ public class RulerExporter extends Exporter3d
         pw .println( "max Z = " + maxZ );
     }
 
+    @Override
     public String getFileExtension()
     {
         return "txt";

@@ -24,7 +24,7 @@ public class Axis
 
 	private final AlgebraicVector normal;   // not a unit vector
         
-    static Logger logger = Logger.getLogger( "com.vzome.core.math" );
+    private static final Logger logger = Logger.getLogger( "com.vzome.core.math" );
 
 	Axis( Direction dir, int index, int sense, int rotation, Permutation rotPerm, AlgebraicVector normal )
 	{
@@ -86,6 +86,7 @@ public class Axis
 		return true;
 	}
 
+    @Override
 	public String toString()
 	{
 		return mDirection .toString() + " " + orientation;

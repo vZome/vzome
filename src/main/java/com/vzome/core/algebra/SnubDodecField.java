@@ -158,6 +158,7 @@ public class SnubDodecField extends AlgebraicField
         return result;
     }
     
+    @Override
     public void defineMultiplier( StringBuffer buf, int i )
     {
         if ( i == B )
@@ -176,11 +177,13 @@ public class SnubDodecField extends AlgebraicField
         }
     }
     
+    @Override
     public int getOrder()
     {
         return 6;
     }
 
+    @Override
     public int getNumIrrationals()
     {
         return 3;
@@ -188,11 +191,13 @@ public class SnubDodecField extends AlgebraicField
 
     private final AlgebraicNumber defaultStrutScaling;
 
+    @Override
     public AlgebraicNumber getDefaultStrutScaling()
     {
         return defaultStrutScaling;
     }
 
+    @Override
     public String getIrrational( int which, int format )
     {
         if ( format == DEFAULT_FORMAT )

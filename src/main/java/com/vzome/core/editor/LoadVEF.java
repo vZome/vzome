@@ -34,11 +34,13 @@ public class LoadVEF extends ChangeManifestations
         this .scale = scale;
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "LoadVEF";
     }
 
+    @Override
     protected void getXmlAttributes( Element element )
     {
         if ( quaternion != null )
@@ -49,6 +51,7 @@ public class LoadVEF extends ChangeManifestations
         element .appendChild( textNode );
     }
 
+    @Override
     protected void setXmlAttributes( Element xml, XmlSaveFormat format )
             throws Failure
     {
@@ -57,6 +60,7 @@ public class LoadVEF extends ChangeManifestations
         vefData = xml .getTextContent();
     }
 
+    @Override
     public void perform() throws Failure
     {
         AlgebraicVector offset = null;

@@ -42,6 +42,7 @@ class ZomodDirectionNaming extends DirectionNaming
 //			        System .out .println( dir .getName() + " " + SIGN[sense] + i + " is called: " + getName( dir .getAxis( sense, i ) ) );
 		}
 		
+        @Override
 		public Axis getAxis( String axisName )
 		{
 		    int sense = getSign( axisName );
@@ -49,6 +50,7 @@ class ZomodDirectionNaming extends DirectionNaming
 			return getDirection() .getAxis( sense, mMapping[ index ] );
 		}
 		
+        @Override
 		public String getName( Axis axis )
 		{
 		    return mBackMap .get( axis );

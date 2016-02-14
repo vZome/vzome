@@ -28,6 +28,7 @@ public class SegExporter extends Exporter3d
 	    super( scene, colors, lights, model );
 	}
 
+    @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
         this .field = this .mModel .getField();
@@ -53,6 +54,7 @@ public class SegExporter extends Exporter3d
         writer .close();
 	}
 
+    @Override
     public String getFileExtension()
     {
         return "seg";

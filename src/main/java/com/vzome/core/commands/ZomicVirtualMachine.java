@@ -35,6 +35,7 @@ public class ZomicVirtualMachine extends AbstractZomicEventHandler
         return mLocation;
     }
 
+    @Override
     public void step( Axis axis, AlgebraicNumber length )
     {
         axis = mOrientation .permute( axis, mHandedNess );
@@ -60,11 +61,13 @@ public class ZomicVirtualMachine extends AbstractZomicEventHandler
         mEffects = effects;
     }
 
+    @Override
     protected AbstractZomicEventHandler copyLocation()
     {
         return new ZomicVirtualMachine( mLocation, mEffects, mSymmetry );
     }
 
+    @Override
     protected void restoreLocation( AbstractZomicEventHandler changed )
     {
         mLocation = ((ZomicVirtualMachine) changed) .mLocation;

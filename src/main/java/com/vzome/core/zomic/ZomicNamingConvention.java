@@ -56,6 +56,7 @@ public class ZomicNamingConvention extends NamingConvention
 		dir = symm .getDirection( "purple" );
 		addDirectionNaming( new GreenDirectionNaming( dir, redNames, yellowNames ) {
 
+            @Override
 			public String getName( Axis axis )
 			{
 				int orn = axis .getOrientation();

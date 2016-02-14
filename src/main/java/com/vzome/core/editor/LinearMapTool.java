@@ -30,6 +30,7 @@ public class LinearMapTool extends TransformationTool
         this.originalScaling = originalScaling;
     }
 
+    @Override
     public void perform() throws Command.Failure
     {
 
@@ -83,16 +84,19 @@ public class LinearMapTool extends TransformationTool
         defineTool();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "LinearTransformTool";
     }
 
+    @Override
     public String getCategory()
     {
         return "linear map";
     }
 
+    @Override
     public String getDefaultName( String baseName )
     {
         return "SHOULD NEVER HAPPEN";

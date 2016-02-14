@@ -8,6 +8,7 @@ import com.vzome.core.commands.Command.Failure;
 
 public class ValidateSelection extends ChangeSelection
 {
+    @Override
     public void perform() throws Failure
     {
         if ( mSelection .isEmpty() )
@@ -19,6 +20,7 @@ public class ValidateSelection extends ChangeSelection
         super( selection, false ); 
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "ValidateSelection";

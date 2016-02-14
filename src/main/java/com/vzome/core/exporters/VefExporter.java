@@ -23,6 +23,7 @@ public class VefExporter extends Exporter3d
 	    super( scene, colors, lights, model );
 	}
 
+    @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    AlgebraicField field = mModel .getField();
@@ -37,6 +38,7 @@ public class VefExporter extends Exporter3d
         exporter .finish();
 	}
 
+    @Override
     public String getFileExtension()
     {
         return "vef";

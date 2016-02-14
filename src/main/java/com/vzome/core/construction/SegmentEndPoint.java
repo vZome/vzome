@@ -29,7 +29,8 @@ public class SegmentEndPoint extends Point
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mSegment .isImpossible() )
             return setStateVariable( null, true );

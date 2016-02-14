@@ -21,6 +21,7 @@ public class DeselectByClass extends ChangeSelection
         this .balls = balls;
     }
     
+    @Override
     public void perform()
     {
         for (Manifestation man : mSelection) {
@@ -38,17 +39,20 @@ public class DeselectByClass extends ChangeSelection
         redo();
     }
 
+    @Override
     protected void getXmlAttributes( Element element )
     {
         element .setAttribute( "class", balls? "balls" : "struts" );
     }
 
+    @Override
     protected void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Failure
     {
         String attr = xml .getAttribute( "class" );
         balls = attr .equals( "balls" );
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "DeselectByClass";

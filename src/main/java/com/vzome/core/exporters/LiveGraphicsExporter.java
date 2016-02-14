@@ -36,6 +36,7 @@ public class LiveGraphicsExporter extends Exporter3d
 	}
 
 
+    @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
@@ -108,6 +109,7 @@ public class LiveGraphicsExporter extends Exporter3d
     }
 
 
+    @Override
     public String getFileExtension()
     {
         return "m";

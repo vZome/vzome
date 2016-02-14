@@ -37,6 +37,7 @@ public class Panel {
 		return list;
 	}
 	
+    @Override
 	public boolean equals( Object other )
 	{
 		if ( other == null )
@@ -53,11 +54,13 @@ public class Panel {
 		}
 	}
 
+    @Override
 	public int hashCode()
 	{
 	    return this .manifestation .hashCode();
 	}
 	
+    @Override
 	public String toString()
 	{
 		return this .manifestation .toString();

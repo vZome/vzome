@@ -19,7 +19,7 @@ public class SegmentRotated4D extends Segment
     
     private final Segment mPrototype;
 
-    private final Logger logger = Logger .getLogger( "com.vzome.core.4d" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.4d" );
 
     public SegmentRotated4D( Quaternion leftQuaternion, Quaternion rightQuaternion, Segment prototype )
     {
@@ -30,7 +30,8 @@ public class SegmentRotated4D extends Segment
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if (  mPrototype .isImpossible() )
             return setStateVariables( null, null, true );

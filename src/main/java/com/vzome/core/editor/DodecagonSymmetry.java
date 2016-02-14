@@ -30,6 +30,7 @@ public class DodecagonSymmetry extends ChangeManifestations
         this .symmetry = (center==null)? null : center .getField() .getSymmetry( "dodecagonal" );
     }
     
+    @Override
     public void perform()
     {
         Transformation transform = new SymmetryTransformation( symmetry, 1, center );
@@ -56,6 +57,7 @@ public class DodecagonSymmetry extends ChangeManifestations
         redo();
     }
     
+    @Override
     protected String getXmlElementName()
     {
         return "DodecagonSymmetry";

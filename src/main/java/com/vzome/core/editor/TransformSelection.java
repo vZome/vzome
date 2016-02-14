@@ -27,6 +27,7 @@ public class TransformSelection extends ChangeManifestations
         this .transform = transform;
     }
     
+    @Override
     public void perform()
     {
         List<Manifestation> inputs = new ArrayList<>();
@@ -56,6 +57,7 @@ public class TransformSelection extends ChangeManifestations
         redo();
     }
     
+    @Override
     protected String getXmlElementName()
     {
         return "TransformSelection";

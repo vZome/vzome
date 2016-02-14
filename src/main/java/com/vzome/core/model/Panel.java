@@ -5,12 +5,11 @@ package com.vzome.core.model;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 
 public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 {
-    List<AlgebraicVector> mVertices;
+    private final List<AlgebraicVector> mVertices;
 
     /**
      * Create a panel from an iterator over AlgebraicVectors
@@ -43,6 +42,7 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 		return mVertices.iterator();
 	}
 
+    @Override
     public int hashCode()
     {
         int len = mVertices.size();
@@ -54,6 +54,7 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         return val;
     }
 
+	@Override
     public boolean equals( Object other )
     {
         if ( other == null )
@@ -113,7 +114,7 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         return true;
     }
 
-    public AlgebraicVector getNormal( AlgebraicField field )
+    public AlgebraicVector getNormal( )
     {
         AlgebraicVector v0 = mVertices.get( 0 );
         AlgebraicVector v1 = mVertices.get( 1 );
@@ -123,12 +124,14 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         return v1 .cross( v2 );
     }
 
+	@Override
     public String toString()
     {
-        StringBuffer buf = new StringBuffer( "panel: " );
-        for (AlgebraicVector vertex : mVertices) {
-            buf.append( vertex .toString() );
-            buf.append( ", " );
+        StringBuilder buf = new StringBuilder( "panel: " );
+		String delim = "";
+        for ( AlgebraicVector vertex: mVertices ) {
+            buf.append( delim ).append( vertex .toString() );
+            delim = ", ";
         }
         return buf.toString();
     }

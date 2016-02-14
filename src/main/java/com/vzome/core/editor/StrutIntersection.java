@@ -21,6 +21,7 @@ public class StrutIntersection extends ChangeManifestations
         super( selection, realized, groupInSelection );
     }
     
+    @Override
     public void perform() throws Failure
     {
         Strut s1 = null, s2 = null;
@@ -52,6 +53,7 @@ public class StrutIntersection extends ChangeManifestations
         redo();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "StrutIntersection";

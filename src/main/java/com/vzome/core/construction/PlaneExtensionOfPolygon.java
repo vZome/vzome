@@ -22,7 +22,8 @@ public class PlaneExtensionOfPolygon extends Plane
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mPolygon .isImpossible() )
             return setStateVariables( null, null, true );
@@ -32,6 +33,7 @@ public class PlaneExtensionOfPolygon extends Plane
         return setStateVariables( mPolygon .getVertices() [0], v1 .cross( v2 ), false );
     }
 
+    @Override
 	public Trivector3dHomogeneous getHomogeneous()
 	{
         AlgebraicVector[] vs = mPolygon .getVertices();

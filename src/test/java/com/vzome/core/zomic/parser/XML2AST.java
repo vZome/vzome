@@ -50,6 +50,7 @@ public class XML2AST extends DefaultHandler
 		return m_stmts .firstElement();
 	}
 
+    @Override
 	public 
 	void startElement( String namespaceURI, String localName,
 	String qName, Attributes atts ) throws SAXException
@@ -211,6 +212,7 @@ public class XML2AST extends DefaultHandler
         return ZomicEventHandler .ALL;
     }
 
+    @Override
 	public 
 	void endElement( String namespaceURI, String localName, String qName )
     throws SAXException

@@ -25,6 +25,7 @@ public class Ball {
 		return new Vector( this .manifestation .getLocation() );
 	}
 	
+    @Override
 	public boolean equals( Object other )
 	{
 		if ( other == null )
@@ -39,11 +40,13 @@ public class Ball {
 		}
 	}
 
+    @Override
 	public int hashCode()
 	{
 	    return this .manifestation .hashCode();
 	}
 	
+    @Override
 	public String toString()
 	{
 		return this .manifestation .toString();

@@ -14,11 +14,13 @@ public class RootTwoField extends AlgebraicField
         defaultStrutScaling = createAlgebraicNumber( 1, 0, 2, -3 );
     };
 
+    @Override
     public void defineMultiplier( StringBuffer buf, int which )
     {
         buf .append( "" );
     }
     
+    @Override
     public int getOrder()
     {
         return 2;
@@ -32,6 +34,7 @@ public class RootTwoField extends AlgebraicField
 
     private static final int ONES_PLACE = 0, SQRT2_PLACE = 1;
 
+    @Override
     public final BigRational[] multiply( BigRational[] first, BigRational[]  second )
     {
         BigRational sqrt2s = first[ SQRT2_PLACE ].times( second[ ONES_PLACE ]) .plus( first[ ONES_PLACE ].times( second[ SQRT2_PLACE ]) );
@@ -40,11 +43,13 @@ public class RootTwoField extends AlgebraicField
         return new BigRational[]{ ones, sqrt2s };
     }
 
+    @Override
     public AlgebraicNumber getDefaultStrutScaling()
     {
         return defaultStrutScaling;
     }
 
+    @Override
     public String getIrrational( int which, int format )
     {
         if ( format == DEFAULT_FORMAT )
@@ -68,6 +73,7 @@ public class RootTwoField extends AlgebraicField
             return new BigRational[]{ factors[ 1 ] .plus( factors[ 1 ] ), factors[ 0 ] };
     }
     
+    @Override
     public AlgebraicNumber parseLegacyNumber( String string )
     {
         int div = 1;

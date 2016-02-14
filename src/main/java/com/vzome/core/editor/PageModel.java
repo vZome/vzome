@@ -64,7 +64,7 @@ public class PageModel
 		return content;
 	}
 
-	public void setContent( String content )
+	public final void setContent( String content )
 	{
 		this.content = content;
 	}
@@ -74,7 +74,7 @@ public class PageModel
 		return title;
 	}
 
-	public void setTitle( String title )
+	public final void setTitle( String title )
 	{
 		this.title = title;
 	}

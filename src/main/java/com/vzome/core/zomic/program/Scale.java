@@ -14,6 +14,7 @@ public class Scale extends ZomicStatement{
 			m_scale = size;
 		}
 
+    @Override
 	public  void accept( Visitor visitor ) throws ZomicException
     {
 		visitor .visitScale( m_scale );

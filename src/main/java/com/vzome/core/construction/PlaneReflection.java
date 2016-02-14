@@ -30,7 +30,8 @@ public class PlaneReflection extends Transformation
         mapParamsToState();
     }
     
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mMirror .isImpossible() )
             setStateVariables( null, null, true );
@@ -40,12 +41,13 @@ public class PlaneReflection extends Transformation
         return setStateVariables( null /*or field identity*/, loc, false );
     }
 
+    @Override
     public AlgebraicVector transform( AlgebraicVector arg )
     {
         arg = arg .minus( mBase );
         // x' = x - 2 ((x.y)/(y.y)) y
         AlgebraicNumber xy = arg .dot( mNormal );
-        xy = xy .times( field .createRational( new int[]{ 2,1 } ) );
+        xy = xy .times( field .createRational( 2 ) );
         arg = arg .minus( mNormal .scale( xy .times( mNormDotReciprocal ) ) );
         return arg .plus( mBase );
     }

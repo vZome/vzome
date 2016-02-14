@@ -68,7 +68,8 @@ public class LinePlaneIntersectionPoint extends Point
      
      * @author Scott Vorthmann
      */
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mPlane .isImpossible() || mLine .isImpossible() )
             return setStateVariable( null, true );

@@ -31,7 +31,8 @@ public class PerpendicularLine extends Line
      * returns true if something changed.
      * @return
      */
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mLine1 .isImpossible() || mLine2 .isImpossible() || mPoint .isImpossible() )
             return setStateVariables( null, null, true );

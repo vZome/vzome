@@ -22,7 +22,8 @@ public class TransformedPoint extends Point
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( mTransform .isImpossible() || mPrototype .isImpossible() )
             return setStateVariable( null, true );

@@ -242,6 +242,7 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
 		return mManifestations .size();
 	}
     
+    @Override
     public boolean equals( Object object )
     {
         if ( object == null ) {
@@ -265,6 +266,7 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
         return true;
     }
     
+    @Override
     public int hashCode()
     {
         return size();

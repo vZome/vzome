@@ -30,6 +30,7 @@ public class SymmetryTool extends TransformationTool
         this.symmetry = symmetry;
     }
     
+    @Override
     public String getDefaultName( String baseName )
     {
         int nextDot = baseName .indexOf( "." );
@@ -42,6 +43,7 @@ public class SymmetryTool extends TransformationTool
         return "tetrahedral" .equals( getCategory() );
     }
 
+    @Override
     public void perform() throws Command.Failure
     {
         boolean isTetrahedral = isTetrahedral();
@@ -99,17 +101,20 @@ public class SymmetryTool extends TransformationTool
         defineTool();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "SymmetryTool";
     }
 
+    @Override
     protected void getXmlAttributes( Element element )
     {
         element .setAttribute( "symmetry", symmetry .getName() );
         super .getXmlAttributes( element );
     }
 
+    @Override
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         String symmName = element .getAttribute( "symmetry" );
@@ -117,6 +122,7 @@ public class SymmetryTool extends TransformationTool
         super .setXmlAttributes( element, format );
     }
 
+    @Override
     public String getCategory()
     {
         String subgroup = getName();

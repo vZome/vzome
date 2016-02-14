@@ -23,12 +23,12 @@ public abstract class AlgebraicField
     public abstract void defineMultiplier( StringBuffer instances, int w );
 
     public abstract int getOrder();
-    
+
     public int getNumIrrationals()
     {
         return this .getOrder() - 1;
     }
-    
+
     public abstract String getIrrational( int i, int format );
 
     public String getIrrational( int which )
@@ -39,9 +39,9 @@ public abstract class AlgebraicField
     private final String name;
 
     private final ArrayList<Symmetry> symmetries = new ArrayList<>();
-    
+
     private final Map<String, QuaternionicSymmetry> quaternionSymmetries = new HashMap<>();
-    
+
     private final AlgebraicNumber one = this .createRational( 1 );
 
     private final AlgebraicNumber zero = this .createRational( 0 );
@@ -51,12 +51,12 @@ public abstract class AlgebraicField
     /**
      * Positive powers of the first irrational.
      */
-	private ArrayList<AlgebraicNumber> positivePowers = new ArrayList<>( 8 );
+    private final ArrayList<AlgebraicNumber> positivePowers = new ArrayList<>( 8 );
 
     /**
      * Negative powers of the first irrational.
      */
-	private ArrayList<AlgebraicNumber> negativePowers = new ArrayList<>( 8 );
+    private final ArrayList<AlgebraicNumber> negativePowers = new ArrayList<>( 8 );
 
     public AlgebraicField( String name )
     {
@@ -79,6 +79,25 @@ public abstract class AlgebraicField
         return this.name;
     }
 
+    @Override
+    public int hashCode() {
+        int prime = 43;
+        int result = 7;
+        result = prime * result + name.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        return getClass().equals(obj.getClass());
+    }
+
     public AlgebraicField getSubfield()
     {
         return subfield;
@@ -88,8 +107,8 @@ public abstract class AlgebraicField
     {
         return new AlgebraicNumber( this, factors );
     }
-    
-    public AlgebraicNumber createAlgebraicNumber( int... factors )
+
+    public final AlgebraicNumber createAlgebraicNumber( int... factors )
     {
         BigRational[] brs = new BigRational[ factors .length ];
         for ( int j = 0; j < factors.length; j++ ) {
@@ -111,99 +130,135 @@ public abstract class AlgebraicField
             return new AlgebraicNumber( this, factors ) .times( multiplier );
         }
         else
-        	return new AlgebraicNumber( this, factors );
+            return new AlgebraicNumber( this, factors );
     }
 
     public final AlgebraicNumber createPower( int power )
     {
-    	if ( power == 0 )
-    		return this .one;
-    	if ( power > 0 )
-    	{
-    		// first, fill in the missing powers in the list
-    		int size = this .positivePowers .size();
-    		AlgebraicNumber irrat = this .positivePowers .get( 1 );
-    		AlgebraicNumber last = this .positivePowers .get( size - 1 );
-    		for (int i = size; i <= power; i++) {
-    			AlgebraicNumber next = last .times( irrat );
-				this .positivePowers .add( next );
-				last = next;
-			}
-    		return positivePowers .get( power );
-    	}
-    	else
-    	{
-    		power = - power;
-    		// first, fill in the missing powers in the list
-    		int size = this .negativePowers .size();
-    		AlgebraicNumber irrat = this .negativePowers .get( 1 );
-    		AlgebraicNumber last = this .negativePowers .get( size - 1 );
-    		for (int i = size; i <= power; i++) {
-    			AlgebraicNumber next = last .times( irrat );
-				this .negativePowers .add( next );
-				last = next;
-			}
-    		return negativePowers .get( power );
-    	}
+        if ( power == 0 )
+            return this .one;
+        if ( power > 0 )
+        {
+            // first, fill in the missing powers in the list
+            int size = this .positivePowers .size();
+            AlgebraicNumber irrat = this .positivePowers .get( 1 );
+            AlgebraicNumber last = this .positivePowers .get( size - 1 );
+            for (int i = size; i <= power; i++) {
+                AlgebraicNumber next = last .times( irrat );
+                this .positivePowers .add( next );
+                last = next;
+            }
+            return positivePowers .get( power );
+        }
+        else
+        {
+            power = - power;
+            // first, fill in the missing powers in the list
+            int size = this .negativePowers .size();
+            AlgebraicNumber irrat = this .negativePowers .get( 1 );
+            AlgebraicNumber last = this .negativePowers .get( size - 1 );
+            for (int i = size; i <= power; i++) {
+                AlgebraicNumber next = last .times( irrat );
+                this .negativePowers .add( next );
+                last = next;
+            }
+            return negativePowers .get( power );
+        }
     }
 
+    /**
+     * @param wholeNumber becomes the numerator with 1 as the denominator
+     * @return AlgebraicNumber
+     */
+    public final AlgebraicNumber createRational( int wholeNumber )
+    {
+        return createRational( wholeNumber, 1 );
+    }
+
+    /**
+     * @param numerator
+     * @param denominator
+     * @return AlgebraicNumber
+     */
+    public final AlgebraicNumber createRational( int numerator, int denominator )
+    {
+        return createAlgebraicNumber( numerator, 0, denominator, 0 );
+    }
+    
+    /**
+    * @deprecated As of 2/1/2016: Use {@link #createRational( int wholeNumber )} 
+    * or {@link #createRational( int numerator, int denominator )} instead
+    * since the new methods ensure that there are exactly one or two parameters at compile-time.
+    * 
+    * For example:
+    * <code> createRational( new int[]{ 0, 1 } ); </code> becomes:
+    * <code> createRational( 0 ); </code> 
+    * and 
+    * <code> createRational( new int[]{ 1, 2 } ); </code> becomes:
+    * <code> createRational( 1, 2 ); </code>.
+    * 
+    * When all references to this varargs overload have been replaced, 
+    *   then this overload should be removed.
+    */
+    @Deprecated
     public final AlgebraicNumber createRational( int... value )
     {
-    	int denom = value.length == 2 ? value[ 1 ] : 1;
+        int denom = value.length == 2 ? value[ 1 ] : 1;
         return createAlgebraicNumber( value[0], 0, denom, 0 );
     }
 
-	public BigRational[] negate( BigRational[] e )
-	{
-    	BigRational[] result = new BigRational[ e.length ];
-    	for (int i = 0; i < e.length; i++) {
-			result[ i ] = e[ i ] .negate();
-		}
-    	return result;
-	}
+    public BigRational[] negate( BigRational[] array )
+    {
+        BigRational[] result = new BigRational[ array.length ];
+        for (int i = 0; i < array.length; i++) {
+            result[ i ] = array[ i ] .negate();
+        }
+        return result;
+    }
 
-	public boolean isZero( BigRational[] e )
-	{
-    	for ( BigRational r : e ) {
-    		if ( ! r .isZero() ) {
-    			return false;
+    public boolean isZero( BigRational[] array )
+    {
+        for (BigRational element : array) {
+            if (!element.isZero()) {
+                return false;
             }
         }
-		return true;
-	}
+        return true;
+    }
 
     public BigRational[] add( BigRational[] v1, BigRational[] v2 )
     {
-    	if ( v1.length != v2.length )
-    		throw new IllegalArgumentException( "arguments don't match" );
-    	BigRational[] result = new BigRational[ v1.length ];
-    	for (int i = 0; i < result.length; i++) {
-			result[ i ] = v1[ i ] .plus( v2[ i ] );
-		}
-    	return result;
+        if ( v1.length != v2.length )
+            throw new IllegalArgumentException( "arguments don't match" );
+        BigRational[] result = new BigRational[ v1.length ];
+        for (int i = 0; i < result.length; i++) {
+            result[ i ] = v1[ i ] .plus( v2[ i ] );
+        }
+        return result;
     }
 
     public BigRational[] subtract( BigRational[] v1, BigRational[] v2 )
     {
-    	if ( v1.length != v2.length )
-    		throw new IllegalArgumentException( "arguments don't match" );
-    	BigRational[] result = new BigRational[ v1.length ];
-    	for (int i = 0; i < result.length; i++) {
-			result[ i ] = v1[ i ] .minus( v2[ i ] );
-		}
-    	return result;
+        if ( v1.length != v2.length )
+            throw new IllegalArgumentException( "arguments don't match" );
+        BigRational[] result = new BigRational[ v1.length ];
+        for (int i = 0; i < result.length; i++) {
+            result[ i ] = v1[ i ] .minus( v2[ i ] );
+        }
+        return result;
     }
 
     public void addSymmetry( Symmetry symmetry )
     {
         this.symmetries.add( symmetry );
     }
-    
+
     public Symmetry getSymmetry( String name )
     {
-        for (Symmetry symm : symmetries) {
-            if ( symm .getName() .equals( name ) )
-                return symm;
+        for (Symmetry symmetry : symmetries) {
+            if (symmetry.getName().equals(name)) {
+                return symmetry;
+            }
         }
         return null;
     }
@@ -212,10 +267,10 @@ public abstract class AlgebraicField
     {
         return symmetries.toArray( new Symmetry[symmetries.size()] );
     }
-    
+
     public void addQuaternionSymmetry( QuaternionicSymmetry symm )
     {
-    	quaternionSymmetries .put( symm .getName(), symm );
+        quaternionSymmetries .put( symm .getName(), symm );
     }
 
     public QuaternionicSymmetry getQuaternionSymmetry( String name )
@@ -227,7 +282,7 @@ public abstract class AlgebraicField
      * Drop one coordinate from the 4D vector. If wFirst (the usual), then drop
      * the first coordinate, taking the "imaginary part" of the vector. If
      * !wFirst (for old VEF import, etc.), drop the last coordinate.
-     * 
+     *
      * @param source
      * @param wFirst
      * @return
@@ -291,7 +346,7 @@ public abstract class AlgebraicField
         }
         return reciprocalFactors;
     }
-        
+
     public final static int DEFAULT_FORMAT = 0; // 4 + 3 \u03C4
 
     public final static int EXPRESSION_FORMAT = 1; // 4+\u03C4*3
@@ -315,7 +370,7 @@ public abstract class AlgebraicField
         int order = this .getOrder();
         if ( is.length % order != 0 )
             throw new IllegalStateException( "Field order (" + order + ") does not divide length for " + is );
-        
+
         int dims = is.length / ( 2 * order );
         AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
         for ( int i = 0; i < dims; i++ ) {
@@ -353,13 +408,13 @@ public abstract class AlgebraicField
             break;
 
         default:
-        	int first = 0;
+            int first = 0;
             for ( int i = 0; i < factors.length; i++ )
             {
                 BigRational factor = factors[ i ];
                 if ( factor .isZero() ) {
-                	++ first;
-                	continue;
+                    ++ first;
+                    continue;
                 }
                 if ( i > first )
                 {
@@ -389,8 +444,8 @@ public abstract class AlgebraicField
                 }
             }
             if ( first == factors.length )
-            	// all factors were zero
-            	buf .append( "0" );
+                // all factors were zero
+                buf .append( "0" );
             break;
         }
     }
@@ -419,7 +474,7 @@ public abstract class AlgebraicField
         }
         return new AlgebraicNumber( this, rats );
     }
-    
+
     public AlgebraicVector parseVector( String nums )
     {
         StringTokenizer tokens = new StringTokenizer( nums, " " );
@@ -427,7 +482,7 @@ public abstract class AlgebraicField
         int order = this .getOrder();
         if ( numToks % order != 0 )
             throw new IllegalStateException( "Field order (" + order + ") does not divide token count: " + numToks + ", for '" + nums + "'" );
-        
+
         int dims = numToks / order;
         AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
         for ( int i = 0; i < dims; i++ ) {
@@ -443,5 +498,5 @@ public abstract class AlgebraicField
             columns[ i ] = this .basisVector( dims, i );
         }
         return new AlgebraicMatrix( columns );
-    }    
+    }
 }

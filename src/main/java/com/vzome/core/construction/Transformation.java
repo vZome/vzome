@@ -30,12 +30,14 @@ public abstract class Transformation extends Construction
 
         public void detach(){}
 
+        @Override
         protected boolean mapParamsToState()
         {
             return true;
         }
     }
 
+    @Override
     public boolean isVisible()
     {
         return false;
@@ -77,6 +79,7 @@ public abstract class Transformation extends Construction
         return arg;
     }
 
+    @Override
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "transformation" );

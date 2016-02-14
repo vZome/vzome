@@ -29,7 +29,8 @@ public class EditHistory implements Iterable<UndoableEdit>
     
     private boolean breakpointHit = false;
     
-    private final Logger logger = Logger .getLogger( "com.vzome.core.EditHistory" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.EditHistory" );
+    private static final Logger breakpointLogger = Logger .getLogger( "com.vzome.core.editor.Breakpoint" );
 
     public interface Listener
     {
@@ -382,43 +383,49 @@ public class EditHistory implements Iterable<UndoableEdit>
     
     public class Breakpoint implements UndoableEdit
     {
-        Logger logger = Logger .getLogger( "com.vzome.core.editor.Breakpoint" );
-
+        @Override
         public Element getXml( Document doc )
         {
             return doc .createElement( "Breakpoint" );
         }
 
+        @Override
         public boolean isVisible()
         {
             return true;
         }
 
+        @Override
         public void loadAndPerform( Element xml, XmlSaveFormat format,
                 Context context ) throws Failure
         {
         	context .performAndRecord( this );
         }
 
+        @Override
         public void perform() throws Failure
         {
-            logger .info( "hit a Breakpoint at " + mEditNumber );
+            breakpointLogger .info( "hit a Breakpoint at " + mEditNumber );
             breakpointHit = true;
         }
 
+        @Override
         public void redo() throws Failure
         {
             perform();
         }
 
+        @Override
         public void undo()
         {}
 
+        @Override
         public boolean isSticky()
         {
             return false;
         }
 
+        @Override
         public boolean isDestructive()
         {
             return false;
@@ -446,21 +453,25 @@ public class EditHistory implements Iterable<UndoableEdit>
             this.context = context;
         }
 
+        @Override
         public Element getXml( Document doc )
         {
             return xml;
         }
 
+        @Override
         public boolean isVisible()
         {
             return true;
         }
 
+        @Override
         public boolean isDestructive()
         {
             return true;
         }
 
+        @Override
         public void redo() throws Command.Failure
         {
             /*
@@ -495,8 +506,9 @@ public class EditHistory implements Iterable<UndoableEdit>
 
         	try {
 				EditHistory .this .listener .showCommand( xml, num );
-        		realized. loadAndPerform( xml, format, new UndoableEdit.Context()
+        		realized. loadAndPerform(xml, format, new UndoableEdit.Context()
         		{
+                    @Override
         			public void performAndRecord( UndoableEdit edit )
         			{
         				// realized is responsible for inserting itself, or any replacements (migration)
@@ -513,6 +525,7 @@ public class EditHistory implements Iterable<UndoableEdit>
         				EditHistory .this .insert( edit );
         			}
 
+                    @Override
         			public UndoableEdit createEdit( Element xml, boolean groupInSelection )
         			{
         				return context .createEdit( xml, groupInSelection );
@@ -530,21 +543,25 @@ public class EditHistory implements Iterable<UndoableEdit>
         	}
         }
 
+        @Override
         public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
         {
             throw new IllegalStateException( "should never be called" );
         }
 
+        @Override
         public void undo()
         {
             // called, but must be a no-op
         }
 
+        @Override
         public void perform()
         {
             // never called
         }
 
+        @Override
         public boolean isSticky()
         {
             return false;

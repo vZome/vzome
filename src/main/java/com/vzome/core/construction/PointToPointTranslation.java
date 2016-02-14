@@ -12,11 +12,13 @@ public class PointToPointTranslation extends Transformation
         mOffset = field .projectTo3d( p2 .getLocation() .minus( p1 .getLocation() ), true );
     }
 
+    @Override
     public AlgebraicVector transform( AlgebraicVector arg )
     {
         return arg .plus( mOffset );
     }
 
+    @Override
     protected boolean mapParamsToState()
     {
 //        AlgebraicField factory = (AlgebraicField) mOffset .getFactory();

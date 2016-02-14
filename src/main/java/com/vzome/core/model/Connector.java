@@ -2,11 +2,10 @@ package com.vzome.core.model;
 
 import com.vzome.core.algebra.AlgebraicVector;
 
-
 /**
  * @author Scott Vorthmann
  */
-public class Connector extends Manifestation
+public class Connector extends Manifestation implements Comparable<Connector>
 {
 
 	public Connector( AlgebraicVector loc )
@@ -16,18 +15,21 @@ public class Connector extends Manifestation
 		m_center = loc;
 	}
 
-	protected AlgebraicVector m_center;
+	private final AlgebraicVector m_center;
 
+	@Override
 	public AlgebraicVector getLocation()
     {
 		return m_center;
 	}
 
+	@Override
 	public int hashCode()
 	{
 	    return m_center .hashCode();
 	}
 
+	@Override
 	public  boolean equals( Object other )
 	{
 		if ( other == null )
@@ -40,10 +42,20 @@ public class Connector extends Manifestation
 		return this .getLocation() .equals( conn .getLocation() );
 	}
 
+	@Override
+	public int compareTo(Connector other) {
+        if ( this == other ) {
+            return 0;
+        }
+        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
+            return 0;
+        }
+		return this.getLocation().compareTo( other.getLocation() );
+	}
+	
+	@Override
     public String toString()
     {
         return "connector at " + m_center .toString();
     }
 }
-
-

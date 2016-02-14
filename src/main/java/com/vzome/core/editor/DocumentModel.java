@@ -108,7 +108,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	
 	private Camera defaultView;
 
-    static Logger logger = Logger .getLogger( "com.vzome.core.editor" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.editor" );
+    private static final Logger thumbnailLogger = Logger.getLogger( "com.vzome.core.thumbnails" );
 
     // 2013-05-26
     //  I thought about leaving these two in EditorModel, but reconsidered.  Although they are in-memory
@@ -220,6 +221,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
         lesson .addPropertyChangeListener( new PropertyChangeListener()
         {
+            @Override
 			public void propertyChange( PropertyChangeEvent change )
 			{
 				if ( "currentSnapshot" .equals( change .getPropertyName() ) )
@@ -264,6 +266,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .mRealizedModel .show( m );
 	}
 
+    @Override
 	public UndoableEdit createEdit( Element xml, boolean groupInSelection )
 	{
 		UndoableEdit edit = null;
@@ -567,6 +570,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         return true;
     }
 
+    @Override
 	public void performAndRecord( UndoableEdit edit )
 	{
         if ( edit == null )
@@ -671,12 +675,14 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             scale = Integer.parseInt( scaleStr );
         OrbitSet.Field orbitSetField = new OrbitSet.Field()
         {
+            @Override
             public OrbitSet getGroup( String name )
             {
                 SymmetrySystem system = symmetrySystems .get( name );
             	return system .getOrbits();
             }
 
+            @Override
             public QuaternionicSymmetry getQuaternionSet( String name )
             {
                 return mField .getQuaternionSymmetry( name);
@@ -858,23 +864,27 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	}
     }
 
+    @Override
     public void addTool( Tool tool )
     {
     	String name = tool .getName();
     	tools .put( name, tool );
     }
 
+    @Override
     public void removeTool( Tool tool )
     {
     	String name = tool .getName();
     	tools .remove( name );
     }
 
+    @Override
     public Tool getTool( String toolName )
     {
     	return tools .get( toolName );
     }
 
+    @Override
     public void useTool( Tool tool ) {}
 
     public AlgebraicField getField()
@@ -1090,10 +1100,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		return lesson;
 	}
 
+    @Override
     public void recordSnapshot( int id )
     {
     	RenderedModel snapshot = ( renderedModel == null )? null : renderedModel .snapshot();
-    	Logger thumbnailLogger = Logger.getLogger( "com.vzome.core.thumbnails" );
     	if ( thumbnailLogger .isLoggable( Level.FINER ) )
     		thumbnailLogger .finer( "recordSnapshot: " + id );
     	numSnapshots = Math .max( numSnapshots, id + 1 );
@@ -1105,6 +1115,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	snapshots[ id ] = snapshot;
     }
 
+    @Override
 	public void actOnSnapshot( int id, SnapshotAction action )
 	{
         RenderedModel snapshot = snapshots[ id ];

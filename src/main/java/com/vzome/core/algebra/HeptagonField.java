@@ -31,6 +31,7 @@ public class HeptagonField extends AlgebraicField
         return SIGMA_INV;
     }
     
+    @Override
     public final BigRational[] multiply( BigRational[] first, BigRational[] second )
     {
         BigRational a = first[ A ], b = first[ B ], c = first[ C ];
@@ -45,6 +46,7 @@ public class HeptagonField extends AlgebraicField
         return new BigRational[]{ ones, rhos, sigmas };
     }
 
+    @Override
     public void defineMultiplier( StringBuffer buf, int i )
     {
         if ( i == B )
@@ -59,21 +61,25 @@ public class HeptagonField extends AlgebraicField
         }
     }
     
+    @Override
     public int getOrder()
     {
         return 3;
     }
 
+    @Override
     public AlgebraicNumber getDefaultStrutScaling()
     {
         return this .one();
     }
 
+    @Override
     public int getNumIrrationals()
     {
         return 2;
     }
 
+    @Override
     public String getIrrational( int which, int format )
     {
         if ( format == DEFAULT_FORMAT )

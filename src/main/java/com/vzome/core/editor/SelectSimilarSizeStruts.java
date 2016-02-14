@@ -34,6 +34,7 @@ public class SelectSimilarSizeStruts extends ChangeSelection
         this .length = length;
     }
 
+    @Override
     public void perform() throws Failure
     {
         for (Manifestation man : model) {
@@ -54,11 +55,13 @@ public class SelectSimilarSizeStruts extends ChangeSelection
         super .perform();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "SelectSimilarSize";
     }
 
+    @Override
     protected void getXmlAttributes( Element element )
     {
         if ( symmetry != null )
@@ -69,6 +72,7 @@ public class SelectSimilarSizeStruts extends ChangeSelection
             XmlSaveFormat .serializeNumber( element, "length", length );
     }
 
+    @Override
     protected void setXmlAttributes( Element xml, XmlSaveFormat format )
             throws Failure
     {

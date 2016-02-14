@@ -15,6 +15,7 @@ public class ShowHidden extends ChangeManifestations
         super( selection, realized, groupInSelection );
     }
     
+    @Override
     public void perform()
     {
         for (Manifestation m : mManifestations) {
@@ -29,6 +30,7 @@ public class ShowHidden extends ChangeManifestations
         redo();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "ShowHidden";

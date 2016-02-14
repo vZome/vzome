@@ -34,11 +34,13 @@ public class Branch implements UndoableEdit
         edits .add( edit );
     }
 
+    @Override
     public boolean isDestructive()
     {
         return false;
     }
 
+    @Override
     public void perform() throws Failure
     {
         final Stack<UndoableEdit> toUndo = new Stack<>();
@@ -52,8 +54,9 @@ public class Branch implements UndoableEdit
 
                 UndoableEdit edit = context .createEdit( editElem, format .groupingDoneInSelection() );
                 addEdit( edit );
-                edit. loadAndPerform( editElem, format, new UndoableEdit.Context()
+                edit. loadAndPerform(editElem, format, new UndoableEdit.Context()
                 {
+                    @Override
                     public void performAndRecord( UndoableEdit edit )
                     {
                         // realized is responsible for inserting itself, or any replacements (migration)
@@ -66,6 +69,7 @@ public class Branch implements UndoableEdit
                         toUndo .push( edit );
                     }
 
+                    @Override
                     public UndoableEdit createEdit( Element xml, boolean groupInSelection )
                     {
                         return context .createEdit( xml, groupInSelection );
@@ -80,15 +84,19 @@ public class Branch implements UndoableEdit
         }
     }
 
+    @Override
     public void undo() {}
 
+    @Override
     public void redo() {}
 
+    @Override
     public boolean isVisible()
     {
         return false;
     }
 
+    @Override
     public Element getXml( Document doc )
     {
         Element branch = doc .createElement( "Branch" );
@@ -108,6 +116,7 @@ public class Branch implements UndoableEdit
         return branch;
     }
 
+    @Override
     public void loadAndPerform( Element xml, XmlSaveFormat format, final Context context ) throws Failure
     {
         this .xml = xml;
@@ -115,6 +124,7 @@ public class Branch implements UndoableEdit
         context .performAndRecord( this );
     }
 
+    @Override
     public boolean isSticky()
     {
         return true;

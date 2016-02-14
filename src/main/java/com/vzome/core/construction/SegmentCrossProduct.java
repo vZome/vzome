@@ -12,7 +12,8 @@ import com.vzome.core.algebra.AlgebraicVector;
 public class SegmentCrossProduct extends Segment
 {
     // parameters
-    private Segment seg1, seg2;
+    private final Segment seg1;
+    private final Segment seg2;
     
     public SegmentCrossProduct( Segment s1, Segment s2 )
     {
@@ -22,7 +23,8 @@ public class SegmentCrossProduct extends Segment
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         if ( seg1 .isImpossible() || seg2 .isImpossible() )
             return setStateVariables( null, null, true );
@@ -30,7 +32,7 @@ public class SegmentCrossProduct extends Segment
         AlgebraicVector v2 = seg2 .getOffset();
         v2 = v1 .cross( v2 );
         v2 = v2 .scale( field .createPower( -4 ) );
-        v2 = v2 .scale( field .createRational( new int[]{ 1,2 } ) );
+        v2 = v2 .scale( field .createRational( 1, 2 ) );
         return setStateVariables( seg1 .getEnd(), v2, false );
     }
 }

@@ -6,6 +6,7 @@ import com.vzome.core.zomic.ZomicException;
 
 public class Reflect extends Permute{
 
+    @Override
 	public  void accept( Visitor visitor ) throws ZomicException
 	{
 		visitor .visitReflect( getAxis() );
@@ -16,6 +17,7 @@ public class Reflect extends Permute{
 		super( null );
 	}
 
+    @Override
 	public  void setAxis( Axis axis )
 	{
 		super .setAxis( axis );

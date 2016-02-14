@@ -19,6 +19,7 @@ public class InversionTool extends TransformationTool
         super( name, selection, realized, tools, originPoint );
     }
 
+    @Override
     public void perform() throws Command.Failure
     {
         Point center = null;
@@ -42,16 +43,19 @@ public class InversionTool extends TransformationTool
         defineTool();
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "InversionTool";
     }
 
+    @Override
     public String getCategory()
     {
         return "point reflection";
     }
 
+    @Override
     public String getDefaultName( String baseName )
     {
         return "point reflect through origin";

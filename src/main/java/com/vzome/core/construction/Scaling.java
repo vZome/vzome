@@ -11,9 +11,10 @@ import com.vzome.core.math.symmetry.Symmetry;
 
 public class Scaling extends Transformation
 {
-    private Segment s1, s2;
-    private Point center;
-    private Symmetry symmetry;
+    private final Segment s1;
+    private final Segment s2;
+    private final Point center;
+    private final Symmetry symmetry;
 
     public Scaling( Segment s1, Segment s2, Point center, Symmetry symmetry )
     {
@@ -26,7 +27,8 @@ public class Scaling extends Transformation
         mapParamsToState();
     }
 
-    protected boolean mapParamsToState()
+    @Override
+    protected final boolean mapParamsToState()
     {
         Axis zone1 = symmetry .getAxis( s1 .getOffset() );
         Axis zone2 = symmetry .getAxis( s2 .getOffset() );

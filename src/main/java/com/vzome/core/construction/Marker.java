@@ -21,11 +21,13 @@ public class Marker extends Construction
         return mTarget;
     }
 
+    @Override
     protected boolean mapParamsToState()
     {
         return false;
     }
 
+    @Override
     public Element getXml( Document doc )
     {
         Element result = doc .createElement( "marker" );

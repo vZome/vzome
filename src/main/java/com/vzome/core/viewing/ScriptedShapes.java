@@ -1,8 +1,5 @@
 /*
  * Created on Jun 25, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package com.vzome.core.viewing;
 
@@ -38,6 +35,7 @@ public class ScriptedShapes extends AbstractShapes
         this.fallback = fallback;
     }
     
+    @Override
     protected StrutGeometry createStrutGeometry( Direction dir )
     {
         ZomicStrutGeometry zsg = new ZomicStrutGeometry( mPkgName, dir, mSymmetry );
@@ -48,6 +46,7 @@ public class ScriptedShapes extends AbstractShapes
         return super .createStrutGeometry( dir );
     }
     
+    @Override
     protected Polyhedron buildConnectorShape( String pkgName )
     {
         String prefix = ZomicStrutGeometry.SCRIPT_PREFIX + pkgName + "/";

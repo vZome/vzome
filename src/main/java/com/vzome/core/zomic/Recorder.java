@@ -45,16 +45,19 @@ public class Recorder implements ZomicEventHandler
             mOutput .statement( stmt );
     }
     
+    @Override
     public void step( Axis axis, AlgebraicNumber length )
     {
         record( new Move( axis, length ) );
     }
 
+    @Override
     public void rotate( Axis axis, int steps )
     {
         record( new Rotate( axis, steps ) );
     }
 
+    @Override
     public void reflect( Axis blueAxis )
     {
         Reflect r = new Reflect();
@@ -62,21 +65,25 @@ public class Recorder implements ZomicEventHandler
         record( r );
     }
 
+    @Override
     public void permute( Permutation permutation, int sense )
     {
         record( new Untranslatable( "permutation" ) );
     }
 
+    @Override
     public void scale( AlgebraicNumber scale )
     {
         record( new Scale( scale ) );
     }
 
+    @Override
     public void action( int action )
     {
         record( new Build( (action & BUILD) != 0, (action & DESTROY) != 0 ) );
     }
 
+    @Override
     public ZomicEventHandler save( int variables )
     {
         mSaves .push( new Walk() );
@@ -93,6 +100,7 @@ public class Recorder implements ZomicEventHandler
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void restore( ZomicEventHandler changes, int variables )
     {
         Walk walk = mSaves .pop();

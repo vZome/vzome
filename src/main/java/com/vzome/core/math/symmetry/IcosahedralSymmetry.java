@@ -102,6 +102,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     }
     
     
+    @Override
     public String getName()
     {
         return "icosahedral";
@@ -149,6 +150,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return result;
     }
 
+    @Override
     public Direction getSpecialOrbit( SpecialOrbit which )
     {
         switch ( which ) {
@@ -167,14 +169,15 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         }
     }
 
+    @Override
     protected void createFrameOrbit( String frameColor )
     {
         AlgebraicVector xAxis = mField .basisVector( 3, AlgebraicVector .X );
         
-        Direction dir = createZoneOrbit( frameColor, 0, 15, xAxis, true, true, mField .createRational( new int[]{ 2, 1 } ) );
+        Direction dir = createZoneOrbit( frameColor, 0, 15, xAxis, true, true, mField .createRational( 2 ) );
 //        Direction dir = new Direction( "blue", this, 0, 15, xAxis, true );
 //        dir .setHalfSizes( true );
-//        dir .setUnitLength( mField .createRational( new int[]{ 2, 1 } ) );
+//        dir .setUnitLength( mField .createRational( 2 );
 //        mDirectionList .add( dir );
 //        mDirectionMap .put( dir .getName(), dir );
 //        orbitSet .add( dir );
@@ -199,6 +202,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         }
     }
     
+    @Override
     protected void createOtherOrbits()
     {
         
@@ -209,7 +213,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         dir = createZoneOrbit( "yellow",   0, 27,          vector( new int[]{ 1,1,1,1, 0,1,0,1, -1,1,0,1 } ), true, false, mField .createPower( -1 ) );
         dir .setScaleNames( new String[]{ "y0", "y1", "y2", "y3" } );
 
-        dir = createZoneOrbit( "green",    6, NO_ROTATION, vector( new int[]{ 1,1,0,1, 1,1,0,1, 0,1,0,1 } ), true, true, mField .createRational( new int[]{ 2, 1 } ) );
+        dir = createZoneOrbit( "green",    6, NO_ROTATION, vector( new int[]{ 1,1,0,1, 1,1,0,1, 0,1,0,1 } ), true, true, mField .createRational( 2 ) );
         dir .setScaleNames( new String[]{ "g0", "g1", "g2", "g3" } );
         
         createZoneOrbit( "orange",   6, NO_ROTATION, vector( new int[]{ 1,1,0,1, 0,1,1,1, 0,1,0,1 } ) );
@@ -246,6 +250,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     }
 
 
+    @Override
     protected void createInitialPermutations()
     {
         final int ORDER = 60;
@@ -299,6 +304,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     private final int[] yellowTetrahedral = new int[ 60 ];
     private final int[] blueTetrahedral = new int[ 60 ];
     
+    @Override
     public int[] subgroup( String name )
     {
         if ( TETRAHEDRAL .equals( name ) )
@@ -306,7 +312,8 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return null;
     }
 
-    public Direction getDirection( String color )
+    @Override
+    public final Direction getDirection( String color )
     {
         if ( "spring" .equals( color ) )
             color = "apple";

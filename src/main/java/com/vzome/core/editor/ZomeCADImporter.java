@@ -353,7 +353,7 @@ public class ZomeCADImporter
         if ( Math .abs( value - 1f ) < EPSILON )
             result = this .field .one();
         else if ( Math .abs( value - 0.5f ) < EPSILON )
-            result = this .field .createRational( new int[]{ 1, 2 } );
+            result = this .field .createRational( 1, 2 );
         else {
             int sign = Float .compare( value, 1f );
             for ( int i = 1; i < 13; i++ )
@@ -377,7 +377,7 @@ public class ZomeCADImporter
             for ( int i = 1; i < 13; i++ )
             {
                 AlgebraicNumber candidate = field .createPower( sign * i );
-                candidate = candidate .times( field .createRational( new int[]{ 1,2 } ) );
+                candidate = candidate .times( field .createRational( 1, 2 ) );
                 double real = candidate .evaluate();
                 if ( Math .abs( value - real ) < EPSILON )
                 {
@@ -396,7 +396,7 @@ public class ZomeCADImporter
             for ( int i = 1; i < 13; i++ )
             {
                 AlgebraicNumber candidate = field .createPower( sign * i );
-                candidate = candidate .times( field .createRational( new int[]{ 1,4 } ) );
+                candidate = candidate .times( field .createRational( 1, 4 ) );
                 double real = candidate .evaluate();
                 if ( Math .abs( value - real ) < EPSILON )
                 {
@@ -459,6 +459,7 @@ public class ZomeCADImporter
                 out = new PrintWriter( new FileOutputStream( string ) );
         }
 
+        @Override
         public void addBall( AlgebraicVector location )
         {
             out .println( "  add ball  " + location );
@@ -487,45 +488,53 @@ public class ZomeCADImporter
             return color + "  " + Integer .toString( zone );
         }
 
+        @Override
         public void addStrut( AlgebraicVector location, int orbit, int zone, int size )
         {
             out .println( "  add strut  " + location + "  " + zone( orbit, zone ) + "  " + size );
             out .flush();
         }
 
+        @Override
         public void beginEdit()
         {
             out .println( "-----" );
             out .flush();
         }
 
+        @Override
         public void beginModel()
         {
             out .println( "[==========" );
             out .flush();
         }
 
+        @Override
         public void endEdit()
         {}
 
+        @Override
         public void endModel()
         {
             out .println( "==========]" );
             out .flush();
         }
 
+        @Override
         public void reflect( AlgebraicVector center, int zone, boolean add )
         {
             out .println( "  reflect  " + zone( 99, zone ) + "  " + (add?"union":"intersection") );
             out .flush();
         }
 
+        @Override
         public void removeBall( AlgebraicVector location )
         {
             out .println( "remove ball  " + location );
             out .flush();
         }
 
+        @Override
         public void removeStrut( AlgebraicVector location, int orbit, int zone,
                 int size )
         {
@@ -533,6 +542,7 @@ public class ZomeCADImporter
             out .flush();
         }
 
+        @Override
         public void rotate( AlgebraicVector center, int orbit, int zone,
                 boolean add )
         {
@@ -540,12 +550,14 @@ public class ZomeCADImporter
             out .flush();
         }
 
+        @Override
         public void tesselate( AlgebraicVector from, AlgebraicVector to, boolean add )
         {
             out .println( "  tesselate  " + from + " -> " + to + "  " + (add?"union":"intersection") );
             out .flush();
         }
 
+        @Override
         public void unknown( int type, int[] params )
         {
             out .println( "  UNKNOWN  " );

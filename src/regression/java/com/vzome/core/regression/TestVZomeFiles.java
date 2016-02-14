@@ -42,6 +42,8 @@ import com.vzome.core.commands.Command.Failure;
  */
 public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 {
+    private static final Logger logger = Logger.getLogger("");
+    
     public static void main( String[] args )
     {
     	TestVZomeFiles tester = new TestVZomeFiles( args[0], args[1] );
@@ -141,6 +143,7 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 	
 	protected static class Collector extends FileSystemVisitor2 {
 
+        @Override
 		public void visitFolder( File directory, Actor actor ) throws IOException
 		{
 			String[] files = directory .list();
@@ -160,6 +163,7 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 		}
 	}	
 	
+    @Override
 	public void actOnFolder( File folder, FileSystemVisitor2 visitor ) throws IOException
 	{
         if ( ".svn" .equals( folder .getName() ) )
@@ -167,6 +171,7 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
         super .actOnFolder( folder, visitor );
 	}
 	
+    @Override
     public void actOnFile( File file, String extension, FileSystemVisitor2 visitor ) throws IOException
     {
         if ( "vZome" .equals( extension ) )
@@ -192,7 +197,6 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
             System .out .println( suiteName );
             testCase .addAttribute( new Attribute( "name", testName ) );
             
-            Logger logger = Logger .getLogger( "" );
             final Element stderr = new Element( "system-err" );
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             Handler handler = new StreamHandler( bos, new SimpleFormatter() );
@@ -276,6 +280,7 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
             super .actOnFile( file, extension, visitor );
     }
 
+    @Override
 	public boolean fileContainsLinks( String ext )
 	{
 	    // This appears to make a file like "foo.testsuite" act like a collection
@@ -295,6 +300,7 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 	        this.type = type;
 	    }
 	    
+        @Override
 	    public void run()
 	    {
 	        try

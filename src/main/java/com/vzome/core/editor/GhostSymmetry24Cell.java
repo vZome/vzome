@@ -35,23 +35,27 @@ public class GhostSymmetry24Cell extends ChangeManifestations
         this.symmAxis = symmAxis;
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "GhostSymmetry24Cell";
     }
 
+    @Override
     public void getXmlAttributes( Element result )
     {
         if ( symmAxis != null )
             XmlSaveFormat .serializeSegment( result, "start", "end", symmAxis );
     }
 
+    @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format )
     {
         symmAxis = format .parseSegment( xml, "start", "end" );
     }
     
     
+    @Override
     public void perform()
     {
         if ( symmAxis == null )

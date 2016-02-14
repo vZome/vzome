@@ -16,12 +16,14 @@ public class Translation extends Transformation
         mOffset = offset;
     }
 
+    @Override
     public AlgebraicVector transform( AlgebraicVector arg )
     {
         arg = arg .plus( mOffset );
         return arg;
     }
 
+    @Override
     protected boolean mapParamsToState()
     {
 //        AlgebraicField factory = (AlgebraicField) mOffset .getFactory();

@@ -36,6 +36,7 @@ public class Strut {
 		return new Vector( this .manifestation .getOffset() );
 	}
 	
+    @Override
 	public boolean equals( Object other )
 	{
 		if ( other == null )
@@ -50,11 +51,13 @@ public class Strut {
 		}
 	}
 
+    @Override
 	public int hashCode()
 	{
 	    return this .manifestation .hashCode();
 	}
 	
+    @Override
 	public String toString()
 	{
 		return this .manifestation .toString();

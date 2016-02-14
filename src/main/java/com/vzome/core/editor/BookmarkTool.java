@@ -34,11 +34,13 @@ public class BookmarkTool extends ChangeManifestations implements Tool
         }
     }
 
+    @Override
 	public boolean isSticky()
     {
         return true;
     }
 
+    @Override
     public void perform() throws Failure
     {
         defineTool();
@@ -49,11 +51,13 @@ public class BookmarkTool extends ChangeManifestations implements Tool
         tools .addTool( this );
     }
 
+    @Override
     public boolean needsInput()
     {
     	return false;
     }
 
+    @Override
     public void prepare( ChangeManifestations edit )
     {
         for (Construction con : bookmarkedConstructions) {
@@ -62,12 +66,16 @@ public class BookmarkTool extends ChangeManifestations implements Tool
         edit .redo();
     }
 
+    @Override
 	public void complete( ChangeManifestations applyTool ) {}
 
+    @Override
     public void performEdit( Construction c, ChangeManifestations applyTool ) {}
     
+    @Override
 	public void performSelect( Manifestation man, ChangeManifestations applyTool ) {}
 
+    @Override
     public void redo()
     {
         // TODO manifest a symmetry construction... that is why this class extends ChangeConstructions
@@ -75,32 +83,38 @@ public class BookmarkTool extends ChangeManifestations implements Tool
 //        tools .addTool( this );
     }
 
+    @Override
     public void undo()
     {
         // this edit is now sticky (not really undoable)
 //        tools .removeTool( this );
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "BookmarkTool";
     }
     
+    @Override
     protected void getXmlAttributes( Element element )
     {
         element .setAttribute( "name", this.name );
     }
 
+    @Override
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         this.name = element .getAttribute( "name" );
     }
 
+    @Override
     public String getCategory()
     {
         return "bookmark";

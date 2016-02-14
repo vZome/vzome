@@ -21,6 +21,7 @@ public class SelectAll extends ChangeSelection
         }
     }
 
+    @Override
     protected String getXmlElementName()
     {
         return "SelectAll";

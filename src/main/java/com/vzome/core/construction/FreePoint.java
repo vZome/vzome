@@ -19,6 +19,7 @@ public class FreePoint extends Point
         setStateVariable( loc, false );
     }
 
+    @Override
     protected boolean mapParamsToState()
     {
         // This won't get called unless there was a state change.  See setLocationAttribute above.

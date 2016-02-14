@@ -20,6 +20,7 @@ import com.vzome.core.math.symmetry.Symmetry;
  */
 public abstract class CommandTransform extends AbstractCommand
 {
+    @Override
     public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         if ( format .getScale() != 0 )
@@ -28,6 +29,7 @@ public abstract class CommandTransform extends AbstractCommand
         super.setFixedAttributes( attributes, format );
     }
 
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attributes, ConstructionChanges effects ) throws Failure
     {
         // TODO Auto-generated method stub
@@ -47,11 +49,13 @@ public abstract class CommandTransform extends AbstractCommand
 
     protected static final Object[][] GROUP_ATTR_SIGNATURE = new Object[][]{ { SYMMETRY_CENTER_ATTR_NAME, Point.class }, { SYMMETRY_GROUP_ATTR_NAME, Symmetry.class } };
 
+    @Override
     public Object[][] getParameterSignature()
     {
         return PARAM_SIGNATURE;
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return AXIS_ATTR_SIGNATURE;

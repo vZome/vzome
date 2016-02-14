@@ -20,6 +20,7 @@ public interface Projection
             this.field = field;
         }
 
+        @Override
         public AlgebraicVector projectImage( AlgebraicVector source, boolean wFirst )
         {
             // we ignore wFirst here, since it only applies to Quaternion projection

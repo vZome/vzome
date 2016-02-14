@@ -38,12 +38,14 @@ public class HistoryExporter extends Exporter3d
         DomUtils .serialize( dom, writer );
     }
 
+    @Override
     public void doExport( File directory, Writer writer, int height, int width )
             throws Exception
     {
         throw new IllegalArgumentException( "HistoryExporter not supported" );
     }
 
+    @Override
     public String getFileExtension()
     {
         return "history.xml";

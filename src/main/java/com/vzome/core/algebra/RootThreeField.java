@@ -21,11 +21,13 @@ public class RootThreeField extends AlgebraicField
         defaultStrutScaling = createAlgebraicNumber( 1, 0, 2, -3 );
     };
     
+    @Override
     public void defineMultiplier( StringBuffer buf, int i )
     {
         buf .append( "" );
     }
 
+    @Override
     public final BigRational[] multiply( BigRational[] first, BigRational[]  second )
     {
         BigRational sqrt3s = first[ SQRT3_PLACE ].times( second[ ONES_PLACE ]) .plus( first[ ONES_PLACE ].times( second[ SQRT3_PLACE ]) );
@@ -34,11 +36,13 @@ public class RootThreeField extends AlgebraicField
         return new BigRational[]{ ones, sqrt3s };
     }
 
+    @Override
     public int getOrder()
     {
         return 2;
     }
     
+    @Override
     public AlgebraicNumber getDefaultStrutScaling()
     {
         return defaultStrutScaling;

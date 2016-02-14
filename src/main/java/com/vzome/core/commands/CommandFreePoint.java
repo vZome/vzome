@@ -18,16 +18,19 @@ public class CommandFreePoint extends AbstractCommand
     
     private static Object[][] ATTRS = new Object[][]{ { "where", int[].class } };
     
+    @Override
     public Object[][] getParameterSignature()
     {
         return PARAMS;
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return ATTRS;
     }
 
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {

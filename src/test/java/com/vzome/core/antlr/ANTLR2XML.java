@@ -40,14 +40,17 @@ public interface ANTLR2XML {
 
         protected antlr.Parser m_parser;
 
+        @Override
         public void setParser( antlr.Parser parser ) {
             m_parser = parser;
         }
 
+        @Override
         public void startElement(String name) throws RecognitionException {
             m_elementNames.push(name);
         }
 
+        @Override
         public void endElement() throws RecognitionException {
             m_elementNames.pop();
         }
@@ -73,6 +76,7 @@ public interface ANTLR2XML {
             }
         }
 
+        @Override
         public void startElement(String name) throws RecognitionException {
             if (m_startIsPending) {
                 System.out.println(">");
@@ -85,11 +89,13 @@ public interface ANTLR2XML {
             m_startIsPending = true;
         }
 
+        @Override
         public void attribute(String name, String value)
                        throws RecognitionException {
             System.out.print(" " + name + "=\"" + value + "\"");
         }
 
+        @Override
         public void endElement() throws RecognitionException {
             if (m_startIsPending) {
                 System.out.println("/>");

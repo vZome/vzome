@@ -42,18 +42,21 @@ public class CommandImportVEFData extends AbstractCommand
     private static final Object[][] ATTR_SIGNATURE =
         new Object[][]{ { VEF_STRING_ATTR_NAME, String.class }, { Command.FIELD_ATTR_NAME, InputStream.class }, { NO_INVERSION_ATTR_NAME, InputStream.class } };
 
-    static Logger logger = Logger .getLogger( "com.vzome.core.commands.importVEF" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.commands.importVEF" );
 
+    @Override
     public Object[][] getParameterSignature()
     {
         return PARAM_SIGNATURE;
     }
 
+    @Override
     public Object[][] getAttributeSignature()
     {
         return ATTR_SIGNATURE;
     }
     
+    @Override
     public boolean attributeIs3D( String attrName )
     {
         if ( "symmetry.axis.segment" .equals( attrName ) )
@@ -70,6 +73,7 @@ public class CommandImportVEFData extends AbstractCommand
     /**
      * Only called when migrating a 2.0 model file.
      */
+    @Override
     public void setQuaternion( AlgebraicVector offset )
     {
         quaternionVector = offset;
@@ -78,6 +82,7 @@ public class CommandImportVEFData extends AbstractCommand
     /*
      * Adding this to support a 4D quaternion.
      */
+    @Override
     public AttributeMap setXml( Element xml, XmlSaveFormat format ) 
     {
         AttributeMap attrs = super .setXml( xml, format );
@@ -87,6 +92,7 @@ public class CommandImportVEFData extends AbstractCommand
         return attrs;
     }
     
+    @Override
     public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
@@ -96,6 +102,7 @@ public class CommandImportVEFData extends AbstractCommand
     }
 
     
+    @Override
     public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         if ( ! attributes .containsKey( CommandImportVEFData .FIELD_ATTR_NAME ) )
@@ -104,6 +111,7 @@ public class CommandImportVEFData extends AbstractCommand
         super .setFixedAttributes( attributes, format );
     }
 
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attributes,
             ConstructionChanges effects ) throws Failure
     {
@@ -144,6 +152,7 @@ public class CommandImportVEFData extends AbstractCommand
             super( quaternion, effects, root .getField() .createPower( 5 ), null );
         }
 
+        @Override
         protected void addVertex( int index, AlgebraicVector location )
         {
             location = location .scale( scale );
@@ -153,11 +162,13 @@ public class CommandImportVEFData extends AbstractCommand
 //            mEffects .constructionAdded( mVertices[ index ] );
         }
 
+        @Override
         protected void startEdges( int numEdges )
         {
             mProjected = new AlgebraicVector[ numEdges ][ 2 ];
         }
 
+        @Override
         protected void addEdge( int index, int v1, int v2 )
         {
             Point p1 = mVertices[ v1 ], p2 = mVertices[ v2 ];
@@ -181,6 +192,7 @@ public class CommandImportVEFData extends AbstractCommand
             mUsedPoints .add( p2 );
         }
         
+        @Override
         protected void endEdges()
         {
             for (Point point : mUsedPoints) {
