@@ -162,6 +162,8 @@ public class POVRayExporter extends Exporter3d
                 exportTransform( transformName, transform );
             }
             Color color = rm .getColor();
+            if ( color == null )
+            	color = Color.WHITE;
             String colorName = colors .get( color );
             if ( colorName == null ){
                 colorName = nameColor( color );
