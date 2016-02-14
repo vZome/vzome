@@ -19,6 +19,7 @@ temp/
 .project
 gradle-app.setting
 local.properties
+logging.properties
 run-vzome.bat
 run-vzome.sh
 Thumbs.db

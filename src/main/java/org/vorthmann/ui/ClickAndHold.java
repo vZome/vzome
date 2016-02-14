@@ -25,18 +25,21 @@ public class ClickAndHold extends MouseAdapter implements Runnable
         mAction = action;
     }
 
+    @Override
     public void mousePressed( MouseEvent arg0 )
     {
         mThread = new Thread( this );
         mThread .start();
     }
 
+    @Override
     public void mouseReleased( MouseEvent arg0 )
     {
         mThread .interrupt();
     }
 
 
+    @Override
     public void run()
     {
         try {

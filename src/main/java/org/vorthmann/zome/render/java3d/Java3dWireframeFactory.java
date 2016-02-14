@@ -25,6 +25,7 @@ public class Java3dWireframeFactory extends Java3dFactory
         super( colors, emissiveHighlights );
     }
 
+    @Override
     Geometry makeSolidGeometry( RenderedManifestation rm )
     {
         Manifestation man = rm .getManifestation();

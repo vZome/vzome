@@ -5,7 +5,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.media.j3d.Transform3D;
@@ -20,6 +19,7 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.Polyhedron.Face;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
@@ -78,6 +78,7 @@ public class Java2dExporter extends Exporter3d
         this.mSnapshot = snapshot;
     }
 
+    @Override
     public void doExport( File directory, Writer writer, int height, int width ) throws Exception
     {
         AlgebraicField field = mModel .getField();
@@ -85,10 +86,8 @@ public class Java2dExporter extends Exporter3d
         mSnapshot .setStrokeWidth( 0.5f );
         mSnapshot .setRect( new Rectangle2D.Float( 0f, 0f, width, height ) );
 
-        List mappedVertices = new ArrayList( 60 );
-        for ( Iterator rms = mModel .getRenderedManifestations(); rms .hasNext(); )
-        {
-            RenderedManifestation rm = (RenderedManifestation) rms .next();
+        List<Vector3f> mappedVertices = new ArrayList<>( 60 );
+        for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
             boolean flip = rm .reverseOrder(); // need to reverse face vertex order
             com.vzome.core.render.Color c = rm .getColor();
@@ -106,35 +105,32 @@ public class Java2dExporter extends Exporter3d
                 continue;
             }
             
-            List vertices = shape .getVertexList();
+            List<AlgebraicVector> vertices = shape .getVertexList();
             AlgebraicMatrix partOrientation = rm .getOrientation();
             RealVector location = rm .getLocation();  // should *2?
             
             if ( location == null )
-            	// avoid NPE reported by Antonio Montero
-            	continue;
+                // avoid NPE reported by Antonio Montero
+                continue;
             
             mappedVertices .clear();
             for ( int i = 0; i < vertices .size(); i++ )
             {
-                AlgebraicVector gv = (AlgebraicVector) vertices .get( i );
+                AlgebraicVector gv = vertices .get( i );
                 gv = partOrientation .timesColumn( gv );
                 RealVector rv = location .plus( gv .toRealVector() );
                 Vector3f v = mapCoordinates( rv, height, width, field, view );
                 mappedVertices .add( v );
             }
             
-            for ( Iterator faces = shape .getFaceSet() .iterator(); faces .hasNext(); ){
-                Polyhedron.Face face = (Polyhedron.Face) faces .next();
+            for (Face face : shape .getFaceSet()) {
                 int arity = face .size();
-
                 Java2dSnapshot.Polygon path = new Java2dSnapshot.Polygon( color );
                 boolean backFacing = false;
-                
                 Vector3f v1 = null, v2 = null;
                 for ( int j = 0; j < arity; j++ ){
-                    Integer index = (Integer) face .get( flip? arity-j-1 : j );
-                    Vector3f v = (Vector3f) mappedVertices .get( index .intValue() );
+                    Integer index = face .get( flip? arity-j-1 : j );
+                    Vector3f v = mappedVertices .get( index );
                     path .addVertex( v );
                     switch ( path .size() ) {
                         case 1 :
@@ -158,7 +154,6 @@ public class Java2dExporter extends Exporter3d
                             break;
                     }
                 }
-
                 path .close();
                 if ( ! backFacing )
                 {
@@ -231,6 +226,7 @@ public class Java2dExporter extends Exporter3d
         return new Vector3f( vr.x, vr.y, vr.z );
     }
 
+    @Override
     public String getFileExtension()
     {
         return "java2d";  // this should never get called

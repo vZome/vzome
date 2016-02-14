@@ -1,8 +1,5 @@
 /*
  * Created on Jan 2, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package org.vorthmann.zome.export.java2d;
 
@@ -11,6 +8,7 @@ import java.awt.geom.PathIterator;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Iterator;
+import org.vorthmann.zome.export.java2d.Java2dSnapshot.Polygon;
 
 
 public class QuartzXMLExporter {
@@ -50,8 +48,8 @@ public class QuartzXMLExporter {
 		output .println();
 		output .println( "    <setLineWidth width='" + mSnapshot .getStrokeWidth() + "'/>" );
 		
-		for ( Iterator paths = mSnapshot .getPolygons(); paths .hasNext(); ){
-			Java2dSnapshot.Polygon polygon = (Java2dSnapshot.Polygon) paths .next();
+		for ( Iterator<Polygon> paths = mSnapshot .getPolygons(); paths .hasNext(); ){
+			Polygon polygon = paths .next();
 			renderPath( polygon .getPath() );
 			rgb = polygon .getColor() .getRGBColorComponents( null );
 			setRGBFillColor( rgb[0], rgb[1], rgb[2] );

@@ -59,6 +59,7 @@ public class PreviewStrut implements PropertyChangeListener
 
         zoneBall = new ZoneVectorBall( viewPlatform )
         {
+            @Override
             protected void zoneChanged( Axis oldZone, Axis newZone )
             {
                 if ( length != null )
@@ -66,7 +67,7 @@ public class PreviewStrut implements PropertyChangeListener
                 zone = newZone;
                 if ( newZone == null )
                     return;
-                length = (LengthController) symmetryController.orbitLengths.get( newZone .getDirection() );
+                length = symmetryController.orbitLengths.get( newZone .getDirection() );
                 adjustStrut();
                 length .addPropertyListener( PreviewStrut .this );
             }
@@ -131,7 +132,7 @@ public class PreviewStrut implements PropertyChangeListener
             length = null;
             return;
         }
-        this .length = (LengthController) symmetryController.orbitLengths.get( zone.getDirection() );
+        this .length = symmetryController.orbitLengths.get( zone.getDirection() );
         adjustStrut();
         length .addPropertyListener( this );
     }
@@ -164,6 +165,7 @@ public class PreviewStrut implements PropertyChangeListener
         strut .perform();
     }
 
+    @Override
     public void propertyChange( PropertyChangeEvent evt )
     {
         // mousewheel ticked over enough to trigger a scale change in the LengthModel

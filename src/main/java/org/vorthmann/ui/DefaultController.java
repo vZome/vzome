@@ -26,6 +26,7 @@ public class DefaultController implements Controller
         return this.pcs;
     }
 
+    @Override
     public void actionPerformed( ActionEvent e )
     {
         try {
@@ -37,16 +38,19 @@ public class DefaultController implements Controller
         }
     }
 
+    @Override
     public void addPropertyListener( PropertyChangeListener listener )
     {
         pcs .addPropertyChangeListener( listener );
     }
 
+    @Override
     public void removePropertyListener( PropertyChangeListener listener )
     {
         pcs .removePropertyChangeListener( listener );
     }
 
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( mNextController != null )
@@ -55,6 +59,7 @@ public class DefaultController implements Controller
             mErrors .reportError( UNKNOWN_ACTION, new Object[]{ action } );
     }
 
+    @Override
     public void doFileAction( String command, File file )
     {
         if ( mNextController != null )
@@ -63,6 +68,7 @@ public class DefaultController implements Controller
             mErrors .reportError( UNKNOWN_ACTION, new Object[]{ command } );
     }
 
+    @Override
     public void doScriptAction( String command, String script )
     {
         if ( mNextController != null )
@@ -71,6 +77,7 @@ public class DefaultController implements Controller
             mErrors .reportError( UNKNOWN_ACTION, new Object[]{ command } );
     }
 
+    @Override
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
     {
         if ( mNextController != null )
@@ -79,6 +86,7 @@ public class DefaultController implements Controller
             return new boolean[0];
     }
 
+    @Override
     public String[] getCommandList( String listName )
     {
         if ( mNextController != null )
@@ -87,11 +95,13 @@ public class DefaultController implements Controller
             return new String[0];
     }
 
+    @Override
     public boolean[] getCommandListDefaultStates( String string )
     {
         return null;
     }
 
+    @Override
     public String getProperty( String string )
     {
         if ( mNextController != null )
@@ -99,11 +109,13 @@ public class DefaultController implements Controller
         return null;
     }
     
+    @Override
     public boolean propertyIsTrue( String propName )
     {
         return "true" .equals( getProperty( propName ) );
     }
 
+    @Override
     public Controller getSubController( String string )
     {
         if ( mNextController != null )
@@ -111,29 +123,34 @@ public class DefaultController implements Controller
         return null;
     }
 
+    @Override
     public void repaintGraphics( String panelName, Graphics graphics, Dimension size )
     {
         if ( mNextController != null )
             mNextController .repaintGraphics( panelName, graphics, size );
     }
 
+    @Override
     public void setErrorChannel( ErrorChannel errors )
     {
         mErrors = errors;
     }
 
+    @Override
     public void setProperty( String cmd, Object value )
     {
         if ( mNextController != null )
             mNextController .setProperty( cmd, value );
     }
 
+    @Override
     public void setNextController( Controller controller )
     {
         mNextController = controller;
-        mNextController .addPropertyListener( new PropertyChangeListener()
+        mNextController .addPropertyListener(new PropertyChangeListener()
         {
             // multicast prop changes down the tree of controllers... watch out for loops!
+            @Override
             public void propertyChange( PropertyChangeEvent event )
             {
                 properties() .firePropertyChange( event );
@@ -143,11 +160,13 @@ public class DefaultController implements Controller
             mErrors = ((DefaultController) mNextController) .mErrors;
     }
 
+    @Override
     public MouseTool getMouseTool()
     {
         return null;
     }
 
+    @Override
     public boolean userHasEntitlement( String propName )
     {
         if ( mNextController != null )

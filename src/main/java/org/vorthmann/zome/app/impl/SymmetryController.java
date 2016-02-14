@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.vorthmann.ui.Controller;
@@ -26,6 +25,7 @@ import com.vzome.desktop.controller.CameraController;
 
 public class SymmetryController extends DefaultController// implements RenderedModel.OrbitSource
 {
+    @Override
     public String getProperty( String string )
     {
         if ( "renderingStyle" .equals( string ) )
@@ -54,7 +54,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     public OrbitSetController buildController;
     public OrbitSetController renderController;
     
-    public Map orbitLengths = new HashMap();
+    public Map<Direction, LengthController> orbitLengths = new HashMap<>();
         
     public Symmetry getSymmetry()
     {
@@ -77,9 +77,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         renderOrbits = new OrbitSet( symmetry );
         snapper = new SymmetrySnapper( snapOrbits );
         boolean haveLoneBuildOrbit = false;
-        for ( Iterator dirs = symmetry .getOrbitSet() .iterator(); dirs .hasNext(); )
-        {
-            Direction dir = (Direction) dirs .next();
+        for (Direction dir : symmetry .getOrbitSet()) {
             if ( dir .isStandard() )
             {
                 availableOrbits .add( dir );
@@ -102,9 +100,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         renderController .setNextController( this );
 
-        for ( Iterator dirs = this .symmetrySystem .getOrbits() .iterator(); dirs .hasNext(); )
-        {
-            Direction dir = (Direction) dirs .next();
+        for (Direction dir : this .symmetrySystem .getOrbits()) {
             LengthController lengthModel = new LengthController( dir );
             lengthModel .setNextController( buildController );
             orbitLengths .put( dir, lengthModel );
@@ -114,6 +110,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
 
         availableController .addPropertyListener( new PropertyChangeListener()
         {
+            @Override
             public void propertyChange( PropertyChangeEvent event )
             {
                 if ( "orbits" .equals( event .getPropertyName() ) )
@@ -125,6 +122,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     }
     
 
+    @Override
     public Controller getSubController( String name )
     {
         if ( name .equals( "availableOrbits" ) )
@@ -144,6 +142,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         return null;
     }
     
+    @Override
     public String[] getCommandList( String listName )
     {
         if ( "styles" .equals( listName ) )
@@ -154,8 +153,10 @@ public class SymmetryController extends DefaultController// implements RenderedM
         {
             String[] result = new String[ this .symmetrySystem .getOrbits() .size() ];
             int i = 0;
-            for ( Iterator orbits = this .symmetrySystem .getOrbits() .iterator(); orbits .hasNext(); i++ )
-                result[ i ] = ((Direction) orbits .next()) .getName();
+            for (Direction orbit : this .symmetrySystem .getOrbits()) {
+                result[ i ] = orbit .getName();
+                i++;
+            }
             return result;
         }
         if ( "tool.templates" .equals( listName ) )
@@ -165,6 +166,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         return new String[0];
     }
 
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( action .equals( "rZomeOrbits" )
@@ -183,7 +185,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     
     private LengthController getLengthController( Direction dir )
     {
-        LengthController result = (LengthController) orbitLengths .get( dir );
+        LengthController result = orbitLengths .get( dir );
         if ( result == null && dir != null )
         {
         	result = new LengthController( dir );

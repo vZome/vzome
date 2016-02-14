@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +30,7 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.Polyhedron.Face;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
@@ -46,9 +46,9 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     
     protected boolean mHasEmissiveColor;
     
-    protected final Map solidGeometries = new HashMap();
+    protected final Map<Polyhedron, Map<AlgebraicMatrix, Geometry> > solidGeometries = new HashMap<>();
 
-    protected final Map outlineGeometries = new HashMap();
+    protected final Map<Polyhedron, Map<AlgebraicMatrix, Geometry> > outlineGeometries = new HashMap<>();
 
     public Java3dFactory( Colors colors, Boolean useEmissiveColor )
     {
@@ -62,6 +62,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         outlines .setColoringAttributes( new ColoringAttributes( new Color3f( Color.BLACK ), ColoringAttributes .SHADE_FLAT ) );
     }
     
+    @Override
     public RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas )
     {
         if ( canvas == null ) // this viewer is for offscreen rendering
@@ -85,6 +86,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     }
 
 
+    @Override
 	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode )
 	{
 		return new Java3dSceneGraph( this, lights, isSticky, outlineMode );
@@ -108,39 +110,37 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     // The resulting geometry does not support the polygon offset
     //  required to avoid "stitching" when the line geometry is rendered at the same Z-depth
     //  as the solid geometry.
-    Geometry makeOutlineGeometry( Map map, Polyhedron poly, AlgebraicMatrix matrix )
+    Geometry makeOutlineGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix )
     {
-        Geometry geom = (Geometry) map .get( matrix );
+        Geometry geom = map .get( matrix );
 
         if ( geom == null ) {
 
-            List polyVertices = poly .getVertexList();
-            Set faces = poly .getFaceSet();
+            List<AlgebraicVector> polyVertices = poly .getVertexList();
+            Set<Face> faces = poly .getFaceSet();
             int[] counts = new int [ faces .size() ];
             int numIndices = 0;
             int i = 0;
-            for ( Iterator it = faces .iterator(); it .hasNext(); ){
-                int arity = ((List) it .next()) .size();
+            for (Face face : faces) {
+                int arity = face .size();
                 counts[i++] = arity;
                 numIndices += arity;
             }
             IndexedLineStripArray strips = new IndexedLineStripArray( polyVertices .size(), GeometryArray.COORDINATES, numIndices, counts );
 
             i = 0;
-            for ( Iterator it = polyVertices .iterator(); it .hasNext(); ) {
-                AlgebraicVector gv = (AlgebraicVector) it .next();
+            for (AlgebraicVector gv : polyVertices) {
                 if ( matrix != null )
                     gv = matrix .timesColumn( gv );
                 RealVector v = gv .toRealVector();
-            	strips .setCoordinate( i++, new Point3d( v.x, v.y, v.z ) );
+                strips .setCoordinate( i++, new Point3d( v.x, v.y, v.z ) );
             }
             i = 0;
-            for ( Iterator it = faces .iterator(); it .hasNext(); ){
-                List face = (List) it .next();
+            for (Face face : faces) {
                 int arity = face .size();
                 for ( int j = 0; j < arity; j++ ){
-                    Integer index = (Integer) face .get( j );
-                    strips .setCoordinateIndex( i++, index .intValue() );
+                    Integer index = face .get( j );
+                    strips .setCoordinateIndex(i++, index);
                 }
             }
 
@@ -154,9 +154,9 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     Geometry makeOutlineGeometry( RenderedManifestation rm )
     {
     	Polyhedron poly = rm .getShape();
-        Map map = (Map) outlineGeometries .get( poly );
+        Map<AlgebraicMatrix, Geometry> map = outlineGeometries .get( poly );
         if ( map == null ){
-            map = new HashMap();
+            map = new HashMap<>();
             outlineGeometries .put( poly, map );
         }
         return makeOutlineGeometry( map, poly, rm .getOrientation() );
@@ -165,24 +165,23 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     Geometry makeSolidGeometry( RenderedManifestation rm )
     {
     	Polyhedron poly = rm .getShape();
-        Map map = (Map) solidGeometries .get( poly );
+        Map<AlgebraicMatrix, Geometry> map = solidGeometries .get( poly );
         if ( map == null ){
-            map = new HashMap();
+            map = new HashMap<>();
             solidGeometries .put( poly, map );
         }
         return makeGeometry( map, poly, rm .getOrientation(), rm .reverseOrder(), true );
     }
 
-    Geometry makeGeometry( Map map, Polyhedron poly, AlgebraicMatrix matrix, boolean reverseFaces, boolean makeNormals )
+    Geometry makeGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix, boolean reverseFaces, boolean makeNormals )
     {
-        Geometry geom = (Geometry) map .get( matrix );
+        Geometry geom = map .get( matrix );
         if ( geom == null ) {
 
-            List vertices = poly .getVertexList();
+            List<AlgebraicVector> vertices = poly .getVertexList();
             Point3d[] coords = new Point3d [ vertices .size() ];
             int i = 0;      
-            for ( Iterator it = vertices .iterator(); it .hasNext(); ) {
-                AlgebraicVector gv = (AlgebraicVector) it .next();
+            for (AlgebraicVector gv : vertices) {
                 Point3d pt = new Point3d();
                 if ( matrix != null )
                     gv = matrix .timesColumn( gv );
@@ -191,26 +190,24 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
                 coords[i++] = pt;
             }
 
-            Set faces = poly .getFaceSet();
+            Set<Face> faces = poly .getFaceSet();
             int[] stripCounts = new int [ faces .size() ];
             int[] contourCounts = new int [ faces .size() ];
-            i = 0;
             int numIndices = 0;
             i = 0;
-            for ( Iterator it = faces .iterator(); it .hasNext(); ){
-                int arity = ((List) it .next()) .size();
+            for (Face face : faces) {
+                int arity = face .size();
                 contourCounts[i] = 1;
                 stripCounts[i++] = arity;
                 numIndices += arity;
             }
             int[] indices = new int [ numIndices ];
             i = 0;
-            for ( Iterator it = faces .iterator(); it .hasNext(); ){
-                List face = (List) it .next();
+            for (Face face : faces) {
                 int arity = face .size();
                 for ( int j = 0; j < arity; j++ ){
-                    Integer index = (Integer) face .get( reverseFaces? arity-j-1 : j );
-                    indices[i++] = index .intValue();
+                    Integer index = face .get( reverseFaces? arity-j-1 : j );
+                    indices[i++] = index;
                 }
             }
         
@@ -247,6 +244,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         return mHasEmissiveColor;
     }
 
+    @Override
     public Component createJ3dComponent( String name )
     {
         GraphicsConfigTemplate3D gct = new GraphicsConfigTemplate3D();

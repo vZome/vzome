@@ -1,8 +1,5 @@
 /*
  * Created on Jan 2, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package org.vorthmann.zome.export.java2d;
 
@@ -17,6 +14,8 @@ import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.Locale;
+import org.vorthmann.zome.export.java2d.Java2dSnapshot.LineSegment;
+import org.vorthmann.zome.export.java2d.Java2dSnapshot.Polygon;
 
 
 /**
@@ -46,12 +45,14 @@ public abstract class SnapshotExporter {
 			super( writer );
 		}
 		
+        @Override
 		public void write( char[] buf, int offset, int len )
 		{
 			super .write( buf, offset, len );
 			mTotal += len;
 		}
 		
+        @Override
 		public void write( String str )
 		{
 			super .write( str );
@@ -96,15 +97,15 @@ public abstract class SnapshotExporter {
 		if ( bgColor != null )
 			outputBackground( bgColor );
 		
-        Iterator lines = snapshot .getLines();
+        Iterator<LineSegment> lines = snapshot .getLines();
         if ( lines .hasNext() )
             while ( lines .hasNext() ) {
-                Java2dSnapshot.LineSegment line = (Java2dSnapshot.LineSegment) lines .next();
+                Java2dSnapshot.LineSegment line = lines .next();
                 outputLine( line, snapshot .isMonochrome() );
             }
         else
-            for ( Iterator paths = snapshot .getPolygons(); paths .hasNext(); ){
-                Java2dSnapshot.Polygon polygon = (Java2dSnapshot.Polygon) paths .next();
+            for ( Iterator<Polygon> paths = snapshot .getPolygons(); paths .hasNext(); ){
+                Polygon polygon = paths .next();
                 outputPolygon( polygon, strokeWidth > 0 );
             }
 

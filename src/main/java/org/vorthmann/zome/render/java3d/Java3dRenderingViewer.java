@@ -56,6 +56,7 @@ public class Java3dRenderingViewer implements RenderingViewer
     
     }
     
+    @Override
     public void setEye( int eye )
     {
         this .eye = eye;
@@ -104,11 +105,13 @@ public class Java3dRenderingViewer implements RenderingViewer
     /* (non-Javadoc)
      * @see org.vorthmann.zome.render.java3d.RenderingViewer#getRenderingChanges()
      */
+    @Override
     public RenderingChanges getRenderingChanges()
     {
         return mScene;
     }
 
+    @Override
     public void setViewTransformation( Matrix4d matrix, int eye )
     {
         if ( eye == this.eye )
@@ -124,6 +127,7 @@ public class Java3dRenderingViewer implements RenderingViewer
 //        mLeftEyeViewTransform .setTransform( trans );
 //    }
 
+    @Override
     public void setPerspective( double fov, double aspectRatio, double near, double far )
     {
         view .setProjectionPolicy( View.PERSPECTIVE_PROJECTION );
@@ -135,6 +139,7 @@ public class Java3dRenderingViewer implements RenderingViewer
         setDistances( near, far );
     }
 
+    @Override
     public void setOrthographic( double halfEdge, double near, double far )
     {
         view .setProjectionPolicy( View.PARALLEL_PROJECTION );
@@ -156,6 +161,7 @@ public class Java3dRenderingViewer implements RenderingViewer
     }
     
     
+    @Override
     public void pickPoint( MouseEvent e, Point3d virtualCursor, Point3d eyePt )
     {
     	Transform3D imagePlateToVworld = new Transform3D();
@@ -169,6 +175,7 @@ public class Java3dRenderingViewer implements RenderingViewer
     }
 
     
+    @Override
     public RenderedManifestation pickManifestation( MouseEvent e )
     {
         PickResult pickResult = null;
@@ -187,6 +194,7 @@ public class Java3dRenderingViewer implements RenderingViewer
         return picked;
     }
 
+    @Override
     public void captureImage( int maxSize, RenderingViewer.ImageCapture capture )
     {
         if ( mCanvas .isOffScreen() )
@@ -216,7 +224,8 @@ public class Java3dRenderingViewer implements RenderingViewer
         //mCanvas .m_imageHandler = null; mCanvas .maxImageSize = -1; // will be done by canvas, on another thread
     }
 
-    public Collection pickCube()
+    @Override
+    public Collection<RenderedManifestation> pickCube()
     {
         PickResult[] pickResult = null;
         try  {
@@ -225,7 +234,7 @@ public class Java3dRenderingViewer implements RenderingViewer
         } catch( Throwable t ) {
             t .printStackTrace();
         }
-        Collection result = new ArrayList();
+        Collection<RenderedManifestation> result = new ArrayList<>();
         for ( int i = 0; i < pickResult.length; i++ )
         {
             Node node = pickResult[ i ] .getObject();

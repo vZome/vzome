@@ -28,7 +28,9 @@ import org.vorthmann.ui.Controller;
 
 public class LessonPanel extends JPanel implements PropertyChangeListener
 {
-    private Controller mController;
+    private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui" );
+    
+    private final Controller mController;
         
     private final JTextArea titleArea, contentArea;
 
@@ -94,6 +96,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
                             panel .setBorder( BorderFactory .createTitledBorder( "page content" ) );
                             contentArea .getDocument() .addUndoableEditListener( new UndoableEditListener() {
 
+                                @Override
                                 public void undoableEditHappened( UndoableEditEvent e )
                                 {
                                     e .getEdit();
@@ -128,7 +131,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
             title .insertString( 0, titleString, null );
             content .insertString( 0, mController .getProperty( "content" ), null );
         } catch ( BadLocationException e ) {
-            Logger .getLogger( "org.vorthmann.zome.ui" ) .log( Level.SEVERE, "Bad textArea location", e );
+            logger .log( Level.SEVERE, "Bad textArea location", e );
         }
         title .addDocumentListener( titleEvents );
         content .addDocumentListener( contentEvents );
@@ -144,7 +147,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
         if ( imgURL != null )
             button .setIcon( new ImageIcon( imgURL ) );
         else
-            Logger .getLogger( "org.vorthmann.zome.ui" ) .log( Level.WARNING, "Couldn't find resource: " + iconPath );
+            logger  .warning( "Couldn't find resource: " + iconPath );
         button .addActionListener( listener );
         button .setActionCommand( actionCommand );
         return button;
@@ -161,9 +164,11 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
             this.whichField = whichField;
         }
         
+        @Override
         public void changedUpdate( DocumentEvent e )
         {}
 
+        @Override
         public void insertUpdate( DocumentEvent e )
         {
             int start = e .getOffset();
@@ -173,12 +178,13 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
                 String text = doc .getText( start, len );
                 mController .doAction( "insertUpdateEvent " + whichField + " " + start + " " + text, null );
             } catch ( BadLocationException e1 ) {
-                Logger .getLogger( "org.vorthmann.zome.ui" ) .log( Level.SEVERE, "Bad textArea location", e1 );
+                logger .log( Level.SEVERE, "Bad textArea location", e1 );
             } catch ( Exception e2 ) {
-                Logger .getLogger( "org.vorthmann.zome.ui" ) .log( Level.SEVERE, "unable to insert text", e2 );
+                logger .log( Level.SEVERE, "unable to insert text", e2 );
             }
         }
 
+        @Override
         public void removeUpdate( DocumentEvent e )
         {
             int start = e .getOffset();
@@ -186,11 +192,12 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
             try {
             	mController .doAction( "removeUpdateEvent " + whichField + " " + start + " " + len, null );
             } catch ( Exception e1 ) {
-                Logger .getLogger( "org.vorthmann.zome.ui" ) .log( Level.SEVERE, "unable to remove text", e1 );
+                logger .log( Level.SEVERE, "unable to remove text", e1 );
             }
         }
     }
 
+    @Override
     public void propertyChange( PropertyChangeEvent e )
     {
         if ( e .getPropertyName() .equals( "currentPage" ) )

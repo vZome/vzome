@@ -1,8 +1,5 @@
 /*
  * Created on Jun 30, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package com.vzome.desktop.controller;
 
@@ -14,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.vecmath.Matrix4d;
-//import javax.media.j3d.Transform3D;
 import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
@@ -48,7 +44,7 @@ public class CameraController extends DefaultController
 
     private Camera copied = null;
     
-	protected final List mViewers = new ArrayList();
+	protected final List<CameraController.Viewer> mViewers = new ArrayList<>();
 	
 	private final Camera initialCamera;
 
@@ -146,17 +142,17 @@ public class CameraController extends DefaultController
 		model .getViewTransform( trans, 0d );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            ((CameraController.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .MONOCULAR );
+            mViewers .get( i ) .setViewTransformation( trans, Viewer .MONOCULAR );
 		
         model .getStereoViewTransform( trans, Viewer .LEFT_EYE );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            ((CameraController.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .LEFT_EYE );
+            mViewers .get( i ) .setViewTransformation( trans, Viewer .LEFT_EYE );
         
         model .getStereoViewTransform( trans, Viewer .RIGHT_EYE );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            ((CameraController.Viewer) mViewers .get( i )) .setViewTransformation( trans, Viewer .RIGHT_EYE );
+            mViewers .get( i ) .setViewTransformation( trans, Viewer .RIGHT_EYE );
 	}
 	
 	private void updateViewersProjection()
@@ -168,12 +164,12 @@ public class CameraController extends DefaultController
 		if ( ! model .isPerspective() ) {
 			double edge = model .getWidth() / 2;
             for ( int i = 0; i < mViewers .size(); i++ )
-                ((CameraController.Viewer) mViewers .get( i )) .setOrthographic( edge, near, far );
+                mViewers .get( i ) .setOrthographic( edge, near, far );
 		}
 		else {
 			double field = model .getFieldOfView();
             for ( int i = 0; i < mViewers .size(); i++ )
-                ((CameraController.Viewer) mViewers .get( i )) .setPerspective( field, 1.0d, near, far );
+                mViewers .get( i ) .setPerspective( field, 1.0d, near, far );
 		}
 
         // TODO - make aspect ratio track the screen window shape
@@ -242,7 +238,7 @@ public class CameraController extends DefaultController
 	}
 
     
-    private final LinkedList recentViews = new LinkedList();
+    private final LinkedList<Camera> recentViews = new LinkedList<>();
     
     private Camera baselineView = model;  // invariant: baselineView .equals( mParameters) whenever the view
                                                     // is "at rest" (not rolling or zooming), AND baselineView equals the latest recentView
@@ -295,6 +291,7 @@ public class CameraController extends DefaultController
 		setViewDirection( Z, Y );
 	}
 
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( action .equals( "toggleSnap" ) )
@@ -330,7 +327,7 @@ public class CameraController extends DefaultController
         {
             if ( currentRecentView >= recentViews .size() )
                 return;
-            restoreView( (Camera) recentViews .get( ++currentRecentView ) );
+            restoreView( recentViews .get( ++currentRecentView ) );
         }
         else if ( action .equals( "goBack" ) )
         {
@@ -339,7 +336,7 @@ public class CameraController extends DefaultController
             boolean wasZooming = saveBaselineView(); // might have been zooming
             if ( ( currentRecentView == recentViews .size() ) && wasZooming ) // we're not browsing recent views
                 --currentRecentView; //    skip over the view we just saved
-            restoreView( (Camera) recentViews .get( --currentRecentView ) );
+            restoreView( recentViews .get( --currentRecentView ) );
         }
         else if ( action .equals( "initialView" ) )
         {
@@ -354,12 +351,14 @@ public class CameraController extends DefaultController
     {
         return new Trackball()
         {
+            @Override
             public void mousePressed( MouseEvent e )
             {
                 saveBaselineView(); // might have been zooming
                 super .mousePressed( e );
             }
             
+            @Override
             public void trackballRolled( Quat4d roll )
             {
                 Quat4d copy = new Quat4d( roll );
@@ -371,6 +370,7 @@ public class CameraController extends DefaultController
                 // TODO give will-snap feedback when drag paused
             }
             
+            @Override
             public void mouseReleased( MouseEvent e )
             {
                 if ( mSnapping )
@@ -398,6 +398,7 @@ public class CameraController extends DefaultController
     {
         return new MouseToolDefault()
         {
+            @Override
             public void mouseWheelMoved( MouseWheelEvent e )
             {
                 int amt = e .getWheelRotation();
@@ -411,6 +412,7 @@ public class CameraController extends DefaultController
         };
     }
 
+    @Override
     public String getProperty( String propName )
     {
 		if ( "magnification" .equals( propName ) )
@@ -429,6 +431,7 @@ public class CameraController extends DefaultController
     private long lastZoom = 0;
     
     
+    @Override
     public void setProperty( String propName, Object value )
     {
     	if ( "magnification" .equals( propName ) )

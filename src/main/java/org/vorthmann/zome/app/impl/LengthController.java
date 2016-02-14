@@ -43,16 +43,17 @@ public class LengthController extends DefaultController
     {
         private static final int MAX_SCALE = 6, MIN_SCALE = -6;
 
+        @Override
         public void doAction( String action, ActionEvent e ) throws Exception
         {
             if ( "scaleUp" .equals( action ) )
                 setScale( this .scale + 1 );
             else if ( "scaleDown" .equals( action ) )
                 setScale( this .scale - 1 );
-            else if ( "factor" .equals( action ) )
-                ; // TODO factor as many of these out of the lengthModel as you can
-            else if ( "zero" .equals( action ) )
-                ; // TODO multiply this value into the lengthModel, and zero this value
+//            else if ( "factor" .equals( action ) )
+//                ; // TODO factor as many of these out of the lengthModel as you can
+//            else if ( "zero" .equals( action ) )
+//                ; // TODO multiply this value into the lengthModel, and zero this value
             super.doAction( action, e );
         }
 
@@ -75,6 +76,7 @@ public class LengthController extends DefaultController
                  * By keeping an internal state (wheelClicks), and applying MOUSE_WHEEL_GAIN,
                  * we can generate courser grained scale changes without those unnatural effects.
                  */
+                @Override
                 public void mouseWheelMoved( MouseWheelEvent e )
                 {
                     int amt = e .getWheelRotation();
@@ -90,6 +92,7 @@ public class LengthController extends DefaultController
             };
         }
 
+        @Override
         public void setProperty( String property, Object value )
         {
             if ( "scale" .equals( property ) )
@@ -101,6 +104,7 @@ public class LengthController extends DefaultController
                 super.setProperty( property, value );
         }
         
+        @Override
         public String getProperty( String string )
         {
             if ( "scale" .equals( string ) )
@@ -181,6 +185,7 @@ public class LengthController extends DefaultController
             return scale;
         }
 
+        @Override
         public MouseTool getMouseTool()
         {
             return tool;
@@ -246,6 +251,7 @@ public class LengthController extends DefaultController
         half = ( attrValue == null || attrValue .isEmpty() )? false : "2" .equals( attrValue );
     }
 
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( "toggleHalf" .equals( action ) )
@@ -293,6 +299,7 @@ public class LengthController extends DefaultController
             super.doAction( action, e );
     }
 
+    @Override
     public String[] getCommandList( String listName )
     {
         int order = this .field .getOrder();
@@ -322,6 +329,7 @@ public class LengthController extends DefaultController
         return super.getCommandList( listName );
     }
 
+    @Override
     public void setProperty( String property, Object value )
     {
         if ( "half" .equals( property ) )
@@ -355,6 +363,7 @@ public class LengthController extends DefaultController
             super.setProperty( property, value );
     }
 
+    @Override
     public String getProperty( String string )
     {
         if ( "half" .equals( string ) )
@@ -401,7 +410,7 @@ public class LengthController extends DefaultController
         // TODO push part of this into AlgebraicField somehow?
         AlgebraicNumber result = this .unitFactor .times( this .fixedFactor );
         if ( half )
-            result = result .times( field .createRational( new int[]{ 1,2 } ) );
+            result = result .times( field .createRational( 1, 2 ) );
         
         // TODO support more than one scaling, like rho and sigma for heptagons
         int realScale = currentScale .getScale() + SCALE_OFFSET;
@@ -409,6 +418,7 @@ public class LengthController extends DefaultController
         return result;
     }
 
+    @Override
     public MouseTool getMouseTool()
     {
         return currentScale .getMouseTool();

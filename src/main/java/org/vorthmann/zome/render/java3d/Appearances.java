@@ -1,7 +1,6 @@
 package org.vorthmann.zome.render.java3d;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.media.j3d.Appearance;
@@ -30,7 +29,7 @@ public class Appearances
 	
 	protected final boolean mHasEmissiveColor;
 
-	private Map mAppearances = new HashMap();
+	private Map<Color, Appearance[][]> mAppearances = new HashMap<>();
 
 	public Appearances( Colors colors, boolean hasEmissiveColor )
 	{
@@ -42,12 +41,11 @@ public class Appearances
 		float[] rgb = new float[3];
 		mGlowColor = new Color3f( color .getRGBColorComponents( rgb ) );
 
-		for ( Iterator it = mColors .getColorNames(); it .hasNext(); ) {
-		    String name = (String) it .next();
-		    color = mColors .getColor( name );
-		    Appearance[][] set = makeAppearances( color );
-		    mAppearances .put( name, set );
-		}
+        for (String name : mColors) {
+            color = mColors .getColor( name );
+            Appearance[][] set = makeAppearances( color );
+            mAppearances .put( color, set );
+        }
 	}
 	 
 	private Material makeMaterial( Color4f color, boolean glowing )
@@ -100,7 +98,7 @@ public class Appearances
 	{
         if ( color == null )
         	color = Color .WHITE;
-		Appearance[][] set = ((Appearance[][]) mAppearances.get( color ));
+		Appearance[][] set = mAppearances.get( color );
 		if ( set == null )
         {
 		    set = makeAppearances( color );

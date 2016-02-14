@@ -52,19 +52,21 @@ public class PartsPanel extends JPanel
         private String[] columnNames = { "count", "color", "name", "length" };
         
         private int balls = 1;
-        private Map struts = new HashMap();
-        private List index = new ArrayList();
+        private Map<String, Object[]> struts = new HashMap<>();
+        private List<String> index = new ArrayList<>();
 
         public PartsTableModel( Controller controller )
         {
             controller .addPropertyListener( this );
         }
         
-        public Class getColumnClass( int c )
+        @Override
+        public Class<?> getColumnClass( int c )
         {
             return getValueAt( 0, c ) .getClass();
         }
         
+        @Override
         public boolean isCellEditable( int row, int col )
         {
             //Note that the data/cell address is constant,
@@ -72,28 +74,32 @@ public class PartsPanel extends JPanel
             return false;
         }
 
+        @Override
         public String getColumnName( int col )
         {
             return columnNames[ col ];
         }
  
+        @Override
         public int getColumnCount()
         {
             return 4;
         }
 
+        @Override
         public int getRowCount()
         {
             return struts .size() + 1;
         }
 
+        @Override
         public Object getValueAt( int row, int col )
         {
             if ( row == 0 )
             {
                 switch ( col ) {
                 case 0:
-                    return new Integer( balls );
+                    return balls;
                     
                 case 1:
                     return Color .white;
@@ -107,12 +113,13 @@ public class PartsPanel extends JPanel
             }
             else
             {
-                String key = (String) index .get( row - 1 );
-                Object[] rowData = (Object[]) struts .get( key );
+                String key = index .get( row - 1 );
+                Object[] rowData = struts .get( key );
                 return rowData[ col ];
             }
         }
 
+        @Override
         public void propertyChange( PropertyChangeEvent evt )
         {
             String name = evt .getPropertyName();
@@ -135,12 +142,12 @@ public class PartsPanel extends JPanel
                 String nameStr = tokens .nextToken();
                 String lengthStr = tokens .nextToken();
                 String key = orbitStr + ":" + nameStr + ":" + lengthStr;
-                Object[] row = (Object[]) struts .get( key );
+                Object[] row = struts .get( key );
                 if ( row == null )
                 {
                     int rgb = Integer .parseInt( rgbStr );
                     Color color = new Color( rgb );
-                    row = new Object[]{ new Integer(1), color, nameStr, lengthStr };
+                    row = new Object[]{ 1, color, nameStr, lengthStr };
                     struts .put( key, row );
                     index .add( key );
                     Collections .sort( index );
@@ -161,7 +168,7 @@ public class PartsPanel extends JPanel
                 String nameStr = tokens .nextToken();
                 String lengthStr = tokens .nextToken();
                 String key = orbitStr + ":" + nameStr + ":" + lengthStr;
-                Object[] row = (Object[]) struts .get( key );
+                Object[] row = struts .get( key );
                 int count = ((Integer) row[ 0 ]) .intValue() - 1;
                 if ( count == 0 )
                 {
@@ -191,6 +198,7 @@ public class PartsPanel extends JPanel
             setOpaque(true); //MUST do this for background to show up.
         }
      
+        @Override
         public Component getTableCellRendererComponent(
                                 JTable table, Object color,
                                 boolean isSelected, boolean hasFocus,

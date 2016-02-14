@@ -54,6 +54,7 @@ public class LeftMouseDragAdapter extends MouseInputAdapter implements MouseTool
         this( drags, HYSTERESIS );
     }
 
+    @Override
     public void mousePressed( MouseEvent e )
     {
         if ( e .isPopupTrigger() ) {
@@ -66,6 +67,7 @@ public class LeftMouseDragAdapter extends MouseInputAdapter implements MouseTool
         mPressEvent = e;
     }
 
+    @Override
     public void mouseDragged( MouseEvent arg0 )
     {
         if ( arg0 .isPopupTrigger() || mPopupTrigger )
@@ -82,6 +84,7 @@ public class LeftMouseDragAdapter extends MouseInputAdapter implements MouseTool
         }
     }
 
+    @Override
     public void mouseReleased( MouseEvent arg0 )
     {
         if ( arg0 .isPopupTrigger() || mPopupTrigger )
@@ -94,14 +97,17 @@ public class LeftMouseDragAdapter extends MouseInputAdapter implements MouseTool
         mPressSent = false;
     }
 
+    @Override
     public void mouseClicked( MouseEvent arg0 )
     {
         // all clicks generated in mouseReleased
     }
 
+    @Override
     public void mouseWheelMoved( MouseWheelEvent arg0 )
     {}
 
+    @Override
     public void attach( Component canvas )
     {
         canvas .addMouseListener( this );
@@ -109,6 +115,7 @@ public class LeftMouseDragAdapter extends MouseInputAdapter implements MouseTool
         canvas .addMouseWheelListener( this );
     }
     
+    @Override
     public void detach( Component canvas )
     {
         canvas .removeMouseListener( this );

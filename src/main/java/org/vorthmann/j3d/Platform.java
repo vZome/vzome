@@ -1,9 +1,4 @@
-/*
- * Created on Mar 3, 2003
- *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code Template
- */
+
 package org.vorthmann.j3d;
 
 import java.awt.event.ActionEvent;
@@ -24,9 +19,10 @@ public class Platform
 	
 	static boolean isWindows = false;
     
+    private static final Logger logger = Logger .getLogger( "org.vorthmann.vzome" );
+   
 	static
     {
-        Logger logger = Logger .getLogger( "org.vorthmann.vzome" );
         try {
             String os = System .getProperty( "os.name" );
             logger .log(Level.FINE, "os.name: {0}", os);
@@ -99,15 +95,15 @@ public class Platform
 					creator = 0x765A6F6D /*vZom*/;
 					type = 0;
 				}
-                Class fmclass = Class.forName( "com.apple.eio.FileManager" );
+                Class<?> fmclass = Class.forName( "com.apple.eio.FileManager" );
                 
 				if ( creator != 0 ) {
-                    Method method = fmclass .getMethod( "setFileCreator", new Class[] { String.class, int.class } );
-                    method .invoke( fmclass, new Object[]{ fname, new Integer(creator) } );
+                    Method method = fmclass .getMethod( "setFileCreator", String.class, int.class );
+                    method .invoke( fmclass, fname, creator );
 				}
 				if ( type != 0 ) {
-                    Method method = fmclass .getMethod( "setFileType", new Class[] { String.class, int.class } );
-                    method .invoke( fmclass, new Object[]{ fname, new Integer(type) } );
+                    Method method = fmclass .getMethod( "setFileType", String.class, int.class );
+                    method .invoke( fmclass, fname, type );
                 }
 			}
 			catch ( Exception e) {

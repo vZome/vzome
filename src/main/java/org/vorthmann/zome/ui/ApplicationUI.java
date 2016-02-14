@@ -9,11 +9,15 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -26,12 +30,14 @@ import javax.swing.JOptionPane;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
+import org.vorthmann.zome.app.impl.ApplicationController;
 
 /**
  * Top-level UI class for vZome.
  * 
  * This class has few responsibilities:
  * 
+ *  - initialization of the root level logging system
  *  - create and destroy a splash screen during initial launch
  *  - create DocumentFrames for DocumentControllers
  *  - convey command line arguments to the ApplicationController
@@ -62,6 +68,55 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 	private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
     private static final Logger logger = Logger .getLogger( loggerClassName );
     
+    // static class initializer configures global logging before any instance of the class is created.
+    static {
+        Logger rootLogger = Logger.getLogger("");
+        Level minLevel = Level.SEVERE;
+        if (rootLogger.getLevel().intValue() > minLevel.intValue()) {
+            // Set minimum logging level
+            rootLogger.setLevel(minLevel);
+        }
+
+        // If a FileHandler is already pre-configured by the logging.properties file then just use it as-is.
+        FileHandler fh = null;
+        for (Handler handler : rootLogger.getHandlers()) {
+            if (handler.getClass().isAssignableFrom(FileHandler.class)) {
+                fh = (FileHandler) handler;
+                break;
+            }
+        }
+
+        // If no FileHandler was pre-configured, then initialze our own default
+        if (fh == null) {
+            File logsFolder = Platform.logsFolder();
+            logsFolder.mkdir();
+            try {
+                // If there is a log file naming conflict and no "%u" field has been specified, 
+                //  an incremental unique number will be added at the end of the filename after a dot.
+                // This behavior interferes with file associations based on the .log file extension.
+                // It also results in the log files accumulating forever rather than overwriting the older ones
+                //  and leaving only the number of log files specified in the constructor,
+                //  so be sure to specify %u in the format string.
+                // If we limit the number of logs to 10, then sorting them alphabetically (0-9) conveniently sorts them by date & time as well.
+                // 
+                // SV: I've reversed the %u and %g, so that sorting by name puts related logs together, in order.  The Finder / Explorer already
+                //   knows how to sort by date, so we don't need to support that.
+                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome50_%u_%g.log", 500000, 10);
+            } catch (Exception e1) {
+                rootLogger.log(Level.WARNING, "unable to set up vZome file log handler", e1);
+                try {
+                    fh = new FileHandler();
+                } catch (Exception e2) {
+                    rootLogger.log(Level.WARNING, "unable to set up default file log handler", e2);
+                }
+            }
+            if (fh != null) {
+                fh.setFormatter(new SimpleFormatter());
+                rootLogger.addHandler(fh);
+            }
+        }
+    }
+
     private static ApplicationUI theUI;
 
     private ApplicationUI() {}
@@ -79,7 +134,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             System.out.println( "problem in main(): " + e.getMessage() );
         }
     }
-	
+    
     /**
      * A common entry point for main() and com.vzome.platform.mac.Adapter.main().
      * 
@@ -105,42 +160,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 		}
 		
 		/*
-		 * Next, get logging configured.
-		 */
-
-        Logger rootLogger = Logger .getLogger( "" );
-		rootLogger.setLevel(Level.CONFIG);
-        File logsFolder = Platform .logsFolder();
-        logsFolder .mkdir();
-        Handler fh = null;
-        try {
-			// If there is a log file naming conflict and no "%u" field has been specified, 
-			//  an incremental unique number will be added at the end of the filename after a dot.
-			// This behavior interferes with file associations based on the .log file extension.
-			// It also results in the log files accumulating forever rather than overwriting the older ones
-			//  and leaving only the number of log files specified in the constructor,
-			//  so be sure to specify %u in the format string.
-			// If we limit the number of logs to 10, then sorting them alphabetically (0-9) conveniently sorts them by date & time as well.
-        	// 
-        	// SV: I've reversed the %u and %g, so that sorting by name puts related logs together, in order.  The Finder / Explorer already
-        	//   knows how to sort by date, so we don't need to support that.
-            fh = new FileHandler( "%h/" + Platform .logsPath() + "/vZome50_%u_%g.log", 500000, 10 );
-        } catch ( Exception e1 ) {
-        	rootLogger .log( Level.WARNING, "unable to set up vZome file log handler", e1 );
-            try {
-                fh = new FileHandler();
-            } catch ( Exception e2 ) {
-            	rootLogger .log( Level.WARNING, "unable to set up default file log handler", e2 );
-            }        
-        }
-        if ( fh != null )
-        {
-            fh .setFormatter( new SimpleFormatter() );
-            rootLogger .addHandler( fh );
-        }
-        
-        /*
-         * Now, get the splash screen up before doing any more work.
+		 * Get the splash screen up before doing any more work.
          */
 
         SplashScreen splash = null;
@@ -148,9 +168,11 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         if ( splashImage != null ) {
             splash = new SplashScreen( splashImage );
             splash .splash();
-        }
-        if ( logger .isLoggable( Level .INFO ) )
             logger .info( "splash screen displayed" );
+        } 
+        else {
+            logger .severe( "splash screen not found at " + splashImage );
+        }
 
         theUI = new ApplicationUI();
 
@@ -171,13 +193,12 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         return theUI;
     }
     
-
     private static class InitializationWorker implements Runnable
     {
-    	private ApplicationUI ui;
-		private String[] args;
-		private URL codebase;
-		private SplashScreen splash;
+    	private final ApplicationUI ui;
+		private final String[] args;
+		private final URL codebase;
+		private final SplashScreen splash;
 
 		public InitializationWorker( ApplicationUI ui, String[] args, URL codebase, SplashScreen splash )
     	{
@@ -210,17 +231,9 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 	        configuration .putAll( loadBuildProperties() );
 			logConfig( configuration );
 
-	        String controllerClassName = "org.vorthmann.zome.app.impl.ApplicationController";
-	        try {
-	            Class controllerClass = Class .forName( controllerClassName );
-	            Constructor<?> constructor = controllerClass .getConstructor( new Class<?>[] { ActionListener.class, Properties.class } );
-	            ui .mController = (Controller) constructor .newInstance( new Object[] { ui, configuration } );
-	        } catch ( Exception e ) {
-	            logger .log( Level.SEVERE, "controller class could not instantiate: " + controllerClassName, e );
-	            System .exit( 0 );
-	        }
+	        ui .mController = new ApplicationController( ui, configuration );
 
-	        ui.errors =  new Controller.ErrorChannel()
+            ui.errors =  new Controller.ErrorChannel()
 	        {
 				@Override
 	            public void reportError( String errorCode, Object[] arguments )
@@ -234,7 +247,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 	                } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
 	                    errorCode = ( (Exception) arguments[0] ).getMessage();
 	                    logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
-	                    errorCode = "internal error, see vZome50_*_*.log in your home or logs directory";
+	                    errorCode = "internal error, see the log file at " + getLogFileName();
 	                } else {
 	                    logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
 	                    // TODO use resources
@@ -338,10 +351,18 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 				"java.version",
 				"java.vendor",
 				"java.home",
+                "java.util.logging.config.file",
 				"user.dir", // current working directory
 				"os.name",
-				"os.arch"
+				"os.arch",
+                "sun.java.command",
 			}); 
+		appendPropertiesList(sb, loggingProperties(), new String[] 
+        {
+            "logfile.name",
+            "logging.properties.filename",
+            "logging.properties.file.exists",
+        });
 		appendPropertiesList(sb, src, new String[]
 			{	// use with src.getProperty(propName)
 				"edition",
@@ -349,11 +370,81 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 				"buildNumber",
 				"gitCommit"
 			});
-		logger.config(sb.toString());
+        // Use an anonymousLogger to ensure that this is always written to the log file 
+        // regardless of the settings in the logging.properties file
+        // and without changing the settings of any static loggers including the root logger
+        Logger anonymousLogger = Logger.getAnonymousLogger();
+        anonymousLogger.setLevel(Level.ALL);
+        anonymousLogger.config(sb.toString());
+        logJVMArgs();
+        logExtendedCharacters();
 	}
+    
+    private static Properties loggingProperties() {
+        Properties props = new Properties();
+        File f = new File(".", "logging.properties");
+        // Use same logic to locate the file as LogManager.getLogManager().readConfiguration() uses...
+        String fname = System.getProperty("java.util.logging.config.file");
+        if (fname == null) {
+            fname = System.getProperty("java.home");
+            if (fname == null) {
+                throw new Error("Can't find java.home ??");
+            }
+            f = new File(fname, "lib");
+            f = new File(f, "logging.properties");
+        }
+        try {
+            fname = f.getCanonicalPath();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        props.put("logfile.name", getLogFileName());        
+        props.put("logging.properties.filename", fname);        
+        props.put("logging.properties.file.exists", Boolean.toString(f.exists()));        
+        return props;
+    }
 	
-	private static void appendPropertiesList(StringBuilder sb, Properties src, String[] propNames)
-	{
+    private static void logJVMArgs() {
+        Level level = Level.CONFIG;
+        if(logger.isLoggable(level)) {
+            Properties props = new Properties();
+            RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+            List<String> arguments = runtimeMxBean.getInputArguments();
+            for(String argument : arguments) {
+                String[] parts = argument.split("=", 2);
+                String key = parts[0];
+                String value = (parts.length > 1) ? parts[1] : "";
+                props.put(key, value);
+            }
+            StringBuilder sb = new StringBuilder("JVM args:");
+            appendPropertiesList(sb, props);
+            logger.log(level, sb.toString());
+        }
+    }
+
+    private static void logExtendedCharacters() {
+        Level level = Level.FINE;
+        if(logger.isLoggable(level)) {
+            Properties props = new Properties();
+            props.put("phi",   "\u03C6");
+            props.put("rho",   "\u03C1");
+            props.put("sigma", "\u03C3");
+            props.put("sqrt",  "\u221A");
+            props.put("xi",    "\u03BE");
+            StringBuilder sb = new StringBuilder("Extended characters:");
+            appendPropertiesList(sb, props);
+            logger.log(level, sb.toString());
+        }
+    }
+
+    // appends the whole list sorted by its keys
+	private static void appendPropertiesList(StringBuilder sb, Properties props) {
+        String[] keys = props.keySet().toArray(new String[props.keySet().size()]);
+        Arrays.sort(keys);
+        appendPropertiesList(sb, props, keys);
+    }
+    
+	private static void appendPropertiesList(StringBuilder sb, Properties src, String[] propNames) {
 		for (String propName : propNames) {
 			String propValue = (src == null)
 					? System.getProperty(propName)
@@ -367,6 +458,34 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 		}
 	}
 
+    private static String logFileName = null;
+
+    public static String getLogFileName() {
+        // determined on demand and cached so we only need to do all of this the first time.
+        if (logFileName == null) {
+            for (Handler handler : Logger.getLogger("").getHandlers()) {
+                if (handler.getClass().isAssignableFrom(FileHandler.class)) {
+                    FileHandler fileHandler = (FileHandler) handler;
+                    try {
+                        // FileHandler.files has private access, 
+                        // so I'm going to resort to reflection to get the file name.
+                        Field privateFilesField = fileHandler.getClass().getDeclaredField("files");
+                        privateFilesField.setAccessible(true); // allow access to this private field
+                        File[] files = (File[]) privateFilesField.get(fileHandler);
+                        logFileName = files[0].getCanonicalPath();
+                        break;
+                    } catch (NullPointerException | NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException | IOException ex) {
+                        logger.log(Level.SEVERE, "Unable to determine log file name.", ex);
+                    }
+                }
+            }
+            if (logFileName == null) {
+                logFileName = "your home directory"; // just be sure it's not null
+                logger.warning("Unable to identify log file name.");
+            }
+        }
+        return logFileName;
+    }
     
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // These next three methods may be invoked by the mac Adapter.

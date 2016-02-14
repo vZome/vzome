@@ -24,15 +24,20 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
-public class ReorderableJList extends JList implements DragSourceListener,
+public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
         DropTargetListener, DragGestureListener
 {
 
+    // Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
+    private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
+    private static final Logger logger = Logger.getLogger(loggerClassName);
+    
     static DataFlavor localObjectFlavor;
     static {
         try {
@@ -55,10 +60,12 @@ public class ReorderableJList extends JList implements DragSourceListener,
     
     private final ListMoveListener moves;
 
+    private final Class<E> elementClass;
 
-    public ReorderableJList( DefaultListModel listModel, ListMoveListener moves )
+    public ReorderableJList ( DefaultListModel<E> listModel, ListMoveListener moves, Class<E> listElementClass )
     {
         super();
+        this.elementClass = listElementClass;
         this .moves = moves;
         setCellRenderer( new ReorderableListCellRenderer() );
         setModel( listModel );
@@ -68,6 +75,7 @@ public class ReorderableJList extends JList implements DragSourceListener,
     }
 
     // DragGestureListener
+    @Override
     public void dragGestureRecognized( DragGestureEvent dge )
     {
 //        System.out.println( "dragGestureRecognized" );
@@ -83,6 +91,7 @@ public class ReorderableJList extends JList implements DragSourceListener,
     }
 
     // DragSourceListener events
+    @Override
     public void dragDropEnd( DragSourceDropEvent dsde )
     {
 //        System.out.println( "dragDropEnd()" );
@@ -91,15 +100,20 @@ public class ReorderableJList extends JList implements DragSourceListener,
         repaint();
     }
 
+    @Override
     public void dragEnter( DragSourceDragEvent dsde ) {}
 
+    @Override
     public void dragExit( DragSourceEvent dse ) {}
 
+    @Override
     public void dragOver( DragSourceDragEvent dsde ) {}
 
+    @Override
     public void dropActionChanged( DragSourceDragEvent dsde ) {}
 
     // DropTargetListener events
+    @Override
     public void dragEnter( DropTargetDragEvent dtde )
     {
 //        System.out.println( "dragEnter" );
@@ -111,8 +125,10 @@ public class ReorderableJList extends JList implements DragSourceListener,
         }
     }
 
+    @Override
     public void dragExit( DropTargetEvent dte ) {}
 
+    @Override
     public void dragOver( DropTargetDragEvent dtde )
     {
         // figure out which cell it's over, no drag to self
@@ -127,6 +143,7 @@ public class ReorderableJList extends JList implements DragSourceListener,
         repaint();
     }
 
+    @Override
     public void drop( DropTargetDropEvent dtde )
     {
 //        System.out.println( "drop()!" );
@@ -148,14 +165,23 @@ public class ReorderableJList extends JList implements DragSourceListener,
             }
             dtde.acceptDrop( DnDConstants.ACTION_MOVE );
 //            System.out.println( "accepted" );
-            Object dragged = dtde.getTransferable().getTransferData( localObjectFlavor );
+            Object draggedObj =  dtde.getTransferable().getTransferData( localObjectFlavor );
+            Class<?> draggedObjClass = draggedObj.getClass();
+            if(!elementClass.isAssignableFrom(draggedObjClass)) {
+                String msg = "Unsupported type " + draggedObjClass.getName() + " was dropped. Expected " + elementClass.getName();
+                logger.fine(msg);
+//                System.out.println( msg );
+                dtde.rejectDrop();
+                return;
+            }
+            E dragged = elementClass.cast(draggedObj);
             // move items - note that indicies for insert will
             // change if [removed] source was before target
 //            System.out.println( "drop " + draggedIndex + " to " + index );
             boolean sourceBeforeTarget = (draggedIndex < index);
 //            System.out.println( "source is" + (sourceBeforeTarget ? "" : " not") + " before target" );
 //            System.out.println( "insert at " + (sourceBeforeTarget ? index - 1 : index) );
-            DefaultListModel mod = (DefaultListModel) getModel();
+            DefaultListModel<E> mod = (DefaultListModel<E>) getModel();
             
       // an alternative, from ListDataListener tutorial
 //            Object aObject = listModel.getElementAt(a);
@@ -175,6 +201,7 @@ public class ReorderableJList extends JList implements DragSourceListener,
         dtde.dropComplete( dropped );
     }
 
+    @Override
     public void dropActionChanged( DropTargetDragEvent dtde ) {}
 
     public interface ListMoveListener
@@ -193,6 +220,7 @@ public class ReorderableJList extends JList implements DragSourceListener,
             object = o;
         }
 
+        @Override
         public Object getTransferData( DataFlavor df )
                 throws UnsupportedFlavorException, IOException
         {
@@ -202,11 +230,13 @@ public class ReorderableJList extends JList implements DragSourceListener,
                 throw new UnsupportedFlavorException( df );
         }
 
+        @Override
         public boolean isDataFlavorSupported( DataFlavor df )
         {
             return (df.equals( localObjectFlavor ));
         }
 
+        @Override
         public DataFlavor[] getTransferDataFlavors()
         {
             return supportedFlavors;
@@ -224,7 +254,8 @@ public class ReorderableJList extends JList implements DragSourceListener,
             super();
         }
 
-        public Component getListCellRendererComponent( JList list,
+        @Override
+        public Component getListCellRendererComponent( JList<?> list,
                 Object value, int index, boolean isSelected, boolean hasFocus )
         {
             isTargetCell = (value == dropTargetCell);
@@ -233,6 +264,7 @@ public class ReorderableJList extends JList implements DragSourceListener,
             return super.getListCellRendererComponent( list, value, index, showSelected, hasFocus );
         }
 
+        @Override
         public void paintComponent( Graphics g )
         {
             super.paintComponent( g );

@@ -1,8 +1,5 @@
 /*
  * Created on Apr 11, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package org.vorthmann.zome.ui;
 
@@ -57,6 +54,7 @@ public class PythonConsolePanel extends JPanel implements Tool {
 
         public abstract void outputScript( String script );
 
+        @Override
         public void actionPerformed( ActionEvent e ) {
             String script = mTextArea .getSelectedText();
             if ( script  != null && script .length() > 0 )
@@ -69,6 +67,7 @@ public class PythonConsolePanel extends JPanel implements Tool {
 
         public abstract String inputScript();
 
+        @Override
         public void actionPerformed( ActionEvent e ) {
             String script = inputScript();
             if ( script  != null && script .length() > 0 ) {
@@ -174,6 +173,7 @@ public class PythonConsolePanel extends JPanel implements Tool {
         size .width = 50;
         button .setPreferredSize( size );
          button .addActionListener( new PythonOutputAction() {
+            @Override
             public void outputScript( String script ){
                 mController .doScriptAction( "runPythonScript" , script );
             }
@@ -183,6 +183,7 @@ public class PythonConsolePanel extends JPanel implements Tool {
         
         button = new JButton( "load" );
         button .addActionListener( new PythonInputAction() {
+            @Override
             public String inputScript(){
                 return readFromFile();
             }
@@ -191,6 +192,7 @@ public class PythonConsolePanel extends JPanel implements Tool {
         upDownPanel .add( button );
         button = new JButton( "save" );
         button .addActionListener( new PythonOutputAction() {
+            @Override
             public void outputScript( String script ){
                 writeToFile( script );
             }
@@ -224,21 +226,26 @@ public class PythonConsolePanel extends JPanel implements Tool {
         setPreferredSize( new Dimension( 500, 800 ) );
     }
 
+    @Override
     public String getToolName() {
         return "script";
     }
 
+    @Override
     public void toolSelected()
     {
         mTextArea .requestFocus();
     }
     
+    @Override
     public void toolUnselected(){}
 
+    @Override
 	public MouseToolDefault getMouseTool()
 	{
 		return new Trackball()
         {
+            @Override
             protected void trackballRolled( Quat4d roll )
             {
                 // TODO remove this?

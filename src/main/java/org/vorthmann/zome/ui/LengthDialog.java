@@ -77,6 +77,7 @@ public class LengthDialog extends EscapeDialog
             JButton cancelButton = new JButton( "Cancel" );
             cancelButton .addActionListener( new ActionListener(){
 
+                @Override
                 public void actionPerformed( ActionEvent e )
                 {
                     LengthDialog.this .setVisible( false );
@@ -89,6 +90,7 @@ public class LengthDialog extends EscapeDialog
             getRootPane() .setDefaultButton( setButton );
             setButton .addActionListener( new ActionListener(){
 
+                @Override
                 public void actionPerformed( ActionEvent e )
                 {
                     StringBuffer buf = new StringBuffer();

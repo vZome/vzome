@@ -39,6 +39,7 @@ public class Snapshot2dFrame extends JFrame
         
         final ActionListener actions = new ActionListener()
         {
+            @Override
             public void actionPerformed( ActionEvent ae )
             {
                 controller .actionPerformed( ae );
@@ -59,15 +60,15 @@ public class Snapshot2dFrame extends JFrame
         buttonPanel .add( button );
 
         String[] drawStyles = controller .getCommandList( "draw.styles" );
-        JComboBox<String> drawStylesCombo = new JComboBox( drawStyles );
+        JComboBox<String> drawStylesCombo = new JComboBox<>( drawStyles );
         drawStylesCombo .setSelectedItem( controller .getProperty( "drawStyle" ) );
         drawStylesCombo .addActionListener( new ActionListener()
         {
             @Override
             public void actionPerformed( ActionEvent e )
             {
-                JComboBox cb = (JComboBox) e .getSource();
-                String drawStyle = (String) cb .getSelectedItem();
+                JComboBox<?> cb = (JComboBox<?>) e .getSource();
+                String drawStyle = cb .getSelectedItem().toString();
                 actions .actionPerformed( new ActionEvent( cb, 0, "setDrawStyle." + drawStyle ) );
             }
         } );
@@ -79,7 +80,7 @@ public class Snapshot2dFrame extends JFrame
         checkbox .addActionListener( actions );        
         buttonPanel .add( checkbox );
 
-        final JComboBox<String> formatsCombo = new JComboBox( FORMATS );
+        final JComboBox<String> formatsCombo = new JComboBox<>( FORMATS );
         final JButton saveButton = new JButton( "Save..." );
         saveButton .addActionListener( new ActionListener()
         {            
@@ -169,6 +170,7 @@ public class Snapshot2dFrame extends JFrame
         controller .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "refresh.2d" ) );
     }
 
+    @Override
     public void repaint()
     {
         this .snapshotPanel .repaint();
@@ -176,6 +178,7 @@ public class Snapshot2dFrame extends JFrame
     
     private class Snapshot2dPanel extends JPanel
     {
+        @Override
         protected void paintComponent( Graphics g )
         {
             controller .repaintGraphics( "snapshot.2d", g, getSize() );

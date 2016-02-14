@@ -1,8 +1,5 @@
 /*
  * Created on Jul 30, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 package org.vorthmann.zome.export.java2d;
 
@@ -11,15 +8,13 @@ import java.awt.geom.Rectangle2D;
 
 /**
  * @author scottv
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class SVGExporter extends SnapshotExporter {
 
 	/* (non-Javadoc)
 	 * @see org.vorthmann.zome.export.java2d.SnapshotExporter#outputBackground(java.awt.Color)
 	 */
+    @Override
 	protected void outputBackground( Color bgColor )
 	{
 		output .print( "<rect fill='#" );
@@ -31,6 +26,7 @@ public class SVGExporter extends SnapshotExporter {
 	/* (non-Javadoc)
 	 * @see org.vorthmann.zome.export.java2d.SnapshotExporter#outputPrologue(java.awt.geom.Rectangle2D, float, java.util.Iterator)
 	 */
+    @Override
 	protected void outputPrologue( Rectangle2D rect, float strokeWidth )
 	{
 		output .println( "<?xml version='1.0'?>" );
@@ -42,6 +38,7 @@ public class SVGExporter extends SnapshotExporter {
         XY_FORMAT .setMaximumFractionDigits( 2 );
     }
     
+    @Override
     protected void outputLine( Java2dSnapshot.LineSegment line, boolean monochrome )
     {
         output .print( "<path stroke='#" );
@@ -57,6 +54,7 @@ public class SVGExporter extends SnapshotExporter {
         output .println( "'/>" );
     }
 
+    @Override
 	protected void outputPolygon( Java2dSnapshot.Polygon polygon, boolean doOutline )
 	{
 		output .print( "<path fill='#" );
@@ -70,6 +68,7 @@ public class SVGExporter extends SnapshotExporter {
 		output .println( "'/>" );
 	}
 
+    @Override
 	protected void outputPostlogue()
 	{
 		output .println();
@@ -77,12 +76,16 @@ public class SVGExporter extends SnapshotExporter {
 	}
 
 
+    @Override
     protected void setRGBStrokeColor(float r, float g, float b) {}
 
+    @Override
     protected void setRGBFillColor(float r, float g, float b) {}
 
+    @Override
 	protected void beginPath() {}
 
+    @Override
 	protected void moveToPoint(float x, float y)
 	{
 		output .print( "M " + XY_FORMAT.format( x ) + " " + XY_FORMAT.format(height-y) + " " );
@@ -91,18 +94,22 @@ public class SVGExporter extends SnapshotExporter {
 	/* (non-Javadoc)
 	 * @see org.vorthmann.zome.export.java2d.SnapshotExporter#addLineToPoint(float, float)
 	 */
+    @Override
 	protected void addLineToPoint(float x, float y)
 	{
 		output .print( "L " + XY_FORMAT.format( x ) + " " + XY_FORMAT.format(height-y) + " " );
 	}
 
+    @Override
 	protected void closePath()
 	{
 		output .print( " z" );
 	}
 
+    @Override
 	protected void fillPath() {}
 
+    @Override
 	protected void strokePath() {}
 
 }

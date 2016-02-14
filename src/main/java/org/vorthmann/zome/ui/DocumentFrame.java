@@ -45,6 +45,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.desktop.controller.ViewPlatformControlPanel;
+import static org.vorthmann.zome.ui.ApplicationUI.getLogFileName;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {
@@ -148,7 +149,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
                     errorCode = ( (Exception) arguments[0] ).getMessage();
                     logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
-                    errorCode = "internal error, see vZomeLog0.log in your home directory";
+                    errorCode = "internal error, see the log file at " + getLogFileName();
                 } else {
                     logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
                     // TODO use resources
@@ -311,7 +312,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 	break;
                 
                 case "configureShapes":
-                    JDialog shapesDialog = (JDialog) shapesDialogs.get( system );
+                    JDialog shapesDialog = shapesDialogs.get( system );
                     if ( shapesDialog == null ) {
                     	delegate = mController .getSubController( "symmetry." + system );
                         shapesDialog = new ShapesDialog( DocumentFrame.this, delegate );
@@ -321,7 +322,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 	break;
                 
                 case "configureDirections":
-                    JDialog symmetryDialog = (JDialog) directionsDialogs.get( system );
+                    JDialog symmetryDialog = directionsDialogs.get( system );
                     if ( symmetryDialog == null ) {
                     	delegate = mController .getSubController( "symmetry." + system );
                         symmetryDialog = new SymmetryDialog( DocumentFrame.this, delegate );
@@ -485,6 +486,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         this.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
         this.addWindowListener( new WindowAdapter()
         {
+            @Override
             public void windowClosing( WindowEvent we )
             {
                 closeWindow();
@@ -616,6 +618,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         };
     }
     
+    @Override
     public AbstractButton setButtonAction( String command, AbstractButton control )
     {
     	control .setActionCommand( command );
@@ -740,6 +743,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     	return control;
     }
     
+    @Override
     public JMenuItem setMenuAction( String command, JMenuItem menuItem )
     {
     	return (JMenuItem) this .setButtonAction( command, menuItem );

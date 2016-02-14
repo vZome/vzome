@@ -75,14 +75,14 @@ allprojects {
 }
 
 dependencies {
-    compile group: 'com.vzome.core', name: 'vzome-core', version:'0.8.1'
+    compile group: 'com.vzome.core', name: 'vzome-core', version:'0.8.2'
     compile group: 'java3d', name: 'j3dcore', version:'1.6.0-pre12'
     compile group: 'java3d', name: 'j3dutils', version:'1.6.0-pre12'
     compile group: 'java3d', name: 'vecmath', version:'1.6.0-pre12'
     compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version:'2.3.2'
     compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version:'2.3.2'
     compile group: 'javax.media.jai', name: 'com.springsource.javax.media.jai.core', version:'1.1.3'
-    testCompile group: 'junit', name: 'junit', version:'3.8.1'
+    testCompile group: 'junit', name: 'junit', version:'4.12'
 }
 
 sourceSets {
@@ -117,14 +117,27 @@ jar {
     }
 }
 
-// Don't necessarily want to turn on these warnings yet, but here's the code to do it eventually.
-//gradle.projectsEvaluated {
-//	tasks.withType(JavaCompile) {
-//		options.compilerArgs \
-//		<< "-Xlint:unchecked" \
-//		<< "-Xlint:deprecation"
-//	}
-//}
+// These options apply to all java projects
+// More info at http://www.javaworld.com/article/2073587/javac-s--xlint-options.html
+gradle.projectsEvaluated {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs \
+		<< "-Xlint:all" \
+		<< "-Xlint:cast" \
+		<< "-Xlint:deprecation" \
+		<< "-Xlint:divzero" \
+		<< "-Xlint:empty" \
+		<< "-Xlint:fallthrough" \
+		<< "-Xlint:finally" \
+		<< "-Xlint:overrides" \
+		<< "-Xlint:path" \
+		<< "-Xlint:rawtypes" \
+		<< "-Xlint:unchecked" \
+		<< "-Xlint:-serial" 
+		// TODO: Enable the serial warning and look into fixing ~33 issues. 
+		// Most of them are classes which extend a generic Collection or Exception.
+	}
+}
 
 // The mainClass property is needed to run a Gradle project from the Netbeans IDE (and maybe others too).
 if (!hasProperty('mainClass')) {

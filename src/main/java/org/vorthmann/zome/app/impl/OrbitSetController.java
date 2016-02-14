@@ -14,7 +14,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.vorthmann.j3d.MouseTool;
@@ -46,10 +45,11 @@ public class OrbitSetController extends DefaultController implements PropertyCha
 
     double xMax = 0d, yMax = 0d;
     
-    private final Map orbitDots = new HashMap();
+    private final Map<Direction, OrbitState> orbitDots = new HashMap<>();
     
     private final MouseTool mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
     {
+        @Override
         public void mouseClicked( MouseEvent click )
         {
             Direction pickedDir = pickDirection( click );
@@ -90,9 +90,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         orbitDots .clear();
 //        lastOrbit = null;  // cannot do this, we might have a valid value, for example after loading from XML
         boolean lastOrbitChanged = false;
-        for ( Iterator dirs = allOrbits .iterator(); dirs .hasNext(); )
-        {
-            Direction dir = (Direction) dirs .next();
+        for (Direction dir : allOrbits) {
             if ( lastOrbit == null )
             {
                 // just a way to initialize the lastOrbit
@@ -112,11 +110,11 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             
 //            if ( symmetry instanceof IcosahedralSymmetry )
             {
-                // switch X and Y (why? don't know, it just works)
-                double temp = orbit.dotX;
-                orbit.dotX = orbit.dotY;
-                orbit.dotY = temp;
-            }
+            // switch X and Y (why? don't know, it just works)
+            double temp = orbit.dotX;
+            orbit.dotX = orbit.dotY;
+            orbit.dotY = temp;
+        }
             
             if ( orbit.dotY > yMax )
                 yMax = orbit.dotY;
@@ -127,9 +125,9 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         {
         	lastOrbitChanged = true;
             if ( ! orbits .isEmpty() )
-                lastOrbit = (Direction) orbits .last();
+                lastOrbit = orbits .last();
             else if ( ! orbitDots .isEmpty() )
-                lastOrbit = (Direction) orbitDots .keySet() .iterator() .next();
+                lastOrbit = orbitDots .keySet() .iterator() .next();
             else
                 lastOrbit = null;
         }
@@ -137,6 +135,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         	properties() .firePropertyChange( "selectedOrbit", null, lastOrbit == null? null : lastOrbit .getName() );
     }
     
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( action .equals( "refreshDots" ) )
@@ -164,20 +163,20 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         {
             mOneAtATime = false;
             orbits .clear();
-            for ( Iterator iterator = allOrbits .iterator(); iterator.hasNext(); ) {
-                Direction dir = (Direction) iterator.next();
-                if ( dir .isStandard() )
+            for (Direction dir : allOrbits) {
+                if ( dir .isStandard() ) {
                     orbits .add( dir );
+                }
             }
         }
         else if ( action .equals( "predefinedOrbits" ) )
         {
             mOneAtATime = false;
             orbits .clear();
-            for ( Iterator iterator = allOrbits .iterator(); iterator.hasNext(); ) {
-                Direction dir = (Direction) iterator.next();
-                if ( ! dir .isAutomatic() )
+            for (Direction dir : allOrbits) {
+                if ( ! dir .isAutomatic() ) {
                     orbits .add( dir );
+                }
             }
         }
         else if ( action .equals( "oneAtATime" ) )
@@ -214,6 +213,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         properties() .firePropertyChange( "orbits", true, false );
     }
 
+    @Override
     public void propertyChange( PropertyChangeEvent evt )
     {
         if ( "length" .equals( evt .getPropertyName() )
@@ -247,6 +247,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             throw new IllegalStateException( "could not toggle direction " + dir .getName() );
     }
 
+    @Override
     public Controller getSubController( String name )
     {
         if ( "currentLength" .equals( name ) )
@@ -254,6 +255,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         return super .getSubController( name );
     }
 
+    @Override
     public String getProperty( String string )
     {
         if ( "oneAtATime" .equals( string ) )
@@ -294,6 +296,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         return super .getProperty( string );
     }
 
+    @Override
     public void setProperty( String cmd, Object value )
     {
         if ( "oneAtATime" .equals( cmd ) )
@@ -311,6 +314,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     private static int TOP = 30;
     private static int LEFT = TOP;
 
+    @Override
     public void repaintGraphics( String panelName, Graphics graphics, Dimension size )
     {
         if ( panelName .startsWith( "oneOrbit." ) )
@@ -367,10 +371,8 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             path .closePath();
             g2d .draw( path );
 
-            for ( Iterator it = orbitDots .keySet() .iterator(); it .hasNext(); )
-            {
-                Direction dir = (Direction) it .next();
-                OrbitState orbit = (OrbitState) orbitDots .get( dir );
+            for (Direction dir : orbitDots .keySet()) {
+                OrbitState orbit = orbitDots .get( dir );
                 Color color = colorSource .getColor( dir );
                 int x = LEFT +  (int) Math .round( orbit.dotY * scaleY );
 //                if ( allOrbits .getSymmetry() == OctahedralSymmetry .GOLDEN_INSTANCE ) {
@@ -402,10 +404,8 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     {
         double minDist = 999d;
         Direction pickedDir = null;
-        for ( Iterator it = orbitDots .keySet() .iterator(); it .hasNext(); )
-        {
-            Direction dir = (Direction) it .next();
-            OrbitState orbit = (OrbitState) orbitDots .get( dir );
+        for (Direction dir : orbitDots .keySet()) {
+            OrbitState orbit = orbitDots .get( dir );
             double dist = Math.sqrt( Math.pow( click.getX()-orbit.dotXint, 2 ) + Math.pow( click.getY()-orbit.dotYint, 2 ) );
             if ( dist < (double) RADIUS*4 )
             {
@@ -419,6 +419,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     }
 
 
+    @Override
     public MouseTool getMouseTool()
     {
         return this .mouseTool;
@@ -447,22 +448,27 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         return result;
     }
 
+    @Override
     public String[] getCommandList( String listName )
     {
         if ( listName .equals( "orbits" ) )
         {
             String[] result = new String[ orbits .size() ];
             int i = 0;
-            for ( Iterator it = orbits .iterator(); it .hasNext(); i++ )
-                result[ i ] = ((Direction) it .next()) .getName();
+            for ( Direction dir :  orbits ) {
+                result[ i ] = dir .getName();
+                 i++;
+            }
             return result;
         }
         if ( listName .equals( "allOrbits" ) )
         {
             String[] result = new String[ allOrbits .size() ];
             int i = 0;
-            for ( Iterator it = allOrbits .iterator(); it .hasNext(); i++ )
-                result[ i ] = ((Direction) it .next()) .getName();
+            for ( Direction dir : allOrbits ) {
+                result[ i ] = dir .getName();
+                i++;
+            }
             return result;
         }
         return new String[0];

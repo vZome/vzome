@@ -34,15 +34,16 @@ public class PolytopesDialog extends EscapeDialog
         
         String[] groupNames = controller .getCommandList( "groups" );
         String defaultGroup = controller .getProperty( "group" );
-        JComboBox groups = new JComboBox( groupNames );
+        JComboBox<String> groups = new JComboBox<String>( groupNames );
         groups .setSelectedItem( defaultGroup );
         groups .setMaximumRowCount( 6 );
         groups .addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed( ActionEvent e )
             {
-                JComboBox cb = (JComboBox) e.getSource();
-                String command = "setGroup." + (String) cb .getSelectedItem();
+                JComboBox<?> combo = (JComboBox<?>) e.getSource();
+                String command = "setGroup." + combo .getSelectedItem().toString();
                 controller .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
             }
         } );
@@ -65,6 +66,7 @@ public class PolytopesDialog extends EscapeDialog
             checkbox .setActionCommand( "edge." + i );
             checkbox .addActionListener( new ActionListener()
             {
+                @Override
                 public void actionPerformed( ActionEvent e )
                 {
                     controller .actionPerformed( e );
@@ -111,6 +113,7 @@ public class PolytopesDialog extends EscapeDialog
         JButton cancel = new JButton( "Cancel" );
         cancel .addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed( ActionEvent e )
             {
                 PolytopesDialog.this .setVisible( false );
@@ -122,6 +125,7 @@ public class PolytopesDialog extends EscapeDialog
         build .setActionCommand( "generate" );
         build .addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed( ActionEvent e )
             {
                 PolytopesDialog.this .setVisible( false );

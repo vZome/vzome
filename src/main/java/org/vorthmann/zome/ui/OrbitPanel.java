@@ -35,6 +35,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 		
 		orbitTriangle = new JPanel()
         {
+            @Override
             public void paintComponent( Graphics graphics )
             {
             	enabledOrbits .repaintGraphics( "orbits", graphics, getSize() );
@@ -44,6 +45,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
         
         final ActionListener indirection = new ActionListener()
         {
+            @Override
             public void actionPerformed( ActionEvent evt )
             {
             	enabledOrbits .actionPerformed( evt );
@@ -64,6 +66,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
                     checkbox .setSelected( true );
                 row1 .add( createButton( "All", "setAllDirections", new ActionListener()
                 {
+                    @Override
                     public void actionPerformed( ActionEvent evt )
                     {
                     	indirection .actionPerformed( evt );
@@ -151,6 +154,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
             panel .setLayout( new BorderLayout() );
             final JPanel colorSwatch = new JPanel()
             {
+                @Override
                 public void paintComponent( Graphics graphics )
                 {
                 	enabledOrbits .repaintGraphics( "oneOrbit." + orbitName, graphics, getSize() );

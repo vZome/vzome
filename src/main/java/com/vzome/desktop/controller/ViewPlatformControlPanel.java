@@ -11,6 +11,7 @@ import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -71,6 +72,7 @@ public class ViewPlatformControlPanel extends JPanel {
         zslider = new JSlider( JSlider .VERTICAL, nearTicks, farTicks, startTicks );
         zslider .addChangeListener( new ChangeListener()
         {
+            @Override
             public  void stateChanged( ChangeEvent e )
             {
                 controller .setProperty( "magnification", Float .toString( ticksToMag( zslider .getValue() ) ) );
@@ -82,9 +84,9 @@ public class ViewPlatformControlPanel extends JPanel {
         zslider .setMajorTickSpacing( 50 );
         zslider .setMinorTickSpacing( 10 );
 
-        Hashtable labelTable = new Hashtable();
-        labelTable.put( new Integer( nearTicks ), new JLabel("far") );  // I don't know why these are reversed
-        labelTable.put( new Integer( farTicks ), new JLabel("near") );
+        Hashtable<Integer, JComponent> labelTable = new Hashtable<>();
+        labelTable.put( nearTicks, new JLabel("far") );  // I don't know why these are reversed
+        labelTable.put( farTicks, new JLabel("near") );
         zslider.setLabelTable( labelTable );
 
         zslider .setPaintTicks( true );
@@ -134,6 +136,7 @@ public class ViewPlatformControlPanel extends JPanel {
         
         this .addMouseWheelListener( new MouseWheelListener()
         {
+            @Override
             public void mouseWheelMoved( MouseWheelEvent e )
             {
                 int amt = e .getWheelRotation();
@@ -150,6 +153,7 @@ public class ViewPlatformControlPanel extends JPanel {
 
         controller .addPropertyListener( new PropertyChangeListener()
             {
+                @Override
                 public void propertyChange( PropertyChangeEvent e )
                 {
                 	if ( "magnification" .equals(  e .getPropertyName() ) ) {

@@ -53,6 +53,7 @@ public class Java2dSnapshot extends DefaultController
             return super .getCommandList( listName );
     }
 
+    @Override
     public String getProperty( String propName )
     {
         if ( "showBackground" .equals( propName ) )
@@ -79,6 +80,7 @@ public class Java2dSnapshot extends DefaultController
         return super.getProperty( propName );
     }
 
+    @Override
     public void actionPerformed( ActionEvent e )
     {
         String action = e .getActionCommand();
@@ -141,6 +143,7 @@ public class Java2dSnapshot extends DefaultController
 //        mSnapshot .setBackgroundColor( new java.awt.Color( colors .getColor( Colors.BACKGROUND ) .getRGB() ) );    
 //    }
 
+    @Override
     public void doFileAction( String command, File file )
     {
         try {
@@ -160,6 +163,7 @@ public class Java2dSnapshot extends DefaultController
         }
     }
 
+    @Override
     public void repaintGraphics( String panelName, Graphics graphics, Dimension size )
     {
         if ( ! current )
@@ -187,9 +191,8 @@ public class Java2dSnapshot extends DefaultController
         if ( mLineDrawing ) {
             g2d .setStroke( new BasicStroke( 3*mStrokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND ) );
             g2d .setPaint( java.awt.Color.BLACK );
-            Iterator lines = mLines .iterator();
-            while ( lines .hasNext() ) {
-                Java2dSnapshot.LineSegment line = (Java2dSnapshot.LineSegment) lines .next();
+            
+            for (LineSegment line : mLines) {
                 if ( monochrome )
                     if ( mShowBackground )
                         g2d .setPaint( java.awt.Color.WHITE );
@@ -202,8 +205,7 @@ public class Java2dSnapshot extends DefaultController
         }
         else {
             g2d .setStroke( new BasicStroke( mStrokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND ) );
-            for ( Iterator polys = mPolygons .iterator(); polys .hasNext(); ){
-                Java2dSnapshot.Polygon poly = (Java2dSnapshot.Polygon) polys .next();
+            for ( Java2dSnapshot.Polygon poly : mPolygons ){
                 g2d .setPaint( poly .getColor() );
                 g2d .fill( poly .getPath() );
                 if ( this .doOutlines ) {
@@ -222,9 +224,9 @@ public class Java2dSnapshot extends DefaultController
     
     private boolean current;
     	
-	private List mPolygons = new ArrayList();
+	private List<Polygon> mPolygons = new ArrayList<>();
     
-    private List mLines = new ArrayList(); // list of int[]
+    private List<LineSegment> mLines = new ArrayList<>();
 	
 	private Rectangle2D mRect;
 	
@@ -293,7 +295,7 @@ public class Java2dSnapshot extends DefaultController
         return new Dimension( (int) mRect .getWidth(), (int) mRect .getHeight() ) ;
     }
 
-    public static class LineSegment implements Comparable
+    public static class LineSegment implements Comparable<LineSegment>
     {
         private final GeneralPath mPath;
         private float mDepth;
@@ -318,9 +320,9 @@ public class Java2dSnapshot extends DefaultController
             return mPolyColor;
         }
 
-        public int compareTo( Object o )
+        @Override
+        public int compareTo( LineSegment other )
         {
-            LineSegment other = (LineSegment) o;
             double otherZ = other .mDepth;
             if ( mDepth > otherZ )
                 return 1;
@@ -330,7 +332,7 @@ public class Java2dSnapshot extends DefaultController
         }
     }
 
-	public static class Polygon implements Comparable
+	public static class Polygon implements Comparable<Polygon>
 	{
 		private final GeneralPath mPath;
 		private float mDepth;
@@ -377,12 +379,9 @@ public class Java2dSnapshot extends DefaultController
 			return mPolyColor;
 		}
 		
-		/* (non-Javadoc)
-		 * @see java.lang.Comparable#compareTo(java.lang.Object)
-		 */
-		public int compareTo( Object o )
+        @Override
+		public int compareTo( Polygon other )
 		{
-			Polygon other = (Polygon) o;
 			double otherZ = other .mDepth;
 			if ( mDepth > otherZ )
 				return 1;
@@ -409,12 +408,12 @@ public class Java2dSnapshot extends DefaultController
         }
     }
 
-    public Iterator getLines()
+    public Iterator<LineSegment> getLines()
     {
         return mLines .iterator();
     }
 
-    public Iterator getPolygons()
+    public Iterator<Polygon> getPolygons()
     {
         return mPolygons .iterator();
     }

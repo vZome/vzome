@@ -40,7 +40,9 @@ import com.vzome.desktop.controller.RenderingViewer;
 
 public class ApplicationController extends DefaultController
 {
-	private final Map<String, DocumentController> docControllers = new HashMap<>();
+    private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.controller" );
+
+    private final Map<String, DocumentController> docControllers = new HashMap<>();
 	
 	private final ActionListener ui;
     
@@ -54,10 +56,9 @@ public class ApplicationController extends DefaultController
 
     private final com.vzome.core.editor.Application modelApp;
 
-	private final File prefsFile;
+	private final File preferencesFile;
 
     private int lastUntitled = 0;
-
     
 	public ApplicationController( ActionListener ui, Properties commandLineArgs )
     {
@@ -79,7 +80,7 @@ public class ApplicationController extends DefaultController
         if ( ! prefsFile .exists() ) {
             prefsFile = new File( prefsFolder, ".vZome.prefs" );
         }
-        this.prefsFile = prefsFile;
+        this.preferencesFile = prefsFile;
         if ( ! prefsFile .exists() ) {
         	logger .config( "Used default preferences." );
         } else {
@@ -200,15 +201,16 @@ public class ApplicationController extends DefaultController
 	public void doAction( String action, ActionEvent event )
 	{
 		try {
-			switch ( action ) {
-
-			case "showAbout":
-			case "openURL":
-			case "quit":
+			if( action .equals( "showAbout" ) 
+             || action .equals( "openURL" ) 
+			 || action .equals( "quit" ) 
+                    )
+            {
 	        	this .ui .actionPerformed( event );
-				break;
+				return;
+            }
 
-			case "launch":
+			if( "launch".equals(action) ) {
 	            String sawWelcome = userPreferences .getProperty( "saw.welcome" );
 	            if ( sawWelcome == null )
 	            {
@@ -217,67 +219,67 @@ public class ApplicationController extends DefaultController
 	                userPreferences .setProperty( "saw.welcome", "true" );
 	                FileWriter writer;
 	                try {
-	                    writer = new FileWriter( prefsFile );
+	                    writer = new FileWriter( preferencesFile );
 	                    userPreferences .store( writer, "" );
 	                    writer .close();
 	                } catch ( IOException e ) {
-	                    // TODO Auto-generated catch block
-	                    e.printStackTrace();
+	                    logger.fine(e.toString());
 	                }
-	                break;
+	                return;
 	            }
-				// else no break! fall through to "new"
+                action = "new";
+            }
 
-			case "new":
-				action = "new-golden";
-				// no break! fall through to default
+            if ("new".equals(action)) {
+                action = "new-golden";
+            }
 
-			default:
-		        if ( action .startsWith( "new-" ) )
-		        {
-		        	String fieldName = action .substring( "new-" .length() );
-		            File prototype = new File( Platform .getPreferencesFolder(), "Prototypes/" + fieldName + ".vZome" );
-		            if ( prototype .exists() ) {
+            if ( action .startsWith( "new-" ) )
+            {
+                String fieldName = action .substring( "new-" .length() );
+                File prototype = new File( Platform .getPreferencesFolder(), "Prototypes/" + fieldName + ".vZome" );
+                if ( prototype .exists() ) {
 //		            	this .mController .doAction(action, e);
 //		                doFileAction( "newFromTemplate", prototype );
-		            }
-		            else
-		            {
-		        		// creating a new Document
-		        		Properties docProps = new Properties();
-		        		docProps .setProperty( "new.document", "true" );
-		        		DocumentModel document = modelApp .createDocument( fieldName );
-		        		String title = "Untitled " + ++lastUntitled;
-		        		docProps .setProperty( "window.title", title );
-		        		DocumentController newest = new DocumentController( document, this, docProps );
-		        		newDocumentController( title, newest );
-		            }
-		        }
-		        else if ( action .startsWith( "openResource-" ) )
-		        {
-	        		Properties docProps = new Properties();
-	    			docProps .setProperty( "reader.preview", "true" );
-		            String path = action .substring( "openResource-" .length() );
-	        		docProps .setProperty( "window.title", path );
-	                ClassLoader cl = Thread .currentThread() .getContextClassLoader();
-	                InputStream bytes = cl .getResourceAsStream( path );
-	                loadDocumentController( path, bytes, docProps );
-		        }
-		        else if ( action .startsWith( "openURL-" ) )
-		        {
-	        		Properties docProps = new Properties();
-	    			docProps .setProperty( "as.template", "true" );
-		            String path = action .substring( "openURL-" .length() );
-	        		docProps .setProperty( "window.title", path );
-					if ( path .toLowerCase() .endsWith( ".vzome" ) ) {
-		            	URI uri = new URI( path );
-						URL url = uri .toURL();
-			            InputStream bytes = url .openStream();
-		                loadDocumentController( path, bytes, docProps );
-					}
-		        }
-		        else
-		        	this .mErrors .reportError( UNKNOWN_ACTION, new Object[]{ action } );
+                }
+                else
+                {
+                    // creating a new Document
+                    Properties docProps = new Properties();
+                    docProps .setProperty( "new.document", "true" );
+                    DocumentModel document = modelApp .createDocument( fieldName );
+                    String title = "Untitled " + ++lastUntitled;
+                    docProps .setProperty( "window.title", title );
+                    DocumentController newest = new DocumentController( document, this, docProps );
+                    newDocumentController( title, newest );
+                }
+            }
+            else if ( action .startsWith( "openResource-" ) )
+            {
+                Properties docProps = new Properties();
+                docProps .setProperty( "reader.preview", "true" );
+                String path = action .substring( "openResource-" .length() );
+                docProps .setProperty( "window.title", path );
+                ClassLoader cl = Thread .currentThread() .getContextClassLoader();
+                InputStream bytes = cl .getResourceAsStream( path );
+                loadDocumentController( path, bytes, docProps );
+            }
+            else if ( action .startsWith( "openURL-" ) )
+            {
+                Properties docProps = new Properties();
+                docProps .setProperty( "as.template", "true" );
+                String path = action .substring( "openURL-" .length() );
+                docProps .setProperty( "window.title", path );
+                if ( path .toLowerCase() .endsWith( ".vzome" ) ) {
+                    URI uri = new URI( path );
+                    URL url = uri .toURL();
+                    InputStream bytes = url .openStream();
+                    loadDocumentController( path, bytes, docProps );
+                }
+            }
+            else 
+            {
+                this .mErrors .reportError( UNKNOWN_ACTION, new Object[]{ action } );
 			}
 		} catch ( Exception e ) {
         	this .mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
@@ -356,7 +358,7 @@ public class ApplicationController extends DefaultController
     }
 
 	@Override
-    public String getProperty( String string )
+    public final String getProperty( String string )
     {
 		switch ( string ) {
 		
@@ -371,6 +373,7 @@ public class ApplicationController extends DefaultController
 		}
     }
 
+    @Override
     public Controller getSubController( final String name )
     {
     	return docControllers .get( name );
@@ -451,7 +454,7 @@ public class ApplicationController extends DefaultController
 
     public RenderedModel getSymmetryModel( Symmetry symm )
     {
-        return (RenderedModel) mSymmetryModels.get( symm );
+        return mSymmetryModels.get( symm );
     }
     
 	@Override
@@ -477,5 +480,4 @@ public class ApplicationController extends DefaultController
         return modelApp .getLights();
     }
 
-    static final Logger logger = Logger.getLogger( "org.vorthmann.zome.controller" );
 }
