@@ -956,7 +956,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 Writer out = new FileWriter( file );
         		Dimension size = this .modelCanvas .getSize();        		
             	try {
-                    String format = command .substring( "export." .length() );
+                    String format = command .substring( "export." .length() ) .toLowerCase();
                     Exporter3d exporter = documentModel .getNaiveExporter( format, mViewPlatform .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
                         exporter.doExport( file, file.getParentFile(), out, size.height, size.width );
