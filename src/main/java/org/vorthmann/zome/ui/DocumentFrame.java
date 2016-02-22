@@ -207,20 +207,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 //                    
             	case "save":
                     if ( mFile == null ) {
-                    	if ( saveAsAction == null ) {
-                    		saveAsAction = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, "save", "vZome", mController )
-                            {
-                                // this happens at the very end, after choose, save, set type
-                        		@Override
-                                protected void openApplication( File file )
-                                {
-                                    mFile = file;
-                                    String newTitle = file .getAbsolutePath();
-                                    mController .setProperty( "name", newTitle );
-                                    setTitle( newTitle );
-                                }
-                            };
-                    	}
                         saveAsAction .actionPerformed( e );
                     }
                     else {
@@ -480,6 +466,19 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         JPopupMenu.setDefaultLightWeightPopupEnabled( false );
         ToolTipManager ttm = ToolTipManager.sharedInstance();
         ttm .setLightWeightPopupEnabled( false );
+
+		this .saveAsAction = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, "save", "vZome", mController )
+        {
+            // this happens at the very end, after choose, save, set type
+    		@Override
+            protected void openApplication( File file )
+            {
+                mFile = file;
+                String newTitle = file .getAbsolutePath();
+                mController .setProperty( "name", newTitle );
+                setTitle( newTitle );
+            }
+        };
 
         this .setJMenuBar( new DocumentMenuBar( mController, this ) );
 

@@ -119,7 +119,7 @@ public class CameraController extends DefaultController
         boolean wasPerspective = model .isPerspective();
         boolean wasStereo = model .isStereo();
         float oldMag = model .getMagnification();
-        model = view;
+        model = new Camera( view );
         updateViewersTransformation();
         updateViewersProjection();
 
