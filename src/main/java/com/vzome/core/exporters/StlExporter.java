@@ -42,7 +42,6 @@ public class StlExporter extends Exporter3d
         }
 
         output = new PrintWriter( writer );
-        // format version 6, with explicit "balls" section, not a ball for every vertex
         output .println( "solid vcg" );
         
         for (RenderedManifestation rm : mModel) {

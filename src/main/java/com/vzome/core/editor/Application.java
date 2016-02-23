@@ -59,6 +59,7 @@ import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartsListExporter;
 import com.vzome.core.exporters.PdbExporter;
+import com.vzome.core.exporters.PlyExporter;
 import com.vzome.core.exporters.RulerExporter;
 import com.vzome.core.exporters.STEPExporter;
 import com.vzome.core.exporters.SecondLifeExporter;
@@ -449,6 +450,7 @@ public class Application
         this .exporters .put( "dxf", new DxfExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "pdb", new PdbExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "seg", new SegExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "ply", new PlyExporter( this .mColors, this .mLights ) );
         
         this .exporters .put( "history", new HistoryExporter( null, this .mColors, this .mLights, null ) );
     }
