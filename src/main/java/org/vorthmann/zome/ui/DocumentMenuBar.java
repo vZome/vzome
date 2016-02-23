@@ -128,6 +128,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu .add( createMenuItem( "STEP", "export.step" ) );
         submenu .add( createMenuItem( "VEF", "export.vef" ) );
         submenu .add( createMenuItem( "OFF", "export.off" ) );
+        submenu .add( createMenuItem( "PLY", "export.ply" ) );
         submenu .add( createMenuItem( "StL", "export.StL" ) );
         submenu .add( createMenuItem( "AutoCAD DXF", "export.dxf" ) );
         if ( controller .userHasEntitlement( "export.pdb" ) )
