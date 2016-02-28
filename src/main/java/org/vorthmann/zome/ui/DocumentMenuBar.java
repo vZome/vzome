@@ -28,9 +28,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 	
 	private static final int CONTROL_OPTION = InputEvent.CTRL_MASK | InputEvent.ALT_MASK;
 	
-    private final JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, pythonMenuItem;
-
-    private final JMenu import3dSubmenu;
+    private final JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, pythonMenuItem, importVEFItem;
 
 	private final ControlActions actions;
 	
@@ -105,31 +103,23 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu.addSeparator();
 
-        JMenu submenu = new JMenu( "Import 3D..." );
-        import3dSubmenu = submenu;
-//        import3dSubmenu.add( createFileMenuItem( "Zomod", true, "import.zomod", "zomod" ) );
-        import3dSubmenu.add( createMenuItem( "4D VEF projection", "import.vef" ) );
-        menu.add( import3dSubmenu );
-        import3dSubmenu .setEnabled( fullPower );
+        importVEFItem = createMenuItem( "Import vZome VEF...", "import.vef" );
+        menu .add( importVEFItem );
 
-        submenu = new JMenu( "Export Faithful 3D..." );
+        JMenu submenu = new JMenu( "Export 3D Rendering..." );
+        submenu .add( createMenuItem( "Collada DAE", "export.dae" ) );
         submenu .add( createMenuItem( "POV-Ray", "export.pov" ) );
         submenu .add( createMenuItem( "WebGL JSON", "export.json" ) );
         submenu .add( createMenuItem( "VRML", "export.vrml" ) );
-        if ( developerExtras )
-        {
-            submenu .addSeparator();
-            submenu.add( createMenuItem( "vZome history detail", "export.history" ) );
-        }
         menu.add( submenu );
         submenu .setEnabled( fullPower && canSave );
 
-        submenu = new JMenu( "Export Abstract 3D..." );
-        submenu .add( createMenuItem( "STEP", "export.step" ) );
-        submenu .add( createMenuItem( "VEF", "export.vef" ) );
-        submenu .add( createMenuItem( "OFF", "export.off" ) );
-        submenu .add( createMenuItem( "PLY", "export.ply" ) );
+        submenu = new JMenu( "Export 3D Geometry..." );
         submenu .add( createMenuItem( "StL", "export.StL" ) );
+        submenu .add( createMenuItem( "PLY", "export.ply" ) );
+        submenu .add( createMenuItem( "vZome VEF", "export.vef" ) );
+        submenu .add( createMenuItem( "STEP", "export.step" ) );
+        submenu .add( createMenuItem( "OFF", "export.off" ) );
         submenu .add( createMenuItem( "AutoCAD DXF", "export.dxf" ) );
         if ( controller .userHasEntitlement( "export.pdb" ) )
         {
@@ -139,20 +129,21 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         {
             submenu .add( createMenuItem( "Mark Stock .seg", "export.seg" ) );
         }
-        if ( controller .userHasEntitlement( "export.partslist" ) )
-        {
-            submenu.add( createMenuItem( "bill of materials", "export.partslist" ) );
-        }
+        menu.add( submenu );
+        submenu .setEnabled( fullPower && canSave );
+
         if ( developerExtras )
         {
+            submenu = new JMenu( "Export Developer Extras..." );
             submenu .addSeparator();
-            submenu.add( createMenuItem( "COLLADA digital asset exchange", "export.dae" ) );
             submenu.add( createMenuItem( "Second Life", "export.2life" ) );
             submenu.add( createMenuItem( "Maximum XYZ", "export.size" ) );
             submenu.add( createMenuItem( "vZome part geometry", "export.partgeom" ) );
+            submenu.add( createMenuItem( "vZome history detail", "export.history" ) );
+            submenu.add( createMenuItem( "bill of materials", "export.partslist" ) );
+            menu.add( submenu );
+            submenu .setEnabled( fullPower && canSave );
         }
-        menu.add( submenu );
-        submenu .setEnabled( fullPower && canSave );
 
         menu.addSeparator();
 
@@ -494,7 +485,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                 showToolsMenuItem .setEnabled( false );
                 pythonMenuItem .setEnabled( false );
                 zomicMenuItem .setEnabled( false );
-                import3dSubmenu .setEnabled( false );
+                importVEFItem .setEnabled( false );
             }
             else
             {                   
@@ -502,7 +493,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                 showToolsMenuItem .setEnabled( fullPower );
                 pythonMenuItem .setEnabled( fullPower );
                 zomicMenuItem .setEnabled( fullPower );
-                import3dSubmenu .setEnabled( fullPower );
+                importVEFItem .setEnabled( fullPower );
             }
         }
 	}
