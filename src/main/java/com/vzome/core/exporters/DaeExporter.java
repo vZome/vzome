@@ -2,26 +2,52 @@ package com.vzome.core.exporters;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.DOMConfiguration;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
+import org.xml.sax.SAXException;
+
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 
 public class DaeExporter extends Exporter3d
 {
+	private static final String DAE_TEMPLATE = "com/vzome/core/exporters/template-dae.xml";
+
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );	
 	
 	public DaeExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
@@ -37,102 +63,28 @@ public class DaeExporter extends Exporter3d
             ((DecimalFormat) FORMAT) .applyPattern( "0.0000" );
         }
 
-        output = new PrintWriter( writer );
-        
-        int vertexCount = 0;
-        int normalCount = 0;
-        int triangleCount = 0;
-        int lineCount = 0;
-        StringBuffer vertices = new StringBuffer();
-        StringBuffer normals = new StringBuffer();
-        StringBuffer triangles = new StringBuffer();
-        StringBuffer lines = new StringBuffer();
+        ColladaDocument doc = new ColladaDocument( DAE_TEMPLATE );
         
         for (RenderedManifestation rm : mModel) {
             Manifestation man = rm .getManifestation();
-            if ( man instanceof Panel )
+            if ( man instanceof Strut )
             {
-                Panel panel = (Panel) man;
-                RealVector norm = panel .getNormal() .toRealVector() .normalize();
-                int v0 = -1, v1 = -1, n0 = -1, n1 = -1;
-                for (AlgebraicVector av : panel) {
-                    RealVector vertex = av .toRealVector();
-                    // This scale factor corresponds to a vZome model that uses a long blue as the radius of a ball.
-                    //  norm squared of diameter in vZome: 1967.87  => diameter == 44.36
-                    //  nominal ball diameter in rZome: .700 in
-                    //  plastic shrinkage in rZome production: .994
-                    //    so actual ball diameter = .6958
-                    //  .6958 / 44.36 = 0.01568
-//                    vertex = vertex .scale( 0.01568d );
-                    if ( v0 == -1 )
-                    {
-                        v0 = vertexCount;
-                        n0 = normalCount;
-                    }
-                    else if ( v1 == -1 )
-                    {
-                        v1 = vertexCount;
-                        n1 = normalCount;
-                    }
-                    else
-                    {
-                        if ( triangleCount % 40 == 0 )
-                            triangles .append( "\n" );
-                        triangles .append( v0 + " " );
-                        triangles .append( n0 + " " );
-                        triangles .append( v1 + " " );
-                        triangles .append( n1 + " " );
-                        triangles .append( vertexCount + " " );
-                        triangles .append( normalCount + " " );
-                        v1 = vertexCount;
-                        ++ triangleCount;
-                    }
-                    if ( vertexCount % 20 == 0 )
-                        vertices .append( "\n" );
-                    vertices .append( FORMAT .format( vertex.x ) + " " );
-                    vertices .append( FORMAT .format( vertex.y ) + " " );
-                    vertices .append( FORMAT .format( vertex.z ) + " " );
-                    ++ vertexCount;
-                    if ( normalCount % 20 == 0 )
-                        normals .append( "\n" );
-                    normals .append( FORMAT .format( norm.x ) + " " );
-                    normals .append( FORMAT .format( norm.y ) + " " );
-                    normals .append( FORMAT .format( norm.z ) + " " );
-                    ++ normalCount;
+                String orientedShapeId = doc .addOrientedShape( rm );
+                AlgebraicVector location = man .getLocation();
+                if ( rm .reverseOrder() ) {
+                	// The strut is meant to be rendered "inside-out", but we can achieve the same affect just
+                	//   by offsetting it.
+                	location = ((Strut) man) .getEnd();
                 }
+            	doc .addShapeInstance( rm, orientedShapeId, location );
             }
             else
-                if ( man instanceof Strut )
-                {
-                    Strut strut = (Strut) man;
-                    int v0 = vertexCount++;
-                    if ( vertexCount % 20 == 0 )
-                        vertices .append( "\n" );
-                    RealVector vertex = strut .getLocation() .toRealVector();
-                    vertices .append( FORMAT .format( vertex.x ) + " " );
-                    vertices .append( FORMAT .format( vertex.y ) + " " );
-                    vertices .append( FORMAT .format( vertex.z ) + " " );
-
-                    int v1 = vertexCount++;
-                    if ( vertexCount % 20 == 0 )
-                        vertices .append( "\n" );
-                    vertex = strut .getEnd() .toRealVector();
-                    vertices .append( FORMAT .format( vertex.x ) + " " );
-                    vertices .append( FORMAT .format( vertex.y ) + " " );
-                    vertices .append( FORMAT .format( vertex.z ) + " " );
-                    if ( lineCount % 40 == 0 )
-                        lines .append( "\n" );
-                    lines .append( v0 + " " );
-                    lines .append( v1 + " " );
-                    ++ lineCount;
-                }
+            {
+                String shapeId = doc .addShape( rm );
+            	doc .addShapeInstance( rm, shapeId, man .getLocation() );
+            }
         }
-        output .println( vertexCount + " vertices " + vertices );
-        output .println( normalCount + " normals " + normals );
-        output .println( lineCount + " lines " + lines );
-        output .println( triangleCount + " triangles " + triangles );
-        
-		output .flush();
+        doc .write( writer );
 	}
 		
     @Override
@@ -145,6 +97,312 @@ public class DaeExporter extends Exporter3d
     public String getContentType()
     {
         return "model/vnd.collada+xml";
+    }
+
+
+    private static class ColladaDocument
+    {
+    	private Document doc;
+    	private XPath xpath;
+    	private Element visual_scene_node_template, oriented_shape_template, geometry_template, shape_template,
+    					visual_scene, library_nodes, library_geometries,
+    					material_template, library_materials, effect_template, library_effects;
+    	private int instanceNum = 0, shapeNum = 0, colorNum = 0;
+    	private Set<String> orientedShapeIds = new HashSet<>();
+    	private Map<Polyhedron,String> shapeIds = new HashMap<>();
+    	private Map<Color,String> colorIds = new HashMap<>();
+
+        ColladaDocument( String templatePath )
+        {
+			super();
+
+		    InputStream bytes = getClass() .getClassLoader() .getResourceAsStream( templatePath );
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//            factory .setNamespaceAware(true);
+            DocumentBuilder builder;
+            try {
+                builder = factory.newDocumentBuilder();
+                doc = builder .parse( bytes );
+
+                // Create XPathFactory object
+                XPathFactory xpathFactory = XPathFactory.newInstance();
+
+                // Create XPath object
+                xpath = xpathFactory.newXPath();
+                
+                visual_scene_node_template = (Element) xpath .evaluate( "//node[@id='instance']", doc .getDocumentElement(), XPathConstants.NODE );
+                visual_scene = (Element) visual_scene_node_template .getParentNode();
+                visual_scene .removeChild( visual_scene_node_template );
+
+                oriented_shape_template = (Element) xpath .evaluate( "//node[@id='oriented-shape']", doc .getDocumentElement(), XPathConstants.NODE );
+                library_nodes = (Element) oriented_shape_template .getParentNode();
+                library_nodes .removeChild( oriented_shape_template );
+
+                shape_template = (Element) xpath .evaluate( "//node[@id='shape-node']", doc .getDocumentElement(), XPathConstants.NODE );
+
+                geometry_template = (Element) xpath .evaluate( "//geometry[@id='shape-geom']", doc .getDocumentElement(), XPathConstants.NODE );
+                library_geometries = (Element) geometry_template .getParentNode();
+                library_geometries .removeChild( geometry_template );
+
+                material_template = (Element) xpath .evaluate( "//material[@id='color']", doc .getDocumentElement(), XPathConstants.NODE );
+                library_materials = (Element) material_template .getParentNode();
+                library_materials .removeChild( material_template );
+
+                effect_template = (Element) xpath .evaluate( "//effect[@id='color-fx']", doc .getDocumentElement(), XPathConstants.NODE );
+                library_effects = (Element) effect_template .getParentNode();
+                library_effects .removeChild( effect_template );
+
+            } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
+                e .printStackTrace();
+            } finally {
+                try {
+					bytes .close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+            }
+		}
+
+        String addColor( RenderedManifestation rm )
+        {
+        	Color color = rm .getColor();
+        	if ( color == null )
+        		color = Color .WHITE;
+        	String colorId = colorIds .get( color );
+        	if ( colorId == null)
+        	{
+            	float[] rgb = new float[3];
+            	color .getRGBColorComponents( rgb );
+            	StringBuffer sb = new StringBuffer();
+            	for ( float f : rgb ) {
+					sb .append( f + " " );
+				}
+            	sb .append( "1.0" ); // opaque
+
+            	colorId = "color" + Integer .toString( colorNum++ );
+        		String effectId = colorId + "-fx";
+
+        		Element material = (Element) material_template .cloneNode( true );
+        		material .setAttribute( "id", colorId );
+				library_materials .appendChild( material );
+        		Element effect = (Element) effect_template .cloneNode( true );
+        		effect .setAttribute( "id", effectId );
+				library_effects .appendChild( effect );
+                try {
+    				Element instance_effect = (Element) xpath .evaluate( "instance_effect", material, XPathConstants.NODE );
+    				instance_effect .setAttribute( "url", "#" + effectId );
+    				Element diffuse_color = (Element) xpath .evaluate( "profile_COMMON//diffuse/color", effect, XPathConstants.NODE );
+    				diffuse_color .setTextContent( sb .toString() );
+                } catch ( XPathExpressionException e ) {
+    				e.printStackTrace();
+    			}
+                colorIds .put( color, colorId );
+        	}
+			return colorId;
+		}
+
+        String addShape( RenderedManifestation rm )
+        {
+        	String colorId = addColor( rm );
+        	Polyhedron shape = rm .getShape();
+        	String shapeId = shapeIds .get( shape );
+        	if ( shapeId == null)
+        	{
+                int vertexCount = 0;
+                int normalCount = 0;
+                int triangleCount = 0;
+                StringBuffer vertices = new StringBuffer();
+                StringBuffer normals = new StringBuffer();
+                StringBuffer triangles = new StringBuffer();
+                
+                for ( AlgebraicVector av : shape .getVertexList() )
+                {
+                    RealVector vertex = av .toRealVector();
+                    vertices .append( FORMAT .format( vertex.x ) + " " );
+                    vertices .append( FORMAT .format( vertex.y ) + " " );
+                    vertices .append( FORMAT .format( vertex.z ) + " " );
+                    ++ vertexCount;
+                }
+                boolean reverseFaces = rm .reverseOrder();
+                for (Polyhedron.Face face : shape .getFaceSet())
+                {
+                	int arity = face .size();
+                    int v0 = -1, v1 = -1;
+                	for ( int j = 0; j < arity; j++ ){
+                		Integer index = face .get( /*reverseFaces? arity-j-1 :*/ j );
+                        if ( v0 == -1 )
+                        {
+                            v0 = index;
+                        }
+                        else if ( v1 == -1 )
+                        {
+                            v1 = index;
+                        }
+                        else
+                        {
+//                            if ( triangleCount % 40 == 0 )
+//                                triangles .append( "\n" );
+                            triangles .append( v0 + " " );
+                            triangles .append( normalCount + " " );
+                            triangles .append( v1 + " " );
+                            triangles .append( normalCount + " " );
+                            triangles .append( index + " " );
+                            triangles .append( normalCount + " " );
+                            v1 = index;
+                            ++ triangleCount;
+                        }
+//                        if ( vertexCount % 20 == 0 )
+//                            vertices .append( "\n" );
+//                        if ( normalCount % 20 == 0 )
+//                            normals .append( "\n" );
+                	}
+                	RealVector norm = face .getNormal() .toRealVector() .normalize();
+                    normals .append( FORMAT .format( norm.x ) + " " );
+                    normals .append( FORMAT .format( norm.y ) + " " );
+                    normals .append( FORMAT .format( norm.z ) + " " );
+                    ++ normalCount;
+                }
+        		
+        		shapeId = "shape" + Integer .toString( shapeNum++ );
+        		String geomId = shapeId + "-geom";
+        		String positionsId = shapeId + "-positions";
+        		String positionsArrayId = positionsId + "-array";
+        		String normalsId = shapeId + "-normals";
+        		String normalsArrayId = normalsId + "-array";
+        		String verticesId = shapeId + "-vertices";
+        		String materialId = shapeId + "-material";
+
+        		Element geometry = (Element) geometry_template .cloneNode( true );
+				geometry .setAttribute( "id", geomId );
+				library_geometries .appendChild( geometry );
+        		Element shape_node = (Element) shape_template .cloneNode( true );
+				shape_node .setAttribute( "id", shapeId );
+				library_nodes .appendChild( shape_node );
+                try {
+    				Element source = (Element) xpath .evaluate( "mesh/source[@name='position']", geometry, XPathConstants.NODE );
+    				source .setAttribute( "id", positionsId );
+    				Element float_array = (Element) xpath .evaluate( "float_array", source, XPathConstants.NODE );
+    				float_array .setAttribute( "id", positionsArrayId );
+    				float_array .setAttribute( "count", "" + ( 3 * vertexCount ) );
+    				float_array .setTextContent( vertices .toString() );
+    				Element accessor = (Element) xpath .evaluate( "technique_common/accessor", source, XPathConstants.NODE );
+    				accessor .setAttribute( "source", "#" +  positionsArrayId );
+    				accessor .setAttribute( "count", "" + vertexCount );
+
+    				source = (Element) xpath .evaluate( "mesh/source[@name='normal']", geometry, XPathConstants.NODE );
+    				source .setAttribute( "id", normalsId );
+    				float_array = (Element) xpath .evaluate( "float_array", source, XPathConstants.NODE );
+    				float_array .setAttribute( "id", normalsArrayId );
+    				float_array .setAttribute( "count", "" + ( 3 * normalCount ) );
+    				float_array .setTextContent( normals .toString() );
+    				accessor = (Element) xpath .evaluate( "technique_common/accessor", source, XPathConstants.NODE );
+    				accessor .setAttribute( "source", "#" +  normalsArrayId );
+    				accessor .setAttribute( "count", "" + normalCount );
+
+    				Element vertices_node = (Element) xpath .evaluate( "mesh/vertices", geometry, XPathConstants.NODE );
+    				vertices_node .setAttribute( "id", verticesId );
+    				Element input = (Element) xpath .evaluate( "input[@semantic='POSITION']", vertices_node, XPathConstants.NODE );
+    				input .setAttribute( "source", "#" + positionsId );
+
+    				Element triangles_node = (Element) xpath .evaluate( "mesh/triangles", geometry, XPathConstants.NODE );
+    				triangles_node .setAttribute( "count", triangleCount + "" );
+    				triangles_node .setAttribute( "material", materialId );
+    				input = (Element) xpath .evaluate( "input[@semantic='VERTEX']", triangles_node, XPathConstants.NODE );
+    				input .setAttribute( "source", "#" + verticesId );
+    				input = (Element) xpath .evaluate( "input[@semantic='NORMAL']", triangles_node, XPathConstants.NODE );
+    				input .setAttribute( "source", "#" + normalsId );
+    				Element p = (Element) xpath .evaluate( "p", triangles_node, XPathConstants.NODE );
+    				p .setTextContent( triangles .toString() );
+
+                	Element instance_geometry = (Element) xpath .evaluate( "instance_geometry", shape_node, XPathConstants.NODE );
+    				instance_geometry .setAttribute( "url", "#" + geomId );
+                	Element instance_material = (Element) xpath .evaluate( "bind_material//instance_material", instance_geometry, XPathConstants.NODE );
+                	instance_material .setAttribute( "symbol", materialId );
+                	instance_material .setAttribute( "target", "#" + colorId );
+
+                } catch ( XPathExpressionException e ) {
+    				e.printStackTrace();
+    			}
+                shapeIds .put( shape, shapeId );
+        	}
+			return shapeId;
+		}
+
+        String addOrientedShape( RenderedManifestation rm )
+        {
+        	String shapeId = addShape( rm );
+        	String orientedShapeId = shapeId + "-" + rm .getStrutZone();
+        	if ( ! orientedShapeIds .contains( orientedShapeId ) )
+        	{
+        		Element oriented_shape = (Element) oriented_shape_template .cloneNode( true );
+                try {
+                	StringBuffer sb = new StringBuffer();
+    				Element matrix = (Element) xpath .evaluate( "matrix", oriented_shape, XPathConstants.NODE );
+    				AlgebraicMatrix transform = rm .getOrientation();
+    				if ( rm .reverseOrder() )
+    					transform = transform .negate(); // we're using the offset trick instead... see doExport() above
+    				for (int i = 0; i < 3; i++) {
+        				for (int j = 0; j < 3; j++) {
+    						AlgebraicNumber num = transform .getElement( i, j );
+    						sb .append( FORMAT .format( num .evaluate() ) + " " );
+    					}
+        				sb .append( "0.0 " );
+					}
+    				sb .append( "0.0 0.0 0.0 1.0" );
+    				matrix .setTextContent( sb .toString() );
+    				Element instance_node = (Element) xpath .evaluate( "instance_node", oriented_shape, XPathConstants.NODE );
+    				instance_node .setAttribute( "url", "#" + shapeId );
+    				oriented_shape .setAttribute( "id", orientedShapeId );
+    				library_nodes .appendChild( oriented_shape );
+    			} catch ( XPathExpressionException e ) {
+    				e.printStackTrace();
+    			}
+                orientedShapeIds .add( orientedShapeId );
+        	}
+			return orientedShapeId;
+		}
+
+		void addShapeInstance( RenderedManifestation rm, String shapeId, AlgebraicVector location )
+        {
+            Element visual_scene_node = (Element) visual_scene_node_template .cloneNode( true );
+            try {
+				Element translate = (Element) xpath .evaluate( "translate", visual_scene_node, XPathConstants.NODE );
+            	if ( location == null )
+            		visual_scene_node .removeChild( translate );
+            	else
+    				translate .setTextContent( location .toRealVector() .spacedString() );
+				Element instance_node = (Element) xpath .evaluate( "instance_node", visual_scene_node, XPathConstants.NODE );
+				instance_node .setAttribute( "url", "#" + shapeId );
+				visual_scene_node .setAttribute( "id", "instance" + Integer .toString( instanceNum++ ) );
+				visual_scene .appendChild( visual_scene_node );
+			} catch ( XPathExpressionException e ) {
+				e.printStackTrace();
+			}
+        }
+
+		void write( Writer writer )
+        {
+        	// Pretty-prints a DOM document to XML using DOM Load and Save's LSSerializer.
+        	// Note that the "format-pretty-print" DOM configuration parameter can only be set in JDK 1.6+.
+        	DOMImplementation domImplementation = doc .getImplementation();
+        	if (domImplementation .hasFeature("LS", "3.0") && domImplementation .hasFeature( "Core", "2.0" ) ) {
+        		DOMImplementationLS domImplementationLS = (DOMImplementationLS) domImplementation .getFeature( "LS", "3.0" );
+        		LSSerializer lsSerializer = domImplementationLS .createLSSerializer();
+        		DOMConfiguration domConfiguration = lsSerializer .getDomConfig();
+        		if (domConfiguration .canSetParameter( "format-pretty-print", Boolean.TRUE )) {
+        			lsSerializer .getDomConfig() .setParameter( "format-pretty-print", Boolean.TRUE );
+        			LSOutput lsOutput = domImplementationLS .createLSOutput();
+        			lsOutput .setEncoding( "UTF-8" );
+        			lsOutput .setCharacterStream( writer );
+        			lsSerializer.write( doc, lsOutput );
+        		} else {
+        			throw new RuntimeException("DOMConfiguration 'format-pretty-print' parameter isn't settable.");
+        		}
+        	} else {
+        		throw new RuntimeException("DOM 3.0 LS and/or DOM 2.0 Core not supported.");
+        	}
+        }
     }
 }
 

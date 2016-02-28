@@ -47,6 +47,7 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentCrossProduct;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
+import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
@@ -1060,7 +1061,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         else if ( format.equals( "opengl" ) )
         	return new OpenGLExporter( view, colors, lights, currentSnapshot );
         else if ( format.equals( "dae" ) )
-        	return new VRMLExporter( view, colors, lights, currentSnapshot );
+        	return new DaeExporter( view, colors, lights, currentSnapshot );
         else
         	return null;
     }
