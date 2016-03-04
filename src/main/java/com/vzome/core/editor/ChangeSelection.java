@@ -11,9 +11,12 @@ import org.w3c.dom.Element;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.math.DomUtils;
+import com.vzome.core.model.Connector;
 import com.vzome.core.model.Group;
 import com.vzome.core.model.GroupElement;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
+import com.vzome.core.model.Strut;
 
 public abstract class ChangeSelection extends SideEffects
 {
@@ -23,14 +26,19 @@ public abstract class ChangeSelection extends SideEffects
     
     private boolean groupingDoneInSelection;
 
-    private static final Logger logger = Logger.getLogger( "com.vzome.core.editor.ChangeSelection" );
+    protected static final Logger logger = Logger.getLogger( "com.vzome.core.editor.ChangeSelection" );
+
+    ChangeSelection( Selection selection )
+    {
+        this(selection, false);
+    }
 
     ChangeSelection( Selection selection, boolean groupInSelection )
     {
         mSelection = selection;
         groupingDoneInSelection = groupInSelection;
     }
-    
+
     protected void getXmlAttributes( Element element ) {}
     
     protected void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Failure {}
@@ -224,4 +232,109 @@ public abstract class ChangeSelection extends SideEffects
             return result;
         }
     }
+
+    ////////////////////////
+    /// getSelected...
+    ////////////////////////
+
+    protected Manifestations.ConnectorIterator getSelectedConnectors() {
+        return Manifestations.getConnectors(mSelection);
+    }
+
+    protected Manifestations.StrutIterator getSelectedStruts() {
+        return Manifestations.getStruts(mSelection);
+    }
+
+    protected Manifestations.PanelIterator getSelectedPanels() {
+        return Manifestations.getPanels(mSelection);
+    }
+
+    ////////////////////////
+    /// getLastSelected...
+    ////////////////////////
+
+    public Manifestation getLastSelectedManifestation() {
+        Manifestation last = null;
+        for( Manifestation man : mSelection ) {
+            last = man;
+        }
+        return last;
+    }
+
+    public Connector getLastSelectedConnector() {
+        Connector last = null;
+        for( Connector connector : getSelectedConnectors() ) {
+            last = connector;
+        }
+        return last;
+    }
+
+    public Strut getLastSelectedStrut() {
+        Strut last = null;
+        for( Strut strut : getSelectedStruts() ) {
+            last = strut;
+        }
+        return last;
+    }
+
+    public Panel getLastSelectedPanel() {
+        Panel last = null;
+        for( Panel panel : getSelectedPanels() ) {
+            last = panel;
+        }
+        return last;
+    }
+
+    ////////////////////////
+    // unselect...
+    ////////////////////////
+
+    public boolean unselectAll() {
+        boolean anySelected = false;
+        for( Manifestation man : mSelection ) {
+            anySelected = true;
+            this.unselect(man);
+        }
+        if(anySelected) {
+            redo();
+        }
+        return anySelected;
+    }
+
+    public boolean unselectConnectors() {
+        boolean anySelected = false;
+        for( Connector connector : getSelectedConnectors() ) {
+            anySelected = true;
+            this.unselect(connector);
+        }
+        if(anySelected) {
+            redo();
+        }
+        return anySelected;
+    }
+
+    public boolean unselectStruts() {
+        boolean anySelected = false;
+        for( Strut strut : getSelectedStruts() ) {
+            anySelected = true;
+            this.unselect(strut);
+        }
+        if(anySelected) {
+            redo();
+        }
+        return anySelected;
+    }
+
+    public boolean unselectPanels() {
+        boolean anySelected = false;
+        for( Panel panel : getSelectedPanels() ) {
+            anySelected = true;
+            this.unselect(panel);
+        }
+        if(anySelected) {
+            redo();
+        }
+        return anySelected;
+    }
+
 }

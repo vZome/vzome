@@ -98,13 +98,27 @@ public class EditorModel
             return new NoOp();
     }
 
+    public UndoableEdit selectAutomaticStruts(SymmetrySystem symmetry)
+    {
+        return new SelectAutomaticStruts(symmetry, mSelection, mRealized );
+    }
+
+    public UndoableEdit selectCollinear()
+    {
+        return new SelectCollinear(mSelection, mRealized );
+    }
+
+	public UndoableEdit selectParallelStruts(SymmetrySystem symmetry) {
+		return new SelectParallelStruts(symmetry, mSelection, mRealized);
+	}
+
     public UndoableEdit invertSelection()
     {
         return new InvertSelection( mSelection, mRealized, false );
         // always a change, by definition
     }
     
-    private RealizedModel mRealized;
+    private final RealizedModel mRealized;
 
     protected Selection mSelection;
     

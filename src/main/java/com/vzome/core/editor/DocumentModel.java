@@ -52,7 +52,6 @@ import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
-import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
@@ -97,7 +96,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	
 	private final Map<String, Tool> tools = new HashMap<>();
 	
-	private Command.FailureChannel failures;
+	private final Command.FailureChannel failures;
 
 	private int changes = 0;
 	
@@ -120,11 +119,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
     private int numSnapshots = 0;
 
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
 
 	private final Map<String, Object> commands; // TODO: DJH: Don't allow non-Command objects in this Map.
 
-    private Map<String,SymmetrySystem> symmetrySystems = new HashMap<>();
+    private final Map<String,SymmetrySystem> symmetrySystems = new HashMap<>();
 
 	private final Lights sceneLighting;
 
@@ -363,6 +362,20 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
             edit = new SelectSimilarSizeStruts( symmetry, null, null, this .mSelection, this .mRealizedModel );
 		}
+		else if ( "SelectParallelStruts".equals( name ) )
+		{
+		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
+            edit = new SelectParallelStruts( symmetry, this .mSelection, this .mRealizedModel );
+		}
+		else if ( "SelectAutomaticStruts".equals( name ) )
+		{
+		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
+            edit = new SelectAutomaticStruts( symmetry, this .mSelection, this .mRealizedModel );
+		}
+		else if ( "SelectCollinear".equals( name ) )
+		{
+            edit = new SelectCollinear( this .mSelection, this .mRealizedModel );
+		}
 		else if ( "ValidateSelection".equals( name ) )
 			edit = new ValidateSelection( this.mSelection );
 
@@ -487,6 +500,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = mEditorModel.unselectStruts();
         else if ( action.equals( "selectNeighbors" ) )
             edit = mEditorModel.selectNeighbors();
+        else if ( action.equals( "SelectAutomaticStruts" ) )
+            edit = mEditorModel.selectAutomaticStruts(symmetrySystem);
+        else if ( action.equals( "SelectCollinear" ) )
+            edit = mEditorModel.selectCollinear();
+        else if ( action.equals( "SelectParallelStruts" ) )
+            edit = mEditorModel.selectParallelStruts(symmetrySystem);
         else if ( action.equals( "invertSelection" ) )
             edit = mEditorModel.invertSelection();
         else if ( action.equals( "group" ) )
@@ -635,6 +654,18 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		}
 		return new RealVector( 0, 0, 0 );
 	}
+
+    public void selectCollinear( Strut strut )
+    {
+        UndoableEdit edit = new SelectCollinear( mSelection, mRealizedModel, strut );
+        this .performAndRecord( edit );
+    }
+    
+    public void selectParallelStruts( Strut strut )
+    {
+        UndoableEdit edit = new SelectParallelStruts( this.symmetrySystem, mSelection, mRealizedModel, strut );
+        this .performAndRecord( edit );
+    }
 
     public void selectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
