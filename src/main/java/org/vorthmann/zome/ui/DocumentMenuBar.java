@@ -195,8 +195,14 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .add( enableIf( isEditor, createMenuItem( "Select Neighbors", ( "selectNeighbors" ), KeyEvent.VK_A, COMMAND_OPTION ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Invert Selection", ( "invertSelection" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Deselect Balls", ( "unselectBalls" ) ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Deselect Struts", ( "unselectStruts" ) ) ) );
-        // menu .add( createMenuItem( "Select First Octant", getExclusiveAction( "test.pick.cube" ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Deselect Struts and Panels", ( "unselectStruts" ) ) ) );
+		
+		submenu = new JMenu("Select...");
+		submenu.add( enableIf( isEditor, createMenuItem( "All Collinear", ( "SelectCollinear" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Parallel Struts", ( "SelectParallelStruts" ) ) ) );
+		submenu.add( enableIf( isEditor, createMenuItem( "Automatic Struts", ( "SelectAutomaticStruts" ) ) ) );
+        // submenu .add( createMenuItem( "First Octant", getExclusiveAction( "test.pick.cube" ) ) );
+		menu.add(submenu);
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Group", ( "group" ), KeyEvent.VK_G, COMMAND ) ) );

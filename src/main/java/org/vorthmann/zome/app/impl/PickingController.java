@@ -48,6 +48,8 @@ public class PickingController extends DefaultController implements Controller
         case "setWorkingPlane":
         case "lookAtBall":
         case "setBuildOrbitAndLength":
+        case "selectCollinear":
+        case "selectParallelStruts":
         case "selectSimilarSize":
         	this .delegate .doManifestationAction( this .pickedManifestation, action );
         	break;
@@ -84,6 +86,8 @@ public class PickingController extends DefaultController implements Controller
 
 			case "setSymmetryAxis":
 			case "setWorkingPlaneAxis":
+			case "selectCollinear":
+			case "selectParallelStruts":
 			case "selectSimilarSize":
 			case "setBuildOrbitAndLength":
             	result[ i ] = pickedManifestation instanceof Strut;
