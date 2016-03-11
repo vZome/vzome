@@ -381,6 +381,13 @@ public class ApplicationController extends DefaultController
 
     private void newDocumentController( final String name, final DocumentController newest )
     {
+    	this .registerDocumentController( name, newest );
+        // trigger window creation in the UI
+		this .properties() .firePropertyChange( "newDocument", null, newest );
+    }
+
+    private void registerDocumentController( final String name, final DocumentController newest )
+    {
         this .docControllers .put( name, newest );
         newest .addPropertyListener( new PropertyChangeListener()
         {
@@ -391,7 +398,9 @@ public class ApplicationController extends DefaultController
 
 				case "name":
 			        docControllers .remove( name );
-			        docControllers .put( (String) evt .getNewValue(), newest );
+			        // important to re-register under the new name, AND get a new listener, or removes won't work
+			        newest .removePropertyListener( this );
+			        registerDocumentController( (String) evt .getNewValue(), newest );
 					break;
 
 				case "visible":
@@ -408,8 +417,6 @@ public class ApplicationController extends DefaultController
 				}
 			}
 		});
-        // trigger window creation in the UI
-		this .properties() .firePropertyChange( "newDocument", null, newest );
     }
 
     private RenderedModel loadModelPanels( String path )
