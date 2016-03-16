@@ -19,49 +19,51 @@ import org.w3c.dom.Element;
  */
 public class SelectCollinear extends ChangeManifestations {
 
-    private AlgebraicVector vector1;
-    private AlgebraicVector vector2;
-    private boolean vectorsFromSelection = false;
+    private AlgebraicVector vector1 = null;
+    private AlgebraicVector vector2 = null;
 
 	/**
-	* Called by the context menu. Input is the strut associated with the context menu.
+	* Called by the context menu. 
+    * Inputs are the two endpoints of the strut associated with the context menu.
 	*/
     public SelectCollinear(Selection selection, RealizedModel model, Strut strut) {
         super(selection, model);
-        this.vector1 = strut.getLocation();
-        this.vector2 = strut.getEnd();
-        vectorsFromSelection = false;
+        vector1 = strut.getLocation();
+        vector2 = strut.getEnd();
     }
 
 	/**
 	* Called by the main menu and when opening a file.
-    * Input is either the last selected strut if present, or else the last two selected balls.
+    * Inputs are either the two endpoints of the last selected strut if there is one,
+    * or else the location of the last two selected balls.
+    * The selection may be empty at the time the c'tor is called,
+    * specifically when de-serializing from a file, but in any case,
+    * it will be populated by the time perform() is called.
+    * Therefore, don't rely on any contents of selection in any UndoableEdit derived c'tor.
+    * Rather, save a reference to it for use later in perform().
 	*/
     public SelectCollinear(Selection selection, RealizedModel model) {
         super(selection, model);
-        AlgebraicVector v1 = null;
-        AlgebraicVector v2 = null;
-        Strut lastStrut = null;
-        for (Strut strut : getSelectedStruts()) {
-            lastStrut = strut;
-        }
-        if (lastStrut != null) {
-            v1 = lastStrut.getLocation();
-            v2 = lastStrut.getEnd();
-        } else {
-            for (Connector ball : getSelectedConnectors()) {
-                // use the last two balls selected if a strut was not selected
-                v1 = v2;
-                v2 = ball.getLocation();
-            }
-        }
-        vector1 = v1;
-        vector2 = v2;
-        vectorsFromSelection = (vector1 != null && vector2 != null);
+        vector1 = null;
+        vector2 = null;
     }
 
     @Override
     public void perform() throws Command.Failure {
+        if(vector1 == null || vector2 == null) {
+            Strut lastStrut = getLastSelectedStrut();
+            if (lastStrut != null) {
+                vector1 = lastStrut.getLocation();
+                vector2 = lastStrut.getEnd();
+            } else {
+                for (Connector ball : getSelectedConnectors()) {
+                    // use the last two balls selected if no strut was selected
+                    vector1 = vector2;
+                    vector2 = ball.getLocation();
+                }
+            }
+        }
+
         if (vector1 == null || vector2 == null) {
             throw new Failure("select a strut or two balls as a reference.");
         }
@@ -126,24 +128,26 @@ public class SelectCollinear extends ChangeManifestations {
         return "SelectCollinear";
     }
 
-    private static final String strVectorsFromSelectionATTR = "vectorsFromSelection";
-
     @Override
     protected void getXmlAttributes(Element element) {
-        DomUtils.addAttribute(element, strVectorsFromSelectionATTR, Boolean.toString(vectorsFromSelection));
-        if( !vectorsFromSelection ) {
-            // don't persist the vectors if they are derived from the selection
-            DomUtils.addAttribute(element, "vector1", vector1.toParsableString());
-            DomUtils.addAttribute(element, "vector2", vector2.toParsableString());
-        }
+        // AlgebraicVector.toString() seems to be the counterpart to format.parseRationalVector()
+        // in LoadVEF.getXmlAttributes() and CommandImportVEFData.getXml(),
+        // but writing in that format doesn't seem to be re-readable here
+        // so I added a new AlgebraicVector.toParsableString() method.
+        // TODO: DJH: Test LoadVEF.getXmlAttributes() and CommandImportVEFData.getXml()
+        // to be sure they can actually read the AlgebraicNumber formats that they write.
+        // If not, then have them use AlgebraicVector.toParsableString() as well.
+        // CommandImportVEFData has a note about quaternionVector only being read from XML
+        // so I wonder if it's ever been written out to XML and re-read
+        // or if it's only ever been manually added to the XML in a readable format 
+        // and then read in without this issue ever showing up.
+        DomUtils.addAttribute(element, "vector1", vector1.toParsableString());
+        DomUtils.addAttribute(element, "vector2", vector2.toParsableString());
     }
 
     @Override
     protected void setXmlAttributes(Element xml, XmlSaveFormat format) throws Failure {
-        vectorsFromSelection = Boolean.parseBoolean(xml.getAttribute(strVectorsFromSelectionATTR));
-        if(!vectorsFromSelection) {
-            this.vector1 = format.parseRationalVector(xml, "vector1");
-            this.vector2 = format.parseRationalVector(xml, "vector2");
-        }
+        vector1 = format.parseRationalVector(xml, "vector1");
+        vector2 = format.parseRationalVector(xml, "vector2");
     }
 }

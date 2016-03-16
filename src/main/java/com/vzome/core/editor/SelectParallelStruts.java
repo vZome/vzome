@@ -6,7 +6,6 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 import org.w3c.dom.Element;
@@ -30,15 +29,6 @@ public class SelectParallelStruts extends ChangeManifestations
     {
         super( selection, model );
         this.symmetry = symmetry;
-        Strut lastStrut = getLastSelectedStrut();
-        if (lastStrut != null) {
-            AlgebraicVector offset = lastStrut.getOffset();
-            this.orbit = symmetry.getAxis(offset).getOrbit();
-            this.axis = orbit.getAxis(offset);
-        } else {
-            this.orbit = null;
-            this.axis = null;
-        }
     }
 
     /**
@@ -66,6 +56,15 @@ public class SelectParallelStruts extends ChangeManifestations
     // 2) Main menu with balls and/or panels selected but no strut selected
     @Override
     public void perform() throws Failure {
+        if (orbit == null || axis == null) {
+            Strut lastStrut = getLastSelectedStrut();
+            if (lastStrut != null) {
+                AlgebraicVector offset = lastStrut.getOffset();
+                this.orbit = symmetry.getAxis(offset).getOrbit();
+                this.axis = orbit.getAxis(offset);
+            }
+        }
+
         if (orbit == null || axis == null) {
             throw new Failure("select a reference strut.");
         }
@@ -99,22 +98,17 @@ public class SelectParallelStruts extends ChangeManifestations
         if ( orbit != null )
             DomUtils .addAttribute( element, "orbit", orbit .getName() );
         if ( axis != null )
-            axis.getXML(element);
+            XmlSaveFormat .serializeAxis( element, "symm", "dir", "index", "sense", axis );
     }
 
+    // Note that symmetry is read from the XML and passed to the c'tor
+    // unlike the normal pattern of deserializing the XML here.
+    // See the explanation in DocumentModel.createEdit()
     @Override
     protected void setXmlAttributes( Element xml, XmlSaveFormat format )
             throws Failure
     {
         orbit = symmetry .getOrbits() .getDirection( xml .getAttribute( "orbit" ) );
-        if(orbit == null) {
-            throw new Failure("Can't read orbit from xml.");
-        }
-        String strSense = xml.getAttribute("sense");
-        int sense = (strSense != null && "minus".equals(strSense.toLowerCase()))
-                ? Symmetry.MINUS
-                : Symmetry.PLUS;
-        int index = Integer.parseInt(xml.getAttribute("index"));
-        this.axis = orbit.getAxis(sense, index);
+        axis = format .parseAxis( xml, "symm", "dir", "index", "sense" );
     }
 }

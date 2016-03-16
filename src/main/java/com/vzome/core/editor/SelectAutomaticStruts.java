@@ -1,6 +1,7 @@
 package com.vzome.core.editor;
 
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
@@ -17,7 +18,8 @@ public class SelectAutomaticStruts extends ChangeManifestations {
 		super(selection, model);
 		this.symmetry = symm;
 	}
-	
+
+    // See the note in SelectSimilarSizeStruts regarding different symmetries. The same logic applies here.
 	@Override
 	public void perform() throws Failure {
         unselectAll();
@@ -41,5 +43,16 @@ public class SelectAutomaticStruts extends ChangeManifestations {
         if (symmetry != null) {
             DomUtils.addAttribute(element, "symmetry", symmetry.getName());
         }
+    }
+
+    // Note that symmetry is read from the XML and passed to the c'tor
+    // unlike the normal pattern of deserializing the XML here.
+    // See the explanation in DocumentModel.createEdit()
+    // There's really no need to override setXmlAttributes in this case
+    // since there is nothing else to deserialize. but it does serve as a reminder
+    // if this code is used as a pattern for another subclass of ChangeSelection.
+    @Override
+    protected void setXmlAttributes(Element xml, XmlSaveFormat format)
+            throws Failure {
     }
 }

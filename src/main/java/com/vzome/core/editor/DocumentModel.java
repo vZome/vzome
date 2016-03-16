@@ -359,16 +359,25 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 		else if ( "SelectSimilarSize".equals( name ) )
 		{
+            /*
+            The normal pattern is to have the edits deserialize their own parameters from the XML in setXmlAttributes()
+            but in the case of persisting the symmetry, it must be read here and passed into the c'tor
+            since this is where the map from a name to an actual SymmetrySystem is maintained.
+            These edits are still responsible for saving the symmetry name to XML in getXmlAttributes().
+            Also see the comments of commit # 8c8cb08a1e4d71f91f24669b203fef0378230b19 on 3/8/2015
+            */
 		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
             edit = new SelectSimilarSizeStruts( symmetry, null, null, this .mSelection, this .mRealizedModel );
 		}
 		else if ( "SelectParallelStruts".equals( name ) )
 		{
+            // See the note above about deserializing symmetry from XML.
 		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
             edit = new SelectParallelStruts( symmetry, this .mSelection, this .mRealizedModel );
 		}
 		else if ( "SelectAutomaticStruts".equals( name ) )
 		{
+            // See the note above about deserializing symmetry from XML.
 		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
             edit = new SelectAutomaticStruts( symmetry, this .mSelection, this .mRealizedModel );
 		}
