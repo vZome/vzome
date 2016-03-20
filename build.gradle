@@ -75,7 +75,7 @@ allprojects {
 }
 
 dependencies {
-    compile group: 'com.vzome.core', name: 'vzome-core', version:'0.8.3'
+    compile group: 'com.vzome.core', name: 'vzome-core', version:'0.8.4'
     compile group: 'java3d', name: 'j3dcore', version:'1.6.0-pre12'
     compile group: 'java3d', name: 'j3dutils', version:'1.6.0-pre12'
     compile group: 'java3d', name: 'vecmath', version:'1.6.0-pre12'
@@ -122,6 +122,7 @@ jar {
 gradle.projectsEvaluated {
 	tasks.withType(JavaCompile) {
 		options.compilerArgs \
+		<< "-Xdiags:verbose" \
 		<< "-Xlint:all" \
 		<< "-Xlint:cast" \
 		<< "-Xlint:deprecation" \

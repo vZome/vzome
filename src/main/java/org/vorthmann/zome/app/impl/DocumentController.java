@@ -1371,6 +1371,14 @@ public class DocumentController extends DefaultController implements J3dComponen
             	}
             	break;
                 
+            case "selectCollinear": 
+                documentModel .selectCollinear( (Strut) pickedManifestation );
+            	break;
+
+            case "selectParallelStruts":
+                documentModel.selectParallelStruts( (Strut) pickedManifestation );
+            	break;
+				
             case "selectSimilarSize": {
                 Strut strut = (Strut) pickedManifestation;
                 AlgebraicVector offset = strut .getOffset();

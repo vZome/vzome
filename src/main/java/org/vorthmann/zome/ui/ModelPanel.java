@@ -24,12 +24,12 @@ import org.vorthmann.ui.Controller;
 
 public class ModelPanel extends JPanel implements PropertyChangeListener
 {
-    private Component monocularCanvas, leftEyeCanvas, rightEyeCanvas;
+    private final Component monocularCanvas, leftEyeCanvas, rightEyeCanvas;
     private MouseListener monocularClicks, leftEyeClicks, rightEyeClicks;
     private final JToolBar toolBar;
     private final boolean isEditor;
 	private final Controller controller, view;
-	private JPanel mMonocularPanel;
+	private final JPanel mMonocularPanel;
 
 	public ModelPanel( Controller controller, ControlActions enabler, boolean isEditor, boolean fullPower )
 	{
@@ -77,7 +77,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         	public void propertyChange( PropertyChangeEvent chg )
         	{
         		if ( "stereo" .equals( chg .getPropertyName() ) )
-        			if ( ((Boolean) chg .getNewValue()) .booleanValue() )
+        			if ( ((Boolean) chg .getNewValue()) )
         				monoStereoCardLayout .show( monoStereoPanel, "stereo" );
         			else
         				monoStereoCardLayout .show( monoStereoPanel, "mono" );
@@ -97,9 +97,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 if ( toolbarLoc == null )
                 	toolbarLoc = BorderLayout .LINE_END;
 
-                AbstractButton button = null;
-
-                button = makeEditButton( enabler, "joinballs", "Join", "Join two or more selected balls" );
+                AbstractButton button = makeEditButton( enabler, "joinballs", "Join", "Join two or more selected balls" );
                 toolBar.add( button );
                 button.setRolloverEnabled( true );
 
@@ -268,7 +266,9 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 
 			this .addSeparator();
 
-			this .add( setMenuAction( "selectSimilarSize", new JMenuItem( "Select All Similar" ) ) );
+			this .add( setMenuAction( "selectCollinear", new JMenuItem( "Select Collinear" ) ) );
+			this .add( setMenuAction( "selectParallelStruts", new JMenuItem( "Select Parallel Struts" ) ) );
+			this .add( setMenuAction( "selectSimilarSize", new JMenuItem( "Select Similar Struts" ) ) );
 
 			this .add( setMenuAction( "undoToManifestation", new JMenuItem( "Undo Including This" ) ) );
 
