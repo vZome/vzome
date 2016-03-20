@@ -11,22 +11,31 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.construction.Construction;
+import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.Strut;
+import java.util.function.Predicate;
 
 public abstract class ChangeManifestations extends ChangeSelection
 {
     protected final RealizedModel mManifestations;
     
+    public ChangeManifestations( Selection selection, RealizedModel realized )
+    {
+        this( selection, realized, false);
+    }
+    
     public ChangeManifestations( Selection selection, RealizedModel realized, boolean groupInSelection )
     {
         super( selection, groupInSelection );
-        
+
         mManifestations = realized;
         // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
         mManifestedNow = new HashMap<>();
     }
-    
+
     /**
      * This records the NEW manifestations produced by manifestConstruction for this edit,
      * to avoid creating colliding manifestations.  It is never referenced after the last
@@ -254,5 +263,46 @@ public abstract class ChangeManifestations extends ChangeSelection
         {
         	return this .mShowing && this .mManifestation .equals( man );
         }
+
     }
+
+
+    // Commonly used Filtered Iterators
+
+    protected Manifestations.ConnectorIterator getConnectors() {
+        return Manifestations.getConnectors(mManifestations);
+    }
+
+    protected Manifestations.StrutIterator getStruts() {
+        return Manifestations.getStruts(mManifestations);
+    }
+
+    protected Manifestations.PanelIterator getPanels() {
+        return Manifestations.getPanels(mManifestations);
+    }
+
+    protected Manifestations.ConnectorIterator getVisibleConnectors() {
+        return Manifestations.getVisibleConnectors(mManifestations);
+    }
+
+    protected Manifestations.StrutIterator getVisibleStruts() {
+        return Manifestations.getVisibleStruts(mManifestations);
+    }
+
+    protected Manifestations.PanelIterator getVisiblePanels() {
+        return Manifestations.getVisiblePanels(mManifestations);
+    }
+
+    protected Manifestations.ConnectorIterator getVisibleConnectors(Predicate<Connector> postFilter) {
+        return Manifestations.getVisibleConnectors(mManifestations, postFilter);
+    }
+
+    protected Manifestations.StrutIterator getVisibleStruts(Predicate<Strut> postFilter) {
+        return Manifestations.getVisibleStruts(mManifestations, postFilter);
+    }
+
+    protected Manifestations.PanelIterator getVisiblePanels(Predicate<Panel> postFilter) {
+        return Manifestations.getVisiblePanels(mManifestations, postFilter);
+    }
+
 }

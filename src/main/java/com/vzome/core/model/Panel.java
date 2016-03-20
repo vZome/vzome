@@ -6,19 +6,21 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.algebra.AlgebraicVector;
+import java.util.ArrayList;
 
 public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 {
     private final List<AlgebraicVector> mVertices;
 
     /**
-     * Create a panel from an iterator over AlgebraicVectors
+     * Create a panel from a list of AlgebraicVectors
      * 
      * @param vertices
      */
     public Panel( List<AlgebraicVector> vertices )
     {
-        mVertices = vertices;
+        // copy the list in case the caller modifies it later.
+        mVertices = new ArrayList<>(vertices);
     }
 
     @Override
@@ -40,6 +42,11 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 	public Iterator<AlgebraicVector> iterator()
 	{
 		return mVertices.iterator();
+	}
+
+	public int getVertexCount()
+	{
+		return mVertices.size();
 	}
 
     @Override
@@ -119,9 +126,7 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         AlgebraicVector v0 = mVertices.get( 0 );
         AlgebraicVector v1 = mVertices.get( 1 );
         AlgebraicVector v2 = mVertices.get( 2 );
-        v1 = v1 .minus( v0 );
-        v2 = v2 .minus( v0 );
-        return v1 .cross( v2 );
+        return AlgebraicVector.getNormal(v0, v1, v2);
     }
 
 	@Override

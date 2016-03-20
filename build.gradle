@@ -4,7 +4,7 @@ apply plugin: 'eclipse'
 //apply plugin: 'antlr4'
 
 group = 'com.vzome.core'
-version = '0.8.3'
+version = '0.8.4'
 
 description = "vzome-core"
 
@@ -74,6 +74,7 @@ dependencies {
 gradle.projectsEvaluated {
 	tasks.withType(JavaCompile) {
 		options.compilerArgs \
+		<< "-Xdiags:verbose" \
 		<< "-Xlint:all" \
 		<< "-Xlint:cast" \
 		<< "-Xlint:divzero" \

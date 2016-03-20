@@ -98,13 +98,21 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
     }
 
     /**
-     * @return Returns a String with no extended characters so it's suitable for writing 
+     * @return A String with no extended characters so it's suitable for writing
      * to an 8 bit stream such as System.out or an ASCII text log file in Windows.
      * Contrast this with {@link toString()} which contains extended characters (e.g. \u03C4 (phi))
      */
     public final String toASCIIString()
     {
         return this .getVectorExpression( AlgebraicField .EXPRESSION_FORMAT );
+    }
+
+    /**
+     * @return A String representation that can be persisted to XML and parsed by XmlSaveFormat.parseRationalVector().
+     */
+    public final String toParsableString()
+    {
+        return this .getVectorExpression( AlgebraicField .ZOMIC_FORMAT );
     }
 
     @Override
@@ -251,6 +259,14 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
             return this .coordinates[ i ] .dividedBy( unit .coordinates[ i ] );
         }
         throw new IllegalStateException( "vector is the origin!" );
+    }
+    
+    public static AlgebraicVector getNormal(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
+        return v1.minus(v0).cross(v2.minus(v0));
+    }
+
+    public static boolean areCollinear(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
+        return getNormal(v0, v1, v2).isOrigin();
     }
 
     public AlgebraicField getField()
