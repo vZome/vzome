@@ -15,7 +15,6 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
@@ -119,7 +118,6 @@ public class CommandImportVEFData extends AbstractCommand
         AlgebraicField field = (AlgebraicField) attributes .get( CommandImportVEFData .FIELD_ATTR_NAME );
         if ( field == null )
             field = (AlgebraicField) attributes .get( Command.FIELD_ATTR_NAME );
-        ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );
         Segment symmAxis = (Segment) attributes .get( CommandTransform.SYMMETRY_AXIS_ATTR_NAME );
         String vefData = (String) attributes .get( VEF_STRING_ATTR_NAME );
         Boolean noInversion = (Boolean) attributes .get( NO_INVERSION_ATTR_NAME );
@@ -133,7 +131,7 @@ public class CommandImportVEFData extends AbstractCommand
             quaternion = quaternion .scale( field .createPower( -5 ) );
         
         if ( noInversion != null && noInversion )
-            new VefToModelNoInversion( quaternion, root, effects ) .parseVEF( vefData, field );
+            new VefToModelNoInversion( quaternion, field, effects ) .parseVEF( vefData, field );
         else
             new VefToModel( quaternion, effects, field .createPower( 5 ), null ) .parseVEF( vefData, field );
         
@@ -147,9 +145,9 @@ public class CommandImportVEFData extends AbstractCommand
         
         protected final Set<Point> mUsedPoints = new HashSet<>();
         
-        public VefToModelNoInversion( AlgebraicVector quaternion, ModelRoot root, ConstructionChanges effects )
+        public VefToModelNoInversion( AlgebraicVector quaternion, AlgebraicField field, ConstructionChanges effects )
         {
-            super( quaternion, effects, root .getField() .createPower( 5 ), null );
+            super( quaternion, effects, field .createPower( 5 ), null );
         }
 
         @Override

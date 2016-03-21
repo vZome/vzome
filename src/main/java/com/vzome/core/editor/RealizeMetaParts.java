@@ -11,7 +11,6 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
@@ -23,19 +22,21 @@ import com.vzome.core.render.RenderedManifestation;
 public class RealizeMetaParts extends ChangeManifestations
 {
     public static final String NAME = "realizeMetaParts";
-    
-    private final ModelRoot root;
-    
+        
     @Override
     public void perform() throws Command.Failure
     {
-        AlgebraicField field = this.root .getField();
-		AlgebraicNumber scale = field .createPower( 5 ); // .times( field .createRational( 2 ));
+    	AlgebraicNumber scale = null;
         for (Manifestation man : mSelection) {
             unselect( man );
             RenderedManifestation rm = man .getRenderedObject();
             if (rm != null) {
                 Polyhedron shape = rm .getShape();
+                if ( scale == null ) {
+                	// wait until we know the field
+                    AlgebraicField field = shape .getField();
+            		scale = field .createPower( 5 ); // .times( field .createRational( 2 ));
+                }
                 AlgebraicMatrix orientation = rm .getOrientation();
                 List<AlgebraicVector> vertexList = shape .getVertexList();
                 for (AlgebraicVector vertex : shape .getVertexList()) {
@@ -67,10 +68,9 @@ public class RealizeMetaParts extends ChangeManifestations
         return new FreePoint( vertex .scale( scale ) );
     }
 
-    public RealizeMetaParts( Selection selection, RealizedModel realized, ModelRoot root )
+    public RealizeMetaParts( Selection selection, RealizedModel realized )
     {
         super( selection, realized, false );
-        this.root = root;
     }
         
     @Override

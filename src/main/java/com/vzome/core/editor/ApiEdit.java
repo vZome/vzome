@@ -5,7 +5,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
@@ -24,12 +23,9 @@ import com.vzome.core.model.Strut;
  */
 public class ApiEdit extends ChangeManifestations
 {
-    private ModelRoot root;
-
-	public ApiEdit( Selection selection, RealizedModel realized, Point origin, ModelRoot root )
+	public ApiEdit( Selection selection, RealizedModel realized, Point origin )
 	{
 		super( selection, realized, false );
-        this .root = root;
 	}
 	
 	private Selection getSelection()
@@ -72,7 +68,7 @@ public class ApiEdit extends ChangeManifestations
 		@Override
 		public AlgebraicField getField()
 		{
-			return edit .root .getField();
+			return edit .mManifestations .getField();
 		}
 
 		@Override

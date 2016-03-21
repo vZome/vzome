@@ -9,7 +9,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.math.Projection;
@@ -26,11 +25,11 @@ public class GhostSymmetry24Cell extends ChangeManifestations
     private Segment symmAxis;
     private DodecagonalSymmetry symm;
 
-    public GhostSymmetry24Cell( Selection selection, RealizedModel realized, ModelRoot root, Segment symmAxis, boolean groupInSelection )
+    public GhostSymmetry24Cell( Selection selection, RealizedModel realized, Segment symmAxis, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
 
-        this.field = root .getField();
+        this.field = realized .getField();
         this.symm = (DodecagonalSymmetry) field .getSymmetry( "dodecagonal" );
         this.symmAxis = symmAxis;
     }

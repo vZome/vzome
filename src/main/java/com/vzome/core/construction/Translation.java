@@ -10,9 +10,9 @@ public class Translation extends Transformation
 {
     private AlgebraicVector mOffset;
 
-    public Translation( AlgebraicVector offset, ModelRoot root )
+    public Translation( AlgebraicVector offset )
     {
-        super( root .field );
+        super( offset .getField() );
         mOffset = offset;
     }
 

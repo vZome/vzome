@@ -56,6 +56,8 @@ public class EditHistory implements Iterable<UndoableEdit>
         
         if ( mEditNumber < mEdits .size() )
         {
+        	// There are "dead" edits to discard.  If any of them are sticky (i.e. represent a snapshot),
+        	//   we will make a branch and keep up to the last sticky edit.
             boolean makeBranch = false;
             // first, find the last isSticky() edit in the dead edits being removed.
             int lastStickyEdit = mEditNumber - 1;
@@ -71,6 +73,7 @@ public class EditHistory implements Iterable<UndoableEdit>
             }
             Branch branch = makeBranch? new Branch( context ) : null;
             deadEditIndex = mEditNumber;
+            // Now, remove all the dead edits.  Add them to the branch if necessary.
             for ( Iterator<UndoableEdit> deadEdits = mEdits .listIterator( mEditNumber ); deadEdits .hasNext(); ) {
                 UndoableEdit removed = deadEdits .next();
                 deadEdits .remove();

@@ -25,7 +25,6 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
@@ -40,9 +39,7 @@ import com.vzome.core.math.symmetry.Symmetry;
 public class XmlSaveFormat
 {
     protected final boolean mProject4d, mSelectionNotSaved, mRationalVectors, mGroupingInSelection;
-    
-    private transient ModelRoot mModelRoot;
-    
+        
     private transient AlgebraicField mField;
     
     private transient OrbitSet.Field symmetries;
@@ -123,7 +120,6 @@ public class XmlSaveFormat
         this.writerVersion = writerVersion;
         mField = field;
         this .symmetries = symms;
-        mModelRoot = new ModelRoot( field );
         mScale = scale;
         if ( scale == 0 )
             mMultiplier = null;
@@ -438,12 +434,7 @@ public class XmlSaveFormat
     {
         return mField;
     }
-    
-    public ModelRoot getModelRoot()
-    {
-        return mModelRoot;
-    }
-    
+        
     public int getScale()
     {
         return mScale;

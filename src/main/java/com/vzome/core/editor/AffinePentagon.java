@@ -8,7 +8,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
@@ -22,12 +21,9 @@ import com.vzome.core.model.Strut;
 
 public class AffinePentagon extends ChangeManifestations
 {
-    private final ModelRoot root;
-    
     @Override
     public void perform() throws Command.Failure
     {
-        AlgebraicField field = root .getField();
         Segment s1 = null, s2 = null;
         for (Manifestation man : mSelection) {
             unselect( man );
@@ -82,12 +78,13 @@ public class AffinePentagon extends ChangeManifestations
         }
 
         // now, construct p3 = p2 + tau*(segment1)
+        AlgebraicField field = offset1 .getField();
         AlgebraicNumber scale = field .createPower( 1 );
-        Transformation transform = new Translation( offset1 .scale( scale ), root );
+        Transformation transform = new Translation( offset1 .scale( scale ) );
         Point p3 = new TransformedPoint( transform, p2 );
         manifestConstruction( p3 );
         // now, construct p4 = p1 + tau*(p2-common)
-        transform = new Translation( offset2 .scale( scale ), root );
+        transform = new Translation( offset2 .scale( scale ) );
         Point p4 = new TransformedPoint( transform, p1 );
         manifestConstruction( p4 );
 
@@ -102,10 +99,9 @@ public class AffinePentagon extends ChangeManifestations
         redo();
     }
 
-    public AffinePentagon( Selection selection, RealizedModel realized, ModelRoot root, boolean groupInSelection )
+    public AffinePentagon( Selection selection, RealizedModel realized, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
-        this.root = root;
     }
         
     @Override

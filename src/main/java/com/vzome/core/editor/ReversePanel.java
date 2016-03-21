@@ -5,7 +5,6 @@ package com.vzome.core.editor;
 
 
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -36,17 +35,14 @@ public class ReversePanel extends ChangeManifestations
     }
 
     private final Panel panel;
-    
-    private final ModelRoot root;
-    
-    public ReversePanel( Manifestation singlePanel, Selection selection, RealizedModel realized, ModelRoot derivationModel )
+        
+    public ReversePanel( Manifestation singlePanel, Selection selection, RealizedModel realized )
     {
         super( selection, realized, false );
         if ( singlePanel != null )
             this .panel = (Panel) singlePanel;
         else
             this .panel = null;
-        this .root = derivationModel;
     }
 
     @Override

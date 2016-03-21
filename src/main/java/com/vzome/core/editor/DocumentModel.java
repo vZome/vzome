@@ -40,7 +40,6 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
@@ -71,13 +70,11 @@ import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderedModel.OrbitSource;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context, Tool .Registry
 {
-	private final ModelRoot mDerivationModel;
-
 	private final RealizedModel mRealizedModel;
 
 	private final Point originPoint;
@@ -152,7 +149,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		super();
 
 		this .mField = field;
-		this .mDerivationModel = new ModelRoot( field );
 		AlgebraicVector origin = field .origin( 3 );
 		this .originPoint = new FreePoint( origin );
 		this .failures = failures;
@@ -288,32 +284,32 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new ShowHidden( this.mSelection, this.mRealizedModel, groupInSelection );
 
 		else if ( "CrossProduct".equals( name ) )
-			edit = new CrossProduct( this.mSelection, this.mRealizedModel, this.mDerivationModel, groupInSelection );
+			edit = new CrossProduct( this.mSelection, this.mRealizedModel, groupInSelection );
 
 		else if ( "AffinePentagon".equals( name ) )
-			edit = new AffinePentagon( this.mSelection, this.mRealizedModel, this.mDerivationModel, groupInSelection );
+			edit = new AffinePentagon( this.mSelection, this.mRealizedModel, groupInSelection );
 
 		else if ( "AffineTransformAll".equals( name ) )
 			edit = new AffineTransformAll( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
 
 		else if ( "HeptagonSubdivision".equals( name ) )
-			edit = new HeptagonSubdivision( this.mSelection, this.mRealizedModel, this.mDerivationModel, groupInSelection );
+			edit = new HeptagonSubdivision( this.mSelection, this.mRealizedModel, groupInSelection );
 
 		else if ( "DodecagonSymmetry".equals( name ) )
 			edit = new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
 
 		else if ( "GhostSymmetry24Cell".equals( name ) )
-			edit = new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mDerivationModel, this.mEditorModel.getSymmetrySegment(),
+			edit = new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mEditorModel.getSymmetrySegment(),
 					groupInSelection );
 
 		else if ( "StrutCreation".equals( name ) )
 			edit = new StrutCreation( null, null, null, this.mRealizedModel );
 
 		else if ( "BnPolyope".equals( name ) || "B4Polytope".equals( name ) )
-			edit = new B4Polytope( this.mSelection, this.mRealizedModel, this.mDerivationModel, null, 0, groupInSelection );
+			edit = new B4Polytope( this.mSelection, this.mRealizedModel, this .mField, null, 0, groupInSelection );
 
 		else if ( "Polytope4d".equals( name ) )
-			edit = new Polytope4d( this.mSelection, this.mRealizedModel, this.mDerivationModel, null, 0, null, groupInSelection );
+			edit = new Polytope4d( this.mSelection, this.mRealizedModel, null, 0, null, groupInSelection );
 
 		else if ( "LoadVEF".equals( name ) )
 			edit = new LoadVEF( this.mSelection, this.mRealizedModel, null, null, null );
@@ -398,7 +394,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new RunZomicScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
 
 		else if ( "RunPythonScript".equals( name ) )
-			edit = new RunPythonScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint(), this .mDerivationModel );
+			edit = new RunPythonScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
 
 		else if ( "BookmarkTool".equals( name ) )
 			edit = new BookmarkTool( name, this.mSelection, this.mRealizedModel, this );
@@ -440,7 +436,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new ApplyTool( this.mSelection, this.mRealizedModel, this, true );
 
         else if ( RealizeMetaParts.NAME .equals( name ) )
-            edit = new RealizeMetaParts( mSelection, mRealizedModel, mDerivationModel );
+            edit = new RealizeMetaParts( mSelection, mRealizedModel );
 
         else if ( ShowVertices.NAME .equals( name ) )
             edit = new ShowVertices( mSelection, mRealizedModel );
@@ -452,7 +448,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 		if ( edit == null )
 			// any command unknown (i.e. from a newer version of vZome) becomes a CommandEdit
-			edit = new CommandEdit( null, mEditorModel, mDerivationModel, groupInSelection );
+			edit = new CommandEdit( null, mEditorModel, groupInSelection );
 		
 		return edit;
 	}
@@ -493,7 +489,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	Command command = (Command) commands .get( action );
     	if ( command != null )
     	{
-    		CommandEdit edit = new CommandEdit( (AbstractCommand) command, mEditorModel, mDerivationModel, false );
+    		CommandEdit edit = new CommandEdit( (AbstractCommand) command, mEditorModel, false );
             this .performAndRecord( edit );
             return true;
     	}
@@ -559,25 +555,25 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         else if ( action.equals( "lineLineIntersect" ) )
             edit = new StrutIntersection( mSelection, mRealizedModel, false );
         else if ( action.equals( "heptagonDivide" ) )
-            edit = new HeptagonSubdivision( mSelection, mRealizedModel, mDerivationModel, false );
+            edit = new HeptagonSubdivision( mSelection, mRealizedModel, false );
         else if ( action.equals( "crossProduct" ) )
-            edit = new CrossProduct( mSelection, mRealizedModel, mDerivationModel, false );
+            edit = new CrossProduct( mSelection, mRealizedModel, false );
         else if ( action.equals( "centroid" ) )
             edit = new Centroid( mSelection, mRealizedModel, false );
         else if ( action.equals( "showHidden" ) )
             edit = new ShowHidden( mSelection, mRealizedModel, false );
         else if ( action.equals( RealizeMetaParts.NAME ) )
-            edit = new RealizeMetaParts( mSelection, mRealizedModel, mDerivationModel );
+            edit = new RealizeMetaParts( mSelection, mRealizedModel );
         else if ( action.equals( "affinePentagon" ) )
-            edit = new AffinePentagon( mSelection, mRealizedModel, mDerivationModel, false );
+            edit = new AffinePentagon( mSelection, mRealizedModel, false );
         else if ( action.equals( "affineTransformAll" ) )
         	edit = new AffineTransformAll( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
         else if ( action.equals( "dodecagonsymm" ) )
             edit = new DodecagonSymmetry( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
         else if ( action.equals( "ghostsymm24cell" ) )
-            edit = new GhostSymmetry24Cell( mSelection, mRealizedModel, mDerivationModel, mEditorModel.getSymmetrySegment(), false );
+            edit = new GhostSymmetry24Cell( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(), false );
 		else if ( action.equals( "apiProxy" ) )
-			edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint, this .mDerivationModel );
+			edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
 
 		else if ( action.startsWith( "polytope_" ) )
         {
@@ -586,7 +582,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             String suffix = action.substring( beginIndex + 2 );
             System.out.println( "computing " + group + " " + suffix );
             int index = Integer.parseInt( suffix, 2 );
-            edit = new Polytope4d( mSelection, mRealizedModel, mDerivationModel, mEditorModel.getSymmetrySegment(),
+            edit = new Polytope4d( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(),
                     index, group, false );
         }
 
@@ -888,7 +884,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	}
     	else if ( command.equals( "runPythonScript" ) || command.equals( "py" ) )
     	{
-    		edit = new RunPythonScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint(), this.mDerivationModel );
+    		edit = new RunPythonScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint() );
     		this .performAndRecord( edit );
     	}
     	//    else if ( command.equals( "import.zomod" ) )
@@ -1182,7 +1178,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
     public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, AlgebraicNumber[] edgeScales )
     {
-        UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, mDerivationModel, mEditorModel.getSymmetrySegment(), index, group, edgesToRender, edgeScales, renderGroup );
+        UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(), index, group, edgesToRender, edgeScales, renderGroup );
         this .performAndRecord( edit );
     }
     

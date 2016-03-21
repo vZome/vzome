@@ -8,7 +8,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
@@ -52,7 +51,7 @@ public class HeptagonSubdivision extends ChangeManifestations
         redo();
     }
 
-    public HeptagonSubdivision( Selection selection, RealizedModel realized, ModelRoot root, boolean groupInSelection )
+    public HeptagonSubdivision( Selection selection, RealizedModel realized, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
     }

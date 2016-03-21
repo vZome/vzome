@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 import com.vzome.core.commands.AbstractCommand;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 
 /**
@@ -21,9 +20,9 @@ public class QuaternionCommandEdit extends CommandEdit
 {
     private final QuaternionicSymmetry left, right;
 
-    public QuaternionCommandEdit( AbstractCommand cmd, EditorModel editor, ModelRoot derivationModel, boolean groupInSelection, QuaternionicSymmetry left, QuaternionicSymmetry right )
+    public QuaternionCommandEdit( AbstractCommand cmd, EditorModel editor, boolean groupInSelection, QuaternionicSymmetry left, QuaternionicSymmetry right )
     {
-        super( cmd, editor, derivationModel, groupInSelection );
+        super( cmd, editor, groupInSelection );
         this.left = left;
         this.right = right;
     }

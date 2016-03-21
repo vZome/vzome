@@ -5,7 +5,6 @@ package com.vzome.core.editor;
 
 
 import com.vzome.core.commands.Command;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentCrossProduct;
@@ -53,7 +52,7 @@ public class CrossProduct extends ChangeManifestations
         redo();
     }
 
-    public CrossProduct( Selection selection, RealizedModel realized, ModelRoot root, boolean groupInSelection )
+    public CrossProduct( Selection selection, RealizedModel realized, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
     }

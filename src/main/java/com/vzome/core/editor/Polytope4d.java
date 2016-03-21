@@ -17,7 +17,6 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
@@ -46,7 +45,7 @@ public class Polytope4d extends ChangeManifestations
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private String renderGroupName;
 
-    public Polytope4d( Selection selection, RealizedModel realized, ModelRoot root,
+    public Polytope4d( Selection selection, RealizedModel realized,
                         Segment symmAxis, int index, String groupName,
                         int edgesToRender, AlgebraicNumber[] edgeScales, String renderGroupName )
     {
@@ -55,14 +54,14 @@ public class Polytope4d extends ChangeManifestations
         this.index = index;
         this.symmAxis = symmAxis;
         this.groupName = groupName;
-        this.field = root .getField();
+        this.field = realized .getField();
         
         this .renderGroupName = renderGroupName;
         this .edgesToRender = edgesToRender;
         this .edgeScales = edgeScales;
     }
 
-    public Polytope4d( Selection selection, RealizedModel realized, ModelRoot root,
+    public Polytope4d( Selection selection, RealizedModel realized,
                         Segment symmAxis, int index, String groupName, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
@@ -70,7 +69,7 @@ public class Polytope4d extends ChangeManifestations
         this.index = index;
         this.symmAxis = symmAxis;
         this.groupName = groupName;
-        this.field = root .getField();
+        this.field = realized .getField();
         
         this .renderGroupName = groupName;
         this .edgesToRender = index;

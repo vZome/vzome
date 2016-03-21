@@ -11,9 +11,8 @@ import org.python.util.PythonInterpreter;
 import org.w3c.dom.Element;
 
 import com.vzome.api.Command;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.construction.ModelRoot;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Point;
 import com.vzome.core.model.RealizedModel;
 
@@ -21,9 +20,9 @@ public class RunPythonScript extends ApiEdit
 {
 	private String programText;
 	
-    public RunPythonScript( Selection selection, RealizedModel realized, String text, Point origin, ModelRoot root )
+    public RunPythonScript( Selection selection, RealizedModel realized, String text, Point origin )
     {
-        super( selection, realized, origin, root );
+        super( selection, realized, origin );
         this .programText = text;
     }
 

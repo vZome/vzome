@@ -3,11 +3,11 @@
 package com.vzome.core.commands;
 
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.construction.Translation;
@@ -25,10 +25,10 @@ public class CommandTranslate extends CommandTransform
         if ( norm == null ) {
             throw new Command.Failure( "no symmetry axis provided" );
         }
-        ModelRoot root = (ModelRoot) attributes .get( MODEL_ROOT_ATTR_NAME );
         final Construction[] params = parameters .getConstructions();
-        AlgebraicVector offset = norm .getField() .projectTo3d( norm .getOffset(), true );
-        Transformation transform = new Translation( offset, root );
+        AlgebraicField field = norm .getField();
+        AlgebraicVector offset = field .projectTo3d( norm .getOffset(), true );
+        Transformation transform = new Translation( offset );
         return transform( params, transform, effects );
     }
 }

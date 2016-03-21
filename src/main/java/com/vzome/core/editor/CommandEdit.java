@@ -25,7 +25,6 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.math.DomUtils;
@@ -45,19 +44,16 @@ public class CommandEdit extends ChangeManifestations
 	private EditorModel mEditorModel;
 	
     private AbstractCommand mCommand;
-    
-    private ModelRoot modelRoot;
-    
+        
     private AttributeMap mAttrs;
 
     private static final Logger logger = Logger .getLogger( "com.vzome.core.editor.CommandEdit" );
     private static final Logger loadAndPerformLgger = Logger .getLogger( "com.vzome.core.editor.CommandEdit.loadAndPerform" );
 
-	public CommandEdit( AbstractCommand cmd, EditorModel editor, ModelRoot derivationModel, boolean groupInSelection )
+	public CommandEdit( AbstractCommand cmd, EditorModel editor, boolean groupInSelection )
     {
         super( editor .mSelection, editor .getRealizedModel(), groupInSelection );
         mEditorModel = editor;  // only needed to set symmetry axis/center
-        modelRoot = derivationModel;
         mCommand = cmd;
     }
 
@@ -125,8 +121,7 @@ public class CommandEdit extends ChangeManifestations
         if ( symmAxis != null )
             mAttrs .put( CommandTransform .SYMMETRY_AXIS_ATTR_NAME, symmAxis );
         mAttrs .put( CommandTransform .SYMMETRY_CENTER_ATTR_NAME, mEditorModel .getCenterPoint() );
-        mAttrs .put( Command .MODEL_ROOT_ATTR_NAME, modelRoot );
-        mAttrs .put( Command.FIELD_ATTR_NAME, modelRoot .getField() );
+        mAttrs .put( Command.FIELD_ATTR_NAME, this .mManifestations .getField() );
         
         // TODO do we really need to do it this way?  Or can we use the other NewConstructions() class?
         //   That one does the manifestConstruction() and redo() immediately.
@@ -332,7 +327,7 @@ public class CommandEdit extends ChangeManifestations
             // TODO work out a more generic migration technique
             if ( mCommand instanceof CommandObliquePentagon )
             {
-                UndoableEdit edit = new AffinePentagon( mSelection, mManifestations, modelRoot, false );
+                UndoableEdit edit = new AffinePentagon( mSelection, mManifestations, false );
                 context .performAndRecord( edit );
                 return;
             }

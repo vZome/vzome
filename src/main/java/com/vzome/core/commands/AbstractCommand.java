@@ -38,7 +38,6 @@ public abstract class AbstractCommand implements Command
     public void setFixedAttributes( AttributeMap attributes, XmlSaveFormat format )
     {
         attributes .put( Command .FIELD_ATTR_NAME, format .getField() );
-        attributes .put( Command .MODEL_ROOT_ATTR_NAME, format .getModelRoot() );
     }
 
     /**
@@ -56,8 +55,6 @@ public abstract class AbstractCommand implements Command
             //
             // skip all of these... synthesized at load time
             if ( key .equals( Command.FIELD_ATTR_NAME ) )
-                continue;
-            if ( key .equals( Command.MODEL_ROOT_ATTR_NAME ) )
                 continue;
             if ( key .equals( CommandTransform .SYMMETRY_CENTER_ATTR_NAME ) )
                 continue;

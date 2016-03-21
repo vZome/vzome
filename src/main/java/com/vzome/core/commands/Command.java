@@ -13,8 +13,6 @@ public interface Command
 {
     public static final String LOADING_FROM_FILE = "org.vorthmann.zome.editor.Command.LOADING_FROM_FILE";
 
-    public static final String MODEL_ROOT_ATTR_NAME = "org.vorthmann.zome.editor.Command.MODEL_ROOT";
-
     public static final String FIELD_ATTR_NAME = "org.vorthmann.zome.commands.Command.ALGEBRAIC_FIELD";
     
     public static final String GENERIC_PARAM_NAME = "org.vorthmann.zome.editor.Command.GENERIC_PARAM";

@@ -89,29 +89,6 @@ public final class PentagonField extends AlgebraicField
             return "phi";
     }
 
-    public final AlgebraicVector conjugate( AlgebraicVector v )
-    {
-        int order = getOrder();
-        if ( order != 2 )
-            throw new IllegalArgumentException( "method only supported for order-2 fields" );
-
-        AlgebraicVector result = new AlgebraicVector( this, v .dimension() );
-        for ( int i = 0; i < v .dimension(); i++ ) {
-            result .setComponent( i, this .conjugate( v .getComponent( i ) ) );
-        }
-        return result;
-    }
-
-    private AlgebraicNumber conjugate( AlgebraicNumber component )
-    {
-        // TODO
-//        for ( int i = 0; i < v.length / 2; i += 2 ) {
-//            RationalNumbers.negate( v, i + 1, result, i + 0 );
-//            RationalNumbers.add( v, i + 0, v, i + 1, result, i + 1 );
-//        }
-        return component;
-    }
-
     @Override
     public AlgebraicNumber parseLegacyNumber( String string )
     {

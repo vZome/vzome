@@ -12,7 +12,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AttributeMap;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.ModelRoot;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
@@ -32,15 +31,15 @@ import com.vzome.core.model.RealizedModel;
 public class B4Polytope extends ChangeManifestations
 {
     private int index;
-    private final ModelRoot root;
     private Projection proj;
     private Segment symmAxis;
+	private final AlgebraicField field;
 
-    public B4Polytope( Selection selection, RealizedModel realized, ModelRoot root, Segment symmAxis, int index, boolean groupInSelection )
+    public B4Polytope( Selection selection, RealizedModel realized, AlgebraicField field, Segment symmAxis, int index, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
+		this.field = field;
 
-        this.root = root;
         this.index = index;
         this.symmAxis = symmAxis;
     }
@@ -77,7 +76,6 @@ public class B4Polytope extends ChangeManifestations
     @Override
     public void perform()
     {
-        AlgebraicField field = root .getField();
         if ( symmAxis == null )
             this.proj = new Projection .Default( field );
         else

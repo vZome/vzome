@@ -34,7 +34,6 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandCentralSymmetry;
 import com.vzome.core.commands.CommandCentroid;
-import com.vzome.core.commands.CommandConjugate;
 import com.vzome.core.commands.CommandHide;
 import com.vzome.core.commands.CommandImportVEFData;
 import com.vzome.core.commands.CommandMidpoint;
@@ -423,7 +422,6 @@ public class Application
             mCommands .put( "hideball", new CommandHide() );
             mCommands .put( "panel", new CommandPolygon() );
             mCommands .put( "tauDivide", new CommandTauDivision() );
-            mCommands .put( "conjugate", new CommandConjugate() );
             mCommands .put( "midpoint", new CommandMidpoint() );
             mCommands .put( "import.vef", new CommandImportVEFData() );
         }
