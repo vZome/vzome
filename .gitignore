@@ -16,7 +16,6 @@ temp/
 *.unused
 .classpath
 .DS_Store
-.nb-gradle-properties
 .project
 gradle-app.setting
 local.properties
