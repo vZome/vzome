@@ -113,9 +113,43 @@ public class PartsPanel extends JPanel
             }
             else
             {
-                String key = index .get( row - 1 );
-                Object[] rowData = struts .get( key );
-                return rowData[ col ];
+                // An IndexOutOfBoundsException can occur if index or struts have an element deleted in one thread
+                // while the grid cells are still being refreshed in another thread
+                // especially if the grid is in the middle of refreshing the last row
+                // when a previous row is removed, thus shifting everything up by one row.
+
+                // One way to frequently, but not always, reproduce this condition is as follows:
+                // 1) Generate all blue struts radiating from origin in icosahedral symmetry
+                // 2) Show the "parts" tab
+                // 3) Switch to octahedral symmetry. Note that some struts are now blue and the rest are black
+                //    Also note that "black" is alphabetically before "blue", so hiding the black struts
+                //    removes a row that's not the last one.
+                // 4) Select all black struts at once (using select similar)
+                // 5) Hide all of the black struts with <Ctrl H>
+                // 6) Note that the following line is often executed with row being greater than index.size().
+                //    This does not always occur though since we have an unpredictable thread race condition.
+
+                // Even adding a check beforehand doesn't avoid the problem since the thread race is still present
+                // and the problem could still occur after the check, although it would be less likely.
+                // Without some profililng, I hesitate to add synchronization because of the potential impact
+                // on large changes like switching symmetry, which removes and re-adds all of the Manifestations.
+                // Still, I think synchronization will eventually be the right solution.
+
+                // One possible improvement, although not a fix, is to fire more specific events
+                // such as fireTableCellUpdated() in propertyChange(), so that fewer cells will need
+                // to be updated than when using fireTableDataChanged() as a catch-all.
+
+                // Until the thread race condition is addressed, I am just going to catch the IndexOutOfBoundsException
+                // and return null, which is incorrect but appears harmless and at least gives the grid updating thread
+                // some chance  of "catching up" with the actual contents of index and struts.
+                try {
+                    String key = index .get( row - 1 );
+                    Object[] rowData = struts .get( key );
+                    return rowData[ col ];
+                }
+                catch (IndexOutOfBoundsException ex) {
+                    return null;
+                }
             }
         }
 
