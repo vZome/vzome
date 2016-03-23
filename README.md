@@ -34,10 +34,7 @@ Existing projects are opened in Eclipse by using "File | Import... | Existing Pr
 Developing with NetBeans IDE
 -------------
 
-The NetBeans IDE supports Gradle projects with the Gradle plug-in available at http://plugins.netbeans.org/plugin/44510/gradle-support. Version 1.3.2 of the plug-in has been used with NetBeans 8.0. The Gradle plug-in should be installed in NetBeans before attempting to load the vzome-desktop project. For the vzome-core project, NetBeans reads the build.gradle or pom.xml and that is the NetBeans project. Simply use File | Open Project and select vzome-desktop/build.gradle and/or vzome-core/pom.xml. Note that if NetBeans finds both a build.gradle and a pom.xml file, it will revert to using pom.xml. This is NOT correct, so be sure that vzome-desktop includes build.gradle and vzome-core uses pom.xml
-
-A NetBeans configuration file (nbactions.xml) is included.
-
+The NetBeans 8.1 IDE supports Gradle projects with the Gradle plug-in available at http://plugins.netbeans.org/plugin/44510/gradle-support. Version 1.3.8.1 of the plug-in has been used to load vzome-desktop and vzome-core in NetBeans 8.1. The Gradle plug-in should be installed in NetBeans before attempting to load the vzome-desktop project or the vzome-core project. After installing the plugin, open the project(s) using *File | Open Project* and select vzome-desktop/build.gradle and/or vzome-core/build.gradle.
 
 Running vZome from the Command Line
 --------------

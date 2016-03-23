@@ -754,11 +754,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 		switch ( e .getPropertyName() ) {
 
 		case "command.status":
-			statusText .setText( (String) e .getNewValue() );
+            if ( statusText != null )
+                statusText .setText( (String) e .getNewValue() );
 			break;
 
 		case "current.edit.xml":
-			if ( this .developerExtras )
+			if ( statusText != null && this .developerExtras )
 				statusText .setText( (String) e .getNewValue() );
 			break;
 
