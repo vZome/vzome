@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -29,10 +30,13 @@ import org.vorthmann.ui.Controller;
 
 public class PartsPanel extends JPanel
 {
+    private static final long serialVersionUID = 1L;
     public PartsPanel( Controller controller )
     {
         super( new BorderLayout() );
-        JTable bomTable = new JTable( new PartsTableModel( controller ) );
+        PartsTableModel partsTableModel = new PartsTableModel();
+        controller .addPropertyListener( partsTableModel );
+        JTable bomTable = new JTable( partsTableModel );
         bomTable .setDefaultRenderer( Color.class, new ColorRenderer(true) );
         bomTable .setRowSelectionAllowed( false );
         bomTable .setCellSelectionEnabled( false );
@@ -44,21 +48,17 @@ public class PartsPanel extends JPanel
         column = bomTable .getColumnModel() .getColumn( 2 );
         column .setMaxWidth( 50 );
         JScrollPane bomScroller = new JScrollPane( bomTable );
-        add( bomScroller );
+        super.add( bomScroller );
     }
 
     private final class PartsTableModel extends AbstractTableModel implements PropertyChangeListener
     {
-        private String[] columnNames = { "count", "color", "name", "length" };
+        private static final long serialVersionUID = 1L;
+        private final String[] columnNames = { "count", "color", "name", "length" };
         
-        private int balls = 1;
-        private Map<String, Object[]> struts = new HashMap<>();
-        private List<String> index = new ArrayList<>();
-
-        public PartsTableModel( Controller controller )
-        {
-            controller .addPropertyListener( this );
-        }
+        private Integer balls = 1;
+        private final Map<String, Object[]> struts = new HashMap<>();
+        private final List<String> index = new ArrayList<>();
         
         @Override
         public Class<?> getColumnClass( int c )
@@ -113,130 +113,98 @@ public class PartsPanel extends JPanel
             }
             else
             {
-                // An IndexOutOfBoundsException can occur if index or struts have an element deleted in one thread
-                // while the grid cells are still being refreshed in another thread
-                // especially if the grid is in the middle of refreshing the last row
-                // when a previous row is removed, thus shifting everything up by one row.
-
-                // One way to frequently, but not always, reproduce this condition is as follows:
-                // 1) Generate all blue struts radiating from origin in icosahedral symmetry
-                // 2) Show the "parts" tab
-                // 3) Switch to octahedral symmetry. Note that some struts are now blue and the rest are black
-                //    Also note that "black" is alphabetically before "blue", so hiding the black struts
-                //    removes a row that's not the last one.
-                // 4) Select all black struts at once (using select similar)
-                // 5) Hide all of the black struts with <Ctrl H>
-                // 6) Note that the following line is often executed with row being greater than index.size().
-                //    This does not always occur though since we have an unpredictable thread race condition.
-
-                // Even adding a check beforehand doesn't avoid the problem since the thread race is still present
-                // and the problem could still occur after the check, although it would be less likely.
-                // Without some profililng, I hesitate to add synchronization because of the potential impact
-                // on large changes like switching symmetry, which removes and re-adds all of the Manifestations.
-                // Still, I think synchronization will eventually be the right solution.
-
-                // One possible improvement, although not a fix, is to fire more specific events
-                // such as fireTableCellUpdated() in propertyChange(), so that fewer cells will need
-                // to be updated than when using fireTableDataChanged() as a catch-all.
-
-                // Until the thread race condition is addressed, I am just going to catch the IndexOutOfBoundsException
-                // and return null, which is incorrect but appears harmless and at least gives the grid updating thread
-                // some chance  of "catching up" with the actual contents of index and struts.
-                try {
-                    String key = index .get( row - 1 );
-                    Object[] rowData = struts .get( key );
-                    return rowData[ col ];
-                }
-                catch (IndexOutOfBoundsException ex) {
-                    return null;
-                }
+                String key = index .get( row - 1 );
+                Object[] rowData = struts .get( key );
+                return rowData[ col ];
             }
         }
 
         @Override
         public void propertyChange( PropertyChangeEvent evt )
         {
-            String name = evt .getPropertyName();
-            if ( name .equals( "addBall" ) )
-            {
-                ++ balls;
-                this .fireTableCellUpdated( 0, 0 );
-            }
-            else if ( name .equals( "removeBall" ) )
-            {
-                -- balls;
-                this .fireTableCellUpdated( 0, 0 );
-            }
-            else if ( name .startsWith( "addStrut-" ) )
-            {
-                name = name .substring( "addStrut-" .length() );
-                StringTokenizer tokens = new StringTokenizer( name, ":" );
-                String orbitStr = tokens .nextToken();
-                String rgbStr = tokens .nextToken();
-                String nameStr = tokens .nextToken();
-                String lengthStr = tokens .nextToken();
-                String key = orbitStr + ":" + nameStr + ":" + lengthStr;
-                Object[] row = struts .get( key );
-                if ( row == null )
-                {
-                    int rgb = Integer .parseInt( rgbStr );
-                    Color color = new Color( rgb );
-                    row = new Object[]{ 1, color, nameStr, lengthStr };
-                    struts .put( key, row );
-                    index .add( key );
-                    Collections .sort( index );
-                }
-                else
-                {
-                    int prev = ((Integer) row[ 0 ]) .intValue();
-                    row[ 0 ] = new Integer( ++prev );
-                }
-                this .fireTableDataChanged();
-            }
-            else if ( name .startsWith( "removeStrut-" ) )
-            {
-                name = name .substring( "removeStrut-" .length() );
-                StringTokenizer tokens = new StringTokenizer( name, ":" );
-                String orbitStr = tokens .nextToken();
-                String rgbStr = tokens .nextToken();
-                String nameStr = tokens .nextToken();
-                String lengthStr = tokens .nextToken();
-                String key = orbitStr + ":" + nameStr + ":" + lengthStr;
-                Object[] row = struts .get( key );
-                int count = ((Integer) row[ 0 ]) .intValue() - 1;
-                if ( count == 0 )
-                {
-                    struts .remove( key );
-                    index .remove( key );
-                    Collections .sort( index );
-                }
-                else
-                {
-                    row[ 0 ] = new Integer( count );
-                }
-                this .fireTableDataChanged();
+            PropertyChangeHandler handler = new PropertyChangeHandler(evt .getPropertyName());
+            if (SwingUtilities.isEventDispatchThread()) {
+                handler.run();
+            } else {
+                SwingUtilities.invokeLater(handler);
             }
         }
-        
+
+
+        private class PropertyChangeHandler implements Runnable {
+            private final String propertyName;
+            public PropertyChangeHandler(String propName) {
+                propertyName = propName;
+            }
+
+            @Override
+            public void run() {
+                if (propertyName.equals("addBall")) {
+                    ++balls;
+                    fireTableCellUpdated(0, 0);
+                } else if (propertyName.equals("removeBall")) {
+                    --balls;
+                    fireTableCellUpdated(0, 0);
+                } else if (propertyName.startsWith("addStrut-")) {
+                    String strutInfo = propertyName.substring("addStrut-".length());
+                    StringTokenizer tokens = new StringTokenizer(strutInfo, ":");
+                    String orbitStr = tokens.nextToken();
+                    String rgbStr = tokens.nextToken();
+                    String nameStr = tokens.nextToken();
+                    String lengthStr = tokens.nextToken();
+                    String key = orbitStr + ":" + nameStr + ":" + lengthStr;
+                    Object[] row = struts.get(key);
+                    if (row == null) {
+                        int rgb = Integer.parseInt(rgbStr);
+                        Color color = new Color(rgb);
+                        row = new Object[]{(Integer)1, color, nameStr, lengthStr};
+                        struts.put(key, row);
+                        index.add(key);
+                        Collections.sort(index);
+                    } else {
+                        row[0] = (Integer)row[0] + 1;
+                    }
+                    fireTableDataChanged();
+                } else if (propertyName.startsWith("removeStrut-")) {
+                    String strutInfo = propertyName.substring("removeStrut-".length());
+                    StringTokenizer tokens = new StringTokenizer(strutInfo, ":");
+                    String orbitStr = tokens.nextToken();
+                    String rgbStr = tokens.nextToken();
+                    String nameStr = tokens.nextToken();
+                    String lengthStr = tokens.nextToken();
+                    String key = orbitStr + ":" + nameStr + ":" + lengthStr;
+                    Object[] row = struts.get(key);
+                    row[0] = (Integer)row[0] - 1;
+                    if ((Integer)row[0] == 0) {
+                        struts.remove(key);
+                        index.remove(key);
+                        Collections.sort(index);
+                    }
+                    fireTableDataChanged();
+                }
+            }
+        }
     }
 
 
     private final class ColorRenderer extends JLabel implements TableCellRenderer
     {
+        private static final long serialVersionUID = 1L;
         Border unselectedBorder = null;
         Border selectedBorder = null;
         boolean isBordered = true;
      
         public ColorRenderer( boolean isBordered ) {
             this.isBordered = isBordered;
-            setOpaque(true); //MUST do this for background to show up.
+            super.setOpaque(true); // MUST do this for background to show up.
         }
      
         @Override
         public Component getTableCellRendererComponent(
                                 JTable table, Object color,
                                 boolean isSelected, boolean hasFocus,
-                                int row, int column) {
+                                int row, int column)
+        {
             Color newColor = (Color)color;
             setBackground(newColor);
             if (isBordered) {
