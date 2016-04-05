@@ -469,7 +469,9 @@ public class EditHistory implements Iterable<UndoableEdit>
                 <StrutCreation anchor="0 0 0 0 0 0" index="9" len="2 4"/>
               </EditHistory>
             */
-            return (Element) doc.importNode(xml, true);
+            return ( doc.equals( xml.getOwnerDocument() ) )
+                    ? xml
+                    : (Element) doc.importNode(xml, true);
         }
 
         @Override
