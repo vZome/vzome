@@ -45,6 +45,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.desktop.controller.ViewPlatformControlPanel;
+import java.io.IOException;
 import static org.vorthmann.zome.ui.ApplicationUI.getLogFileName;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
@@ -218,7 +219,15 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     // this is basically "save a copy...", with no choosing
                     String fieldName = mController.getProperty( "field.name" );
                     File prototype = new File( Platform.getPreferencesFolder(), "Prototypes/" + fieldName + ".vZome" );
+                    String msg = "Saving default template";
+                    try {
+                        msg = msg + " to " + prototype.getCanonicalPath();
+                    } catch (IOException ex) {
+                        errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ ex } );
+                    }
+                    logger.config(msg);
                     mController .doFileAction( "save", prototype );
+                    JOptionPane.showMessageDialog( null, msg, "Saved Template", JOptionPane.PLAIN_MESSAGE );
                     break;
                     
             	case "snapshot.2d":

@@ -239,8 +239,8 @@ public class ApplicationController extends DefaultController
                 String fieldName = action .substring( "new-" .length() );
                 File prototype = new File( Platform .getPreferencesFolder(), "Prototypes/" + fieldName + ".vZome" );
                 if ( prototype .exists() ) {
-//		            	this .mController .doAction(action, e);
-//		                doFileAction( "newFromTemplate", prototype );
+                    logger.log(Level.CONFIG, "Loading default template from {0}", prototype.getCanonicalPath());
+                    doFileAction( "newFromTemplate", prototype );
                 }
                 else
                 {
