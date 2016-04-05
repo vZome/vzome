@@ -456,7 +456,20 @@ public class EditHistory implements Iterable<UndoableEdit>
         @Override
         public Element getXml( Document doc )
         {
-            return xml;
+            // Use doc.importNode() instead of returning the xml directly.
+            // This avoids a org.w3c.dom.DOMException: WRONG_DOCUMENT_ERR: A node is used in a different document than the one that created it.
+            //
+            // This can occur in DocumentModel.serialize()
+            // when saving a file that includes a DeferredEdit imported from Prototypes\golden.vZome
+            // For example, the following snippet of XML as a valid part of that file can cause the condition described
+            // by simply opening vzome and immediately selecting "Save As..." from the menu and saving the new empty file
+            // which now includes the deferred edits from the prototype file.
+            /*
+              <EditHistory editNumber="0" lastStickyEdit="-1">
+                <StrutCreation anchor="0 0 0 0 0 0" index="9" len="2 4"/>
+              </EditHistory>
+            */
+            return (Element) doc.importNode(xml, true);
         }
 
         @Override
