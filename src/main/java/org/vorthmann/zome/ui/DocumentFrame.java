@@ -45,6 +45,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.desktop.controller.ViewPlatformControlPanel;
+import java.io.IOException;
 import static org.vorthmann.zome.ui.ApplicationUI.getLogFileName;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
@@ -215,10 +216,40 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
             	case "saveDefault":
-                    // this is basically "save a copy...", with no choosing
+                    // this is basically "save a copy...", with a hard coded file path.
                     String fieldName = mController.getProperty( "field.name" );
                     File prototype = new File( Platform.getPreferencesFolder(), "Prototypes/" + fieldName + ".vZome" );
-                    mController .doFileAction( "save", prototype );
+                    try {
+                        String path = prototype.getCanonicalPath();
+                        int response = JOptionPane.showConfirmDialog(
+                                DocumentFrame.this,
+                                "Do you want to save this model as the default template to be used for new " + fieldName + " models?"
+                                + "\n\nTemplate file: " + path,
+                                "Save Template?",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.WARNING_MESSAGE );
+                        
+                        if ( response == JOptionPane.YES_OPTION ) {
+                            logger.config("Saving default template to " + path);
+                            mController .doFileAction( "save", prototype );
+                        } 
+                        else if ( prototype.exists() ) {
+                            response = JOptionPane.showConfirmDialog(
+                                DocumentFrame.this,
+                                "Do you want to delete the existing template for new " + fieldName + " models?"
+                                + "\n\nTemplate file: " + path,
+                                "Delete Template?",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.WARNING_MESSAGE );
+
+                            if ( response == JOptionPane.YES_OPTION ) {
+                                logger.config("Deleting default template at " + path);
+                                prototype.delete();
+                            }
+                        }
+                    } catch (IOException ex) {
+                        errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ ex } );
+                    }
                     break;
                     
             	case "snapshot.2d":
