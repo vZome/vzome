@@ -182,6 +182,8 @@ public class DocumentController extends DefaultController implements J3dComponen
         final boolean asTemplate = propertyIsTrue( "as.template" );
 
         final boolean newDocument = propertyIsTrue( "new.document" );
+        
+        final boolean outlineMode = propertyIsTrue( "outline.geometry" );
 
         startReader = ! newDocument && ! asTemplate;
         
@@ -269,7 +271,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         mViewPlatform .setNextController( this );
 
         RenderingViewer.Factory rvFactory = app .getJ3dFactory();
-        mainScene = rvFactory .createRenderingChanges( sceneLighting, true, true );
+        mainScene = rvFactory .createRenderingChanges( sceneLighting, true, outlineMode );
 
         modelCanvas = rvFactory .createJ3dComponent( "" ); // name not relevant there
         imageCaptureViewer = rvFactory.createRenderingViewer( mainScene, modelCanvas );
