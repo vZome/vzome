@@ -3,36 +3,40 @@
 
 package org.vorthmann.zome.ui;
 
+import com.vzome.core.model.Connector;
+import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
+import com.vzome.core.model.Strut;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.vorthmann.ui.Controller;
+import org.vorthmann.zome.app.impl.PartsController.PartInfo;
 
 public class PartsPanel extends JPanel
 {
+    private static final long serialVersionUID = 1L;
     public PartsPanel( Controller controller )
     {
         super( new BorderLayout() );
-        JTable bomTable = new JTable( new PartsTableModel( controller ) );
+        PartsTableModel partsTableModel = new PartsTableModel();
+        controller .addPropertyListener( partsTableModel );
+        JTable bomTable = new JTable( partsTableModel );
         bomTable .setDefaultRenderer( Color.class, new ColorRenderer(true) );
         bomTable .setRowSelectionAllowed( false );
         bomTable .setCellSelectionEnabled( false );
@@ -44,26 +48,174 @@ public class PartsPanel extends JPanel
         column = bomTable .getColumnModel() .getColumn( 2 );
         column .setMaxWidth( 50 );
         JScrollPane bomScroller = new JScrollPane( bomTable );
-        add( bomScroller );
+        super.add( bomScroller );
     }
+
+    /**
+     * PartsTableRow allows the PartInfo instances that are received in the PropertyChangeEvent
+     * to be managed as rows and columns in the PartsTableModel.
+     * It also supports the aggregate (total) columns that are generated and used locally.
+     */
+    public static final class PartsTableRow implements Comparable<PartsTableRow>
+    {
+        private static final int COUNT_COLUMN = 0;
+        private final PartInfo partInfo;
+        private final PartGroupingOrderEnum partClassGroupingOrder;
+        private final Color color;
+        private final Boolean isAutomaticDirection;
+        private final String key;
+        private Integer count = 0;
+
+        /**
+         * Used internally for generating the initial aggregate rows
+         * @param name Name to be displayed on this aggregate row (e.g. "balls", "struts" or "panels").
+         * @param partType Class to be counted by this row.
+         * @param initialCount Initial count to be displayed.
+         */
+        private PartsTableRow(String name, Class<? extends Manifestation> partType, int initialCount) {
+            this( new PartInfo(name, partType), true, initialCount );
+        }
+
+        /**
+         * Constructed from the PartInfo from the received in the PropertyChangeEvent
+         * @param partData PartInfo that's received in the PropertyChangeEvent
+         */
+        private PartsTableRow(PartInfo partData) {
+            this( partData, false, 1 );
+        }
+
+        /**
+         * Common c'tor called by the other special purpose c'tors.
+         * @param partData
+         * @param isAggregate
+         * @param initialCount
+         */
+        private PartsTableRow(PartInfo partData, boolean isAggregate, int initialCount ) {
+            partInfo = partData;
+            partClassGroupingOrder = getPartGroupingOrder(partInfo.partClass, isAggregate);
+            color = new Color(partInfo.rgbColor);
+            isAutomaticDirection = (partInfo.automaticDirectionIndex >= 0);
+            key = calculateKey(partInfo);
+            count = initialCount;
+        }
+
+        /**
+         * Allows specific internal fields to be addresses as columns
+         * Note the special case of {@code col} = -1 which returns this.
+         * The JPanel doesn't ever use columns less than 0,
+         * but it can be used within this class to allow an individual cell
+         * to access its underlying PartInfo as in the case of the ColorRenderer
+         * @param col Column number (zero based)
+         * @return
+         */
+        public Object getValueAt(int col) {
+            switch (col) {
+                case -1:
+                    return this; // used internally for the color column tool tip text
+
+                case COUNT_COLUMN:
+                    return count;
+
+                case 1:
+                    return color;
+
+                case 2:
+                    return partInfo.sizeNameStr;
+
+                case 3:
+                    return partInfo.lengthStr;
+            }
+            throw new IllegalArgumentException("unexpected column number: " + Integer.toString(col));
+        }
+
+        /**
+         * Sort numerically by realLength and automaticDirectionIndex
+         * instead of alphabetically by their String counterparts
+         */
+        @Override
+        public int compareTo(PartsTableRow that) {
+            int comparison = this.partClassGroupingOrder.compareTo(that.partClassGroupingOrder);
+            if (comparison != 0)
+                return comparison;
+            comparison = this.isAutomaticDirection.compareTo(that.isAutomaticDirection);
+            if (comparison != 0)
+                return comparison;
+            comparison = this.partInfo.automaticDirectionIndex.compareTo(that.partInfo.automaticDirectionIndex);
+            if (comparison != 0)
+                return comparison;
+            comparison = this.partInfo.orbitStr.compareTo(that.partInfo.orbitStr);
+            if (comparison != 0)
+                return comparison;
+            comparison = this.partInfo.realLength.compareTo(that.partInfo.realLength);
+            if (comparison != 0)
+                return comparison;
+            comparison = this.partInfo.sizeNameStr.compareTo(that.partInfo.sizeNameStr);
+            return comparison;
+        }
+
+        /**
+         * used only by the c'tors
+         * @param partInfo
+         * @return
+         */
+        private static String calculateKey(PartInfo partInfo) {
+            return partInfo.orbitStr + ":" + partInfo.sizeNameStr + ":" + partInfo.lengthStr;
+        }
+
+        /**
+         * used only by the c'tors
+         * @param partClass
+         * @param isAggregate
+         * @return
+         */
+        private static PartGroupingOrderEnum getPartGroupingOrder(Class<? extends Manifestation> partClass, boolean isAggregate ) {
+            if(partClass.equals(Connector.class) && isAggregate ) {
+                return PartGroupingOrderEnum.BALLS_TOTAL;
+            } 
+            else if(partClass.equals(Strut.class)) {
+                return isAggregate 
+                        ? PartGroupingOrderEnum.STRUTS_TOTAL
+                        : PartGroupingOrderEnum.STRUTS;
+            } 
+            else if(partClass.equals(Panel.class)) {
+                return isAggregate 
+                        ? PartGroupingOrderEnum.PANELS_TOTAL
+                        : PartGroupingOrderEnum.PANELS;
+            }
+            return PartGroupingOrderEnum.TEMP;
+        }
+    }
+
+    /**
+     * The order listed here is the order the rows will be grouped and sorted for display
+     */
+    private enum PartGroupingOrderEnum {
+        BALLS_TOTAL,
+        STRUTS_TOTAL,
+        STRUTS,
+        PANELS_TOTAL,
+        PANELS,
+        TEMP; // nothing displayed in this case
+    }
+
 
     private final class PartsTableModel extends AbstractTableModel implements PropertyChangeListener
     {
-        private String[] columnNames = { "count", "color", "name", "length" };
-        
-        private int balls = 1;
-        private Map<String, Object[]> struts = new HashMap<>();
-        private List<String> index = new ArrayList<>();
+        private static final long serialVersionUID = 1L;
+        private final String[] columnNames = { "count", "orbit", "size", "length" };
+        private final TreeSet<PartsTableRow> tableRows = new TreeSet<>(); // self-sorting since PartsTableRow implements Comparable
+        private final PartsTableRow ballsTotalRow = new PartsTableRow("balls", Connector.class, 1 );
+        private final PartsTableRow strutsTotalRow = new PartsTableRow("struts", Strut.class, 0 );
+        private final PartsTableRow panelsTotalRow = new PartsTableRow("panels", Panel.class, 0 );
 
-        public PartsTableModel( Controller controller )
-        {
-            controller .addPropertyListener( this );
+        PartsTableModel() {
+            tableRows.add(ballsTotalRow);
         }
         
         @Override
-        public Class<?> getColumnClass( int c )
+        public Class<?> getColumnClass( int col )
         {
-            return getValueAt( 0, c ) .getClass();
+            return ballsTotalRow.getValueAt( col ).getClass();
         }
         
         @Override
@@ -83,160 +235,180 @@ public class PartsPanel extends JPanel
         @Override
         public int getColumnCount()
         {
-            return 4;
+            return columnNames.length;
         }
 
         @Override
         public int getRowCount()
         {
-            return struts .size() + 1;
+            return tableRows.size();
         }
 
         @Override
         public Object getValueAt( int row, int col )
         {
-            if ( row == 0 )
-            {
-                switch ( col ) {
-                case 0:
-                    return balls;
-                    
-                case 1:
-                    return Color .white;
-                    
-                case 2:
-                    return "ball";
-                    
-                default:
-                    return "";
-                }
-            }
-            else
-            {
-                // An IndexOutOfBoundsException can occur if index or struts have an element deleted in one thread
-                // while the grid cells are still being refreshed in another thread
-                // especially if the grid is in the middle of refreshing the last row
-                // when a previous row is removed, thus shifting everything up by one row.
+            PartsTableRow rowData = getRow( row );
+            return rowData == null ? null : rowData.getValueAt( col );
+        }
 
-                // One way to frequently, but not always, reproduce this condition is as follows:
-                // 1) Generate all blue struts radiating from origin in icosahedral symmetry
-                // 2) Show the "parts" tab
-                // 3) Switch to octahedral symmetry. Note that some struts are now blue and the rest are black
-                //    Also note that "black" is alphabetically before "blue", so hiding the black struts
-                //    removes a row that's not the last one.
-                // 4) Select all black struts at once (using select similar)
-                // 5) Hide all of the black struts with <Ctrl H>
-                // 6) Note that the following line is often executed with row being greater than index.size().
-                //    This does not always occur though since we have an unpredictable thread race condition.
+        public PartsTableRow getRow( int row ) {
+            return tableRows.stream().skip(row).findFirst().orElse(null);
+        }
 
-                // Even adding a check beforehand doesn't avoid the problem since the thread race is still present
-                // and the problem could still occur after the check, although it would be less likely.
-                // Without some profililng, I hesitate to add synchronization because of the potential impact
-                // on large changes like switching symmetry, which removes and re-adds all of the Manifestations.
-                // Still, I think synchronization will eventually be the right solution.
+        public PartsTableRow getRow( String key ) {
+            return tableRows.stream().filter(r -> r.key.equals(key)).findFirst().orElse(null);
+        }
 
-                // One possible improvement, although not a fix, is to fire more specific events
-                // such as fireTableCellUpdated() in propertyChange(), so that fewer cells will need
-                // to be updated than when using fireTableDataChanged() as a catch-all.
-
-                // Until the thread race condition is addressed, I am just going to catch the IndexOutOfBoundsException
-                // and return null, which is incorrect but appears harmless and at least gives the grid updating thread
-                // some chance  of "catching up" with the actual contents of index and struts.
-                try {
-                    String key = index .get( row - 1 );
-                    Object[] rowData = struts .get( key );
-                    return rowData[ col ];
-                }
-                catch (IndexOutOfBoundsException ex) {
-                    return null;
-                }
-            }
+        public int getRowNumber( PartsTableRow row ) {
+            return tableRows.contains(row) 
+                    ? tableRows. headSet(row).size() // the number of elements that are less than row
+                    : -1;
         }
 
         @Override
-        public void propertyChange( PropertyChangeEvent evt )
+        public void propertyChange( PropertyChangeEvent event )
         {
-            String name = evt .getPropertyName();
-            if ( name .equals( "addBall" ) )
+            String propertyName = event .getPropertyName();
+            if( propertyName.equals("addBall") ||
+                propertyName.equals("removeBall") ||
+                propertyName.equals("addStrut") ||
+                propertyName.equals("removeStrut") ||
+                propertyName.equals("addPanel") ||
+                propertyName.equals("removePanel") )
             {
-                ++ balls;
-                this .fireTableCellUpdated( 0, 0 );
-            }
-            else if ( name .equals( "removeBall" ) )
-            {
-                -- balls;
-                this .fireTableCellUpdated( 0, 0 );
-            }
-            else if ( name .startsWith( "addStrut-" ) )
-            {
-                name = name .substring( "addStrut-" .length() );
-                StringTokenizer tokens = new StringTokenizer( name, ":" );
-                String orbitStr = tokens .nextToken();
-                String rgbStr = tokens .nextToken();
-                String nameStr = tokens .nextToken();
-                String lengthStr = tokens .nextToken();
-                String key = orbitStr + ":" + nameStr + ":" + lengthStr;
-                Object[] row = struts .get( key );
-                if ( row == null )
-                {
-                    int rgb = Integer .parseInt( rgbStr );
-                    Color color = new Color( rgb );
-                    row = new Object[]{ 1, color, nameStr, lengthStr };
-                    struts .put( key, row );
-                    index .add( key );
-                    Collections .sort( index );
+                ManifestationChangeHandler handler = new ManifestationChangeHandler(event);
+                if (SwingUtilities.isEventDispatchThread()) {
+                    handler.run();
+                } else {
+                    SwingUtilities.invokeLater(handler);
                 }
-                else
-                {
-                    int prev = ((Integer) row[ 0 ]) .intValue();
-                    row[ 0 ] = new Integer( ++prev );
-                }
-                this .fireTableDataChanged();
-            }
-            else if ( name .startsWith( "removeStrut-" ) )
-            {
-                name = name .substring( "removeStrut-" .length() );
-                StringTokenizer tokens = new StringTokenizer( name, ":" );
-                String orbitStr = tokens .nextToken();
-                String rgbStr = tokens .nextToken();
-                String nameStr = tokens .nextToken();
-                String lengthStr = tokens .nextToken();
-                String key = orbitStr + ":" + nameStr + ":" + lengthStr;
-                Object[] row = struts .get( key );
-                int count = ((Integer) row[ 0 ]) .intValue() - 1;
-                if ( count == 0 )
-                {
-                    struts .remove( key );
-                    index .remove( key );
-                    Collections .sort( index );
-                }
-                else
-                {
-                    row[ 0 ] = new Integer( count );
-                }
-                this .fireTableDataChanged();
             }
         }
-        
-    }
 
+        private class ManifestationChangeHandler implements Runnable {
+            private final String propertyName;
+            private final PartsTableRow oldRow;
+            private final PartsTableRow newRow;
+            public ManifestationChangeHandler(PropertyChangeEvent event) {
+                // Don't maintain a reference to the actual event.
+                // Just copy the data to be used later in another thread.
+                propertyName = event.getPropertyName();
+                PartInfo oldPart = (PartInfo) event.getOldValue();
+                PartInfo newPart = (PartInfo) event.getNewValue();
+                oldRow = oldPart == null ? null : new PartsTableRow(oldPart);
+                newRow = newPart == null ? null : new PartsTableRow(newPart);
+            }
+
+            @Override
+            public void run() {
+                switch(propertyName) {
+                    case "addBall":
+                        incrementAggregateRow(ballsTotalRow, false);
+                        break;
+
+                    case "removeBall":
+                        decrementAggregateRow(ballsTotalRow, false);
+                        break;
+
+                    case "addStrut":
+                        incrementAggregateRow(strutsTotalRow, true);
+                        updateOrInsertNewRow();
+                        break;
+
+                    case "removeStrut":
+                        decrementAggregateRow(strutsTotalRow, true);
+                        updateOrRemoveOldRow();
+                        break;
+                    
+                    case "addPanel":
+                        incrementAggregateRow(panelsTotalRow, true);
+                        updateOrInsertNewRow();
+                        break;
+
+                    case "removePanel":
+                        decrementAggregateRow(panelsTotalRow, true);
+                        updateOrRemoveOldRow();
+                        break;
+                }
+            }
+
+            private void incrementAggregateRow(PartsTableRow aggregateRow, boolean addInitial ) {
+                if (addInitial) {
+                    updateOrInsertRow(aggregateRow);
+                } else {
+                    aggregateRow.count++;
+                    int row = getRowNumber(aggregateRow);
+                    fireTableCellUpdated(row, PartsTableRow.COUNT_COLUMN);
+                }
+            }
+
+            private void decrementAggregateRow(PartsTableRow tableRow, boolean removeEmpty ) {
+                if (removeEmpty) {
+                    updateOrDeleteRow(tableRow);
+                } else {
+                    tableRow.count--;
+                    int row = getRowNumber(tableRow);
+                    fireTableCellUpdated(row, PartsTableRow.COUNT_COLUMN);
+                }
+            }
+
+            private void updateOrInsertNewRow() {
+                updateOrInsertRow(newRow);
+            }
+
+            private void updateOrRemoveOldRow() {
+                updateOrDeleteRow(oldRow);
+            }
+
+            private void updateOrInsertRow(PartsTableRow insertRow) {
+                PartsTableRow existingRow = getRow(insertRow.key);
+                if (existingRow == null) {
+                    insertRow.count = 1;
+                    tableRows.add(insertRow);
+                    // determine rowNumber AFTER adding insertedRow
+                    int rowNumber = getRowNumber(insertRow);
+                    fireTableRowsInserted(rowNumber, rowNumber);
+                } else {
+                    existingRow.count++;
+                    int row = getRowNumber(existingRow);
+                    fireTableCellUpdated(row, PartsTableRow.COUNT_COLUMN);
+                }
+            }
+
+            private void updateOrDeleteRow(PartsTableRow deleteRow) {
+                PartsTableRow existingRow = getRow(deleteRow.key);
+                existingRow.count--;     // existingRow should never be null
+                if (existingRow.count == 0) {
+                    // determine rowNumber BEFORE removing deleteRow
+                    int rowNumber = getRowNumber(existingRow);
+                    tableRows.remove(existingRow);
+                    fireTableRowsDeleted(rowNumber, rowNumber);
+                } else {
+                    int row = getRowNumber(existingRow);
+                    fireTableCellUpdated(row, PartsTableRow.COUNT_COLUMN);
+                }
+            }
+        }
+    }
 
     private final class ColorRenderer extends JLabel implements TableCellRenderer
     {
+        private static final long serialVersionUID = 1L;
         Border unselectedBorder = null;
         Border selectedBorder = null;
         boolean isBordered = true;
      
         public ColorRenderer( boolean isBordered ) {
             this.isBordered = isBordered;
-            setOpaque(true); //MUST do this for background to show up.
+            super.setOpaque(true); // MUST do this for background to show up.
         }
      
         @Override
         public Component getTableCellRendererComponent(
                                 JTable table, Object color,
                                 boolean isSelected, boolean hasFocus,
-                                int row, int column) {
+                                int row, int column)
+        {
             Color newColor = (Color)color;
             setBackground(newColor);
             if (isBordered) {
@@ -254,10 +426,24 @@ public class PartsPanel extends JPanel
                     setBorder(unselectedBorder);
                 }
             }
-             
-            setToolTipText("RGB value: " + newColor.getRed() + ", "
-                                         + newColor.getGreen() + ", "
-                                         + newColor.getBlue());
+
+            PartsTableRow rowData = (PartsTableRow) table.getValueAt(row, -1);
+            if( rowData.partClassGroupingOrder == PartGroupingOrderEnum.PANELS ||
+                    rowData.partClassGroupingOrder == PartGroupingOrderEnum.STRUTS )
+            {
+                if(rowData.isAutomaticDirection) {
+                    setToolTipText("auto " + rowData.partInfo.orbitStr);
+                }
+                else {
+                    setToolTipText(rowData.partInfo.orbitStr + " RGB: "
+                            + newColor.getRed() + ", "
+                            + newColor.getGreen() + ", "
+                            + newColor.getBlue() );
+                }
+            }
+            else {
+                setToolTipText(null);
+            }
             return this;
         }
     }
