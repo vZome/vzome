@@ -99,7 +99,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( createMenuItem( "Close", "close", KeyEvent.VK_W, COMMAND ) );
         menu .add( enableIf( canSave, createMenuItem( "Save...", "save", KeyEvent.VK_S, COMMAND ) ) );
         menu .add( enableIf( canSave, createMenuItem( "Save As...", "saveAs" ) ) );
-        menu .add( enableIf( canSave, createMenuItem( "Save Default", "saveDefault" ) ) );
+        menu .add( enableIf( canSave, createMenuItem( "Save Template...", "saveDefault" ) ) );
 
         menu.addSeparator();
 

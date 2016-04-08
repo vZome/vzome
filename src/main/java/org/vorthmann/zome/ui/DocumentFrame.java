@@ -216,14 +216,15 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
             	case "saveDefault":
-                    // this is basically "save a copy...", with a hard coded file path.
+                    // this is basically "save a copy...", with a hard-coded file path.
                     String fieldName = mController.getProperty( "field.name" );
+                    String fieldLabel = mController.getProperty( "field.label" );
                     File prototype = new File( Platform.getPreferencesFolder(), "Prototypes/" + fieldName + ".vZome" );
                     try {
                         String path = prototype.getCanonicalPath();
                         int response = JOptionPane.showConfirmDialog(
                                 DocumentFrame.this,
-                                "Do you want to save this model as the default template to be used for new " + fieldName + " models?"
+                                "Save as the template for new models in the " + fieldLabel + " field?"
                                 + "\n\nTemplate file: " + path,
                                 "Save Template?",
                                 JOptionPane.YES_NO_OPTION,
@@ -236,7 +237,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         else if ( prototype.exists() ) {
                             response = JOptionPane.showConfirmDialog(
                                 DocumentFrame.this,
-                                "Do you want to delete the existing template for new " + fieldName + " models?"
+                                "Delete the existing template for new models in the " + fieldLabel + " field?"
                                 + "\n\nTemplate file: " + path,
                                 "Delete Template?",
                                 JOptionPane.YES_NO_OPTION,

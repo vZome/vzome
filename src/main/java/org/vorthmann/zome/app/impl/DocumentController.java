@@ -1159,6 +1159,31 @@ public class DocumentController extends DefaultController implements J3dComponen
         if ( "field.name".equals( string ) )
             return this .documentModel .getField() .getName();
         
+        if ( "field.label".equals( string ) ) {
+        	
+            String name = this .documentModel .getField() .getName();
+            switch ( name ) {
+
+            case "golden":
+				return "Zome (Golden)";
+
+            case "rootTwo":
+				return "\u221A2";
+
+            case "rootThree":
+				return "\u221A3";
+
+            case "heptagon":
+				return "Heptagon";
+
+            case "snubDodec":
+				return "Snub Dodec";
+
+			default:
+				return "unknown";
+			}
+        }
+        
         if ( "clipboard" .equals( string ) )
             return designClipboard;
                 
