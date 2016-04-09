@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +42,7 @@ import com.vzome.desktop.controller.RenderingViewer;
 
 public class ApplicationController extends DefaultController
 {
-    private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.controller" );
+	private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.controller" );
 
     private final Map<String, DocumentController> docControllers = new HashMap<>();
 	
@@ -358,9 +360,9 @@ public class ApplicationController extends DefaultController
     }
 
 	@Override
-    public final String getProperty( String string )
+    public final String getProperty( String propName )
     {
-		switch ( string ) {
+		switch ( propName ) {
 		
 		case "formatIsSupported":
             return "true";
@@ -369,7 +371,62 @@ public class ApplicationController extends DefaultController
             return "Untitled " + ++lastUntitled;
 
 		default:
-	        return properties .getProperty( string );
+			if ( propName .startsWith( "field.label." ) )
+			{
+				String fieldName = propName .substring( "field.label." .length() );
+	            // TODO implement AlgebraicField.getLabel()
+	            switch ( fieldName ) {
+
+	            case "golden":
+					return "Zome (Golden)";
+
+	            case "rootTwo":
+					return "\u221A2";
+
+	            case "rootThree":
+					return "\u221A3";
+
+	            case "heptagon":
+					return "Heptagon";
+
+	            case "snubDodec":
+					return "Snub Dodec";
+
+				default:
+					return fieldName;
+				}
+			}
+			if ( propName .startsWith( "enable." ) && propName .endsWith( ".field" ) )
+			{
+				String fieldName = propName .substring( "enable." .length() );
+				fieldName = fieldName .substring( 0, fieldName .lastIndexOf( ".field" ) );
+				
+				switch ( fieldName ) {
+
+				case "golden":
+					return "false"; // this one is forcibly enabled by the menu, and we don't want it listed twice
+
+				case "dodecagon":
+					return "false"; // this is just an alias for rootThree
+
+				default:
+					// fall through
+				}
+
+				if ( getProperty( "vZomeDeveloper" ) != null )
+					return "true"; // developer sees all available fields
+				
+				switch ( fieldName ) {
+
+				case "rootTwo":
+				case "rootThree":
+					return "true"; // these two are enabled for everyone
+
+				default:
+					// fall through, see if it is explicitly set
+				}
+			}
+	        return properties .getProperty( propName );
 		}
     }
 
@@ -467,10 +524,14 @@ public class ApplicationController extends DefaultController
 	@Override
     public String[] getCommandList( String listName )
     {
-        if ( listName.startsWith( "fields." ) ) {
-            Set<?> names = (Set<?>)modelApp.getFieldNames();
-            return (String[]) names.toArray( );
-        } else if ( listName.startsWith( "symmetries." ) ) {
+        if ( listName .startsWith( "fields" ) )
+        {
+            Set<String> names = modelApp .getFieldNames();
+            SortedSet<String> sorted = new TreeSet<String>( names );
+            return (String[]) sorted .toArray( new String[]{} );
+        }
+        else if ( listName .startsWith( "symmetries." ) )
+        {
             String fieldName = listName.substring( 11 );
             AlgebraicField field = modelApp .getField( fieldName );
             Symmetry[] symms = field.getSymmetries();

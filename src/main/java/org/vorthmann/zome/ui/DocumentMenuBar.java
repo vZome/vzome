@@ -77,13 +77,15 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         if ( fullPower )
         {
             JMenu submenu = new JMenu( "New Model..." );
-            submenu.add( enableIf( isEditor || readerPreview, createMenuItem( "Zome (Golden Field)", "new", KeyEvent.VK_N, COMMAND ) ) );
-            submenu.add( createMenuItem( "\u221A2 Field", "new-rootTwo" ) );
-            submenu.add( createMenuItem( "\u221A3 Field", "new-rootThree" ) );
-            if ( "true" .equals( controller .getProperty( "enable.heptagon.field" ) ) )
-                submenu.add( createMenuItem( "Heptagon Field", "new-heptagon" ) );
-            if ( "true" .equals( controller .getProperty( "enable.snub.dodec.field" ) ) )
-                submenu.add( createMenuItem( "Snub Dodec Field", "new-snubDodec" ) );
+            submenu.add( enableIf( isEditor || readerPreview, createMenuItem( "Zome (Golden) Field", "new-golden", KeyEvent.VK_N, COMMAND ) ) );
+            
+            String[] fieldNames = controller .getCommandList( "fields" );
+            for ( String fName : fieldNames ) {
+				if ( controller .propertyIsTrue( "enable." + fName + ".field" ) ) {
+					String label = controller .getProperty( "field.label." + fName );
+		            submenu .add( createMenuItem( label + " Field", "new-" + fName ) );
+				}
+			}
             menu.add( submenu );
         }
         else
