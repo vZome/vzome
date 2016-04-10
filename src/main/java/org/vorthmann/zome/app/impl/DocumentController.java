@@ -802,6 +802,15 @@ public class DocumentController extends DefaultController implements J3dComponen
 //                document .applyQuaternionSymmetry( qsymm, qsymm );
 //            }
 //            
+            else if ( action .equals( "delete" ) )
+            {
+                documentModel .doEdit( action );
+            }
+            else if ( action .equals( "cut" ) )
+            {
+                setProperty( "clipboard", documentModel .copySelectionVEF() );
+                documentModel .doEdit( "delete" );
+            }
             else if ( action .equals( "copy" ) )
                 setProperty( "clipboard", documentModel .copySelectionVEF() );
             else if ( action.equals( "paste" ) )
