@@ -274,7 +274,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		else if ( "Branch" .equals( name ) )
 			edit = new Branch( this );
 
-		else if ( "ShowPoint".equals( name ) )
+        else if ( "Delete" .equals( name ) )
+            edit = new Delete( this.mSelection, this.mRealizedModel );
+
+        else if ( "ShowPoint".equals( name ) )
 			edit = new ShowPoint( null, this.mSelection, this.mRealizedModel, groupInSelection );
 
 		else if ( "setItemColor".equals( name ) )
@@ -520,6 +523,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
         else if ( action.equals( "assertSelection" ) )
             edit = new ValidateSelection( mSelection );
+
+        else if ( action.equals( "delete" ) )
+            edit = new Delete( mSelection, mRealizedModel );
 
 //        else if ( action.equals( "sixLattice" ) )
 //            edit = new SixLattice( mSelection, mRealizedModel, mDerivationModel );

@@ -6,6 +6,7 @@ package com.vzome.core.editor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,7 +17,6 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import java.util.function.Predicate;
 
 public abstract class ChangeManifestations extends ChangeSelection
 {
@@ -122,6 +122,11 @@ public abstract class ChangeManifestations extends ChangeSelection
         return m;
     }
     
+    protected void deleteManifestation( Manifestation man )
+	{
+        plan( new DeleteManifestation( man ) );
+	}
+
     protected void showManifestation( Manifestation m )
     {
         plan( new RenderManifestation( m, true ) );
@@ -179,7 +184,7 @@ public abstract class ChangeManifestations extends ChangeSelection
                 mManifestation .removeConstruction( mConstruction );
                 if ( mManifestation .isUnnecessary() ) {
                     mManifestations .hide( mManifestation ); // TODO make this more immediate, call renderer here
-                    mManifestations .remove(  mManifestation );
+                    mManifestations .remove( mManifestation );
                 }
             }
         }
@@ -264,6 +269,41 @@ public abstract class ChangeManifestations extends ChangeSelection
         	return this .mShowing && this .mManifestation .equals( man );
         }
 
+    }
+
+    private class DeleteManifestation implements SideEffect
+    {
+        private final Manifestation mManifestation;
+        
+        public DeleteManifestation( Manifestation manifestation )
+        {
+            mManifestation = manifestation;
+        }
+
+        @Override
+        public void redo()
+        {
+        	mManifestation .setHidden( true );
+            mManifestations .hide( mManifestation );
+            mManifestations .remove( mManifestation );
+        }
+
+        @Override
+        public void undo()
+        {
+            mManifestations .add( mManifestation );
+            mManifestations .show( mManifestation );
+        	mManifestation .setHidden( false );
+        }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            Element result = doc .createElement( "delete" );
+            Element man = mManifestation .getXml( doc );
+            result .appendChild( man );
+            return result;
+        }
     }
 
 
