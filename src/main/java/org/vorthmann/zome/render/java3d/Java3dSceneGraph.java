@@ -62,7 +62,7 @@ public class Java3dSceneGraph implements RenderingChanges
 
     protected LinearFog mFog;
 
-    protected AmbientLight variableAmbient;
+    protected Light ambientForGlow, ambientForOutlines, directionalForOutlines;
 
     protected int mGlowCount = 0;
 
@@ -152,15 +152,16 @@ public class Java3dSceneGraph implements RenderingChanges
 
         float[] rgb = new float[3];
         Color3f color = new Color3f( lights.getAmbientColor().getRGBColorComponents( rgb ) );
-        variableAmbient = new AmbientLight( color );
-        variableAmbient.setInfluencingBounds( mEverywhere );
-        variableAmbient.setEnable( true );
-        variableAmbient.setCapability( Light.ALLOW_STATE_WRITE );
-        mLights.addChild( variableAmbient );
-        AmbientLight fixedAmbient = new AmbientLight( color );
-        fixedAmbient.setInfluencingBounds( mEverywhere );
-        fixedAmbient.setEnable( true );
-        mLights.addChild( fixedAmbient );
+        ambientForGlow = new AmbientLight( color );
+        ambientForGlow .setInfluencingBounds( mEverywhere );
+        ambientForGlow .setEnable( true );
+        ambientForGlow .setCapability( Light.ALLOW_STATE_WRITE );
+        mLights .addChild( ambientForGlow );
+        ambientForOutlines = new AmbientLight( color );
+        ambientForOutlines .setInfluencingBounds( mEverywhere );
+        ambientForOutlines .setEnable( polygonOutlinesMode );
+        ambientForOutlines .setCapability( Light.ALLOW_STATE_WRITE );
+        mLights .addChild( ambientForOutlines );
 
         if(lights.size() <= 0) {
             throw new IllegalArgumentException("Expected lights.size() to be greater than 0.");
@@ -169,9 +170,17 @@ public class Java3dSceneGraph implements RenderingChanges
             Vector3f direction = new Vector3f();
             color = new Color3f( lights.getDirectionalLight( i, direction ).getRGBColorComponents( rgb ) );
             Light light = new DirectionalLight( color, direction );
-            light.setInfluencingBounds( mEverywhere );
-            light.setEnable( true );
-            mLights.addChild( light );
+            light .setInfluencingBounds( mEverywhere );
+            light .setEnable( true );
+            mLights .addChild( light );
+            if ( i == lights.size() - 1 ) {
+            	// TODO model this better in core Lights... no overloading
+            	directionalForOutlines = light;
+            	directionalForOutlines .setCapability( Light.ALLOW_STATE_WRITE );
+            	directionalForOutlines .setEnable( polygonOutlinesMode );
+            	// reuse the color for the ambient light
+            	ambientForOutlines .setColor( color );
+            }
         }
         // ---------------------------------------------------
 
@@ -443,9 +452,9 @@ public class Java3dSceneGraph implements RenderingChanges
         if ( mFactory.hasEmissiveColor() )
             if ( glowOn ) {
                 ++ mGlowCount;
-                variableAmbient.setEnable( false );
+                ambientForGlow.setEnable( false );
             } else if ( -- mGlowCount == 0 ) {
-                variableAmbient.setEnable( true );
+                ambientForGlow.setEnable( true );
             }
         colorChanged( rm );
     }
@@ -553,6 +562,9 @@ public class Java3dSceneGraph implements RenderingChanges
 	public void togglePolygonOutlinesMode()
 	{
 		this.polygonOutlinesMode = ! this .polygonOutlinesMode;
+		ambientForOutlines .setEnable( this .polygonOutlinesMode );
+    	directionalForOutlines .setEnable( this .polygonOutlinesMode );
+
 		
 		Collection<BranchGroup> bgs = new ArrayList<>();
         for ( int i = 0; i < mScene .numChildren(); i++ ) {
