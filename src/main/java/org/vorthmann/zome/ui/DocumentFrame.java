@@ -353,7 +353,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     if ( cmd .startsWith( "setSymmetry." ) )
                     {
                         system = cmd .substring( "setSymmetry.".length() );
-                        mController .actionPerformed( e ); // TODO exclusive
+                        mController .actionPerformed( e ); // TODO getExclusiveAction
                     }
                     else if ( cmd .startsWith( "showProperties-" ) )
                     {

@@ -189,7 +189,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         
         editingModel = userHasEntitlement( "model.edit" ) && ! propertyIsTrue( "reader.preview" );
         
-        toolsController = new ToolsController();
+        toolsController = new ToolsController( document );
         toolsController .setNextController( this );
         
         polytopesController = new PolytopesController( this .documentModel );
@@ -786,12 +786,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 if ( "icosahedral" .equals( group ) || "octahedral" .equals( group ) )
                     symmetry = symmetries .get( group ) .getSymmetry();
                 
-                documentModel .createTool( name, group, toolsController, symmetry );
-            }
-            else if ( action.equals( "applyTool" ) )
-            {
-    	        ToolEvent event = (ToolEvent) e;
-    	        documentModel .applyTool( event .getTool(), toolsController, event .getModes() );
+                documentModel .createTool( name, group, documentModel, symmetry );
             }
             
 // This was an experiment, to see if the applyQuaternionSymmetry() approach was workable.
@@ -876,7 +871,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                     lessonController .renderThumbnails( documentModel, thumbnails );
                 if ( this .toolsController != null )
                     for ( Tool tool : this .documentModel .getTools() )
-                        this .toolsController .addTool( tool );
+                        this .toolsController .addTool( tool .getName() );
             }
             else
                 try {
