@@ -912,6 +912,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     {
     	String name = tool .getName();
     	tools .put( name, tool );
+        firePropertyChange( "tool.instances", null, name );
     }
 
     @Override
