@@ -361,8 +361,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 		String group = cmd .substring( "addTool-" .length() );
                         String numStr = toolsController .getProperty( "next.tool.number" );
                         int toolNum = Integer .parseInt( numStr );
-                		String toolName = group + "." + toolNum;
-                        mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "newTool/" + toolName + "/" + toolName ) );
+                		String toolId = group + "." + toolNum;
+                    	String toolName = (String) JOptionPane .showInputDialog( DocumentFrame.this,
+                    			"Name the new tool:", "New Tool",
+                    					JOptionPane.PLAIN_MESSAGE, null, null, toolId );
+                    	if ( ( toolName == null ) || ( toolName .length() == 0 ) ) {
+                    		return;
+                    	}
+                        mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "newTool/" + toolId + "/" + toolName ) );
                 	}
                     else if ( cmd .startsWith( "showProperties-" ) )
                     {
