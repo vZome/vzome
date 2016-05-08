@@ -356,6 +356,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         system = cmd .substring( "setSymmetry.".length() );
                         mController .actionPerformed( e ); // TODO getExclusiveAction
                     }
+                    else if ( cmd .startsWith( "addTool-" ) )
+                    {
+                		String group = cmd .substring( "addTool-" .length() );
+                        String numStr = toolsController .getProperty( "next.tool.number" );
+                        int toolNum = Integer .parseInt( numStr );
+                		String toolName = group + "." + toolNum;
+                        mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "newTool/" + toolName + "/" + toolName ) );
+                	}
                     else if ( cmd .startsWith( "showProperties-" ) )
                     {
             			String key = cmd .substring( "showProperties-" .length() );
@@ -744,6 +752,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         			actionListener = this .mController;
         		}
         		else if ( command .startsWith( "setSymmetry." ) ) {
+        			actionListener = this .localActions;
+        		}
+        		else if ( command .startsWith( "addTool-" ) ) {
         			actionListener = this .localActions;
         		}
         		else if ( command .startsWith( "showProperties-" ) ) {

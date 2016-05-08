@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -40,6 +41,14 @@ public class NewToolDialog extends EscapeDialog implements ListSelectionListener
         super( frame, "Create New Tool", true );
         Container content = getContentPane();
         content .setLayout( new BorderLayout() );
+        
+        String numStr = controller .getProperty( "next.tool.number" );
+        try {
+			toolNum = Integer .parseInt( numStr );
+		} catch (Exception e) {
+			Logger .getLogger( "com.vzome.ui" ) .warning( "property 'next.tool.number' did not parse as an integer" );
+			toolNum = 99;
+		}
 
         this .controller = controller;
         {

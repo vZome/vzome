@@ -201,8 +201,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	
 	private AbstractButton newToolButton( ControlActions enabler, String command, String group, String label, String tooltip )
 	{
-		// TODO this is far from ready: handler must prompt user for a unique tool name
-		AbstractButton button = makeEditButton( enabler, "newTool/" + group + ".1/" + command, "CreateTool", "Create a new tool", "/icons/tools/newTool/" + group + ".png" );
+		AbstractButton button = makeEditButton( enabler, "addTool-" + group, "CreateTool", "Create a new tool", "/icons/tools/newTool/" + group + ".png" );
 		return button;
 	}
 	

@@ -24,9 +24,7 @@ import org.vorthmann.ui.Controller;
 public class ToolsPanel extends JPanel implements PropertyChangeListener
 {
     private final Controller controller;
-    
-    private int toolNum = 0;
-    
+        
     private JPanel instances;
     
     private JScrollPane scroller;
@@ -49,7 +47,6 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
                 public void actionPerformed( ActionEvent arg0 )
                 {
                     final NewToolDialog newToolDialog = new NewToolDialog( frame, controller );
-                    newToolDialog .setToolNum( ++toolNum );
                     newToolDialog .setVisible( true );
                 }
                 

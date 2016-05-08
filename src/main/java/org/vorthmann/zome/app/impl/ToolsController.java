@@ -56,4 +56,17 @@ public class ToolsController extends DefaultController implements PropertyChange
     		this .properties() .firePropertyChange( evt ); // propagate to the UI
         }
 	}
+
+	@Override
+	public String getProperty( String name )
+	{
+		switch (name) {
+
+		case "next.tool.number":
+			return "" + toolNames .size();
+
+		default:
+			return super .getProperty( name );
+		}
+	}
 }
