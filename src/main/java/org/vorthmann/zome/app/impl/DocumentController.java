@@ -869,9 +869,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 // get the thumbnails updating in the background
                 if ( lessonController != null )
                     lessonController .renderThumbnails( documentModel, thumbnails );
-                if ( this .toolsController != null )
                     for ( Tool tool : this .documentModel .getTools() )
-                        this .toolsController .addTool( tool .getName() );
+                    	this .properties() .firePropertyChange( "tool.instances", null, tool .getName() );
             }
             else
                 try {

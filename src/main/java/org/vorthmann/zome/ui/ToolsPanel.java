@@ -11,9 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -33,9 +30,7 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
     private JPanel instances;
     
     private JScrollPane scroller;
-    
-    private List<String> toolIDs;
-    
+        
     private static final Logger logger = Logger .getLogger( "org.vorthmann.zome.ui" );
 
     public ToolsPanel( final JFrame frame, final Controller controller )
@@ -69,10 +64,6 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
         instances .setMaximumSize( new Dimension( 350, 0 ) );
 //        instances .setLayout( new BoxLayout( instances, BoxLayout .Y_AXIS ) );
         instances .setLayout( new GridLayout( 0,4 ) );
-        {
-            toolIDs = new ArrayList<>();
-            Collections .addAll( toolIDs, this .controller .getCommandList( "tool.instances" ) );
-        }
         JPanel instancesBorder = new JPanel( new BorderLayout() );
         instancesBorder .add( instances, BorderLayout.PAGE_START );
 
@@ -121,19 +112,9 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
     {
         if ( evt .getPropertyName() .equals( "tool.instances" ) )
         {
-            if ( evt .getNewValue() == null )
-            {
-                String idAndName = (String) evt .getOldValue(); // will be "group.N/label"
-                int index = toolIDs .indexOf( idAndName );
-                toolIDs .remove( index );
-                instances .remove( index );
-                scroller .revalidate();
-                scroller .repaint();
-            }
-            else if ( evt .getOldValue() == null )
+            if ( evt .getOldValue() == null )
             {
                 String idAndName = (String) evt .getNewValue(); // will be "group.N/label"
-                toolIDs .add( idAndName );
                 Component button = createButton( idAndName, controller );
                 instances .add( button );
                 scroller .revalidate();

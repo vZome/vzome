@@ -1,5 +1,7 @@
 package org.vorthmann.zome.ui;
 
+import static org.vorthmann.zome.ui.ApplicationUI.getLogFileName;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -17,6 +19,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +48,6 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.desktop.controller.ViewPlatformControlPanel;
-import java.io.IOException;
-import static org.vorthmann.zome.ui.ApplicationUI.getLogFileName;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {
@@ -465,7 +466,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     if ( this .fullPower )
                     {
                         tabbedPane .addTab( "build", buildPanel );
-                        JPanel toolsPanel = new ToolsPanel( DocumentFrame.this, toolsController );
+                        ToolsPanel toolsPanel = new ToolsPanel( DocumentFrame.this, toolsController );
+                        mController .addPropertyListener( toolsPanel );
                         tabbedPane .addTab( "tools", toolsPanel );
                         
                         JPanel bomPanel = new PartsPanel( mController .getSubController( "parts" ) );
