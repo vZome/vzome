@@ -28,8 +28,8 @@ public interface Tool
 
         void addTool( Tool tool );
 
-        void removeTool( Tool tool );
-        
-        void useTool( Tool tool );
+        Tool findEquivalent( Tool tool );
     }
+
+	boolean isValidForSelection();
 }

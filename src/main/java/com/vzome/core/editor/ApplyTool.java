@@ -20,8 +20,6 @@ public class ApplyTool extends ChangeManifestations
     @Override
     public void perform() throws Failure
     {
-        registry .useTool( tool );
-        
         // first, handle the inputs, offering each to the tool (if it needs input).
         //  If the tool does not need input, it operates just on its parameters and
         //  the entire realized model, but it still may add to or replace the current

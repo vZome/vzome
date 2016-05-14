@@ -916,10 +916,14 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     }
 
     @Override
-    public void removeTool( Tool tool )
+    public Tool findEquivalent( Tool tool )
     {
-    	String name = tool .getName();
-    	tools .remove( name );
+    	for ( Map.Entry<String, Tool> entry : tools .entrySet() )
+    	{
+    		if ( entry .getValue() .equals( tool ) )
+    			return entry .getValue();
+		}
+    	return null;
     }
 
     @Override
@@ -927,9 +931,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     {
     	return tools .get( toolName );
     }
-
-    @Override
-    public void useTool( Tool tool ) {}
 
     public AlgebraicField getField()
     {
@@ -1057,30 +1058,32 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	UndoableEdit edit = new StrutCreation( point, zone, length, this .mRealizedModel );
         this .performAndRecord( edit );
     }
+    
+    public boolean isToolEnabled( String group, Symmetry symmetry )
+    {
+        Tool tool = (Tool) makeTool( group + ".0/UNUSED", group, null, symmetry ); // TODO: get rid of isAutomatic() and isTetrahedral() silliness, so the string won't get parsed
+    	return tool .isValidForSelection();
+    }
 
 	public void createTool( String name, String group, Tool.Registry tools, Symmetry symmetry )
 	{
-        Selection toolSelection = mSelection;
-
-        if ( "default" .equals( group ) )
-        {
-            name = name .substring( "default." .length() );
-            int nextDot = name .indexOf( "." );
-            group = name .substring( 0, nextDot );
-            toolSelection = new Selection();
-        }
-        
+        UndoableEdit edit = makeTool( name, group, tools, symmetry );
+        performAndRecord( edit );
+	}
+	
+	private UndoableEdit makeTool( String name, String group, Tool.Registry tools, Symmetry symmetry )
+	{
         UndoableEdit edit = null;
         if ( "bookmark" .equals( group ) )
-            edit = new BookmarkTool( name, toolSelection, mRealizedModel, tools );
+            edit = new BookmarkTool( name, mSelection, mRealizedModel, tools );
         else if ( "point reflection" .equals( group ) )
-            edit = new InversionTool( name, toolSelection, mRealizedModel, tools, originPoint );
+            edit = new InversionTool( name, mSelection, mRealizedModel, tools, originPoint );
         else if ( "mirror" .equals( group ) )
-            edit = new MirrorTool( name, toolSelection, mRealizedModel, tools, originPoint );
+            edit = new MirrorTool( name, mSelection, mRealizedModel, tools, originPoint );
         else if ( "translation" .equals( group ) )
-            edit = new TranslationTool( name, toolSelection, mRealizedModel, tools, originPoint );
+            edit = new TranslationTool( name, mSelection, mRealizedModel, tools, originPoint );
         else if ( "linear map" .equals( group ) )
-            edit = new LinearMapTool( name, toolSelection, mRealizedModel, tools, originPoint, false );
+            edit = new LinearMapTool( name, mSelection, mRealizedModel, tools, originPoint, false );
         else if ( "rotation" .equals( group ) )
             edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
         else if ( "scaling" .equals( group ) )
@@ -1093,8 +1096,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new PlaneSelectionTool( name, mSelection, mField, tools );
         else
         	edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
-        
-        performAndRecord( edit );
+        return edit;
 	}
 
 	public Exporter3d getNaiveExporter( String format, Camera view, Colors colors, Lights lights, RenderedModel currentSnapshot )

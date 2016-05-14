@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.model.Manifestation;
@@ -34,21 +34,45 @@ public class BookmarkTool extends ChangeManifestations implements Tool
         }
     }
 
-    @Override
+	@Override
+	public boolean equals( Object that )
+	{
+		if (this == that) {
+			return true;
+		}
+		if (that == null) {
+			return false;
+		}
+		if (getClass() != that.getClass()) {
+			return false;
+		}
+		BookmarkTool other = (BookmarkTool) that;
+		if (bookmarkedConstructions == null) {
+			if (other.bookmarkedConstructions != null) {
+				return false;
+			}
+		} else if (!bookmarkedConstructions
+				.equals(other.bookmarkedConstructions)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public boolean isSticky()
     {
         return true;
     }
 
     @Override
-    public void perform() throws Failure
+    public void perform() throws Command.Failure
     {
         defineTool();
     }
 
     protected void defineTool()
     {
-        tools .addTool( this );
+		tools .addTool( this );
     }
 
     @Override
@@ -109,7 +133,7 @@ public class BookmarkTool extends ChangeManifestations implements Tool
     }
 
     @Override
-    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
+    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Command.Failure
     {
         this.name = element .getAttribute( "name" );
     }
@@ -124,4 +148,10 @@ public class BookmarkTool extends ChangeManifestations implements Tool
     {
         return "SHOULD NOT HAPPEN";
     }
+
+	@Override
+	public boolean isValidForSelection() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

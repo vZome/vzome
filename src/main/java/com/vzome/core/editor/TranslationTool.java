@@ -4,11 +4,7 @@
 package com.vzome.core.editor;
 
 
-import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
-import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointToPointTranslation;
 import com.vzome.core.construction.Transformation;
@@ -29,44 +25,47 @@ public class TranslationTool extends TransformationTool
         return "translation along X axis";
     }
 
+	@Override
+	public boolean isValidForSelection()
+	{
+		return null == checkSelection( false );
+	}
+
     @Override
     public void perform() throws Command.Failure
     {
+    	String error = checkSelection( true );
+    	if ( error != null )
+    		throw new Command.Failure( error );
+    	else
+    		defineTool();
+	}
+
+    @Override
+    protected String checkSelection( boolean prepareTool )
+    {
         Point p1 = null, p2 = null;
         boolean correct = true;
-        if ( ! isAutomatic() )
-            for (Manifestation man : mSelection) {
-                unselect( man );
-                if ( man instanceof Connector )
-                {
-                    if ( p2 != null )
-                    {
-                        correct = false;
-                        break;
-                    }
-                    if ( p1 == null )
-                        p1 = (Point) ((Connector) man) .getConstructions() .next();
-                    else
-                        p2 = (Point) ((Connector) man) .getConstructions() .next();
-                }
+        for (Manifestation man : mSelection) {
+        	if ( prepareTool )
+        		unselect( man );
+        	if ( man instanceof Connector )
+        	{
+        		if ( p2 != null )
+        		{
+        			correct = false;
+        			break;
+        		}
+        		if ( p1 == null )
+        			p1 = (Point) ((Connector) man) .getConstructions() .next();
+        		else
+        			p2 = (Point) ((Connector) man) .getConstructions() .next();
+        	}
         }
         
         if ( p1 == null )
         {
-            if ( isAutomatic() )
-            {
-                p1 = originPoint;
-                AlgebraicField field = originPoint .getField();
-                AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
-                AlgebraicNumber scale = field .createPower( 3 );
-                scale = scale .times( field .createRational( 2 ) );
-                xAxis = xAxis .scale( scale );
-                p2 = new FreePoint( xAxis );
-            }
-            else
-            {
-                correct = false;
-            }
+        	correct = false;
         }
         else if ( p2 == null )
         {
@@ -75,12 +74,13 @@ public class TranslationTool extends TransformationTool
         }
 
         if ( ! correct )
-            throw new Command.Failure( "translation tool requires start and end points, or just an end point" );
+            return "translation tool requires start and end points, or just an end point";
 
-        this .transforms = new Transformation[ 1 ];
-        transforms[ 0 ] = new PointToPointTranslation( p1, p2 );
-
-        defineTool();
+        if ( prepareTool ) {
+            this .transforms = new Transformation[ 1 ];
+            transforms[ 0 ] = new PointToPointTranslation( p1, p2 );
+        }
+        return null;
     }
 
     @Override

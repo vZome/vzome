@@ -12,7 +12,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Bivector3d;
 import com.vzome.core.algebra.Vector3d;
 import com.vzome.core.commands.Command;
-import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.model.Connector;
@@ -45,14 +44,65 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         this .tools = tools;
     }
 
-    @Override
+	@Override
+	public boolean equals( Object that )
+	{
+		if (this == that) {
+			return true;
+		}
+		if (that == null) {
+			return false;
+		}
+		if (getClass() != that.getClass()) {
+			return false;
+		}
+		PlaneSelectionTool other = (PlaneSelectionTool) that;
+		if (above != other.above) {
+			return false;
+		}
+		if (anchor == null) {
+			if (other.anchor != null) {
+				return false;
+			}
+		} else if (!anchor.equals(other.anchor)) {
+			return false;
+		}
+		if (boundaryOpen != other.boundaryOpen) {
+			return false;
+		}
+		if (halfSpace != other.halfSpace) {
+			return false;
+		}
+		if (includeBalls != other.includeBalls) {
+			return false;
+		}
+		if (includePanels != other.includePanels) {
+			return false;
+		}
+		if (includePartials != other.includePartials) {
+			return false;
+		}
+		if (includeStruts != other.includeStruts) {
+			return false;
+		}
+		if (plane == null) {
+			if (other.plane != null) {
+				return false;
+			}
+		} else if (!plane.equals(other.plane)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public boolean isSticky()
     {
         return true;
     }
 
     @Override
-    public void perform() throws Failure
+    public void perform() throws Command.Failure
     {
         AlgebraicVector p1 = null, p2 = null, p3 = null;
         for (Manifestation man : mSelection) {
@@ -94,7 +144,7 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
 
     protected void defineTool()
     {
-        tools .addTool( this );
+		tools .addTool( this );
     }
 
     @Override
@@ -222,7 +272,7 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
     }
 
     @Override
-    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
+    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Command.Failure
     {
         this.name = element .getAttribute( "name" );
         this .includeBalls = ! "false" .equals( element .getAttribute( "balls" ) );
@@ -258,4 +308,10 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
     {
         return "plane";
     }
+
+	@Override
+	public boolean isValidForSelection() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

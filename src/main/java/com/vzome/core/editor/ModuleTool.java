@@ -9,7 +9,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
@@ -32,21 +32,44 @@ public class ModuleTool extends ChangeManifestations implements Tool
         mSelection .copy( bookmarkedSelection );
     }
 
-    @Override
+	@Override
+	public boolean equals( Object that )
+	{
+		if (this == that) {
+			return true;
+		}
+		if (that == null) {
+			return false;
+		}
+		if (getClass() != that.getClass()) {
+			return false;
+		}
+		ModuleTool other = (ModuleTool) that;
+		if (bookmarkedSelection == null) {
+			if (other.bookmarkedSelection != null) {
+				return false;
+			}
+		} else if (!bookmarkedSelection.equals(other.bookmarkedSelection)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public boolean isSticky()
     {
         return true;
     }
 
     @Override
-    public void perform() throws Failure
+    public void perform() throws Command.Failure
     {
         defineTool();
     }
 
     protected void defineTool()
     {
-        tools .addTool( this );
+		tools .addTool( this );
     }
 
     @Override
@@ -112,7 +135,7 @@ public class ModuleTool extends ChangeManifestations implements Tool
     }
 
     @Override
-    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
+    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Command.Failure
     {
         this.name = element .getAttribute( "name" );
     }
@@ -127,4 +150,10 @@ public class ModuleTool extends ChangeManifestations implements Tool
     {
         return "module";
     }
+
+	@Override
+	public boolean isValidForSelection() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

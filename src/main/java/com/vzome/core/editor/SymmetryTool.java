@@ -6,9 +6,8 @@ package com.vzome.core.editor;
 
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.Command;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
@@ -31,6 +30,38 @@ public class SymmetryTool extends TransformationTool
     }
     
     @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((symmetry == null) ? 0 : symmetry.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals( Object that )
+	{
+		if (this == that) {
+			return true;
+		}
+		if (!super.equals(that)) {
+			return false;
+		}
+		if (getClass() != that.getClass()) {
+			return false;
+		}
+		SymmetryTool other = (SymmetryTool) that;
+		if (symmetry == null) {
+			if (other.symmetry != null) {
+				return false;
+			}
+		} else if (!symmetry.equals(other.symmetry)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
     public String getDefaultName( String baseName )
     {
         int nextDot = baseName .indexOf( "." );
@@ -43,33 +74,37 @@ public class SymmetryTool extends TransformationTool
         return "tetrahedral" .equals( getCategory() );
     }
 
-    @Override
-    public void perform() throws Command.Failure
+	@Override
+    protected String checkSelection( boolean prepareTool )
     {
         boolean isTetrahedral = isTetrahedral();
         boolean isIcosahedral = "icosahedral" .equals( symmetry .getName() );
         Point center = null;
         Strut axis = null;
         boolean correct = true;
-        if ( ! isAutomatic() )
-            for (Manifestation man : mSelection) {
-                unselect( man );
-                if ( man instanceof Connector )
-                {
-                    if ( center != null )
-                        throw new Command.Failure( "no unique symmetry center selected" );
-                    center = (Point) ((Connector) man) .getConstructions() .next();
-                }
-                else if ( man instanceof Strut )
-                {
-                    if ( axis != null )
-                        correct = false;
-                    else
-                        axis = (Strut) man;
-                }
+        for (Manifestation man : mSelection) {
+        	if ( prepareTool ) // not just validating the selection
+        		unselect( man );
+        	if ( man instanceof Connector )
+        	{
+        		if ( center != null )
+        			return "No unique symmetry center selected";
+        		center = (Point) ((Connector) man) .getConstructions() .next();
+        	}
+        	else if ( man instanceof Strut )
+        	{
+        		if ( axis != null )
+        			correct = false;
+        		else
+        			axis = (Strut) man;
+        	}
         }
-        if ( center == null )
-            center = this.originPoint;
+        if ( center == null ) {
+        	if ( prepareTool ) // after validation, or when loading from a file
+        		center = originPoint;
+        	else // just validating the selection, not really creating a tool
+        		return "No symmetry center selected";
+        }
         
         if ( isTetrahedral )
         {
@@ -77,28 +112,33 @@ public class SymmetryTool extends TransformationTool
             if ( isIcosahedral && axis != null )
             {
                 if ( !correct )
-                    throw new Command.Failure( "no unique alignment strut selected." );
+                    return "no unique alignment strut selected.";
                 // align the tetrahedral symmetry with this yellow, blue, or green strut
                 IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
                 Axis zone = icosa .getAxis( axis .getOffset() );
                 closure = icosa .subgroup( Symmetry.TETRAHEDRAL, zone );
                 if ( closure == null )
-                    throw new Command.Failure( "selected alignment strut is not a tetrahedral axis." );
+                    return "selected alignment strut is not a tetrahedral axis.";
             }
-            int order = closure .length;
-            this .transforms = new Transformation[ order-1 ];
-            for ( int i = 0; i < order-1; i++ )
-                transforms[ i ] = new SymmetryTransformation( symmetry, closure[ i+1 ], center );
+            if ( prepareTool ) {
+                int order = closure .length;
+                this .transforms = new Transformation[ order-1 ];
+                for ( int i = 0; i < order-1; i++ )
+                    transforms[ i ] = new SymmetryTransformation( symmetry, closure[ i+1 ], center );
+            }
         }
-        else
-        {
-            int order = symmetry .getChiralOrder();
-            this .transforms = new Transformation[ order-1 ];
-            for ( int i = 0; i < order-1; i++ )
-                transforms[ i ] = new SymmetryTransformation( symmetry, i+1, center );
+        else if ( prepareTool ) {
+        	int order = symmetry .getChiralOrder();
+        	this .transforms = new Transformation[ order-1 ];
+        	for ( int i = 0; i < order-1; i++ )
+        		transforms[ i ] = new SymmetryTransformation( symmetry, i+1, center );
         }
-    
-        defineTool();
+        else if ( isIcosahedral ) {
+        	// just validating the selection
+        	if ( axis != null )
+        		return "No struts";
+        }
+        return null;
     }
 
     @Override

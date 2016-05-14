@@ -3,10 +3,12 @@
 
 package com.vzome.core.editor;
 
+import java.util.Arrays;
+
 import org.w3c.dom.Element;
 
+import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
@@ -38,15 +40,40 @@ public abstract class TransformationTool extends ChangeManifestations implements
     	return true;
     }
 
+	@Override
+	/**
+	 * Validate whether this tool can be constructed from the selected objects.
+	 * Never called when loading files, just called to enable buttons in the UI,
+	 * using a representative tool instance.
+	 */
+	public boolean isValidForSelection()
+	{
+		// the new way of creating tools, validating the selection before even enabling the control
+		return null == checkSelection( false );
+	}
+
     @Override
-    public void perform() throws Failure
+    public void perform() throws Command.Failure
     {
-        defineTool();
-    }
+    	String error = checkSelection( true );
+    	if ( error != null )
+    		// the old way of creating tools, validating the selection after the user action
+    		throw new Command.Failure( error );
+    	else
+    		defineTool();
+	}
+
+    /**
+     * Check the selection applicability for this tool, and possibly record the tool parameters.
+     * @param prepareTool is true when actually creating a tool, whether interactively or when loading a file.
+     * It is false when just validating the selection.
+     * @return
+     */
+    protected abstract String checkSelection( boolean prepareTool );
 
     protected void defineTool()
     {
-        tools .addTool( this );
+		tools .addTool( this );
     }
 
     private String name;
@@ -68,19 +95,37 @@ public abstract class TransformationTool extends ChangeManifestations implements
         this.tools = tools;
         this.originPoint = originPoint;
     }
-    
-    public static String DEFAULT_NAME_TRIGGER = "____DEFAULT";
+
+	@Override
+	public boolean equals( Object that )
+	{
+		if (this == that) {
+			return true;
+		}
+		if (that == null) {
+			return false;
+		}
+		if (! that .getClass() .equals( this .getClass() ) ) {
+			return false;
+		}
+		TransformationTool other = (TransformationTool) that;
+		if (originPoint == null) {
+			if (other.originPoint != null) {
+				return false;
+			}
+		} else if (!originPoint.equals(other.originPoint)) {
+			return false;
+		}
+		if (!Arrays.equals(transforms, other.transforms)) {
+			return false;
+		}
+		return true;
+	}
+
+	public static String DEFAULT_NAME_TRIGGER = "____DEFAULT";
     
     protected abstract String getDefaultName( String template );
     
-    protected boolean isAutomatic()
-    {
-        int dot = this .name .indexOf( "." );
-        int slash = this .name .indexOf( "/" );
-        String id = this .name .substring( dot, slash );
-        return ".auto" .equals( id );
-    }
-
     @Override
     public void performEdit( Construction c, ChangeManifestations applyTool )
     {
@@ -133,7 +178,7 @@ public abstract class TransformationTool extends ChangeManifestations implements
     }
 
     @Override
-    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
+    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Command.Failure
     {
         this.name = element .getAttribute( "name" );
     }

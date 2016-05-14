@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 
-import com.vzome.core.commands.Command;
 import com.vzome.core.construction.ChangeOfBasis;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -16,7 +15,7 @@ import com.vzome.core.model.Strut;
 
 public class LinearMapTool extends TransformationTool
 {
-    private final boolean originalScaling;
+	private final boolean originalScaling;
 
     public LinearMapTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
     {
@@ -30,17 +29,35 @@ public class LinearMapTool extends TransformationTool
         this.originalScaling = originalScaling;
     }
 
-    @Override
-    public void perform() throws Command.Failure
-    {
+	@Override
+	public boolean equals( Object that )
+	{
+		if (this == that) {
+			return true;
+		}
+		if (!super.equals(that)) {
+			return false;
+		}
+		if (getClass() != that.getClass()) {
+			return false;
+		}
+		LinearMapTool other = (LinearMapTool) that;
+		if (originalScaling != other.originalScaling) {
+			return false;
+		}
+		return true;
+	}
 
+    protected String checkSelection( boolean prepareTool )
+    {
         Segment[] oldBasis = new Segment[3];
         Segment[] newBasis = new Segment[3];
         int index = 0;
         boolean correct = true;
         Point center = null;
         for (Manifestation man : mSelection) {
-            unselect( man );
+        	if ( prepareTool )
+        		unselect( man );
             if ( man instanceof Connector )
             {
                 if ( center != null )
@@ -70,18 +87,18 @@ public class LinearMapTool extends TransformationTool
         
         correct = correct && ( ( index == 3) || ( index == 6 ) );
         if ( !correct )
-            throw new Command.Failure( "linear map tool requires three adjacent, non-parallel struts (or two sets of three) and a single (optional) center ball" );
+            return "linear map tool requires three adjacent, non-parallel struts (or two sets of three) and a single (optional) center ball";
 
-        if ( center == null )
-            center = this.originPoint;
-        
-        this .transforms = new Transformation[ 1 ];
-        if ( index == 6 )
-        	transforms[ 0 ] = new ChangeOfBasis( oldBasis, newBasis, center );
-        else
-        	transforms[ 0 ] = new ChangeOfBasis( oldBasis[ 0 ], oldBasis[ 1 ], oldBasis[ 2 ], center, originalScaling );
-
-        defineTool();
+        if ( prepareTool ) {
+        	if ( center == null )
+        		center = this.originPoint;
+        	this .transforms = new Transformation[ 1 ];
+        	if ( index == 6 )
+        		transforms[ 0 ] = new ChangeOfBasis( oldBasis, newBasis, center );
+        	else
+        		transforms[ 0 ] = new ChangeOfBasis( oldBasis[ 0 ], oldBasis[ 1 ], oldBasis[ 2 ], center, originalScaling );
+        }
+        return null;
     }
 
     @Override

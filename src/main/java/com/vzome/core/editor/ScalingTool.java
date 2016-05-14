@@ -6,9 +6,8 @@ package com.vzome.core.editor;
 
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.Command;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Scaling;
 import com.vzome.core.construction.Segment;
@@ -18,6 +17,7 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
@@ -35,13 +35,15 @@ public class ScalingTool extends SymmetryTool
     }
 
     @Override
-    public void perform() throws Command.Failure
+    protected String checkSelection( boolean prepareTool )
     {
         Segment s1 = null, s2 = null;
         Point center = null;
         boolean correct = true;
+        boolean hasPanels = false;
         for (Manifestation man : mSelection) {
-            unselect( man );
+        	if ( prepareTool )
+        		unselect( man );
             if ( man instanceof Connector )
             {
                 if ( center != null )
@@ -63,25 +65,34 @@ public class ScalingTool extends SymmetryTool
                 else
                     s2 = (Segment) ((Strut) man) .getConstructions() .next();
             }
+            else if ( man instanceof Panel )
+            	hasPanels = true;
         }
         
-        if ( center == null )
-            center = this.originPoint;
+        if ( center == null ) {
+        	if ( prepareTool ) // after validation, or when loading from a file
+        		center = originPoint;
+        	else // just validating the selection, not really creating a tool
+        		return "No symmetry center selected";
+        }
         
         correct = correct && s2 != null;
+        if ( !prepareTool && hasPanels )
+        	correct = false;  // panels must be allowed when opening legacy files (prepareTool)
         if ( !correct )
-            throw new Command.Failure( "scaling tool requires before and after struts, and a single optional center" );
+            return "scaling tool requires before and after struts, and a single center";
 
         Axis zone1 = symmetry .getAxis( s1 .getOffset() );
         Axis zone2 = symmetry .getAxis( s2 .getOffset() );
         Direction orbit = zone1 .getDirection();
         if ( orbit != zone2 .getDirection() )
-            throw new Command.Failure( "before and after struts must be from the same orbit" );
+            return "before and after struts must be from the same orbit";
 
-        this .transforms = new Transformation[ 1 ];
-        transforms[ 0 ] = new Scaling( s1, s2, center, symmetry );
-
-        defineTool();
+    	if ( prepareTool ) {
+    		this .transforms = new Transformation[ 1 ];
+    		transforms[ 0 ] = new Scaling( s1, s2, center, symmetry );
+    	}
+        return null;
     }
 
     @Override

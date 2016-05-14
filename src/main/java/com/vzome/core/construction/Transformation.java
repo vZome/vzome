@@ -52,7 +52,37 @@ public abstract class Transformation extends Construction
         super( field );
     }
     
-    protected boolean setStateVariables( AlgebraicMatrix transform, AlgebraicVector offset, boolean impossible )
+	@Override
+	public boolean equals( Object that )
+	{
+		if (this == that) {
+			return true;
+		}
+		if (that == null) {
+			return false;
+		}
+		if (!(that instanceof Transformation)) {
+			return false;
+		}
+		Transformation other = (Transformation) that;
+		if (mOffset == null) {
+			if (other.mOffset != null) {
+				return false;
+			}
+		} else if (!mOffset.equals(other.mOffset)) {
+			return false;
+		}
+		if (mTransform == null) {
+			if (other.mTransform != null) {
+				return false;
+			}
+		} else if (!mTransform.equals(other.mTransform)) {
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean setStateVariables( AlgebraicMatrix transform, AlgebraicVector offset, boolean impossible )
     {
         if ( impossible ) {
             // don't attempt to access other params

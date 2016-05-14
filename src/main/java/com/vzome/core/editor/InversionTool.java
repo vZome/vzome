@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 
-import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointReflection;
 import com.vzome.core.construction.Transformation;
@@ -20,27 +19,32 @@ public class InversionTool extends TransformationTool
     }
 
     @Override
-    public void perform() throws Command.Failure
+    protected String checkSelection( boolean prepareTool )
     {
         Point center = null;
-        if ( ! isAutomatic() )
-            for (Manifestation man : mSelection) {
-                unselect( man );
-                if ( man instanceof Connector )
-                {
-                    if ( center != null )
-                        throw new Command.Failure( "more than one center selected" );
-                    center = (Point) ((Connector) man) .getConstructions() .next();
-                }
+        for (Manifestation man : mSelection) {
+        	if ( prepareTool )
+        		unselect( man );
+        	if ( man instanceof Connector )
+        	{
+        		if ( center != null )
+        			return "more than one center selected";
+        		center = (Point) ((Connector) man) .getConstructions() .next();
+        	}
         }
         
-        if ( center == null )
-            center = originPoint;
+        if ( center == null ) {
+        	if ( prepareTool )
+        		center = originPoint;
+        	else
+        		return "No symmetry center selected";
+        }
     
-        this .transforms = new Transformation[ 1 ];
-        transforms[ 0 ] = new PointReflection( center );
-
-        defineTool();
+    	if ( prepareTool ) {
+    		this .transforms = new Transformation[ 1 ];
+    		transforms[ 0 ] = new PointReflection( center );
+    	}
+        return null;
     }
 
     @Override
