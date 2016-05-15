@@ -49,12 +49,21 @@ public class ToolsController extends DefaultController implements PropertyChange
 	@Override
 	public void propertyChange( PropertyChangeEvent evt )
 	{
-        if ( evt .getPropertyName() .equals( "tool.instances" ) )
-        {
+		switch ( evt .getPropertyName() ) {
+
+		case "tool.instances":
             String toolName = (String) evt .getNewValue(); // will be "group.N/label"
     		toolNames .add( toolName );
     		this .properties() .firePropertyChange( evt ); // propagate to the UI
-        }
+			break;
+			
+		case "tools.enabled":
+    		this .properties() .firePropertyChange( evt ); // propagate to the UI
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	@Override

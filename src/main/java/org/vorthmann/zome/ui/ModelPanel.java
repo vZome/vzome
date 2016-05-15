@@ -9,6 +9,9 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -30,6 +33,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
     private final boolean isEditor;
 	private final Controller controller, view;
 	private final JPanel mMonocularPanel;
+	private Map<String, AbstractButton> toolCreationButtons = new HashMap<String, AbstractButton>();
 
 	public ModelPanel( Controller controller, ControlActions enabler, boolean isEditor, boolean fullPower )
 	{
@@ -101,19 +105,19 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 else
                 	toolbarLoc = BorderLayout .NORTH;
 
-                AbstractButton button = newToolButton( enabler, "icosahedral at origin", "icosahedral", "CreateTool", "Create a new tool" );
+                AbstractButton button = newToolButton( enabler, "icosahedral", "CreateTool", "Create a new tool" );
                 dynamicToolBar .add( button );
-                button = newToolButton( enabler, "octahedral at origin", "octahedral", "CreateTool", "Create a new tool" );
+                button = newToolButton( enabler, "octahedral", "CreateTool", "Create a new tool" );
                 dynamicToolBar .add( button );
-                button = newToolButton( enabler, "tetrahedral at origin", "tetrahedral", "CreateTool", "Create a new tool" );
+                button = newToolButton( enabler, "tetrahedral", "CreateTool", "Create a new tool" );
                 dynamicToolBar .add( button );
-                button = newToolButton( enabler, "point reflection at origin", "point reflection", "CreateTool", "Create a new tool" );
+                button = newToolButton( enabler, "point reflection", "CreateTool", "Create a new tool" );
                 dynamicToolBar .add( button );
-                button = newToolButton( enabler, "mirror at origin", "mirror", "CreateTool", "Create a new tool" );
+                button = newToolButton( enabler, "mirror", "CreateTool", "Create a new tool" );
                 dynamicToolBar .add( button );
-                button = newToolButton( enabler, "scaling at origin", "scaling", "CreateTool", "Create a new tool" );
+                button = newToolButton( enabler, "scaling", "CreateTool", "Create a new tool" );
                 dynamicToolBar .add( button );
-                button = newToolButton( enabler, "rotation at origin", "rotation", "CreateTool", "Create a new tool" );
+                button = newToolButton( enabler, "rotation", "CreateTool", "Create a new tool" );
                 dynamicToolBar .add( button );
             	this .add( dynamicToolBar, toolbarLoc );
                 
@@ -199,9 +203,10 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         }
 	}
 	
-	private AbstractButton newToolButton( ControlActions enabler, String command, String group, String label, String tooltip )
+	private AbstractButton newToolButton( ControlActions enabler, String group, String label, String tooltip )
 	{
 		AbstractButton button = makeEditButton( enabler, "addTool-" + group, "CreateTool", "Create a new tool", "/icons/tools/newTool/" + group + ".png" );
+		this .toolCreationButtons .put( group, button );
 		return button;
 	}
 	
@@ -260,21 +265,37 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	@Override
 	public void propertyChange( PropertyChangeEvent e )
 	{
-        if ( isEditor && "editor.mode" .equals( e .getPropertyName() ) )
-        {
-            if ( "article" .equals( e .getNewValue() ) ) {
-                this .fixedToolBar .setVisible( false );
-                monocularCanvas .removeMouseListener( monocularClicks );
-                leftEyeCanvas .removeMouseListener( leftEyeClicks );
-                rightEyeCanvas .removeMouseListener( rightEyeClicks );
-            }
-            else if ( ! "true" .equals( this .controller .getProperty( "no.toolbar" ) ) ) {
-            	this .fixedToolBar .setVisible( true );
-                monocularCanvas .addMouseListener( monocularClicks );
-                leftEyeCanvas .addMouseListener( leftEyeClicks );
-                rightEyeCanvas .addMouseListener( rightEyeClicks );
-            }
-        }
+		switch ( e .getPropertyName() ) {
+		
+		case "tools.enabled":
+			// selection changed, update button states
+			for ( Entry<String, AbstractButton> entry : this .toolCreationButtons .entrySet() ) {
+				boolean on = this .controller .propertyIsTrue( "tool.enabled." + entry .getKey() );
+				entry .getValue() .setEnabled( on );
+			}
+			break;
+
+		case "editor.mode":
+	        if ( isEditor )
+	        {
+	            if ( "article" .equals( e .getNewValue() ) ) {
+	                this .fixedToolBar .setVisible( false );
+	                monocularCanvas .removeMouseListener( monocularClicks );
+	                leftEyeCanvas .removeMouseListener( leftEyeClicks );
+	                rightEyeCanvas .removeMouseListener( rightEyeClicks );
+	            }
+	            else if ( ! "true" .equals( this .controller .getProperty( "no.toolbar" ) ) ) {
+	            	this .fixedToolBar .setVisible( true );
+	                monocularCanvas .addMouseListener( monocularClicks );
+	                leftEyeCanvas .addMouseListener( leftEyeClicks );
+	                rightEyeCanvas .addMouseListener( rightEyeClicks );
+	            }
+	        }
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	public Dimension getRenderedSize()

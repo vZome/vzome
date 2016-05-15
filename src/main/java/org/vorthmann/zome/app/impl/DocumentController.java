@@ -216,6 +216,24 @@ public class DocumentController extends DefaultController implements J3dComponen
         	public void manifestationColored( Manifestation m, Color c ) {}
         };
         this .documentModel .addSelectionListener( selectionRendering );
+        
+        this .documentModel .addSelectionListener( new ManifestationChanges()
+        {
+			@Override
+			public void manifestationRemoved( Manifestation man )
+			{
+				properties() .firePropertyChange( "tools.enabled", null, null );
+			}
+			
+			@Override
+			public void manifestationColored(Manifestation arg0, Color arg1) {}
+			
+			@Override
+			public void manifestationAdded( Manifestation man )
+			{
+				properties() .firePropertyChange( "tools.enabled", null, null );
+			}
+		});
 
         this .articleChanges = new PropertyChangeListener()
         {   
@@ -1165,6 +1183,17 @@ public class DocumentController extends DefaultController implements J3dComponen
             String name = this .documentModel .getField() .getName();
             return super.getProperty( "field.label." + name ); // defer to app controller
             // TODO implement AlgebraicField.getLabel()
+        }
+        
+        if ( string .startsWith( "tool.enabled." ) )
+        {
+            String group = string .substring( "tool.enabled." .length() );
+            
+            Symmetry symmetry = symmetryController .getSymmetry();
+            if ( "icosahedral" .equals( group ) || "octahedral" .equals( group ) )
+                symmetry = symmetries .get( group ) .getSymmetry();
+            
+            return Boolean .toString( this .documentModel .isToolEnabled( group, symmetry ) );
         }
         
         if ( "clipboard" .equals( string ) )

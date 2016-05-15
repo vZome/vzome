@@ -528,7 +528,7 @@ public class ApplicationController extends DefaultController
         {
             Set<String> names = modelApp .getFieldNames();
             SortedSet<String> sorted = new TreeSet<String>( names );
-            return (String[]) sorted .toArray( new String[]{} );
+            return sorted .toArray( new String[]{} );
         }
         else if ( listName .startsWith( "symmetries." ) )
         {
