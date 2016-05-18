@@ -62,7 +62,6 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.SymmetrySystem;
-import com.vzome.core.editor.Tool;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -578,15 +577,21 @@ public class DocumentController extends DefaultController implements J3dComponen
             return canvas;
         }
     }
+    
+    private SymmetryController getSymmetryController( String name )
+    {
+    	SymmetryController result = this .symmetries .get( name );
+        if ( result == null ) {
+        	result = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
+        	this .symmetries .put( name, result );
+        }
+        return result;
+    }
 
     private void setSymmetrySystem( SymmetrySystem symmetrySystem )
     {
     	String name =  symmetrySystem .getName();
-        symmetryController = this .symmetries .get( name );
-        if ( symmetryController == null ) {
-        	symmetryController = new SymmetryController( this, symmetrySystem );
-        	this .symmetries .put( name, symmetryController );
-        }
+        symmetryController = getSymmetryController( name );
 
         mControlBallModel = mApp.getSymmetryModel( symmetryController.getSymmetry() );
         if ( mControlBallScene != null ) {
@@ -802,7 +807,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 
                 Symmetry symmetry = symmetryController.getSymmetry();
                 if ( "icosahedral" .equals( group ) || "octahedral" .equals( group ) )
-                    symmetry = symmetries .get( group ) .getSymmetry();
+                    symmetry = getSymmetryController( group ) .getSymmetry();
                 
                 documentModel .createTool( name, group, documentModel, symmetry );
             }
@@ -1191,7 +1196,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             
             Symmetry symmetry = symmetryController .getSymmetry();
             if ( "icosahedral" .equals( group ) || "octahedral" .equals( group ) )
-                symmetry = symmetries .get( group ) .getSymmetry();
+                symmetry = getSymmetryController( group ) .getSymmetry();
             
             return Boolean .toString( this .documentModel .isToolEnabled( group, symmetry ) );
         }
@@ -1369,7 +1374,7 @@ public class DocumentController extends DefaultController implements J3dComponen
     			break;
 
 //            case "symmTool-icosahedral":
-//                Symmetry symmetry = ((SymmetryController) symmetries .get( "icosahedral" )) .getSymmetry();
+//                Symmetry symmetry = ((SymmetryController) getSymmetryController( "icosahedral" )) .getSymmetry();
 //
 //                this .document .createTool( "icosahedral.99/", "icosahedral", toolsController, symmetry );
 //                this .document .createAndApplyTool( pickedManifestation, "icosahedral", toolsController, symmetry );
