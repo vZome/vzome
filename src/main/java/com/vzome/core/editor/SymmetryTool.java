@@ -16,6 +16,7 @@ import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
@@ -82,6 +83,7 @@ public class SymmetryTool extends TransformationTool
         Point center = null;
         Strut axis = null;
         boolean correct = true;
+        boolean hasPanels = false;
         for (Manifestation man : mSelection) {
         	if ( prepareTool ) // not just validating the selection
         		unselect( man );
@@ -98,12 +100,21 @@ public class SymmetryTool extends TransformationTool
         		else
         			axis = (Strut) man;
         	}
+        	else if ( man instanceof Panel )
+        	{
+        		hasPanels = true;
+        	}
         }
         if ( center == null ) {
         	if ( prepareTool ) // after validation, or when loading from a file
         		center = originPoint;
         	else // just validating the selection, not really creating a tool
         		return "No symmetry center selected";
+        }
+        
+        if ( hasPanels ) {
+        	if ( ! prepareTool ) // just validating the selection, not really creating a tool
+        		return "panels are selected";
         }
         
         if ( isTetrahedral )
