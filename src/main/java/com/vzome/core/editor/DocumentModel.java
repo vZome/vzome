@@ -1222,6 +1222,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         return this .symmetrySystem;
     }
     
+    public SymmetrySystem getSymmetrySystem( String name )
+    {
+        return this .symmetrySystems .get( name );
+    }
+    
     public void setSymmetrySystem( String name )
     {
     	this .symmetrySystem = this .symmetrySystems .get( name );
