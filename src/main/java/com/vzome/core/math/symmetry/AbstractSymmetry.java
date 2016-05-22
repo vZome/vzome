@@ -395,36 +395,42 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
         return list .toArray( new String[]{} );
     }
 
+    /* (non-Javadoc)
+     * @see com.vzome.core.math.symmetry.Symmetry#closure(int[])
+     */
     @Override
     public int[] closure( int[] perms )
     {
-        List<Permutation> newPerms = new ArrayList<>();
-        Permutation[] closures = new Permutation[ mOrientations .length ];
+        List<Permutation> newPerms = new ArrayList<>(); // work list, new permutations to compose with all known perms
+        Permutation[] knownPerms = new Permutation[ mOrientations .length ]; // known permutations (entries may be null)
         int closureSize = 0;
         
         for ( int i = 0; i < perms.length; i++ ) {
             Permutation perm = mOrientations[ perms[i] ];
-            closures[ perms[i] ] = perm;
+            knownPerms[ perms[i] ] = perm;
             newPerms .add( perm );
             ++ closureSize;
         }
         
+        // iterate until the work list (newPerms) is empty
         while ( !newPerms .isEmpty() ) {
             Permutation perm = newPerms .remove(0);
-            for (Permutation closure : closures) {
-                if (closure != null) {
-                    Permutation composition = perm.compose(closure);
+            // compose (both ways) with all known permutations
+            for (Permutation knownPerm : knownPerms) {
+                if (knownPerm != null) {
+                    Permutation composition = perm.compose(knownPerm);
                     int j = composition .mapIndex( 0 );
-                    if ( closures[ j ] == null ) {
+                    if ( knownPerms[ j ] == null ) {
+                    	// haven't seen this permutation yet, schedule it
                         newPerms .add( composition );
-                        closures[ j ] = composition;
+                        knownPerms[ j ] = composition; // and make it a known permutation
                         ++ closureSize;
                     }
-                    composition = closure.compose(perm);
+                    composition = knownPerm.compose(perm);
                     j = composition .mapIndex( 0 );
-                    if ( closures[ j ] == null ) {
+                    if ( knownPerms[ j ] == null ) {
                         newPerms .add( composition );
-                        closures[ j ] = composition;
+                        knownPerms[ j ] = composition;
                         ++ closureSize;
                     }
                 }
@@ -433,8 +439,8 @@ public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
         
         int[] result = new int[ closureSize ];
         int j = 0;
-        for (int i = 0; i < closures.length; i++ ) {
-            if ( closures[ i ] != null ) {
+        for (int i = 0; i < knownPerms.length; i++ ) {
+            if ( knownPerms[ i ] != null ) {
                 result[ j++ ] = i;
             }
         }

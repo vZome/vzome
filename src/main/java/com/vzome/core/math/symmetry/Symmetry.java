@@ -58,6 +58,11 @@ public interface Symmetry
 
     OrbitSet getOrbitSet();
 
+    /**
+     * Generate a subgroup, by taking the closure of some collection of Permutations
+     * @param perms an array of Permutations indices
+     * @return an array of Permutations indices
+     */
     int[] closure( int[] perms );
     
     int[] subgroup( String name );

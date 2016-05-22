@@ -30,12 +30,18 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         }
         
         // These were derived manually by examining the orientation key dodec.
-        // 0 -> 1 is a yellow axis rotation, and 0 -> 15 is a blue axis rotation
-        tetrahedralSubgroup[ 0 ] = closure( new int[]{ 0, 1, 15 } );
-        tetrahedralSubgroup[ 1 ] = closure( new int[]{ 0, 11, 20 } );
-        tetrahedralSubgroup[ 2 ] = closure( new int[]{ 0, 27, 58 } );
-        tetrahedralSubgroup[ 3 ] = closure( new int[]{ 0, 4, 17 } );
-        tetrahedralSubgroup[ 4 ] = closure( new int[]{ 0, 55, 14 } );
+        // 0 -> 1 is a yellow axis rotation, and 0 -> 15 is a blue axis rotation.
+        //
+        //  The second and third columns of arguments correspond to yellow axis and
+        //  blue axis rotations, respectively.  The yellow and blue axes selected
+        //  are those that surround the pentagon face containing element 0.
+        //  For yellow, the axes of rotation are, in order: 9, 12, 0, 3, 6.
+        //  For blue, the axes of rotation are, in order: 0, 3, 6, 9, 12.
+        tetrahedralSubgroup[ 0 ] = closure( new int[]{ 1, 15 } );
+        tetrahedralSubgroup[ 1 ] = closure( new int[]{ 11, 20 } );
+        tetrahedralSubgroup[ 2 ] = closure( new int[]{ 27, 58 } );
+        tetrahedralSubgroup[ 3 ] = closure( new int[]{ 17, 4 } );
+        tetrahedralSubgroup[ 4 ] = closure( new int[]{ 55, 14 } );
 
         Direction blueOrbit = getDirection( "blue" );
         Direction yellowOrbit = getDirection( "yellow" );
@@ -49,9 +55,25 @@ public class IcosahedralSymmetry extends AbstractSymmetry
                     if ( tetrahedralSubgroup[ j ][ k ] == blueZone .getRotation() )
                         // mark blueZone as a rotation axis of this subgroup
                         blueTetrahedral[ i ] = j;
+                    // For yellow, this does not work; a single yellow axis does not uniquely
+                    //  determine an oriented tetrahedron.  I'm keeping it here to support
+                    //  existing files that create a tetrahedral tool using a yellow axis.
+                    //  The UI will prevent creating such tools, henceforward.
                     if ( tetrahedralSubgroup[ j ][ k ] == yellowZone .getRotation() )
                         yellowTetrahedral[ i ] = j;
                 }
+            }
+        }
+        
+        // The tetrahedral subgroups above correspond to blue rotations around 0, 3, 6, 9, 12,
+        //  and those will preserve green axes 6, 9, 12, 0, 3, respectively.
+        int[] greenSeeds = new int[]{ 6, 9, 12, 0, 3 };
+        for ( int j = 0; j < tetrahedralSubgroup.length; j++ ) {
+        	int seedAxis = greenSeeds[ j ];
+            // for each orientation in this subgroup, map the seed to another green axis
+            for ( int k = 0; k < tetrahedralSubgroup[ j ] .length; k++ ) {
+            	int mappedAxis = mOrientations[ tetrahedralSubgroup[ j ][ k ] ] .mapIndex( seedAxis );
+            	greenTetrahedral[ mappedAxis ] = j;
             }
         }
     }
@@ -301,8 +323,9 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 
     private final int[][] tetrahedralSubgroup = new int[ 5 ][];
     
-    private final int[] yellowTetrahedral = new int[ 60 ];
     private final int[] blueTetrahedral = new int[ 60 ];
+    private final int[] greenTetrahedral = new int[ 60 ];
+    private final int[] yellowTetrahedral = new int[ 60 ]; // not really correct, but retained for legacy support
     
     @Override
     public int[] subgroup( String name )
@@ -325,6 +348,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 
     public int[] subgroup( String name, Axis zone )
     {
+    	// TODO: don't assume name is TETRAHEDRAL
         int orientation = zone .getOrientation();
         Direction orbit = zone .getDirection();
         String orbitName = orbit .getName();
@@ -333,8 +357,14 @@ public class IcosahedralSymmetry extends AbstractSymmetry
             int subgroup = blueTetrahedral[ orientation ];
             return tetrahedralSubgroup[ subgroup ];
         }
+        else if ( orbitName .equals( "green" ) )
+        {
+            int subgroup = greenTetrahedral[ orientation ];
+            return tetrahedralSubgroup[ subgroup ];
+        }
         else if ( orbitName .equals( "yellow" ) )
         {
+        	// not really correct, but retained for legacy support
             int subgroup = yellowTetrahedral[ orientation ];
             return tetrahedralSubgroup[ subgroup ];
         }

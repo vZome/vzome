@@ -138,4 +138,30 @@ public class SymmetryTest extends TestCase
         Axis actual = symm .getAxis( vector );
         assertEquals( expected, actual );
     }
+    
+    public void testTetrahedral()
+    {
+        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField(), null );
+        
+        Axis greenZone = symm .getDirection( "green" ) .getAxis( Symmetry.MINUS, 23 );
+        Axis blueZone = symm .getDirection( "blue" ) .getAxis( Symmetry.PLUS, 31 );
+        
+        int[] blueSubgroup = symm .subgroup( "blue", blueZone );
+        int[] greenSubgroup = symm .subgroup( "green", greenZone );
+        assertTrue( Arrays .equals( blueSubgroup, greenSubgroup ) );
+
+        greenZone = symm .getDirection( "green" ) .getAxis( Symmetry.PLUS, 7 );
+        blueZone = symm .getDirection( "blue" ) .getAxis( Symmetry.MINUS, 15 );
+        
+        blueSubgroup = symm .subgroup( "blue", blueZone );
+        greenSubgroup = symm .subgroup( "green", greenZone );
+        assertTrue( Arrays .equals( blueSubgroup, greenSubgroup ) );
+
+        greenZone = symm .getDirection( "green" ) .getAxis( Symmetry.PLUS, 22 );
+        blueZone = symm .getDirection( "green" ) .getAxis( Symmetry.MINUS, 51 );
+        
+        blueSubgroup = symm .subgroup( "green", blueZone );
+        greenSubgroup = symm .subgroup( "green", greenZone );
+        assertTrue( Arrays .equals( blueSubgroup, greenSubgroup ) );
+    }
 }
