@@ -806,7 +806,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 String group = name .substring( 0, nextDot );
                 
                 Symmetry symmetry = symmetryController.getSymmetry();
-                if ( "icosahedral" .equals( group ) || "octahedral" .equals( group ) )
+                if ( "icosahedral" .equals( group ) )
+                	// no longer supporting no-axis octahedral when in icosahedral mode
                     symmetry = getSymmetryController( group ) .getSymmetry();
                 
                 documentModel .createTool( name, group, documentModel, symmetry );
