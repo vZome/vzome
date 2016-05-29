@@ -92,15 +92,6 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
         button .setMaximumSize( dim );
         button .setToolTipText( name );
         
-//        JPanel row = new JPanel( new BorderLayout() );
-//        row .setBorder( BorderFactory .createEtchedBorder( EtchedBorder.LOWERED ) );
-//        row .add( button, BorderLayout.WEST );
-//        JLabel label = new JLabel( " " + name );
-//        dim = new Dimension( 95, 25 );
-//        label .setMinimumSize( dim );
-//        row .add( label, BorderLayout.CENTER );
-//        row .setMaximumSize( new Dimension( 600, 60 ) );
-//        row .getLayout() .layoutContainer( row );
         return button;
     }
 

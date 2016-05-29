@@ -269,10 +269,16 @@ public class DocumentController extends DefaultController implements J3dComponen
             @Override
         	public void propertyChange( PropertyChangeEvent change )
         	{
-        		if ( "current.edit.xml" .equals( change .getPropertyName() ) )
-        		{
-        			properties() .firePropertyChange( change ); // forward to the UI for display in the statusText
-        		}
+            	switch ( change .getPropertyName() ) {
+
+            	case "current.edit.xml":
+            	case "tool.instances":
+        			properties() .firePropertyChange( change ); // forward to the UI for display
+					break;
+
+				default:
+					break;
+				}
         	}
         };
         if ( editingModel )

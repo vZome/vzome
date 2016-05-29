@@ -481,7 +481,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     {
                         tabbedPane .addTab( "build", buildPanel );
                         ToolsPanel toolsPanel = new ToolsPanel( DocumentFrame.this, toolsController );
-                        mController .addPropertyListener( toolsPanel );
                         tabbedPane .addTab( "tools", toolsPanel );
                         
                         JPanel bomPanel = new PartsPanel( mController .getSubController( "parts" ) );

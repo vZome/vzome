@@ -24,7 +24,6 @@ public class ToolsController extends DefaultController implements PropertyChange
 		super();
 		
 		this.tools = tools;
-		tools .addPropertyChangeListener( this );
 	}
             
     @Override
