@@ -723,7 +723,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 //                    document .selectManifestation( targetManifestation, true ); // NOT UNDOABLE!
 //                }
 //            }
-            
+
             else if ( action.equals( "refresh.2d" ) )
             {
                 Java2dExporter exporter = new Java2dExporter( mViewPlatform.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
@@ -845,34 +845,46 @@ public class DocumentController extends DefaultController implements J3dComponen
             }
             else
             {
-        		Symmetry symm = symmetryController .getSymmetry();
-        		String symmName = symm .getName();
-        		AlgebraicField field = symm .getField();
-            	if ( action.equals( "axialsymm" ) )
-            	{
-            		if ( field instanceof RootTwoField ) 
-            			action += "-roottwo"; 
-            		else if ( field instanceof RootThreeField ) 
-            			action += "-rootthree"; 
-            		else if ( field instanceof HeptagonField ) 
-            			action += "-heptagon"; 
-            		else if ( "octahedral" .equals( symmName ) ) 
-            			action += "-octa"; 
-            		else if ( "icosahedral" .equals( symmName ) ) 
-            			action += "-icosa"; 
-            	} else if ( action.equals( "tetrasymm" ) || action.equals( "octasymm" ) ) 
-            		if ( field instanceof RootTwoField ) 
-            			action += "-roottwo"; 
-            		else if ( field instanceof RootThreeField ) 
-            			action += "-rootthree"; 
-            		else if ( field instanceof HeptagonField ) 
-            			action += "-heptagon"; 
-            		else 
-            			action += "-golden"; 
-            		 	 
-            	boolean handled = documentModel .doEdit( action );
-                if ( ! handled )
-                    super .doAction( action, e );
+            	switch ( action ) {
+                
+                case "setSymmetryCenter":
+                    this .documentModel .setParameter( null, "ball" );
+        			break;
+
+                case "setSymmetryAxis":
+                    this .documentModel .setParameter( null, "strut" );
+        			break;
+
+				default:
+	        		Symmetry symm = symmetryController .getSymmetry();
+	        		String symmName = symm .getName();
+	        		AlgebraicField field = symm .getField();
+	            	if ( action.equals( "axialsymm" ) )
+	            	{
+	            		if ( field instanceof RootTwoField ) 
+	            			action += "-roottwo"; 
+	            		else if ( field instanceof RootThreeField ) 
+	            			action += "-rootthree"; 
+	            		else if ( field instanceof HeptagonField ) 
+	            			action += "-heptagon"; 
+	            		else if ( "octahedral" .equals( symmName ) ) 
+	            			action += "-octa"; 
+	            		else if ( "icosahedral" .equals( symmName ) ) 
+	            			action += "-icosa"; 
+	            	} else if ( action.equals( "tetrasymm" ) || action.equals( "octasymm" ) ) 
+	            		if ( field instanceof RootTwoField ) 
+	            			action += "-roottwo"; 
+	            		else if ( field instanceof RootThreeField ) 
+	            			action += "-rootthree"; 
+	            		else if ( field instanceof HeptagonField ) 
+	            			action += "-heptagon"; 
+	            		else 
+	            			action += "-golden"; 
+	            		 	 
+	            	boolean handled = documentModel .doEdit( action );
+	                if ( ! handled )
+	                    super .doAction( action, e );
+				}
             }
 
  
