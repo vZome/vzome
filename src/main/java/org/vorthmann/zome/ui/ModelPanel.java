@@ -95,38 +95,63 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
             {
             	// -------------------- Create the dynamic toolbar
             	
-                String toolbarLoc = controller .getProperty( "toolbar.position" );
+                String oldToolbarLoc = controller .getProperty( "toolbar.position" );
+                if ( oldToolbarLoc == null )
+                	oldToolbarLoc = BorderLayout .LINE_END;
+                String dynamicToolbarLoc = BorderLayout .NORTH;
+                String staticToolbarLoc = BorderLayout .LINE_START;
                 boolean hasOldToolBar = controller .propertyIsTrue( "original.tools" );
-                if ( toolbarLoc == null )
-                	toolbarLoc = BorderLayout .NORTH;
-                else if ( toolbarLoc == BorderLayout .NORTH )
-                	toolbarLoc = BorderLayout .LINE_END;
-                else
-                	toolbarLoc = BorderLayout .NORTH;
+                if ( hasOldToolBar && oldToolbarLoc .equals( BorderLayout .NORTH ) ) {
+                	dynamicToolbarLoc = BorderLayout .SOUTH;
+                }
 
                 this .dynamicToolBar = new JToolBar();
                 this .dynamicToolBar .setOrientation( JToolBar.HORIZONTAL );
-                this .add( dynamicToolBar, toolbarLoc );
+                this .add( dynamicToolBar, dynamicToolbarLoc );
 
-                staticToolBar = new JToolBar();
-                staticToolBar .setOrientation( JToolBar.VERTICAL );
-                AbstractButton button = newToolButton( enabler, "icosahedral", "CreateTool", "Create icosahedral symmetry tool" );
+                this .staticToolBar = new JToolBar();
+                this .staticToolBar .setOrientation( JToolBar.VERTICAL );
+                this .add( staticToolBar, staticToolbarLoc );
+
+                AbstractButton button = makeEditButton( enabler, "delete", "Delete selected objects" );
                 staticToolBar .add( button );
-                button = newToolButton( enabler, "octahedral", "CreateTool", "Create octahedral symmetry tool" );
+                button = makeEditButton( enabler, "hideball", "Hide selected objects" );
                 staticToolBar .add( button );
-                button = newToolButton( enabler, "tetrahedral", "CreateTool", "Create tetrahedral symmetry tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "point reflection", "CreateTool", "Create point reflection tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "mirror", "CreateTool", "Create mirror symmetry tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "scaling", "CreateTool", "Create scaling tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "rotation", "CreateTool", "Create rotation tool" );
-                staticToolBar .add( button );
-                staticToolBar .addSeparator();
-                this .add( staticToolBar, BorderLayout .LINE_START );
                 
+                staticToolBar .addSeparator();
+
+                button = makeEditButton( enabler, "joinballs", "Connect balls in a loop" );
+                staticToolBar .add( button );
+                button = makeEditButton( enabler, "chainBalls", "Connect balls in a chain" );
+                staticToolBar .add( button );
+                button = makeEditButton( enabler, "joinBallsAllToLast", "Connect all balls to last selected" );
+                staticToolBar .add( button );
+                button = makeEditButton( enabler, "joinBallsAllPossible", "Connect balls in all possible ways" );
+                staticToolBar .add( button );
+                button = makeEditButton( enabler, "panel", "Make a panel polygon" );
+                staticToolBar .add( button );
+                button = makeEditButton( enabler, "centroid", "Construct centroid of points" );
+                staticToolBar .add( button );
+                
+                staticToolBar .addSeparator();
+
+                button = newToolButton( enabler, "icosahedral", "Create icosahedral symmetry tool" );
+                staticToolBar .add( button );
+                button = newToolButton( enabler, "octahedral", "Create octahedral symmetry tool" );
+                staticToolBar .add( button );
+                button = newToolButton( enabler, "tetrahedral", "Create tetrahedral symmetry tool" );
+                staticToolBar .add( button );
+                button = newToolButton( enabler, "point reflection", "Create point reflection tool" );
+                staticToolBar .add( button );
+                button = newToolButton( enabler, "mirror", "Create mirror symmetry tool" );
+                staticToolBar .add( button );
+                button = newToolButton( enabler, "scaling", "Create scaling tool" );
+                staticToolBar .add( button );
+                button = newToolButton( enabler, "rotation", "Create rotation tool" );
+                staticToolBar .add( button );
+                button = newToolButton( enabler, "translation", "Create translation tool" );
+                staticToolBar .add( button );
+                                
                 final Controller toolsController = controller .getSubController( "tools" );
             	
             	toolsController .addPropertyListener( new PropertyChangeListener()
@@ -144,7 +169,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				                delim = idAndName .indexOf( "/" );
 				                String name = idAndName .substring( delim + 1 );
 				                String iconPath = "/icons/tools/small/" + group + ".png";
-				                AbstractButton button = makeEditButton2( enabler, name, name, iconPath );
+				                AbstractButton button = makeEditButton2( enabler, name, iconPath );
 				        		button .setActionCommand( idAndName );
 				        		button .addActionListener( toolsController );
 				                dynamicToolBar .add( button );
@@ -154,69 +179,73 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				    }
 				});
                 
-                // --------------------------------------- Create the fixed toolbar.
+            	if ( hasOldToolBar ) {
+                    // --------------------------------------- Create the fixed toolbar.
 
-                this .oldToolBar = new JToolBar( "vZome Toolbar" );
-                this .oldToolBar .setOrientation( JToolBar.VERTICAL );
-                toolbarLoc = controller .getProperty( "toolbar.position" );
-                if ( toolbarLoc == null )
-                	toolbarLoc = BorderLayout .LINE_END;
+                    this .oldToolBar = new JToolBar( "vZome Toolbar" );
+                    if ( oldToolbarLoc .equals( BorderLayout .LINE_END ) )
+                    	this .oldToolBar .setOrientation( JToolBar.VERTICAL );
+                    else
+                    	this .oldToolBar .setOrientation( JToolBar.HORIZONTAL );
 
-                button = makeEditButton( enabler, "joinballs", "Join", "Join two or more selected balls" );
-                oldToolBar.add( button );
-                button.setRolloverEnabled( true );
-
-                String fieldName = controller.getProperty( "field.name" );
-                if ( "golden" .equals( fieldName ) ) {
-                    button = makeEditButton( enabler, "icosasymm-golden", "Icosahedral Symm.", "Repeat selection with chiral icosahedral symmetry" );
+                    button = makeLegacyEditButton( enabler, "joinballs", "Join two or more selected balls" );
                     oldToolBar.add( button );
                     button.setRolloverEnabled( true );
-                } else if ( "snubDodec" .equals( fieldName ) ) {
-                    button = makeEditButton( enabler, "icosasymm-snubDodec", "Icosahedral Symm.", "Repeat selection with chiral icosahedral symmetry" );
+
+                    String fieldName = controller.getProperty( "field.name" );
+                    if ( "golden" .equals( fieldName ) ) {
+                        button = makeLegacyEditButton( enabler, "icosasymm-golden", "Repeat selection with chiral icosahedral symmetry" );
+                        oldToolBar.add( button );
+                        button.setRolloverEnabled( true );
+                    } else if ( "snubDodec" .equals( fieldName ) ) {
+                        button = makeLegacyEditButton( enabler, "icosasymm-snubDodec", "Repeat selection with chiral icosahedral symmetry" );
+                        oldToolBar.add( button );
+                        button.setRolloverEnabled( true );
+                    } else {
+                        button = makeLegacyEditButton( enabler, "octasymm", "Repeat selection with chiral octahedral symmetry" );
+                        oldToolBar.add( button );
+                        button.setRolloverEnabled( true );
+                    }
+
+               		button = makeLegacyEditButton( enabler, "tetrasymm", "Repeat selection with chiral tetrahedral symmetry" );
                     oldToolBar.add( button );
                     button.setRolloverEnabled( true );
-                } else {
-                    button = makeEditButton( enabler, "octasymm", "Octahedral Symm.", "Repeat selection with chiral octahedral symmetry" );
+
+                    button = makeLegacyEditButton( enabler, "axialsymm", "Repeat selection with symmetry around an axis" );
                     oldToolBar.add( button );
                     button.setRolloverEnabled( true );
-                }
 
-           		button = makeEditButton( enabler, "tetrasymm", "Tetrahedral Symm.", "Repeat selection with chiral tetrahedral symmetry" );
-                oldToolBar.add( button );
-                button.setRolloverEnabled( true );
-
-                button = makeEditButton( enabler, "axialsymm", "Axial Symmetry", "Repeat selection with symmetry around an axis" );
-                oldToolBar.add( button );
-                button.setRolloverEnabled( true );
-
-                button = makeEditButton( enabler, "pointsymm", "Point Reflect", "Reflect selection through origin" );
-                oldToolBar.add( button );
-                button.setRolloverEnabled( true );
-
-                button = makeEditButton( enabler, "mirrorsymm", "Mirror Symmetry", "Reflect selection through mirror" );
-                oldToolBar.add( button );
-                button.setRolloverEnabled( true );
-
-                button = makeEditButton( enabler, "translate", "Translate", "Repeat selection translated along symmetry axis" );
-                oldToolBar.add( button );
-                button.setRolloverEnabled( true );
-
-                if ( fullPower )
-                {
-                    button = makeEditButton( enabler, "centroid", "Centroid", "Construct centroid of points" );
+                    button = makeLegacyEditButton( enabler, "pointsymm", "Reflect selection through origin" );
                     oldToolBar.add( button );
                     button.setRolloverEnabled( true );
-                }
 
-                button = makeEditButton( enabler, "hideball", "Hide", "Hide selected objects" );
-                oldToolBar.add( button );
-                button.setRolloverEnabled( true );
+                    button = makeLegacyEditButton( enabler, "mirrorsymm", "Reflect selection through mirror" );
+                    oldToolBar.add( button );
+                    button.setRolloverEnabled( true );
 
-                button = makeEditButton( enabler, "panel", "Panel", "Make a panel polygon" );
-                oldToolBar.add( button );
-                button.setRolloverEnabled( true );
-            	
-            	this .add( oldToolBar, toolbarLoc );
+                    button = makeLegacyEditButton( enabler, "translate", "Repeat selection translated along symmetry axis" );
+                    oldToolBar.add( button );
+                    button.setRolloverEnabled( true );
+
+                    if ( fullPower )
+                    {
+                        button = makeLegacyEditButton( enabler, "centroid", "Construct centroid of points" );
+                        oldToolBar.add( button );
+                        button.setRolloverEnabled( true );
+                    }
+
+                    button = makeLegacyEditButton( enabler, "hideball", "Hide selected objects" );
+                    oldToolBar.add( button );
+                    button.setRolloverEnabled( true );
+
+                    button = makeLegacyEditButton( enabler, "panel", "Make a panel polygon" );
+                    oldToolBar.add( button );
+                    button.setRolloverEnabled( true );
+                	
+                	this .add( oldToolBar, oldToolbarLoc );
+            	}
+            	else
+                	this .oldToolBar = null;
             }
             else {
             	this .oldToolBar = null;
@@ -238,22 +267,29 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         }
 	}
 	
-	private AbstractButton newToolButton( ControlActions enabler, String group, String label, String tooltip )
+	private AbstractButton newToolButton( ControlActions enabler, String group, String tooltip )
 	{
-		AbstractButton button = makeEditButton2( enabler, "addTool-" + group, tooltip, "/icons/tools/newTool/" + group + ".png" );
+		AbstractButton button = makeEditButton2( enabler, tooltip, "/icons/tools/newTool/" + group + ".png" );
 		button = enabler .setButtonAction( "addTool-" + group, button );
 		this .toolCreationButtons .put( group, button );
 		return button;
 	}
 	
-	private AbstractButton makeEditButton( ControlActions enabler, String command, String label, String tooltip )
+	private AbstractButton makeEditButton( ControlActions enabler, String command, String tooltip )
+	{
+		AbstractButton button = makeEditButton2( enabler, tooltip, "/icons/tools/small/" + command + ".png" );
+		button = enabler .setButtonAction( command, button );
+		return button;
+	}
+	
+	private AbstractButton makeLegacyEditButton( ControlActions enabler, String command, String tooltip )
 	{
 		String imageName = command;
 		if ( imageName .endsWith( "-roottwo" ) )
 			imageName = command .substring( 0, command.length() - 8 );
 		else if ( imageName .endsWith( "-golden" ) )
 			imageName = command .substring( 0, command.length() - 7 );
-		AbstractButton button = makeEditButton2( enabler, label, tooltip, "/icons/" + imageName + "_on.png" );
+		AbstractButton button = makeEditButton2( enabler, tooltip, "/icons/" + imageName + "_on.png" );
 		button = enabler .setButtonAction( command, button );
 		Dimension dim = new Dimension( 100, 63 );
 		button .setPreferredSize( dim );
@@ -261,33 +297,26 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		return button;
 	}
 	
-	private AbstractButton makeEditButton2( ControlActions enabler, String label, String tooltip, String imgLocation )
+	private AbstractButton makeEditButton2( ControlActions enabler, String tooltip, String imgLocation )
 	{
-        boolean skipImages = controller .getProperty( "noButtonImages" ) != null;
-
         // Create and initialize the button.
         AbstractButton button = new JButton();
-        if ( skipImages )
-            button .setText( label );
-        else
-        {
-        	URL imageURL = getClass() .getResource( imgLocation );
-        	if ( imageURL != null ) {
-        		Icon icon = new ImageIcon( imageURL, label );
-        		button .setIcon( icon );
+        URL imageURL = getClass() .getResource( imgLocation );
+        if ( imageURL != null ) {
+        	Icon icon = new ImageIcon( imageURL, tooltip );
+        	button .setIcon( icon );
 
-        		Dimension dim = new Dimension( icon .getIconWidth()+1, icon .getIconHeight()+1 );
-        		button .setPreferredSize( dim );
-        		button .setMaximumSize( dim );
+        	Dimension dim = new Dimension( icon .getIconWidth()+1, icon .getIconHeight()+1 );
+        	button .setPreferredSize( dim );
+        	button .setMaximumSize( dim );
 
-        		// the rest will only work if setRolloverEnabled(true) is called
-        		// after adding to the toolbar!
-//        		imageURL = getClass() .getResource( "/icons/" + imageName + "_on.png" );
-//        		icon = new ImageIcon( imageURL, label );
-//        		button .setRolloverIcon( icon );
-        	} else
-        		System.err.println( "Resource not found: " + imgLocation );
-        }
+        	// the rest will only work if setRolloverEnabled(true) is called
+        	// after adding to the toolbar!
+        	//        		imageURL = getClass() .getResource( "/icons/" + imageName + "_on.png" );
+        	//        		icon = new ImageIcon( imageURL, label );
+        	//        		button .setRolloverIcon( icon );
+        } else
+        	System.err.println( "Resource not found: " + imgLocation );
 
         button .setVerticalTextPosition( SwingConstants.TOP );
         button .setHorizontalTextPosition( SwingConstants.CENTER );
@@ -312,13 +341,15 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	        if ( isEditor )
 	        {
 	            if ( "article" .equals( e .getNewValue() ) ) {
-	                this .oldToolBar .setVisible( false );
+	            	if ( this .oldToolBar != null )
+	            		this .oldToolBar .setVisible( false );
 	                monocularCanvas .removeMouseListener( monocularClicks );
 	                leftEyeCanvas .removeMouseListener( leftEyeClicks );
 	                rightEyeCanvas .removeMouseListener( rightEyeClicks );
 	            }
 	            else if ( ! "true" .equals( this .controller .getProperty( "no.toolbar" ) ) ) {
-	            	this .oldToolBar .setVisible( true );
+	            	if ( this .oldToolBar != null )
+	            		this .oldToolBar .setVisible( true );
 	                monocularCanvas .addMouseListener( monocularClicks );
 	                leftEyeCanvas .addMouseListener( leftEyeClicks );
 	                rightEyeCanvas .addMouseListener( rightEyeClicks );
@@ -344,6 +375,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		{
 			super();
 			this .controller = controller;
+			boolean oldTools = controller .propertyIsTrue( "original.tools" );
             this .setLightWeightPopupEnabled( false );
 
 			this .add( setMenuAction( "copyThisView", new JMenuItem( "Copy This View" ) ) );
@@ -353,13 +385,13 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 
 			this .add( setMenuAction( "lookAtBall", new JMenuItem( "Look At This" ) ) );
 			this .add( setMenuAction( "lookAtOrigin", new JMenuItem( "Look At Origin" ) ) );
-			this .add( setMenuAction( "lookAtSymmetryCenter", new JMenuItem( "Look At Symmetry Center" ) ) );
 
-			this .addSeparator();
-
-			this .add( setMenuAction( "symmTool-icosahedral", new JMenuItem( "Apply Icosahedral Symmetry" ) ) );
-			this .add( setMenuAction( "setSymmetryCenter", new JMenuItem( "Set Symmetry Center" ) ) );
-			this .add( setMenuAction( "setSymmetryAxis", new JMenuItem( "Set Symmetry Axis" ) ) );
+			if ( oldTools ) {
+				this .add( setMenuAction( "lookAtSymmetryCenter", new JMenuItem( "Look At Symmetry Center" ) ) );
+				this .addSeparator();
+				this .add( setMenuAction( "setSymmetryCenter", new JMenuItem( "Set Symmetry Center" ) ) );
+				this .add( setMenuAction( "setSymmetryAxis", new JMenuItem( "Set Symmetry Axis" ) ) );
+			}
 
 			this .addSeparator();
 

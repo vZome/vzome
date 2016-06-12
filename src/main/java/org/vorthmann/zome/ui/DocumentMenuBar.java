@@ -69,6 +69,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         boolean isRootTwo = "rootTwo" .equals( fieldName );
 
         boolean isRootThree = "rootThree" .equals( fieldName );
+        
+        boolean oldTools = controller .propertyIsTrue( "original.tools" );
 
         // ----------------------------------------- File menu
 
@@ -290,14 +292,18 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu = new JMenu( "Tools" );
         
-        menu.add( enableIf( isEditor, createMenuItem( "Set Center", "setSymmetryCenter" ) ) ); 
-        menu.add( enableIf( isEditor, createMenuItem( "Set Axis", "setSymmetryAxis" ) ) ); 
-        menu.addSeparator(); 
-        
-        showToolsMenuItem = enableIf( isEditor, createMenuItem( "Show Tools Panel", "showToolsPanel" ) );
-        showToolsMenuItem .setEnabled( fullPower );
-        menu .add( showToolsMenuItem );
-        menu .addSeparator();
+        if ( oldTools ) {
+            menu.add( enableIf( isEditor, createMenuItem( "Set Center", "setSymmetryCenter" ) ) ); 
+            menu.add( enableIf( isEditor, createMenuItem( "Set Axis", "setSymmetryAxis" ) ) ); 
+            menu.addSeparator(); 
+            
+            showToolsMenuItem = enableIf( isEditor, createMenuItem( "Show Tools Panel", "showToolsPanel" ) );
+            showToolsMenuItem .setEnabled( fullPower );
+            menu .add( showToolsMenuItem );
+            menu .addSeparator();
+        }
+        else
+        	this .showToolsMenuItem = null;
 
         if ( isGolden ) {
             menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm-golden", KeyEvent.VK_I, COMMAND ) ) );
@@ -308,11 +314,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu.add( enableIf( isEditor, createMenuItem( "Dodecagonal Symmetry", "dodecagonsymm", KeyEvent.VK_D, COMMAND ) ) );
         }
         menu.add( enableIf( isEditor, createMenuItem( "Cubic / Octahedral Symmetry", "octasymm", KeyEvent.VK_C, COMMAND_OPTION ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", KeyEvent.VK_T, COMMAND_OPTION ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Axial Symmetry", "axialsymm", KeyEvent.VK_R, COMMAND ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", KeyEvent.VK_T, COMMAND_OPTION ) ) );
+        if ( oldTools ) {
+        	menu.add( enableIf( isEditor, createMenuItem( "Axial Symmetry", "axialsymm", KeyEvent.VK_R, COMMAND ) ) );
+        	menu.add( enableIf( isEditor, createMenuItem( "Mirror Reflection", "mirrorsymm" , KeyEvent.VK_M, COMMAND ) ) );
+        	menu.add( enableIf( isEditor, createMenuItem( "Translate", "translate", KeyEvent.VK_T, COMMAND ) ) );
+        }
         menu.add( enableIf( isEditor, createMenuItem( "Point Reflection", "pointsymm" ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Mirror Reflection", "mirrorsymm" , KeyEvent.VK_M, COMMAND ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Translate", "translate", KeyEvent.VK_T, COMMAND ) ) );
         
         menu .addSeparator();
         menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog", KeyEvent.VK_P, COMMAND_OPTION ) ) );
@@ -492,7 +500,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             if ( "article" .equals( mode ) )
             {
                 setColorMenuItem .setEnabled( false );
-                showToolsMenuItem .setEnabled( false );
+                if ( showToolsMenuItem != null )
+                	showToolsMenuItem .setEnabled( false );
                 pythonMenuItem .setEnabled( false );
                 zomicMenuItem .setEnabled( false );
                 importVEFItem .setEnabled( false );
@@ -500,7 +509,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             else
             {                   
                 setColorMenuItem .setEnabled( true );
-                showToolsMenuItem .setEnabled( fullPower );
+                if ( showToolsMenuItem != null )
+                	showToolsMenuItem .setEnabled( fullPower );
                 pythonMenuItem .setEnabled( fullPower );
                 zomicMenuItem .setEnabled( fullPower );
                 importVEFItem .setEnabled( fullPower );
