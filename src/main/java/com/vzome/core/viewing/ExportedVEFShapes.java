@@ -122,6 +122,8 @@ public class ExportedVEFShapes extends AbstractShapes
             else {
                 script = MODEL_PREFIX + script;
                 stream = Thread.currentThread() .getContextClassLoader().getResourceAsStream( script );
+                if ( stream == null )
+                	return null; // avoid the NPE!
             }
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buf = new byte[1024];

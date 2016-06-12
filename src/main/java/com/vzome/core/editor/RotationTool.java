@@ -78,6 +78,8 @@ public class RotationTool extends SymmetryTool
         AlgebraicVector vector = axisStrut .getOffset();
         vector = axisStrut .getField() .projectTo3d( vector, true );
         Axis axis = symmetry .getAxis( vector );
+        if ( axis == null )
+        	return "selected strut is not an axis of rotation";
         int rotation = axis .getRotation();
         if ( rotation == Symmetry .NO_ROTATION )
         	return "selected strut is not an axis of rotation";
