@@ -53,7 +53,6 @@ public class ToolsController extends DefaultController implements PropertyChange
 		case "tool.instances":
             String toolName = (String) evt .getNewValue(); // will be "group.N/label"
     		toolNames .add( toolName );
-    		this .properties() .firePropertyChange( evt ); // propagate to the UI
 			break;
 			
 		case "tools.enabled":

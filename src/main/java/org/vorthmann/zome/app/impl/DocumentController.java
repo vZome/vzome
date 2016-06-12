@@ -190,6 +190,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         
         toolsController = new ToolsController( document );
         toolsController .setNextController( this );
+        this .addPropertyListener( toolsController );
         
         polytopesController = new PolytopesController( this .documentModel );
         polytopesController .setNextController( this );

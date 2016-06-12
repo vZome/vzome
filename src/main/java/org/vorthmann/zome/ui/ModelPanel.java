@@ -151,6 +151,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 staticToolBar .add( button );
                 button = newToolButton( enabler, "translation", "Create translation tool" );
                 staticToolBar .add( button );
+                button = newToolButton( enabler, "linear map", "Create linear map tool" );
+                staticToolBar .add( button );
                                 
                 final Controller toolsController = controller .getSubController( "tools" );
             	
