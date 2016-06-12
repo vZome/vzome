@@ -420,6 +420,7 @@ public class Application
             mCommands .put( "translate", new CommandTranslate() );
             mCommands .put( "centroid", new CommandCentroid() );
             mCommands .put( "hideball", new CommandHide() );
+            mCommands .put( "hide", new CommandHide() );
             mCommands .put( "panel", new CommandPolygon() );
             mCommands .put( "tauDivide", new CommandTauDivision() );
             mCommands .put( "midpoint", new CommandMidpoint() );

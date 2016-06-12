@@ -36,7 +36,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
-import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
@@ -157,12 +156,21 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .sceneLighting = app .getLights();
 
 		this .mRealizedModel = new RealizedModel( field, new Projection.Default( field ) );
+		
+		this .mSelection = new Selection();
 
         Symmetry[] symms = field .getSymmetries();
         for (Symmetry symm : symms) {
-            SymmetrySystem osm = new SymmetrySystem(null, symm, app .getColors(), app.getGeometries(symm), true);
+            SymmetrySystem osm = new SymmetrySystem( null, symm, app .getColors(), app .getGeometries( symm ), true );
             // one of these will be overwritten below, if we are loading from a file that has it set
             this .symmetrySystems .put( osm .getName(), osm );
+            
+            try {
+            	String name = symm .getName();
+				makeTool( name + ".builtin/" + name + " around origin", name, this, symm ) .perform();
+			} catch ( Command.Failure e ) {
+				logger .warning( "Failed to create " + symm .getName() + " tool." );
+			}
         }
 
 		if ( xml != null ) {
@@ -178,11 +186,20 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         this .symmetrySystem = new SymmetrySystem( xml, symmetry, app .getColors(), app .getGeometries( symmetry ), true );
         this .symmetrySystems .put( symmName, this .symmetrySystem );
 
+        try {
+			makeTool( "tetrahedral.builtin/tetrahedral around origin", "tetrahedral", this, symmetry ) .perform();
+		} catch ( Command.Failure e ) {
+			logger .warning( "Failed to create built-in tetrahedral symmetry tool." );
+		}
+        try {
+			makeTool( "point reflection.builtin/reflection through origin", "point reflection", this, symmetry ) .perform();
+		} catch ( Command.Failure e ) {
+			logger .warning( "Failed to create built-in point reflection tool." );
+		}
+
         this .renderedModel = new RenderedModel( field, this .symmetrySystem );
 
 		this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
-		
-		this .mSelection = new Selection();
 		// the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
 		this .mEditorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint );
 
@@ -488,6 +505,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     public boolean doEdit( String action )
     {
     	// TODO break all these cases out as dedicated DocumentModel methods
+    	
+    	if ( this .mEditorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
+    		action = "showHidden";
+		}
 
     	Command command = (Command) commands .get( action );
     	if ( command != null )
@@ -542,7 +563,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         }
         else if ( action.equals( "joinballs" ) )
             edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CLOSED_LOOP );
-        else if ( action.equals( "chainBalls" ) )
+        else if ( action .toLowerCase() .equals( "chainballs" ) )
             edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CHAIN_BALLS );
         else if ( action.equals( "joinBallsAllToFirst" ) )
             edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_TO_FIRST );
@@ -620,20 +641,20 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         {
             Throwable cause = re.getCause();
             if ( cause instanceof Command.Failure )
-            	this .failures .reportFailure( (Failure) cause );
+            	this .failures .reportFailure( (Command.Failure) cause );
             else if ( cause != null )
-            	this .failures .reportFailure( new Failure( cause ) );
+            	this .failures .reportFailure( new Command.Failure( cause ) );
             else
-            	this .failures .reportFailure( new Failure( re ) );
+            	this .failures .reportFailure( new Command.Failure( re ) );
         }
-        catch ( Failure failure )
+        catch ( Command.Failure failure )
         {
         	this .failures .reportFailure( failure );
         }
         this .changes++;
     }
 
-	public void setParameter( Construction singleConstruction, String paramName ) throws Failure
+	public void setParameter( Construction singleConstruction, String paramName ) throws Command.Failure
 	{
     	UndoableEdit edit = null;
     	if ( "ball" .equals( paramName ) )
@@ -695,6 +716,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
     public void finishLoading( boolean openUndone, boolean asTemplate ) throws Command.Failure
     {
+        for ( Tool tool : getTools() )
+			firePropertyChange( "tool.instances", null, tool .getName() );
+
     	if ( mXML == null )
     		return;
 
@@ -815,7 +839,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         } catch ( Throwable t )
         {
         	String message = format .getFormatError( mXML, Version.edition, Version.label, Version.SVN_REVISION );
-        	throw new Failure( message, t );
+        	throw new Command.Failure( message, t );
         }
 
         this .migrated = openUndone || format.isMigration() || ! implicitSnapshots .isEmpty();

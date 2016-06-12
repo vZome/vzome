@@ -68,10 +68,13 @@ public class TranslationTool extends TransformationTool
         	correct = false;
         }
         else if ( p2 == null )
-        {
-            p2 = p1;
-            p1 = this.originPoint;
-        }
+        	if ( prepareTool )
+        	{
+        		p2 = p1;
+        		p1 = this.originPoint;
+        	}
+        	else // doing isValidForSelection
+        		correct = false;
 
         if ( ! correct )
             return "translation tool requires start and end points, or just an end point";

@@ -20,7 +20,7 @@ import com.vzome.core.math.RealVector;
  * @author Scott Vorthmann
  *
  */
-public abstract class AbstractSymmetry implements Symmetry, Iterable<Direction>
+public abstract class AbstractSymmetry implements Symmetry
 {
     protected final Map<String, Direction> mDirectionMap = new HashMap<>();
     

@@ -124,14 +124,17 @@ public class SymmetryTool extends TransformationTool
         	case "tetrahedral":
         		if ( !correct )
         			return "no unique alignment strut selected.";
-        		if ( axis == null )
-        			return "no aligment strut selected.";
-        		// align the tetrahedral symmetry with this yellow, blue, or green strut
-        		IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
-        		Axis zone = icosa .getAxis( axis .getOffset() );
-        		closure = icosa .subgroup( Symmetry.TETRAHEDRAL, zone );
-        		if ( closure == null )
-        			return "selected alignment strut is not a tetrahedral axis.";
+        		if ( axis == null ) {
+        			if ( !prepareTool )
+        				return "no aligment strut selected.";
+        		} else {
+        			// align the tetrahedral symmetry with this yellow, blue, or green strut
+        			IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
+        			Axis zone = icosa .getAxis( axis .getOffset() );
+        			closure = icosa .subgroup( Symmetry.TETRAHEDRAL, zone );
+        			if ( closure == null )
+        				return "selected alignment strut is not a tetrahedral axis.";
+        		}
                 if ( prepareTool ) {
 	                int order = closure .length;
 	                this .transforms = new Transformation[ order-1 ];
@@ -147,8 +150,7 @@ public class SymmetryTool extends TransformationTool
         	}
 			break;
 
-		default:
-			// octahedral
+		case "octahedral":
 			if ( prepareTool ) {
 				if ( getCategory() .equals( "tetrahedral" ) ) {
 	                int order = closure .length;

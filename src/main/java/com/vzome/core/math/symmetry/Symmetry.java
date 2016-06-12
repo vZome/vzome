@@ -15,7 +15,7 @@ import com.vzome.core.math.RealVector;
  * @author Scott Vorthmann
  *
  */
-public interface Symmetry
+public interface Symmetry extends Iterable<Direction>
 {
 	public enum SpecialOrbit {
 	    BLUE,

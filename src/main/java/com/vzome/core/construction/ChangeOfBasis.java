@@ -78,7 +78,7 @@ public class ChangeOfBasis extends Transformation
             AlgebraicMatrix transform = newMatrix .times( oldMatrix .inverse() );
             
             // now transform has the transition matrix
-            System .out .println( transform .toString() );
+//            System .out .println( transform .toString() );
             return setStateVariables( transform, loc, false );
         }
         else
