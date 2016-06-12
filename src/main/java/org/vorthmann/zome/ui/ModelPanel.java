@@ -274,6 +274,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		AbstractButton button = makeEditButton2( enabler, tooltip, "/icons/tools/newTool/" + group + ".png" );
 		button = enabler .setButtonAction( "addTool-" + group, button );
 		this .toolCreationButtons .put( group, button );
+		boolean on = this .controller .propertyIsTrue( "tool.enabled." + group );
+		button .setEnabled( on );
 		return button;
 	}
 	
