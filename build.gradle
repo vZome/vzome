@@ -12,7 +12,7 @@ ext.appName = 'vZome'
 ext.edition = appName
 
 group = 'com.vzome'
-version = '5.0'
+version = '6.0'
 
 description = 'vzome-desktop'
 

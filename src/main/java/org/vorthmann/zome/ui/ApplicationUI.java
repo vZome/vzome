@@ -164,7 +164,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
          */
 
         SplashScreen splash = null;
-        String splashImage = "org/vorthmann/zome/ui/vZome50Splash.gif";
+        String splashImage = "org/vorthmann/zome/ui/vZome-6-splash.png";
         if ( splashImage != null ) {
             splash = new SplashScreen( splashImage );
             splash .splash();

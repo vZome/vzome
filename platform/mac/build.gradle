@@ -19,13 +19,13 @@ dependencies {
     compile project( ':' )
 }
 
-// The classesDir adjustment is necessary so that mac-5.0.jar does not end up containing
+// The classesDir adjustment is necessary so that mac-6.0.jar does not end up containing
 //  all the classes of vzome-desktop.  The correct fix is actually in vzome-desktop/build.gradle,
 //  to remove the common buildDir for all subprojects.  However, applying that fix causes a
 //  mysterious failure from "createDmg":
 //       hdiutil: create failed - error -5341
 //  I am unable to determine what the error code means.  After much experimentation, the
-//  failure correlates with a size-optimized mac-5.0.jar.  If I leave in all or even some of
+//  failure correlates with a size-optimized mac-6.0.jar.  If I leave in all or even some of
 //  the extraneous classes and resources, the error does not appear.  Therefore I have
 //  found an acceptable compromise.  For classes, I use a separate directory, configured
 //  here.  For resources, I continue to use the master build/main/resources directory.
@@ -35,7 +35,7 @@ dependencies {
 //  UPDATE! Something changed with the vzome-core 0.5 adoption, either here or in vzome-core,
 //    And the fix described above no longer works.  What does work is this:
 //    I have commented out the buildDir sharing in the main project.  I've also added resourcesDir here,
-//    but I'm not sure it had any effect.  The mac-5.0.jar still seems to have some vzome-core
+//    but I'm not sure it had any effect.  The mac-6.0.jar still seems to have some vzome-core
 //    resources.
 sourceSets.main.output.classesDir 'build/classes'
 sourceSets.main.output.resourcesDir 'build/resources'
@@ -47,15 +47,15 @@ macAppBundle {
     dmgName = "${appName}-MacOSX-${->project.version}"
     volumeName = "${dmgName}-build-${->project.buildNumber}"
     delegate.mainClassName = 'com.vzome.platform.mac.Adapter'
-    creatorCode = 'vZ50'
-    icon = 'vZomeLogo.icns'
+    creatorCode = 'vZ60'
+    icon = 'vZome-6.icns'
     bundleJRE = 'true'
     javaProperties.putAll jvmArgs
     javaProperties.put 'java.ext.dirs', '.'
     arguments.addAll vzomeArgs
     bundleExtras = [ CFBundleDocumentTypes: [ [
         CFBundleTypeExtensions: [ project.appName ],
-        CFBundleTypeIconFile: 'vZomeLogo.icns',
+        CFBundleTypeIconFile: 'vZome-6.icns',
         CFBundleTypeName: project.appName + ' model',
         CFBundleTypeRole: 'Editor',
         LSTypeIsPackage: 'false'
