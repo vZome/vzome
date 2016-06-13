@@ -4,5 +4,5 @@ jdk:
   - oraclejdk8
 
 script:
-  - ./gradlew clean build regression
+  - ./gradlew clean build regression install
   
