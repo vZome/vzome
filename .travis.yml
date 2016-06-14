@@ -4,7 +4,10 @@ jdk:
   - oraclejdk8
 
 before_install:
-  - wget https://github.com/vorth/vzome-core/releases/download/0.8.6/vzome-core-0.8.6.jar -O /tmp/vzome-core.jar
-  - mvn install:install-file -DgroupId=com.vzome.core -Dpackaging=jar -Dversion=0.8.6 -DartifactId=vzome-core -Dfile=/tmp/vzome-core.jar
+  - export LATEST_JSON=$(curl -s https://api.github.com/repos/vorth/vzome-core/releases/latest)
+  - export LATEST_ARTIFACT_TAG=$(echo $LATEST_JSON | grep 'tag_name' | head -n 1 | cut -d '"' -f 4)
+  - export LATEST_ARTIFACT_URL=$(echo $LATEST_JSON | grep 'browser_download' | head -n 1 | cut -d '"' -f 4)
+  - wget ${LATEST_ARTIFACT_URL} -O /tmp/vzome-core.jar
+  - mvn install:install-file -DgroupId=com.vzome.core -Dpackaging=jar -Dversion=${LATEST_ARTIFACT_TAG} -DartifactId=vzome-core -Dfile=/tmp/vzome-core.jar
 
-script: ./gradlew clean createApp
+script: ./gradlew clean createDmg zipWin64Distribution
