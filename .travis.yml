@@ -3,7 +3,7 @@ os: osx
 language: java
 
 jdk:
-  - oraclejdk8
+  - openjdk7
 
 before_install:
   - curl -s https://api.github.com/repos/vorth/vzome-core/releases/latest > /tmp/latest.json
