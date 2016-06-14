@@ -67,17 +67,7 @@ public class ToolsController extends DefaultController implements Tool.Registry
     {
         String name = tool .getName();
         tools .put( name, tool );
-        useTool( tool );
         properties() .firePropertyChange( "tool.instances", null, name );
-    }
-
-    @Override
-    public void removeTool( Tool tool )
-    {
-        String name = tool .getName();
-        tools .remove( name );
-        categories .remove( tool .getCategory() );
-        properties() .firePropertyChange( "tool.instances", name, null );
     }
 
     @Override
@@ -86,14 +76,15 @@ public class ToolsController extends DefaultController implements Tool.Registry
         return tools .get( toolName );
     }
 
-    @Override
-    public void useTool( Tool tool )
-    {
-        categories .put( tool .getCategory(), tool );
-    }
-
     public Tool getLastInCategory( String category )
     {
         return categories .get( category );
     }
+
+	@Override
+	public Tool findEquivalent(Tool arg0)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
