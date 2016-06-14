@@ -5,9 +5,13 @@ jdk:
 
 before_install:
   - export LATEST_JSON=$(curl -s https://api.github.com/repos/vorth/vzome-core/releases/latest)
+  - echo $LATEST_JSON
   - export LATEST_ARTIFACT_TAG=$(echo $LATEST_JSON | grep 'tag_name' | head -n 1 | cut -d '"' -f 4)
+  - echo $LATEST_ARTIFACT_TAG
   - export LATEST_ARTIFACT_URL=$(echo $LATEST_JSON | grep 'browser_download' | head -n 1 | cut -d '"' -f 4)
+  - echo $LATEST_ARTIFACT_URL
   - wget ${LATEST_ARTIFACT_URL} -O /tmp/vzome-core.jar
+  - ls -lF /tmp/vzome-core.jar
   - mvn install:install-file -DgroupId=com.vzome.core -Dpackaging=jar -Dversion=${LATEST_ARTIFACT_TAG} -DartifactId=vzome-core -Dfile=/tmp/vzome-core.jar
 
-script: ./gradlew clean createDmg zipWin64Distribution
+script: ./gradlew clean distZip
