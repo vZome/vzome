@@ -3,6 +3,7 @@ jdk:
 - oraclejdk8
 script:
 - "./gradlew clean build regression"
+before_deploy: "pwd && echo '%%%%%%%%' && ls"
 deploy:
   provider: releases
   api_key:
