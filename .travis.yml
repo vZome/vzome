@@ -4,5 +4,12 @@ jdk:
   - oraclejdk8
 
 script:
-  - ./gradlew clean build regression install
+  - ./gradlew clean build regression
   
+deploy:
+  provider: releases
+  api_key: "d2e052aa5b031ed8af64a8e3a53bca71bd8c7a34"
+  file: "build/libs/vzome-core-*.jar"
+  skip_cleanup: true
+  on:
+    tags: true
