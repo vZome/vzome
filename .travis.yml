@@ -7,6 +7,6 @@ deploy:
   provider: releases
   api_key:
     secure: YHFs1nCDRvT+XcH3RtKYDYAP5hPalQx0b5DVhhPevzmRrr6OLZF06UGQKdJyqw03J4B9imqvtWZyub/pqbMAXRtTowH84Vz58HPoIIg7+xwasUFChqhxtaeE8x9ZsvoenmRfYfjLA4IzoZqTZKaZ7nxLRwHP88T1B3Z0C52oozkI/8DVQ967ABWO5hX+1Z0tYOheRMQH5fB+6ygI7TeOfCqX1fBAsMTb412JpiUjl8HxSmoA51skn3A5LZqZhrn7yY84Fn8fPEJbQP/X2xuRuB28uFgixNhDorysqDa7ukkG0YA+Jj+XNd6wKlcuvqv98o0h5+Dsi55h9bIVC/a4XRpmVvssIrO0fns+ZfA6uQ+KW+1g1hYZbjErJt7dkLJiHepSe2CAVuVJLslUUjd9VwXfCzNcQnnyCo6NdvFYNig2t3vMiQ4q4qimv0RIv/aWaUJ5KR0H+C1UU8t+NHDL3psL/2Z7swj1pVVTYlh5FryZGbypbh2wyt70J1iP8QM6HJbeJOq287o2Lm5EPTbWFRQV/mHfqlnjj9ccXuuD49u0nQ0RNd0Hqj4lcXFbKBWKn3Tevik3MgJUatWgWid+hP0W/dIegN8MFkhkVkiYrxjzyPySMzZjjOpIR2MDF3YNnsPVBmdxT5XBu0B9ihpniJP7maxeqN9a3dablTh1cZ8=
-  file: build/libs/vzome-core-*.jar
+  file: build/libs/vzome-core-0.8.6.jar
   on:
     repo: vorth/vzome-core
