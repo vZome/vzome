@@ -4,11 +4,11 @@ jdk:
   - oraclejdk8
 
 before_install:
-  - export LATEST_JSON=$(curl -s https://api.github.com/repos/vorth/vzome-core/releases/latest)
-  - echo $LATEST_JSON
-  - export LATEST_ARTIFACT_TAG=$(echo $LATEST_JSON | grep 'tag_name' | head -n 1 | cut -d '"' -f 4)
+  - curl -s https://api.github.com/repos/vorth/vzome-core/releases/latest > /tmp/latest.json
+  - cat /tmp/latest.json
+  - export LATEST_ARTIFACT_TAG=$(cat /tmp/latest.json | grep 'tag_name' | head -n 1 | cut -d '"' -f 4)
   - echo $LATEST_ARTIFACT_TAG
-  - export LATEST_ARTIFACT_URL=$(echo $LATEST_JSON | grep 'browser_download' | head -n 1 | cut -d '"' -f 4)
+  - export LATEST_ARTIFACT_URL=$(cat /tmp/latest.json | grep 'browser_download' | head -n 1 | cut -d '"' -f 4)
   - echo $LATEST_ARTIFACT_URL
   - wget ${LATEST_ARTIFACT_URL} -O /tmp/vzome-core.jar
   - ls -lF /tmp/vzome-core.jar
