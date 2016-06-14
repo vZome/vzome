@@ -3,4 +3,8 @@ language: java
 jdk:
   - oraclejdk8
 
+before_script:
+  - wget https://github.com/vorth/vzome-core/releases/download/0.8.6/vzome-core-0.8.6.jar -O /tmp/vzome-core.jar
+  - mvn install:install-file -DgroupId=com.vzome.core -Dpackaging=jar -Dversion=0.8.6 -DartifactId=vzome-core -Dfile=/tmp/vzome-core.jar
+
 script: ./gradlew clean createApp
