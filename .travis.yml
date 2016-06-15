@@ -1,6 +1,8 @@
-os: osx
 
 language: java
+
+jdk:
+  - oraclejdk8
 
 before_install:
   - curl -s https://api.github.com/repos/vorth/vzome-core/releases/latest > /tmp/latest.json
@@ -13,4 +15,4 @@ before_install:
   - ls -lF /tmp/vzome-core.jar
   - mvn install:install-file -DgroupId=com.vzome.core -Dpackaging=jar -Dversion=${LATEST_ARTIFACT_TAG} -DartifactId=vzome-core -Dfile=/tmp/vzome-core.jar
 
-script: ./gradlew createDmg zipWin64Distribution
+script: ./gradlew zipWin64Distribution createDmg
