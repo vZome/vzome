@@ -15,4 +15,4 @@ before_install:
   - ls -lF /tmp/vzome-core.jar
   - mvn install:install-file -DgroupId=com.vzome.core -Dpackaging=jar -Dversion=${LATEST_ARTIFACT_TAG} -DartifactId=vzome-core -Dfile=/tmp/vzome-core.jar
 
-script: ./gradlew zipWin64Distribution
+script: ./gradlew distZip
