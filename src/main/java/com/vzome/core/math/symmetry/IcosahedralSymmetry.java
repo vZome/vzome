@@ -348,6 +348,12 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 
     public int[] subgroup( String name, Axis zone )
     {
+    	return subgroup( name, zone, true );
+    }
+
+
+    public int[] subgroup( String name, Axis zone, boolean allowYellow )
+    {
     	// TODO: don't assume name is TETRAHEDRAL
         int orientation = zone .getOrientation();
         Direction orbit = zone .getDirection();
@@ -362,7 +368,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
             int subgroup = greenTetrahedral[ orientation ];
             return tetrahedralSubgroup[ subgroup ];
         }
-        else if ( orbitName .equals( "yellow" ) )
+        else if ( allowYellow && orbitName .equals( "yellow" ) )
         {
         	// not really correct, but retained for legacy support
             int subgroup = yellowTetrahedral[ orientation ];
