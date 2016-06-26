@@ -37,7 +37,7 @@ public class Polytope4d extends ChangeManifestations
     private int index;
     private final AlgebraicField field;
     private Projection proj;
-    private Segment symmAxis;
+    private AlgebraicVector quaternion;
     private String groupName;
     
     // new controls
@@ -46,13 +46,29 @@ public class Polytope4d extends ChangeManifestations
     private String renderGroupName;
 
     public Polytope4d( Selection selection, RealizedModel realized,
+            AlgebraicVector quaternion, int index, String groupName,
+            int edgesToRender, AlgebraicNumber[] edgeScales, String renderGroupName )
+    {
+    	super( selection, realized, false );
+
+    	this.index = index;
+    	this.quaternion = quaternion;
+    	this.groupName = groupName;
+    	this.field = realized .getField();
+
+    	this .renderGroupName = renderGroupName;
+    	this .edgesToRender = edgesToRender;
+    	this .edgeScales = edgeScales;
+    }
+
+    public Polytope4d( Selection selection, RealizedModel realized,
                         Segment symmAxis, int index, String groupName,
                         int edgesToRender, AlgebraicNumber[] edgeScales, String renderGroupName )
     {
         super( selection, realized, false );
 
         this.index = index;
-        this.symmAxis = symmAxis;
+        this.quaternion = ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d();
         this.groupName = groupName;
         this.field = realized .getField();
         
@@ -67,7 +83,7 @@ public class Polytope4d extends ChangeManifestations
         super( selection, realized, groupInSelection );
 
         this.index = index;
-        this.symmAxis = symmAxis;
+        this.quaternion = ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d();
         this.groupName = groupName;
         this.field = realized .getField();
         
@@ -88,8 +104,8 @@ public class Polytope4d extends ChangeManifestations
     @Override
     public void getXmlAttributes( Element xml )
     {
-        if ( symmAxis != null )
-            XmlSaveFormat .serializeSegment( xml, "start", "end", symmAxis );
+        if ( quaternion != null )
+        	DomUtils .addAttribute( xml, "quaternion", quaternion .toString() );        
         DomUtils .addAttribute( xml, "group", this.groupName );
         DomUtils .addAttribute( xml, "wythoff", Integer .toString( this.index, 2 ) );
         if ( this .edgesToRender != 0xF )
@@ -109,12 +125,16 @@ public class Polytope4d extends ChangeManifestations
         String rgString = xml .getAttribute( "renderGroup" );
         this .renderGroupName = ( rgString==null || rgString .isEmpty() )? this .groupName : rgString;
         
-        if ( format .commandEditsCompacted() )
-            this.symmAxis = format .parseSegment( xml, "start", "end" );
+        String quatString = xml .getAttribute( "quaternion" );
+        if ( quatString != null ) {
+        	this.quaternion = format .parseRationalVector( xml, "quaternion" );
+        }
+        else if ( format .commandEditsCompacted() )
+            this.quaternion = format .parseSegment( xml, "start", "end" ) .getOffset() .inflateTo4d();
         else
         {
             AttributeMap attrs = format .loadCommandAttributes( xml );
-            this.symmAxis = (Segment) attrs .get( "rotation" );
+            this.quaternion = ((Segment) attrs .get( "rotation" )) .getOffset() .inflateTo4d();
         }
     }
     
@@ -122,10 +142,10 @@ public class Polytope4d extends ChangeManifestations
     @Override
     public void perform()
     {
-        if ( symmAxis == null )
+        if ( quaternion == null )
             this.proj = new Projection .Default( field );
         else
-            this.proj = new QuaternionProjection( field, null, symmAxis .getOffset() .scale( field .createPower( -5 ) ) );
+            this.proj = new QuaternionProjection( field, null, quaternion .scale( field .createPower( -5 ) ) );
         if ( "H4" .equals( groupName ) )
         {
             QuaternionicSymmetry qsymm = field .getQuaternionSymmetry( "H_4" ); 

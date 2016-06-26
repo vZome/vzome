@@ -195,6 +195,11 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
         return new AlgebraicVector( result );
     }
 
+    public AlgebraicVector inflateTo4d()
+    {
+    	return this .inflateTo4d( true );
+    }
+
     public AlgebraicVector inflateTo4d( boolean wFirst )
     {
         if ( this .coordinates .length == 4 ) {
