@@ -5,15 +5,18 @@ package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
 
+import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
 
 public class PolytopesController extends DefaultController
 {
-    private final DocumentModel model;
+	private final DocumentModel model;
     
     private String group = "H4";
     
@@ -22,6 +25,7 @@ public class PolytopesController extends DefaultController
     private boolean[] generateEdge = new boolean[]{ false, false, false, true };
     private boolean[] renderEdge = new boolean[]{ true, true, true, true };
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
+    private final VectorController rotationQuaternion;
 
     public PolytopesController( DocumentModel document )
     {
@@ -39,11 +43,28 @@ public class PolytopesController extends DefaultController
         	groups = new String[]{ "A4", "B4/C4", "D4", "F4", "H4" };
         	group = "H4";
         }
+        rotationQuaternion = new VectorController( field .basisVector( 4, 0 ) );
     }
 
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
+    	switch ( action ) {
+
+    	case "setQuaternion":
+    		// TODO get current selected strut vector
+    		Segment strut = model .getSelectedSegment();
+    		if ( strut != null ) {
+    			AlgebraicVector vector = strut .getOffset();
+        		rotationQuaternion .setVector( vector .inflateTo4d() );
+    		} else {
+    			rotationQuaternion .setVector( model .getField() .basisVector( 4, 0 ) );
+    		}
+			return;
+
+		default:
+			break;
+		}
         if ( "generate".equals( action ) )
         {
             int index = 0;
@@ -55,7 +76,8 @@ public class PolytopesController extends DefaultController
                 if ( renderEdge[ i ] )
                     edgesToRender += 1 << i;
             }
-            model .generatePolytope( group, group, index, edgesToRender, edgeScales );
+            AlgebraicVector quaternion = rotationQuaternion .getVector();
+            model .generatePolytope( group, group, index, edgesToRender, quaternion, edgeScales );
         }
         else if ( action .startsWith( "setGroup." ) )
         {
@@ -107,4 +129,17 @@ public class PolytopesController extends DefaultController
         else
             return super .getProperty( propName );
     }
+
+    @Override
+	public Controller getSubController( String name )
+    {
+    	switch ( name ) {
+
+    	case "rotation":
+			return this .rotationQuaternion;
+
+		default:
+			return super.getSubController( name );
+		}
+	}
 }

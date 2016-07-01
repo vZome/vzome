@@ -280,8 +280,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
             	case "showPolytopesDialog":
+            		Controller polytopesController = mController .getSubController( "polytopes" );
             		if ( polytopesDialog == null )
-            	        polytopesDialog = new PolytopesDialog( DocumentFrame.this, mController .getSubController( "polytopes" ) );
+            	        polytopesDialog = new PolytopesDialog( DocumentFrame.this, polytopesController );
+                    try {
+                    	polytopesController .doAction( "setQuaternion", new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "setQuaternion" ) );
+                    } catch ( Exception e1 ) {
+                        errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ e1 } );
+                    }
                     polytopesDialog .setVisible( true );
                 	break;
                 
@@ -362,7 +368,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         String numStr = toolsController .getProperty( "next.tool.number" );
                         int toolNum = Integer .parseInt( numStr );
                 		String toolId = group + "." + toolNum;
-                    	String toolName = (String) JOptionPane .showInputDialog( DocumentFrame.this,
+                    	String toolName = (String) JOptionPane .showInputDialog( (Component) e .getSource(),
                     			"Name the new tool:", "New Tool",
                     					JOptionPane.PLAIN_MESSAGE, null, null, toolId );
                     	if ( ( toolName == null ) || ( toolName .length() == 0 ) ) {

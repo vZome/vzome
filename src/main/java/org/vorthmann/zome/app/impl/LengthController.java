@@ -5,17 +5,15 @@ package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
-import java.math.BigInteger;
-import java.util.StringTokenizer;
 
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
+import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.BigRational;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Direction;
 
@@ -25,7 +23,7 @@ import com.vzome.core.math.symmetry.Direction;
  */
 public class LengthController extends DefaultController
 {
-    /**
+	/**
      * This is a permanent adjustment of the scale slider.  When the scale reads 0 for the user,
      * the actual scale used internally will be SCALE_OFFSET.
      */
@@ -63,7 +61,6 @@ public class LengthController extends DefaultController
 
         public ScaleController()
         {
-            // TODO Auto-generated constructor stub
             this .tool = new MouseToolDefault()
             {
                 int wheelClicks = 0;
@@ -194,6 +191,8 @@ public class LengthController extends DefaultController
 
     private ScaleController currentScale;
     
+    private NumberController unitController;
+    
     private static final int MOUSE_WHEEL_GAIN = 4;
     
 
@@ -215,13 +214,41 @@ public class LengthController extends DefaultController
         
     public LengthController( Direction orbit )
     {
-        this .field = orbit .getSymmetry() .getField();
+    	this( orbit .getSymmetry() .getField(), orbit .getUnitLength() );
+    }
+
+    public LengthController( AlgebraicField field )
+    {
+    	this( field, field .one() );
+    }
+
+    public LengthController( AlgebraicField field, AlgebraicNumber factor )
+    {
+        this .field = field;
         this .standardUnitFactor = field .createPower( 0 );
         this .unitFactor = standardUnitFactor;
-        this .fixedFactor = orbit .getUnitLength();
+        this .fixedFactor = factor;
         this .currentScale = new ScaleController();
         this .currentScale .setNextController( this );
+        this .unitController = new NumberController( field );
+        this .unitController .setNextController( this );
     }
+
+    @Override
+	public Controller getSubController( String name )
+    {
+		switch ( name ) {
+
+		case "unit":
+			return this .unitController;
+
+		case "scale":
+			return this .currentScale;
+
+		default:
+			return super.getSubController( name );
+		}
+	}
 
     public void fireLengthChange()
     {
@@ -254,6 +281,24 @@ public class LengthController extends DefaultController
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
+    	switch ( action ) {
+
+    	case "setCustomUnit":
+			// push the value to the NumberController
+    		this .unitController .setValue( this .unitFactor );
+            return;
+
+    	case "getCustomUnit":
+			// get the value from the NumberController
+    		this .unitFactor = this .unitController .getValue();
+    		// now reset everything according to that unitFactor
+            currentScale .setScale( 0 );
+            fireLengthChange();
+            return;
+
+		default:
+			break;
+		}
         if ( "toggleHalf" .equals( action ) )
         {
             this .half = ! this .half;
@@ -300,36 +345,6 @@ public class LengthController extends DefaultController
     }
 
     @Override
-    public String[] getCommandList( String listName )
-    {
-        int order = this .field .getOrder();
-
-        if ( "labels" .equals( listName ) )
-        {
-            // first label should always be "1", last should always be "/"
-            String[] result = new String[ order + 1 ];
-            result[ 0 ] = "1";
-            result[ order ] = "/";
-            for( int i = 1; i < order; i++ )
-                result[ i ] = this .field .getIrrational( i );
-            return result;
-        }
-
-        if ( "values" .equals( listName ) )
-        {
-            BigInteger divisor = unitFactor .getDivisor();
-            String[] result = new String[ order + 1 ];
-            result[ order ] = divisor .toString();
-            BigRational[] factors = unitFactor .getFactors();
-            for( int i = 0; i < order; i++ )
-                result[ i ] = factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .toString();
-            return result;
-        }
-
-        return super.getCommandList( listName );
-    }
-
-    @Override
     public void setProperty( String property, Object value )
     {
         if ( "half" .equals( property ) )
@@ -342,21 +357,6 @@ public class LengthController extends DefaultController
         else if ( "scale" .equals( property ) )
         {
             currentScale .setProperty( property, value );
-            return;
-        }
-        else if ( "customUnit" .equals( property ) )
-        {
-            StringTokenizer values = new StringTokenizer( (String) value );
-            int[] inputs = new int[ field .getOrder() ]; // divisor will be the last int
-            int divisor = 1;
-            for ( int i = 0; values .hasMoreTokens(); i++ )
-                if ( i < inputs.length )
-                    inputs[ i ] = Integer .parseInt( values .nextToken() );
-                else
-                    divisor = Integer .parseInt( values .nextToken() );
-            unitFactor = field .createAlgebraicNumber( inputs ) .dividedBy( field .createRational( divisor ) );
-            currentScale .setScale( 0 );
-            fireLengthChange();
             return;
         }
         else

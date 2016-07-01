@@ -6,107 +6,179 @@ package org.vorthmann.zome.ui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.vorthmann.ui.Controller;
 
 public class PolytopesDialog extends EscapeDialog
 {
-    private final JCheckBox[] renderCheckboxes = new JCheckBox[4];
+	private final JCheckBox[] renderCheckboxes = new JCheckBox[4];
+	
+	private final NumberPanel[] numberPanels = new NumberPanel[4];
     
     public PolytopesDialog( Frame frame, final Controller controller )
     {
-        super( frame, "Generate a Polytope", true );
-        setSize( new Dimension( 250, 250 ) );
+        super( frame, "Generate a 4D Polytope", true );
+        setSize( new Dimension( 350, 350 ) );
         setLocationRelativeTo( frame );
 
         Container content = getContentPane();
         content .setLayout( new BorderLayout() );
         
-        String[] groupNames = controller .getCommandList( "groups" );
-        String defaultGroup = controller .getProperty( "group" );
-        JComboBox<String> groups = new JComboBox<String>( groupNames );
-        groups .setSelectedItem( defaultGroup );
-        groups .setMaximumRowCount( 6 );
-        groups .addActionListener( new ActionListener()
         {
-            @Override
-            public void actionPerformed( ActionEvent e )
-            {
-                JComboBox<?> combo = (JComboBox<?>) e.getSource();
-                String command = "setGroup." + combo .getSelectedItem().toString();
-                controller .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
+        	JPanel topHalf = new JPanel();
+//        	topHalf .setBorder( BorderFactory .createBevelBorder( BevelBorder .LOWERED ) );
+        	topHalf .setLayout( new BorderLayout() );
+        	{
+            	JPanel labelAndGroup = new JPanel();
+            	{
+            		JLabel label = new JLabel( "symmetry group" );
+            		labelAndGroup .add( label );
+            	}
+            	{
+                    String[] groupNames = controller .getCommandList( "groups" );
+                    String defaultGroup = controller .getProperty( "group" );
+                    JComboBox<String> groups = new JComboBox<String>( groupNames );
+                    groups .setSelectedItem( defaultGroup );
+                    groups .setMaximumRowCount( 6 );
+                    groups .addActionListener( new ActionListener()
+                    {
+                        @Override
+                        public void actionPerformed( ActionEvent e )
+                        {
+                            JComboBox<?> combo = (JComboBox<?>) e.getSource();
+                            String command = "setGroup." + combo .getSelectedItem().toString();
+                            controller .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
+                        }
+                    } );
+                    labelAndGroup .add( groups );
+            	}
+            	topHalf .add( labelAndGroup, BorderLayout.NORTH );
             }
-        } );
-        JPanel groupsPanel = new JPanel();
-        groupsPanel .add( groups );
-        content .add( groupsPanel, BorderLayout .NORTH );
-
-        JPanel listPanel = new JPanel();
-        
-        JPanel column = new JPanel();
-        column .setLayout( new BoxLayout( column, BoxLayout.PAGE_AXIS ) );
-        JLabel label = new JLabel( "edge" );
-        label .setMinimumSize( new Dimension( 90, 1 ) );
-        column .add( label );
-        for ( int i = 3; i >= 0; i-- ) {
-            final int edge = i;
-            JCheckBox checkbox = new JCheckBox();
-            boolean enabled = "true" .equals( controller .getProperty( "edge." + i ) );
-            checkbox .setSelected( enabled );
-            checkbox .setActionCommand( "edge." + i );
-            checkbox .addActionListener( new ActionListener()
-            {
-                @Override
-                public void actionPerformed( ActionEvent e )
-                {
-                    controller .actionPerformed( e );
-                    boolean enabled = "true" .equals( controller .getProperty( "edge." + edge ) );
-                    renderCheckboxes[ edge ] .setEnabled( enabled );
-                    if ( enabled )
-                    {
-                        boolean render = "true" .equals( controller .getProperty( "render." + edge ) );
-                        renderCheckboxes[ edge ] .setSelected( render );
-                    }
-                    else
-                    {
-                        renderCheckboxes[ edge ] .setSelected( false );
-                    }
-                }
-            } );
-            column .add( checkbox );
+        	{
+            	JPanel checkboxList = new JPanel();
+            	checkboxList .setLayout( new BoxLayout( checkboxList, BoxLayout.PAGE_AXIS ) );
+            	checkboxList .add( Box.createRigidArea( new Dimension( 0, 15 ) ) );
+            	{
+            		JPanel checkboxesAndLabel = new JPanel();
+            		checkboxesAndLabel .setLayout( new BorderLayout() );
+            		{
+            			JLabel label = new JLabel( "Wythoff" );
+            			label .setMinimumSize( new Dimension( 1, 100 ) );
+            			label .setHorizontalAlignment( SwingConstants.RIGHT );
+            			checkboxesAndLabel .add( label, BorderLayout.CENTER );
+            		}
+            		{
+            			JPanel checkboxes = new JPanel();
+            			checkboxes .setLayout( new BoxLayout( checkboxes, BoxLayout.LINE_AXIS ) );
+            			checkboxes .add( Box.createRigidArea( new Dimension( 20, 0 ) ) );
+            			for ( int i = 3; i >= 0; i-- ) {
+            				final int edge = i;
+            				JCheckBox checkbox = new JCheckBox();
+            				boolean enabled = "true" .equals( controller .getProperty( "edge." + i ) );
+            				checkbox .setSelected( enabled );
+            				checkbox .setActionCommand( "edge." + i );
+            				checkbox .addActionListener( new ActionListener()
+            				{
+            					@Override
+            					public void actionPerformed( ActionEvent e )
+            					{
+            						controller .actionPerformed( e );
+            						boolean enabled = "true" .equals( controller .getProperty( "edge." + edge ) );
+            						renderCheckboxes[ edge ] .setEnabled( enabled );
+            						if ( enabled )
+            						{
+            							boolean render = "true" .equals( controller .getProperty( "render." + edge ) );
+            							renderCheckboxes[ edge ] .setSelected( render );
+            						}
+            						else
+            						{
+            							renderCheckboxes[ edge ] .setSelected( false );
+            						}
+            					}
+            				} );
+            				checkboxes .add( checkbox );
+            			}
+            			checkboxes .add( Box.createRigidArea( new Dimension( 30, 0 ) ) );
+            			checkboxesAndLabel .add( checkboxes, BorderLayout.EAST );
+            		}
+        			checkboxList .add( checkboxesAndLabel );
+            	}
+            	{
+            		JPanel checkboxesAndLabel = new JPanel();
+            		checkboxesAndLabel .setLayout( new BorderLayout() );
+            		{
+            			JLabel label = new JLabel( "struts" );
+            			label .setMinimumSize( new Dimension( 1, 100 ) );
+            			label .setHorizontalAlignment( SwingConstants.RIGHT );
+            			checkboxesAndLabel .add( label, BorderLayout.CENTER );
+            		}
+            		{
+            			JPanel checkboxes = new JPanel();
+            			checkboxes .setLayout( new BoxLayout( checkboxes, BoxLayout.LINE_AXIS ) );
+            			checkboxes .setMinimumSize( new Dimension( 1, 80 ) );
+            			checkboxes .add( Box.createRigidArea( new Dimension( 20, 0 ) ) );
+            			for ( int i = 3; i >= 0; i-- ) {
+            				renderCheckboxes[ i ] = new JCheckBox();
+            				boolean enabled = "true" .equals( controller .getProperty( "edge." + i ) );
+            				boolean render = "true" .equals( controller .getProperty( "render." + i ) );
+            				renderCheckboxes[ i ] .setEnabled( enabled );
+            				renderCheckboxes[ i ] .setSelected( enabled && render );
+            				renderCheckboxes[ i ] .setActionCommand( "render." + i );
+            				renderCheckboxes[ i ] .addActionListener( controller );
+            				checkboxes .add( renderCheckboxes[ i ] );
+            			}
+            			checkboxes .add( Box.createRigidArea( new Dimension( 30, 0 ) ) );
+            			checkboxesAndLabel .add( checkboxes, BorderLayout.EAST );
+            		}
+        			checkboxList .add( checkboxesAndLabel );
+            	}
+            	checkboxList .add( Box.createRigidArea( new Dimension( 0, 15 ) ) );
+            	topHalf .add( checkboxList, BorderLayout.CENTER );
+            }
+            content .add( topHalf, BorderLayout.NORTH );
         }
-        listPanel .add( column );
-        
-        column = new JPanel();
-        column .setLayout( new BoxLayout( column, BoxLayout.PAGE_AXIS ) );
-        column .setMinimumSize( new Dimension( 80, 1 ) );
-        label = new JLabel( "render" );
-        label .setMinimumSize( new Dimension( 90, 1 ) );
-        column .add( label );
-        for ( int i = 3; i >= 0; i-- ) {
-            renderCheckboxes[ i ] = new JCheckBox();
-            boolean enabled = "true" .equals( controller .getProperty( "edge." + i ) );
-            boolean render = "true" .equals( controller .getProperty( "render." + i ) );
-            renderCheckboxes[ i ] .setEnabled( enabled );
-            renderCheckboxes[ i ] .setSelected( enabled && render );
-            renderCheckboxes[ i ] .setActionCommand( "render." + i );
-            renderCheckboxes[ i ] .addActionListener( controller );
-            column .add( renderCheckboxes[ i ] );
+        {
+        	JPanel quaternionPanel = new JPanel();
+        	quaternionPanel .setBorder( BorderFactory .createTitledBorder( "rotation quaternion" ) );
+        	quaternionPanel .setLayout( new BoxLayout( quaternionPanel, BoxLayout.PAGE_AXIS ) );
+        	//    			coordinates .add( Box.createRigidArea( new Dimension( 0, 10 ) ) );
+        	Controller quaternionController = controller .getSubController( "rotation" );
+        	String[] coords = new String[]{ "w", "x", "y", "z" };
+        	String[] labels = new String[]{ "       ", "+ i * ", "+ j * ", "+ k * " };
+        	for ( int j = 0; j < labels.length; j++ ) {
+				String labelStr = labels[ j ];
+        		JPanel coordinate = new JPanel();
+        		coordinate .setLayout( new BoxLayout( coordinate, BoxLayout.LINE_AXIS ) );
+        		{
+        			JLabel label = new JLabel( labelStr );
+        			Font biggestFont = label .getFont() .deriveFont( 20f );
+        			label .setFont( biggestFont );
+        			label .setHorizontalAlignment( SwingConstants.LEFT );
+        			coordinate .add( label, BorderLayout.WEST );
+        		}
+        		{
+        			numberPanels[ j ] = new NumberPanel( quaternionController .getSubController( coords[ j ]) );
+        			coordinate .add( numberPanels[ j ], BorderLayout.CENTER );
+        		}
+        		quaternionPanel .add( coordinate );
+			}
+            content .add( quaternionPanel, BorderLayout.CENTER );
         }
-        listPanel .add( column );
-        
-        content .add( listPanel, BorderLayout .CENTER );
-        
+                
         JPanel buttons = new JPanel();
         content .add( buttons, BorderLayout .SOUTH );
         
@@ -128,10 +200,24 @@ public class PolytopesDialog extends EscapeDialog
             @Override
             public void actionPerformed( ActionEvent e )
             {
+    			for ( NumberPanel numberPanel : numberPanels ) {
+    				numberPanel .syncToModel();
+    			}
                 PolytopesDialog.this .setVisible( false );
                 controller .actionPerformed( e );
             }
         } );
         buttons .add( build );
     }
+
+    @Override
+	public void setVisible( boolean b )
+    {
+		if ( b ) {
+			for ( NumberPanel numberPanel : numberPanels ) {
+				numberPanel .syncFromModel();
+			}
+		}
+		super.setVisible(b);
+	}
 }
