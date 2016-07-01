@@ -1213,10 +1213,21 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	    return this .defaultView;
 	}
 
+    public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, AlgebraicVector quaternion, AlgebraicNumber[] edgeScales )
+    {
+        UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, quaternion, index, group, edgesToRender, edgeScales, renderGroup );
+        this .performAndRecord( edit );
+    }
+
     public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, AlgebraicNumber[] edgeScales )
     {
         UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(), index, group, edgesToRender, edgeScales, renderGroup );
         this .performAndRecord( edit );
+    }
+    
+    public Segment getSelectedSegment()
+    {
+    	return (Segment) mEditorModel .getSelectedConstruction( Segment.class );
     }
     
     public Segment getSymmetryAxis()
