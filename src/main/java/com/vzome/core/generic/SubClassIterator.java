@@ -1,7 +1,5 @@
 package com.vzome.core.generic;
 
-import java.util.function.Predicate;
-
 /**
  * @author David Hall
  */

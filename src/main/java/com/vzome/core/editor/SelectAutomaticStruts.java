@@ -1,11 +1,13 @@
 package com.vzome.core.editor;
 
+import org.w3c.dom.Element;
+
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.generic.Predicate;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import org.w3c.dom.Element;
 
 /**
  * @author David Hall
@@ -23,15 +25,18 @@ public class SelectAutomaticStruts extends ChangeManifestations {
 	@Override
 	public void perform() throws Failure {
         unselectAll();
-        for( Strut strut : getVisibleStruts(this::isAutomaticStrut) ) {
+        for( Strut strut : getVisibleStruts(isAutomaticStrut) ) {
             select(strut);
 		}
 		super.perform();
 	}
 	
-    private boolean isAutomaticStrut(Strut strut) {
-        return symmetry.getAxis(strut.getOffset()).getOrbit().isAutomatic();
-    }
+	private final Predicate<Strut> isAutomaticStrut = new Predicate<Strut>()
+	{	
+	    public boolean test( Strut strut ) {
+	        return symmetry.getAxis(strut.getOffset()).getOrbit().isAutomatic();
+	    }
+	};
     
 	@Override
 	protected String getXmlElementName() {

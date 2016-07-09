@@ -2,7 +2,6 @@ package com.vzome.core.generic;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
 
 /**
  * @author David Hall
@@ -142,43 +141,43 @@ public abstract class FilteredIterator<T, R> implements Iterator<R>, Iterable<R>
             return result != null;
         }
 
-        /**
-         * A static convenience function that may be used with another predicate
-         * to be passed as a preFilter or postFilter parameter
-         * @param <B>
-         * @param predicate The predicate to be negated.
-         * @param arg The parameter to be passed to the predicate.
-         * @return The opposite of what the predicate returns.
-         */
-        public static <B> boolean not(Predicate<B> predicate, B arg) {
-            return predicate.negate().test(arg);
-        }
-
-        /**
-         * A static convenience function that may be used to combine two other predicates
-         * to be passed as a preFilter or postFilter parameter
-         * @param <B>
-         * @param check1 The 1st predicate to be evaluated.
-         * @param check2 The 2nd predicate to be evaluated.
-         * @param arg The parameter to be passed to the predicates.
-         * @return {@code true} only if both predicates are true.
-         */
-        public static <B> boolean and(Predicate<B> check1, Predicate<B> check2, B arg) {
-            return check1.and(check2).test(arg);
-        }
-
-        /**
-         * A static convenience function that may be used to combine two other predicates
-         * to be passed as a preFilter or postFilter parameter
-         * @param <B>
-         * @param check1 The 1st predicate to be evaluated.
-         * @param check2 The 2nd predicate to be evaluated.
-         * @param arg The parameter to be passed to the predicates.
-         * @return {@code true} if either predicate is true.
-         */
-        public static <B> boolean or(Predicate<B> check1, Predicate<B> check2, B arg) {
-            return check1.or(check2).test(arg);
-        }
+//        /**
+//         * A static convenience function that may be used with another predicate
+//         * to be passed as a preFilter or postFilter parameter
+//         * @param <B>
+//         * @param predicate The predicate to be negated.
+//         * @param arg The parameter to be passed to the predicate.
+//         * @return The opposite of what the predicate returns.
+//         */
+//        public static <B> boolean not(Predicate<B> predicate, B arg) {
+//            return predicate.negate().test(arg);
+//        }
+//
+//        /**
+//         * A static convenience function that may be used to combine two other predicates
+//         * to be passed as a preFilter or postFilter parameter
+//         * @param <B>
+//         * @param check1 The 1st predicate to be evaluated.
+//         * @param check2 The 2nd predicate to be evaluated.
+//         * @param arg The parameter to be passed to the predicates.
+//         * @return {@code true} only if both predicates are true.
+//         */
+//        public static <B> boolean and(Predicate<B> check1, Predicate<B> check2, B arg) {
+//            return check1.and(check2).test(arg);
+//        }
+//
+//        /**
+//         * A static convenience function that may be used to combine two other predicates
+//         * to be passed as a preFilter or postFilter parameter
+//         * @param <B>
+//         * @param check1 The 1st predicate to be evaluated.
+//         * @param check2 The 2nd predicate to be evaluated.
+//         * @param arg The parameter to be passed to the predicates.
+//         * @return {@code true} if either predicate is true.
+//         */
+//        public static <B> boolean or(Predicate<B> check1, Predicate<B> check2, B arg) {
+//            return check1.or(check2).test(arg);
+//        }
 
     }
 

@@ -23,7 +23,7 @@ public interface ErrorHandler {
         }
         
         public Default(){
-			this(new ArrayList<>());
+			this(new ArrayList<String>());
         }
         
 		@Override

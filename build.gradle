@@ -8,8 +8,8 @@ version = '0.8.7'
 
 description = "vzome-core"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 ext.antlr4 = [
     antlrSource:    "src/main/antlr",

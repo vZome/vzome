@@ -2,27 +2,40 @@ package com.vzome.core.editor;
 
 import com.vzome.core.generic.SubClassIterator;
 import com.vzome.core.generic.FilteredIterator;
+import com.vzome.core.generic.Predicate;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
-import java.util.function.Predicate;
 
 /**
  * @author David Hall
  */
 public class Manifestations {
+	
+	private static final ManifestationIsVisible manifestationIsVisible = new ManifestationIsVisible();
+    
+	private static final ManifestationIsRendered manifestationIsRendered = new ManifestationIsRendered();
+	
+	private static final Predicate<RenderedManifestation> resultNotNull = new Predicate<RenderedManifestation>()
+	{
+		@Override
+		public boolean test( RenderedManifestation rm )
+		{
+			return rm != null;
+		}
+	};
     
     // Manifestations
     public static ManifestationIterator visibleManifestations(Iterable<Manifestation> manifestations) {
-        return new ManifestationIterator(Filters::isVisible, manifestations, null);
+        return new ManifestationIterator(manifestationIsVisible, manifestations, null);
     }
     public static ManifestationIterator visibleManifestations(Predicate<Manifestation> preTest, Iterable<Manifestation> manifestations) {
-        return new ManifestationIterator(preTest, manifestations, Filters::isVisible);
+        return new ManifestationIterator(preTest, manifestations, manifestationIsVisible);
     }
     public static ManifestationIterator visibleManifestations(Iterable<Manifestation> manifestations, Predicate<Manifestation> postTest) {
-        return new ManifestationIterator(Filters::isVisible, manifestations, postTest);
+        return new ManifestationIterator(manifestationIsVisible, manifestations, postTest);
     }
     public static class ManifestationIterator extends FilteredIterator<Manifestation, Manifestation> {
         public ManifestationIterator(Predicate<Manifestation> preTest, Iterable<Manifestation> manifestations, Predicate<Manifestation> postTest) {
@@ -38,13 +51,13 @@ public class Manifestations {
     public static RenderedManifestationIterator getRenderedManifestations(Iterable<Manifestation> manifestations) {
         // Either this preTest or this postTest would do the job in this case.
         // Using both doesn't help or hurt. It just documents the options.
-        return new RenderedManifestationIterator(Filters::isRendered, manifestations, FilteredIterator.Filters::resultNotNull);
+        return new RenderedManifestationIterator(manifestationIsRendered, manifestations, resultNotNull);
     }
     public static RenderedManifestationIterator getRenderedManifestations(Predicate<Manifestation> preTest, Iterable<Manifestation> manifestations) {
-        return new RenderedManifestationIterator(preTest, manifestations, FilteredIterator.Filters::resultNotNull);
+        return new RenderedManifestationIterator(preTest, manifestations, resultNotNull);
     }
     public static RenderedManifestationIterator getRenderedManifestations(Iterable<Manifestation> manifestations, Predicate<RenderedManifestation> postTest) {
-        return new RenderedManifestationIterator(Filters::isRendered, manifestations, postTest);
+        return new RenderedManifestationIterator(manifestationIsRendered, manifestations, postTest);
     }
     public static class RenderedManifestationIterator extends FilteredIterator<Manifestation, RenderedManifestation> {
         public RenderedManifestationIterator(Predicate<Manifestation> preTest, Iterable<Manifestation> manifestations, Predicate<RenderedManifestation> postTest) {
@@ -70,7 +83,7 @@ public class Manifestations {
         return getVisibleConnectors(manifestations, null);
     }
     public static ConnectorIterator getVisibleConnectors(Iterable<Manifestation> manifestations, Predicate<Connector> postFilter) {
-        return new ConnectorIterator(Filters::isVisible, manifestations, postFilter);
+        return new ConnectorIterator(manifestationIsVisible, manifestations, postFilter);
     }
     public static class ConnectorIterator extends SubClassIterator<Manifestation, Connector> {
         private ConnectorIterator(Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Connector> postFilter) {
@@ -92,7 +105,7 @@ public class Manifestations {
         return getVisibleStruts(manifestations, null);
     }
     public static StrutIterator getVisibleStruts(Iterable<Manifestation> manifestations, Predicate<Strut> postFilter) {
-        return new StrutIterator(Filters::isVisible, manifestations, postFilter);
+        return new StrutIterator(manifestationIsVisible, manifestations, postFilter);
     }
     public static class StrutIterator extends SubClassIterator<Manifestation, Strut> {
         private StrutIterator(Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Strut> postFilter) {
@@ -114,7 +127,7 @@ public class Manifestations {
         return getVisiblePanels(manifestations, null);
     }
     public static PanelIterator getVisiblePanels(Iterable<Manifestation> manifestations, Predicate<Panel> postFilter) {
-        return new PanelIterator(Filters::isVisible, manifestations, postFilter);
+        return new PanelIterator(manifestationIsVisible, manifestations, postFilter);
     }
     public static class PanelIterator extends SubClassIterator<Manifestation, Panel> {
         private PanelIterator(Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Panel> postFilter) {
@@ -132,7 +145,23 @@ public class Manifestations {
         public static boolean isVisible(Manifestation man) {
             return !man.isHidden();
         }
-
-
+    }
+    
+    public static class ManifestationIsRendered implements Predicate<Manifestation>
+    {
+		@Override
+		public boolean test( Manifestation man )
+		{
+			return man .isRendered();
+		}
+    }
+    
+    public static class ManifestationIsVisible implements Predicate<Manifestation>
+    {
+		@Override
+		public boolean test( Manifestation man )
+		{
+            return !man.isHidden();
+		}
     }
 }

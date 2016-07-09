@@ -6,12 +6,12 @@ package com.vzome.core.editor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.construction.Construction;
+import com.vzome.core.generic.Predicate;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
