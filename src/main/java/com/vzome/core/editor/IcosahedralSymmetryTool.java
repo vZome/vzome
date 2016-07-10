@@ -20,11 +20,11 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
-public class SymmetryTool extends TransformationTool
+public class IcosahedralSymmetryTool extends TransformationTool
 {
     protected Symmetry symmetry;
     
-    public SymmetryTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    public IcosahedralSymmetryTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
     {
         super( name, selection, realized, tools, originPoint );
         this.symmetry = symmetry;
@@ -51,7 +51,7 @@ public class SymmetryTool extends TransformationTool
 		if (getClass() != that.getClass()) {
 			return false;
 		}
-		SymmetryTool other = (SymmetryTool) that;
+		IcosahedralSymmetryTool other = (IcosahedralSymmetryTool) that;
 		if (symmetry == null) {
 			if (other.symmetry != null) {
 				return false;
@@ -70,16 +70,9 @@ public class SymmetryTool extends TransformationTool
         return baseName + " around origin";
     }
 
-    private boolean isTetrahedral()
-    {
-        return "tetrahedral" .equals( getCategory() );
-    }
-
 	@Override
     protected String checkSelection( boolean prepareTool )
     {
-        boolean isTetrahedral = isTetrahedral();
-        boolean isIcosahedral = "icosahedral" .equals( symmetry .getName() );
         Point center = null;
         Strut axis = null;
         boolean correct = true;
@@ -117,39 +110,75 @@ public class SymmetryTool extends TransformationTool
         		return "panels are selected";
         }
         
-        if ( isTetrahedral )
-        {
-            int[] closure = symmetry .subgroup( Symmetry.TETRAHEDRAL );
-            if ( isIcosahedral && axis != null )
-            {
-                if ( !correct )
-                    return "no unique alignment strut selected.";
-                // align the tetrahedral symmetry with this yellow, blue, or green strut
-                IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
-                Axis zone = icosa .getAxis( axis .getOffset() );
-                closure = icosa .subgroup( Symmetry.TETRAHEDRAL, zone );
-                if ( closure == null )
-                    return "selected alignment strut is not a tetrahedral axis.";
-            }
-            if ( prepareTool ) {
-                int order = closure .length;
-                this .transforms = new Transformation[ order-1 ];
-                for ( int i = 0; i < order-1; i++ )
-                    transforms[ i ] = new SymmetryTransformation( symmetry, closure[ i+1 ], center );
-            }
-        }
-        else if ( prepareTool ) {
-        	int order = symmetry .getChiralOrder();
-        	this .transforms = new Transformation[ order-1 ];
-        	for ( int i = 0; i < order-1; i++ )
-        		transforms[ i ] = new SymmetryTransformation( symmetry, i+1, center );
-        }
-        else if ( isIcosahedral ) {
-        	// just validating the selection
-        	if ( axis != null )
-        		return "No struts";
-        }
+        int[] closure = symmetry .subgroup( Symmetry.TETRAHEDRAL );
+        
+        switch ( symmetry .getName() ) {
+        
+        // For icosahedral and octahedral category, symmetry always matches category.
+        //  Currently the only subgroup category supported is tetrahedral.
+        
+		case "icosahedral":
+        	if ( !prepareTool && ( axis != null ) && getCategory() .equals( "icosahedral" ) )
+        		return "No struts needed for icosahedral symmetry.";
+
+            switch ( getCategory() ) {
+
+        	case "tetrahedral":
+        		if ( !correct )
+        			return "no unique alignment strut selected.";
+        		if ( axis == null ) {
+        			if ( !prepareTool )
+        				return "no aligment strut selected.";
+        		} else {
+        			// align the tetrahedral symmetry with this yellow, blue, or green strut
+        			IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
+        			Axis zone = icosa .getAxis( axis .getOffset() );
+        			boolean allowYellow = prepareTool;  // yellow only allowed for legacy use
+        			closure = icosa .subgroup( Symmetry.TETRAHEDRAL, zone, allowYellow );
+        			if ( closure == null )
+        				return "selected alignment strut is not a tetrahedral axis.";
+        		}
+                if ( prepareTool ) {
+	                int order = closure .length;
+	                this .transforms = new Transformation[ order-1 ];
+	                for ( int i = 0; i < order-1; i++ )
+	                    transforms[ i ] = new SymmetryTransformation( symmetry, closure[ i+1 ], center );
+				}
+        		break;
+
+        	default:
+                if ( prepareTool )
+		        	prepareFullSymmetry( center );
+        		break;
+        	}
+			break;
+
+		case "octahedral":
+			if ( prepareTool ) {
+				if ( getCategory() .equals( "tetrahedral" ) ) {
+	                int order = closure .length;
+	                this .transforms = new Transformation[ order-1 ];
+	                for ( int i = 0; i < order-1; i++ )
+	                    transforms[ i ] = new SymmetryTransformation( symmetry, closure[ i+1 ], center );
+				} else {
+		        	prepareFullSymmetry( center );
+				}
+			} else {
+				// validating selection
+				if ( axis != null )
+					return "No struts needed for symmetry";
+			}
+		}
+        
         return null;
+    }
+	
+	private void prepareFullSymmetry( Point center )
+	{
+    	int order = symmetry .getChiralOrder();
+    	this .transforms = new Transformation[ order-1 ];
+    	for ( int i = 0; i < order-1; i++ )
+    		transforms[ i ] = new SymmetryTransformation( symmetry, i+1, center );
     }
 
     @Override

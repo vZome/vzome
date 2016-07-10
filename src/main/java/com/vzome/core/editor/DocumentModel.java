@@ -8,6 +8,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -122,6 +123,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     private final Map<String,SymmetrySystem> symmetrySystems = new HashMap<>();
 
 	private final Lights sceneLighting;
+
+	private Map<String,Map<String,Tool>> toolPrototypes = new HashMap<>();
 
     public void addPropertyChangeListener( PropertyChangeListener listener )
     {
@@ -1085,7 +1088,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
     public boolean isToolEnabled( String group, Symmetry symmetry )
     {
-        Tool tool = (Tool) makeTool( group + ".0/UNUSED", group, null, symmetry ); // TODO: get rid of isAutomatic() and isTetrahedral() silliness, so the string won't get parsed
+    	Map<String,Tool> symmTools = this .toolPrototypes .get( symmetry .getName() );
+    	if ( symmTools == null ) {
+    		symmTools = new HashMap<>();
+    		this .toolPrototypes .put( symmetry .getName(), symmTools );
+    	}
+    	Tool tool = symmTools .get( group );
+    	if ( tool == null ) {
+            tool = (Tool) makeTool( group + ".0/UNUSED", group, null, symmetry ); // TODO: get rid of isAutomatic() and isTetrahedral() silliness, so the string won't get parsed
+            symmTools .put( group, tool );
+    	}
     	return tool .isValidForSelection();
     }
 

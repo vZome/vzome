@@ -32,7 +32,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         // These were derived manually by examining the orientation key dodec.
         // 0 -> 1 is a yellow axis rotation, and 0 -> 15 is a blue axis rotation.
         //
-        //  The second and third columns of arguments correspond to yellow axis and
+        //  The first and second columns of arguments correspond to yellow axis and
         //  blue axis rotations, respectively.  The yellow and blue axes selected
         //  are those that surround the pentagon face containing element 0.
         //  For yellow, the axes of rotation are, in order: 9, 12, 0, 3, 6.
