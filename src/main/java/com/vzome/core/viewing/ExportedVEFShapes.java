@@ -25,7 +25,6 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.render.Color;
@@ -50,12 +49,12 @@ public class ExportedVEFShapes extends AbstractShapes
         
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {
-    	this( prefsFolder, pkgName, name, alias, symm, ( symm instanceof IcosahedralSymmetry )? new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) : null );
+    	this( prefsFolder, pkgName, name, alias, symm, null );
     }
     
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
     {
-        this( prefsFolder, pkgName, name, null, symm );
+        this( prefsFolder, pkgName, name, null, symm, null );
     }
     
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, AbstractShapes fallback )

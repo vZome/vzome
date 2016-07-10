@@ -411,10 +411,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new SymmetryAxisChange( this.mEditorModel, null );
 
 		else if ( "RunZomicScript".equals( name ) )
-			edit = new RunZomicScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
+			edit = createRunZomicScript();
 
 		else if ( "RunPythonScript".equals( name ) )
-			edit = new RunPythonScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
+			edit = createRunPythonScript();
 
 		else if ( "BookmarkTool".equals( name ) )
 			edit = new BookmarkTool( name, this.mSelection, this.mRealizedModel, this );
@@ -473,6 +473,46 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		return edit;
 	}
 	
+    /**
+     * Use reflection to create the RunZomicScript edit.
+     * This is to allow some editions of vzome-core that do not include the entire Antlr dependency,
+     * for running in DukeScript, for example.
+     * @return
+     */
+	private UndoableEdit createRunZomicScript()
+	{
+        try {
+            Class<?> factoryClass = Class.forName( "com.vzome.core.editor.RunZomicScript" );
+            if ( factoryClass == null ) {
+            	throw new RuntimeException( "Zomic scripting is not available in this edition." );
+            }
+            Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Selection.class, RealizedModel.class, String.class, Point.class } );
+            return (UndoableEdit) constructor.newInstance( new Object[] { this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() } );
+        } catch ( Exception e ) {
+        	throw new RuntimeException( "Failed to create RunZomicScript command" );
+        }
+	}
+
+    /**
+     * Use reflection to create the RunPythonScript edit.
+     * This is to allow some editions of vzome-core that do not include the entire Jython dependency,
+     * for running in DukeScript, for example.
+     * @return
+     */
+	private UndoableEdit createRunPythonScript()
+	{
+        try {
+            Class<?> factoryClass = Class.forName( "com.vzome.core.editor.RunPythonScript" );
+            if ( factoryClass == null ) {
+            	throw new RuntimeException( "Python scripting is not available in this edition." );
+            }
+            Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Selection.class, RealizedModel.class, String.class, Point.class } );
+            return (UndoableEdit) constructor.newInstance( new Object[] { this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() } );
+        } catch ( Exception e ) {
+        	throw new RuntimeException( "Failed to create RunPythonScript command" );
+        }
+	}
+
 	public String copySelectionVEF()
 	{
 		StringWriter out = new StringWriter();
@@ -909,12 +949,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	UndoableEdit edit = null;
     	if ( command.equals( "runZomicScript" ) || command.equals( "zomic" ) )
     	{
-    		edit = new RunZomicScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint() );
+    		edit = createRunZomicScript();
     		this .performAndRecord( edit );
     	}
     	else if ( command.equals( "runPythonScript" ) || command.equals( "py" ) )
     	{
-    		edit = new RunPythonScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint() );
+    		edit = createRunPythonScript();
     		this .performAndRecord( edit );
     	}
     	//    else if ( command.equals( "import.zomod" ) )
