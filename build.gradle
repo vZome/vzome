@@ -4,7 +4,7 @@ apply plugin: 'eclipse'
 //apply plugin: 'antlr4'
 
 group = 'com.vzome.core'
-version = '0.8.7'
+version = '1.0.0'
 
 description = "vzome-core"
 
