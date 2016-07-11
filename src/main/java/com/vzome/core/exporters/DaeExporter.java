@@ -172,13 +172,16 @@ public class DaeExporter extends Exporter3d
         	String colorId = colorIds .get( color );
         	if ( colorId == null)
         	{
-            	float[] rgb = new float[3];
-            	color .getRGBColorComponents( rgb );
+            	float[] rgba = new float[4];
+            	color .getRGBColorComponents( rgba );
+                Float alphaComponent = rgba[3];
             	StringBuffer sb = new StringBuffer();
-            	for ( float f : rgb ) {
-					sb .append( f + " " );
+                String delim = "";
+            	for ( float f : rgba ) {
+					sb .append( delim );
+					sb .append( f );
+                    delim = " ";
 				}
-            	sb .append( "1.0" ); // opaque
 
             	colorId = "color" + Integer .toString( colorNum++ );
         		String effectId = colorId + "-fx";
@@ -194,6 +197,10 @@ public class DaeExporter extends Exporter3d
     				instance_effect .setAttribute( "url", "#" + effectId );
     				Element diffuse_color = (Element) xpath .evaluate( "profile_COMMON//diffuse/color", effect, XPathConstants.NODE );
     				diffuse_color .setTextContent( sb .toString() );
+                    if ( alphaComponent < 1.0f ) {
+                        Element transparency_float = (Element) xpath.evaluate("profile_COMMON//transparency/float", effect, XPathConstants.NODE);
+                        transparency_float.setTextContent(alphaComponent.toString());
+                    }
                 } catch ( XPathExpressionException e ) {
     				e.printStackTrace();
     			}
