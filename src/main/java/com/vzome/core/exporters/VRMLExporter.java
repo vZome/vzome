@@ -138,6 +138,9 @@ public class VRMLExporter extends Exporter3d
             }
             
             Color color = rm .getColor();
+            if (color == null) {
+                color = Color.WHITE;
+            }
             String colorName = colors .get( color );
             if ( colorName == null ) {
                 colorName = "color_" + color .toString() .replace( ',', '_' );

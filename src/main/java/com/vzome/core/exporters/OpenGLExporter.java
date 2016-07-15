@@ -143,7 +143,7 @@ public class OpenGLExporter extends Exporter3d
     
     protected void appendColor( Color color, StringBuffer buf )
     {
-        float[] rgb = color .getRGBColorComponents( new float[4] );
+        float[] rgb = (color == null ? Color.WHITE : color) .getRGBColorComponents( new float[4] );
         buf .append( FORMAT.format(rgb[0]) + ", " );
         buf .append( FORMAT.format(rgb[1]) + ", " );
         buf .append( FORMAT.format(rgb[2]) + ", " );
