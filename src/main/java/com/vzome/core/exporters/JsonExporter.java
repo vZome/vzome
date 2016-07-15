@@ -92,8 +92,11 @@ public class JsonExporter extends Exporter3d
             
             RealVector loc = rm .getLocation();
             Color color = rm .getColor();
-            float[] rgb = new float[3];
-            color .getRGBColorComponents( rgb );
+            if( color == null) {
+                color = Color.WHITE;
+            }
+            float[] rgba = new float[4];
+            color .getRGBColorComponents( rgba );
 
             if ( instanceCount > 0 )
                 instances .append( ",\n" );
@@ -104,19 +107,21 @@ public class JsonExporter extends Exporter3d
             instances .append( "], \"orientation\" : " + transformNum );
             instances .append( ", \"shape\" : " + shapeNum );
             instances .append( ", \"color\" : [" );
-            instances .append( FORMAT .format( rgb[0] ) + "," );
-            instances .append( FORMAT .format( rgb[1] ) + "," );
-            instances .append( FORMAT .format( rgb[2] ) + ",1.0" );
+            instances .append( FORMAT .format( rgba[0] ) + "," );
+            instances .append( FORMAT .format( rgba[1] ) + "," );
+            instances .append( FORMAT .format( rgba[2] ) + "," );
+            instances .append( FORMAT .format( rgba[3] ) );
             // TODO do we need flip?
             instances .append( "] }" );
             ++instanceCount;
         }
         output .print( "\n],\n\n\"background\" : [" );
-        float[] rgb = new float[3];
-        this .background .getRGBColorComponents( rgb );
-        output .print( FORMAT .format( rgb[0] ) + "," );
-        output .print( FORMAT .format( rgb[1] ) + "," );
-        output .print( FORMAT .format( rgb[2] ) + ",1.0" );
+        float[] rgba = new float[4];
+        this .background .getRGBColorComponents( rgba );
+        output .print( FORMAT .format( rgba[0] ) + "," );
+        output .print( FORMAT .format( rgba[1] ) + "," );
+        output .print( FORMAT .format( rgba[2] ) + "," );
+        output .print( FORMAT .format( rgba[3] ) );
         output .print( " ],\n\n\"instances\" :\n[\n" );
         output .print( instances );
         output .print( "\n],\n\n\"orientations\" :\n[\n" );
