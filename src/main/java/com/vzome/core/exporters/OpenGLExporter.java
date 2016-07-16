@@ -30,11 +30,16 @@ public class OpenGLExporter extends Exporter3d
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 	
-	
+    
 	public OpenGLExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    super( scene, colors, lights, model );
 	}
+
+    @Override
+	public boolean needsManifestations() {
+        return false;
+    }
 
     @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException

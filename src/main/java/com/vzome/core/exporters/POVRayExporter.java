@@ -54,7 +54,12 @@ public class POVRayExporter extends Exporter3d
         viewTrans .invert();
         viewTrans .transform( vector );
     }
-    
+
+    @Override
+    public boolean needsManifestations() {
+        return false;
+    }
+
     @Override
 	public void doExport( File povFile, File directory, Writer writer, int height, int width ) throws IOException
 	{
