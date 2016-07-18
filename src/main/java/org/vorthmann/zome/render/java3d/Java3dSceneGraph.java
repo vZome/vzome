@@ -38,9 +38,15 @@ import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 import com.sun.j3d.utils.geometry.Text2D;
+import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
@@ -80,7 +86,7 @@ public class Java3dSceneGraph implements RenderingChanges
 
 	private boolean polygonOutlinesMode;
 
-    private final BranchGroup frameLabels;
+    private final BranchGroup frameLabels, icosahedralLabels;
 
     public BranchGroup getRoot()
     {
@@ -244,7 +250,6 @@ public class Java3dSceneGraph implements RenderingChanges
 //            axisZLines.setColor( 0, black );
 //        }
 
-//        Create a Text2D leaf node, add it to the scene graph.
         frameLabels = new BranchGroup();
         frameLabels .setCapability( BranchGroup.ALLOW_DETACH );
         LineArray frameEdges = new LineArray( 24, LineArray.COORDINATES | LineArray.COLOR_3 );
@@ -289,6 +294,33 @@ public class Java3dSceneGraph implements RenderingChanges
                         }
                     }
 
+        icosahedralLabels = new BranchGroup();
+        icosahedralLabels .setCapability( BranchGroup.ALLOW_DETACH );
+        Color3f minusColor = new Color3f( 1.0f, 0.0f, 0.0f );
+        Color3f plusColor = new Color3f( 0.0f, 0.0f, 1.0f );
+        AlgebraicField field = new PentagonField();
+        AlgebraicNumber distance = field .createPower( 6 );
+        IcosahedralSymmetry symm = new IcosahedralSymmetry( field, "temp" );
+        Direction orbit = symm .getDirection( "turquoise" );
+        for ( Axis axis : orbit ) {
+        	boolean negative = axis .getSense() == Symmetry.MINUS;
+        	Color3f numColor = negative? minusColor : plusColor;
+        	RealVector location = axis .normal() .scale( distance ) .toRealVector();
+            String label = ( negative? "-" : "" ) + axis .getOrientation();
+            Text2D text2D = new Text2D( label, numColor, "Helvetica", 90, negative? Font.PLAIN : Font.BOLD );
+            text2D .setRectangleScaleFactor( 0.02f );
+            text2D .getGeometry() .setCapability( Geometry .ALLOW_INTERSECT );
+            OrientedShape3D os3D = new OrientedShape3D();
+            os3D .setGeometry( text2D.getGeometry() );
+            os3D .setAppearance( text2D.getAppearance() );
+            os3D .setAlignmentMode( OrientedShape3D.ROTATE_ABOUT_POINT );
+            Transform3D move = new Transform3D();
+            move .setTranslation( new Vector3d( location .x, location .y, location .z ) );
+            TransformGroup tg = new TransformGroup( move );
+            tg .addChild( os3D );
+            icosahedralLabels .addChild( tg );
+		}
+
         mRoot.addChild( mScene );
 
         VirtualUniverse vu = new VirtualUniverse();
@@ -299,13 +331,15 @@ public class Java3dSceneGraph implements RenderingChanges
     @Override
     public void enableFrameLabels()
     {
-        mRoot .addChild( frameLabels );
+//        mRoot .addChild( frameLabels );
+        mRoot .addChild( icosahedralLabels );
     }
     
     @Override
     public void disableFrameLabels()
     {
-        mRoot .removeChild( frameLabels );
+//        mRoot .removeChild( frameLabels );
+        mRoot .removeChild( icosahedralLabels );
     }
 
     /**
