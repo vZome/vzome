@@ -186,7 +186,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         startReader = ! newDocument && ! asTemplate;
         
-        editingModel = userHasEntitlement( "model.edit" ) && ! propertyIsTrue( "reader.preview" );
+        editingModel = userHasEntitlement( "model.edit" ); // && ! propertyIsTrue( "reader.preview" );
         
         toolsController = new ToolsController( document );
         toolsController .setNextController( this );
@@ -323,6 +323,9 @@ public class DocumentController extends DefaultController implements J3dComponen
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
         showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
+        showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
+        if ( showFrameLabels )
+            mainScene .enableFrameLabels();
 
         AlgebraicField field = this .documentModel .getField();
         previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );

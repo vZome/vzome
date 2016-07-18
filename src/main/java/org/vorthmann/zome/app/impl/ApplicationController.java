@@ -213,23 +213,9 @@ public class ApplicationController extends DefaultController
             }
 
 			if( "launch".equals(action) ) {
-	            String sawWelcome = userPreferences .getProperty( "saw.welcome" );
-	            if ( sawWelcome == null )
-	            {
-	                String welcome = properties .getProperty( "welcome" );
-	                doAction( "openResource-" + welcome, null );
-	                userPreferences .setProperty( "saw.welcome", "true" );
-	                FileWriter writer;
-	                try {
-	                    writer = new FileWriter( preferencesFile );
-	                    userPreferences .store( writer, "" );
-	                    writer .close();
-	                } catch ( IOException e ) {
-	                    logger.fine(e.toString());
-	                }
-	                return;
-	            }
-                action = "new";
+				String welcome = properties .getProperty( "welcome" );
+				doAction( "openResource-" + welcome, null );
+				return;
             }
 
             if ("new".equals(action)) {
