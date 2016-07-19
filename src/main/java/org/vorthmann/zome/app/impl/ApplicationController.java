@@ -212,10 +212,36 @@ public class ApplicationController extends DefaultController
 				return;
             }
 
+			if ( "icosakey" .equals( action ) ) {
+                Properties docProps = new Properties();
+                docProps .setProperty( "reader.preview", "true" );
+                docProps .setProperty( "window.title", "Icosahedral Symmetry Indices" );
+                docProps .setProperty( "showIcosahedralLabels", "true" );
+                String path = "org/vorthmann/zome/content/icosahedralDomains.vZome";
+                ClassLoader cl = Thread .currentThread() .getContextClassLoader();
+                InputStream bytes = cl .getResourceAsStream( path );
+                loadDocumentController( path, bytes, docProps );
+                return;
+			}
+			
 			if( "launch".equals(action) ) {
-				String welcome = properties .getProperty( "welcome" );
-				doAction( "openResource-" + welcome, null );
-				return;
+	            String sawWelcome = userPreferences .getProperty( "saw.welcome" );
+	            if ( sawWelcome == null )
+	            {
+	                String welcome = properties .getProperty( "welcome" );
+	                doAction( "openResource-" + welcome, null );
+	                userPreferences .setProperty( "saw.welcome", "true" );
+	                FileWriter writer;
+	                try {
+	                    writer = new FileWriter( preferencesFile );
+	                    userPreferences .store( writer, "" );
+	                    writer .close();
+	                } catch ( IOException e ) {
+	                    logger.fine(e.toString());
+	                }
+	                return;
+	            }
+                action = "new";
             }
 
             if ("new".equals(action)) {

@@ -37,9 +37,12 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
+import org.vorthmann.ui.Controller;
+
 import com.sun.j3d.utils.geometry.Text2D;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -56,7 +59,7 @@ import com.vzome.core.viewing.Lights;
 /**
  * @author vorth
  */
-public class Java3dSceneGraph implements RenderingChanges
+public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListener
 {
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.render.java3d" );
 
@@ -103,7 +106,7 @@ public class Java3dSceneGraph implements RenderingChanges
         return mLights;
     }
 
-    public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky, boolean polygonOutlinesMode )
+    public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky, boolean polygonOutlinesMode, Controller controller )
     {
         mFactory = factory;
         this .isSticky = isSticky;
@@ -252,6 +255,8 @@ public class Java3dSceneGraph implements RenderingChanges
 
         frameLabels = new BranchGroup();
         frameLabels .setCapability( BranchGroup.ALLOW_DETACH );
+        if ( controller .propertyIsTrue( "showFrameLabels" ) )
+            mRoot .addChild( frameLabels );
         LineArray frameEdges = new LineArray( 24, LineArray.COORDINATES | LineArray.COLOR_3 );
         int nextEdge = 0;
         frameLabels .addChild( new Shape3D( frameEdges ) );
@@ -296,16 +301,21 @@ public class Java3dSceneGraph implements RenderingChanges
 
         icosahedralLabels = new BranchGroup();
         icosahedralLabels .setCapability( BranchGroup.ALLOW_DETACH );
+        if ( controller .propertyIsTrue( "showIcosahedralLabels" ) )
+            mRoot .addChild( icosahedralLabels );
         Color3f minusColor = new Color3f( 1.0f, 0.0f, 0.0f );
         Color3f plusColor = new Color3f( 0.0f, 0.0f, 1.0f );
         AlgebraicField field = new PentagonField();
         AlgebraicNumber distance = field .createPower( 6 );
         IcosahedralSymmetry symm = new IcosahedralSymmetry( field, "temp" );
-        Direction orbit = symm .getDirection( "turquoise" );
+        Direction orbit = symm .getDirection( "black" );
+        Direction otherOrbit = symm .getDirection( "turquoise" );
         for ( Axis axis : orbit ) {
         	boolean negative = axis .getSense() == Symmetry.MINUS;
         	Color3f numColor = negative? minusColor : plusColor;
-        	RealVector location = axis .normal() .scale( distance ) .toRealVector();
+        	// we use black for indexing, but turqouise for location
+        	AlgebraicVector v = otherOrbit .getAxis( axis .normal() .toRealVector() ) .normal();
+        	RealVector location = v .scale( distance ) .toRealVector();
             String label = ( negative? "-" : "" ) + axis .getOrientation();
             Text2D text2D = new Text2D( label, numColor, "Helvetica", 90, negative? Font.PLAIN : Font.BOLD );
             text2D .setRectangleScaleFactor( 0.02f );
@@ -331,15 +341,13 @@ public class Java3dSceneGraph implements RenderingChanges
     @Override
     public void enableFrameLabels()
     {
-//        mRoot .addChild( frameLabels );
-        mRoot .addChild( icosahedralLabels );
+        throw new IllegalStateException( "enableFrameLabels is deprecated" );
     }
     
     @Override
     public void disableFrameLabels()
     {
-//        mRoot .removeChild( frameLabels );
-        mRoot .removeChild( icosahedralLabels );
+        mRoot .removeChild( frameLabels );
     }
 
     /**
@@ -619,5 +627,29 @@ public class Java3dSceneGraph implements RenderingChanges
 	public boolean getPolygonOutlinesMode()
 	{
 		return this .polygonOutlinesMode;
+	}
+
+	@Override
+	public void propertyChange( PropertyChangeEvent evt )
+	{
+		switch ( evt .getPropertyName() ) {
+
+		case "showFrameLabels":
+			if ( ((Boolean) evt .getNewValue()) .booleanValue() )
+				mRoot .addChild( frameLabels );
+			else
+				mRoot .removeChild( frameLabels );
+			break;
+
+		case "showIcosahedralLabels":
+			if ( ((Boolean) evt .getNewValue()) .booleanValue() )
+				mRoot .addChild( icosahedralLabels );
+			else
+				mRoot .removeChild( icosahedralLabels );
+			break;
+
+		default:
+			break;
+		}
 	}
 }
