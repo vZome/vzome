@@ -123,6 +123,10 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
             int i = 0;
             for (Face face : faces) {
                 int arity = face .size();
+                if(face.get(0) != face.get(arity-1)) {
+                    // make room for one more vertex at the end to close the outline
+                    arity++;
+                }
                 counts[i++] = arity;
                 numIndices += arity;
             }
@@ -140,6 +144,11 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
                 int arity = face .size();
                 for ( int j = 0; j < arity; j++ ){
                     Integer index = face .get( j );
+                    strips .setCoordinateIndex(i++, index);
+                }
+                if(face.get(0) != face.get(arity-1)) {
+                    // repeat the first vertex at the end to complete the outline.
+                    Integer index = face .get( 0 );
                     strips .setCoordinateIndex(i++, index);
                 }
             }
