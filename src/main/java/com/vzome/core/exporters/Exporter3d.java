@@ -59,6 +59,14 @@ public abstract class Exporter3d
     }
 
     /**
+     * Subclasses can override this if they don't rely on Manifestations and therefore can operate on article pages
+     * See the comments below DocumentModel.getNaiveExporter() for a more complete explanation.
+     */
+    public boolean needsManifestations() {
+        return true;
+    }
+
+    /**
      * Subclasses can override this if they need to export history or the lesson model.
      */
     public void doExport( DocumentModel doc, File file, File parentFile, Writer writer, int height, int width ) throws Exception

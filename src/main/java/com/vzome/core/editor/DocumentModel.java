@@ -45,7 +45,6 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentCrossProduct;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
-import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
@@ -1125,14 +1124,17 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	public Exporter3d getNaiveExporter( String format, Camera view, Colors colors, Lights lights, RenderedModel currentSnapshot )
 	{
+        Exporter3d exporter = null;
         if ( format.equals( "pov" ) )
-            return new POVRayExporter( view, colors, lights, currentSnapshot );
+            exporter = new POVRayExporter( view, colors, lights, currentSnapshot );
         else if ( format.equals( "opengl" ) )
-        	return new OpenGLExporter( view, colors, lights, currentSnapshot );
-        else if ( format.equals( "dae" ) )
-        	return new DaeExporter( view, colors, lights, currentSnapshot );
-        else
-        	return null;
+        	exporter = new OpenGLExporter( view, colors, lights, currentSnapshot );
+
+        boolean inArticleMode = (renderedModel != currentSnapshot);
+        if(exporter != null && exporter.needsManifestations() && inArticleMode ) {
+            throw new IllegalStateException("The " + format + " exporter can only operate on the current model, not article pages.");
+        }
+        return exporter;
     }
 
 	/*
@@ -1146,14 +1148,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	 * 
 	 * POV-Ray is a bit of a special case, but only because the .pov language supports coordinate values as expressions,
 	 * and supports enough modeling that the different strut shapes can be defined, and so on.
-	 * It is likely that COLLADA DAE has the same character.  OpenGL and WebGL (Web3d/json) could as well, since I
-	 * can control how the data is stored and rendered.
+     * OpenGL and WebGL (Web3d/json) could as well, since I can control how the data is stored and rendered.
 	 * 
 	 * The POV-Ray export reuses shapes, etc. just as vZome does, so really works just with the RenderedManifestations
 	 * (except when the Manifestation is available for structured coordinate expressions).  Again, any rendering exporter
 	 * could apply the same reuse tricks, working just with RenderedManifestations, so the current limitations to
 	 * mRenderedModel for many of these is spurious.
-	 */   
+     *
+     * The base Exporter3d class now has a boolean needsManifestations() method which subclasses should override
+     * if they don't rely on Manifestations and therefore can operate on article pages.
+     */
 	
 	// TODO move all the parameters inside this object!
 	
