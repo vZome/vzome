@@ -68,10 +68,4 @@ public class TransparentRendering implements RenderingChanges
         throw new IllegalStateException();
     }
 
-    @Override
-    public void enableFrameLabels() {}
-
-    @Override
-    public void disableFrameLabels() {}
-    
 }
