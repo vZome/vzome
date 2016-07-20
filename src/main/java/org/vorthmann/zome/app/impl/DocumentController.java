@@ -1209,6 +1209,13 @@ public class DocumentController extends DefaultController implements J3dComponen
             // TODO implement AlgebraicField.getLabel()
         }
         
+        if ( string .startsWith( "supports.symmetry." ) )
+        {
+            String group = string .substring( "supports.symmetry." .length() );
+            Symmetry symm = this .documentModel .getField() .getSymmetry( group );
+            return new Boolean( symm != null ) .toString();
+        }
+        
         if ( string .startsWith( "tool.enabled." ) )
         {
             String group = string .substring( "tool.enabled." .length() );
