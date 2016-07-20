@@ -8,6 +8,7 @@ import java.awt.image.RenderedImage;
 import javax.vecmath.Point3d;
 
 import org.vorthmann.j3d.J3dComponentFactory;
+import org.vorthmann.ui.Controller;
 
 import com.vzome.core.render.ManifestationPicker;
 import com.vzome.core.render.RenderingChanges;
@@ -32,7 +33,7 @@ public interface RenderingViewer extends CameraController.Viewer, ManifestationP
     {
         RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas );
         
-        RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode );
+        RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode, Controller controller );
     }
 
 //    Group getSceneGraphRoot();

@@ -22,6 +22,7 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
 import org.vorthmann.j3d.J3dComponentFactory;
+import org.vorthmann.ui.Controller;
 
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
@@ -82,14 +83,14 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
             }
             canvas = new CapturingCanvas3D( gc, true );
         }
-        return new Java3dRenderingViewer( scene, canvas );
+        return new Java3dRenderingViewer( (Java3dSceneGraph) scene, (CapturingCanvas3D) canvas );
     }
 
 
     @Override
-	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode )
+	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode, Controller controller )
 	{
-		return new Java3dSceneGraph( this, lights, isSticky, outlineMode );
+		return new Java3dSceneGraph( this, lights, isSticky, outlineMode, controller );
 	}
 
     Colors getColors()

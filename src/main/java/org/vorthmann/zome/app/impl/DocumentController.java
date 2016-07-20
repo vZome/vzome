@@ -186,7 +186,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         startReader = ! newDocument && ! asTemplate;
         
-        editingModel = userHasEntitlement( "model.edit" ) && ! propertyIsTrue( "reader.preview" );
+        editingModel = userHasEntitlement( "model.edit" ) ;//&& ! propertyIsTrue( "reader.preview" );
         
         toolsController = new ToolsController( document );
         toolsController .setNextController( this );
@@ -294,8 +294,14 @@ public class DocumentController extends DefaultController implements J3dComponen
         mViewPlatform = new CameraController( document .getViewModel() );
         mViewPlatform .setNextController( this );
 
+        mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
+        useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
+        showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
+        showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
+
         RenderingViewer.Factory rvFactory = app .getJ3dFactory();
-        mainScene = rvFactory .createRenderingChanges( sceneLighting, true, outlineMode );
+        mainScene = rvFactory .createRenderingChanges( sceneLighting, true, outlineMode, this );
+        this .addPropertyListener( (PropertyChangeListener) mainScene );
 
         modelCanvas = rvFactory .createJ3dComponent( "" ); // name not relevant there
         imageCaptureViewer = rvFactory.createRenderingViewer( mainScene, modelCanvas );
@@ -313,16 +319,12 @@ public class DocumentController extends DefaultController implements J3dComponen
         mViewPlatform .addViewer( viewer );
         viewer .setEye( RenderingViewer .RIGHT_EYE );
         rightController = new PickingController( viewer, this );
-        
-        mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, false );
+
+        mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, false, this );
 
         thumbnails = new ThumbnailRendererImpl( rvFactory, sceneLighting );
 
         mApp = app;
-
-        mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
-        useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
-        showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
 
         AlgebraicField field = this .documentModel .getField();
         previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
@@ -577,7 +579,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             RenderingViewer.Factory rvFactory = mApp .getJ3dFactory();
             Component canvas = rvFactory .createJ3dComponent( name ); // name not relevant there
 
-            RenderingChanges scene = rvFactory.createRenderingChanges( sceneLighting, true, true );
+            RenderingChanges scene = rvFactory.createRenderingChanges( sceneLighting, true, true, this );
             mRenderedModel.addListener( scene );
             RenderingViewer viewer = rvFactory.createRenderingViewer( mainScene, canvas );
             this.addPropertyListener( (PropertyChangeListener) viewer );
@@ -737,10 +739,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             else if ( action.equals( "toggleFrameLabels" ) )
             {
                 showFrameLabels = ! showFrameLabels;
-                if ( showFrameLabels )
-                    mainScene .enableFrameLabels();
-                else
-                    mainScene .disableFrameLabels();
+                properties() .firePropertyChange( "showFrameLabels", !showFrameLabels, showFrameLabels );
             }
 
             else if ( action.equals( "toggleOutlines" ) )
@@ -1355,11 +1354,9 @@ public class DocumentController extends DefaultController implements J3dComponen
         
         else if ( "showFrameLabels" .equals( cmd ) )
         {
+        	boolean old = showFrameLabels;
             showFrameLabels = "true" .equals( value );
-            if ( showFrameLabels )
-                mainScene .enableFrameLabels();
-            else
-                mainScene .disableFrameLabels();
+            properties() .firePropertyChange( "showFrameLabels", old, showFrameLabels );
         }
 
         super.setProperty( cmd, value );

@@ -34,14 +34,14 @@ import com.vzome.desktop.controller.RenderingViewer;
 
 public class Java3dRenderingViewer implements RenderingViewer
 {
-    public Java3dRenderingViewer( RenderingChanges scene, Component canvas )
+    public Java3dRenderingViewer( Java3dSceneGraph scene, CapturingCanvas3D canvas )
     {
         super();
 
 //        GraphicsConfiguration gc = SimpleUniverse .getPreferredConfiguration();
-        mCanvas = (CapturingCanvas3D) canvas; // new CapturingCanvas3D( gc );
+        mCanvas = canvas; // new CapturingCanvas3D( gc );
 
-        mScene = (Java3dSceneGraph) scene;
+        mScene = scene;
 
         viewTransform = new TransformGroup();
         view = new View();
