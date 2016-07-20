@@ -507,20 +507,18 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
     public void about()
     {
-        String licensee = mController .getProperty( "licensed.user" );
-        if ( licensee == null )
-            licensee = "unlicensed";
-        else
-            licensee = "licensed to " + licensee;
         JOptionPane.showMessageDialog( null, mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + ", build "
         		+ mController .getProperty( "buildNumber" ) + "\n\n"
-                + "  by Scott Vorthmann\n\n"
-                // + licensee + "\n\n"
-                + "Acknowledgements:\n\n" + "Paul Hildebrandt\n" + "Marc Pelletier\n" + "David Hall\n"
+
+                + "Contributors:\n\n" + "Scott Vorthmann\n" + "David Hall\n" + "\n"
+                
+                + "Acknowledgements:\n\n" + "Paul Hildebrandt\n" + "Marc Pelletier\n"
                 + "David Richter\n" + "Brian Hall\n" + "Dan Duddy\n" + "Fabien Vienne\n" + "George Hart\n"
                 + "Edmund Harriss\n" + "Corrado Falcolini\n" + "Ezra Bradford\n" + "Chris Kling\n" + "Samuel Verbiese\n" + "Walt Venable\n"
                 + "Will Ackel\n" + "Tom Darrow\n" + "Sam Vandervelde\n" + "Henri Picciotto\n" + "Florelia Braschi\n"
-                + "\n" + "Dedicated to Everett Vorthmann,\n" + "who made me an engineer\n" + "\n"
-                + "  Copyright 2015, Scott Vorthmann \n", "About vZome", JOptionPane.PLAIN_MESSAGE );
+                
+                + "\n" + "Dedicated to Everett Vorthmann,\n" + "who made me an engineer\n"
+                + "\n",
+                "About vZome", JOptionPane.PLAIN_MESSAGE );
     }
 } 
