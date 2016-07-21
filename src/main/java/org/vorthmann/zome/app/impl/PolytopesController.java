@@ -13,6 +13,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.math.symmetry.Direction;
 
 public class PolytopesController extends DefaultController
 {
@@ -26,11 +27,15 @@ public class PolytopesController extends DefaultController
     private boolean[] renderEdge = new boolean[]{ true, true, true, true };
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private final VectorController rotationQuaternion;
+    private final AlgebraicField field;
+    private final AlgebraicNumber defaultScaleFactor, strutScaleFactor;
 
     public PolytopesController( DocumentModel document )
     {
         this .model = document;
-        AlgebraicField field = document .getField();
+        this .field = document .getField();
+        this .defaultScaleFactor = field .createPower( Direction .USER_SCALE + 2 );
+        this .strutScaleFactor = field .createAlgebraicNumber( 1, 0, 2, - Direction .USER_SCALE );
         for (int i = 0; i < edgeScales.length; i++)
         {
             edgeScales[ i ] = field .createPower( 0 );
@@ -52,13 +57,24 @@ public class PolytopesController extends DefaultController
     	switch ( action ) {
 
     	case "setQuaternion":
-    		// TODO get current selected strut vector
+    		/*
+    		 *   The old way:
+    		 *     With no symmetry axis set, the 120-cell comes out with medium blue struts.
+    		 *     With a short blue symmetry axis set, it comes out with double short blue struts.
+    		 *   We don't need to scale that way now, but we do need to scale in a predictable way.
+    		 *   The new way:
+    		 *     A quaternion value of (1,0,0,0) produces a 120-cell with medium blue struts, as before.
+    		 *     With no quaternion strut selected, the quaternion value defaults to (1,0,0,0).
+    		 *     With a single short blue selected as the quaternion, the quaternion is (0,1,0,0) or similar.
+    		 */
     		Segment strut = model .getSelectedSegment();
     		if ( strut != null ) {
     			AlgebraicVector vector = strut .getOffset();
+    			vector = vector .scale( this .strutScaleFactor );
         		rotationQuaternion .setVector( vector .inflateTo4d() );
     		} else {
-    			rotationQuaternion .setVector( model .getField() .basisVector( 4, 0 ) );
+    			AlgebraicVector vector =  model .getField() .basisVector( 4, 0 );
+    			rotationQuaternion .setVector( vector .inflateTo4d() );
     		}
 			return;
 
@@ -76,7 +92,7 @@ public class PolytopesController extends DefaultController
                 if ( renderEdge[ i ] )
                     edgesToRender += 1 << i;
             }
-            AlgebraicVector quaternion = rotationQuaternion .getVector();
+            AlgebraicVector quaternion = rotationQuaternion .getVector() .scale( this .defaultScaleFactor );
             model .generatePolytope( group, group, index, edgesToRender, quaternion, edgeScales );
         }
         else if ( action .startsWith( "setGroup." ) )
