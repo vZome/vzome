@@ -23,8 +23,20 @@ public interface RenderingChanges {
     void orientationChanged( RenderedManifestation manifestation );
 
     void shapeChanged( RenderedManifestation manifestation );
-	
-    public void enableFrameLabels();
-    
-    public void disableFrameLabels();
+
+    /**
+    * @deprecated As of 7/20/2016: Use controller property "showFrameLabels" instead.
+    */
+    @Deprecated
+    default void enableFrameLabels(){
+        throw new IllegalStateException( "enableFrameLabels is deprecated." );
+    }
+
+    /**
+    * @deprecated As of 7/20/2016: Use controller property "showFrameLabels" instead.
+    */
+    @Deprecated
+    default void disableFrameLabels(){
+        throw new IllegalStateException( "disableFrameLabels is deprecated." );
+    }
 }
