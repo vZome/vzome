@@ -13,6 +13,8 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 
 public class PolytopesController extends DefaultController
@@ -28,14 +30,13 @@ public class PolytopesController extends DefaultController
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private final VectorController rotationQuaternion;
     private final AlgebraicField field;
-    private final AlgebraicNumber defaultScaleFactor, strutScaleFactor;
+    private final AlgebraicNumber defaultScaleFactor;
 
     public PolytopesController( DocumentModel document )
     {
         this .model = document;
         this .field = document .getField();
         this .defaultScaleFactor = field .createPower( Direction .USER_SCALE + 2 );
-        this .strutScaleFactor = field .createAlgebraicNumber( 1, 0, 2, - Direction .USER_SCALE );
         for (int i = 0; i < edgeScales.length; i++)
         {
             edgeScales[ i ] = field .createPower( 0 );
@@ -48,7 +49,7 @@ public class PolytopesController extends DefaultController
         	groups = new String[]{ "A4", "B4/C4", "D4", "F4", "H4" };
         	group = "H4";
         }
-        rotationQuaternion = new VectorController( field .basisVector( 4, 0 ) );
+        rotationQuaternion = new VectorController( field .basisVector( 4, AlgebraicVector.W4 ) );
     }
 
     @Override
@@ -70,11 +71,15 @@ public class PolytopesController extends DefaultController
     		Segment strut = model .getSelectedSegment();
     		if ( strut != null ) {
     			AlgebraicVector vector = strut .getOffset();
-    			vector = vector .scale( this .strutScaleFactor );
+    			SymmetrySystem symm = model .getSymmetrySystem();
+    			Axis zone = symm .getAxis( vector );
+                AlgebraicNumber len = zone .getLength( vector );
+                len = zone .getOrbit() .getLengthInUnits( len );
+    			vector = zone .normal() .scale( len );
         		rotationQuaternion .setVector( vector .inflateTo4d() );
     		} else {
-    			AlgebraicVector vector =  model .getField() .basisVector( 4, 0 );
-    			rotationQuaternion .setVector( vector .inflateTo4d() );
+    			AlgebraicVector vector = this .field .basisVector( 4, AlgebraicVector.W4 );
+    			rotationQuaternion .setVector( vector );
     		}
 			return;
 

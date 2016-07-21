@@ -44,6 +44,7 @@ public class PolytopesDialog extends EscapeDialog
         	topHalf .setLayout( new BorderLayout() );
         	{
             	JPanel labelAndGroup = new JPanel();
+            	labelAndGroup .setToolTipText( "4-dimensional Coxeter (reflection) groups." );
             	{
             		JLabel label = new JLabel( "symmetry group" );
             		labelAndGroup .add( label );
@@ -72,11 +73,13 @@ public class PolytopesDialog extends EscapeDialog
             	JPanel checkboxList = new JPanel();
             	checkboxList .setLayout( new BoxLayout( checkboxList, BoxLayout.PAGE_AXIS ) );
             	checkboxList .add( Box.createRigidArea( new Dimension( 0, 15 ) ) );
+            	checkboxList .setToolTipText( "The group is based on four mirror planes intersecting the 3-sphere." );
             	{
             		JPanel checkboxesAndLabel = new JPanel();
             		checkboxesAndLabel .setLayout( new BorderLayout() );
+            		checkboxesAndLabel .setToolTipText( "Which mirrors should create pairs of balls." );
             		{
-            			JLabel label = new JLabel( "Wythoff" );
+            			JLabel label = new JLabel( "use mirror" );
             			label .setMinimumSize( new Dimension( 1, 100 ) );
             			label .setHorizontalAlignment( SwingConstants.RIGHT );
             			checkboxesAndLabel .add( label, BorderLayout.CENTER );
@@ -120,8 +123,9 @@ public class PolytopesDialog extends EscapeDialog
             	{
             		JPanel checkboxesAndLabel = new JPanel();
             		checkboxesAndLabel .setLayout( new BorderLayout() );
+            		checkboxesAndLabel .setToolTipText( "Which mirrors should create struts." );
             		{
-            			JLabel label = new JLabel( "struts" );
+            			JLabel label = new JLabel( "create struts" );
             			label .setMinimumSize( new Dimension( 1, 100 ) );
             			label .setHorizontalAlignment( SwingConstants.RIGHT );
             			checkboxesAndLabel .add( label, BorderLayout.CENTER );
@@ -155,6 +159,8 @@ public class PolytopesDialog extends EscapeDialog
         	JPanel quaternionPanel = new JPanel();
         	quaternionPanel .setBorder( BorderFactory .createTitledBorder( "rotation quaternion" ) );
         	quaternionPanel .setLayout( new BoxLayout( quaternionPanel, BoxLayout.PAGE_AXIS ) );
+        	quaternionPanel .setToolTipText( "To pre-set the i, j, and k values, " +
+        									"select a single strut before opening this dialog." );
         	//    			coordinates .add( Box.createRigidArea( new Dimension( 0, 10 ) ) );
         	Controller quaternionController = controller .getSubController( "rotation" );
         	String[] coords = new String[]{ "w", "x", "y", "z" };
