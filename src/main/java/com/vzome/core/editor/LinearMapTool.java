@@ -29,8 +29,9 @@ public class LinearMapTool extends TransformationTool
         this.originalScaling = originalScaling;
     }
 
-	@Override
-	public boolean equals( Object that )
+	// Not quite the same as overriding equals since the tool name is not compared
+    // We're basically just checking if the tool's input parameters match
+	public boolean hasEquivalentParameters( Object that )
 	{
 		if (this == that) {
 			return true;
