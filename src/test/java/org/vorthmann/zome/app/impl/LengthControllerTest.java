@@ -67,7 +67,7 @@ public class LengthControllerTest
 		value = controller .getProperty( "unitIsCustom" );
 		assertEquals( "false", value );
 		value = controller .getProperty( "lengthText" );
-		assertEquals( "3 +5φ", value );
+		assertEquals( "3 +5\u03C6", value );
 		AlgebraicNumber result = controller .getValue();
 		AlgebraicNumber expected = field .createAlgebraicNumber( 1, 0, 1, 8 );
 		assertEquals( expected, result );
@@ -87,11 +87,11 @@ public class LengthControllerTest
 			value = controller .getProperty( "scale" );
 			assertEquals( "0", value );
 			value = controller .getProperty( "unitText" );
-			assertEquals( "5/3 +8/3φ", value );
+			assertEquals( "5/3 +8/3\u03C6", value );
 			value = controller .getProperty( "unitIsCustom" );
 			assertEquals( "true", value );
 			value = controller .getProperty( "lengthText" );
-			assertEquals( "5/3 +8/3φ", value );
+			assertEquals( "5/3 +8/3\u03C6", value );
 			AlgebraicNumber result = controller .getValue();
 			AlgebraicNumber expected = field .createAlgebraicNumber( 5, 8, 3, 3 );
 			assertEquals( expected, result );
@@ -144,7 +144,7 @@ public class LengthControllerTest
 			value = controller .getProperty( "unitIsCustom" );
 			assertEquals( "false", value );
 			value = controller .getProperty( "lengthText" );
-			assertEquals( "1 +φ", value );
+			assertEquals( "1 +\u03C6", value );
 			AlgebraicNumber result = controller .getValue();
 			AlgebraicNumber expected = field .createAlgebraicNumber( 1, 0, 1, 5 );
 			assertEquals( expected, result );

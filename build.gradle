@@ -75,6 +75,15 @@ allprojects {
     }
 }
 
+// Not sure why the 'test' sourceSet has to be specifically declared here 
+// before it will show up in the NetBeans 'Projects' window.
+// It shows up in the vzome-core project without explicitly being listed.
+sourceSets {
+    test {
+        java.srcDir file('src/test/java')
+    }
+}
+
 dependencies {
     compile group: 'com.vzome.core', name: 'vzome-core', version:'0.8.8'
     compile group: 'java3d', name: 'j3dcore', version:'1.6.0-pre12'
