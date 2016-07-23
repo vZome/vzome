@@ -26,7 +26,12 @@ public class ApplyTool extends ChangeManifestations
         //  selection.
         List<Manifestation> inputs = new ArrayList<>();
         for (Manifestation man : mSelection) {
-            if ( hideInputs && tool .needsInput() )
+        	if ( deleteInputs && tool .needsInput() )
+            {
+                super .unselect( man, true );
+                super .deleteManifestation( man );
+            }
+            else if ( hideInputs && tool .needsInput() )
             {
                 super .unselect( man, true );
                 super .hideManifestation( man );
@@ -67,7 +72,7 @@ public class ApplyTool extends ChangeManifestations
     
     private Tool.Registry registry;
     
-    private boolean selectInputs, deselectOutputs, justSelect, hideInputs, redundantOutputs;
+    private boolean selectInputs, deselectOutputs, justSelect, hideInputs, deleteInputs, redundantOutputs;
 
 //    public ApplyTool( Selection selection, RealizedModel realized, ToolEvent event )
 //    {
@@ -88,7 +93,8 @@ public class ApplyTool extends ChangeManifestations
         selectInputs = ( modes & ActionEvent.SHIFT_MASK ) != 0;
         deselectOutputs = ( modes & ActionEvent.ALT_MASK ) != 0;
         justSelect = ( modes & ActionEvent.META_MASK ) != 0;
-        hideInputs = ( modes & ActionEvent.CTRL_MASK ) != 0;
+        deleteInputs = ( modes & ActionEvent.CTRL_MASK ) != 0;
+        hideInputs = false;
         this .redundantOutputs = redundantOutputs;
     }
 
@@ -113,6 +119,8 @@ public class ApplyTool extends ChangeManifestations
             element .setAttribute( "justSelect", "true" );
         if ( hideInputs )
             element .setAttribute( "hideInputs", "true" );
+        if ( deleteInputs )
+            element .setAttribute( "deleteInputs", "true" );
     }
 
     @Override
@@ -124,6 +132,7 @@ public class ApplyTool extends ChangeManifestations
         this .deselectOutputs = isAttributeTrue( element, "deselectOutputs" );
         this .justSelect = isAttributeTrue( element, "justSelect" );
         this .hideInputs = isAttributeTrue( element, "hideInputs" );
+        this .deleteInputs = isAttributeTrue( element, "deleteInputs" );
     }
     
     private boolean isAttributeTrue( Element element, String name )
