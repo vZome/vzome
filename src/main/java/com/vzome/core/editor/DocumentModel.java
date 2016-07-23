@@ -717,6 +717,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     {
         for ( Tool tool : getTools() )
 			firePropertyChange( "tool.instances", null, tool .getName() );
+		firePropertyChange( "tool.separator", null, "SEPARATOR" );
 
     	if ( mXML == null )
     		return;
