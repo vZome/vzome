@@ -163,14 +163,15 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 					@Override
 					public void propertyChange( PropertyChangeEvent evt )
 					{
-				        if ( evt .getPropertyName() .equals( "tool.instances" ) )
-				        {
+						switch ( evt .getPropertyName() ) {
+
+						case "tool.separator":
+		            		dynamicToolBar .addSeparator();
+							break;
+
+						case "tool.instances":
 				            if ( evt .getOldValue() == null )
 				            {
-				            	if ( evt .getNewValue() .equals( "SEPARATOR" ) ) {
-				            		dynamicToolBar .addSeparator();
-				            		return;
-				            	}
 				                String idAndName = (String) evt .getNewValue(); // will be "group.N/label"
 				                int delim = idAndName .indexOf( "." );
 				                String group = idAndName .substring( 0, delim );
@@ -183,7 +184,11 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				                dynamicToolBar .add( button );
 				                //scroller .revalidate();
 				            }
-				        }
+							break;
+
+						default:
+							break;
+						}
 				    }
 				});
                 

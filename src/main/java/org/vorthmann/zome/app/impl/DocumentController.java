@@ -273,6 +273,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             	switch ( change .getPropertyName() ) {
 
             	case "current.edit.xml":
+            	case "tool.separator":
             	case "tool.instances":
         			properties() .firePropertyChange( change ); // forward to the UI for display
 					break;
