@@ -84,6 +84,8 @@ public class ScalingTool extends SymmetryTool
 
         Axis zone1 = symmetry .getAxis( s1 .getOffset() );
         Axis zone2 = symmetry .getAxis( s2 .getOffset() );
+        if(zone1 == null || zone2 == null)
+            return "struts cannot be automatic";
         Direction orbit = zone1 .getDirection();
         if ( orbit != zone2 .getDirection() )
             return "before and after struts must be from the same orbit";
