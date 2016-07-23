@@ -131,6 +131,8 @@ public class SymmetryTool extends TransformationTool
         			// align the tetrahedral symmetry with this yellow, blue, or green strut
         			IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
         			Axis zone = icosa .getAxis( axis .getOffset() );
+        			if ( zone == null )
+        				return "selected alignment strut is not a tetrahedral axis.";
         			boolean allowYellow = prepareTool;  // yellow only allowed for legacy use
         			closure = icosa .subgroup( Symmetry.TETRAHEDRAL, zone, allowYellow );
         			if ( closure == null )
