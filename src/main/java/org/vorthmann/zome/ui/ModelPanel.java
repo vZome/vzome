@@ -167,6 +167,10 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				        {
 				            if ( evt .getOldValue() == null )
 				            {
+				            	if ( evt .getNewValue() .equals( "SEPARATOR" ) ) {
+				            		dynamicToolBar .addSeparator();
+				            		return;
+				            	}
 				                String idAndName = (String) evt .getNewValue(); // will be "group.N/label"
 				                int delim = idAndName .indexOf( "." );
 				                String group = idAndName .substring( 0, delim );
