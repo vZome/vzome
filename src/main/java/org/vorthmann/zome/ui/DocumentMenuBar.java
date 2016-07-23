@@ -485,8 +485,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu = new JMenu( "Help" );
         if ( "G4G10" .equals( controller .getProperty( "licensed.user" ) ) )
             menu .add( createMenuItem( "Welcome G4G10 Participant...", "openResource-org/vorthmann/zome/content/welcomeG4G10.vZome" ) );
-        if ( developerExtras )
-            menu .add( createMenuItem( "Icosahedral Symmetry Key...", "icosakey" ) );
         menu .add( createMenuItem( "Quick Start...", "openResource-org/vorthmann/zome/content/welcomeDodec.vZome" ) );
         menu .addSeparator(); 
         menu .add( createMenuItem( "About vZome...", "showAbout" ) );

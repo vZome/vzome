@@ -139,14 +139,10 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                     button = newToolButton( enabler, "icosahedral", "Create icosahedral symmetry tool" );
                     staticToolBar .add( button );
                 }
-                if ( controller .propertyIsTrue( "supports.symmetry.octahedral" ) ) {
-                	button = newToolButton( enabler, "octahedral", "Create octahedral symmetry tool" );
-                	staticToolBar .add( button );
-                }
-                if ( controller .propertyIsTrue( "supports.symmetry.tetrahedral" ) ) {
-                	button = newToolButton( enabler, "tetrahedral", "Create tetrahedral symmetry tool" );
-                	staticToolBar .add( button );
-                }
+            	button = newToolButton( enabler, "octahedral", "Create octahedral symmetry tool" );
+            	staticToolBar .add( button );
+            	button = newToolButton( enabler, "tetrahedral", "Create tetrahedral symmetry tool" );
+            	staticToolBar .add( button );
                 button = newToolButton( enabler, "point reflection", "Create point reflection tool" );
                 staticToolBar .add( button );
                 button = newToolButton( enabler, "mirror", "Create mirror symmetry tool" );

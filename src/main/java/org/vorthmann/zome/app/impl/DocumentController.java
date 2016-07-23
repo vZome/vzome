@@ -320,7 +320,27 @@ public class DocumentController extends DefaultController implements J3dComponen
         viewer .setEye( RenderingViewer .RIGHT_EYE );
         rightController = new PickingController( viewer, this );
 
-        mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, false, this );
+        Controller controlBallProps = this;
+        if ( this .userHasEntitlement( "developer.extras" ) ) {
+        	// TODO define a standalone controller class for contextual menus, etc.
+        	controlBallProps = new DefaultController()
+        	{
+				@Override
+				public String getProperty( String name )
+				{
+					switch ( name ) {
+
+					case "showIcosahedralLabels":
+						return "true";
+
+					default:
+						return super.getProperty( name );
+					}
+				}
+        	};
+        	controlBallProps .setNextController( this );
+        }
+        mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, false, controlBallProps );
 
         thumbnails = new ThumbnailRendererImpl( rvFactory, sceneLighting );
 

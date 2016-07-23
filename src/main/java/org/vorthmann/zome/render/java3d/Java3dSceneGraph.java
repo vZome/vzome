@@ -306,7 +306,6 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         Color3f minusColor = new Color3f( 1.0f, 0.0f, 0.0f );
         Color3f plusColor = new Color3f( 0.0f, 0.0f, 1.0f );
         AlgebraicField field = new PentagonField();
-        AlgebraicNumber distance = field .createPower( 6 );
         IcosahedralSymmetry symm = new IcosahedralSymmetry( field, "temp" );
         Direction orbit = symm .getDirection( "black" );
         Direction otherOrbit = symm .getDirection( "turquoise" );
@@ -315,15 +314,16 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         	Color3f numColor = negative? minusColor : plusColor;
         	// we use black for indexing, but turqouise for location
         	AlgebraicVector v = otherOrbit .getAxis( axis .normal() .toRealVector() ) .normal();
-        	RealVector location = v .scale( distance ) .toRealVector();
+        	RealVector location = v .toRealVector() .scale( 11f );
             String label = ( negative? "-" : "" ) + axis .getOrientation();
-            Text2D text2D = new Text2D( label, numColor, "Helvetica", 90, negative? Font.PLAIN : Font.BOLD );
+            Text2D text2D = new Text2D( label, numColor, "Helvetica", 120, negative? Font.PLAIN : Font.BOLD );
             text2D .setRectangleScaleFactor( 0.02f );
             text2D .getGeometry() .setCapability( Geometry .ALLOW_INTERSECT );
             OrientedShape3D os3D = new OrientedShape3D();
             os3D .setGeometry( text2D.getGeometry() );
             os3D .setAppearance( text2D.getAppearance() );
             os3D .setAlignmentMode( OrientedShape3D.ROTATE_ABOUT_POINT );
+//            os3D .setRotationPoint(arg0, arg1, arg2);
             Transform3D move = new Transform3D();
             move .setTranslation( new Vector3d( location .x, location .y, location .z ) );
             TransformGroup tg = new TransformGroup( move );
