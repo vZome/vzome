@@ -145,11 +145,13 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
             	staticToolBar .add( button );
                 button = newToolButton( enabler, "point reflection", "Create point reflection tool" );
                 staticToolBar .add( button );
-                button = newToolButton( enabler, "mirror", "Create mirror symmetry tool" );
+                button = newToolButton( enabler, "mirror", "Create mirror reflection tool" );
                 staticToolBar .add( button );
                 button = newToolButton( enabler, "scaling", "Create scaling tool" );
                 staticToolBar .add( button );
                 button = newToolButton( enabler, "rotation", "Create rotation tool" );
+                staticToolBar .add( button );
+                button = newToolButton( enabler, "axial symmetry", "Create rotational symmetry tool" );
                 staticToolBar .add( button );
                 button = newToolButton( enabler, "translation", "Create translation tool" );
                 staticToolBar .add( button );
