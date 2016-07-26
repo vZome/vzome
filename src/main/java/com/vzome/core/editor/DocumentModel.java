@@ -1109,7 +1109,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         else if ( "linear map" .equals( group ) )
             edit = new LinearMapTool( name, mSelection, mRealizedModel, tools, originPoint, false );
         else if ( "rotation" .equals( group ) )
-            edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
+            edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, false );
+        else if ( "axial symmetry" .equals( group ) )
+            edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, true );
         else if ( "scaling" .equals( group ) )
         	edit = new ScalingTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
         else if ( "tetrahedral" .equals( group ) )

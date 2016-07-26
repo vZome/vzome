@@ -4,13 +4,18 @@
 package com.vzome.core.editor;
 
 
+import org.w3c.dom.Element;
+
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentEndPoint;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -19,7 +24,9 @@ import com.vzome.core.model.Strut;
 
 public class RotationTool extends SymmetryTool
 {
-    public String getDefaultName()
+    private boolean fullRotation, corrected;
+
+	public String getDefaultName()
     {
         return "rotation around Z axis";
     }
@@ -30,9 +37,36 @@ public class RotationTool extends SymmetryTool
         return "rotation";
     }
 
+    /**
+     * Create a RotationTool while loading a saved model.
+     * @param name
+     * @param symmetry
+     * @param selection
+     * @param realized
+     * @param tools
+     * @param originPoint
+     */
     public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
     {
+    	this( name, symmetry, selection, realized, tools, originPoint, false );
+    	this .corrected = false; // for backward compatibility... may get overwritten in setXmlAttributes
+    }
+
+    /**
+     * Create a new RotationTool.
+     * @param name
+     * @param symmetry
+     * @param selection
+     * @param realized
+     * @param tools
+     * @param originPoint
+     * @param full
+     */
+    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint, boolean full )
+    {
         super( name, symmetry, selection, realized, tools, originPoint );
+        this .fullRotation = full;
+        this .corrected = true;
     }
 
     @Override
@@ -80,12 +114,23 @@ public class RotationTool extends SymmetryTool
         Axis axis = symmetry .getAxis( vector );
         if ( axis == null )
         	return "selected strut is not an axis of rotation";
-        int rotation = axis .getRotation();
-        if ( rotation == Symmetry .NO_ROTATION )
+		Permutation perm = axis .getRotationPermutation();
+        if ( perm == null )
         	return "selected strut is not an axis of rotation";
+		// This can correct for the very old bug in Direction.createAxis() for negative axes.
+        int rotation = this.corrected? perm .mapIndex( 0 ) : axis .getRotation();
     	if ( prepareTool ) {
-    		this .transforms = new Transformation[ 1 ];
-    		transforms[ 0 ] = new SymmetryTransformation( symmetry, rotation, center );
+    		if ( this .fullRotation ) {
+    			int order = perm .getOrder();
+        		this .transforms = new Transformation[ order - 1 ];
+    			for (int i = 0; i < transforms.length; i++) {
+					transforms[ i ] = new SymmetryTransformation( symmetry, rotation, center );
+					rotation = perm .mapIndex( rotation );
+				}
+    		} else {
+        		this .transforms = new Transformation[ 1 ];
+        		transforms[ 0 ] = new SymmetryTransformation( symmetry, rotation, center );
+    		}
     	}
     	return null;
     }
@@ -94,5 +139,25 @@ public class RotationTool extends SymmetryTool
     protected String getXmlElementName()
     {
         return "RotationTool";
+    }
+
+    @Override
+    protected void getXmlAttributes( Element element )
+    {
+    	if ( this .fullRotation )
+    		element .setAttribute( "full", "true" );
+    	if ( this .corrected )
+    		element .setAttribute( "corrected", "true" );
+        super .getXmlAttributes( element );
+    }
+
+    @Override
+    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
+    {
+        String value = element .getAttribute( "full" );
+        this .fullRotation = ( value != null ) && "true" .equals( value );
+        value = element .getAttribute( "corrected" );
+        this .corrected = ( value != null ) && "true" .equals( value );
+        super .setXmlAttributes( element, format );
     }
 }

@@ -1,8 +1,6 @@
 package com.vzome.core.math.symmetry;
 
 
-import java.util.logging.Logger;
-
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -24,12 +22,10 @@ public class Axis
 
 	private final AlgebraicVector normal;   // not a unit vector
         
-    private static final Logger logger = Logger.getLogger( "com.vzome.core.math" );
-
 	Axis( Direction dir, int index, int sense, int rotation, Permutation rotPerm, AlgebraicVector normal )
 	{
 		this.mDirection = dir;
-		this .mRotation = rotation ;
+		this .mRotation = rotation;
         mRotationPerm = rotPerm;
 		this.orientation = index;
 		this.normal = normal;
@@ -110,6 +106,11 @@ public class Axis
     public int getRotation()
     {
         return mRotation;
+    }
+
+    public int getCorrectRotation()
+    {
+        return mRotationPerm .mapIndex( 0 );
     }
 
     public Permutation getRotationPermutation()

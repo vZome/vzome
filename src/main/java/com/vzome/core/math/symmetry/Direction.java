@@ -286,6 +286,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         key = norm;
         axis = mVectors .get( key );
         if ( axis == null ) {
+        	// This is a bug! We should have adjusted rotation to be perm .mapIndex( 0 );
             axis = new Axis( this, orientation, Symmetry.MINUS, rotation, perm, norm );
             mVectors .put( key, axis );
         }
