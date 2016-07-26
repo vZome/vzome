@@ -216,24 +216,6 @@ public class DocumentController extends DefaultController implements J3dComponen
         	public void manifestationColored( Manifestation m, Color c ) {}
         };
         this .documentModel .addSelectionListener( selectionRendering );
-        
-        this .documentModel .addSelectionListener( new ManifestationChanges()
-        {
-			@Override
-			public void manifestationRemoved( Manifestation man )
-			{
-				properties() .firePropertyChange( "tools.enabled", null, null );
-			}
-			
-			@Override
-			public void manifestationColored(Manifestation arg0, Color arg1) {}
-			
-			@Override
-			public void manifestationAdded( Manifestation man )
-			{
-				properties() .firePropertyChange( "tools.enabled", null, null );
-			}
-		});
 
         this .articleChanges = new PropertyChangeListener()
         {   
@@ -660,6 +642,24 @@ public class DocumentController extends DefaultController implements J3dComponen
                         
             // mainScene is not listening to mRenderedModel yet, so batch the rendering changes to it
             this .syncRendering();
+            
+            this .documentModel .addSelectionListener( new ManifestationChanges()
+            {
+    			@Override
+    			public void manifestationRemoved( Manifestation man )
+    			{
+    				properties() .firePropertyChange( "tools.enabled", null, null );
+    			}
+    			
+    			@Override
+    			public void manifestationColored(Manifestation arg0, Color arg1) {}
+    			
+    			@Override
+    			public void manifestationAdded( Manifestation man )
+    			{
+    				properties() .firePropertyChange( "tools.enabled", null, null );
+    			}
+    		});
             return;
         }
         
