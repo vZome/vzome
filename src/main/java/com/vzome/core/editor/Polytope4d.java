@@ -126,7 +126,7 @@ public class Polytope4d extends ChangeManifestations
         this .renderGroupName = ( rgString==null || rgString .isEmpty() )? this .groupName : rgString;
         
         String quatString = xml .getAttribute( "quaternion" );
-        if ( quatString != null ) {
+        if ( quatString != null && ! "" .equals( quatString ) ) {
         	this.quaternion = format .parseRationalVector( xml, "quaternion" );
         }
         else if ( format .commandEditsCompacted() )
