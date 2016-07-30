@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" edition="vZome" field="golden" revision="9999" version="5.0, build 0">
+  <EditHistory editNumber="238" lastStickyEdit="1">
+    <Branch>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="8" len="2 4"/>
+      <SymmetryAxisChange end="2 4 0 0 2 4" start="0 0 0 0 0 0"/>
+      <Polytope4d end="2 4 0 0 2 4" group="H4" renderEdges="1000" start="0 0 0 0 0 0" wythoff="1000"/>
+      <BeginBlock/>
+      <SelectManifestation point="0 0 0 0 16 24"/>
+      <SelectManifestation point="-14 -22 2 2 6 10"/>
+      <SelectManifestation point="-8 -14 8 14 8 14"/>
+      <SelectManifestation point="4 6 8 14 12 18"/>
+      <SelectNeighbors/>
+      <SelectNeighbors/>
+      <SelectNeighbors/>
+      <SelectNeighbors/>
+      <SelectNeighbors/>
+      <SelectNeighbors/>
+      <EndBlock/>
+      <TetrahedralSymmetry>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </TetrahedralSymmetry>
+      <Hide>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Hide>
+      <SelectManifestation point="2 4 2 4 2 4"/>
+      <TetrahedralSymmetry>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </TetrahedralSymmetry>
+      <SelectNeighbors/>
+      <Hide>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Hide>
+      <BeginBlock/>
+      <SelectManifestation point="2 4 0 0 2 4"/>
+      <SelectManifestation endSegment="2 4 0 0 2 4" startSegment="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <Hide>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Hide>
+      <BeginBlock/>
+      <SelectManifestation point="-2 -2 6 10 -2 -2"/>
+      <SelectNeighbors/>
+      <EndBlock/>
+      <TetrahedralSymmetry>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </TetrahedralSymmetry>
+      <Hide>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Hide>
+      <BeginBlock/>
+      <SelectManifestation endSegment="2 4 10 16 -6 -8" startSegment="0 0 12 20 -4 -8"/>
+      <SelectManifestation endSegment="4 6 12 18 -4 -6" startSegment="0 0 12 20 -4 -8"/>
+      <SelectManifestation endSegment="6 8 10 16 -2 -4" startSegment="2 4 10 16 -6 -8"/>
+      <SelectManifestation endSegment="4 6 8 14 -4 -6" startSegment="4 6 12 18 -4 -6"/>
+      <SelectManifestation endSegment="-2 -4 10 16 -6 -8" startSegment="0 0 12 20 -4 -8"/>
+      <SelectManifestation endSegment="-4 -6 8 14 -4 -6" startSegment="0 0 8 12 -4 -8"/>
+      <SelectManifestation endSegment="2 4 10 16 -6 -8" startSegment="0 0 8 12 -4 -8"/>
+      <SelectManifestation endSegment="0 0 8 12 -4 -8" startSegment="0 0 4 8 -8 -12"/>
+      <EndBlock/>
+      <TetrahedralSymmetry>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </TetrahedralSymmetry>
+      <Hide>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Hide>
+      <BeginBlock/>
+      <SelectManifestation endSegment="4 6 8 14 -4 -6" startSegment="0 0 8 12 -4 -8"/>
+      <SelectManifestation endSegment="4 6 8 14 -4 -6" startSegment="4 8 8 12 0 0"/>
+      <EndBlock/>
+      <TetrahedralSymmetry>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </TetrahedralSymmetry>
+      <Hide>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Hide>
+      <BeginBlock/>
+      <SelectManifestation endSegment="6 8 10 16 2 4" startSegment="4 8 8 12 0 0"/>
+      <SelectManifestation endSegment="10 16 6 8 2 4" startSegment="8 12 4 8 0 0"/>
+      <SelectManifestation endSegment="10 16 6 8 2 4" startSegment="8 14 8 14 4 6"/>
+      <SelectManifestation point="10 16 6 8 2 4"/>
+      <SelectManifestation endSegment="8 14 8 14 4 6" startSegment="6 8 10 16 2 4"/>
+      <SelectManifestation endSegment="8 14 4 6 8 14" startSegment="10 16 2 4 6 8"/>
+      <SelectManifestation endSegment="8 14 4 6 4 6" startSegment="6 10 6 10 6 10"/>
+      <SelectManifestation endSegment="4 6 8 14 4 6" startSegment="6 10 6 10 6 10"/>
+      <SelectManifestation endSegment="4 6 8 14 4 6" startSegment="4 8 8 12 0 0"/>
+      <EndBlock/>
+      <TetrahedralSymmetry>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </TetrahedralSymmetry>
+      <Hide>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Hide>
+      <BeginBlock/>
+      <SelectManifestation endSegment="-2 -4 10 16 -6 -8" startSegment="-6 -8 10 16 -2 -4"/>
+      <SelectManifestation endSegment="-2 -4 -6 -8 -10 -16" startSegment="0 0 -4 -8 -8 -12"/>
+      <EndBlock/>
+      <TetrahedralSymmetry>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </TetrahedralSymmetry>
+      <Hide>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Hide>
+      <StrutCreation anchor="0 0 4 8 -8 -12" dir="lavender" index="19" len="2 4" symm="octahedral"/>
+      <StrutCreation anchor="-4 -8 0 0 -8 -12" dir="lavender" index="9" len="2 4" symm="octahedral"/>
+      <BeginBlock/>
+      <SelectManifestation point="-4 -6 4 6 -8 -14"/>
+      <SelectManifestation endSegment="-4 -6 4 6 -8 -14" startSegment="0 0 4 8 -8 -12"/>
+      <SelectManifestation endSegment="-4 -8 0 0 -8 -12" startSegment="-4 -6 4 6 -8 -14"/>
+      <EndBlock/>
+      <TetrahedralSymmetry>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </TetrahedralSymmetry>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation point="0 0 4 8 8 12"/>
+      <SelectManifestation point="0 0 8 12 4 8"/>
+      <DeselectAll/>
+      <EndBlock/>
+      <SymmetryAxisChange end="2 4 2 4 -2 -4" start="0 0 0 0 0 0"/>
+      <BeginBlock/>
+      <SelectManifestation point="0 0 4 8 8 12"/>
+      <SelectManifestation point="0 0 8 12 4 8"/>
+      <EndBlock/>
+      <JoinPoints/>
+      <AxialSymmetry>
+        <Symmetry attrName="symmetry.group" name="octahedral"/>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </AxialSymmetry>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation point="-4 -6 -8 -14 4 6"/>
+      <SelectManifestation point="-4 -6 -4 -6 8 14"/>
+      <SelectManifestation point="-8 -14 -4 -6 4 6"/>
+      <SelectNeighbors/>
+      <SelectNeighbors/>
+      <SelectNeighbors/>
+      <EndBlock/>
+      <Hide>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Hide>
+      <StrutCreation anchor="4 6 4 6 8 14" dir="yellow" index="1" len="2 2" symm="octahedral"/>
+      <BeginBlock/>
+      <SelectManifestation point="6 10 6 10 6 10"/>
+      <DeselectAll/>
+      <EndBlock/>
+      <StrutCreation anchor="6 10 6 10 6 10" dir="yellow" index="2" len="2 2" symm="octahedral"/>
+      <StrutCreation anchor="6 10 6 10 6 10" dir="yellow" index="14" len="2 2" symm="octahedral"/>
+      <BeginBlock/>
+      <SelectManifestation point="6 10 6 10 6 10"/>
+      <SelectManifestation endSegment="4 6 4 6 8 14" startSegment="6 10 6 10 6 10"/>
+      <SelectManifestation endSegment="8 14 4 6 4 6" startSegment="6 10 6 10 6 10"/>
+      <SelectManifestation endSegment="4 6 8 14 4 6" startSegment="6 10 6 10 6 10"/>
+      <EndBlock/>
+      <AxialSymmetry>
+        <Symmetry attrName="symmetry.group" name="octahedral"/>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </AxialSymmetry>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation point="4 8 8 12 0 0"/>
+      <SelectManifestation point="8 12 4 8 0 0"/>
+      <EndBlock/>
+      <JoinPoints/>
+      <AxialSymmetry>
+        <Symmetry attrName="symmetry.group" name="octahedral"/>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </AxialSymmetry>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation point="4 8 0 0 8 12"/>
+      <SelectManifestation point="8 12 0 0 4 8"/>
+      <EndBlock/>
+      <JoinPoints/>
+      <AxialSymmetry>
+        <Symmetry attrName="symmetry.group" name="octahedral"/>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </AxialSymmetry>
+      <DeselectAll/>
+      <StrutCreation anchor="8 12 -4 -8 0 0" dir="maroon" index="4" len="2 4" symm="octahedral"/>
+      <StrutCreation anchor="10 18 -6 -10 2 2" dir="maroon" index="3" len="2 4" symm="octahedral"/>
+      <StrutCreation anchor="12 20 -4 -8 4 8" dir="maroon" index="14" len="2 4" symm="octahedral"/>
+      <StrutCreation anchor="8 12 0 0 4 8" dir="maroon" index="4" len="2 4" symm="octahedral"/>
+      <BeginBlock/>
+      <SelectManifestation point="-4 -8 0 0 -8 -12"/>
+      <SelectManifestation point="8 12 0 0 4 8"/>
+      <EndBlock/>
+      <TranslationTool name="translation.1/translation.1"/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectAll/>
+      <EndBlock/>
+      <ApplyTool name="translation.1/translation.1"/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation point="10 18 6 10 14 22"/>
+      <SelectManifestation point="10 18 -6 -10 2 2"/>
+      <EndBlock/>
+      <TranslationTool name="translation.2/translation.2"/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectAll/>
+      <EndBlock/>
+      <ApplyTool name="translation.2/translation.2"/>
+      <DeselectAll/>
+      <StrutCreation anchor="8 12 4 8 0 0" dir="maroon" index="6" len="2 4" symm="octahedral"/>
+      <StrutCreation anchor="12 20 4 8 4 8" dir="maroon" index="22" len="2 4" symm="octahedral"/>
+      <StrutCreation anchor="10 18 6 10 -2 -2" dir="green" index="0" len="4 4" symm="octahedral"/>
+      <StrutCreation anchor="14 22 6 10 2 2" dir="maroon" index="7" len="2 4" symm="octahedral"/>
+      <StrutCreation anchor="16 28 4 8 0 0" dir="maroon" index="2" len="2 4" symm="octahedral"/>
+      <StrutCreation anchor="18 30 2 2 2 2" dir="maroon" index="13" len="2 4" symm="octahedral"/>
+      <BeginBlock/>
+      <SelectManifestation point="16 28 4 8 0 0"/>
+      <SelectManifestation point="18 30 2 2 2 2"/>
+      <SelectManifestation point="14 22 6 10 2 2"/>
+      <SelectManifestation point="10 18 6 10 -2 -2"/>
+      <SelectNeighbors/>
+      <DeselectAll/>
+      <SelectManifestation point="16 28 4 8 0 0"/>
+      <SelectManifestation point="14 22 6 10 2 2"/>
+      <SelectManifestation point="10 18 6 10 -2 -2"/>
+      <SelectManifestation point="18 30 2 2 2 2"/>
+      <SelectNeighbors/>
+      <EndBlock/>
+      <ApplyTool name="translation.2/translation.2"/>
+      <BeginBlock/>
+      <SelectManifestation endSegment="10 18 -6 -10 2 2" startSegment="14 22 -6 -10 -2 -2"/>
+      <SelectManifestation point="10 18 6 10 -2 -2"/>
+      <EndBlock/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation endSegment="10 18 -6 -10 2 2" startSegment="14 22 -6 -10 -2 -2"/>
+      <SelectManifestation point="10 18 6 10 -2 -2"/>
+      <EndBlock/>
+      <MirrorTool name="mirror.4/mirror.4"/>
+    </Branch>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="1" len="2 3" symm="octahedral"/>
+    <SelectManifestation point="3 5 3 5 -3 -5"/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <DeselectAll/>
+    <StrutCreation anchor="3 5 3 5 -3 -5" dir="lavender" index="2" len="2 3" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation point="4 6 0 0 -4 -6"/>
+    <SelectManifestation endSegment="4 6 0 0 -4 -6" startSegment="3 5 3 5 -3 -5"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <DeselectAll/>
+    <StrutCreation anchor="-4 -6 0 0 4 6" dir="maroon" index="4" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="-4 -6 -4 -6 0 0" dir="maroon" index="4" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="-1 -2 -5 -8 1 2" dir="maroon" index="3" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="0 0 -4 -6 4 6" dir="maroon" index="14" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="-4 -6 -4 -6 0 0" dir="maroon" index="3" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="-3 -4 -3 -4 3 4" dir="maroon" index="14" len="2 3" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation point="-1 -2 -1 -2 5 8"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <DeselectAll/>
+    <StrutCreation anchor="5 8 -1 -2 -1 -2" dir="green" index="17" len="2 4" symm="octahedral"/>
+    <SelectManifestation endSegment="5 8 1 2 1 2" startSegment="5 8 -1 -2 -1 -2"/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="3 5 3 5 -3 -5" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <StrutCreation anchor="3 5 -3 -5 3 5" dir="yellow" index="3" len="1 2" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation point="5 8 -5 -8 5 8"/>
+    <SelectManifestation endSegment="5 8 -5 -8 5 8" startSegment="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-3 -4 -3 -4 3 4"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation endSegment="5 8 5 8 -5 -8" startSegment="3 5 3 5 -3 -5"/>
+    <SelectManifestation endSegment="4 6 4 6 0 0" startSegment="3 5 3 5 -3 -5"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation point="6 10 6 10 0 0"/>
+    <SelectManifestation point="7 11 7 11 -3 -5"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="6 10 0 0 6 10" startSegment="4 6 0 0 4 6"/>
+    <SelectManifestation endSegment="5 8 1 2 1 2" startSegment="4 6 0 0 4 6"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation point="9 14 1 2 5 8"/>
+    <SelectManifestation point="8 13 2 3 2 3"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="8 13 2 3 2 3" startSegment="5 8 1 2 1 2"/>
+    <SelectManifestation endSegment="5 8 1 2 1 2" startSegment="5 8 -1 -2 -1 -2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation point="10 16 0 0 0 0"/>
+    <SelectManifestation endSegment="8 13 -2 -3 -2 -3" startSegment="5 8 -1 -2 -1 -2"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="5 8 5 8 -5 -8"/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="5 8 -1 -2 -1 -2" startSegment="4 6 -4 -6 0 0"/>
+    <SelectManifestation endSegment="6 10 -6 -10 0 0" startSegment="4 6 -4 -6 0 0"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="9 14 -5 -8 -1 -2" startSegment="8 13 -2 -3 -2 -3"/>
+    <SelectManifestation point="9 14 -5 -8 -1 -2"/>
+    <SelectManifestation endSegment="9 14 -5 -8 -1 -2" startSegment="8 13 -2 -3 -2 -3"/>
+    <SelectManifestation endSegment="8 13 -2 -3 -2 -3" startSegment="5 8 -1 -2 -1 -2"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="6 10 0 0 6 10" startSegment="7 11 -3 -5 7 11"/>
+    <SelectManifestation endSegment="5 8 1 2 9 14" startSegment="6 10 0 0 6 10"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation point="6 10 -4 -6 10 16"/>
+    <SelectManifestation point="5 8 -1 -2 11 18"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="5 8 -1 -2 11 18" startSegment="5 8 1 2 9 14"/>
+    <SelectManifestation endSegment="5 8 1 2 9 14" startSegment="2 3 2 3 8 13"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="0 0 0 0 10 16" startSegment="2 3 2 3 8 13"/>
+    <SelectManifestation point="2 3 -2 -3 12 19"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <DeselectAll/>
+    <StrutCreation anchor="2 3 -2 -3 12 19" dir="lavender" index="23" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="-1 -2 -5 -8 9 14" dir="green" index="0" len="2 4" symm="octahedral"/>
+    <StrutCreation anchor="1 2 -5 -8 11 18" dir="maroon" index="7" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="4 6 -6 -10 10 16" dir="lavender" index="15" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="6 10 -4 -6 10 16" dir="green" index="15" len="2 4" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="4 6 -6 -10 10 16" startSegment="1 2 -5 -8 11 18"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <DeselectAll/>
+    <BeginBlock/>
+    <SelectManifestation point="11 18 1 2 -5 -8"/>
+    <SelectManifestation point="11 18 5 8 -1 -2"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <DeselectAll/>
+    <EndBlock/>
+    <LoadVEF>vZome VEF 6 field golden
+
+14
+(0,0) (18,11) (2,1) (-8,-5)
+(0,0) (18,11) (8,5) (-2,-1)
+(0,0) (14,9) (8,5) (2,1)
+(0,0) (16,10) (10,6) (-6,-4)
+(0,0) (19,12) (3,2) (-3,-2)
+(0,0) (16,10) (6,4) (-10,-6)
+(0,0) (14,9) (-2,-1) (-8,-5)
+(0,0) (11,7) (5,3) (-11,-7)
+(0,0) (16,10) (0,0) (0,0)
+(0,0) (10,6) (10,6) (0,0)
+(0,0) (13,8) (3,2) (3,2)
+(0,0) (10,6) (0,0) (-10,-6)
+(0,0) (13,8) (-3,-2) (-3,-2)
+(0,0) (11,7) (11,7) (-5,-3)
+
+
+
+14
+2 1
+3 1
+1 4
+0 5
+4 0
+6 0
+5 7
+3 5
+4 8
+9 2
+10 2
+11 6
+6 12
+13 3
+
+
+
+0
+
+
+
+14
+ 0 1 5 4 2 6 3 12 13 10 11 9 7 8
+
+</LoadVEF>
+    <BeginBlock/>
+    <SelectManifestation point="10 16 -4 -6 6 10"/>
+    <DeselectAll/>
+    <SelectManifestation point="9 14 5 8 1 2"/>
+    <SelectManifestation point="6 10 0 0 -6 -10"/>
+    <EndBlock/>
+    <Centroid/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="10 16 4 6 -6 -10" startSegment="10 16 6 10 -4 -6"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <SymmetryCenterChange new="15/2 12 5/2 4 -5/2 -4"/>
+    <SymmetryAxisChange end="10 16 4 6 -6 -10" start="10 16 6 10 -4 -6"/>
+    <BeginBlock/>
+    <SelectManifestation point="10 16 -4 -6 6 10"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectManifestation point="7 11 -3 -5 7 11"/>
+    <SelectNeighbors/>
+    <SelectManifestation point="7 11 -3 -5 7 11"/>
+    <SelectNeighbors/>
+    <SelectManifestation point="7 11 -3 -5 7 11"/>
+    <SelectManifestation point="7 11 -7 -11 3 5"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectManifestation endSegment="6 10 -4 -6 10 16" startSegment="7 11 -3 -5 7 11"/>
+    <SelectManifestation endSegment="7 11 -3 -5 7 11" startSegment="5 8 -5 -8 5 8"/>
+    <SelectManifestation endSegment="7 11 -7 -11 3 5" startSegment="5 8 -5 -8 5 8"/>
+    <SelectManifestation endSegment="7 11 -7 -11 3 5" startSegment="6 10 -10 -16 4 6"/>
+    <SelectManifestation point="7 11 -7 -11 3 5"/>
+    <SelectManifestation point="7 11 -3 -5 7 11"/>
+    <SelectManifestation point="6 10 0 0 6 10"/>
+    <SelectNeighbors/>
+    <SelectManifestation endSegment="9 14 5 8 1 2" startSegment="8 13 2 3 2 3"/>
+    <SelectManifestation endSegment="10 16 0 0 0 0" startSegment="12 19 2 3 -2 -3"/>
+    <SelectNeighbors/>
+    <SelectManifestation endSegment="7 11 -7 -11 3 5" startSegment="6 10 -10 -16 4 6"/>
+    <SelectManifestation point="5 8 -5 -8 5 8"/>
+    <SelectManifestation endSegment="5 8 -5 -8 5 8" startSegment="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <AxialSymmetry>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
+    </AxialSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="10 16 14 22 -4 -6" startSegment="9 14 11 18 -5 -8"/>
+    <SelectManifestation endSegment="9 14 15 24 -9 -14" startSegment="8 13 12 19 -8 -13"/>
+    <SelectManifestation endSegment="10 16 4 6 -14 -22" startSegment="9 14 5 8 -11 -18"/>
+    <SelectManifestation endSegment="9 14 5 8 -11 -18" startSegment="11 18 5 8 -9 -14"/>
+    <EndBlock/>
+    <Hide/>
+    <StrutCreation anchor="10 16 4 6 -6 -10" dir="maroon" index="22" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="9 14 5 8 -11 -18" dir="green" index="0" len="2 4" symm="octahedral"/>
+    <StrutCreation anchor="11 18 5 8 -9 -14" dir="lavender" index="0" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="10 16 6 10 -4 -6" dir="maroon" index="0" len="2 3" symm="octahedral"/>
+    <StrutCreation anchor="11 18 9 14 -5 -8" dir="lavender" index="10" len="2 3" symm="octahedral"/>
+    <SelectManifestation point="15/2 12 5/2 4 -5/2 -4"/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation point="11 18 9 14 -5 -8"/>
+    <SelectManifestation point="4 6 6 10 -10 -16"/>
+    <EndBlock/>
+    <Centroid/>
+    <BeginBlock/>
+    <SelectManifestation point="4 6 -4 -6 0 0"/>
+    <SelectManifestation point="11 18 -1 -2 5 8"/>
+    <SelectManifestation point="15/2 12 15/2 12 -15/2 -12"/>
+    <EndBlock/>
+    <Centroid/>
+    <SelectManifestation point="15/2 12 15/2 12 -15/2 -12"/>
+    <JoinPoints/>
+    <DeselectAll/>
+    <StrutCreation anchor="15/2 12 15/2 12 -15/2 -12" dir="green" index="12" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="15/2 12 15/2 12 -15/2 -12" dir="green" index="15" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="-5/2 -4 -5/2 -4 -15/2 -12" dir="green" index="12" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="-5/2 -4 15/2 12 5/2 4" dir="green" index="15" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="-5/2 -4 15/2 12 5/2 4" dir="green" index="16" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="-25/2 -20 -5/2 -4 5/2 4" dir="green" index="16" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="-5/2 -4 -5/2 -4 25/2 20" dir="green" index="15" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="-5/2 -4 -5/2 -4 -15/2 -12" dir="green" index="16" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="15/2 12 -5/2 -4 5/2 4" dir="green" index="15" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="-5/2 -4 -25/2 -20 5/2 4" dir="green" index="12" len="10 16" symm="octahedral"/>
+    <StrutCreation anchor="15/2 12 -5/2 -4 5/2 4" dir="green" index="12" len="10 16" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation point="-3 -5 -3 -5 -3 -5"/>
+    <SelectManifestation point="3 5 3 5 -3 -5"/>
+    <SelectManifestation point="-3 -5 3 5 3 5"/>
+    <SelectManifestation point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <Centroid/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="2" len="3 5" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="5 8 -5 -8 -5 -8" startSegment="0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="0" len="3 5" symm="octahedral"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="12" len="3 5" symm="octahedral"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="14" len="3 5" symm="octahedral"/>
+    <StrutCreation anchor="-5 -8 -5 -8 5 8" dir="yellow" index="3" len="3 5" symm="octahedral"/>
+    <StrutCreation anchor="-5 -8 -5 -8 5 8" dir="yellow" index="13" len="3 5" symm="octahedral"/>
+    <StrutCreation anchor="-5 -8 -5 -8 5 8" dir="yellow" index="15" len="3 5" symm="octahedral"/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="45,45,45" background="194,180,138">
+    <directionalLight color="236,236,236" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="236,236,236" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="346.845458984375" far="693.6909179687536" near="0.8671136603819416" parallel="false" stereoAngle="0.0" width="156.08045654296959">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.6704940035279972" y="0.29873620622517955" z="-0.6791130026167795"/>
+      <LookDirection x="0.507148112539944" y="0.4835564465929585" z="0.7134241059184763"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" renderingStyle="trapezoids" single="true">
+    <Direction color="0,118,149" name="blue" render="true" snap="true">
+      <LengthModel divisor="1" ones="1" scale="3" taus="0"/>
+    </Direction>
+    <Direction available="true" color="240,160,0" name="yellow" render="true" snap="true">
+      <LengthModel divisor="1" ones="1" scale="6" taus="0"/>
+    </Direction>
+    <Direction available="true" build="true" color="0,141,54" name="green" render="true" snap="true">
+      <LengthModel divisor="1" ones="1" scale="3" taus="0"/>
+    </Direction>
+    <Direction available="true" color="175,135,255" name="lavender" render="true">
+      <LengthModel divisor="1" ones="1" scale="4" taus="0"/>
+    </Direction>
+    <Direction color="100,113,0" name="olive" render="true">
+      <LengthModel divisor="1" ones="1" scale="3" taus="0"/>
+    </Direction>
+    <Direction available="true" color="117,0,50" name="maroon" render="true">
+      <LengthModel divisor="1" ones="1" scale="4" taus="0"/>
+    </Direction>
+    <Direction color="107,53,26" name="brown" render="true">
+      <LengthModel divisor="1" ones="1" scale="3" taus="0"/>
+    </Direction>
+    <Direction color="175,0,0" name="red" render="true">
+      <LengthModel divisor="1" ones="1" scale="3" taus="0"/>
+    </Direction>
+    <Direction color="108,0,198" name="purple" render="true">
+      <LengthModel divisor="1" ones="1" scale="3" taus="0"/>
+    </Direction>
+    <Direction color="30,30,30" name="black" render="true">
+      <LengthModel divisor="1" ones="1" scale="3" taus="0"/>
+    </Direction>
+    <Direction color="18,205,148" name="turquoise" render="true">
+      <LengthModel divisor="1" ones="1" scale="3" taus="0"/>
+    </Direction>
+  </SymmetrySystem>
+</vzome:vZome>

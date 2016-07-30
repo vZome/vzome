@@ -103,3 +103,7 @@ format-2.1.0-models.vZome-files
 # uses showVertices command for panel and strut
 2015/10-Oct/22-Scott-showVertices/showVertices-test.vZome
 
+# tests legacy polytope (with symmetry strut as quaternion)
+2015/07-Jul/28-Scott-foam/tetrahedral-foam-maroon-cell.vZome
+
+2014/04-Apr/06-Scott-D4/D4-F-yellowMaps.vZome

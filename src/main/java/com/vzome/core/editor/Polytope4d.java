@@ -127,14 +127,21 @@ public class Polytope4d extends ChangeManifestations
         
         String quatString = xml .getAttribute( "quaternion" );
         if ( quatString != null && ! "" .equals( quatString ) ) {
+        	// newest format
         	this.quaternion = format .parseRationalVector( xml, "quaternion" );
         }
-        else if ( format .commandEditsCompacted() )
-            this.quaternion = format .parseSegment( xml, "start", "end" ) .getOffset() .inflateTo4d();
-        else
-        {
-            AttributeMap attrs = format .loadCommandAttributes( xml );
-            this.quaternion = ((Segment) attrs .get( "rotation" )) .getOffset() .inflateTo4d();
+        else {
+        	// legacy formats
+        	Segment segment = null;
+        	if ( format .commandEditsCompacted() )
+            	segment = format .parseSegment( xml, "start", "end" );
+            else
+            {
+                AttributeMap attrs = format .loadCommandAttributes( xml );
+        		segment = (Segment) attrs .get( "rotation" );
+            }
+        	if ( segment != null )
+        		this.quaternion = segment .getOffset() .inflateTo4d();
         }
     }
     

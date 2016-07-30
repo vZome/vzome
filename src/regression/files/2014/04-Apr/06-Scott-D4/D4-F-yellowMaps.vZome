@@ -1,0 +1,803 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome edition="vZome" version="4.0, build 0" revision="1111" field="golden" xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/">
+  <sceneModel ambientLight="45,45,45" background="43,56,66">
+    <directionalLight x="1.0" y="-1.0" z="-1.0" color="236,236,236"/>
+    <directionalLight x="-1.0" y="0.0" z="0.0" color="236,236,236"/>
+    <directionalLight x="0.0" y="0.0" z="-1.0" color="30,30,30"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel near="0.6296537874587423" far="503.7230224609396" width="113.33768005371144" distance="251.86151123046875"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.036530427740106265" y="0.9987807926759993" z="-0.03320325331416513"/>
+      <LookDirection x="-0.9472747454862754" y="-0.024024532848243622" z="0.31952054454341033"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors" single="true">
+    <Direction name="blue" available="true" snap="true" render="true" color="0,118,149">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" render="true" color="175,0,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" build="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="orange" render="true" color="220,76,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="purple" render="true" color="108,0,198">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="black" render="true" color="30,30,30">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="lavender" render="true" color="175,135,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="olive" render="true" color="100,113,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="maroon" render="true" color="117,0,50">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="rose" render="true" color="255,51,143">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="navy" render="true" color="0,0,153">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="turquoise" render="true" color="18,205,148">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="coral" render="true" color="255,126,106">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sulfur" render="true" color="230,245,62">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sand" render="true" color="154,117,74">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="apple" render="true" color="116,195,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="cinnamon" render="true" color="136,37,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="spruce" render="true" color="18,73,48">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="brown" render="true" color="107,53,26">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 0 1 -2 1" name="160" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 -2 1 0 -1" name="161" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="3 -1 5 -3 5 -3" name="163" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="4 -3 -6 3 -2 1" name="164" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-6 3 -4 3 2 -1" name="165" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-5 3 3 -1 1 -1" name="166" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="5 -3 1 -1 -3 1" name="167" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="4 -3 0 1 2 -1" name="168" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-1 0 -7 4 1 0" name="169" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-2 1 0 -1 4 -3" name="170" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1/2 -1/2 -5/2 3/2 -1/2 -1/2" name="171" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="3/2 -1 0 1 1 -1/2" name="172" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="8 -5 0 1 -4 3" name="173" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="3 -1 5 -3 3 -1" name="174" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-3 1 7 -5 5 -3" name="175" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="5 -4 7 -4 1 0" name="176" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-1 0 -1/2 1 -1/2 1" name="177" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 -3/2 0 -1/2 0" name="178" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-1 0 -3/2 1/2 1/2 -1/2" name="179" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1 0 1/2 1/2 1/2 -1/2" name="180" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1 0 1/2 -1/2 1/2 1/2" name="181" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1 -1 -1/2 1 -1/2 0" name="182" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 1 1 -1/2 1 -1/2" name="183" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-1 1 1/2 1/2 1/2 1/2" name="184" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1 0 0 -1/2 -1 1/2" name="185" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1 0 -1 1/2 0 -1/2" name="186" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1 -1/2 -2 1/2 2 -3/2" name="189" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="3/2 0 -1/2 1 3/2 -1" name="190" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="1 -3/2 2 -1/2 1 -1/2" name="191" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 1 3/2 -1/2 1/2 -1/2" name="192" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 -1 1/2 -1 -1/2" name="193" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 1 3/2 -1 1/2 0" name="194" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 -3/2 1/2 -1/2 -1/2" name="195" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="4 -3 0 -1 -8 5" name="196" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="5 -4 -1 0 -7 4" name="197" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-2 2 0 0 -1 1" name="233" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="0 0 2 -2 1 -1" name="234" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="119" lastStickyEdit="119">
+    <Branch>
+      <Branch>
+        <Branch>
+          <Branch>
+            <Branch>
+              <Polytope4d group="D4" wythoff="1110" renderEdges="1011"/>
+              <BeginBlock/>
+              <SelectManifestation startSegment="0 0 -3 -5 6 10" endSegment="0 0 -6 -10 3 5"/>
+              <SelectManifestation startSegment="-3 -5 0 0 6 10" endSegment="0 0 -3 -5 6 10"/>
+              <SelectManifestation startSegment="3 5 0 0 6 10" endSegment="0 0 -3 -5 6 10"/>
+              <EndBlock/>
+              <LinearTransformTool name="linear map.1/linear map.1"/>
+              <DeselectAll/>
+              <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="0" len="1 2"/>
+              <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="46" len="1 2"/>
+              <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="17" len="1 2"/>
+              <BeginBlock/>
+              <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 2 3 -1 -2"/>
+              <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="2 3 1 2 0 0"/>
+              <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="1 2 0 0 -2 -3"/>
+              <EndBlock/>
+              <LinearTransformTool name="linear map.2/linear map.2"/>
+            </Branch>
+          </Branch>
+          <BeginBlock/>
+          <SelectManifestation point="0 0 0 0 0 0"/>
+          <DeselectAll/>
+          <EndBlock/>
+          <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="green" index="19" len="2 4"/>
+          <SymmetryAxisChange start="0 0 0 0 0 0" end="0 0 -2 -4 -2 -4"/>
+          <Polytope4d start="0 0 0 0 0 0" end="0 0 -2 -4 -2 -4" group="D4" wythoff="1111"/>
+          <BeginBlock/>
+          <SelectManifestation startSegment="-4 -8 4 8 4 8" endSegment="-2 -4 2 4 2 4"/>
+          <SelectManifestation startSegment="-2 -4 6 12 6 12" endSegment="-4 -8 4 8 4 8"/>
+          <SelectManifestation startSegment="-6 -12 2 4 6 12" endSegment="-4 -8 4 8 4 8"/>
+          <EndBlock/>
+          <LinearTransformTool name="linear map.3/linear map.3"/>
+          <BeginBlock/>
+          <DeselectAll/>
+          <SelectAll/>
+          <DeselectAll/>
+          <EndBlock/>
+          <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="31" len="1 2"/>
+          <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="1" len="1 2"/>
+          <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="17" len="1 2"/>
+          <BeginBlock/>
+          <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 -2 -3 1 2"/>
+          <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="1 2 0 0 -2 -3"/>
+          <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 2 3 1 2"/>
+          <EndBlock/>
+          <LinearTransformTool name="linear map.4/linear map.4"/>
+          <SelectNeighbors/>
+          <Hide>
+            <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+          </Hide>
+          <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 -2 -4 -2 -4"/>
+          <Hide>
+            <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+          </Hide>
+          <BeginBlock/>
+          <SelectAll/>
+          <DeselectAll/>
+          <EndBlock/>
+          <StrutCreation anchor="2 4 -2 -4 -2 -4" index="26" len="2 4"/>
+          <StrutCreation anchor="2 4 -2 -4 -2 -4" index="24" len="2 4"/>
+          <StrutCreation anchor="2 4 -2 -4 -2 -4" index="25" len="2 4"/>
+          <BeginBlock/>
+          <SelectManifestation startSegment="2 4 -2 -4 -2 -4" endSegment="3 6 -4 -7 -3 -5"/>
+          <SelectManifestation startSegment="2 4 -2 -4 -2 -4" endSegment="3 5 -3 -6 -4 -7"/>
+          <SelectManifestation startSegment="2 4 -2 -4 -2 -4" endSegment="4 7 -3 -5 -3 -6"/>
+          <EndBlock/>
+          <LinearTransformTool name="linear map.5/linear map.5"/>
+          <BeginBlock/>
+          <SelectManifestation point="3 6 -4 -7 -3 -5"/>
+          <SelectManifestation point="4 7 -3 -5 -3 -6"/>
+          <SelectManifestation point="3 5 -3 -6 -4 -7"/>
+          <EndBlock/>
+          <Hide>
+            <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+          </Hide>
+          <BeginBlock/>
+          <SelectAll/>
+          <DeselectAll/>
+          <EndBlock/>
+          <StrutCreation anchor="-6 -12 6 12 -6 -12" dir="yellow" index="30" len="1 1"/>
+          <StrutCreation anchor="-6 -12 6 12 -6 -12" dir="yellow" index="17" len="1 1"/>
+          <StrutCreation anchor="-6 -12 6 12 -6 -12" dir="yellow" index="1" len="1 1"/>
+          <BeginBlock/>
+          <SelectManifestation startSegment="-6 -12 6 12 -6 -12" endSegment="-6 -12 7 13 -8 -15"/>
+          <SelectManifestation startSegment="-6 -12 6 12 -6 -12" endSegment="-8 -15 6 12 -7 -13"/>
+          <SelectManifestation startSegment="-6 -12 6 12 -6 -12" endSegment="-7 -13 8 15 -6 -12"/>
+          <EndBlock/>
+          <LinearTransformTool name="linear map.6/linear map.6"/>
+        </Branch>
+      </Branch>
+    </Branch>
+    <StrutCreation anchor="0 0 0 0 0 0" index="21" len="2 4"/>
+    <SymmetryAxisChange start="0 0 0 0 0 0" end="1 2 -2 -3 1 1"/>
+    <SelectAll/>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <Polytope4d start="0 0 0 0 0 0" end="1 2 -2 -3 1 1" group="D4" wythoff="1111"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 0 1 0 1 0"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="-5 -9 -1 -3 -3 -5"/>
+    <SelectManifestation point="-1 -3 7 9 3 5"/>
+    <SelectManifestation point="4 5 4 5 4 5"/>
+    <EndBlock/>
+    <SymmetryAxisChange start="4 5 4 5 4 5" end="5 7 5 7 5 7"/>
+    <AxialSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </AxialSymmetry>
+    <SelectNeighbors/>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="-7 -12 1 0 -3 -4"/>
+    <SelectManifestation startSegment="-8 -13 0 -1 -4 -5" endSegment="-7 -12 1 0 -3 -4"/>
+    <SelectManifestation startSegment="-8 -13 0 -1 -4 -5" endSegment="-7 -12 1 0 -3 -4"/>
+    <SelectNeighbors/>
+    <SelectManifestation startSegment="-8 -13 0 -1 -4 -5" endSegment="-7 -12 1 0 -3 -4"/>
+    <SelectNeighbors/>
+    <SelectManifestation startSegment="-8 -13 0 -1 -4 -5" endSegment="-7 -12 1 0 -3 -4"/>
+    <SelectNeighbors/>
+    <SelectManifestation startSegment="-8 -13 0 -1 -4 -5" endSegment="-7 -12 1 0 -3 -4"/>
+    <EndBlock/>
+    <AxialSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </AxialSymmetry>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="-7 -12 5 6 -1 0"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <AxialSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </AxialSymmetry>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <TetrahedralSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <SelectManifestation point="-1 -4 3 4 -5 -8"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <DeselectAll/>
+    <SelectManifestation point="-1 -4 3 4 -5 -8"/>
+    <SelectManifestation point="-1 -4 5 8 -7 -10"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectManifestation point="-2 -5 4 7 -8 -11"/>
+    <SelectManifestation point="1 -1 3 5 -7 -11"/>
+    <EndBlock/>
+    <AxialSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </AxialSymmetry>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="-1 -4 7 10 -3 -4"/>
+    <SelectManifestation point="3 2 5 8 -5 -8"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <AxialSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </AxialSymmetry>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="5 7 5 7 5 7"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation startSegment="-5 -8 -5 -8 -5 -8" endSegment="-4 -7 -4 -7 -4 -7"/>
+    <SelectNeighbors/>
+    <SelectManifestation point="-5 -8 -5 -8 -5 -8"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <TetrahedralSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </TetrahedralSymmetry>
+    <SelectManifestation startSegment="-8 -13 0 -1 -4 -5" endSegment="-7 -12 1 0 -3 -4"/>
+    <AxialSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </AxialSymmetry>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="-5 -9 7 9 1 3"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <AxialSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </AxialSymmetry>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="-2 -5 8 11 0 1"/>
+    <SelectManifestation point="-4 -7 6 7 4 7"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <AxialSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </AxialSymmetry>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <SelectManifestation point="1 -1 3 5 -7 -11"/>
+    <AxialSymmetry>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </AxialSymmetry>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <Snapshot id="0"/>
+    <SelectAll/>
+    <Branch>
+      <Branch>
+        <ApplyTool name="linear map.5/linear map.5" deselectOutputs="true" hideInputs="true"/>
+        <Snapshot id="1"/>
+      </Branch>
+      <DeselectAll/>
+      <Branch>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="red" index="2" len="1 2"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="red" index="0" len="1 2"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="red" index="1" len="1 2"/>
+        <BeginBlock/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="1 3 0 2 -1 0"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="-1 0 1 3 0 2"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="0 2 -1 0 1 3"/>
+        <EndBlock/>
+        <LinearTransformTool name="linear map.7/linear map.7"/>
+      </Branch>
+      <Branch>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="yellow" index="8" len="1 1"/>
+        <BeginBlock/>
+        <SelectManifestation startSegment="8 13 -2 -1 0 -1" endSegment="7 11 -1 1 -3 -5"/>
+        <DeselectAll/>
+        <EndBlock/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="yellow" index="6" len="1 1"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="yellow" index="7" len="1 1"/>
+        <BeginBlock/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="0 1 1 3 -1 0"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="-1 0 0 1 1 3"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="1 3 -1 0 0 1"/>
+        <EndBlock/>
+        <LinearTransformTool name="linear map.8/linear map.8"/>
+      </Branch>
+      <Branch>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="yellow" index="4" len="1 1"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="yellow" index="3" len="1 1"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="yellow" index="5" len="1 1"/>
+        <BeginBlock/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="-2 -2 0 2 0 2"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="0 2 -2 -2 0 2"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="0 2 0 2 -2 -2"/>
+        <EndBlock/>
+        <LinearTransformTool name="linear map.9/linear map.9"/>
+      </Branch>
+      <Branch>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="red" index="45" len="1 2"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="red" index="17" len="1 2"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" dir="red" index="31" len="1 2"/>
+        <BeginBlock/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="-3 -3 0 2 -1 0"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="0 2 -1 0 -3 -3"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="-1 0 -3 -3 0 2"/>
+        <EndBlock/>
+        <LinearTransformTool name="linear map.10/linear map.10"/>
+      </Branch>
+      <Branch>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" symm="octahedral" dir="green" index="1" len="2 4"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" symm="octahedral" dir="green" index="17" len="2 4"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" symm="octahedral" dir="green" index="0" len="2 4"/>
+        <BeginBlock/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="-1 0 1 4 1 4"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="1 4 -1 0 1 4"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="1 4 1 4 -1 0"/>
+        <EndBlock/>
+        <LinearTransformTool name="linear map.11/linear map.11"/>
+        <BeginBlock/>
+        <SelectNeighbors/>
+        <SelectManifestation point="-1 0 -1 0 -1 0"/>
+        <EndBlock/>
+        <Hide>
+          <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+        </Hide>
+        <SelectAll/>
+        <ApplyTool name="linear map.11/linear map.11" deselectOutputs="true" hideInputs="true"/>
+        <Snapshot id="2"/>
+      </Branch>
+      <Branch>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" index="41" len="2 4"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" index="55" len="2 4"/>
+        <StrutCreation anchor="-1 0 -1 0 -1 0" index="24" len="2 4"/>
+        <BeginBlock/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="-2 -1 0 2 -3 -3"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="0 2 -3 -3 -2 -1"/>
+        <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="-3 -3 -2 -1 0 2"/>
+        <EndBlock/>
+        <LinearTransformTool name="linear map.12/linear map.12"/>
+        <BeginBlock/>
+        <SelectNeighbors/>
+        <SelectManifestation startSegment="-2 -1 -4 -5 0 1" endSegment="-1 0 -1 0 -1 0"/>
+        <SelectManifestation startSegment="-2 -1 -4 -5 0 1" endSegment="-1 0 -1 0 -1 0"/>
+        <SelectManifestation point="-1 0 -1 0 -1 0"/>
+        <EndBlock/>
+        <Hide>
+          <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+        </Hide>
+        <SelectAll/>
+        <ApplyTool name="linear map.12/linear map.12" deselectOutputs="true" hideInputs="true"/>
+        <Branch>
+          <Snapshot id="3"/>
+        </Branch>
+        <StrutCreation anchor="-1 1 -1 1 -1 1" symm="octahedral" dir="green" index="17" len="2 4"/>
+        <StrutCreation anchor="-1 1 -1 1 -1 1" symm="octahedral" dir="green" index="0" len="2 4"/>
+        <StrutCreation anchor="-1 1 -1 1 -1 1" symm="octahedral" dir="green" index="1" len="2 4"/>
+        <BeginBlock/>
+        <SelectManifestation startSegment="-1 1 -1 1 -1 1" endSegment="1 5 -1 1 1 5"/>
+        <SelectManifestation startSegment="-1 1 -1 1 -1 1" endSegment="1 5 1 5 -1 1"/>
+        <SelectManifestation startSegment="-1 1 -1 1 -1 1" endSegment="-1 1 1 5 1 5"/>
+        <EndBlock/>
+        <LinearTransformTool name="linear map.13/linear map.13"/>
+        <BeginBlock/>
+        <SelectNeighbors/>
+        <SelectManifestation point="-1 1 -1 1 -1 1"/>
+        <EndBlock/>
+        <Hide>
+          <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+        </Hide>
+        <SelectAll/>
+        <Branch>
+          <ApplyTool name="linear map.13/linear map.13" deselectOutputs="true" hideInputs="true"/>
+          <Snapshot id="4"/>
+        </Branch>
+        <BeginBlock/>
+        <DeselectAll/>
+        <SelectAll/>
+        <EndBlock/>
+        <Branch>
+          <ApplyTool name="linear map.11/linear map.11" deselectOutputs="true" hideInputs="true"/>
+          <Snapshot id="5"/>
+        </Branch>
+      </Branch>
+      <StrutCreation anchor="-1 0 -1 0 -1 0" index="10" len="2 4"/>
+      <StrutCreation anchor="-1 0 -1 0 -1 0" index="9" len="2 4"/>
+      <StrutCreation anchor="-1 0 -1 0 -1 0" index="10" len="2 4"/>
+      <StrutCreation anchor="-1 0 -1 0 -1 0" index="11" len="2 4"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="1 3 0 1 0 2"/>
+      <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="0 2 1 3 0 1"/>
+      <SelectManifestation startSegment="-1 0 -1 0 -1 0" endSegment="0 1 0 2 1 3"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.1/linear map.1"/>
+    </Branch>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectAll/>
+    <EndBlock/>
+    <Hide/>
+    <ShowPoint point="0 0 0 0 0 0"/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="16" len="2 4"/>
+    <SymmetryAxisChange start="0 0 0 0 0 0" end="0 0 -2 -4 0 0"/>
+    <Branch>
+      <Polytope4d start="0 0 0 0 0 0" end="0 0 -2 -4 0 0" group="D4" wythoff="1111"/>
+      <BeginBlock/>
+      <SelectManifestation point="0 0 -2 -4 0 0"/>
+      <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 -2 -4 0 0"/>
+      <EndBlock/>
+      <Hide/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <Hide/>
+      <Snapshot id="6"/>
+      <SelectAll/>
+      <Branch>
+        <ApplyTool name="linear map.1/linear map.1" deselectOutputs="true" hideInputs="true"/>
+        <Snapshot id="7"/>
+      </Branch>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation startSegment="0 0 2 4 4 8" endSegment="2 4 0 0 4 8"/>
+      <SelectManifestation startSegment="-2 -4 -4 -8 0 0" endSegment="0 0 -4 -8 2 4"/>
+      <SelectManifestation startSegment="4 8 0 0 -2 -4" endSegment="4 8 -2 -4 0 0"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.2/linear map.2"/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectAll/>
+      <EndBlock/>
+      <Branch>
+        <ApplyTool name="linear map.2/linear map.2" deselectOutputs="true" hideInputs="true"/>
+        <Snapshot id="8"/>
+      </Branch>
+      <DeselectAll/>
+      <StrutCreation anchor="-4 -8 2 4 0 0" index="36" len="2 4"/>
+      <StrutCreation anchor="-4 -8 2 4 0 0" index="52" len="2 4"/>
+      <StrutCreation anchor="-4 -8 2 4 0 0" index="8" len="2 4"/>
+      <BeginBlock/>
+      <SelectManifestation startSegment="-4 -8 2 4 0 0" endSegment="-3 -7 3 6 -2 -3"/>
+      <SelectManifestation startSegment="-4 -8 2 4 0 0" endSegment="-2 -5 1 3 1 2"/>
+      <SelectManifestation startSegment="-4 -8 2 4 0 0" endSegment="-5 -10 0 1 -1 -1"/>
+      <EndBlock/>
+      <LinearTransformTool name="linear map.3/linear map.3"/>
+      <BeginBlock/>
+      <SelectNeighbors/>
+      <SelectManifestation point="-4 -8 2 4 0 0"/>
+      <EndBlock/>
+      <Hide/>
+      <SelectAll/>
+      <ApplyTool name="linear map.3/linear map.3" deselectOutputs="true" hideInputs="true"/>
+      <Snapshot id="9"/>
+    </Branch>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="green" index="3" len="2 4"/>
+    <SymmetryAxisChange start="0 0 0 0 0 0" end="2 4 -2 -4 0 0"/>
+    <SelectAll/>
+    <Hide/>
+    <Polytope4d start="0 0 0 0 0 0" end="2 4 -2 -4 0 0" group="D4" wythoff="1111"/>
+    <Snapshot id="10"/>
+    <SelectAll/>
+    <Branch>
+      <ApplyTool name="linear map.1/linear map.1" deselectOutputs="true" hideInputs="true"/>
+      <Snapshot id="11"/>
+    </Branch>
+    <Branch>
+      <ApplyTool name="linear map.2/linear map.2" deselectOutputs="true" hideInputs="true"/>
+      <Snapshot id="12"/>
+    </Branch>
+    <ApplyTool name="linear map.3/linear map.3" deselectOutputs="true" hideInputs="true"/>
+    <Snapshot id="13"/>
+  </EditHistory>
+  <notes>
+    <page title="" snapshot="0">
+      <ViewModel near="0.6958751782160254" far="556.7001342773461" width="125.25753021240284" distance="278.3500671386719"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.5022896233785804" y="0.5981929958274195" z="0.6243959272682734"/>
+        <LookDirection x="-0.2524913360215658" y="-0.5891620559460625" z="0.767552081013044"/>
+      </ViewModel>
+      <content xml:space="preserve">
+D4 four radios
+
+(Cantitruncated 16-cell?)
+
+under off-axis blue quaternion rotation
+
+one hemi-hypersphere removed
+
+</content>
+    </page>
+    <page title="" snapshot="1">
+      <ViewModel near="0.5697343529721234" far="455.78747558593943" width="102.55218200683635" distance="227.89373779296875"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.04923627777721799" y="0.06458774616765968" z="0.9966966499369879"/>
+        <LookDirection x="-0.9037539983866296" y="-0.42771737138594973" z="-0.01692810133688972"/>
+      </ViewModel>
+      <content xml:space="preserve">
+some form of yellow stretch, probably mapping to three yellow axes</content>
+    </page>
+    <page title="" snapshot="2">
+      <ViewModel near="0.9207331222404972" far="736.5864868164099" width="165.73195953369208" distance="368.2932434082031"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.924249149214198" y="-0.3358764377153451" z="-0.18152280508100047"/>
+        <LookDirection x="-0.16366565317054663" y="-0.7781100768829549" z="0.6064307563320451"/>
+      </ViewModel>
+      <content xml:space="preserve">a yellow stretch mapping to green axes
+</content>
+    </page>
+    <page title="" snapshot="3">
+      <ViewModel near="0.5929856197980858" far="474.38848876953335" width="106.73740997314493" distance="237.19424438476562"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.6182113997157339" y="0.5370923755799216" z="0.5738871364261622"/>
+        <LookDirection x="-0.059366832398072465" y="0.7599456794469346" z="-0.6472697609968587"/>
+      </ViewModel>
+      <content xml:space="preserve">
+three inverted off-axis blues</content>
+    </page>
+    <page title="" snapshot="4">
+      <ViewModel near="0.8331136446165062" far="666.4909057617217" width="149.96045379638736" distance="333.2454528808594"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.11863708831475968" y="0.7293858818484361" z="0.6737369491399218"/>
+        <LookDirection x="-0.029930194813558485" y="0.6755937005805639" z="-0.7366663662569743"/>
+      </ViewModel>
+      <content xml:space="preserve">
+a combination of the last two:
+
+first mapped to three off-axis blues, 
+then to three greens</content>
+    </page>
+    <page title="" snapshot="6">
+      <ViewModel near="0.6296537874587423" far="503.7230224609396" width="113.33768005371144" distance="251.86151123046875"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.19841218468570612" y="0.7032537816156157" z="0.6826907964895935"/>
+        <LookDirection x="-0.024328044417870842" y="0.6927905988483365" z="-0.7207283346741293"/>
+      </ViewModel>
+      <content xml:space="preserve">
+default projection
+
+</content>
+    </page>
+    <page title="" snapshot="7">
+      <ViewModel near="0.6296537874587423" far="503.7230224609396" width="113.33768005371144" distance="251.86151123046875"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.4645534079065403" y="0.7209803687440342" z="0.5141764668750823"/>
+        <LookDirection x="-0.1300049801953931" y="0.5188154057356472" z="-0.844943358986699"/>
+      </ViewModel>
+      <content xml:space="preserve">
+default projection
+mapped to skinny blue basis</content>
+    </page>
+    <page title="" snapshot="8">
+      <ViewModel near="0.8166169097515459" far="653.293518066409" width="146.99104156494215" distance="326.6467590332031"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.7111845946154794" y="0.633818381710261" z="0.30412288862859455"/>
+        <LookDirection x="-0.7023766074056372" y="-0.6223277338438211" z="-0.34550729812571057"/>
+      </ViewModel>
+      <content xml:space="preserve">
+default projection mapped to
+green basis</content>
+    </page>
+    <page title="" snapshot="9">
+      <ViewModel near="0.515516937308264" far="412.4135437011737" width="92.79304733276405" distance="206.20677185058594"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.6793724149696939" y="0.6770991106950701" z="0.28282488588202787"/>
+        <LookDirection x="-0.7227698463829756" y="-0.5509069574343874" z="-0.41725924005330967"/>
+      </ViewModel>
+      <content xml:space="preserve">
+default projection
+mapped to fat blue basis</content>
+    </page>
+    <page title="" snapshot="10">
+      <ViewModel near="0.800446865565281" far="640.3574829101592" width="144.08043365478576" distance="320.1787414550781"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.8015893573035724" y="0.28982863927808805" z="0.5229281615211087"/>
+        <LookDirection x="-0.5280206882303833" y="0.06708613375667104" z="-0.8465775826575164"/>
+      </ViewModel>
+      <content xml:space="preserve">
+green quaternion projection
+</content>
+    </page>
+    <page title="" snapshot="11">
+      <ViewModel near="0.800446865565281" far="640.3574829101592" width="144.08043365478576" distance="320.1787414550781"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.2788290931609753" y="0.23086713048880034" z="-0.9321773998906386"/>
+        <LookDirection x="0.6217556683502741" y="-0.7831705472277019" z="-0.007986415297669263"/>
+      </ViewModel>
+      <content xml:space="preserve">
+green quaternion
+
+skinny blue basis
+</content>
+    </page>
+    <page title="" snapshot="12">
+      <ViewModel near="1.1704812033546115" far="936.384948730473" width="210.68661346435633" distance="468.1924743652344"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.41812292906887866" y="0.5542821735828497" z="0.7196836028666443"/>
+        <LookDirection x="0.7054528459879528" y="0.30099053358727496" z="-0.6416704612012941"/>
+      </ViewModel>
+      <content xml:space="preserve">
+green quaternion
+
+green basis
+</content>
+    </page>
+    <page title="" snapshot="13">
+      <ViewModel near="0.5584528815515749" far="446.76229858398625" width="100.52151718139689" distance="223.3811492919922"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.724460537231384" y="-0.5531179738464037" z="-0.41136047087980593"/>
+        <LookDirection x="-0.5945192030949674" y="-0.8033947878387644" z="0.03322246265356079"/>
+      </ViewModel>
+      <content xml:space="preserve">
+green quaternion
+
+fat blue basis</content>
+    </page>
+  </notes>
+</vzome:vZome>
