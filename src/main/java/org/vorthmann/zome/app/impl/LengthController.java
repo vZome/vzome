@@ -52,7 +52,8 @@ public class LengthController extends DefaultController
 //                ; // TODO factor as many of these out of the lengthModel as you can
 //            else if ( "zero" .equals( action ) )
 //                ; // TODO multiply this value into the lengthModel, and zero this value
-            super.doAction( action, e );
+            else
+            	super.doAction( action, e );
         }
 
         private int scale = 0;

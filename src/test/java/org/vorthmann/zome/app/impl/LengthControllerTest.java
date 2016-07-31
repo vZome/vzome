@@ -3,6 +3,7 @@ package org.vorthmann.zome.app.impl;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.vorthmann.ui.Controller;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -29,8 +30,10 @@ public class LengthControllerTest
 	{
 		AlgebraicField field = new PentagonField();
 		LengthController controller = new LengthController( field );
+		Controller units = controller .getSubController( "unit" );
 		try {
-			controller .setProperty( "customUnit", "5 8 3" );
+			units .setProperty( "values", "5 8 3" );
+			controller .doAction( "getCustomUnit", null );
 			AlgebraicNumber result = controller .getValue();
 			AlgebraicNumber expected = field .createAlgebraicNumber( 5, 8, 3, 3 );
 			assertEquals( expected, result );
