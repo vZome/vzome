@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" version="3.0 beta 96" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
+  <sceneModel ambientLight="45,45,45" background="200,200,250">
+    <directionalLight x="1.0" y="-1.0" z="-1.0" color="236,236,236"/>
+    <directionalLight x="-1.0" y="0.0" z="0.0" color="236,236,236"/>
+    <directionalLight x="0.0" y="0.0" z="-1.0" color="30,30,30"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel near="0.36692967007949445" far="293.5437316894532" width="66.04733963012694" distance="146.77186584472656"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.23808801476726885" y="0.9656292440243461" z="-0.10427972146670006"/>
+      <LookDirection x="-0.9674228515510275" y="0.22626642782743164" z="-0.11356288977968919"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors" single="true">
+    <Direction name="blue" available="true" snap="true" render="true" color="0,118,149">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="red" snap="true" render="true" color="175,0,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="orange" render="true" color="220,76,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="purple" render="true" color="108,0,198">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="black" render="true" color="80,80,80">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="lavender" render="true" color="175,135,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="olive" render="true" color="100,113,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="maroon" render="true" color="117,0,50">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="rose" render="true" color="255,51,143">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="navy" render="true" color="0,0,153">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="turquoise" render="true" color="18,205,148">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="coral" render="true" color="255,126,106">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sulfur" render="true" color="230,245,62">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="sand" render="true" color="154,117,74">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="apple" render="true" color="116,195,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="cinnamon" render="true" color="136,37,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="spruce" render="true" color="18,73,48">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-19 11 17 -10 -28 17" name="0" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-22 14 942 -582 40 -24" name="1" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="22 -14 -40 24 942 -582" name="2" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-19 11 17 -10 -28 17" name="0" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-22 14 942 -582 40 -24" name="1" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="22 -14 -40 24 942 -582" name="2" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-19 11 17 -10 -28 17" name="0" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-22 14 942 -582 40 -24" name="1" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="22 -14 -40 24 942 -582" name="2" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-19 11 17 -10 -28 17" name="0" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-22 14 942 -582 40 -24" name="1" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="22 -14 -40 24 942 -582" name="2" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-19 11 17 -10 -28 17" name="0" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-22 14 942 -582 40 -24" name="1" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="22 -14 -40 24 942 -582" name="2" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction prototype="-4 2 4 -2 8 -4" name="15" render="true" color="255,255,255">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="155">
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="yellow" index="0" len="0 1"/>
+    <StrutCreation anchor="1 1 1 1 1 1" symm="octahedral" dir="yellow" index="0" len="0 1"/>
+    <StrutCreation anchor="2 2 2 2 2 2" symm="octahedral" dir="yellow" index="0" len="0 1"/>
+    <StrutCreation anchor="3 3 3 3 3 3" symm="octahedral" dir="yellow" index="0" len="0 1"/>
+    <StrutCreation anchor="4 4 4 4 4 4" symm="octahedral" dir="yellow" index="0" len="0 1"/>
+    <StrutCreation anchor="5 5 5 5 5 5" symm="octahedral" dir="yellow" index="0" len="0 1"/>
+    <StrutCreation anchor="6 6 6 6 6 6" symm="octahedral" dir="yellow" index="0" len="0 1"/>
+    <StrutCreation anchor="7 7 7 7 7 7" symm="octahedral" dir="yellow" index="15" len="1 1"/>
+    <BeginBlock/>
+    <SelectAll/>
+    <SelectManifestation point="6 5 6 5 6 5"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="6 5 6 5 6 5"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <DeselectAll/>
+    <StrutCreation anchor="6 5 6 5 6 5" index="54" len="4 6"/>
+    <StrutCreation anchor="4 2 9 10 5 3" dir="red" index="31" len="1 2"/>
+    <StrutCreation anchor="4 2 7 7 6 5" dir="red" index="31" len="1 2"/>
+    <StrutCreation anchor="4 2 5 4 7 7" dir="red" index="31" len="1 2"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="4 2 5 4 7 7" endSegment="4 2 3 1 8 9"/>
+    <SelectManifestation point="4 2 5 4 7 7"/>
+    <SelectManifestation startSegment="4 2 7 7 6 5" endSegment="4 2 5 4 7 7"/>
+    <SelectManifestation point="4 2 7 7 6 5"/>
+    <SelectManifestation startSegment="4 2 9 10 5 3" endSegment="4 2 7 7 6 5"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="4 2 9 10 5 3"/>
+    <SelectManifestation point="4 2 3 1 8 9"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="6 5 6 5 6 5"/>
+    <SelectManifestation startSegment="6 5 6 5 6 5" endSegment="4 2 9 10 5 3"/>
+    <SelectManifestation point="4 2 9 10 5 3"/>
+    <SelectManifestation startSegment="4 2 9 10 5 3" endSegment="4 2 3 1 8 9"/>
+    <SelectManifestation point="4 2 3 1 8 9"/>
+    <EndBlock/>
+    <SymmetryTool symmetry="icosahedral" name="tetrahedral.auto/tetrahedral around origin"/>
+    <ToolApplied name="tetrahedral.auto/tetrahedral around origin"/>
+    <DeselectAll/>
+    <StrutCreation anchor="8 9 4 2 3 1" dir="red" index="45" len="3 6"/>
+    <StrutCreation anchor="2 0 7 8 3 1" dir="red" index="31" len="3 6"/>
+    <StrutCreation anchor="2 0 1 -1 6 7" dir="red" index="17" len="3 6"/>
+    <StrutCreation anchor="5 6 1 -1 0 -2" dir="red" index="45" len="3 6"/>
+    <StrutCreation anchor="-1 -3 4 5 0 -2" dir="red" index="31" len="3 6"/>
+    <BeginBlock/>
+    <SelectManifestation point="-1 -3 -2 -4 3 4"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <ToolApplied name="tetrahedral.auto/tetrahedral around origin"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation startSegment="6 5 6 5 6 5" endSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean value="true" attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="3 4 -1 -3 -2 -4"/>
+    <SelectManifestation point="-3 -4 1 3 -2 -4"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <ToolApplied name="tetrahedral.auto/tetrahedral around origin"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="6 5 -6 -5 -6 -5"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <setItemColor red="0" green="204" blue="0"/>
+    <BeginBlock/>
+    <SelectManifestation point="-6 -5 6 5 -6 -5"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <setItemColor red="153" green="51" blue="255"/>
+    <BeginBlock/>
+    <SelectManifestation point="6 5 6 5 6 5"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <setItemColor red="255" green="51" blue="0"/>
+    <BeginBlock/>
+    <SelectManifestation point="-6 -5 -6 -5 6 5"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <setItemColor red="51" green="102" blue="255"/>
+  </EditHistory>
+  <notes>
+    <page title="How to save notes">
+      <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">You can create as many pages as you like, using the '+' buttons in either direction.
+
+For now, only the text and the view of the model are different from one page to the next.  In the next update, each page will allow a different model entirely.
+
+Eventually there will be a 'vZome Player' application that will display the pages.
+</content>
+    </page>
+  </notes>
+</vzome:vZome>

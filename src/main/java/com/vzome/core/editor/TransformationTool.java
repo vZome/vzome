@@ -147,6 +147,14 @@ public abstract class TransformationTool extends ChangeManifestations implements
         applyTool .redo();
     }
     
+    protected boolean isAutomatic()
+    {
+        int dot = this .name .indexOf( "." );
+        int slash = this .name .indexOf( "/" );
+        String id = this .name .substring( dot, slash );
+        return ".auto" .equals( id );
+    }
+
     @Override
 	public void performSelect( Manifestation man, ChangeManifestations applyTool ) {};
 

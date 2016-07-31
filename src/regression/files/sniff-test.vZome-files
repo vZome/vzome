@@ -106,4 +106,8 @@ format-2.1.0-models.vZome-files
 # tests legacy polytope (with symmetry strut as quaternion)
 2015/07-Jul/28-Scott-foam/tetrahedral-foam-maroon-cell.vZome
 
+# tests legacy polytope (with no quaternion at all)
 2014/04-Apr/06-Scott-D4/D4-F-yellowMaps.vZome
+
+2010/07-Jul/31-Brian-redSpirals/4spirals4-colored.vZome
+

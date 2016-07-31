@@ -77,27 +77,28 @@ public class SymmetryTool extends TransformationTool
         Strut axis = null;
         boolean correct = true;
         boolean hasPanels = false;
-        for (Manifestation man : mSelection) {
-        	if ( prepareTool ) // not just validating the selection
-        		unselect( man );
-        	if ( man instanceof Connector )
-        	{
-        		if ( center != null )
-        			return "No unique symmetry center selected";
-        		center = (Point) ((Connector) man) .getConstructions() .next();
+        if ( ! isAutomatic() )
+        	for (Manifestation man : mSelection) {
+        		if ( prepareTool ) // not just validating the selection
+        			unselect( man );
+        		if ( man instanceof Connector )
+        		{
+        			if ( center != null )
+        				return "No unique symmetry center selected";
+        			center = (Point) ((Connector) man) .getConstructions() .next();
+        		}
+        		else if ( man instanceof Strut )
+        		{
+        			if ( axis != null )
+        				correct = false;
+        			else
+        				axis = (Strut) man;
+        		}
+        		else if ( man instanceof Panel )
+        		{
+        			hasPanels = true;
+        		}
         	}
-        	else if ( man instanceof Strut )
-        	{
-        		if ( axis != null )
-        			correct = false;
-        		else
-        			axis = (Strut) man;
-        	}
-        	else if ( man instanceof Panel )
-        	{
-        		hasPanels = true;
-        	}
-        }
         if ( center == null ) {
         	if ( prepareTool ) // after validation, or when loading from a file
         		center = originPoint;

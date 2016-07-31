@@ -6,9 +6,12 @@ package com.vzome.core.editor;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentEndPoint;
@@ -75,32 +78,42 @@ public class RotationTool extends SymmetryTool
         Point center = null;
         Segment axisStrut = null;
         boolean correct = true;
-        for (Manifestation man : mSelection) {
-        	if ( prepareTool )
-        		unselect( man );
-        	if ( man instanceof Connector )
-        	{
-        		if ( center != null )
+        if ( ! isAutomatic() )
+        	for (Manifestation man : mSelection) {
+        		if ( prepareTool )
+        			unselect( man );
+        		if ( man instanceof Connector )
         		{
-        			correct = false;
-        			break;
+        			if ( center != null )
+        			{
+        				correct = false;
+        				break;
+        			}
+        			center = (Point) ((Connector) man) .getConstructions() .next();
         		}
-        		center = (Point) ((Connector) man) .getConstructions() .next();
-        	}
-        	else if ( man instanceof Strut )
-        	{
-        		if ( axisStrut != null )
+        		else if ( man instanceof Strut )
         		{
-        			correct = false;
-        			break;
+        			if ( axisStrut != null )
+        			{
+        				correct = false;
+        				break;
+        			}
+        			axisStrut = (Segment) ((Strut) man) .getConstructions() .next();
         		}
-        		axisStrut = (Segment) ((Strut) man) .getConstructions() .next();
         	}
-        }
         
         if ( axisStrut == null )
         {
-        	correct = false;
+            if ( isAutomatic() )
+            {
+                center = originPoint;
+                AlgebraicField field = symmetry .getField();
+                AlgebraicVector zAxis = field .basisVector( 3, AlgebraicVector .Z );
+                AlgebraicNumber len = field .createPower( 2 );  // does not matter
+                axisStrut = new AnchoredSegment( symmetry .getAxis( zAxis ), len, center );
+            }
+            else
+                correct = false;
         }
         else if ( center == null )
             center = new SegmentEndPoint( axisStrut );

@@ -4,6 +4,9 @@
 package com.vzome.core.editor;
 
 
+import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Plane;
 import com.vzome.core.construction.PlaneExtensionOfPolygon;
 import com.vzome.core.construction.PlaneFromNormalSegment;
@@ -11,6 +14,7 @@ import com.vzome.core.construction.PlaneReflection;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -31,47 +35,56 @@ public class MirrorTool extends TransformationTool
         Point center = null;
         Segment axis = null;
         Polygon mirrorPanel = null;
-        for (Manifestation man : mSelection) {
-        	if ( prepareTool )
-        		unselect( man );
-        	// The legacy validation / binding is associated with prepareTool,
-        	//  so that old files will open.  Apparently, the first of many
-        	//  balls, panels, or struts was used for the parameter, though I
-        	//  doubt that anyone ever used it this way.
-        	if ( man instanceof Connector )
-        	{
-        		if ( center != null )
-        		{
-        			if ( prepareTool )
-        				break;
-        			else
-        				return "Only one center ball may be selected";
-        		}
-        		center = (Point) ((Connector) man) .getConstructions() .next();
-        	}
-        	else if ( man instanceof Strut )
-        	{
-        		if ( axis != null )
-        		{
-        			if ( prepareTool )
-        				break;
-        			else
-        				return "Only one mirror axis strut may be selected";
-        		}
-        		axis = (Segment) ((Strut) man) .getConstructions() .next();
-        	}
-        	else if ( man instanceof Panel )
-        	{
-        		if ( mirrorPanel != null )
-        		{
-        			if ( prepareTool )
-        				break;
-        			else
-        				return "Only one mirror panel may be selected";
-        		}
-        		mirrorPanel = (Polygon) ((Panel) man) .getConstructions() .next();
-        	}
+        if ( isAutomatic() )
+        {
+            center = originPoint;
+            AlgebraicField field = originPoint .getField();
+            AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
+            Point p2 = new FreePoint( xAxis );
+            axis = new SegmentJoiningPoints( center, p2 );
         }
+        else
+        	for (Manifestation man : mSelection) {
+        		if ( prepareTool )
+        			unselect( man );
+        		// The legacy validation / binding is associated with prepareTool,
+        		//  so that old files will open.  Apparently, the first of many
+        		//  balls, panels, or struts was used for the parameter, though I
+        		//  doubt that anyone ever used it this way.
+        		if ( man instanceof Connector )
+        		{
+        			if ( center != null )
+        			{
+        				if ( prepareTool )
+        					break;
+        				else
+        					return "Only one center ball may be selected";
+        			}
+        			center = (Point) ((Connector) man) .getConstructions() .next();
+        		}
+        		else if ( man instanceof Strut )
+        		{
+        			if ( axis != null )
+        			{
+        				if ( prepareTool )
+        					break;
+        				else
+        					return "Only one mirror axis strut may be selected";
+        			}
+        			axis = (Segment) ((Strut) man) .getConstructions() .next();
+        		}
+        		else if ( man instanceof Panel )
+        		{
+        			if ( mirrorPanel != null )
+        			{
+        				if ( prepareTool )
+        					break;
+        				else
+        					return "Only one mirror panel may be selected";
+        			}
+        			mirrorPanel = (Polygon) ((Panel) man) .getConstructions() .next();
+        		}
+        	}
         if ( center == null ) {
         	if ( prepareTool ) // after validation, or when loading from a file
         		center = originPoint;

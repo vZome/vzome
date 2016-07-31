@@ -22,18 +22,19 @@ public class InversionTool extends TransformationTool
     protected String checkSelection( boolean prepareTool )
     {
         Point center = null;
-        for (Manifestation man : mSelection) {
-        	if ( prepareTool )
-        		unselect( man );
-        	if ( man instanceof Connector )
-        	{
-        		if ( center != null )
-        			return "more than one center selected";
-        		center = (Point) ((Connector) man) .getConstructions() .next();
+        if ( ! isAutomatic() )
+        	for (Manifestation man : mSelection) {
+        		if ( prepareTool )
+        			unselect( man );
+        		if ( man instanceof Connector )
+        		{
+        			if ( center != null )
+        				return "more than one center selected";
+        			center = (Point) ((Connector) man) .getConstructions() .next();
+        		}
+        		else if ( ! prepareTool )
+        			return "panel or strut selected";
         	}
-        	else if ( ! prepareTool )
-        		return "panel or strut selected";
-        }
         
         if ( center == null ) {
         	if ( prepareTool )
