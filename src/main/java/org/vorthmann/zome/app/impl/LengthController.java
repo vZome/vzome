@@ -350,9 +350,9 @@ public class LengthController extends DefaultController
     {
         if ( "half" .equals( property ) )
         {
-            boolean oldHalf = half;
-            half = Boolean .getBoolean( (String) value );
-            if ( half != oldHalf )
+            boolean oldHalf = this .half;
+            this .half = Boolean .parseBoolean( (String) value );
+            if ( this .half != oldHalf )
                 fireLengthChange();
         }
         else if ( "scale" .equals( property ) )
