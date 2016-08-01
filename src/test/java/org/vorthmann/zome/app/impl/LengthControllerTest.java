@@ -1,6 +1,9 @@
 package org.vorthmann.zome.app.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.StringTokenizer;
 
 import org.junit.Test;
 import org.vorthmann.ui.Controller;
@@ -11,24 +14,45 @@ import com.vzome.core.algebra.PentagonField;
 
 public class LengthControllerTest
 {
+	private void assertStateAfter( Controller controller, String[] actions, String[] propertyValues )
+	{
+		if ( actions != null )
+			try {
+				for ( String actionOrChange : actions ) {
+					if ( actionOrChange .contains( "=" ) ) {
+						StringTokenizer tokens = new StringTokenizer( actionOrChange, "=" );
+						String name = tokens .nextToken();
+						String value = tokens .nextToken();
+						controller .setProperty( name, value );
+					}
+					else
+						controller .doAction( actionOrChange, null );
+				}
+			} catch (Exception e) {
+				fail( e .getMessage() );
+			}
+		String[] properties = new String[]{ "half", "scale", "unitText", "unitIsCustom", "lengthText" };
+		for ( int i = 0; i < properties.length; i++ ) {
+			String actual = controller .getProperty( properties[ i ] );
+			String expected = propertyValues[ i ];
+			assertEquals( expected, actual );
+		}
+	}
+	
+	private void assertStateAfter( LengthController controller, String[] actions, String[] propertyValues, AlgebraicNumber expectedValue )
+	{
+		assertStateAfter( controller, actions, propertyValues );
+		AlgebraicNumber result = controller .getValue();
+		assertEquals( expectedValue, result );
+	}
+	
 	@Test
 	public void testInitialState() 
 	{
 		AlgebraicField field = new PentagonField();
 		LengthController controller = new LengthController( field );
-		String value = controller .getProperty( "half" );
-		assertEquals( "false", value );
-		value = controller .getProperty( "scale" );
-		assertEquals( "0", value );
-		value = controller .getProperty( "unitText" );
-		assertEquals( "1", value );
-		value = controller .getProperty( "unitIsCustom" );
-		assertEquals( "false", value );
-		value = controller .getProperty( "lengthText" );
-		assertEquals( "1", value );
-		AlgebraicNumber result = controller .getValue();
-		AlgebraicNumber expected = field .createAlgebraicNumber( 1, 0, 1, 3 );
-		assertEquals( expected, result );
+		assertStateAfter( controller, null, new String[]{ "false", "0", "1", "false", "1" },
+							field .createAlgebraicNumber( 1, 0, 1, 3 ) );
 	}
 
 	@Test
@@ -36,20 +60,19 @@ public class LengthControllerTest
 	{
 		AlgebraicField field = new PentagonField();
 		LengthController controller = new LengthController( field );
-		controller .setProperty( "half", "true" );
-		String value = controller .getProperty( "half" );
-		assertEquals( "true", value );
-		value = controller .getProperty( "scale" );
-		assertEquals( "0", value );
-		value = controller .getProperty( "unitText" );
-		assertEquals( "1", value );
-		value = controller .getProperty( "unitIsCustom" );
-		assertEquals( "false", value );
-		value = controller .getProperty( "lengthText" );
-		assertEquals( "1", value );
-		AlgebraicNumber result = controller .getValue();
-		AlgebraicNumber expected = field .createAlgebraicNumber( 1, 0, 2, 3 );
-		assertEquals( expected, result );
+		assertStateAfter( controller, new String[]{ "half=true" },
+							new String[]{ "true", "0", "1", "false", "1" },
+							field .createAlgebraicNumber( 1, 0, 2, 3 ) );
+	}
+
+	@Test
+	public void testToggleHalf() 
+	{
+		AlgebraicField field = new PentagonField();
+		LengthController controller = new LengthController( field );
+		assertStateAfter( controller, new String[]{ "half=true, toggleHalf" },
+							new String[]{ "false", "0", "1", "false", "1" },
+							field .createAlgebraicNumber( 1, 0, 1, 3 ) );
 	}
 
 	@Test
@@ -57,20 +80,9 @@ public class LengthControllerTest
 	{
 		AlgebraicField field = new PentagonField();
 		LengthController controller = new LengthController( field );
-		controller .setProperty( "scale", "5" );
-		String value = controller .getProperty( "half" );
-		assertEquals( "false", value );
-		value = controller .getProperty( "scale" );
-		assertEquals( "5", value );
-		value = controller .getProperty( "unitText" );
-		assertEquals( "1", value );
-		value = controller .getProperty( "unitIsCustom" );
-		assertEquals( "false", value );
-		value = controller .getProperty( "lengthText" );
-		assertEquals( "3 +5φ", value );
-		AlgebraicNumber result = controller .getValue();
-		AlgebraicNumber expected = field .createAlgebraicNumber( 1, 0, 1, 8 );
-		assertEquals( expected, result );
+		assertStateAfter( controller, new String[]{ "scale=5" },
+							new String[]{ "false", "5", "1", "false", "3 +5φ" },
+							field .createAlgebraicNumber( 1, 0, 1, 8 ) );
 	}
 
 	@Test
@@ -80,52 +92,9 @@ public class LengthControllerTest
 		LengthController controller = new LengthController( field );
 		Controller units = controller .getSubController( "unit" );
 		units .setProperty( "values", "5 8 3" );
-		try {
-			controller .doAction( "getCustomUnit", null );
-			String value = controller .getProperty( "half" );
-			assertEquals( "false", value );
-			value = controller .getProperty( "scale" );
-			assertEquals( "0", value );
-			value = controller .getProperty( "unitText" );
-			assertEquals( "5/3 +8/3φ", value );
-			value = controller .getProperty( "unitIsCustom" );
-			assertEquals( "true", value );
-			value = controller .getProperty( "lengthText" );
-			assertEquals( "5/3 +8/3φ", value );
-			AlgebraicNumber result = controller .getValue();
-			AlgebraicNumber expected = field .createAlgebraicNumber( 5, 8, 3, 3 );
-			assertEquals( expected, result );
-		} catch (Exception e) {
-			fail( e .getMessage() );
-		}
-	}
-
-	@Test
-	public void testScaling() 
-	{
-		AlgebraicField field = new PentagonField();
-		LengthController controller = new LengthController( field );
-		try {
-			controller .doAction( "long", null );
-			AlgebraicNumber result = controller .getValue();
-			AlgebraicNumber expected = field .createPower( 5 );
-			assertEquals( expected, result );
-			
-			controller .doAction( "scaleDown", null );
-			controller .doAction( "scaleDown", null );
-			controller .doAction( "scaleDown", null );
-			result = controller .getValue();
-			expected = field .createPower( 2 );
-			assertEquals( expected, result );
-			
-			controller .doAction( "reset", null );
-			controller .doAction( "toggleHalf", null );
-			result = controller .getValue();
-			expected = field .createAlgebraicNumber( 1, 0, 2, 3 );
-			assertEquals( expected, result );
-		} catch (Exception e) {
-			fail( e .getMessage() );
-		}
+		assertStateAfter( controller, new String[]{ "getCustomUnit" },
+							new String[]{ "false", "0", "5/3 +8/3φ", "true", "5/3 +8/3φ" },
+							field .createAlgebraicNumber( 5, 8, 3, 3 ) );
 	}
 
 	@Test
@@ -133,23 +102,42 @@ public class LengthControllerTest
 	{
 		AlgebraicField field = new PentagonField();
 		LengthController controller = new LengthController( field );
-		try {
-			controller .doAction( "long", null );
-			String value = controller .getProperty( "half" );
-			assertEquals( "false", value );
-			value = controller .getProperty( "scale" );
-			assertEquals( "2", value );
-			value = controller .getProperty( "unitText" );
-			assertEquals( "1", value );
-			value = controller .getProperty( "unitIsCustom" );
-			assertEquals( "false", value );
-			value = controller .getProperty( "lengthText" );
-			assertEquals( "1 +φ", value );
-			AlgebraicNumber result = controller .getValue();
-			AlgebraicNumber expected = field .createAlgebraicNumber( 1, 0, 1, 5 );
-			assertEquals( expected, result );
-		} catch (Exception e) {
-			fail( e .getMessage() );
-		}
+		assertStateAfter( controller, new String[]{ "long" },
+							new String[]{ "false", "2", "1", "false", "1 +φ" },
+							field .createAlgebraicNumber( 1, 0, 1, 5 ) );
+	}
+
+	@Test
+	public void testScaling() 
+	{
+		AlgebraicField field = new PentagonField();
+		LengthController controller = new LengthController( field );
+		assertStateAfter( controller, new String[]{ "long", "scaleDown", "scaleDown", "scaleDown" },
+							new String[]{ "false", "-1", "1", "false", "-1 +φ" },
+							field .createPower( 2 ) );
+	}
+
+	@Test
+	public void testNewZeroScale() 
+	{
+		AlgebraicField field = new PentagonField();
+		LengthController controller = new LengthController( field );
+		Controller units = controller .getSubController( "unit" );
+		units .setProperty( "values", "3 0 1" );
+		assertStateAfter( controller, new String[]{ "getCustomUnit", "scaleUp", "scaleUp", "newZeroScale" },
+							new String[]{ "false", "0", "3 +3φ", "true", "3 +3φ" },
+							field .createAlgebraicNumber( 3, 0, 1, 5 ) );
+	}
+
+	@Test
+	public void testReset() 
+	{
+		AlgebraicField field = new PentagonField();
+		LengthController controller = new LengthController( field );
+		Controller units = controller .getSubController( "unit" );
+		units .setProperty( "values", "5 2 7" );
+		assertStateAfter( controller, new String[]{ "getCustomUnit", "scaleUp", "newZeroScale", "reset" },
+							new String[]{ "false", "0", "1", "false", "1" },
+							field .createAlgebraicNumber( 1, 0, 1, 3 ) );
 	}
 }
