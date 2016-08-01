@@ -39,13 +39,13 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public void addPropertyListener( PropertyChangeListener listener )
+    public final void addPropertyListener( PropertyChangeListener listener )
     {
         pcs .addPropertyChangeListener( listener );
     }
 
     @Override
-    public void removePropertyListener( PropertyChangeListener listener )
+    public final void removePropertyListener( PropertyChangeListener listener )
     {
         pcs .removePropertyChangeListener( listener );
     }
@@ -110,7 +110,7 @@ public class DefaultController implements Controller
     }
     
     @Override
-    public boolean propertyIsTrue( String propName )
+    public final boolean propertyIsTrue( String propName )
     {
         return "true" .equals( getProperty( propName ) );
     }
@@ -144,7 +144,7 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public void setNextController( Controller controller )
+    final public void setNextController( Controller controller )
     {
         mNextController = controller;
         mNextController .addPropertyListener(new PropertyChangeListener()

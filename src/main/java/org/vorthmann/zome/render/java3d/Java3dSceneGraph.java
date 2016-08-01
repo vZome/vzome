@@ -83,7 +83,7 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     private final boolean isSticky;
 
-	private boolean polygonOutlinesMode;
+	private boolean drawOutlines;
 
     private FrameLabels frameLabels = null;
 
@@ -104,11 +104,10 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         return mLights;
     }
 
-    public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky, boolean polygonOutlinesMode, Controller controller )
+    public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky, Controller controller )
     {
         mFactory = factory;
         this .isSticky = isSticky;
-        this .polygonOutlinesMode = polygonOutlinesMode;
 
         lights .addPropertyListener( new PropertyChangeListener(){
 
@@ -166,7 +165,6 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         mLights .addChild( ambientForGlow );
         ambientForOutlines = new AmbientLight( color );
         ambientForOutlines .setInfluencingBounds( mEverywhere );
-        ambientForOutlines .setEnable( polygonOutlinesMode );
         ambientForOutlines .setCapability( Light.ALLOW_STATE_WRITE );
         mLights .addChild( ambientForOutlines );
 
@@ -186,7 +184,6 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         // use the last light in the array for the directional light
         directionalForOutlines = light;
         directionalForOutlines.setCapability(Light.ALLOW_STATE_WRITE);
-        directionalForOutlines.setEnable(polygonOutlinesMode);
         // ---------------------------------------------------
 
         mScene = new BranchGroup();
@@ -249,6 +246,9 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 //            axisZLines.setColor( 1, blue );
 //            axisZLines.setColor( 0, black );
 //        }
+
+        if ( controller .propertyIsTrue( "drawOutlines" ) )
+            propertyChange("drawOutlines", true );
 
         if ( controller .propertyIsTrue( "showFrameLabels" ) )
             propertyChange("showFrameLabels", true );
@@ -389,7 +389,7 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         tg.setPickable( true );
         tg.addChild( solidPolyhedron );
 
-        if ( this .polygonOutlinesMode ) {
+        if ( drawOutlines ) {
         	geom = mFactory .makeOutlineGeometry( rm );
             Shape3D outlinePolyhedron = new Shape3D( geom );
             outlinePolyhedron .setAppearance( mFactory .getOutlineAppearance() );
@@ -509,15 +509,11 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
     @Override
     public void locationChanged( RenderedManifestation manifestation )
     {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void orientationChanged( RenderedManifestation manifestation )
     {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -579,21 +575,12 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         mFog.setColor( color );
     }
 
-    /**
-     * @return
-     */
     public LinearFog getFog()
     {
         return mFog;
     }
 
-	public void togglePolygonOutlinesMode()
-	{
-		this.polygonOutlinesMode = ! this .polygonOutlinesMode;
-		ambientForOutlines .setEnable( this .polygonOutlinesMode );
-    	directionalForOutlines .setEnable( this .polygonOutlinesMode );
-
-		
+	private void refreshPolygonOutlines() {
 		Collection<BranchGroup> bgs = new ArrayList<>();
         for ( int i = 0; i < mScene .numChildren(); i++ ) {
             BranchGroup bg = (BranchGroup) mScene .getChild( i );
@@ -609,11 +596,6 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         	}
 		}
 	}
-	
-	public boolean getPolygonOutlinesMode()
-	{
-		return this .polygonOutlinesMode;
-	}
 
 	@Override
 	public void propertyChange( PropertyChangeEvent evt )
@@ -628,6 +610,12 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     protected void propertyChange(String propertyName, Object newValue, Object oldValue) {
         switch (propertyName) {
+            case "drawOutlines":
+                drawOutlines = (Boolean) newValue;
+                ambientForOutlines.setEnable(drawOutlines);
+                directionalForOutlines.setEnable(drawOutlines);
+                refreshPolygonOutlines();
+                break;
 
             case "showFrameLabels":
                 if ((Boolean) newValue) {

@@ -88,9 +88,9 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
 
 
     @Override
-	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode, Controller controller )
+	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, Controller controller )
 	{
-		return new Java3dSceneGraph( this, lights, isSticky, outlineMode, controller );
+		return new Java3dSceneGraph( this, lights, isSticky, controller );
 	}
 
     Colors getColors()
