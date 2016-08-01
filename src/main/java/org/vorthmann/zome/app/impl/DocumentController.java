@@ -355,6 +355,8 @@ public class DocumentController extends DefaultController implements J3dComponen
         partsController = new PartsController( symmetryController .getOrbitSource() );
         partsController .setNextController( this );
         mRenderedModel .addListener( partsController );
+
+        copyThisView(); // initialize the "copied" view at startup.
     }
 
     @Override
@@ -807,7 +809,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
             else if ( action.equals( "copyThisView" ) )
             {
-                mViewPlatform .copyView( mViewPlatform .getView() );
+                copyThisView();
             }
             else if ( action.equals( "useCopiedView" ) )
             {
@@ -929,6 +931,11 @@ public class DocumentController extends DefaultController implements J3dComponen
             else
                 mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { re } );
         } 
+    }
+
+    private void copyThisView()
+    {
+        mViewPlatform.copyView(mViewPlatform.getView());
     }
 
     public void syncRendering()
