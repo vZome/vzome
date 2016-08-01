@@ -41,7 +41,6 @@ import org.vorthmann.ui.Controller;
 
 import com.sun.j3d.utils.geometry.Text2D;
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.Polyhedron;
@@ -336,18 +335,6 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         VirtualUniverse vu = new VirtualUniverse();
         mLocale = new Locale( vu );
         mLocale.addBranchGraph( mRoot );
-    }
-    
-    @Override
-    public void enableFrameLabels()
-    {
-        throw new IllegalStateException( "enableFrameLabels is deprecated" );
-    }
-    
-    @Override
-    public void disableFrameLabels()
-    {
-        mRoot .removeChild( frameLabels );
     }
 
     /**

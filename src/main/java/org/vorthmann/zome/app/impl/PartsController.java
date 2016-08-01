@@ -195,12 +195,4 @@ public class PartsController extends DefaultController implements RenderingChang
     public void shapeChanged( RenderedManifestation manifestation )
     {}
 
-    @Override
-    public void enableFrameLabels()
-    {}
-
-    @Override
-    public void disableFrameLabels()
-    {}
-
 }
