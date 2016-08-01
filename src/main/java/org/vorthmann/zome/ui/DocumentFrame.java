@@ -813,7 +813,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 		switch ( e .getPropertyName() ) {
 
 		case "command.status":
-            if ( statusText != null )
+            if ( statusText != null && ! this .developerExtras )
                 statusText .setText( (String) e .getNewValue() );
 			break;
 
