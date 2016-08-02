@@ -1027,6 +1027,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         	return "PANEL"; // TODO panels
     }
 
+	public void undo( boolean useBlocks )
+	{
+		mHistory .undo( useBlocks );
+	}
+
+	public void redo( boolean useBlocks ) throws Command.Failure
+	{
+		mHistory .redo( useBlocks );
+	}
+
 	public void undo()
 	{
 		mHistory .undo();

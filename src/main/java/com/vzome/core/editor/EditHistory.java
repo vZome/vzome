@@ -206,10 +206,15 @@ public class EditHistory implements Iterable<UndoableEdit>
     
     public UndoableEdit undo()
     {
+    	return this .undo( true );
+    }
+    
+    public UndoableEdit undo( boolean useBlocks )
+    {
         if ( mEditNumber == 0 )
             return null;
         UndoableEdit undoable = mEdits .get( --mEditNumber );
-        if ( undoable instanceof EndBlock )
+        if ( useBlocks && undoable instanceof EndBlock )
         	return undoBlock();
         
     	undoable .undo();
@@ -233,10 +238,15 @@ public class EditHistory implements Iterable<UndoableEdit>
 
     public UndoableEdit redo() throws Command.Failure
     {
+    	return this .redo( true );
+    }
+
+    public UndoableEdit redo( boolean useBlocks ) throws Command.Failure
+    {
         if ( mEditNumber == mEdits .size() )
             return null;
         UndoableEdit undoable = mEdits .get( mEditNumber++ );
-        if ( undoable instanceof BeginBlock )
+        if ( useBlocks && undoable instanceof BeginBlock )
             return redoBlock();
         
     	try {
