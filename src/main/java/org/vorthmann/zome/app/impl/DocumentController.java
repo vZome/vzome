@@ -677,9 +677,9 @@ public class DocumentController extends DefaultController implements J3dComponen
         mErrors .clearError();
         try {
             if ( action.equals( "undo" ) )
-                this .documentModel .undo();
+            	this .documentModel .undo( ! this .userHasEntitlement( "developer.extras" ) );
             else if ( action.equals( "redo" ) )
-            	this .documentModel .redo();
+            	this .documentModel .redo( ! this .userHasEntitlement( "developer.extras" ) );
             else if ( action.equals( "undoToBreakpoint" ) ) {
             	this .documentModel .undoToBreakpoint();
             } else if ( action.equals( "redoToBreakpoint" ) ) {
