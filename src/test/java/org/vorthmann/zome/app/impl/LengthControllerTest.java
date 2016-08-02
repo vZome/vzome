@@ -81,7 +81,7 @@ public class LengthControllerTest
 		AlgebraicField field = new PentagonField();
 		LengthController controller = new LengthController( field );
 		assertStateAfter( controller, new String[]{ "scale=5" },
-							new String[]{ "false", "5", "1", "false", "3 +5φ" },
+							new String[]{ "false", "5", "1", "false", "3 +5\u03C6" },
 							field .createAlgebraicNumber( 1, 0, 1, 8 ) );
 	}
 
@@ -93,7 +93,7 @@ public class LengthControllerTest
 		Controller units = controller .getSubController( "unit" );
 		units .setProperty( "values", "5 8 3" );
 		assertStateAfter( controller, new String[]{ "getCustomUnit" },
-							new String[]{ "false", "0", "5/3 +8/3φ", "true", "5/3 +8/3φ" },
+							new String[]{ "false", "0", "5/3 +8/3\u03C6", "true", "5/3 +8/3\u03C6" },
 							field .createAlgebraicNumber( 5, 8, 3, 3 ) );
 	}
 
@@ -103,7 +103,7 @@ public class LengthControllerTest
 		AlgebraicField field = new PentagonField();
 		LengthController controller = new LengthController( field );
 		assertStateAfter( controller, new String[]{ "long" },
-							new String[]{ "false", "2", "1", "false", "1 +φ" },
+							new String[]{ "false", "2", "1", "false", "1 +\u03C6" },
 							field .createAlgebraicNumber( 1, 0, 1, 5 ) );
 	}
 
@@ -113,7 +113,7 @@ public class LengthControllerTest
 		AlgebraicField field = new PentagonField();
 		LengthController controller = new LengthController( field );
 		assertStateAfter( controller, new String[]{ "long", "scaleDown", "scaleDown", "scaleDown" },
-							new String[]{ "false", "-1", "1", "false", "-1 +φ" },
+							new String[]{ "false", "-1", "1", "false", "-1 +\u03C6" },
 							field .createPower( 2 ) );
 	}
 
@@ -125,7 +125,7 @@ public class LengthControllerTest
 		Controller units = controller .getSubController( "unit" );
 		units .setProperty( "values", "3 0 1" );
 		assertStateAfter( controller, new String[]{ "getCustomUnit", "scaleUp", "scaleUp", "newZeroScale" },
-							new String[]{ "false", "0", "3 +3φ", "true", "3 +3φ" },
+							new String[]{ "false", "0", "3 +3\u03C6", "true", "3 +3\u03C6" },
 							field .createAlgebraicNumber( 3, 0, 1, 5 ) );
 	}
 

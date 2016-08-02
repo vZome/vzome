@@ -254,7 +254,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         	menu .add(  createMenuItem( "Meta-model", ( "realizeMetaParts" ) ) );
         }
         if ( isGolden ) {
-            menu.add( enableIf( isEditor, createMenuItem( "\u03C4 Divide", ( "tauDivide" ) ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "\u03C6 Divide", ( "tauDivide" ) ) ) );
             menu.add( enableIf( isEditor, createMenuItem( "Affine Pentagon", ( "affinePentagon" ) ) ) );
         } else if ( isHeptagon )
             menu.add( enableIf( isEditor, createMenuItem( "1/\u03C3/\u03C1 Subdivisions", ( "heptagonDivide" ) ) ) );

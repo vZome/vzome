@@ -27,7 +27,6 @@ import javax.media.j3d.Node;
 import javax.media.j3d.OrientedShape3D;
 import javax.media.j3d.PointArray;
 import javax.media.j3d.Shape3D;
-import javax.media.j3d.SharedGroup;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.media.j3d.VirtualUniverse;
@@ -41,7 +40,6 @@ import org.vorthmann.ui.Controller;
 
 import com.sun.j3d.utils.geometry.Text2D;
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.Polyhedron;
@@ -65,31 +63,31 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     private final Locale mLocale;
 
-    protected BranchGroup mScene, mRoot;
+    private final BranchGroup mScene, mRoot;
 
-    protected TransformGroup mLights;
+    private final TransformGroup mLights;
 
-    protected LinearFog mFog;
+    private final LinearFog mFog;
 
-    protected Light ambientForGlow, ambientForOutlines, directionalForOutlines;
+    private final Light ambientForGlow, ambientForOutlines, directionalForOutlines;
 
-    protected int mGlowCount = 0;
+    private int mGlowCount = 0;
 
-    protected Background mBackground;
+    private final Background mBackground;
 
-    protected Java3dFactory mFactory;
+    private final Java3dFactory mFactory;
 
-    protected int mWhichShape = 0;
+    //private final SharedGroup mBallGroup = null;
 
-    protected SharedGroup mBallGroup = null;
-
-    private BoundingSphere mEverywhere = new BoundingSphere( new Point3d( 0.0, 0.0, 0.0 ), Double.MAX_VALUE );
+    private final BoundingSphere mEverywhere = new BoundingSphere( new Point3d( 0.0, 0.0, 0.0 ), Double.MAX_VALUE );
 
     private final boolean isSticky;
 
-	private boolean polygonOutlinesMode;
+	private boolean drawOutlines;
 
-    private final BranchGroup frameLabels, icosahedralLabels;
+    private FrameLabels frameLabels = null;
+
+    private IcosahedralLabels icosahedralLabels = null;
 
     public BranchGroup getRoot()
     {
@@ -106,11 +104,10 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         return mLights;
     }
 
-    public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky, boolean polygonOutlinesMode, Controller controller )
+    public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky, Controller controller )
     {
         mFactory = factory;
         this .isSticky = isSticky;
-        this .polygonOutlinesMode = polygonOutlinesMode;
 
         lights .addPropertyListener( new PropertyChangeListener(){
 
@@ -168,29 +165,25 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         mLights .addChild( ambientForGlow );
         ambientForOutlines = new AmbientLight( color );
         ambientForOutlines .setInfluencingBounds( mEverywhere );
-        ambientForOutlines .setEnable( polygonOutlinesMode );
         ambientForOutlines .setCapability( Light.ALLOW_STATE_WRITE );
         mLights .addChild( ambientForOutlines );
 
         if(lights.size() <= 0) {
             throw new IllegalArgumentException("Expected lights.size() to be greater than 0.");
         }
+        Light light = null;
         for ( int i = 0; i < lights.size(); i++ ) {
             Vector3f direction = new Vector3f();
             color = new Color3f( lights.getDirectionalLight( i, direction ).getRGBColorComponents( rgb ) );
-            Light light = new DirectionalLight( color, direction );
+            light = new DirectionalLight( color, direction );
             light .setInfluencingBounds( mEverywhere );
             light .setEnable( true );
             mLights .addChild( light );
-            if ( i == lights.size() - 1 ) {
-            	// TODO model this better in core Lights... no overloading
-            	directionalForOutlines = light;
-            	directionalForOutlines .setCapability( Light.ALLOW_STATE_WRITE );
-            	directionalForOutlines .setEnable( polygonOutlinesMode );
-            	// reuse the color for the ambient light
-            	ambientForOutlines .setColor( color );
-            }
         }
+        // TODO: model this better in core Lights... no overloading
+        // use the last light in the array for the directional light
+        directionalForOutlines = light;
+        directionalForOutlines.setCapability(Light.ALLOW_STATE_WRITE);
         // ---------------------------------------------------
 
         mScene = new BranchGroup();
@@ -198,6 +191,7 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         mScene.setCapability( Group.ALLOW_CHILDREN_READ );
         mScene.setCapability( Group.ALLOW_CHILDREN_WRITE );
         mScene.setCapability( Node.ENABLE_PICK_REPORTING );
+        mRoot.addChild( mScene );
 
         Color bg = lights .getBackgroundColor();
         bg.getRGBColorComponents( rgb );
@@ -253,112 +247,104 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 //            axisZLines.setColor( 0, black );
 //        }
 
-        frameLabels = new BranchGroup();
-        frameLabels .setCapability( BranchGroup.ALLOW_DETACH );
+        if ( controller .propertyIsTrue( "drawOutlines" ) )
+            propertyChange("drawOutlines", true );
+
         if ( controller .propertyIsTrue( "showFrameLabels" ) )
-            mRoot .addChild( frameLabels );
-        LineArray frameEdges = new LineArray( 24, LineArray.COORDINATES | LineArray.COLOR_3 );
-        int nextEdge = 0;
-        frameLabels .addChild( new Shape3D( frameEdges ) );
-        String[] labels = { "-", "0", "+" };
-        Color3f frameColor = new Color3f( 0.9f, 1.0f, 0.0f );
-        float scale = 30f;
-        for (int x = -1; x < 2; x++)
-            for (int y = -1; y < 2; y++)
-                for (int z = -1; z < 2; z++)
-                    if ( x != 0 || y != 0 || z != 0 )
-                    {
-                        int parity = ( x + y + z ) % 2;
-                        String label = labels[x+1] + labels[y+1] + labels[z+1];
-                        Text2D text2D = new Text2D( label, frameColor, "Helvetica", 72, Font.PLAIN );
-                        text2D .setRectangleScaleFactor( 0.02f );
-                        text2D .getGeometry() .setCapability( Geometry .ALLOW_INTERSECT );
-                        OrientedShape3D os3D = new OrientedShape3D();
-                        os3D .setGeometry( text2D.getGeometry() );
-                        os3D .setAppearance( text2D.getAppearance() );
-                        os3D .setAlignmentMode( OrientedShape3D.ROTATE_ABOUT_POINT );
-                        Transform3D move = new Transform3D();
-                        move .setTranslation( new Vector3d( scale*x, scale*y, scale*z ) );
-                        TransformGroup tg = new TransformGroup( move );
-                        tg .addChild( os3D );
-                        frameLabels .addChild( tg );
-                        
-                        if ( parity == 0 )
-                        {
-                            // odd parity means this is an edge center, so let's render the edge of the cube
-                            int zeroCoord = ( x == 0 )? 0 : ( ( y == 0 )? 1 : 2 );
-                            float[] start = { scale*x, scale*y, scale*z };
-                            float[] end = { scale*x, scale*y, scale*z };
-                            start[ zeroCoord ] = scale;
-                            end[ zeroCoord ] = -scale;
+            propertyChange("showFrameLabels", true );
 
-                            frameEdges .setCoordinate( nextEdge, new Point3f( start ) );
-                            frameEdges .setColor( nextEdge++, frameColor );
-                            frameEdges .setCoordinate( nextEdge, new Point3f( end ) );
-                            frameEdges .setColor( nextEdge++, frameColor );
-                        }
-                    }
-
-        icosahedralLabels = new BranchGroup();
-        icosahedralLabels .setCapability( BranchGroup.ALLOW_DETACH );
         if ( controller .propertyIsTrue( "showIcosahedralLabels" ) )
-            mRoot .addChild( icosahedralLabels );
-        Color3f minusColor = new Color3f( 1.0f, 0.0f, 0.0f );
-        Color3f plusColor = new Color3f( 0.0f, 0.0f, 1.0f );
-        AlgebraicField field = new PentagonField();
-        IcosahedralSymmetry symm = new IcosahedralSymmetry( field, "temp" );
-        Direction orbit = symm .getDirection( "black" );
-        Direction otherOrbit = symm .getDirection( "turquoise" );
-        for ( Axis axis : orbit ) {
-        	boolean negative = axis .getSense() == Symmetry.MINUS;
-        	Color3f numColor = negative? minusColor : plusColor;
-        	// we use black for indexing, but turqouise for location
-        	AlgebraicVector v = otherOrbit .getAxis( axis .normal() .toRealVector() ) .normal();
-        	RealVector location = v .toRealVector() .scale( 11f );
-            String label = ( negative? "-" : "" ) + axis .getOrientation();
-            Text2D text2D = new Text2D( label, numColor, "Helvetica", 120, negative? Font.PLAIN : Font.BOLD );
-            text2D .setRectangleScaleFactor( 0.02f );
-            text2D .getGeometry() .setCapability( Geometry .ALLOW_INTERSECT );
-            OrientedShape3D os3D = new OrientedShape3D();
-            os3D .setGeometry( text2D.getGeometry() );
-            os3D .setAppearance( text2D.getAppearance() );
-            os3D .setAlignmentMode( OrientedShape3D.ROTATE_ABOUT_POINT );
-//            os3D .setRotationPoint(arg0, arg1, arg2);
-            Transform3D move = new Transform3D();
-            move .setTranslation( new Vector3d( location .x, location .y, location .z ) );
-            TransformGroup tg = new TransformGroup( move );
-            tg .addChild( os3D );
-            icosahedralLabels .addChild( tg );
-		}
-
-        mRoot.addChild( mScene );
+            propertyChange("showIcosahedralLabels", true );
 
         VirtualUniverse vu = new VirtualUniverse();
         mLocale = new Locale( vu );
         mLocale.addBranchGraph( mRoot );
     }
-    
-    @Override
-    public void enableFrameLabels()
-    {
-        throw new IllegalStateException( "enableFrameLabels is deprecated" );
-    }
-    
-    @Override
-    public void disableFrameLabels()
-    {
-        mRoot .removeChild( frameLabels );
+
+    private class FrameLabels extends BranchGroup {
+        public FrameLabels() {
+            // <editor-fold defaultstate="collapsed">
+            setCapability(BranchGroup.ALLOW_DETACH);
+            LineArray frameEdges = new LineArray(24, LineArray.COORDINATES | LineArray.COLOR_3);
+            int nextEdge = 0;
+            addChild(new Shape3D(frameEdges));
+            String[] labels = {"-", "0", "+"};
+            Color3f frameColor = new Color3f(0.9f, 1.0f, 0.0f);
+            float scale = 30f;
+            for (int x = -1; x < 2; x++) {
+                for (int y = -1; y < 2; y++) {
+                    for (int z = -1; z < 2; z++) {
+                        if (x != 0 || y != 0 || z != 0) {
+                            int parity = (x + y + z) % 2;
+                            String label = labels[x + 1] + labels[y + 1] + labels[z + 1];
+                            Text2D text2D = new Text2D(label, frameColor, "Helvetica", 72, Font.PLAIN);
+                            text2D.setRectangleScaleFactor(0.02f);
+                            text2D.getGeometry().setCapability(Geometry.ALLOW_INTERSECT);
+                            OrientedShape3D os3D = new OrientedShape3D();
+                            os3D.setGeometry(text2D.getGeometry());
+                            os3D.setAppearance(text2D.getAppearance());
+                            os3D.setAlignmentMode(OrientedShape3D.ROTATE_ABOUT_POINT);
+                            Transform3D move = new Transform3D();
+                            move.setTranslation(new Vector3d(scale * x, scale * y, scale * z));
+                            TransformGroup tg = new TransformGroup(move);
+                            tg.addChild(os3D);
+                            addChild(tg);
+
+                            if (parity == 0) {
+                                // odd parity means this is an edge center, so let's render the edge of the cube
+                                int zeroCoord = (x == 0) ? 0 : ((y == 0) ? 1 : 2);
+                                float[] start = {scale * x, scale * y, scale * z};
+                                float[] end = {scale * x, scale * y, scale * z};
+                                start[zeroCoord] = scale;
+                                end[zeroCoord] = -scale;
+
+                                frameEdges.setCoordinate(nextEdge, new Point3f(start));
+                                frameEdges.setColor(nextEdge++, frameColor);
+                                frameEdges.setCoordinate(nextEdge, new Point3f(end));
+                                frameEdges.setColor(nextEdge++, frameColor);
+                            }
+                        }
+                    }
+                }
+            }
+            // </editor-fold>
+        }
     }
 
-    /**
-     * Build a brand new Shape3D for this polyhedron.
-     * 
-     * @param geom
-     * @param appearance
-     * @param location
-     * @param userData
-     * @return
-     */
+    private class IcosahedralLabels extends BranchGroup {
+        public IcosahedralLabels() {
+            // <editor-fold defaultstate="collapsed">
+            setCapability(BranchGroup.ALLOW_DETACH);
+            Color3f minusColor = new Color3f(1.0f, 0.0f, 0.0f);
+            Color3f plusColor = new Color3f(0.0f, 0.0f, 1.0f);
+            AlgebraicField field = new PentagonField();
+            IcosahedralSymmetry symm = new IcosahedralSymmetry(field, "temp");
+            // we use black for index numbers, but turqouise for location of the text
+            Direction indexOrbit = symm.getDirection("black");
+            Direction locationOrbit = symm.getDirection("turquoise");
+            for (Axis axis : indexOrbit) {
+                boolean negative = axis.getSense() == Symmetry.MINUS;
+                Color3f numColor = negative ? minusColor : plusColor;
+                AlgebraicVector v = locationOrbit.getAxis(axis.normal().toRealVector()).normal();
+                RealVector location = v.toRealVector().scale( 11f );
+                String label = (negative ? "-" : "") + axis.getOrientation();
+                Text2D text2D = new Text2D(label, numColor, "Helvetica", 120, negative ? Font.PLAIN : Font.BOLD);
+                text2D.setRectangleScaleFactor(0.02f);
+                text2D.getGeometry().setCapability(Geometry.ALLOW_INTERSECT);
+                OrientedShape3D os3D = new OrientedShape3D();
+                os3D.setGeometry(text2D.getGeometry());
+                os3D.setAppearance(text2D.getAppearance());
+                os3D.setAlignmentMode(OrientedShape3D.ROTATE_ABOUT_POINT);
+                Transform3D move = new Transform3D();
+                move.setTranslation(new Vector3d(location.x, location.y, location.z));
+                TransformGroup tg = new TransformGroup(move);
+                tg.addChild(os3D);
+                addChild(tg);
+            }
+            // </editor-fold>
+        }
+    }
+
     @Override
     public void manifestationAdded( RenderedManifestation rm )
     {
@@ -403,7 +389,7 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         tg.setPickable( true );
         tg.addChild( solidPolyhedron );
 
-        if ( this .polygonOutlinesMode ) {
+        if ( drawOutlines ) {
         	geom = mFactory .makeOutlineGeometry( rm );
             Shape3D outlinePolyhedron = new Shape3D( geom );
             outlinePolyhedron .setAppearance( mFactory .getOutlineAppearance() );
@@ -523,15 +509,11 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
     @Override
     public void locationChanged( RenderedManifestation manifestation )
     {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void orientationChanged( RenderedManifestation manifestation )
     {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -593,21 +575,12 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         mFog.setColor( color );
     }
 
-    /**
-     * @return
-     */
     public LinearFog getFog()
     {
         return mFog;
     }
 
-	public void togglePolygonOutlinesMode()
-	{
-		this.polygonOutlinesMode = ! this .polygonOutlinesMode;
-		ambientForOutlines .setEnable( this .polygonOutlinesMode );
-    	directionalForOutlines .setEnable( this .polygonOutlinesMode );
-
-		
+	private void refreshPolygonOutlines() {
 		Collection<BranchGroup> bgs = new ArrayList<>();
         for ( int i = 0; i < mScene .numChildren(); i++ ) {
             BranchGroup bg = (BranchGroup) mScene .getChild( i );
@@ -623,33 +596,69 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         	}
 		}
 	}
-	
-	public boolean getPolygonOutlinesMode()
-	{
-		return this .polygonOutlinesMode;
-	}
 
 	@Override
 	public void propertyChange( PropertyChangeEvent evt )
 	{
-		switch ( evt .getPropertyName() ) {
+        propertyChange(evt.getPropertyName(), evt.getNewValue(), evt.getOldValue());
+    }
 
-		case "showFrameLabels":
-			if ( ((Boolean) evt .getNewValue()) .booleanValue() )
-				mRoot .addChild( frameLabels );
-			else
-				mRoot .removeChild( frameLabels );
-			break;
+    // properties that don't care about oldValue can call this overloaded method
+    protected void propertyChange(String propertyName, Object newValue) {
+        propertyChange(propertyName, newValue, null);
+    }
 
-		case "showIcosahedralLabels":
-			if ( ((Boolean) evt .getNewValue()) .booleanValue() )
-				mRoot .addChild( icosahedralLabels );
-			else
-				mRoot .removeChild( icosahedralLabels );
-			break;
+    protected void propertyChange(String propertyName, Object newValue, Object oldValue) {
+        switch (propertyName) {
+            case "drawOutlines":
+                drawOutlines = (Boolean) newValue;
+                ambientForOutlines.setEnable(drawOutlines);
+                directionalForOutlines.setEnable(drawOutlines);
+                refreshPolygonOutlines();
+                break;
 
-		default:
-			break;
-		}
-	}
+            case "showFrameLabels":
+                if ((Boolean) newValue) {
+                    showFrameLabels();
+                } else {
+                    hideFrameLabels();
+                }
+                break;
+
+            case "showIcosahedralLabels":
+                if ((Boolean) newValue) {
+                    showIcosahedralLabels();
+                } else {
+                    hideIcosahedralLabels();
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void showFrameLabels() {
+        if (frameLabels == null) {
+            // lazy creation upon first use
+            frameLabels = new FrameLabels();
+        }
+        mRoot.addChild(frameLabels);
+    }
+
+    private void hideFrameLabels() {
+        mRoot.removeChild(frameLabels);
+    }
+
+    private void showIcosahedralLabels() {
+        if (icosahedralLabels == null) {
+            // lazy creation upon first use
+            icosahedralLabels = new IcosahedralLabels();
+        }
+        mRoot.addChild(icosahedralLabels);
+    }
+
+    private void hideIcosahedralLabels() {
+        mRoot.removeChild(icosahedralLabels);
+    }
 }

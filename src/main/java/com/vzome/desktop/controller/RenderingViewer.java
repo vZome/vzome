@@ -33,7 +33,7 @@ public interface RenderingViewer extends CameraController.Viewer, ManifestationP
     {
         RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas );
         
-        RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, boolean outlineMode, Controller controller );
+        RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, Controller controller );
     }
 
 //    Group getSceneGraphRoot();

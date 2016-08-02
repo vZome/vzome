@@ -96,18 +96,4 @@ public class JoglScene implements RenderingChanges
 
 	}
 
-	@Override
-	public void enableFrameLabels()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void disableFrameLabels()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
 }

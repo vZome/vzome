@@ -46,7 +46,6 @@ import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
 import org.vorthmann.zome.export.java2d.Java2dExporter;
 import org.vorthmann.zome.export.java2d.Java2dSnapshot;
-import org.vorthmann.zome.render.java3d.Java3dSceneGraph;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -67,6 +66,7 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -93,8 +93,6 @@ public class DocumentController extends DefaultController implements J3dComponen
 {
     private DocumentModel documentModel;
     
-    public boolean useGraphicalViews = false, showStrutScales = false;
-
     private final PreviewStrut previewStrut;
 
     private final RenderedModel mRenderedModel;
@@ -111,15 +109,21 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private RenderedModel mControlBallModel;
 
-    private RenderingChanges mainScene, mControlBallScene;
+    private RenderingChanges mainScene;
+    private final RenderingChanges mControlBallScene;
 
     private final ApplicationController mApp;
 
     private Java2dSnapshot mSnapshot = null;
 
-    private boolean mRequireShift = false, showFrameLabels = false, useWorkingPlane = false;
+    private boolean useGraphicalViews = false;
+    private boolean showStrutScales = false;
+    private boolean mRequireShift = false;
+    private boolean drawOutlines = false;
+    private boolean showFrameLabels = false;
+    private boolean useWorkingPlane = false;
 
-    private LessonController lessonController;
+    private final LessonController lessonController;
 
     private final boolean startReader;
     
@@ -135,7 +139,7 @@ public class DocumentController extends DefaultController implements J3dComponen
     
     private final ToolsController toolsController;
     
-    private PartsController partsController;
+    private final PartsController partsController;
 
     private Map<String,SymmetryController> symmetries = new HashMap<>();
 
@@ -182,11 +186,11 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         final boolean newDocument = propertyIsTrue( "new.document" );
         
-        final boolean outlineMode = propertyIsTrue( "outline.geometry" );
+        drawOutlines = propertyIsTrue( "outline.geometry" );
 
         startReader = ! newDocument && ! asTemplate;
         
-        editingModel = userHasEntitlement( "model.edit" ) ;//&& ! propertyIsTrue( "reader.preview" );
+        editingModel = super.userHasEntitlement( "model.edit" ) ;//&& ! propertyIsTrue( "reader.preview" );
         
         toolsController = new ToolsController( document );
         toolsController .setNextController( this );
@@ -242,7 +246,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         		}
         		else if ( "thumbnailChanged" .equals( change .getPropertyName() ) )
         		{
-        			int pageNum = ((Integer) change .getNewValue()) .intValue();
+        			int pageNum = (Integer) change .getNewValue();
         			DocumentController .this .documentModel .getLesson() .updateThumbnail( pageNum, DocumentController .this .documentModel, thumbnails );
         		}
         	}
@@ -283,7 +287,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
         RenderingViewer.Factory rvFactory = app .getJ3dFactory();
-        mainScene = rvFactory .createRenderingChanges( sceneLighting, true, outlineMode, this );
+        mainScene = rvFactory .createRenderingChanges( sceneLighting, true, this );
         this .addPropertyListener( (PropertyChangeListener) mainScene );
 
         modelCanvas = rvFactory .createJ3dComponent( "" ); // name not relevant there
@@ -304,7 +308,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         rightController = new PickingController( viewer, this );
 
         Controller controlBallProps = this;
-        if ( this .userHasEntitlement( "developer.extras" ) ) {
+        if ( super .userHasEntitlement( "developer.extras" ) ) {
         	// TODO define a standalone controller class for contextual menus, etc.
         	controlBallProps = new DefaultController()
         	{
@@ -312,9 +316,13 @@ public class DocumentController extends DefaultController implements J3dComponen
 				public String getProperty( String name )
 				{
 					switch ( name ) {
+                    case "drawOutlines":
+                        return "false";
 
 					case "showIcosahedralLabels":
-						return "true";
+                        return (documentModel.getSymmetrySystem().getSymmetry() instanceof IcosahedralSymmetry)
+                            ? super.getProperty( "trackball.showIcosahedralLabels" )
+                            : "false";
 
 					default:
 						return super.getProperty( name );
@@ -323,7 +331,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         	};
         	controlBallProps .setNextController( this );
         }
-        mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, false, controlBallProps );
+        mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, controlBallProps );
 
         thumbnails = new ThumbnailRendererImpl( rvFactory, sceneLighting );
 
@@ -347,6 +355,8 @@ public class DocumentController extends DefaultController implements J3dComponen
         partsController = new PartsController( symmetryController .getOrbitSource() );
         partsController .setNextController( this );
         mRenderedModel .addListener( partsController );
+
+        copyThisView(); // initialize the "copied" view at startup.
     }
 
     @Override
@@ -499,7 +509,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                     if ( target instanceof Connector )
                     {
                         mErrors .clearError();
-                        Point point = (Point) ((Connector) target) .getConstructions() .next();
+                        Point point = (Point) target .getConstructions() .next();
                         AlgebraicVector workingPlaneNormal = null;
                         if ( useWorkingPlane && (workingPlaneAxis != null ) )
                         	workingPlaneNormal = workingPlaneAxis .getOffset();
@@ -582,7 +592,8 @@ public class DocumentController extends DefaultController implements J3dComponen
             RenderingViewer.Factory rvFactory = mApp .getJ3dFactory();
             Component canvas = rvFactory .createJ3dComponent( name ); // name not relevant there
 
-            RenderingChanges scene = rvFactory.createRenderingChanges( sceneLighting, true, true, this );
+            drawOutlines = true;
+            RenderingChanges scene = rvFactory.createRenderingChanges( sceneLighting, true, this );
             mRenderedModel.addListener( scene );
             RenderingViewer viewer = rvFactory.createRenderingViewer( mainScene, canvas );
             this.addPropertyListener( (PropertyChangeListener) viewer );
@@ -765,7 +776,8 @@ public class DocumentController extends DefaultController implements J3dComponen
 
             else if ( action.equals( "toggleOutlines" ) )
             {
-                ((Java3dSceneGraph) mainScene ) .togglePolygonOutlinesMode();
+                drawOutlines = ! drawOutlines;
+                properties() .firePropertyChange( "drawOutlines", !drawOutlines, drawOutlines );
             }
 
             else if ( action.equals( "toggleWorkingPlane" ) )
@@ -797,7 +809,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
             else if ( action.equals( "copyThisView" ) )
             {
-                mViewPlatform .copyView( mViewPlatform .getView() );
+                copyThisView();
             }
             else if ( action.equals( "useCopiedView" ) )
             {
@@ -919,6 +931,11 @@ public class DocumentController extends DefaultController implements J3dComponen
             else
                 mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { re } );
         } 
+    }
+
+    private void copyThisView()
+    {
+        mViewPlatform.copyView(mViewPlatform.getView());
     }
 
     public void syncRendering()
@@ -1152,7 +1169,8 @@ public class DocumentController extends DefaultController implements J3dComponen
         } catch (Exception ex) {
             throw ex;
         } finally {
-        	writer .close();
+            if(writer != null)
+                writer .close();
         }
     }
 
@@ -1234,7 +1252,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         {
             String group = string .substring( "supports.symmetry." .length() );
             Symmetry symm = this .documentModel .getField() .getSymmetry( group );
-            return new Boolean( symm != null ) .toString();
+            return Boolean .toString(symm != null);
         }
         
         if ( string .startsWith( "tool.enabled." ) )
@@ -1255,7 +1273,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             return Boolean .toString( showFrameLabels );
                 
         if ( "drawOutlines" .equals( string ) )
-            return Boolean .toString( ((Java3dSceneGraph) mainScene) .getPolygonOutlinesMode() );
+            return Boolean .toString( drawOutlines );
                 
         if ( "useWorkingPlane" .equals( string ) )
             return Boolean .toString( useWorkingPlane );
