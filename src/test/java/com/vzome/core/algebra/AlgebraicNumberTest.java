@@ -6,6 +6,69 @@ import junit.framework.TestCase;
 
 public class AlgebraicNumberTest extends TestCase
 {
+    public void testZeroAndOne()
+    {
+        AlgebraicField field = new PentagonField();
+        {
+            AlgebraicNumber zero = field.zero();
+            assertTrue(zero.isZero());
+            assertFalse(zero.isOne());
+        }
+        {
+            AlgebraicNumber one = field.one();
+            assertFalse(one.isZero());
+            assertTrue(one.isOne());
+        }
+        {
+            AlgebraicNumber phi = field.createAlgebraicNumber(new int[]{0, 1});
+            assertFalse(phi.isZero());
+            assertFalse(phi.isOne());
+        }
+    }
+
+    public void testFactorsNotNull()
+    {
+        final AlgebraicField field = new PentagonField();
+        {
+            final BigRational[] inputFactors = {BigRational.ONE};
+            assertEquals( inputFactors.length, 1 );
+
+            AlgebraicNumber value = new AlgebraicNumber(field, inputFactors);
+
+            BigRational[] factors = value.getFactors();
+            assertEquals( factors.length, 2 );
+            assertEquals( factors.length, field.getOrder() );
+            // although we only provided a single element array as inputFactor,
+            // the c'tor should zero-fill the array so it never contains nulls
+            for(int i = 0; i < factors.length; i++) {
+                assertFalse( factors[i] == null );
+            }
+        }
+        // a similar but not identical test...
+        {
+            final BigRational[] inputFactors = new BigRational[field.getOrder()];
+            assertEquals( inputFactors.length, 2 );
+
+            inputFactors[0] = BigRational.ONE;
+            assertTrue( inputFactors[0] != null );
+            assertTrue( inputFactors[1] == null );
+
+            AlgebraicNumber value = new AlgebraicNumber(field, inputFactors);
+
+            // although we provided a null element in inputFactor,
+            // the c'tor should zero-fill its factors so it never contains nulls
+            BigRational[] factors = value.getFactors();
+            assertEquals( factors.length, 2 );
+            assertEquals( factors.length, field.getOrder() );
+            for(int i = 0; i < factors.length; i++) {
+                assertFalse( factors[i] == null );
+            }
+            // check for the specific values we expect
+            assertEquals( factors[0], inputFactors[0] );
+            assertEquals( factors[1], BigRational.ZERO );
+        }
+    }
+
     public void testPentagonField()
     {
         AlgebraicField field = new PentagonField();
@@ -26,7 +89,7 @@ public class AlgebraicNumberTest extends TestCase
         assertTrue( tau_9 .equals( field.createPower( 9 ) ) );
         assertTrue( tau_minus5 .equals( field.createPower( -5 ) ) );
     }
-    
+
     public void testToString()
     {
         AlgebraicField field = new PentagonField();

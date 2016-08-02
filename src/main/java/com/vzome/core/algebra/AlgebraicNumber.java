@@ -18,7 +18,9 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         this .field = field;
         this .factors = new BigRational[ field .getOrder() ];
         for ( int i = 0; i < factors.length; i++ ) {
-            this .factors[ i ] = factors[ i ];
+            this .factors[ i ] = factors[ i ] == null 
+                    ? BigRational.ZERO
+                    : factors[ i ];
         }
         for ( int i = factors.length; i < this.factors.length; i++ ) {
             this .factors[ i ] = BigRational.ZERO;
@@ -109,6 +111,8 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
 
     public AlgebraicNumber plus( AlgebraicNumber that )
     {
+        if ( this .isZero() )
+            return that;
         if ( that .isZero() )
             return this;
         int order = this .factors .length;
@@ -121,8 +125,10 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
 
     public AlgebraicNumber times( AlgebraicNumber that )
     {
-        if ( that .isZero() )
+        if ( this.isZero() || that .isZero() )
             return this .field .zero();
+        if ( this .isOne() )
+            return that;
         if ( that .isOne() )
             return this;
         return new AlgebraicNumber( this .field, this .field .multiply( this .factors, that .factors ) );
@@ -130,6 +136,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
 
     public AlgebraicNumber minus( AlgebraicNumber that )
     {
+        // Subtraction is not commutative so don't be tempted to optimize for the case when this.isZero()
         if ( that .isZero() )
             return this;
         return this .plus( that .negate() );
@@ -137,6 +144,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
 
     public AlgebraicNumber dividedBy( AlgebraicNumber that )
     {
+        // Division is not commutative so don't be tempted to optimize for the case when this.isOne()
         if ( that .isOne() )
             return this;
         return this .times( that .reciprocal() );
@@ -166,7 +174,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
             if ( ! this .factors[ i ] .isZero() )
                 return false;
         }
-        return false;
+        return true;
     }
 
     @Override

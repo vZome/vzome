@@ -100,7 +100,7 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
     /**
      * @return A String with no extended characters so it's suitable for writing
      * to an 8 bit stream such as System.out or an ASCII text log file in Windows.
-     * Contrast this with {@link toString()} which contains extended characters (e.g. \u03C4 (phi))
+     * Contrast this with {@link toString()} which contains extended characters (e.g. \u03C6 (phi))
      */
     public final String toASCIIString()
     {

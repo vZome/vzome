@@ -347,9 +347,9 @@ public abstract class AlgebraicField
         return reciprocalFactors;
     }
 
-    public final static int DEFAULT_FORMAT = 0; // 4 + 3 \u03C4
+    public final static int DEFAULT_FORMAT = 0; // 4 + 3 \u03C6
 
-    public final static int EXPRESSION_FORMAT = 1; // 4+\u03C4*3
+    public final static int EXPRESSION_FORMAT = 1; // 4+\u03C6*3
 
     public final static int ZOMIC_FORMAT = 2; // 4 3
 
