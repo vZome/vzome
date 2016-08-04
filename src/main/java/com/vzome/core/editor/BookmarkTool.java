@@ -27,11 +27,6 @@ public class BookmarkTool extends ChangeManifestations implements Tool
         super( selection, realized, false );
         this.name = name;
         this.tools = tools;
-        Duplicator duper = new Duplicator( null, null );
-        for (Manifestation man : mSelection) {
-            Construction result = duper .duplicateConstruction( man );
-            bookmarkedConstructions .add( result );
-        }
     }
 
 	// Not quite the same as overriding equals since the tool name is not compared
@@ -68,6 +63,11 @@ public class BookmarkTool extends ChangeManifestations implements Tool
     @Override
     public void perform() throws Command.Failure
     {
+        Duplicator duper = new Duplicator( null, null );
+        for (Manifestation man : mSelection) {
+            Construction result = duper .duplicateConstruction( man );
+            bookmarkedConstructions .add( result );
+        }
         defineTool();
     }
 
@@ -151,8 +151,8 @@ public class BookmarkTool extends ChangeManifestations implements Tool
     }
 
 	@Override
-	public boolean isValidForSelection() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isValidForSelection()
+	{
+		return ! this .mSelection .isEmpty();
 	}
 }
