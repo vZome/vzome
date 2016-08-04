@@ -29,7 +29,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 {
     private final Component monocularCanvas, leftEyeCanvas, rightEyeCanvas;
     private MouseListener monocularClicks, leftEyeClicks, rightEyeClicks;
-    private final JToolBar oldToolBar, staticToolBar, dynamicToolBar;
+    private final JToolBar oldToolBar, staticToolBar, dynamicToolBar, bookmarkBar;
     private final boolean isEditor;
 	private final Controller controller, view;
 	private final JPanel mMonocularPanel;
@@ -95,15 +95,11 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
             {
             	// -------------------- Create the dynamic toolbar
             	
-                String oldToolbarLoc = controller .getProperty( "toolbar.position" );
-                if ( oldToolbarLoc == null )
-                	oldToolbarLoc = BorderLayout .LINE_END;
+                String oldToolbarLoc = BorderLayout .LINE_END;
                 String dynamicToolbarLoc = BorderLayout .NORTH;
                 String staticToolbarLoc = BorderLayout .LINE_START;
+                String bookmarkBarLoc = BorderLayout .SOUTH;
                 boolean hasOldToolBar = controller .propertyIsTrue( "original.tools" );
-                if ( hasOldToolBar && oldToolbarLoc .equals( BorderLayout .NORTH ) ) {
-                	dynamicToolbarLoc = BorderLayout .SOUTH;
-                }
 
                 this .dynamicToolBar = new JToolBar();
                 this .dynamicToolBar .setOrientation( JToolBar.HORIZONTAL );
@@ -112,6 +108,10 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 this .staticToolBar = new JToolBar();
                 this .staticToolBar .setOrientation( JToolBar.VERTICAL );
                 this .add( staticToolBar, staticToolbarLoc );
+
+                this .bookmarkBar = new JToolBar();
+                this .bookmarkBar .setOrientation( JToolBar.HORIZONTAL );
+                this .add( bookmarkBar, bookmarkBarLoc );
 
                 AbstractButton button = makeEditButton( enabler, "delete", "Delete selected objects" );
                 staticToolBar .add( button );
@@ -158,6 +158,14 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 button = newToolButton( enabler, "linear map", "Create linear map tool" );
                 staticToolBar .add( button );
                                 
+        		button = makeEditButton2( enabler, "Create selection bookmark", "/icons/tools/newTool/bookmark.png" );
+        		button = enabler .setButtonAction( "addBookmark", button );
+        		this .toolCreationButtons .put( "bookmark", button );
+        		boolean on = this .controller .propertyIsTrue( "tool.enabled.bookmark" );
+        		button .setEnabled( on );
+                bookmarkBar .add( button );
+                bookmarkBar .addSeparator();
+
                 final Controller toolsController = controller .getSubController( "tools" );
             	
             	toolsController .addPropertyListener( new PropertyChangeListener()
@@ -183,7 +191,10 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				                AbstractButton button = makeEditButton2( enabler, name, iconPath );
 				        		button .setActionCommand( idAndName );
 				        		button .addActionListener( toolsController );
-				                dynamicToolBar .add( button );
+				        		if ( group .equals( "bookmark" ) )
+				        			bookmarkBar .add( button );
+				        		else
+				        			dynamicToolBar .add( button );
 				                //scroller .revalidate();
 				            }
 							break;
@@ -266,6 +277,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
             	this .oldToolBar = null;
             	this .dynamicToolBar = null;
             	this .staticToolBar = null;
+            	this .bookmarkBar = null;
             }
 
             monocularClicks = new ContextualMenuMouseListener( monoController , new PickerContextualMenu( monoController, enabler, "monocular" ) );
@@ -279,6 +291,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         	this .oldToolBar = null;
         	this .dynamicToolBar = null;
         	this .staticToolBar = null;
+        	this .bookmarkBar = null;
         }
 	}
 	

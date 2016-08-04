@@ -355,6 +355,19 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     }
                     symmetryDialog .setVisible( true );
                     break;
+                    
+                case "addBookmark":
+                    String numStr = toolsController .getProperty( "next.tool.number" );
+                    int bookmarkNum = Integer .parseInt( numStr );
+            		String bookmarkId = "bookmark." + bookmarkNum;
+                	String bookmarkName = (String) JOptionPane .showInputDialog( (Component) e .getSource(),
+                			"Name the new bookmark:", "New Selection Bookmark",
+                					JOptionPane.PLAIN_MESSAGE, null, null, bookmarkId );
+                	if ( ( bookmarkName == null ) || ( bookmarkName .length() == 0 ) ) {
+                		return;
+                	}
+                    mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "newTool/" + bookmarkId + "/" + bookmarkName ) );
+                    break;
 
                 default:
                     if ( cmd .startsWith( "setSymmetry." ) )
@@ -365,8 +378,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     else if ( cmd .startsWith( "addTool-" ) )
                     {
                 		String group = cmd .substring( "addTool-" .length() );
-                        String numStr = toolsController .getProperty( "next.tool.number" );
-                        int toolNum = Integer .parseInt( numStr );
+                        String toolNumStr = toolsController .getProperty( "next.tool.number" );
+                        int toolNum = Integer .parseInt( toolNumStr );
                 		String toolId = group + "." + toolNum;
                     	String toolName = (String) JOptionPane .showInputDialog( (Component) e .getSource(),
                     			"Name the new tool:", "New Tool",
@@ -754,6 +767,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         	case "configureShapes":
         	case "configureDirections":
         	case "redoUntilEdit":
+        	case "addBookmark":
         		actionListener = this .localActions;
                 break;
                                                 
