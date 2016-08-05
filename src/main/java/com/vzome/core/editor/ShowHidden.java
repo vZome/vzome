@@ -19,7 +19,7 @@ public class ShowHidden extends ChangeManifestations
     public void perform()
     {
         for (Manifestation m : mManifestations) {
-            if ( ! m .isRendered() )
+            if ( m .isHidden() )
             {
                 showManifestation( m );
                 select( m );
