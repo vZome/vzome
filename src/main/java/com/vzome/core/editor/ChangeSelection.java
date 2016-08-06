@@ -182,6 +182,8 @@ public abstract class ChangeSelection extends SideEffects
         
         private final boolean mOn;
 
+		private int index;
+
         public SelectManifestation( Manifestation man, boolean value )
         {
             mMan = man;
@@ -202,7 +204,7 @@ public abstract class ChangeSelection extends SideEffects
                 if ( mOn )
                     mSelection .select( mMan );
                 else
-                    mSelection .unselect( mMan );
+                    this .index = mSelection .unselect( mMan );
         }
 
         @Override
@@ -217,8 +219,8 @@ public abstract class ChangeSelection extends SideEffects
             else
                 if ( mOn )
                     mSelection .unselect( mMan );
-                else
-                    mSelection .select( mMan );
+                else if ( this .index >= 0 )
+                    mSelection .reselect( mMan, this .index );
         }
 
         @Override

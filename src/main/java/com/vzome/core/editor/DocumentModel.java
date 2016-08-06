@@ -464,6 +464,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             QuaternionicSymmetry h4symm = this .mField .getQuaternionSymmetry( "H_4" ); 
 			edit = new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
 		}
+		else if ( "SparseCrossProduct".equals( name ) )
+			// for testing selection order after undo
+			edit = new SparseCrossProduct( this.mSelection, this.mRealizedModel, groupInSelection );
+
 
 		if ( edit == null )
 			// any command unknown (i.e. from a newer version of vZome) becomes a CommandEdit
@@ -584,6 +588,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new HeptagonSubdivision( mSelection, mRealizedModel, false );
         else if ( action.equals( "crossProduct" ) )
             edit = new CrossProduct( mSelection, mRealizedModel, false );
+        else if ( action.equals( "sparseCrossProduct" ) ) // for testing selection order after undo
+            edit = new SparseCrossProduct( mSelection, mRealizedModel, false );
         else if ( action.equals( "centroid" ) )
             edit = new Centroid( mSelection, mRealizedModel, false );
         else if ( action.equals( "showHidden" ) )
