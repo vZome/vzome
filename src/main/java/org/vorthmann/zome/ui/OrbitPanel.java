@@ -22,6 +22,13 @@ import org.vorthmann.ui.Controller;
 
 public class OrbitPanel extends JPanel implements PropertyChangeListener
 {
+	@Override
+	public void setToolTipText( String text )
+	{
+		orbitTriangle .setToolTipText( text );
+		orbitCheckboxes .setToolTipText( text );
+	}
+
 	private Controller enabledOrbits, drawnOrbits;
 	private final ContextualMenu directionPopupMenu;
 	private final JPanel orbitTriangle, orbitCheckboxes;
@@ -135,6 +142,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
         {
             orbitPopup = new ContextualMenuMouseListener( enabledOrbits, directionPopupMenu );
             orbitTriangle .addMouseListener( orbitPopup );
+            orbitCheckboxes .addMouseListener( orbitPopup );
         }
 
         orbitsChanged();

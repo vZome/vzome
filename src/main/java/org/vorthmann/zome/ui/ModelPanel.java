@@ -29,7 +29,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 {
     private final Component monocularCanvas, leftEyeCanvas, rightEyeCanvas;
     private MouseListener monocularClicks, leftEyeClicks, rightEyeClicks;
-    private final JToolBar oldToolBar, staticToolBar, dynamicToolBar, bookmarkBar;
+    private final JToolBar oldToolBar, firstToolbar, secondToolbar, bookmarkBar;
     private final boolean isEditor;
 	private final Controller controller, view;
 	private final JPanel mMonocularPanel;
@@ -48,8 +48,12 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         
         controller .addPropertyListener( this );
 
+        JPanel monoStereoPlusToolbar = new JPanel();
+        monoStereoPlusToolbar .setLayout( new BorderLayout() );
+        this .add( monoStereoPlusToolbar, BorderLayout.CENTER );
+
         JPanel monoStereoPanel = new JPanel();
-        this .add( monoStereoPanel, BorderLayout.CENTER );
+        monoStereoPlusToolbar .add( monoStereoPanel, BorderLayout.CENTER );
 		CardLayout monoStereoCardLayout = new CardLayout();
 		monoStereoPanel .setLayout( monoStereoCardLayout );
         boolean showStereo =  "true" .equals( view .getProperty( "stereo" ) );
@@ -95,76 +99,80 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
             {
             	// -------------------- Create the dynamic toolbar
             	
-                String oldToolbarLoc = BorderLayout .LINE_END;
-                String dynamicToolbarLoc = BorderLayout .NORTH;
-                String staticToolbarLoc = BorderLayout .LINE_START;
-                String bookmarkBarLoc = BorderLayout .SOUTH;
                 boolean hasOldToolBar = controller .propertyIsTrue( "original.tools" );
 
-                this .dynamicToolBar = new JToolBar();
-                this .dynamicToolBar .setOrientation( JToolBar.HORIZONTAL );
-                this .add( dynamicToolBar, dynamicToolbarLoc );
-
-                this .staticToolBar = new JToolBar();
-                this .staticToolBar .setOrientation( JToolBar.VERTICAL );
-                this .add( staticToolBar, staticToolbarLoc );
+                this .firstToolbar = new JToolBar();
+                this .firstToolbar .setFloatable( false );
+                this .firstToolbar .setOrientation( JToolBar.HORIZONTAL );
+                this .firstToolbar .setToolTipText( "Click on objects to select them, and enable creation of new tools accordingly." );
+                this .add( firstToolbar, BorderLayout .NORTH );
 
                 this .bookmarkBar = new JToolBar();
-                this .bookmarkBar .setOrientation( JToolBar.HORIZONTAL );
-                this .add( bookmarkBar, bookmarkBarLoc );
-
-                AbstractButton button = makeEditButton( enabler, "delete", "Delete selected objects" );
-                staticToolBar .add( button );
-                button = makeEditButton( enabler, "hideball", "Hide selected objects" );
-                staticToolBar .add( button );
+                this .bookmarkBar .setFloatable( false );
+                this .bookmarkBar .setOrientation( JToolBar.VERTICAL );
+                this .bookmarkBar .setToolTipText( "Selection bookmarks" );
+                monoStereoPlusToolbar .add( bookmarkBar, BorderLayout .LINE_START );
                 
-                staticToolBar .addSeparator();
-
-                button = makeEditButton( enabler, "joinballs", "Connect balls in a loop" );
-                staticToolBar .add( button );
-                button = makeEditButton( enabler, "chainBalls", "Connect balls in a chain" );
-                staticToolBar .add( button );
-                button = makeEditButton( enabler, "joinBallsAllToLast", "Connect all balls to last selected" );
-                staticToolBar .add( button );
-                button = makeEditButton( enabler, "joinBallsAllPossible", "Connect balls in all possible ways" );
-                staticToolBar .add( button );
-                button = makeEditButton( enabler, "panel", "Make a panel polygon" );
-                staticToolBar .add( button );
-                button = makeEditButton( enabler, "centroid", "Construct centroid of points" );
-                staticToolBar .add( button );
-                
-                staticToolBar .addSeparator();
+                AbstractButton button;
 
                 if ( controller .propertyIsTrue( "supports.symmetry.icosahedral" ) ) {
                     button = newToolButton( enabler, "icosahedral", "Create icosahedral symmetry tool" );
-                    staticToolBar .add( button );
+                    firstToolbar .add( button );
                 }
-            	button = newToolButton( enabler, "octahedral", "Create octahedral symmetry tool" );
-            	staticToolBar .add( button );
-            	button = newToolButton( enabler, "tetrahedral", "Create tetrahedral symmetry tool" );
-            	staticToolBar .add( button );
-                button = newToolButton( enabler, "point reflection", "Create point reflection tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "mirror", "Create mirror reflection tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "scaling", "Create scaling tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "rotation", "Create rotation tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "axial symmetry", "Create rotational symmetry tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "translation", "Create translation tool" );
-                staticToolBar .add( button );
-                button = newToolButton( enabler, "linear map", "Create linear map tool" );
-                staticToolBar .add( button );
-                                
-        		button = makeEditButton2( enabler, "Create selection bookmark", "/icons/tools/newTool/bookmark.png" );
+            	button = newToolButton( enabler, "octahedral", "Create an octahedral symmetry tool" );
+            	firstToolbar .add( button );
+            	button = newToolButton( enabler, "tetrahedral", "Create a tetrahedral symmetry tool" );
+            	firstToolbar .add( button );
+                button = newToolButton( enabler, "point reflection", "Create a point reflection tool" );
+                firstToolbar .add( button );
+                button = newToolButton( enabler, "mirror", "Create a mirror reflection tool" );
+                firstToolbar .add( button );
+                button = newToolButton( enabler, "scaling", "Create a scaling tool" );
+                firstToolbar .add( button );
+                button = newToolButton( enabler, "rotation", "Create a rotation tool" );
+                firstToolbar .add( button );
+                button = newToolButton( enabler, "axial symmetry", "Create a rotational symmetry tool" );
+                firstToolbar .add( button );
+                button = newToolButton( enabler, "translation", "Create a translation tool" );
+                firstToolbar .add( button );
+                button = newToolButton( enabler, "linear map", "Create a linear map tool" );
+                firstToolbar .add( button );
+
+                this .secondToolbar = new JToolBar();
+                this .secondToolbar .setFloatable( false );
+                this .secondToolbar .setOrientation( JToolBar.HORIZONTAL );
+                this .secondToolbar .setToolTipText( "All commands and tools apply to the currently selected objects." );
+                monoStereoPlusToolbar .add( secondToolbar, BorderLayout .NORTH );
+
+                button = makeEditButton2( enabler, "Create a selection bookmark", "/icons/tools/newTool/bookmark.png" );
         		button = enabler .setButtonAction( "addBookmark", button );
         		this .toolCreationButtons .put( "bookmark", button );
         		boolean on = this .controller .propertyIsTrue( "tool.enabled.bookmark" );
         		button .setEnabled( on );
                 bookmarkBar .add( button );
                 bookmarkBar .addSeparator();
+
+                button = makeEditButton( enabler, "delete", "Delete selected objects" );
+                secondToolbar .add( button );
+                button = makeEditButton( enabler, "hideball", "Hide selected objects" );
+                secondToolbar .add( button );
+                
+                secondToolbar .addSeparator();
+
+                button = makeEditButton( enabler, "joinballs", "Connect balls in a loop" );
+                secondToolbar .add( button );
+                button = makeEditButton( enabler, "chainBalls", "Connect balls in a chain" );
+                secondToolbar .add( button );
+                button = makeEditButton( enabler, "joinBallsAllToLast", "Connect all balls to last selected" );
+                secondToolbar .add( button );
+                button = makeEditButton( enabler, "joinBallsAllPossible", "Connect balls in all possible ways" );
+                secondToolbar .add( button );
+                button = makeEditButton( enabler, "panel", "Make a panel polygon" );
+                secondToolbar .add( button );
+                button = makeEditButton( enabler, "centroid", "Construct centroid of points" );
+                secondToolbar .add( button );
+                
+                secondToolbar .addSeparator();
 
                 final Controller toolsController = controller .getSubController( "tools" );
             	
@@ -176,7 +184,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 						switch ( evt .getPropertyName() ) {
 
 						case "tool.separator":
-		            		dynamicToolBar .addSeparator();
+		            		secondToolbar .addSeparator();
 							break;
 
 						case "tool.instances":
@@ -194,7 +202,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				        		if ( group .equals( "bookmark" ) )
 				        			bookmarkBar .add( button );
 				        		else
-				        			dynamicToolBar .add( button );
+				        			secondToolbar .add( button );
 				                //scroller .revalidate();
 				            }
 							break;
@@ -209,10 +217,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                     // --------------------------------------- Create the fixed toolbar.
 
                     this .oldToolBar = new JToolBar( "vZome Toolbar" );
-                    if ( oldToolbarLoc .equals( BorderLayout .LINE_END ) )
-                    	this .oldToolBar .setOrientation( JToolBar.VERTICAL );
-                    else
-                    	this .oldToolBar .setOrientation( JToolBar.HORIZONTAL );
+                    this .oldToolBar .setOrientation( JToolBar.VERTICAL );
+                	this .add( oldToolBar, BorderLayout .LINE_END );
 
                     button = makeLegacyEditButton( enabler, "joinballs", "Join two or more selected balls" );
                     oldToolBar.add( button );
@@ -267,16 +273,14 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                     button = makeLegacyEditButton( enabler, "panel", "Make a panel polygon" );
                     oldToolBar.add( button );
                     button.setRolloverEnabled( true );
-                	
-                	this .add( oldToolBar, oldToolbarLoc );
             	}
             	else
                 	this .oldToolBar = null;
             }
             else {
             	this .oldToolBar = null;
-            	this .dynamicToolBar = null;
-            	this .staticToolBar = null;
+            	this .secondToolbar = null;
+            	this .firstToolbar = null;
             	this .bookmarkBar = null;
             }
 
@@ -289,8 +293,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         }
         else {
         	this .oldToolBar = null;
-        	this .dynamicToolBar = null;
-        	this .staticToolBar = null;
+        	this .secondToolbar = null;
+        	this .firstToolbar = null;
         	this .bookmarkBar = null;
         }
 	}

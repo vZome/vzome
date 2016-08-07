@@ -23,7 +23,7 @@ public class StrutBuilderPanel extends JPanel
     {
         this .controller = controller;
         this .setLayout( new BorderLayout() );
-        
+
         // here's the containment layout...
         
         	JPanel constraintsPanel = new JPanel();
@@ -35,6 +35,7 @@ public class StrutBuilderPanel extends JPanel
                 {
                 	orbitPanel = new OrbitPanel( orbitController, symmController .getSubController( "availableOrbits" ), enabler );
                 	orbitPanel .setBorder( BorderFactory .createTitledBorder( "strut directions" ) );
+                	orbitPanel .setToolTipText( "Click and drag on a ball to create a strut, using directions selected here." );
             		constraintsPanel .add( orbitPanel, BorderLayout.CENTER );
                 }
 

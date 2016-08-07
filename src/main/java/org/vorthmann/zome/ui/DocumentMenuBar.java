@@ -245,7 +245,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( enableIf( isEditor, createMenuItem( "Ball At Origin", ( "ballAtOrigin" ) ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Ball At Symmetry Center", ( "ballAtSymmCenter" ) ) ) );
+        if ( controller .propertyIsTrue( "original.tools" ) )
+        	menu.add( enableIf( isEditor, createMenuItem( "Ball At Symmetry Center", ( "ballAtSymmCenter" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //        menu.add( enableIf( isEditor, createMenuItem( "Affine Transform All", getExclusiveAction( "affineTransformAll" ) ) );

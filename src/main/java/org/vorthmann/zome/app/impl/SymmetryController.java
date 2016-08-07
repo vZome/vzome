@@ -76,16 +76,15 @@ public class SymmetryController extends DefaultController// implements RenderedM
         buildOrbits = new OrbitSet( symmetry );
         renderOrbits = new OrbitSet( symmetry );
         snapper = new SymmetrySnapper( snapOrbits );
-        boolean haveLoneBuildOrbit = false;
         for (Direction dir : symmetry .getOrbitSet()) {
             if ( dir .isStandard() )
             {
                 availableOrbits .add( dir );
                 snapOrbits .add( dir );
-                if ( ! haveLoneBuildOrbit )
+                Axis zone = dir .getAxis( 0, 0 );
+                if ( zone .getRotationPermutation() != null )
                 {
                     buildOrbits .add( dir );
-                    haveLoneBuildOrbit = true;
                 }
             }
             renderOrbits .add( dir );
