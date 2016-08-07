@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -89,7 +90,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
 	private final AlgebraicField mField;
 	
-	private final Map<String, Tool> tools = new HashMap<>();
+	private final Map<String, Tool> tools = new LinkedHashMap<>();
 	
 	private final Command.FailureChannel failures;
 
@@ -194,6 +195,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			makeTool( "point reflection.builtin/reflection through origin", "point reflection", this, symmetry ) .perform();
 		} catch ( Command.Failure e ) {
 			logger .warning( "Failed to create built-in point reflection tool." );
+		}
+        try {
+			makeTool( "bookmark.builtin/ball at origin", "bookmark", this, symmetry ) .perform();
+		} catch ( Command.Failure e ) {
+			logger .warning( "Failed to create built-in origin bookmark." );
 		}
 
         this .renderedModel = new RenderedModel( field, this .symmetrySystem );

@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
+import com.vzome.core.construction.FreePoint;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
@@ -64,10 +65,13 @@ public class BookmarkTool extends ChangeManifestations implements Tool
     public void perform() throws Command.Failure
     {
         Duplicator duper = new Duplicator( null, null );
-        for (Manifestation man : mSelection) {
-            Construction result = duper .duplicateConstruction( man );
-            bookmarkedConstructions .add( result );
-        }
+        if ( mSelection .isEmpty() )
+        	bookmarkedConstructions .add( new FreePoint( this .mManifestations .getField() .origin( 3 ) ) );
+        else
+        	for (Manifestation man : mSelection) {
+        		Construction result = duper .duplicateConstruction( man );
+        		bookmarkedConstructions .add( result );
+        	}
         defineTool();
     }
 
