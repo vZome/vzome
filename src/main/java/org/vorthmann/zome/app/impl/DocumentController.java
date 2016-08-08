@@ -997,7 +997,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                     dir .mkdirs();
                 
                 FileOutputStream out = new FileOutputStream( file );
-                documentModel .serialize( out );
+                documentModel .serialize( out, this .properties );
                 out.close();
                 // just did a save, so lets record the document change count again,
                 //  so isEdited() will return false until more changes occur.

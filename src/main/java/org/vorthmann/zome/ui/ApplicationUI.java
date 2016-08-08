@@ -229,9 +229,11 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 	        }
 
 	        configuration .putAll( loadBuildProperties() );
-			logConfig( configuration );
 
 	        ui .mController = new ApplicationController( ui, configuration );
+
+	        configuration .setProperty( "coreVersion", ui .mController .getProperty( "coreVersion" ) );
+			logConfig( configuration );
 
             ui.errors =  new Controller.ErrorChannel()
 	        {
@@ -368,7 +370,8 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 				"edition",
 				"version",
 				"buildNumber",
-				"gitCommit"
+				"gitCommit",
+				"coreVersion"
 			});
         // Use an anonymousLogger to ensure that this is always written to the log file 
         // regardless of the settings in the logging.properties file
@@ -507,8 +510,12 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
     public void about()
     {
-        JOptionPane.showMessageDialog( null, mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + ", build "
-        		+ mController .getProperty( "buildNumber" ) + "\n\n"
+    	String version = mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + ", build "
+        		+ mController .getProperty( "buildNumber" );
+    	if ( mController .userHasEntitlement( "developer.extras" ) )
+    		version += "\n\nGit commit: " + mController .getProperty( "gitCommit" )
+    					+ "\n\nvzome-core: " + mController .getProperty( "coreVersion" );
+        JOptionPane.showMessageDialog( null, version + "\n\n"
 
                 + "Contributors:\n\n" + "Scott Vorthmann\n" + "David Hall\n" + "\n"
                 

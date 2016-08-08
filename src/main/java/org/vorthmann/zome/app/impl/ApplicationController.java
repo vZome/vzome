@@ -254,6 +254,10 @@ public class ApplicationController extends DefaultController
                     DocumentModel document = modelApp .createDocument( fieldName );
                     String title = "Untitled " + ++lastUntitled;
                     docProps .setProperty( "window.title", title );
+                    docProps .setProperty( "edition", this .properties .getProperty( "edition" ) );
+                    docProps .setProperty( "version", this .properties .getProperty( "version" ) );
+                    docProps .setProperty( "buildNumber", this .properties .getProperty( "buildNumber" ) );
+                    docProps .setProperty( "gitCommit", this .properties .getProperty( "gitCommit" ) );
                     DocumentController newest = new DocumentController( document, this, docProps );
                     newDocumentController( title, newest );
                 }
@@ -371,6 +375,9 @@ public class ApplicationController extends DefaultController
 
 		case "untitled.title":
             return "Untitled " + ++lastUntitled;
+
+		case "coreVersion":
+            return this .modelApp .getCoreVersion();
 
 		default:
 			if ( propName .startsWith( "field.label." ) )
