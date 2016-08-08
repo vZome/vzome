@@ -94,6 +94,8 @@ public class Application
     private final Colors mColors;
 
     private final Command.FailureChannel failures;
+    
+    private final Properties properties;
 
     private Map<String, Exporter3d> exporters = new HashMap<>();
 
@@ -105,12 +107,14 @@ public class Application
     {
         this .failures = failures;
         
-        Properties props = loadDefaults();
+        properties = loadDefaults();
         if ( overrides != null )
         {
-        	props .putAll( overrides );
+        	properties .putAll( overrides );
         }
-        mColors = new Colors( props );
+        properties .putAll( loadBuildProperties() );
+        
+        mColors = new Colors( properties );
         File prefsFolder = new File( System.getProperty( "user.home" ), "vZome-Preferences" );
 
         for ( int i = 1; i <= 3; i++ ) {
@@ -491,8 +495,7 @@ public class Application
                 edition = "vZome";
             String error = "Unknown " + edition + " file format.";
             if ( ! version .isEmpty() )
-                error += "\n " + Version.edition + " " + Version.label + " cannot open files\ncreated by "
-                        + edition + " " + version;
+                error += "\n Cannot open files created by " + edition + " " + version;
             logger .severe( error );
             throw new IllegalStateException( error );
         }
@@ -604,6 +607,21 @@ public class Application
         return defaults;
 	}
 
+	public static Properties loadBuildProperties()
+	{
+        String defaultRsrc = "vzome-core-build.properties";
+        Properties defaults = new Properties();
+        try {
+            ClassLoader cl = Application.class.getClassLoader();
+            InputStream in = cl.getResourceAsStream( defaultRsrc );
+            if ( in != null ) 
+            	defaults .load( in );
+        } catch ( IOException ioe ) {
+            logger.warning( "problem reading build properties: " + defaultRsrc );
+        }
+        return defaults;
+	}
+
 	public Colors getColors()
 	{
 		return this .mColors;
@@ -622,5 +640,10 @@ public class Application
 	public Lights getLights()
 	{
 		return this .mLights;
+	}
+
+	public String getCoreVersion()
+	{
+		return this .properties .getProperty( "version" );
 	}
 }

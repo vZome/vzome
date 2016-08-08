@@ -103,6 +103,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	private RenderedModel renderedModel;
 	
 	private Camera defaultView;
+	
+	private final String coreVersion;
 
     private static final Logger logger = Logger .getLogger( "com.vzome.core.editor" );
     private static final Logger thumbnailLogger = Logger.getLogger( "com.vzome.core.thumbnails" );
@@ -154,6 +156,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .mXML = xml;
 		this .commands = app .getCommands();
 		this .sceneLighting = app .getLights();
+		
+		this .coreVersion = app .getCoreVersion();
 
 		this .mRealizedModel = new RealizedModel( field, new Projection.Default( field ) );
 		
@@ -761,7 +765,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
                 return mField .getQuaternionSymmetry( name);
             }
         };
-        format .initialize( mField, orbitSetField, scale, mXML .getAttribute( "version" ), new Properties() );
+        
+        String writerVersion = mXML .getAttribute( "version" );
+        String buildNum = mXML .getAttribute( "buildNumber" );
+        if ( buildNum != null )
+        	writerVersion += " build " + buildNum;
+        format .initialize( mField, orbitSetField, scale, writerVersion, new Properties() );
 
         Element hist = (Element) mXML .getElementsByTagName( "EditHistory" ) .item( 0 );
         if ( hist == null )
@@ -844,27 +853,62 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             mHistory .synchronize( lastDoneEdit, lastStickyEdit, explicitSnapshots );
         } catch ( Throwable t )
         {
-        	String message = format .getFormatError( mXML, Version.edition, Version.label, Version.SVN_REVISION );
-        	throw new Command.Failure( message, t );
+        	String fileVersion = mXML .getAttribute( "coreVersion" );
+        	if ( this .fileIsTooNew( fileVersion ) ) {
+        		String message = "This file was authored with a newer version, " + format .getToolVersion( mXML );
+            	throw new Command.Failure( message, t );
+        	} else {
+        		String message = "There was a problem opening this file.  Please send the file to bugs@vzome.com.";
+            	throw new Command.Failure( message, t );
+        	}
         }
 
         this .migrated = openUndone || format.isMigration() || ! implicitSnapshots .isEmpty();
+    }
+    
+    boolean fileIsTooNew( String fileVersion )
+    {
+    	if ( fileVersion == null || "" .equals( fileVersion ) )
+    		return false;
+    	String[] fvTokens = fileVersion .split( "\\." );
+    	String[] cvTokens = this .coreVersion .split( "\\." );
+    	for (int i = 0; i < cvTokens.length; i++) {
+    		try {
+    			int codepart = Integer .parseInt( cvTokens[ i ] );
+    			int filepart = Integer .parseInt( fvTokens[ i ] );
+    			if ( filepart > codepart )
+    				return true;
+			} catch ( NumberFormatException e ) {
+				return false;
+			}
+		}
+    	return false;
     }
 
     public Element getDetailsXml( Document doc )
     {
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
         vZomeRoot .setAttribute( "xmlns:vzome", XmlSaveFormat.CURRENT_FORMAT );
-        vZomeRoot .setAttribute( "edition", Version.edition );
-        vZomeRoot .setAttribute( "version", Version.label );
-        vZomeRoot .setAttribute( "revision", Integer .toString( Version.SVN_REVISION ) );
         vZomeRoot .setAttribute( "field", mField.getName() );
         Element result = mHistory .getDetailXml( doc );
         vZomeRoot .appendChild( result );
         return vZomeRoot;
     }
 
+    /**
+     * For backward-compatibility
+     * @param out
+     * @throws Exception
+     */
     public void serialize( OutputStream out ) throws Exception
+    {
+    	Properties props = new Properties();
+    	props .setProperty( "edition", "vZome" );
+    	props .setProperty( "version", "5.0" );
+    	this .serialize( out, props );
+    }
+
+    public void serialize( OutputStream out, Properties editorProps ) throws Exception
     {
     	DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
     	factory .setNamespaceAware( true );
@@ -873,9 +917,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
         vZomeRoot .setAttribute( "xmlns:vzome", XmlSaveFormat.CURRENT_FORMAT );
-        vZomeRoot .setAttribute( "edition", Version.edition );
-        vZomeRoot .setAttribute( "version", Version.label );
-        vZomeRoot .setAttribute( "revision", Integer .toString( Version.SVN_REVISION ) );
+        String value = editorProps .getProperty( "edition" );
+        if ( value != null )
+        	vZomeRoot .setAttribute( "edition", value );
+        value = editorProps .getProperty( "version" );
+        if ( value != null )
+        	vZomeRoot .setAttribute( "version", value );
+        value = editorProps .getProperty( "buildNumber" );
+        if ( value != null )
+        	vZomeRoot .setAttribute( "buildNumber", value );
+        vZomeRoot .setAttribute( "coreVersion", this .coreVersion );
         vZomeRoot .setAttribute( "field", mField.getName() );
 
         Element childElement;
