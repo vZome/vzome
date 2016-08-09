@@ -72,7 +72,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         this.allOrbits = allOrbits;
         this.colorSource = colorSource;
         this.showLastOrbit = showLastOrbit;
-        this.mOneAtATime = showLastOrbit; // correlates... true only for build orbits
+        this.mOneAtATime = orbits .size() == 1;
         recalculateDots();
     }
     
