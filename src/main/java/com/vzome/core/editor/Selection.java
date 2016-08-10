@@ -15,6 +15,7 @@ import com.vzome.core.model.Group;
 import com.vzome.core.model.GroupElement;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.RealizedModel;
 
 /**
  * @author Scott Vorthmann
@@ -304,4 +305,10 @@ public class Selection implements Iterable<Manifestation>
     {
         return this .mManifestations .size();
     }
+
+	public void selectAll( RealizedModel model )
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

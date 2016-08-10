@@ -87,6 +87,11 @@ public abstract class ChangeSelection extends SideEffects
         unselect( man, false );
     }
     
+    public void selectAll()
+    {
+    	plan( new SelectAll( ) );
+    }
+    
     public void unselect( Manifestation man, boolean ignoreGroups )
     {
         if ( groupingDoneInSelection )  // the legacy form, pre 2.1.2
@@ -173,6 +178,53 @@ public abstract class ChangeSelection extends SideEffects
                 unselectGroup( (Group) next );
             else
                 plan( new SelectManifestation( (Manifestation) next, false ) );
+        }
+    }
+    
+    private class SelectAll implements SideEffect
+    {
+        private final boolean mOn;
+
+        public SelectAll( boolean on )
+        {
+            mOn = on;
+            logger .finest( "constructing SelectAll" );
+        }
+
+        @Override
+        public void redo()
+        {
+        	if ( mOn )
+        		mSelection .selectAll();
+        	else
+        		mSelection .selectNone();
+        }
+
+        @Override
+        public void undo()
+        {
+            if ( groupingDoneInSelection ) {
+                if ( mOn )
+                    mSelection .unselectWithGrouping( mMan );
+                else
+                    mSelection .selectWithGrouping( mMan );
+            }
+            else
+                if ( mOn )
+                    mSelection .unselect( mMan );
+                else
+                    mSelection .select( mMan );
+        }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            Element result = this .mOn ? doc .createElement( "select" ) : doc .createElement( "deselect" );
+            if ( mMan != null ) {
+                Element man = mMan .getXml( doc );
+                result .appendChild( man );
+            }
+            return result;
         }
     }
     

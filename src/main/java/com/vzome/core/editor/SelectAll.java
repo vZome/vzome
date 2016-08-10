@@ -12,13 +12,7 @@ public class SelectAll extends ChangeSelection
     public SelectAll( Selection selection, RealizedModel model, boolean groupInSelection )
     {
         super( selection, groupInSelection );
-        for (Manifestation m : model) {
-            if ( m .getRenderedObject() != null )
-            {
-                if ( ! selection .manifestationSelected( m ) )
-                    select( m, true );
-            }
-        }
+        selection .selectAll( model );
     }
 
     @Override
