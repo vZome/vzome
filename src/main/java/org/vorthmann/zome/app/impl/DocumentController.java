@@ -1515,6 +1515,14 @@ public class DocumentController extends DefaultController implements J3dComponen
 		case "objectProperties":
 			if ( pickedManifestation != null ) {
 				String objectProps = documentModel .getManifestationProperties( pickedManifestation, symmetryController .getOrbitSource() );
+				if ( pickedManifestation instanceof Strut && this .userHasEntitlement( "developer.extras" ) ) {
+		            AlgebraicVector offset = ( (Strut) pickedManifestation ).getOffset();
+		            Axis zone = symmetryController .getOrbitSource() .getAxis( offset );
+		            objectProps += "\n\nzone: " + zone .toString();
+		            objectProps += "\n\nrotation: " + zone .getCorrectRotation();
+		            objectProps += "\n\norientation: " + zone .getOrientation();
+		            objectProps += "\n\nsense: " + zone .getSense();
+				}
 				pickedManifestation = null;
 				return objectProps;
 			}
