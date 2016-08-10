@@ -6,13 +6,16 @@ package com.vzome.core.editor;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.construction.ConjugatedSymmetryTransformation;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -121,7 +124,6 @@ public class SymmetryTool extends TransformationTool
 
             switch ( getCategory() ) {
 
-        	case "octahedral":
         	case "tetrahedral":
         		if ( !correct )
         			return "no unique alignment strut selected.";
@@ -144,6 +146,44 @@ public class SymmetryTool extends TransformationTool
 	                this .transforms = new Transformation[ order-1 ];
 	                for ( int i = 0; i < order-1; i++ )
 	                    transforms[ i ] = new SymmetryTransformation( symmetry, closure[ i+1 ], center );
+				}
+        		break;
+
+        	case "octahedral":
+                Axis zone = null;
+        		if ( !correct )
+        			return "no unique alignment strut selected.";
+        		if ( axis == null ) {
+        			if ( !prepareTool )
+        				return "no aligment strut selected.";
+        		} else {
+        			// align the octahedral symmetry with this blue or green strut
+        			IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
+        			zone = icosa .getAxis( axis .getOffset() );
+        			if ( zone == null )
+        				return "selected alignment strut is not an octahedral axis.";
+        			switch ( zone .getDirection() .getName() ) {
+
+        			case "green":
+						zone = icosa .blueTetrahedralFromGreen( zone );
+        				// zone is now blue
+        				break;
+        				
+        			case "blue":
+						break;
+
+					default:
+        				return "selected alignment strut is not a tetrahedral axis.";
+					}
+        		}
+                if ( prepareTool ) {
+                	AlgebraicMatrix orientation = symmetry .getMatrix( zone .getOrientation() );
+                	AlgebraicMatrix inverse = orientation .inverse();
+        			OctahedralSymmetry octa = (OctahedralSymmetry) symmetry .getField() .getSymmetry( "octahedral" );
+        	    	int order = octa .getChiralOrder();
+        	    	this .transforms = new Transformation[ order-1 ];
+        	    	for ( int i = 0; i < order-1; i++ )
+        	    		transforms[ i ] = new ConjugatedSymmetryTransformation( octa, i+1, center, inverse, orientation );
 				}
         		break;
 
