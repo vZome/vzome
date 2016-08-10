@@ -26,6 +26,23 @@ public class AlgebraicNumberTest extends TestCase
         }
     }
 
+    public void testZeroPower()
+    {
+        AlgebraicField pentagonField = new PentagonField();
+        final AlgebraicField[] fields = {
+            pentagonField,
+            new RootTwoField(),
+            new RootThreeField(),
+            new HeptagonField(),
+            new SnubDodecField(pentagonField)
+        };
+        for(AlgebraicField field : fields ) {
+            AlgebraicNumber one = field.createPower(0); // anything to the zero power...
+            assertEquals(one, field.createRational(1)); // ...equals exactly one
+            assertTrue(one.isOne());
+        }
+    }
+
     public void testFactorsNotNull()
     {
         final AlgebraicField field = new PentagonField();
