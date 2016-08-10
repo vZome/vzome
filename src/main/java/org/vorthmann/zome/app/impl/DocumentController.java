@@ -143,6 +143,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private Map<String,SymmetryController> symmetries = new HashMap<>();
 
+    private final ClipboardController systemClipboard;
     private String designClipboard;
 
     private boolean editingModel;
@@ -191,6 +192,10 @@ public class DocumentController extends DefaultController implements J3dComponen
         startReader = ! newDocument && ! asTemplate;
         
         editingModel = super.userHasEntitlement( "model.edit" ) ;//&& ! propertyIsTrue( "reader.preview" );
+        
+        systemClipboard = propertyIsTrue( "enable.system.clipboard" )
+                ? new ClipboardController()
+                : null;
         
         toolsController = new ToolsController( document );
         toolsController .setNextController( this );
@@ -1267,8 +1272,10 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
         
         if ( "clipboard" .equals( string ) )
-            return designClipboard;
-                
+            return systemClipboard != null
+                    ? systemClipboard.getClipboardContents()
+                    : designClipboard;
+        
         if ( "showFrameLabels" .equals( string ) )
             return Boolean .toString( showFrameLabels );
                 
@@ -1395,8 +1402,14 @@ public class DocumentController extends DefaultController implements J3dComponen
             this.showStrutScales = "true" .equals( value );
             properties().firePropertyChange( "showStrutScales", old, this.showStrutScales );
         }
-        else if ( "clipboard" .equals( cmd ) )
-            this .designClipboard = (String) value;
+        else if ( "clipboard" .equals( cmd ) ) {
+            if( systemClipboard != null ) {
+                systemClipboard.setClipboardContents((String) value);
+            }
+            else {
+                designClipboard = (String) value;
+            }
+        }
         
         else if ( "showFrameLabels" .equals( cmd ) )
         {
