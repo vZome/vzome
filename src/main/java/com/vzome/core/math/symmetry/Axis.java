@@ -110,7 +110,7 @@ public class Axis
 
     public int getCorrectRotation()
     {
-        return mRotationPerm .mapIndex( 0 );
+        return (mRotationPerm == null)? Symmetry.NO_ROTATION : mRotationPerm .mapIndex( 0 );
     }
 
     public Permutation getRotationPermutation()
