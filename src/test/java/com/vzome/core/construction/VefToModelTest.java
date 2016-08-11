@@ -193,11 +193,11 @@ public class VefToModelTest
 
     @Test
     public void testZeroFillHigherOrderIrrationals() {
-        // TODO: Be sure that an order N formatted number can be imported into a field of order > N
+        // Tests that an order N formatted number can be imported into a field of order > N
         // with the resulting irrational factors automatically zero filled.
-        // Also confirm that specifying too many factors for a field will generate an error.
+        // TODO: Confirm that specifying too many factors for a field will generate an error.
 
-                final AlgebraicVector quaternion = null;
+        final AlgebraicVector quaternion = null;
         final NewConstructions effects = new NewConstructions();
         final AlgebraicVector offset = null;
         final AlgebraicField pentagonField = new PentagonField();

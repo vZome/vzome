@@ -486,7 +486,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	public String copySelectionVEF()
 	{
 		StringWriter out = new StringWriter();
-		Exporter exporter = new VefModelExporter( out, mField, null );
+		Exporter exporter = new VefModelExporter( out, mField );
         for (Manifestation man : mSelection) {
             exporter .exportManifestation( man );
         }
