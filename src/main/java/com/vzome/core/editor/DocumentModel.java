@@ -1026,7 +1026,18 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 
-	public String getManifestationProperties( Manifestation man, OrbitSource symmetry )
+    /**
+     * @deprecated As of 8/11/2016:
+     * This code will continue to function properly,
+     * but its functionality has been replicated in vzome-desktop.
+     *
+     * Formatting such information for display should not be a function of vzome-core.
+     *
+     * When all references to this method have been replaced,
+     *   then it should be removed from vzome-core.
+     */
+    @Deprecated
+    public String getManifestationProperties( Manifestation man, OrbitSource symmetry )
 	{
         if ( man instanceof Connector )
         {
