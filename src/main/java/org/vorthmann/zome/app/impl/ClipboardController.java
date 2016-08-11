@@ -1,5 +1,6 @@
 package org.vorthmann.zome.app.impl;
 
+import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -25,9 +26,15 @@ public class ClipboardController implements ClipboardOwner {
      * Place a String on the clipboard, and make this class the owner of the Clipboard's contents.
      */
     public void setClipboardContents(String string) {
-        StringSelection stringSelection = new StringSelection(string);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(stringSelection, this);
+        try {
+            StringSelection stringSelection = new StringSelection(string);
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(stringSelection, this);
+        }
+        catch ( HeadlessException | IllegalStateException ex ) {
+            System.out.println(ex);
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -37,15 +44,16 @@ public class ClipboardController implements ClipboardOwner {
      */
     public String getClipboardContents() {
         String result = "";
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        //odd: the Object param of getContents is not currently used
-        Transferable contents = clipboard.getContents(null);
-        if( (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor) ) {
-            try {
+        try {
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            // The param of getContents is not currently used
+            Transferable contents = clipboard.getContents(null);
+            if( (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor) ) {
                 result = (String) contents.getTransferData(DataFlavor.stringFlavor);
-            } catch (UnsupportedFlavorException | IOException ex) {
-                ex.printStackTrace();
             }
+        } catch ( UnsupportedFlavorException | IOException | IllegalStateException ex ) {
+            System.out.println(ex);
+            ex.printStackTrace();
         }
         return result;
     }
