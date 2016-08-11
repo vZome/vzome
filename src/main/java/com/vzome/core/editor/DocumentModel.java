@@ -495,8 +495,14 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	public void pasteVEF( String vefContent )
 	{
-        UndoableEdit edit = new LoadVEF( this.mSelection, this.mRealizedModel, vefContent, null, null );
-        performAndRecord( edit );
+        if( vefContent != null && vefContent.startsWith("vZome VEF" )) {
+            // Although older VEF formats don't all include the header and could possibly be successfully pasted here,
+            // we're going to limit it to at least something that includes a valid VEF header.
+            // We won't check the version number so we can still paste formats older than VERSION_W_FIRST
+            // as long as they at least include the minimal header.
+            UndoableEdit edit = new LoadVEF( this.mSelection, this.mRealizedModel, vefContent, null, null );
+            performAndRecord( edit );
+        }
 	}
 
 	public void applyTool( Tool tool, Tool.Registry registry, int modes )
