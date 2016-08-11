@@ -312,30 +312,30 @@ public class DocumentController extends DefaultController implements J3dComponen
         viewer .setEye( RenderingViewer .RIGHT_EYE );
         rightController = new PickingController( viewer, this );
 
-        Controller controlBallProps = this;
-        if ( super .userHasEntitlement( "developer.extras" ) ) {
         	// TODO define a standalone controller class for contextual menus, etc.
-        	controlBallProps = new DefaultController()
+        Controller controlBallProps = new DefaultController()
+        {
+        	@Override
+        	public String getProperty( String name )
         	{
-				@Override
-				public String getProperty( String name )
-				{
-					switch ( name ) {
-                    case "drawOutlines":
-                        return "false";
+        		switch ( name ) {
 
-					case "showIcosahedralLabels":
-                        return (documentModel.getSymmetrySystem().getSymmetry() instanceof IcosahedralSymmetry)
-                            ? super.getProperty( "trackball.showIcosahedralLabels" )
-                            : "false";
+        		case "drawOutlines":
+        			return "false";
 
-					default:
-						return super.getProperty( name );
-					}
-				}
-        	};
-        	controlBallProps .setNextController( this );
-        }
+        		case "showIcosahedralLabels":
+        			if ( super .userHasEntitlement( "developer.extras" )
+        					&& documentModel.getSymmetrySystem().getSymmetry() instanceof IcosahedralSymmetry ) {
+        				return super.getProperty( "trackball.showIcosahedralLabels" );
+        			} else
+        				return "false";
+
+        		default:
+        			return super.getProperty( name );
+        		}
+        	}
+        };
+        controlBallProps .setNextController( this );
         mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, controlBallProps );
 
         thumbnails = new ThumbnailRendererImpl( rvFactory, sceneLighting );
