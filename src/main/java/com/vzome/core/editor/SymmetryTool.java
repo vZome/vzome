@@ -150,7 +150,7 @@ public class SymmetryTool extends TransformationTool
         		break;
 
         	case "octahedral":
-                Axis zone = null;
+        		AlgebraicMatrix orientation = null;
         		if ( !correct )
         			return "no unique alignment strut selected.";
         		if ( axis == null ) {
@@ -159,25 +159,26 @@ public class SymmetryTool extends TransformationTool
         		} else {
         			// align the octahedral symmetry with this blue or green strut
         			IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
-        			zone = icosa .getAxis( axis .getOffset() );
+        			Axis zone = icosa .getAxis( axis .getOffset() );
         			if ( zone == null )
         				return "selected alignment strut is not an octahedral axis.";
+        			int blueIndex = 0;
         			switch ( zone .getDirection() .getName() ) {
 
         			case "green":
-						zone = icosa .blueTetrahedralFromGreen( zone );
-        				// zone is now blue
+        				blueIndex = icosa .blueTetrahedralFromGreen( zone .getOrientation() );
         				break;
         				
         			case "blue":
+        				blueIndex = zone .getOrientation();
 						break;
 
 					default:
-        				return "selected alignment strut is not a tetrahedral axis.";
+        				return "selected alignment strut is not an octahedral axis.";
 					}
+                	orientation = symmetry .getMatrix( blueIndex );
         		}
                 if ( prepareTool ) {
-                	AlgebraicMatrix orientation = symmetry .getMatrix( zone .getOrientation() );
                 	AlgebraicMatrix inverse = orientation .inverse();
         			OctahedralSymmetry octa = (OctahedralSymmetry) symmetry .getField() .getSymmetry( "octahedral" );
         	    	int order = octa .getChiralOrder();

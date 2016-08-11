@@ -376,4 +376,14 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         }
         return null;
     }
+
+	public int blueTetrahedralFromGreen( int greenIndex )
+	{
+		int subgroup = this .greenTetrahedral[ greenIndex ];
+		for (int i = 0; i < this .blueTetrahedral .length; i++) {
+			if ( this .blueTetrahedral[ i ] == subgroup )
+				return i;
+		}
+		return 0;
+	}
 }
