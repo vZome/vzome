@@ -62,6 +62,7 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
@@ -1031,12 +1032,23 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 
-	public String getManifestationProperties( Manifestation man, OrbitSource symmetry )
+    /**
+     * @deprecated As of 8/11/2016:
+     * This code will continue to function properly,
+     * but its functionality has been replicated in vzome-desktop.
+     *
+     * Formatting such information for display should not be a function of vzome-core.
+     *
+     * When all references to this method have been replaced,
+     *   then it should be removed from vzome-core.
+     */
+    @Deprecated
+    public String getManifestationProperties( Manifestation man, OrbitSource symmetry )
 	{
         if ( man instanceof Connector )
         {
             StringBuffer buf;
-            AlgebraicVector loc = ((Connector) man) .getLocation();
+            AlgebraicVector loc = man .getLocation();
 
             System .out .println( loc .getVectorExpression( AlgebraicField.EXPRESSION_FORMAT ) );
             System .out .println( loc .getVectorExpression( AlgebraicField.ZOMIC_FORMAT ) );
@@ -1050,9 +1062,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         else if ( man instanceof Strut ) {
             StringBuffer buf = new StringBuffer();
             buf.append( "start: " );
-            ( (Strut) man ).getLocation() .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
+            Strut strut = Strut.class.cast(man);
+            strut .getLocation() .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
             buf.append( "\n\noffset: " );
-            AlgebraicVector offset = ( (Strut) man ).getOffset();
+            AlgebraicVector offset = strut .getOffset();
 
             System .out .println( offset .getVectorExpression( AlgebraicField.EXPRESSION_FORMAT ) );
             System .out .println( offset .getVectorExpression( AlgebraicField.ZOMIC_FORMAT ) );
@@ -1086,8 +1099,44 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             }
             return buf .toString();
         }
-        else
-        	return "PANEL"; // TODO panels
+        else if ( man instanceof Panel ) {
+            Panel panel = Panel.class.cast(man);
+            StringBuffer buf = new StringBuffer();
+
+            buf .append( "vertices: " );
+            buf .append( panel.getVertexCount() );
+
+            String delim = "";
+            for( AlgebraicVector vertex : panel) {
+                buf.append(delim);
+                buf.append("\n  ");
+                vertex .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
+                delim = ",";
+            }
+
+            AlgebraicVector normal = panel .getNormal();
+            buf .append( "\n\nnormal: " );
+            normal .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
+
+            buf.append("\n\nnorm squared: ");
+            AlgebraicNumber normSquared = normal.dot(normal);
+            double norm2d = normSquared.evaluate();
+            normSquared.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+            buf.append(" = ");
+            buf.append(FORMAT.format(norm2d));
+
+            Axis zone = symmetry .getAxis( normal );
+            Direction direction = zone.getDirection();
+            buf.append( "\n\ndirection: " );
+            if( direction.isAutomatic() ) {
+                buf.append( "Automatic " );
+            }
+            buf.append( direction.getName() );
+
+
+            return buf.toString();
+        }
+        return man.getClass().getSimpleName();
     }
 
 	public void undo( boolean useBlocks )
