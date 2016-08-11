@@ -1260,7 +1260,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             String group = string .substring( "tool.enabled." .length() );
             
             Symmetry symmetry = symmetryController .getSymmetry();
-            if ( "icosahedral" .equals( group ) || "octahedral" .equals( group ) )
+            if ( "icosahedral" .equals( group ) )
                 symmetry = getSymmetryController( group ) .getSymmetry();
             
             return Boolean .toString( this .documentModel .isToolEnabled( group, symmetry ) );
