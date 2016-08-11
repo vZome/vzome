@@ -51,6 +51,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
@@ -71,11 +72,13 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
+import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
@@ -83,10 +86,11 @@ import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
- * Description here.
- * 
  * @author Scott Vorthmann 2003
  */
 public class DocumentController extends DefaultController implements J3dComponentFactory
@@ -1527,17 +1531,121 @@ public class DocumentController extends DefaultController implements J3dComponen
 
 		case "objectProperties":
 			if ( pickedManifestation != null ) {
-				String objectProps = documentModel .getManifestationProperties( pickedManifestation, symmetryController .getOrbitSource() );
-				if ( pickedManifestation instanceof Strut && this .userHasEntitlement( "developer.extras" ) ) {
-		            AlgebraicVector offset = ( (Strut) pickedManifestation ).getOffset();
-		            Axis zone = symmetryController .getOrbitSource() .getAxis( offset );
-		            objectProps += "\n\nzone: " + zone .toString();
-		            objectProps += "\n\nrotation: " + zone .getCorrectRotation();
-		            objectProps += "\n\norientation: " + zone .getOrientation();
-		            objectProps += "\n\nsense: " + zone .getSense();
+                boolean devExtras = userHasEntitlement( "developer.extras" );
+                StringBuffer buf = new StringBuffer();
+                final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
+				OrbitSource symmetry  = symmetryController .getOrbitSource();
+                Manifestation man = pickedManifestation;
+                Axis zone = null;
+                if (man instanceof Connector) {
+                    AlgebraicVector loc = man.getLocation();
+                    if(devExtras) {
+                        System.out.println(loc.getVectorExpression(AlgebraicField.EXPRESSION_FORMAT));
+                        System.out.println(loc.getVectorExpression(AlgebraicField.ZOMIC_FORMAT));
+                        System.out.println(loc.getVectorExpression(AlgebraicField.VEF_FORMAT));
+                    }
+                    buf.append("location: ");
+                    loc.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                } else if (man instanceof Strut) {
+                    buf.append("start: ");
+                    Strut strut = Strut.class.cast(man);
+                    strut.getLocation().getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    
+                    buf.append("\n\noffset: ");
+                    AlgebraicVector offset = strut.getOffset();
+                    if (offset.isOrigin()) {
+                        return "zero length!";
+                    }
+                    if (devExtras) {
+                        System.out.println(offset.getVectorExpression(AlgebraicField.EXPRESSION_FORMAT));
+                        System.out.println(offset.getVectorExpression(AlgebraicField.ZOMIC_FORMAT));
+                        System.out.println(offset.getVectorExpression(AlgebraicField.VEF_FORMAT));
+                    }
+                    offset.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    buf.append("\n\nnorm squared: ");
+                    AlgebraicNumber normSquared = offset.dot(offset);
+                    double norm2d = normSquared.evaluate();
+                    normSquared.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    buf.append(" = ");
+                    buf.append(FORMAT.format(norm2d));
+
+                    zone = symmetry.getAxis(offset);
+                    Direction direction = zone.getDirection();
+                    buf.append("\n\ndirection: ");
+                    if (direction.isAutomatic()) {
+                        buf.append("Automatic ");
+                    }
+                    buf.append(direction.getName());
+
+                    AlgebraicNumber len = zone.getLength(offset);
+                    len = zone.getOrbit().getLengthInUnits(len);
+
+                    buf.append("\n\nlength in orbit units: ");
+                    len.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+
+                    if (this .documentModel.getField() instanceof PentagonField) {
+                        buf.append("\n\nlength in Zome b1 struts: ");
+                        if (FORMAT instanceof DecimalFormat) {
+                            ((DecimalFormat) FORMAT).applyPattern("0.0000");
+                        }
+                        buf.append(FORMAT.format(Math.sqrt(norm2d) / PentagonField.B1_LENGTH));
+                    }
+                } else if (man instanceof Panel) {
+                    Panel panel = Panel.class.cast(man);
+
+                    buf.append("vertices: ");
+                    buf.append(panel.getVertexCount());
+
+                    String delim = "";
+                    for (AlgebraicVector vertex : panel) {
+                        buf.append(delim);
+                        buf.append("\n  ");
+                        vertex.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                        delim = ",";
+                    }
+
+                    AlgebraicVector normal = panel.getNormal();
+                    buf.append("\n\nnormal: ");
+                    normal.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    if (devExtras) {
+                        System.out.println(normal.getVectorExpression(AlgebraicField.EXPRESSION_FORMAT));
+                        System.out.println(normal.getVectorExpression(AlgebraicField.ZOMIC_FORMAT));
+                        System.out.println(normal.getVectorExpression(AlgebraicField.VEF_FORMAT));
+                    }
+                    buf.append("\n\nnorm squared: ");
+                    AlgebraicNumber normSquared = normal.dot(normal);
+                    double norm2d = normSquared.evaluate();
+                    normSquared.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    buf.append(" = ");
+                    buf.append(FORMAT.format(norm2d));
+
+                    zone = symmetry.getAxis(normal);
+                    Direction direction = zone.getDirection();
+                    buf.append("\n\ndirection: ");
+                    if (direction.isAutomatic()) {
+                        buf.append("Automatic ");
+                    }
+                    buf.append(direction.getName());
+                } else {
+                    // should never get here
+                    return man.getClass().getSimpleName();
+                }
+                
+				if( devExtras) {
+                    if( zone != null) {
+                        buf.append( "\n\nzone: " + zone .toString() );
+                        buf.append( "\n\nrotation: " + zone .getCorrectRotation() );
+                        buf.append( "\n\norientation: " + zone .getOrientation() );
+                        buf.append( "\n\nsense: " + zone .getSense() );
+                        buf.append( "\n\nprototype: " + zone.getDirection().getPrototype() );
+                        // Future TODO: if and when centroid property is eventually added to manifestation
+                        // buf.append( "\n\centroid: " + man .getCentroid() );
+                    }
+                    System .out .println(buf.toString().replace("\n\n", "\n"));
+                    System .out .println();
 				}
 				pickedManifestation = null;
-				return objectProps;
+				return buf.toString();
 			}
 			return null;
 
