@@ -3,6 +3,8 @@
 
 package com.vzome.core.algebra;
 
+import java.util.Arrays;
+
 public class Fields
 {
     public interface Element
@@ -56,6 +58,11 @@ public class Fields
     
     public static final void gaussJordanReduction( Element[][] matrix, Element[][] adjoined )
     {
+        final Element[][] copy = new Element[ matrix.length ][];
+        for (int i = 0; i < matrix.length; i++) {
+        	copy[i] = Arrays.copyOf( matrix[i], matrix[i].length );
+        }
+        matrix = copy;
         for ( int upleft = 0; upleft < matrix.length; upleft++ )
         {
             int pivot = -1;
