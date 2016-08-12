@@ -51,6 +51,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
@@ -71,11 +72,13 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
+import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
@@ -83,10 +86,11 @@ import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
- * Description here.
- * 
  * @author Scott Vorthmann 2003
  */
 public class DocumentController extends DefaultController implements J3dComponentFactory
@@ -160,8 +164,8 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private int changeCount = 0;
 
-	private final PickingController monoController, leftController, rightController;
-	    
+    private final PickingController monoController, leftController, rightController;
+        
    /*
      * See the javadoc to control the logging:
      * 
@@ -210,74 +214,74 @@ public class DocumentController extends DefaultController implements J3dComponen
         selectionRendering = new ManifestationChanges()
         {
             @Override
-        	public void manifestationAdded( Manifestation m )
-        	{
-        		mRenderedModel .setManifestationGlow( m, true );
-        	}
+            public void manifestationAdded( Manifestation m )
+            {
+                mRenderedModel .setManifestationGlow( m, true );
+            }
 
             @Override
-        	public void manifestationRemoved( Manifestation m )
-        	{
-        		mRenderedModel .setManifestationGlow( m, false );
-        	}
+            public void manifestationRemoved( Manifestation m )
+            {
+                mRenderedModel .setManifestationGlow( m, false );
+            }
 
-        	@Override
-        	public void manifestationColored( Manifestation m, Color c ) {}
+            @Override
+            public void manifestationColored( Manifestation m, Color c ) {}
         };
         this .documentModel .addSelectionListener( selectionRendering );
 
         this .articleChanges = new PropertyChangeListener()
         {   
             @Override
-        	public void propertyChange( PropertyChangeEvent change )
-        	{
-        		if ( "currentSnapshot" .equals( change .getPropertyName() ) )
-        		{
-        			// contents of old "renderSnapshot" action
-        			RenderedModel newSnapshot = (RenderedModel) change .getNewValue();
-        			if ( newSnapshot != currentSnapshot )
-        			{
-        				synchronized ( newSnapshot ) {
-        					RenderedModel .renderChange( currentSnapshot, newSnapshot, mainScene );
-        				}
-        				currentSnapshot = newSnapshot;
-        			}
-        		}
-        		else if ( "currentView" .equals( change .getPropertyName() ) )
-        		{
-        			Camera newView = (Camera) change .getNewValue();
-        			if ( ! newView .equals( mViewPlatform .getView() ) )
-        				mViewPlatform .restoreView( newView );
-        		}
-        		else if ( "thumbnailChanged" .equals( change .getPropertyName() ) )
-        		{
-        			int pageNum = (Integer) change .getNewValue();
-        			DocumentController .this .documentModel .getLesson() .updateThumbnail( pageNum, DocumentController .this .documentModel, thumbnails );
-        		}
-        	}
+            public void propertyChange( PropertyChangeEvent change )
+            {
+                if ( "currentSnapshot" .equals( change .getPropertyName() ) )
+                {
+                    // contents of old "renderSnapshot" action
+                    RenderedModel newSnapshot = (RenderedModel) change .getNewValue();
+                    if ( newSnapshot != currentSnapshot )
+                    {
+                        synchronized ( newSnapshot ) {
+                            RenderedModel .renderChange( currentSnapshot, newSnapshot, mainScene );
+                        }
+                        currentSnapshot = newSnapshot;
+                    }
+                }
+                else if ( "currentView" .equals( change .getPropertyName() ) )
+                {
+                    Camera newView = (Camera) change .getNewValue();
+                    if ( ! newView .equals( mViewPlatform .getView() ) )
+                        mViewPlatform .restoreView( newView );
+                }
+                else if ( "thumbnailChanged" .equals( change .getPropertyName() ) )
+                {
+                    int pageNum = (Integer) change .getNewValue();
+                    DocumentController .this .documentModel .getLesson() .updateThumbnail( pageNum, DocumentController .this .documentModel, thumbnails );
+                }
+            }
         };
         this .modelChanges = new PropertyChangeListener()
         {   
             @Override
-        	public void propertyChange( PropertyChangeEvent change )
-        	{
-            	switch ( change .getPropertyName() ) {
+            public void propertyChange( PropertyChangeEvent change )
+            {
+                switch ( change .getPropertyName() ) {
 
-            	case "current.edit.xml":
-            	case "tool.separator":
-            	case "tool.instances":
-        			properties() .firePropertyChange( change ); // forward to the UI for display
-					break;
+                case "current.edit.xml":
+                case "tool.separator":
+                case "tool.instances":
+                    properties() .firePropertyChange( change ); // forward to the UI for display
+                    break;
 
-				default:
-					break;
-				}
-        	}
+                default:
+                    break;
+                }
+            }
         };
         if ( editingModel )
-        	this .documentModel .addPropertyChangeListener( this .modelChanges );
+            this .documentModel .addPropertyChangeListener( this .modelChanges );
         else
-        	this .documentModel .addPropertyChangeListener( this .articleChanges );
+            this .documentModel .addPropertyChangeListener( this .articleChanges );
 
         sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
 
@@ -312,28 +316,28 @@ public class DocumentController extends DefaultController implements J3dComponen
         viewer .setEye( RenderingViewer .RIGHT_EYE );
         rightController = new PickingController( viewer, this );
 
-        	// TODO define a standalone controller class for contextual menus, etc.
+            // TODO define a standalone controller class for contextual menus, etc.
         Controller controlBallProps = new DefaultController()
         {
-        	@Override
-        	public String getProperty( String name )
-        	{
-        		switch ( name ) {
+            @Override
+            public String getProperty( String name )
+            {
+                switch ( name ) {
 
-        		case "drawOutlines":
-        			return "false";
+                case "drawOutlines":
+                    return "false";
 
-        		case "showIcosahedralLabels":
-        			if ( super .userHasEntitlement( "developer.extras" )
-        					&& documentModel.getSymmetrySystem().getSymmetry() instanceof IcosahedralSymmetry ) {
-        				return super.getProperty( "trackball.showIcosahedralLabels" );
-        			} else
-        				return "false";
+                case "showIcosahedralLabels":
+                    if ( super .userHasEntitlement( "developer.extras" )
+                            && documentModel.getSymmetrySystem().getSymmetry() instanceof IcosahedralSymmetry ) {
+                        return super.getProperty( "trackball.showIcosahedralLabels" );
+                    } else
+                        return "false";
 
-        		default:
-        			return super.getProperty( name );
-        		}
-        	}
+                default:
+                    return super.getProperty( name );
+                }
+            }
         };
         controlBallProps .setNextController( this );
         mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, controlBallProps );
@@ -353,8 +357,8 @@ public class DocumentController extends DefaultController implements J3dComponen
         // can't do this before the setSymmetrySystem() call just above
         if ( mRenderedModel != null )
         {
-        	this .documentModel .setRenderedModel( mRenderedModel );
-        	this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
+            this .documentModel .setRenderedModel( mRenderedModel );
+            this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
         }
 
         partsController = new PartsController( symmetryController .getOrbitSource() );
@@ -369,14 +373,14 @@ public class DocumentController extends DefaultController implements J3dComponen
     {
         if ( name.startsWith( "mainViewer" ) )
         {
-        	Component canvas = null;
-        	if ( name .endsWith( "monocular" ) )
-        		canvas = modelCanvas;
-        	else if ( name .endsWith( "leftEye" ) )
-        		canvas = leftEyeCanvas;
-        	else
-        		canvas = rightEyeCanvas;
-        	
+            Component canvas = null;
+            if ( name .endsWith( "monocular" ) )
+                canvas = modelCanvas;
+            else if ( name .endsWith( "leftEye" ) )
+                canvas = leftEyeCanvas;
+            else
+                canvas = rightEyeCanvas;
+            
             /*
              * Mouse tools here follow some general principles:
              * 
@@ -475,9 +479,9 @@ public class DocumentController extends DefaultController implements J3dComponen
             if ( canvas == modelCanvas )
                 modelModeMainTrackball = mouseTool;
             if ( editingModel )
-            	modelModeMainTrackball .attach( canvas );
+                modelModeMainTrackball .attach( canvas );
             else
-            	articleModeMainTrackball .attach( canvas );
+                articleModeMainTrackball .attach( canvas );
             
             // clicks become select or deselect all
             mouseTool = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
@@ -517,13 +521,13 @@ public class DocumentController extends DefaultController implements J3dComponen
                         Point point = (Point) target .getConstructions() .next();
                         AlgebraicVector workingPlaneNormal = null;
                         if ( useWorkingPlane && (workingPlaneAxis != null ) )
-                        	workingPlaneNormal = workingPlaneAxis .getOffset();
+                            workingPlaneNormal = workingPlaneAxis .getOffset();
                         previewStrut .startRendering( symmetryController, point, workingPlaneNormal );
                     }
                 }
 
                 @Override
-				protected void dragFinished( Manifestation target, boolean b )
+                protected void dragFinished( Manifestation target, boolean b )
                 {
                     previewStrut .finishPreview( documentModel );
                 }
@@ -550,14 +554,14 @@ public class DocumentController extends DefaultController implements J3dComponen
             // working plane drag events to adjust the preview strut (when it is rendered)
             mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
             {
-				@Override
-				public void mouseDragged( MouseEvent e )
-				{
-					Point3d imagePt = new Point3d();
-					Point3d eyePt = new Point3d();
-					imageCaptureViewer .pickPoint( e, imagePt, eyePt );
-					previewStrut .workingPlaneDrag( imagePt, eyePt );
-				}
+                @Override
+                public void mouseDragged( MouseEvent e )
+                {
+                    Point3d imagePt = new Point3d();
+                    Point3d eyePt = new Point3d();
+                    imageCaptureViewer .pickPoint( e, imagePt, eyePt );
+                    previewStrut .workingPlaneDrag( imagePt, eyePt );
+                }
             } );
             if ( editingModel )
                 mouseTool .attach( canvas );
@@ -586,7 +590,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             mViewPlatform .addViewer( new TrackballRenderingViewer( viewer ) );
 
             // mControlBallScene .reset();
-        	for ( RenderedManifestation rm : mControlBallModel )
+            for ( RenderedManifestation rm : mControlBallModel )
                 mControlBallScene.manifestationAdded( rm );
 
             mViewPlatform .updateViewers();
@@ -608,23 +612,23 @@ public class DocumentController extends DefaultController implements J3dComponen
     
     private SymmetryController getSymmetryController( String name )
     {
-    	SymmetryController result = this .symmetries .get( name );
+        SymmetryController result = this .symmetries .get( name );
         if ( result == null ) {
-        	result = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
-        	this .symmetries .put( name, result );
+            result = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
+            this .symmetries .put( name, result );
         }
         return result;
     }
 
     private void setSymmetrySystem( SymmetrySystem symmetrySystem )
     {
-    	String name =  symmetrySystem .getName();
+        String name =  symmetrySystem .getName();
         symmetryController = getSymmetryController( name );
 
         mControlBallModel = mApp.getSymmetryModel( symmetryController.getSymmetry() );
         if ( mControlBallScene != null ) {
             mControlBallScene.reset();
-        	for ( RenderedManifestation rm : mControlBallModel )
+            for ( RenderedManifestation rm : mControlBallModel )
                 mControlBallScene.manifestationAdded( rm );
         }
         mViewPlatform .setSnapper( symmetryController.getSnapper() );
@@ -661,41 +665,41 @@ public class DocumentController extends DefaultController implements J3dComponen
             
             this .documentModel .addSelectionListener( new ManifestationChanges()
             {
-    			@Override
-    			public void manifestationRemoved( Manifestation man )
-    			{
-    				properties() .firePropertyChange( "tools.enabled", null, null );
-    			}
-    			
-    			@Override
-    			public void manifestationColored(Manifestation arg0, Color arg1) {}
-    			
-    			@Override
-    			public void manifestationAdded( Manifestation man )
-    			{
-    				properties() .firePropertyChange( "tools.enabled", null, null );
-    			}
-    		});
+                @Override
+                public void manifestationRemoved( Manifestation man )
+                {
+                    properties() .firePropertyChange( "tools.enabled", null, null );
+                }
+                
+                @Override
+                public void manifestationColored(Manifestation arg0, Color arg1) {}
+                
+                @Override
+                public void manifestationAdded( Manifestation man )
+                {
+                    properties() .firePropertyChange( "tools.enabled", null, null );
+                }
+            });
             return;
         }
         
         mErrors .clearError();
         try {
             if ( action.equals( "undo" ) )
-            	this .documentModel .undo( ! this .userHasEntitlement( "developer.extras" ) );
+                this .documentModel .undo( ! this .userHasEntitlement( "developer.extras" ) );
             else if ( action.equals( "redo" ) )
-            	this .documentModel .redo( ! this .userHasEntitlement( "developer.extras" ) );
+                this .documentModel .redo( ! this .userHasEntitlement( "developer.extras" ) );
             else if ( action.equals( "undoToBreakpoint" ) ) {
-            	this .documentModel .undoToBreakpoint();
+                this .documentModel .undoToBreakpoint();
             } else if ( action.equals( "redoToBreakpoint" ) ) {
-            	this .documentModel .redoToBreakpoint();
+                this .documentModel .redoToBreakpoint();
             } 
             else if ( action.equals( "setBreakpoint" ) )
-            	this .documentModel .setBreakpoint();
+                this .documentModel .setBreakpoint();
             else if ( action.equals( "undoAll" ) ) {
-            	this .documentModel .undoAll();
+                this .documentModel .undoAll();
             } else if ( action.equals( "redoAll" ) ) {
-            	this .documentModel .redoAll( - 1 );
+                this .documentModel .redoAll( - 1 );
             } else if ( action.startsWith( "redoUntilEdit." ) ) {
                 String editNum = action .substring( "redoUntilEdit.".length() );
                 this .documentModel .redoAll( Integer.parseInt( editNum ) );
@@ -743,7 +747,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             }
             else if ( action .equals( "takeSnapshot" ) )
             {
-            	documentModel .addSnapshotPage( mViewPlatform .getView() );
+                documentModel .addSnapshotPage( mViewPlatform .getView() );
             }
 
             else if ( "nextPage" .equals( action ) )
@@ -825,23 +829,23 @@ public class DocumentController extends DefaultController implements J3dComponen
             
             else if ( action.equals( "lookAtSymmetryCenter" ) )
             {
-            	RealVector loc = documentModel .getParamLocation( "ball" );
-            	mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+                RealVector loc = documentModel .getParamLocation( "ball" );
+                mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
             }
 
             else if ( action .equals( "usedOrbits" ) )
             {
-            	Set<Direction> usedOrbits = new HashSet<>();
-            	for ( RenderedManifestation rm : mRenderedModel ) {
-            		Polyhedron shape = rm .getShape();
-            		Direction orbit = shape .getOrbit();
-            		if ( orbit != null )
-            			usedOrbits .add( orbit );
-				}
-            	symmetryController .availableController .doAction( "setNoDirections", null );
-            	for ( Direction orbit : usedOrbits ) {
-            		symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
-            	}
+                Set<Direction> usedOrbits = new HashSet<>();
+                for ( RenderedManifestation rm : mRenderedModel ) {
+                    Polyhedron shape = rm .getShape();
+                    Direction orbit = shape .getOrbit();
+                    if ( orbit != null )
+                        usedOrbits .add( orbit );
+                }
+                symmetryController .availableController .doAction( "setNoDirections", null );
+                for ( Direction orbit : usedOrbits ) {
+                    symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
+                }
             }
             else if ( action.startsWith( "newTool/" ) )
             {
@@ -851,7 +855,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 
                 Symmetry symmetry = symmetryController.getSymmetry();
                 if ( "icosahedral" .equals( group ) )
-                	// no longer supporting no-axis octahedral when in icosahedral mode
+                    // no longer supporting no-axis octahedral when in icosahedral mode
                     symmetry = getSymmetryController( group ) .getSymmetry();
                 
                 documentModel .createTool( name, group, documentModel, symmetry );
@@ -883,46 +887,46 @@ public class DocumentController extends DefaultController implements J3dComponen
             }
             else
             {
-            	switch ( action ) {
+                switch ( action ) {
                 
                 case "setSymmetryCenter":
                     this .documentModel .setParameter( null, "ball" );
-        			break;
+                    break;
 
                 case "setSymmetryAxis":
                     this .documentModel .setParameter( null, "strut" );
-        			break;
+                    break;
 
-				default:
-	        		Symmetry symm = symmetryController .getSymmetry();
-	        		String symmName = symm .getName();
-	        		AlgebraicField field = symm .getField();
-	            	if ( action.equals( "axialsymm" ) )
-	            	{
-	            		if ( field instanceof RootTwoField ) 
-	            			action += "-roottwo"; 
-	            		else if ( field instanceof RootThreeField ) 
-	            			action += "-rootthree"; 
-	            		else if ( field instanceof HeptagonField ) 
-	            			action += "-heptagon"; 
-	            		else if ( "octahedral" .equals( symmName ) ) 
-	            			action += "-octa"; 
-	            		else if ( "icosahedral" .equals( symmName ) ) 
-	            			action += "-icosa"; 
-	            	} else if ( action.equals( "tetrasymm" ) || action.equals( "octasymm" ) ) 
-	            		if ( field instanceof RootTwoField ) 
-	            			action += "-roottwo"; 
-	            		else if ( field instanceof RootThreeField ) 
-	            			action += "-rootthree"; 
-	            		else if ( field instanceof HeptagonField ) 
-	            			action += "-heptagon"; 
-	            		else 
-	            			action += "-golden"; 
-	            		 	 
-	            	boolean handled = documentModel .doEdit( action );
-	                if ( ! handled )
-	                    super .doAction( action, e );
-				}
+                default:
+                    Symmetry symm = symmetryController .getSymmetry();
+                    String symmName = symm .getName();
+                    AlgebraicField field = symm .getField();
+                    if ( action.equals( "axialsymm" ) )
+                    {
+                        if ( field instanceof RootTwoField ) 
+                            action += "-roottwo"; 
+                        else if ( field instanceof RootThreeField ) 
+                            action += "-rootthree"; 
+                        else if ( field instanceof HeptagonField ) 
+                            action += "-heptagon"; 
+                        else if ( "octahedral" .equals( symmName ) ) 
+                            action += "-octa"; 
+                        else if ( "icosahedral" .equals( symmName ) ) 
+                            action += "-icosa"; 
+                    } else if ( action.equals( "tetrasymm" ) || action.equals( "octasymm" ) ) 
+                        if ( field instanceof RootTwoField ) 
+                            action += "-roottwo"; 
+                        else if ( field instanceof RootThreeField ) 
+                            action += "-rootthree"; 
+                        else if ( field instanceof HeptagonField ) 
+                            action += "-heptagon"; 
+                        else 
+                            action += "-golden"; 
+                             
+                    boolean handled = documentModel .doEdit( action );
+                    if ( ! handled )
+                        super .doAction( action, e );
+                }
             }
 
  
@@ -971,24 +975,24 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
     }
 
-	@Override
+    @Override
     public void doScriptAction( String command, String script )
     {
         if ( command.equals( "runZomicScript" ) 
-				|| command.equals( "runPythonScript" )
-        		|| command.equals( "import.vef" ) 
-				//|| command.equals( "import.zomod" ) 
-				)
-        	documentModel .doScriptAction( command, script );
+                || command.equals( "runPythonScript" )
+                || command.equals( "import.vef" ) 
+                //|| command.equals( "import.zomod" ) 
+                )
+            documentModel .doScriptAction( command, script );
         else
-        	super .doScriptAction( command, script );
+            super .doScriptAction( command, script );
     }
 
 
     /* (non-Javadoc)
      * @see org.vorthmann.ui.DefaultController#doFileAction(java.lang.String, java.io.File)
      */
-	@Override
+    @Override
     public void doFileAction( String command, final File file )
     {
         // TODO set output file types
@@ -996,7 +1000,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             final Colors colors = mApp.getColors();
 
             if ( "save".equals( command ) )
-            {            	
+            {               
                 File dir = file .getParentFile();
                 if ( ! dir .exists() )
                     dir .mkdirs();
@@ -1014,25 +1018,25 @@ public class DocumentController extends DefaultController implements J3dComponen
             }
             if ( "capture-animation" .equals( command ) )
             {
-        		File dir = file .isDirectory()? file : file .getParentFile();
-        		Dimension size = this .modelCanvas .getSize();        		
-        		String html = readResource( "org/vorthmann/zome/app/animation.html" );
-        		html = html .replaceFirst( "%%WIDTH%%", Integer .toString( size .width ) );
-        		html = html .replaceFirst( "%%HEIGHT%%", Integer .toString( size .height ) );
-        		writeFile( html, new File( dir, "index.html" ) );
-        		String js = readResource( "org/vorthmann/zome/app/j360-loop.js" );
-        		writeFile( js, new File( dir, "j360-loop.js" ) );
+                File dir = file .isDirectory()? file : file .getParentFile();
+                Dimension size = this .modelCanvas .getSize();              
+                String html = readResource( "org/vorthmann/zome/app/animation.html" );
+                html = html .replaceFirst( "%%WIDTH%%", Integer .toString( size .width ) );
+                html = html .replaceFirst( "%%HEIGHT%%", Integer .toString( size .height ) );
+                writeFile( html, new File( dir, "index.html" ) );
+                String js = readResource( "org/vorthmann/zome/app/j360-loop.js" );
+                writeFile( js, new File( dir, "j360-loop.js" ) );
 
-            	AnimationCaptureController animation = new AnimationCaptureController( this .mViewPlatform, dir );
-            	captureImageFile( null, AnimationCaptureController.TYPE, animation );
+                AnimationCaptureController animation = new AnimationCaptureController( this .mViewPlatform, dir );
+                captureImageFile( null, AnimationCaptureController.TYPE, animation );
                 return;
             }
             if ( command.startsWith( "capture." ) )
             {
                 final String extension = command .substring( "capture.".length() );
                 captureImageFile( file, extension, null );
-	            Platform .setFileType( file, extension );
-	            Platform .openApplication( file );
+                Platform .setFileType( file, extension );
+                Platform .openApplication( file );
                 return;
             }
 //            if ( command .equals( "export.zomespace" ) )
@@ -1042,8 +1046,8 @@ public class DocumentController extends DefaultController implements J3dComponen
             if ( command.startsWith( "export." ) )
             {
                 Writer out = new FileWriter( file );
-        		Dimension size = this .modelCanvas .getSize();        		
-            	try {
+                Dimension size = this .modelCanvas .getSize();              
+                try {
                     String format = command .substring( "export." .length() ) .toLowerCase();
                     Exporter3d exporter = documentModel .getNaiveExporter( format, mViewPlatform .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
@@ -1052,11 +1056,11 @@ public class DocumentController extends DefaultController implements J3dComponen
                     else {
                         exporter = this .mApp .getExporter( format );
                         if ( exporter == null ) {
-                        	// currently just "partgeom"
-                        	exporter = documentModel .getStructuredExporter( format, mViewPlatform .getView(), colors, sceneLighting, mRenderedModel );
+                            // currently just "partgeom"
+                            exporter = documentModel .getStructuredExporter( format, mViewPlatform .getView(), colors, sceneLighting, mRenderedModel );
                         }
-                    	if ( exporter != null )
-                    		exporter .doExport( documentModel, file, file.getParentFile(), out, size.height, size.width );
+                        if ( exporter != null )
+                            exporter .doExport( documentModel, file, file.getParentFile(), out, size.height, size.width );
                     }
                 } finally {
                     out.close();
@@ -1064,8 +1068,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 return;
             }
             if ( command.equals( "import.vef" ) 
-					// || command.equals( "import.zomod" )
-					) {
+                    // || command.equals( "import.zomod" )
+                    ) {
                 String vefData = readFile( file );
                 documentModel .doScriptAction( command, vefData );
                 return;
@@ -1082,52 +1086,52 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
     }
 
-	private void captureImageFile( final File file, final String extension, final AnimationCaptureController animation )
-	{
-		String maxSizeStr = getProperty( "max.image.size" );
-		final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) :
-								( animation != null )? animation .getImageSize() : -1; // Animation images can't be too big
-		if ( animation != null ) {
-			animation .rotate();
-		}
-		imageCaptureViewer .captureImage( maxSize, new RenderingViewer.ImageCapture()
-		{
-			@Override
-		    public void captureImage( final RenderedImage image )
-		    {
-		        String type = extension.toUpperCase();
-		        if ( type.equals( "JPG" ) )
-		            type = "JPEG";
-		        try {
-		        	File thisFile = ( animation != null )? animation .nextFile() : file;
-		            ImageOutputStream  ios =  ImageIO.createImageOutputStream( thisFile );
-		            Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName( type );
-		            ImageWriter writer = iter .next();
-		            writer .setOutput( ios );
-		            ImageWriteParam iwParam = writer .getDefaultWriteParam();
-		            if ( iwParam .canWriteCompressed() ) {
-		            	String[] types = iwParam .getCompressionTypes();
-		                iwParam .setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
-		                iwParam .setCompressionType( types[ types.length - 1 ] ); // this default is better for BMP, to avoid non-compression
-		                iwParam .setCompressionQuality( .95f );
-		            }
-		            writer .write( null, new IIOImage( image, null, null), iwParam );
-		            writer .dispose();
-		            if ( animation != null && ! animation .finished() ) {
-		            	// queue up the next capture in the sequence
-		            	EventQueue .invokeLater( new Runnable(){
+    private void captureImageFile( final File file, final String extension, final AnimationCaptureController animation )
+    {
+        String maxSizeStr = getProperty( "max.image.size" );
+        final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) :
+                                ( animation != null )? animation .getImageSize() : -1; // Animation images can't be too big
+        if ( animation != null ) {
+            animation .rotate();
+        }
+        imageCaptureViewer .captureImage( maxSize, new RenderingViewer.ImageCapture()
+        {
+            @Override
+            public void captureImage( final RenderedImage image )
+            {
+                String type = extension.toUpperCase();
+                if ( type.equals( "JPG" ) )
+                    type = "JPEG";
+                try {
+                    File thisFile = ( animation != null )? animation .nextFile() : file;
+                    ImageOutputStream  ios =  ImageIO.createImageOutputStream( thisFile );
+                    Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName( type );
+                    ImageWriter writer = iter .next();
+                    writer .setOutput( ios );
+                    ImageWriteParam iwParam = writer .getDefaultWriteParam();
+                    if ( iwParam .canWriteCompressed() ) {
+                        String[] types = iwParam .getCompressionTypes();
+                        iwParam .setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
+                        iwParam .setCompressionType( types[ types.length - 1 ] ); // this default is better for BMP, to avoid non-compression
+                        iwParam .setCompressionQuality( .95f );
+                    }
+                    writer .write( null, new IIOImage( image, null, null), iwParam );
+                    writer .dispose();
+                    if ( animation != null && ! animation .finished() ) {
+                        // queue up the next capture in the sequence
+                        EventQueue .invokeLater( new Runnable(){
 
-							@Override
-							public void run() {
-				            	captureImageFile( null, extension, animation );
-							}});
-		            }
-				} catch (Exception e) {
-		            mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
-				}
-		    }
-		} );
-	}
+                            @Override
+                            public void run() {
+                                captureImageFile( null, extension, animation );
+                            }});
+                    }
+                } catch (Exception e) {
+                    mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
+                }
+            }
+        } );
+    }
     
     private static String readFile( File file ) throws IOException
     {
@@ -1143,34 +1147,34 @@ public class DocumentController extends DefaultController implements J3dComponen
     
     private static String readResource( String resourcePath )
     {
-    	InputStream stream = null;
+        InputStream stream = null;
         try {
-        	stream = DocumentController.class .getClassLoader() .getResourceAsStream( resourcePath );
+            stream = DocumentController.class .getClassLoader() .getResourceAsStream( resourcePath );
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buf = new byte[1024];
             int num;
             while ( ( num = stream .read( buf, 0, 1024 )) > 0 )
-            	out .write( buf, 0, num );
+                out .write( buf, 0, num );
             return new String( out .toByteArray() );
         } catch (Exception e) {
             return null;
-		} finally {
-			if ( stream != null )
-				try {
-					stream .close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		}
+        } finally {
+            if ( stream != null )
+                try {
+                    stream .close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+        }
     }
 
     private static void writeFile( String content, File file ) throws Exception
     {
-    	FileWriter writer = null;
+        FileWriter writer = null;
         try {
-        	writer = new FileWriter( file );
-        	writer .write( content );
+            writer = new FileWriter( file );
+            writer .write( content );
         } catch (Exception ex) {
             throw ex;
         } finally {
@@ -1179,7 +1183,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
     }
 
-	@Override
+    @Override
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
     {
         boolean[] result = new boolean[menu.length];
@@ -1187,20 +1191,20 @@ public class DocumentController extends DefaultController implements J3dComponen
             String menuItem = menu[i];
             switch ( menuItem ) {
 
-			case "lookAtOrigin":
+            case "lookAtOrigin":
             case "lookAtSymmetryCenter":
-			case "setBackgroundColor":
-			case "copyThisView":
+            case "setBackgroundColor":
+            case "copyThisView":
                 result[i] = true;
-				break;
+                break;
 
-			case "useCopiedView":
-            	result[ i ] = mViewPlatform .hasCopiedView();
-				break;
+            case "useCopiedView":
+                result[ i ] = mViewPlatform .hasCopiedView();
+                break;
 
-			default:
-				result[i] = false;
-			}
+            default:
+                result[i] = false;
+            }
         }
         return result;
     }
@@ -1211,7 +1215,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         return currentChangeCount > this .changeCount;
     }
 
-	@Override
+    @Override
     public void setErrorChannel( ErrorChannel errors )
     {
         mErrors = errors;
@@ -1222,7 +1226,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         toolsController .setErrorChannel( errors );
     }
 
-	@Override
+    @Override
     public String getProperty( String string )
     {
         if ( "useGraphicalViews".equals( string ) ) {
@@ -1247,7 +1251,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             return this .documentModel .getField() .getName();
         
         if ( "field.label".equals( string ) ) {
-        	
+            
             String name = this .documentModel .getField() .getName();
             return super.getProperty( "field.label." + name ); // defer to app controller
             // TODO implement AlgebraicField.getLabel()
@@ -1314,13 +1318,13 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
         
         if ( string .startsWith( "file-dialog-title." ) ) {
-        	switch ( string .substring( "file-dialog-title." .length() ) ) {
-			case "capture-animation":
-				return "Choose a target folder for animation frames";
+            switch ( string .substring( "file-dialog-title." .length() ) ) {
+            case "capture-animation":
+                return "Choose a target folder for animation frames";
 
-			default:
-				break; // fall through to properties or super
-			}
+            default:
+                break; // fall through to properties or super
+            }
         }
 
         String result = this .properties .getProperty( string );
@@ -1330,39 +1334,39 @@ public class DocumentController extends DefaultController implements J3dComponen
         return super.getProperty( string );
     }
     
-	@Override
+    @Override
     public Controller getSubController( String name )
     {
-		switch ( name ) {
+        switch ( name ) {
 
-		case "monocularPicking":
-			return monoController;
+        case "monocularPicking":
+            return monoController;
 
-		case "leftEyePicking":
-			return leftController;
+        case "leftEyePicking":
+            return leftController;
 
-		case "rightEyePicking":
-			return rightController;
+        case "rightEyePicking":
+            return rightController;
 
-	    case "viewPlatform":
+        case "viewPlatform":
             return mViewPlatform;
 
-	    case "symmetry":
+        case "symmetry":
             return symmetryController;
 
-	    case "tools":
+        case "tools":
             return toolsController;
         
-	    case "parts":
+        case "parts":
             return partsController; 
         
-	    case "polytopes":
+        case "polytopes":
             return polytopesController; 
         
-	    case "lesson":
+        case "lesson":
             return lessonController;
         
-	    case "snapshot.2d": {
+        case "snapshot.2d": {
             if ( mSnapshot == null ) {
                 Java2dExporter exporter = new Java2dExporter( mViewPlatform.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
                 mSnapshot = new Java2dSnapshot( exporter );
@@ -1371,15 +1375,15 @@ public class DocumentController extends DefaultController implements J3dComponen
             return mSnapshot;
         }
 
-		default:
-	        if ( name.startsWith( "symmetry." ) )
-	            return this.symmetries.get( name.substring( "symmetry.".length() ) );
-	        else
-	        	return null;
-		}
+        default:
+            if ( name.startsWith( "symmetry." ) )
+                return this.symmetries.get( name.substring( "symmetry.".length() ) );
+            else
+                return null;
+        }
     }
 
-	@Override
+    @Override
     public void setProperty( String cmd, Object value )
     {
         if ( "useGraphicalViews".equals( cmd ) ) {
@@ -1387,11 +1391,11 @@ public class DocumentController extends DefaultController implements J3dComponen
             properties().firePropertyChange( cmd, false, this.useGraphicalViews );
             return;
         } else if ( "visible".equals( cmd ) ) {
-        	// Window is listening, will bring itself to the front, or close itself
-        	// App controller will set topDocument, or remove the document.
-        	properties() .firePropertyChange( "visible", null, value );
+            // Window is listening, will bring itself to the front, or close itself
+            // App controller will set topDocument, or remove the document.
+            properties() .firePropertyChange( "visible", null, value );
         } else if ( "name".equals( cmd ) ) {
-        	// App controller is listening, will change its map
+            // App controller is listening, will change its map
             properties() .firePropertyChange( "name", null, (String) value );
         } else if ( "backgroundColor".equals( cmd ) ) {
             sceneLighting .setProperty( cmd, value );
@@ -1413,7 +1417,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         
         else if ( "showFrameLabels" .equals( cmd ) )
         {
-        	boolean old = showFrameLabels;
+            boolean old = showFrameLabels;
             showFrameLabels = "true" .equals( value );
             properties() .firePropertyChange( "showFrameLabels", old, showFrameLabels );
         }
@@ -1421,7 +1425,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         super.setProperty( cmd, value );
     }
 
-	@Override
+    @Override
     public String[] getCommandList( String listName )
     {
         if ( "tool.templates" .equals( listName ) )
@@ -1435,9 +1439,9 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
         return super.getCommandList( listName );
     }
-	
-	void doManifestationAction( Manifestation pickedManifestation, String action )
-	{
+    
+    public void doManifestationAction( Manifestation pickedManifestation, String action )
+    {
         Construction singleConstruction = null;
         if ( pickedManifestation != null )
             singleConstruction = pickedManifestation .getConstructions().next();
@@ -1447,36 +1451,36 @@ public class DocumentController extends DefaultController implements J3dComponen
 
             case "undoToManifestation":
                 this .documentModel .undoToManifestation( pickedManifestation );
-    			break;
+                break;
 
 //            case "symmTool-icosahedral":
 //                Symmetry symmetry = ((SymmetryController) getSymmetryController( "icosahedral" )) .getSymmetry();
 //
 //                this .document .createTool( "icosahedral.99/", "icosahedral", toolsController, symmetry );
 //                this .document .createAndApplyTool( pickedManifestation, "icosahedral", toolsController, symmetry );
-//    			break;
+//              break;
 
             case "setSymmetryCenter":
                 this .documentModel .setParameter( singleConstruction, "ball" );
-    			break;
+                break;
 
             case "setSymmetryAxis":
                 this .documentModel .setParameter( singleConstruction, "strut" );
-    			break;
+                break;
 
             case "setWorkingPlaneAxis":
-            	this .workingPlaneAxis = (Segment) singleConstruction;
-            	this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
-    			break;
+                this .workingPlaneAxis = (Segment) singleConstruction;
+                this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
+                break;
 
             case "setWorkingPlane":
-            	this .workingPlaneAxis = this .documentModel .getPlaneAxis( (Polygon) singleConstruction );
-            	this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
-    			break;
+                this .workingPlaneAxis = this .documentModel .getPlaneAxis( (Polygon) singleConstruction );
+                this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
+                break;
 
             case "lookAtBall":
-            	RealVector loc = documentModel .getLocation( singleConstruction );
-            	mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+                RealVector loc = documentModel .getLocation( singleConstruction );
+                mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
                 
             case "setBuildOrbitAndLength": {
@@ -1484,21 +1488,21 @@ public class DocumentController extends DefaultController implements J3dComponen
                 Axis zone = symmetryController .getZone( offset );
                 Direction orbit = zone .getOrbit();
                 AlgebraicNumber length = zone .getLength( offset );
-    			symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
-    	        symmetryController .buildController .doAction( "setSingleDirection." + orbit .getName(), null );
-    	        LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
-    	        lmodel .setActualLength( length );
-            	}
-            	break;
+                symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
+                symmetryController .buildController .doAction( "setSingleDirection." + orbit .getName(), null );
+                LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
+                lmodel .setActualLength( length );
+                }
+                break;
                 
             case "selectCollinear": 
                 documentModel .selectCollinear( (Strut) pickedManifestation );
-            	break;
+                break;
 
             case "selectParallelStruts":
                 documentModel.selectParallelStruts( (Strut) pickedManifestation );
-            	break;
-				
+                break;
+                
             case "selectSimilarSize": {
                 Strut strut = (Strut) pickedManifestation;
                 AlgebraicVector offset = strut .getOffset();
@@ -1506,9 +1510,9 @@ public class DocumentController extends DefaultController implements J3dComponen
                 Direction orbit = zone .getOrbit();
                 AlgebraicNumber length = zone .getLength( offset );
                 documentModel .selectSimilarStruts( orbit, length ); // does performAndRecord
-            	}
-            	break;
-    		}
+                }
+                break;
+            }
         } catch ( Command.Failure failure ) {
             // signal an error to the user
             mErrors.reportError( USER_ERROR_CODE, new Object[] { failure } );
@@ -1519,39 +1523,143 @@ public class DocumentController extends DefaultController implements J3dComponen
             else
                 mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { re } );
         } 
-	}
+    }
 
-	String getManifestationProperty( Manifestation pickedManifestation, String propName )
-	{
-		switch ( propName ) {
+    public String getManifestationProperty( Manifestation pickedManifestation, String propName )
+    {
+        switch ( propName ) {
 
-		case "objectProperties":
-			if ( pickedManifestation != null ) {
-				String objectProps = documentModel .getManifestationProperties( pickedManifestation, symmetryController .getOrbitSource() );
-				if ( pickedManifestation instanceof Strut && this .userHasEntitlement( "developer.extras" ) ) {
-		            AlgebraicVector offset = ( (Strut) pickedManifestation ).getOffset();
-		            Axis zone = symmetryController .getOrbitSource() .getAxis( offset );
-		            objectProps += "\n\nzone: " + zone .toString();
-		            objectProps += "\n\nrotation: " + zone .getCorrectRotation();
-		            objectProps += "\n\norientation: " + zone .getOrientation();
-		            objectProps += "\n\nsense: " + zone .getSense();
-				}
-				pickedManifestation = null;
-				return objectProps;
-			}
-			return null;
+        case "objectProperties":
+            if ( pickedManifestation != null ) {
+                boolean devExtras = userHasEntitlement( "developer.extras" );
+                StringBuffer buf = new StringBuffer();
+                final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
+                OrbitSource symmetry  = symmetryController .getOrbitSource();
+                Manifestation man = pickedManifestation;
+                Axis zone = null;
+                if (man instanceof Connector) {
+                    AlgebraicVector loc = man.getLocation();
+                    if(devExtras) {
+                        System.out.println(loc.getVectorExpression(AlgebraicField.EXPRESSION_FORMAT));
+                        System.out.println(loc.getVectorExpression(AlgebraicField.ZOMIC_FORMAT));
+                        System.out.println(loc.getVectorExpression(AlgebraicField.VEF_FORMAT));
+                    }
+                    buf.append("location: ");
+                    loc.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                } else if (man instanceof Strut) {
+                    buf.append("start: ");
+                    Strut strut = Strut.class.cast(man);
+                    strut.getLocation().getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    
+                    buf.append("\n\noffset: ");
+                    AlgebraicVector offset = strut.getOffset();
+                    if (offset.isOrigin()) {
+                        return "zero length!";
+                    }
+                    if (devExtras) {
+                        System.out.println(offset.getVectorExpression(AlgebraicField.EXPRESSION_FORMAT));
+                        System.out.println(offset.getVectorExpression(AlgebraicField.ZOMIC_FORMAT));
+                        System.out.println(offset.getVectorExpression(AlgebraicField.VEF_FORMAT));
+                    }
+                    offset.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    buf.append("\n\nnorm squared: ");
+                    AlgebraicNumber normSquared = offset.dot(offset);
+                    double norm2d = normSquared.evaluate();
+                    normSquared.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    buf.append(" = ");
+                    buf.append(FORMAT.format(norm2d));
 
-		case "objectColor":
-			if ( pickedManifestation != null ) {
+                    zone = symmetry.getAxis(offset);
+                    Direction direction = zone.getDirection();
+                    buf.append("\n\ndirection: ");
+                    if (direction.isAutomatic()) {
+                        buf.append("Automatic ");
+                    }
+                    buf.append(direction.getName());
+
+                    AlgebraicNumber len = zone.getLength(offset);
+                    len = zone.getOrbit().getLengthInUnits(len);
+
+                    buf.append("\n\nlength in orbit units: ");
+                    len.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+
+                    if (this .documentModel.getField() instanceof PentagonField) {
+                        buf.append("\n\nlength in Zome b1 struts: ");
+                        if (FORMAT instanceof DecimalFormat) {
+                            ((DecimalFormat) FORMAT).applyPattern("0.0000");
+                        }
+                        buf.append(FORMAT.format(Math.sqrt(norm2d) / PentagonField.B1_LENGTH));
+                    }
+                } else if (man instanceof Panel) {
+                    Panel panel = Panel.class.cast(man);
+
+                    buf.append("vertices: ");
+                    buf.append(panel.getVertexCount());
+
+                    String delim = "";
+                    for (AlgebraicVector vertex : panel) {
+                        buf.append(delim);
+                        buf.append("\n  ");
+                        vertex.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                        delim = ",";
+                    }
+
+                    AlgebraicVector normal = panel.getNormal();
+                    buf.append("\n\nnormal: ");
+                    normal.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    if (devExtras) {
+                        System.out.println(normal.getVectorExpression(AlgebraicField.EXPRESSION_FORMAT));
+                        System.out.println(normal.getVectorExpression(AlgebraicField.ZOMIC_FORMAT));
+                        System.out.println(normal.getVectorExpression(AlgebraicField.VEF_FORMAT));
+                    }
+                    buf.append("\n\nnorm squared: ");
+                    AlgebraicNumber normSquared = normal.dot(normal);
+                    double norm2d = normSquared.evaluate();
+                    normSquared.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    buf.append(" = ");
+                    buf.append(FORMAT.format(norm2d));
+
+                    zone = symmetry.getAxis(normal);
+                    Direction direction = zone.getDirection();
+                    buf.append("\n\ndirection: ");
+                    if (direction.isAutomatic()) {
+                        buf.append("Automatic ");
+                    }
+                    buf.append(direction.getName());
+                } else {
+                    // should never get here
+                    return man.getClass().getSimpleName();
+                }
+                
+                if( devExtras) {
+                    if( zone != null) {
+                        buf.append( "\n\nzone: " + zone .toString() );
+                        buf.append( "\n\nrotation: " + zone .getCorrectRotation() );
+                        buf.append( "\n\norientation: " + zone .getOrientation() );
+                        buf.append( "\n\nsense: " + zone .getSense() );
+                        buf.append( "\n\nprototype: " + zone.getDirection().getPrototype() );
+                        // Future TODO: if and when centroid property is eventually added to manifestation
+                        // buf.append( "\n\centroid: " + man .getCentroid() );
+                    }
+                    System .out .println(buf.toString().replace("\n\n", "\n"));
+                    System .out .println();
+                }
+                pickedManifestation = null;
+                return buf.toString();
+            }
+            return null;
+
+        case "objectColor":
+            if ( pickedManifestation != null ) {
                 RenderedManifestation rm = pickedManifestation .getRenderedObject();
                 String colorStr = rm .getColor() .toString();
-				pickedManifestation = null;
-				return colorStr;
-			}
-			return null;
+                pickedManifestation = null;
+                return colorStr;
+            }
+            return null;
 
-		default:
-	 		return this .getProperty( propName );
-		}
-	}
+        default:
+            return this .getProperty( propName );
+        }
+    }
 }
