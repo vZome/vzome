@@ -144,7 +144,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 this .secondToolbar .setToolTipText( "All commands and tools apply to the currently selected objects." );
                 monoStereoPlusToolbar .add( secondToolbar, BorderLayout .NORTH );
 
-                button = makeEditButton2( enabler, "Create a selection bookmark", "/icons/tools/newTool/bookmark.png" );
+                button = makeEditButton2( "Create a selection bookmark", "/icons/tools/newTool/bookmark.png" );
         		button = enabler .setButtonAction( "addBookmark", button );
         		this .toolCreationButtons .put( "bookmark", button );
         		boolean on = this .controller .propertyIsTrue( "tool.enabled.bookmark" );
@@ -187,23 +187,26 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		            		secondToolbar .addSeparator();
 							break;
 
-						case "tool.instances":
+						case "tool.added":
 				            if ( evt .getOldValue() == null )
 				            {
-				                String idAndName = (String) evt .getNewValue(); // will be "group.N/label"
-				                int delim = idAndName .indexOf( "." );
-				                String group = idAndName .substring( 0, delim );
-				                delim = idAndName .indexOf( "/" );
-				                String name = idAndName .substring( delim + 1 );
-				                String iconPath = "/icons/tools/small/" + group + ".png";
-				                AbstractButton button = makeEditButton2( enabler, name, iconPath );
-				        		button .setActionCommand( idAndName );
-				        		button .addActionListener( toolsController );
-				        		if ( group .equals( "bookmark" ) )
+				            	Controller controller = (Controller) evt .getNewValue();
+				                String kind = controller .getProperty( "kind" );
+				                String name = controller .getProperty( "label" );
+				                String iconPath = "/icons/tools/small/" + kind + ".png";
+				                AbstractButton button = makeEditButton2( name, iconPath );
+				        		button .setActionCommand( "apply" );
+				        		button .addActionListener( controller );
+				        		if ( kind .equals( "bookmark" ) )
 				        			bookmarkBar .add( button );
-				        		else
+				        		else {
+				        			ContextualMenu menu = new ContextualMenu();
+				        			menu .setLightWeightPopupEnabled( false );
+				        			menu .add( newMenuAction( "Show parameters", controller, "selectParams" ) );
+				        			menu .add( newMenuAction( "Help", controller, "help" ) );
+				        			button .addMouseListener( new ContextualMenuMouseListener( controller, menu ) );
 				        			secondToolbar .add( button );
-				                //scroller .revalidate();
+				        		}
 				            }
 							break;
 
@@ -211,6 +214,14 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 							break;
 						}
 				    }
+
+					private JMenuItem newMenuAction( String label, Controller controller, String action )
+					{
+						JMenuItem item = new JMenuItem( label );
+						item .setActionCommand( action );
+						item .addActionListener( controller );
+						return item;
+					}
 				});
                 
             	if ( hasOldToolBar ) {
@@ -301,7 +312,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	
 	private AbstractButton newToolButton( ControlActions enabler, String group, String tooltip )
 	{
-		AbstractButton button = makeEditButton2( enabler, tooltip, "/icons/tools/newTool/" + group + ".png" );
+		AbstractButton button = makeEditButton2( tooltip, "/icons/tools/newTool/" + group + ".png" );
 		button = enabler .setButtonAction( "addTool-" + group, button );
 		this .toolCreationButtons .put( group, button );
 		boolean on = this .controller .propertyIsTrue( "tool.enabled." + group );
@@ -311,7 +322,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	
 	private AbstractButton makeEditButton( ControlActions enabler, String command, String tooltip )
 	{
-		AbstractButton button = makeEditButton2( enabler, tooltip, "/icons/tools/small/" + command + ".png" );
+		AbstractButton button = makeEditButton2( tooltip, "/icons/tools/small/" + command + ".png" );
 		button = enabler .setButtonAction( command, button );
 		return button;
 	}
@@ -323,7 +334,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 			imageName = command .substring( 0, command.length() - 8 );
 		else if ( imageName .endsWith( "-golden" ) )
 			imageName = command .substring( 0, command.length() - 7 );
-		AbstractButton button = makeEditButton2( enabler, tooltip, "/icons/" + imageName + "_on.png" );
+		AbstractButton button = makeEditButton2( tooltip, "/icons/" + imageName + "_on.png" );
 		button = enabler .setButtonAction( command, button );
 		Dimension dim = new Dimension( 100, 63 );
 		button .setPreferredSize( dim );
@@ -331,7 +342,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		return button;
 	}
 	
-	private AbstractButton makeEditButton2( ControlActions enabler, String tooltip, String imgLocation )
+	private AbstractButton makeEditButton2( String tooltip, String imgLocation )
 	{
         // Create and initialize the button.
         AbstractButton button = new JButton();

@@ -3,12 +3,12 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.core.editor.DocumentModel;
@@ -16,31 +16,22 @@ import com.vzome.core.editor.Tool;
 
 public class ToolsController extends DefaultController implements PropertyChangeListener
 {
-	private final DocumentModel tools;
-	private final List<String> toolNames = new ArrayList<>();
+	private final DocumentModel tools;  // TODO this should be a ToolsModel
+	private final Map<String,Controller> subcontrollers = new TreeMap<>();
 
     public ToolsController( DocumentModel tools )
     {
 		super();
 		
 		this.tools = tools;
+		tools .addPropertyChangeListener( this );
 	}
-            
-    @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
-    {
-    	Tool tool = tools .getTool( action );
-    	if ( tool != null )
-    		tools .applyTool( tool, tools, e .getModifiers() );
-    	else
-    		super .doAction( action, e );
-    }
 
     @Override
     public String[] getCommandList( String listName )
     {
         if ( "tool.instances" .equals( listName ) )
-            return toolNames .toArray( new String[ toolNames.size() ] );
+            return (String[]) subcontrollers .keySet() .toArray();
 
         return super .getCommandList( listName );
     }
@@ -52,9 +43,14 @@ public class ToolsController extends DefaultController implements PropertyChange
 
 		case "tool.instances":
             String toolName = (String) evt .getNewValue(); // will be "group.N/label"
-    		toolNames .add( toolName );
+            Tool tool = tools .getTool( toolName );
+            Controller controller = new ToolController( tool, tools );
+            controller .setNextController( this );
+    		this .properties() .firePropertyChange( new PropertyChangeEvent( this, "tool.added", null, controller ) );
+    		subcontrollers .put( toolName, controller );
 			break;
 			
+    	case "tool.separator":
 		case "tools.enabled":
     		this .properties() .firePropertyChange( evt ); // propagate to the UI
 			break;
@@ -70,7 +66,7 @@ public class ToolsController extends DefaultController implements PropertyChange
 		switch (name) {
 
 		case "next.tool.number":
-			return "" + toolNames .size();
+			return "" + subcontrollers .size();
 
 		default:
 			return super .getProperty( name );
