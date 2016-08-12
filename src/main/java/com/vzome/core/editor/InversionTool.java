@@ -37,8 +37,10 @@ public class InversionTool extends TransformationTool
         	}
         
         if ( center == null ) {
-        	if ( prepareTool )
+        	if ( prepareTool ) {
         		center = originPoint;
+        		this .addParameter( center );
+        	}
         	else
         		return "No symmetry center selected";
         }

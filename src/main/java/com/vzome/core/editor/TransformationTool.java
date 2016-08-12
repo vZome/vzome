@@ -3,7 +3,9 @@
 
 package com.vzome.core.editor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.w3c.dom.Element;
 
@@ -22,7 +24,7 @@ import com.vzome.core.model.RealizedModel;
 
 public abstract class TransformationTool extends ChangeManifestations implements Tool
 {
-    @Override
+	@Override
     public void prepare( ChangeManifestations applyTool ) {}
 
     @Override
@@ -83,6 +85,8 @@ public abstract class TransformationTool extends ChangeManifestations implements
     private final Tool.Registry tools;
     
     protected Point originPoint;
+    
+    protected final List<Construction> parameters = new ArrayList<>();
 
     public TransformationTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
     {
@@ -190,4 +194,23 @@ public abstract class TransformationTool extends ChangeManifestations implements
     {
         this.name = element .getAttribute( "name" );
     }
+
+    @Override
+	public void unselect( Manifestation man, boolean ignoreGroups )
+    {
+    	Construction c = man .getConstructions() .next();
+    	this .addParameter( c );
+    	
+		super .unselect( man, ignoreGroups );
+	}
+
+	protected void addParameter( Construction c )
+    {
+    	this .parameters .add( c );
+	}
+
+	List<Construction> getParameters()
+	{
+		return this .parameters;
+	}
 }

@@ -103,8 +103,10 @@ public class SymmetryTool extends TransformationTool
         		}
         	}
         if ( center == null ) {
-        	if ( prepareTool ) // after validation, or when loading from a file
+        	if ( prepareTool ) { // after validation, or when loading from a file
         		center = originPoint;
+        		this .addParameter( center );
+        	}
         	else // just validating the selection, not really creating a tool
         		return "No symmetry center selected";
         }
