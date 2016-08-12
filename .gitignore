@@ -8,6 +8,7 @@ build/
 gen/
 generated/
 gradle/
+nbproject/
 repos/
 target/
 temp/

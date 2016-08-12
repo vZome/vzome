@@ -2,7 +2,12 @@
 
 package com.vzome.core.algebra;
 
+import static com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT;
+import static com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT;
+import static com.vzome.core.algebra.AlgebraicField.VEF_FORMAT;
+import static com.vzome.core.algebra.AlgebraicField.ZOMIC_FORMAT;
 import junit.framework.TestCase;
+import static org.junit.Assert.assertNotEquals;
 
 public class AlgebraicNumberTest extends TestCase
 {
@@ -41,6 +46,35 @@ public class AlgebraicNumberTest extends TestCase
             assertEquals(one, field.createRational(1)); // ...equals exactly one
             assertTrue(one.isOne());
         }
+    }
+
+    public void testAlternativeConstructions() {
+        AlgebraicField field = new PentagonField();
+        int ones = -7, irrat = 3, denom = 5;
+
+        int scalePower = 0;
+        int power = 1;
+        assertNotEquals(scalePower, power);
+
+        // DJH: I was confused as to why these two ways of creating an AlgebraicNumber took different values for power.
+        // I discovered that scalePower has an unexpected subtly different meaning than power and they expect different values.
+        // I renamed the parameter and added this test case, mainly as a reminder of the difference between the two methods.
+        // It also serves to highlight various display formats.
+
+        AlgebraicNumber n0 = field.createAlgebraicNumber(ones, irrat, denom, scalePower);
+        AlgebraicNumber n1 = field.createRational(ones, denom).plus( field.createPower(power).times( field.createRational(irrat, denom) ) );
+
+        // Note that we also have these other methods available with their own syntactical subtleties
+        // field.createAlgebraicNumber( int... factors )
+        // field.createAlgebraicNumber( BigRational[] factors )
+
+        assertEquals(n0, n1);
+
+        assertEquals(n1.toString(), n1.toString(DEFAULT_FORMAT));
+        assertEquals("-7/5 +3/5\u03C6", n1.toString(DEFAULT_FORMAT));
+        assertEquals("-7/5 +3/5*phi", n1.toString(EXPRESSION_FORMAT));
+        assertEquals("-7/5 3/5", n1.toString(ZOMIC_FORMAT));
+        assertEquals("(3/5,-7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
     }
 
     public void testFactorsNotNull()
