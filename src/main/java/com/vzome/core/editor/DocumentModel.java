@@ -55,6 +55,7 @@ import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -1248,6 +1249,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new ModuleTool( name, mSelection, mRealizedModel, tools );
         else if ( "plane" .equals( group ) )
             edit = new PlaneSelectionTool( name, mSelection, mField, tools );
+        else if ( "axialstretch" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools );
         else
         	edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
         return edit;

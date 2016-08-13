@@ -52,6 +52,10 @@ public class AxialStretchTool extends TransformationTool
             	return "Panels are not supported.";
             }
         }
+        if ( center == null )
+        	return "Exactly one ball must be selected.";
+        if ( axis == null )
+        	return "Exactly one strut must be selected.";
         
 		Axis zone = this .symmetry .getAxis( axis .getOffset() );
 		if ( zone == null )
