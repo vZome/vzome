@@ -9,7 +9,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.construction.ConjugatedSymmetryTransformation;
+import com.vzome.core.construction.MatrixTransformation;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
@@ -185,8 +185,11 @@ public class SymmetryTool extends TransformationTool
         			OctahedralSymmetry octa = (OctahedralSymmetry) symmetry .getField() .getSymmetry( "octahedral" );
         	    	int order = octa .getChiralOrder();
         	    	this .transforms = new Transformation[ order-1 ];
-        	    	for ( int i = 0; i < order-1; i++ )
-        	    		transforms[ i ] = new ConjugatedSymmetryTransformation( octa, i+1, center, inverse, orientation );
+        	    	for ( int i = 0; i < order-1; i++ ) {
+        	            AlgebraicMatrix matrix = octa .getMatrix( i+1 );
+        	            matrix = orientation .times( matrix .times( inverse ) );
+        	    		transforms[ i ] = new MatrixTransformation( matrix, center .getLocation() );
+        	    	}
 				}
         		break;
 
