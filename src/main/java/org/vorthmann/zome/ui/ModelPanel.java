@@ -183,6 +183,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 firstToolbar .add( button );
                 button = newToolButton( enabler, "linear map", "Create a linear map tool", "" );
                 firstToolbar .add( button );
+                button = newToolButton( enabler, "axialstretch", "Create a yellow stretch tool" );
+                firstToolbar .add( button );
 
                 this .secondToolbar = new JToolBar();
                 this .secondToolbar .setFloatable( false );
