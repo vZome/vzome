@@ -205,19 +205,11 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				        			menu .setLightWeightPopupEnabled( false );
 				        			menu .add( newMenuAction( "Show parameters", controller, "selectParams" ) );
 				        			menu .addSeparator();
-				        			JCheckBoxMenuItem checkbox = new JCheckBoxMenuItem( "Select inputs" );
-				        	        checkbox .setSelected( controller .propertyIsTrue( "selectInputs" ) );
-				        	        menu .add( checkbox );
-				        			checkbox = new JCheckBoxMenuItem( "Delete inputs" );
-				        	        checkbox .setSelected( controller .propertyIsTrue( "deleteInputs" ) );
-				        	        menu .add( checkbox );
+				        			menu .add( newCheckboxMenuAction( "Select inputs", controller, "selectInputs" ) );
+				        			menu .add( newCheckboxMenuAction( "Delete inputs", controller, "deleteInputs" ) );
 				        			menu .addSeparator();
-				        			checkbox = new JCheckBoxMenuItem( "Select outputs" );
-				        	        checkbox .setSelected( controller .propertyIsTrue( "justSelect" ) );
-				        	        menu .add( checkbox );
-				        			checkbox = new JCheckBoxMenuItem( "Create outputs" );
-				        	        checkbox .setSelected( controller .propertyIsTrue( "justSelect" ) );
-				        	        menu .add( checkbox );
+				        			menu .add( newCheckboxMenuAction( "Select outputs", controller, "selectOutputs" ) );
+				        			menu .add( newCheckboxMenuAction( "Create outputs", controller, "createOutputs" ) );
 				        			button .addMouseListener( new ContextualMenuMouseListener( controller, menu ) );
 				        			secondToolbar .add( button );
 				        		}
@@ -234,6 +226,24 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 						JMenuItem item = new JMenuItem( label );
 						item .setActionCommand( action );
 						item .addActionListener( controller );
+						return item;
+					}
+
+					private JCheckBoxMenuItem newCheckboxMenuAction( String label, Controller controller, final String action )
+					{
+						final JCheckBoxMenuItem item = new JCheckBoxMenuItem( label );
+						item .setActionCommand( action );
+						item .addActionListener( controller );
+						item .setSelected( controller .propertyIsTrue( action ) );
+						controller .addPropertyListener( new PropertyChangeListener()
+						{
+							@Override
+							public void propertyChange( PropertyChangeEvent evt )
+							{
+								if ( action .equals( evt .getPropertyName() ) )
+									item .setSelected( Boolean .parseBoolean( (String) evt .getNewValue() ) );
+							}
+						});
 						return item;
 					}
 				});

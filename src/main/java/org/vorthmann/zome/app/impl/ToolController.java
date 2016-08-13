@@ -30,20 +30,22 @@ public class ToolController extends DefaultController
 		this .kind = idAndName .substring( 0, delim );
 		delim = idAndName .indexOf( "/" );
 		this .label = idAndName .substring( delim + 1 );
+
+		this .selectOutputs = true;
 		switch (kind) {
 
-		case "icosahedral":
-			this .selectInputs = true;
-			break;
-
-		case "translation":
+		case "rotation":
 		case "scaling":
+		case "translation":
+		case "linear map":
 			this .deleteInputs = true;
 			break;
 
 		default:
+			this .selectInputs = true;
 			break;
 		}
+		this .justSelect = false;
 	}
 
 	@Override
@@ -55,13 +57,13 @@ public class ToolController extends DefaultController
 			// TODO use the checkbox modes, override with modifiers
 			int modes = 0;
 			if ( deleteInputs )
-				modes &= ActionEvent.CTRL_MASK;
+				modes |= ActionEvent.CTRL_MASK;
 			if ( selectInputs )
-				modes &= ActionEvent.SHIFT_MASK;
+				modes |= ActionEvent.SHIFT_MASK;
 			if ( !selectOutputs )
-				modes &= ActionEvent.ALT_MASK;
+				modes |= ActionEvent.ALT_MASK;
 			if ( justSelect )
-				modes &= ActionEvent.META_MASK;
+				modes |= ActionEvent.META_MASK;
 			this .applier .applyTool( tool, this .applier, modes );
 			break;
 
@@ -69,7 +71,28 @@ public class ToolController extends DefaultController
 			this .applier .selectToolParameters( (TransformationTool) tool );
 			break;
 
-		case "help":
+		case "selectInputs":
+			this .selectInputs = ! this .selectInputs;
+			break;
+
+		case "deleteInputs":
+			this .deleteInputs = ! this .deleteInputs;
+			if ( this .deleteInputs ) {
+				this .selectInputs = false;
+				this .properties() .firePropertyChange( "selectInputs", null, "false" );
+			}
+			break;
+
+		case "selectOutputs":
+			this .selectOutputs = ! this .selectOutputs;
+			break;
+
+		case "createOutputs":
+			this .justSelect = ! this .justSelect;
+			if ( this .justSelect ) {
+				this .selectOutputs = true;
+				this .properties() .firePropertyChange( "selectOutputs", null, "true" );
+			}
 			break;
 
 		default:
@@ -97,8 +120,8 @@ public class ToolController extends DefaultController
 		case "selectOutputs":
 			return Boolean .toString( this .selectOutputs );
 
-		case "justSelect":
-			return Boolean .toString( this .justSelect );
+		case "createOutputs":
+			return Boolean .toString( ! this .justSelect );
 
 		default:
 			return super .getProperty(name);
@@ -109,8 +132,20 @@ public class ToolController extends DefaultController
 	public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
 	{
 		boolean[] result = new boolean[ menu .length ];
-		for (int i = 0; i < result.length; i++) {
-			result[ i ] = true;
+		for (int i = 0; i < menu.length; i++) {
+			switch ( menu[ i ] ) {
+
+			case "selectInputs":
+				result[ i ] = ! this .deleteInputs;
+				break;
+
+			case "selectOutputs":
+				result[ i ] = ! this .justSelect;
+				break;
+
+			default:
+				result[ i ] = true;
+			}
 		}
 		return result;
 	}
