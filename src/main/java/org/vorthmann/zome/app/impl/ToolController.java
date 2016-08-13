@@ -7,6 +7,7 @@ import org.vorthmann.ui.DefaultController;
 
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.Tool;
+import com.vzome.core.editor.TransformationTool;
 
 public class ToolController extends DefaultController
 {
@@ -14,6 +15,10 @@ public class ToolController extends DefaultController
 	private DocumentModel applier;  // TODO this should be a ToolsModel
 	private final String kind;
 	private final String label;
+	private boolean deleteInputs;
+	private boolean selectInputs;
+	private boolean selectOutputs;
+	private boolean justSelect;
 
 	public ToolController( Tool tool, DocumentModel applier )
 	{
@@ -25,6 +30,20 @@ public class ToolController extends DefaultController
 		this .kind = idAndName .substring( 0, delim );
 		delim = idAndName .indexOf( "/" );
 		this .label = idAndName .substring( delim + 1 );
+		switch (kind) {
+
+		case "icosahedral":
+			this .selectInputs = true;
+			break;
+
+		case "translation":
+		case "scaling":
+			this .deleteInputs = true;
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -33,11 +52,21 @@ public class ToolController extends DefaultController
 		switch ( e .getActionCommand() ) {
 
 		case "apply":
-			this .applier .applyTool( tool, this .applier, e .getModifiers() );
+			// TODO use the checkbox modes, override with modifiers
+			int modes = 0;
+			if ( deleteInputs )
+				modes &= ActionEvent.CTRL_MASK;
+			if ( selectInputs )
+				modes &= ActionEvent.SHIFT_MASK;
+			if ( !selectOutputs )
+				modes &= ActionEvent.ALT_MASK;
+			if ( justSelect )
+				modes &= ActionEvent.META_MASK;
+			this .applier .applyTool( tool, this .applier, modes );
 			break;
 
 		case "selectParams":
-//			this .applier .selectToolParameters( tool );
+			this .applier .selectToolParameters( (TransformationTool) tool );
 			break;
 
 		case "help":
@@ -58,6 +87,18 @@ public class ToolController extends DefaultController
 
 		case "kind":
 			return this .kind;
+
+		case "selectInputs":
+			return Boolean .toString( this .selectInputs );
+
+		case "deleteInputs":
+			return Boolean .toString( this .deleteInputs );
+
+		case "selectOutputs":
+			return Boolean .toString( this .selectOutputs );
+
+		case "justSelect":
+			return Boolean .toString( this .justSelect );
 
 		default:
 			return super .getProperty(name);
