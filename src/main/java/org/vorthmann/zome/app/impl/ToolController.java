@@ -39,6 +39,9 @@ public class ToolController extends DefaultController
 		case "translation":
 		case "linear map":
 		case "axialstretch":
+		case "axialsquish":
+		case "redstretch":
+		case "redsquash":
 			this .deleteInputs = true;
 			break;
 
