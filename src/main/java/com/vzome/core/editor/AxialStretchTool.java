@@ -5,6 +5,7 @@ package com.vzome.core.editor;
 
 
 import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.MatrixTransformation;
 import com.vzome.core.construction.Point;
@@ -23,11 +24,13 @@ import com.vzome.core.model.Strut;
 public class AxialStretchTool extends TransformationTool
 {
     private final IcosahedralSymmetry symmetry;
+	private final boolean stretch;
 
-	public AxialStretchTool( String name, IcosahedralSymmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools )
+	public AxialStretchTool( String name, IcosahedralSymmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, boolean stretch )
     {
         super( name, selection, realized, tools, null );
 		this.symmetry = symmetry;
+		this .stretch = stretch;
     }
 
     protected String checkSelection( boolean prepareTool )
@@ -62,18 +65,32 @@ public class AxialStretchTool extends TransformationTool
 			return "Selected alignment strut is not an appropriate axis.";
 
 		AlgebraicVector o0, o1, o2, n0, n1, n2;
-    	Direction blueOrbit = symmetry .getDirection( "blue" );
-    	Direction targetOrbit = zone .getDirection();
-    	String targetName = targetOrbit .getName();
-    	switch ( targetName ) {
+    	switch ( zone .getDirection() .getName() ) {
 
 		case "yellow":
-        	o0 = blueOrbit .getAxis( Symmetry.PLUS, 2 ) .normal();
-        	o1 = blueOrbit .getAxis( Symmetry.PLUS, 54 ) .normal();
-        	o2 = blueOrbit .getAxis( Symmetry.PLUS, 36 ) .normal();
-        	n0 = targetOrbit .getAxis( Symmetry.PLUS, 2 ) .normal();
-        	n1 = targetOrbit .getAxis( Symmetry.PLUS, 46 ) .normal();
-        	n2 = targetOrbit .getAxis( Symmetry.PLUS, 16 ) .normal();
+	    	Direction blueOrbit = symmetry .getDirection( "blue" );
+	    	AlgebraicNumber blueScale = blueOrbit .getUnitLength();
+        	o0 = blueOrbit .getAxis( Symmetry.PLUS, 2 ) .normal() .scale( blueScale );
+        	o1 = blueOrbit .getAxis( Symmetry.PLUS, 54 ) .normal() .scale( blueScale );
+        	o2 = blueOrbit .getAxis( Symmetry.PLUS, 36 ) .normal() .scale( blueScale );
+        	Direction redOrbit = symmetry .getDirection( "red" );
+	    	AlgebraicNumber redScale = redOrbit .getUnitLength();
+        	n0 = redOrbit .getAxis( Symmetry.PLUS, 2 ) .normal() .scale( redScale );
+        	n1 = redOrbit .getAxis( Symmetry.PLUS, 46 ) .normal() .scale( redScale );
+        	n2 = redOrbit .getAxis( Symmetry.PLUS, 16 ) .normal() .scale( redScale );
+			break;
+
+		case "red":
+	    	blueOrbit = symmetry .getDirection( "blue" );
+	    	blueScale = blueOrbit .getUnitLength();
+        	o0 = blueOrbit .getAxis( Symmetry.PLUS, 56 ) .normal() .scale( blueScale );
+        	o1 = blueOrbit .getAxis( Symmetry.PLUS, 38 ) .normal() .scale( blueScale );
+        	o2 = blueOrbit .getAxis( Symmetry.PLUS, 40 ) .normal() .scale( blueScale );
+        	redOrbit = symmetry .getDirection( "red" );
+	    	redScale = redOrbit .getUnitLength();
+        	n0 = redOrbit .getAxis( Symmetry.PLUS, 46 ) .normal() .scale( redScale );
+        	n1 = redOrbit .getAxis( Symmetry.PLUS, 1 ) .normal() .scale( redScale );
+        	n2 = redOrbit .getAxis( Symmetry.PLUS, 2 ) .normal() .scale( redScale );
 			break;
 
 		default:
@@ -82,9 +99,16 @@ public class AxialStretchTool extends TransformationTool
 
         if ( prepareTool )
         {
+        	AlgebraicMatrix orientation = symmetry .getMatrix( zone .getOrientation() );
+        	AlgebraicMatrix inverse = orientation .inverse();
         	AlgebraicMatrix oldBasis = new AlgebraicMatrix( o0, o1, o2 );
         	AlgebraicMatrix newBasis = new AlgebraicMatrix( n0, n1, n2 );
-	    	AlgebraicMatrix matrix = newBasis .times( oldBasis .inverse() );
+        	if ( this .stretch ) {
+        		AlgebraicMatrix temp = oldBasis;
+        		oldBasis = newBasis;
+        		newBasis = temp;
+        	}
+	    	AlgebraicMatrix matrix = orientation .times( newBasis .times( oldBasis .inverse() ) .times( inverse ) );
 	    	this .transforms = new Transformation[ 1 ];
 	    	transforms[ 0 ] = new MatrixTransformation( matrix, center .getLocation() );
 		}

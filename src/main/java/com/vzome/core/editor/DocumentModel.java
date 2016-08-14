@@ -1250,7 +1250,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         else if ( "plane" .equals( group ) )
             edit = new PlaneSelectionTool( name, mSelection, mField, tools );
         else if ( "axialstretch" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools );
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true );
+        else if ( "axialsquish" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false );
+        else if ( "redstretch" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true );
+        else if ( "redsquash" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false );
         else
         	edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
         return edit;
