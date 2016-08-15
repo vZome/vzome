@@ -107,7 +107,8 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         	}
         	{
         		JPanel actionButtons = new JPanel();
-        		behaviorPanel .add( actionButtons, BorderLayout .SOUTH );
+        		behaviorPanel .add( actionButtons, BorderLayout .EAST );
+        		actionButtons .setLayout( new GridLayout( 2, 1 ) );
         		JButton okButton = new JButton( "OK" );
         		actionButtons .add( okButton );
         		okButton .addActionListener( new ActionListener()
