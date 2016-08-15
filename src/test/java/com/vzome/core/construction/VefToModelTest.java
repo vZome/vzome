@@ -23,11 +23,11 @@ import org.junit.Test;
 public class VefToModelTest
 {
     @Test
-    public void testAutomaticField() {
+    public void testRationalField() {
         final AlgebraicVector quaternion = null;
         final NewConstructions effects = new NewConstructions();
         final AlgebraicVector offset = null;
-        // we're testing that the keyword "automatic" here can be applied to all types of AlgebraicField
+        // Verify that a "rational" field can be imported into all types of AlgebraicField
         final String vefData = "vZome VEF 7 field rational "
                 + "actual scale 1 "
                 + "3 "

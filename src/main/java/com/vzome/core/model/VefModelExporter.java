@@ -141,18 +141,44 @@ public class VefModelExporter implements Exporter
             output.println();
         }
     }
-    
+
+    /**
+     * @param buffer = Don't assume that buffer starts out empty. Results will be appended.
+     * @param vector = Value to be converted to a zero-padded 4D String which will be 
+     * prefixed and/or padded with field specific zeroes
+     * depending on the number of dimensions in vector as follows:
+     * 1D : 0 X 0 0
+     * 2D : 0 X Y 0
+     * 3D : 0 X Y Z
+     * 4D : W X Y Z
+     */
+    public static void appendVector( StringBuffer buffer, AlgebraicVector vector )
+    {
+        String zeroString = vector.getField().zero().toString(AlgebraicField.VEF_FORMAT);
+        int dims = vector .dimension();
+        if(dims < 4) {
+            // prefix with zero in the W dimension
+            buffer.append(zeroString);
+            buffer.append(" ");
+        }
+        // now append the vector (all of its dimensions) from the parameter
+        // it will contain at least X and usually Y and Z
+        vector .getVectorExpression( buffer, AlgebraicField.VEF_FORMAT );
+      
+        for( int d = dims + 1; d < 4; d++ ) {
+            // append zeroString in the y and z dimensions as needed...
+            buffer.append(" ");
+            buffer.append(zeroString);
+        }
+    }
+
+    /**
+     * @deprecated As of 8/12/2016 Use {@link #appendVector( StringBuffer buffer, AlgebraicVector vector )} instead.
+     */
+    @Deprecated
     public static void appendVector( StringBuffer buffer, int order, AlgebraicVector vector )
     {
-        int dims = vector .dimension();
-        if ( dims < 4 )
-        {
-            buffer .append( "(" );
-            for ( int k = 0; k < order-1; k++ )
-                buffer .append( "0," );
-            buffer .append( "0) " );
-        }
-        vector .getVectorExpression( buffer, AlgebraicField.VEF_FORMAT );
+        appendVector( buffer, vector );
     }
         
 	@Override
@@ -173,9 +199,8 @@ public class VefModelExporter implements Exporter
         // vertices
         output .println( "\n" + sortedVertexList .size() );
         StringBuffer buf = new StringBuffer();
-        int order = field.getOrder();
         for(AlgebraicVector vector : sortedVertexList) {
-            appendVector(buf, order, vector);
+            appendVector(buf, vector);
             buf.append("\n");
         }
         output .println( buf.toString() + "\n" );
