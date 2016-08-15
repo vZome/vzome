@@ -5,6 +5,8 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -18,6 +20,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -34,6 +37,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
     private final boolean isEditor;
 	private final Controller controller, view;
 	private final JPanel mMonocularPanel;
+	private final ToolConfigDialog toolConfigDialog;
 	private Map<String, AbstractButton> toolCreationButtons = new HashMap<String, AbstractButton>();
 
 	public ModelPanel( Controller controller, ControlActions enabler, boolean isEditor, boolean fullPower )
@@ -93,6 +97,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         	}
         } );
 
+        this .toolConfigDialog = new ToolConfigDialog( (JFrame) this.getParent() );
 
         if ( isEditor )
         {
@@ -195,22 +200,33 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				                String kind = controller .getProperty( "kind" );
 				                String name = controller .getProperty( "label" );
 				                String iconPath = "/icons/tools/small/" + kind + ".png";
-				                AbstractButton button = makeEditButton2( name, iconPath );
+				                JButton button = makeEditButton2( name, iconPath );
 				        		button .setActionCommand( "apply" );
 				        		button .addActionListener( controller );
 				        		if ( kind .equals( "bookmark" ) )
 				        			bookmarkBar .add( button );
 				        		else {
-				        			ContextualMenu menu = new ContextualMenu();
-				        			menu .setLightWeightPopupEnabled( false );
-				        			menu .add( newMenuAction( "Show parameters", controller, "selectParams" ) );
-				        			menu .addSeparator();
-				        			menu .add( newCheckboxMenuAction( "Select inputs", controller, "selectInputs" ) );
-				        			menu .add( newCheckboxMenuAction( "Delete inputs", controller, "deleteInputs" ) );
-				        			menu .addSeparator();
-				        			menu .add( newCheckboxMenuAction( "Select outputs", controller, "selectOutputs" ) );
-				        			menu .add( newCheckboxMenuAction( "Create outputs", controller, "createOutputs" ) );
-				        			button .addMouseListener( new ContextualMenuMouseListener( controller, menu ) );
+				        			button .addMouseListener( new MouseAdapter()
+				        			{
+				        				@Override
+				        			    public void mousePressed( MouseEvent e )
+				        			    {
+				        			        maybeShowPopup( e );
+				        			    }
+
+				        				@Override
+				        			    public void mouseReleased( MouseEvent e )
+				        			    {
+				        			        maybeShowPopup( e );
+				        			    }
+
+				        			    private void maybeShowPopup( MouseEvent e )
+				        			    {
+				        			        if ( e.isPopupTrigger() ) {
+				        			            toolConfigDialog .showTool( button, controller );
+				        			        }
+				        			    }
+									} );
 				        			secondToolbar .add( button );
 				        		}
 				            }
@@ -220,14 +236,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 							break;
 						}
 				    }
-
-					private JMenuItem newMenuAction( String label, Controller controller, String action )
-					{
-						JMenuItem item = new JMenuItem( label );
-						item .setActionCommand( action );
-						item .addActionListener( controller );
-						return item;
-					}
 
 					private JCheckBoxMenuItem newCheckboxMenuAction( String label, Controller controller, final String action )
 					{
@@ -366,10 +374,10 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		return button;
 	}
 	
-	private AbstractButton makeEditButton2( String tooltip, String imgLocation )
+	private JButton makeEditButton2( String tooltip, String imgLocation )
 	{
         // Create and initialize the button.
-        AbstractButton button = new JButton();
+		JButton button = new JButton();
         URL imageURL = getClass() .getResource( imgLocation );
         if ( imageURL != null ) {
         	Icon icon = new ImageIcon( imageURL, tooltip );
