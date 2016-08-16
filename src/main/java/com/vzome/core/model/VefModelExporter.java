@@ -7,117 +7,63 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.generic.ArrayComparator;
 import com.vzome.core.math.Polyhedron;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class VefModelExporter implements Exporter
 {
-    private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
-
-    private final Map<AlgebraicVector, Integer> vertexData = new LinkedHashMap<>();
+    private final PrintWriter output;
 
     protected final AlgebraicField field;
 
-    private final int order;
+    private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 
-    private final AlgebraicNumber scale;
-
-    private final StringBuffer vertices = new StringBuffer();
-
-    private int numBalls;
-
-    private int numStruts;
-
-    private final StringBuffer balls;
-
-    private final StringBuffer panels;
-
-    private final StringBuffer struts;
-
-    private int numPanels;
-
-    private final PrintWriter output;
+    private ArrayList<AlgebraicVector> sortedVertexList = null;
+    private SortedSet<AlgebraicVector> vertices = new TreeSet<>();
+    private final SortedSet<AlgebraicVector> ballLocations = new TreeSet<>();
+    private final SortedSet<AlgebraicVector[]> strutEnds;
+    private final SortedSet<AlgebraicVector[]> panelVertices;
     
-    private boolean writingTip;
-    
-    private final Set<Integer> middleVertices = new HashSet<>();
-
-    public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale )
+    public VefModelExporter( Writer writer, AlgebraicField field )
     {
         this .output = new PrintWriter( writer );
         this .field = field;
-        this .scale = scale;
-        order = field .getOrder();
 
         FORMAT .setMaximumFractionDigits( 16 );
 
-        numBalls = 0;
-        numStruts = 0;
-        numPanels = 0;
-        balls = new StringBuffer();
-        struts = new StringBuffer();
-        panels = new StringBuffer();
+        ArrayComparator<AlgebraicVector> arrayComparator = new ArrayComparator<>();
+        strutEnds = new TreeSet<>( arrayComparator.getContentFirstArrayComparator() );
+        panelVertices = new TreeSet<>( arrayComparator.getLengthFirstArrayComparator() );
     }
-    
+
+    /**
+     * @deprecated On 8/10/2016
+     * Use {@link #VefModelExporter( Writer writer, AlgebraicField field )}
+     * since the scale parameter is no longer used.
+     */
+    @Deprecated
+    public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale )
+    {
+        this(writer, field); // scale is no longer used
+    }
+
+    /**
+    * @deprecated On 8/10/2016 I realized that exportStrutPolyhedron() is not being used
+    * by the current vzome-core or vzome-desktop, and it's not compatible with the new code for sorting vertices
+    * so I have deprecated it and commented out all of the code.
+    * I'll leave it here for now so we don't need to bump the version yet.
+    */
+    @Deprecated
     public void exportStrutPolyhedron( Polyhedron poly, AlgebraicMatrix rotation, boolean reverseFaces, AlgebraicVector endpoint )
     {
-        // I have a challenge here, since there are apparently some strut models that contain duplicate
-        // vertices: same location, several indices.  Since this.vertices wants to have unique locations,
-        // (a Map, not a List), I need to make a mapping from polyhedron vertex index to VEF vertex index.
-        //
-        int[] vertexMapping = new int[ poly .getVertexList() .size() ];
-        int vertexNum = 0;
-        for (AlgebraicVector vertexVector : poly .getVertexList()) {
-            if ( reverseFaces )
-                vertexVector = vertexVector .negate();
-            vertexVector = rotation .timesColumn( vertexVector );
-            // have to inline getVertexIndex here, so I can create balls.
-            Integer vefIndex = vertexData .get( vertexVector );
-            if ( vefIndex == null )
-            {
-                AlgebraicVector key = vertexVector;
-                int index = vertexData .size();
-                vefIndex = index;
-                vertexData .put( key, vefIndex );
-                if ( scale != null )
-                    vertexVector = vertexVector .scale( scale );
-                appendVector( this.vertices, order, vertexVector );            
-                this.vertices .append( "\n" );
-                ++ numBalls;
-                balls .append( " " );
-                balls .append( vefIndex );
-            }
-            vertexMapping[ vertexNum++ ] = vefIndex;
-        }
-        ++ numBalls;
-        balls .append( " " );
-        balls .append( getVertexIndex( endpoint ) );
-
-        for (Polyhedron.Face face : poly .getFaceSet()) {
-            ++ numPanels;
-            List<Integer> vs = new ArrayList<>();
-            int arity = face .size();
-            for ( int j = 0; j < arity; j++ ){
-                Integer index = face .get( /*reverseFaces? arity-j-1 :*/ j );
-                vs .add( vertexMapping[ index ] );
-            }
-            panels .append( vs .size() );
-            for (Integer v : vs) {
-                panels .append( " " );
-                panels .append(v);
-            }
-            panels .append( "\n" );
-        }
     }
 
 	@Override
@@ -125,36 +71,42 @@ public class VefModelExporter implements Exporter
     {
         if ( man instanceof Connector )
         {
-            ++ numBalls;
-            AlgebraicVector loc = ((Connector) man) .getLocation();
-            balls .append( " " );
-            balls .append( getVertexIndex( loc ) );
+            AlgebraicVector loc = man .getLocation();
+            vertices.add(loc);
+            ballLocations.add(loc);
         }
         else if ( man instanceof Strut )
         {
-            ++ numStruts;
             Strut strut = (Strut) man;
-            struts .append( getVertexIndex( strut .getLocation() ) );
-            struts .append( " " );
-            struts .append( getVertexIndex( strut .getEnd() ) );
-            struts .append( "\n" );
+            AlgebraicVector[] ends = {
+                // we must preserve the strut direction since it may be significant later
+                // such as when it's used for a translation tool's direction parameter
+                // so don't use getCanonicalLesserEnd() and getCanonicalGreaterEnd() here
+                strut .getLocation(),
+                strut .getEnd()
+            };
+            vertices.add(ends[0]);
+            vertices.add(ends[1]);
+            strutEnds.add(ends);
         }
         else if ( man instanceof Panel )
         {
-            ++ numPanels;
-            List<Integer> vs = new ArrayList<>();
-            for (AlgebraicVector vertex : ((Panel) man)) {
-                vs .add( getVertexIndex( vertex ) );
+            Panel panel = (Panel) man;
+            // Unsorted list retains the panel vertex order
+            ArrayList<AlgebraicVector> corners = new ArrayList<>(panel.getVertexCount());
+            for (AlgebraicVector vertex : panel) {
+                corners .add( vertex );
             }
-            panels .append( vs .size() );
-			for (Integer v : vs) {
-				panels .append( " " );
-				panels .append(v);
-			}
-            panels .append( "\n" );
+            vertices.addAll(corners);
+            AlgebraicVector[] cornerArray = new AlgebraicVector[corners.size()];
+            corners.toArray(cornerArray);
+            panelVertices.add( cornerArray );
         }
     }
-    
+
+    private String strTip = "tip";
+    private String strMiddle = "middle";
+
     /**
      * This is used only for vZome part geometry export    
      * @param man
@@ -165,78 +117,125 @@ public class VefModelExporter implements Exporter
 		{
 			// This is called to append a newline after all of the panels are exported
 			// to provide readability and separation of whatever new field may eventually be appended.
-			output .println( "");
+			output .println();
+			output .flush();
 		}
 		else if ( man instanceof Connector )
         {
-        	if ( ! this .writingTip ) {
-        		output .print( "tip" );
-        		this .writingTip = true;
+        	if ( strTip != null ) {
+        		output .print( strTip );
+        		strTip = null; // indicates that it's already been written
         	}
-            AlgebraicVector loc = ((Connector) man) .getLocation();
-            output .println( " " + getVertexIndex( loc ) );
+            AlgebraicVector loc = man .getLocation();
+            output .println( " " + sortedVertexList.indexOf(loc));
         }
         else if ( man instanceof Panel ) {
-        	if ( this .middleVertices .isEmpty() )
-        		output .print( "middle" );
-            for (AlgebraicVector vertex : ((Panel) man)) {
-                Integer index = getVertexIndex( vertex );
-                if ( ! this .middleVertices .contains( index ) ) {
-                    this .middleVertices .add( index );
-                    output .print( " " + index );
-                }
+        	if ( strMiddle != null ) {
+        		output .println( strMiddle );
+        		strMiddle = null; // indicates that it's already been written
+        	}
+            Panel panel = (Panel) man;
+            for (AlgebraicVector corner : panel) {
+                output .print( sortedVertexList.indexOf( corner ) + " " );
             }
+            output.println();
         }
-    }
-    
-    protected Integer getVertexIndex( AlgebraicVector vertexVector )
-    {
-        Integer obj = vertexData .get(vertexVector);
-        if ( obj == null )
-        {
-            AlgebraicVector key = vertexVector;
-            int index = vertexData .size();
-            obj = index;
-            vertexData .put( key, obj );
-            if ( scale != null )
-                vertexVector = vertexVector .scale( scale );            
-            appendVector( vertices, order, vertexVector );            
-            vertices .append( "\n" );
-        }
-        return obj;
     }
 
+    /**
+     * @param buffer = Don't assume that buffer starts out empty. Results will be appended.
+     * @param vector = Value to be converted to a zero-padded 4D String which will be 
+     * prefixed and/or padded with field specific zeroes
+     * depending on the number of dimensions in vector as follows:
+     * 1D : 0 X 0 0
+     * 2D : 0 X Y 0
+     * 3D : 0 X Y Z
+     * 4D : W X Y Z
+     */
+    public static void appendVector( StringBuffer buffer, AlgebraicVector vector )
+    {
+        String zeroString = vector.getField().zero().toString(AlgebraicField.VEF_FORMAT);
+        int dims = vector .dimension();
+        if(dims < 4) {
+            // prefix with zero in the W dimension
+            buffer.append(zeroString);
+            buffer.append(" ");
+        }
+        // now append the vector (all of its dimensions) from the parameter
+        // it will contain at least X and usually Y and Z
+        vector .getVectorExpression( buffer, AlgebraicField.VEF_FORMAT );
+      
+        for( int d = dims + 1; d < 4; d++ ) {
+            // append zeroString in the y and z dimensions as needed...
+            buffer.append(" ");
+            buffer.append(zeroString);
+        }
+    }
+
+    /**
+     * @deprecated As of 8/12/2016 Use {@link #appendVector( StringBuffer buffer, AlgebraicVector vector )} instead.
+     */
+    @Deprecated
     public static void appendVector( StringBuffer buffer, int order, AlgebraicVector vector )
     {
-        int dims = vector .dimension();
-        if ( dims < 4 )
-        {
-            buffer .append( "(" );
-            for ( int k = 0; k < order-1; k++ )
-                buffer .append( "0," );
-            buffer .append( "0) " );
-        }
-        vector .getVectorExpression( buffer, AlgebraicField.VEF_FORMAT );
+        appendVector( buffer, vector );
     }
         
 	@Override
     public void finish()
     {
+        // Up to this point, the vertices TreeSet has collected and sorted every unique vertex of every manifestation.
+        // From now on we'll need their index, so we copy them into an ArrayList, preserving their sorted order.
+        // so we can get their index into that array.
+        sortedVertexList = new ArrayList<>(vertices);
+        // we no longer need the vertices collection, 
+        // so set it to null to free the memory and to ensure we don't use it later by mistake.
+        vertices = null;
+
         // format version 6, with explicit "balls" section, not a ball for every vertex
         output .println( "vZome VEF 6 field " + field .getName() );
-//        if ( outputScale != null )
-//        {
-//            StringBuffer scaleBuf = new StringBuffer( " scale " );
-//            appendNumber( scaleBuf, outputScale, 0, order );
-//            output .println( scaleBuf );
-//        }
-        output .println( "\n" + vertexData .size() + "\n" + vertices + "\n" );
-        
-        output .println( "\n" + numStruts + "\n" + struts + "\n" );
 
-        output .println( "\n" + numPanels + "\n" + panels + "\n" );
 
-        output .println( "\n" + numBalls + "\n" + balls + "\n" );
+        // vertices
+        output .println( "\n" + sortedVertexList .size() );
+        StringBuffer buf = new StringBuffer();
+        for(AlgebraicVector vector : sortedVertexList) {
+            appendVector(buf, vector);
+            buf.append("\n");
+        }
+        output .println( buf.toString() + "\n" );
+
+        // strut ends as vertex index pairs
+        output .println( "\n" + strutEnds.size() );
+        for(AlgebraicVector[] ends : strutEnds) {
+            output .print( sortedVertexList.indexOf(ends[0]) + " " );
+            output .println( sortedVertexList.indexOf(ends[1]) );
+        }
+        output .println( "\n" );
+
+
+        // panel corners as vertex index sets
+        output .println( "\n" + panelVertices.size() );
+        for(AlgebraicVector[] corners : panelVertices) {
+            output .print( corners.length + "  " );
+            for(AlgebraicVector corner : corners) {
+                output .print( sortedVertexList.indexOf(corner) + " " );
+            }
+            output .println();
+        }
+        output .println( "\n" );
+
+
+        // balls as vertex indices
+        output .println( "\n" + ballLocations.size() );
+        int i = 0;
+        for(AlgebraicVector ball : ballLocations) {
+            output .print( sortedVertexList.indexOf(ball) + " " );
+            if(++i % 10 == 0) {
+                output. println(); // wrap lines for readability
+            }
+        }
+        output .println( "\n" );
 
         output .flush();
     }
