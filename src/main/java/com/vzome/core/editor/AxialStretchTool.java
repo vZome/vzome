@@ -91,6 +91,14 @@ public class AxialStretchTool extends TransformationTool
         	n0 = redOrbit .getAxis( Symmetry.PLUS, 46 ) .normal() .scale( redScale );
         	n1 = redOrbit .getAxis( Symmetry.PLUS, 1 ) .normal() .scale( redScale );
         	n2 = redOrbit .getAxis( Symmetry.PLUS, 2 ) .normal() .scale( redScale );
+        	
+        	o0 = blueOrbit .getAxis( Symmetry.PLUS, 37 ) .normal() .scale( blueScale );
+        	o1 = blueOrbit .getAxis( Symmetry.PLUS, 25 ) .normal() .scale( blueScale );
+        	o2 = blueOrbit .getAxis( Symmetry.PLUS, 45 ) .normal() .scale( blueScale );
+        	n0 = blueOrbit .getAxis( Symmetry.PLUS, 37 ) .normal() .scale( blueScale );
+        	n1 = blueOrbit .getAxis( Symmetry.PLUS, 25 ) .normal() .scale( blueScale );
+        	redScale = redScale .times( symmetry .getField() .createPower( -1 ) );
+        	n2 = redOrbit .getAxis( Symmetry.PLUS, 45 ) .normal() .scale( redScale );
 			break;
 
 		default:
