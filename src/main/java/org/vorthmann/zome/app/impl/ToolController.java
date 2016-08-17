@@ -81,6 +81,7 @@ public class ToolController extends DefaultController
 				this .selectInputs = false;
 				this .properties() .firePropertyChange( "selectInputs", null, "false" );
 			}
+			this .properties() .firePropertyChange( "deleteInputs", null, Boolean .toString( this .deleteInputs ) );
 			break;
 
 		case "selectOutputs":
@@ -93,6 +94,7 @@ public class ToolController extends DefaultController
 				this .selectOutputs = true;
 				this .properties() .firePropertyChange( "selectOutputs", null, "true" );
 			}
+			this .properties() .firePropertyChange( "createOutputs", null, Boolean .toString( ! this .justSelect ) );
 			break;
 
 		default:

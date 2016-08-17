@@ -236,24 +236,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 							break;
 						}
 				    }
-
-					private JCheckBoxMenuItem newCheckboxMenuAction( String label, Controller controller, final String action )
-					{
-						final JCheckBoxMenuItem item = new JCheckBoxMenuItem( label );
-						item .setActionCommand( action );
-						item .addActionListener( controller );
-						item .setSelected( controller .propertyIsTrue( action ) );
-						controller .addPropertyListener( new PropertyChangeListener()
-						{
-							@Override
-							public void propertyChange( PropertyChangeEvent evt )
-							{
-								if ( action .equals( evt .getPropertyName() ) )
-									item .setSelected( Boolean .parseBoolean( (String) evt .getNewValue() ) );
-							}
-						});
-						return item;
-					}
 				});
                 
             	if ( hasOldToolBar ) {

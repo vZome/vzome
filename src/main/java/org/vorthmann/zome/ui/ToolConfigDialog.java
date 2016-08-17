@@ -5,6 +5,11 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
@@ -32,23 +37,71 @@ public class ToolConfigDialog extends JDialog implements ActionListener
     private final JTabbedPane tabs;
     private final JCheckBox selectInputsCheckbox, deleteInputsCheckbox, selectOutputsCheckbox, createOutputsCheckbox;
 	private Controller controller;
+	private PropertyChangeListener checkboxChanges;
+	private final ActionListener closer;
 
     public ToolConfigDialog( JFrame frame )
     {
         super( frame, true );
 
-        //setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
+//        setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
+        WindowListener closeEvents = new WindowAdapter()
+        {
+ 			@Override
+			public void windowClosed( WindowEvent e )
+			{
+                closer .actionPerformed( new ActionEvent( e .getSource(), 0, null ) );
+                super .windowClosed( e );
+			}
+		
+		};
+        addWindowListener( closeEvents );
+        
         //setUndecorated( true );
         setResizable( false );
         setLayout( new BorderLayout() );
         setTitle( "tool configuration" );
+        
+        checkboxChanges = new PropertyChangeListener()
+		{
+			@Override
+			public void propertyChange( PropertyChangeEvent evt )
+			{
+				if ( ! ( evt .getNewValue() instanceof String ) )
+					return;
+				boolean value = Boolean .parseBoolean( (String) evt .getNewValue() );
+				switch ( evt .getPropertyName() ) {
+				
+				case "deleteInputs":
+					selectInputsCheckbox .setEnabled( !value );
+					break;
 
-        ActionListener closer = new ActionListener()
+				case "selectInputs":
+					selectInputsCheckbox .setSelected( value );
+					break;
+
+				case "selectOutputs":
+					selectOutputsCheckbox .setSelected( value );
+					break;
+
+				case "createOutputs":
+					selectOutputsCheckbox .setEnabled( value );
+					break;
+
+				default:
+					break;
+				}
+			}
+		};
+
+        closer = new ActionListener()
         {
             @Override
             public void actionPerformed( ActionEvent e )
             {
                 setVisible( false );
+        		controller .removePropertyListener( checkboxChanges );
+        		controller = null;
             }
         };
 
@@ -67,7 +120,6 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         	iconButton .setMaximumSize( dim );
         	iconButton .setActionCommand( "apply" );
         	iconButton .addActionListener( this );
-        	iconButton .addActionListener( closer );
         	iconAndLabel .add( iconButton, BorderLayout .WEST );
         	toolLabel = new JLabel();
         	toolLabel .setHorizontalAlignment( SwingConstants .CENTER );
@@ -116,7 +168,6 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         	showParamsPanel .add( showParamsButton, BorderLayout .SOUTH );
         	showParamsButton .setActionCommand( "selectParams" );
         	showParamsButton .addActionListener( this );
-        	showParamsButton .addActionListener( closer );
         }
         pack();
     }
@@ -124,6 +175,7 @@ public class ToolConfigDialog extends JDialog implements ActionListener
     public void showTool( JButton button, Controller controller )
     {
 		this.controller = controller;
+		this.controller .addPropertyListener( checkboxChanges );
 		iconButton .setIcon( button .getIcon() );
 		toolLabel .setText( controller .getProperty( "label" ) );
 		boolean selectInputs = controller .propertyIsTrue( "selectInputs" );
@@ -145,5 +197,15 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 	public void actionPerformed( ActionEvent e )
 	{
 		this .controller .actionPerformed( e );
+		switch ( e .getActionCommand() ) {
+		
+		case "apply":
+		case "selectParams":
+			closer .actionPerformed( e );
+			break;
+
+		default:
+			break;
+		}
 	}
 }
