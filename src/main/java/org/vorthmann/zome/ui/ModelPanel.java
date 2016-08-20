@@ -186,17 +186,17 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 firstToolbar .add( button );
                 button = newToolButton( enabler, "linear map", "Create a linear map tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "yellowstretch", "Create a yellow stretch tool" );
+                button = newToolButton( enabler, "yellowstretch", "Create a yellow stretch tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool" );
+                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redstretch1", "Create a red stretch 1 tool" );
+                button = newToolButton( enabler, "redstretch1", "Create a red stretch 1 tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redsquash1", "Create a red squash 1 tool" );
+                button = newToolButton( enabler, "redsquash1", "Create a red squash 1 tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redstretch2", "Create a red stretch 2 tool" );
+                button = newToolButton( enabler, "redstretch2", "Create a red stretch 2 tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redsquash2", "Create a red squash 2 tool" );
+                button = newToolButton( enabler, "redsquash2", "Create a red squash 2 tool", "" );
                 firstToolbar .add( button );
 
                 this .secondToolbar = new JToolBar();
