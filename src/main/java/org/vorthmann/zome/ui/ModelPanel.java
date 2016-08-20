@@ -19,7 +19,6 @@ import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -110,7 +109,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 this .firstToolbar = new JToolBar();
                 this .firstToolbar .setFloatable( false );
                 this .firstToolbar .setOrientation( JToolBar.HORIZONTAL );
-                this .firstToolbar .setToolTipText( "Click on objects to select them, and enable creation of new tools accordingly." );
+//                this .firstToolbar .setToolTipText( "Click on objects to select them, and enable creation of new tools accordingly." );
                 this .add( firstToolbar, BorderLayout .NORTH );
 
                 this .bookmarkBar = new JToolBar();
@@ -122,32 +121,73 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 AbstractButton button;
 
                 if ( controller .propertyIsTrue( "supports.symmetry.icosahedral" ) ) {
-                    button = newToolButton( enabler, "icosahedral", "Create icosahedral symmetry tool" );
+                    button = newToolButton( enabler, "icosahedral", "Create an icosahedral symmetry tool",
+                    		"<p>" +
+                            		"Each tool produces up to 59 copies of the<br>" +
+                            		"input selection, using the rotation<br>" +
+                            		"symmetries of an icosahedron.  To create a tool,<br>" +
+                            		"select a single ball that defines the center<br>" +
+                            		"of symmetry.<br><br>" +
+                            		"Combine with a point reflection tool to achieve<br>" +
+                            		"all 120 symmetries of the icosahedron,<br>" +
+                            		"including reflections.<br>" +
+                    		"</p>" );
+                    firstToolbar .add( button );
+                	button = newToolButton( enabler, "octahedral", "Create an octahedral symmetry tool",
+                    		"<p>" +
+                            		"Each tool is defined by a single ball,<br>" +
+                            		"defining the center of symmetry, and<br>" +
+                            		"a single blue or green strut, defining<br>" +
+                            		"one of five possible orientations for<br>" +
+                            		"the symmetry." +
+                    		"</p>" );
+                    firstToolbar .add( button );
+                	button = newToolButton( enabler, "tetrahedral", "Create a tetrahedral symmetry tool",
+                    		"<p>" +
+                            		"Each tool is defined by a single ball,<br>" +
+                            		"defining the center of symmetry, and<br>" +
+                            		"a single blue or green strut, defining<br>" +
+                            		"one of five possible orientations for<br>" +
+                            		"the symmetry." +
+                    		"</p>" );
+                    firstToolbar .add( button );
+                } else {
+                	button = newToolButton( enabler, "octahedral", "Create an octahedral symmetry tool",
+                    		"<p>" +
+                            		"Each tool is defined by a single<br>" +
+                            		"ball, defining the center of symmetry.<br>" +
+                    		"</p>" );
+                    firstToolbar .add( button );
+                	button = newToolButton( enabler, "tetrahedral", "Create a tetrahedral symmetry tool",
+                    		"<p>" +
+                            		"Each tool is defined by a single<br>" +
+                            		"ball, defining the center of symmetry.<br>" +
+                    		"</p>" );
                     firstToolbar .add( button );
                 }
-            	button = newToolButton( enabler, "octahedral", "Create an octahedral symmetry tool" );
-            	firstToolbar .add( button );
-            	button = newToolButton( enabler, "tetrahedral", "Create a tetrahedral symmetry tool" );
-            	firstToolbar .add( button );
-                button = newToolButton( enabler, "point reflection", "Create a point reflection tool" );
+                button = newToolButton( enabler, "point reflection", "Create a point reflection tool",
+                		"<p>" +
+                        		"Each tool is defined by a single<br>" +
+                        		"ball, defining the center of symmetry.<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "mirror", "Create a mirror reflection tool" );
+                button = newToolButton( enabler, "mirror", "Create a mirror reflection tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "scaling", "Create a scaling tool" );
+                button = newToolButton( enabler, "scaling", "Create a scaling tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "rotation", "Create a rotation tool" );
+                button = newToolButton( enabler, "rotation", "Create a rotation tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "axial symmetry", "Create a rotational symmetry tool" );
+                button = newToolButton( enabler, "axial symmetry", "Create a rotational symmetry tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "translation", "Create a translation tool" );
+                button = newToolButton( enabler, "translation", "Create a translation tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "linear map", "Create a linear map tool" );
+                button = newToolButton( enabler, "linear map", "Create a linear map tool", "" );
                 firstToolbar .add( button );
 
                 this .secondToolbar = new JToolBar();
                 this .secondToolbar .setFloatable( false );
                 this .secondToolbar .setOrientation( JToolBar.HORIZONTAL );
-                this .secondToolbar .setToolTipText( "All commands and tools apply to the currently selected objects." );
+//                this .secondToolbar .setToolTipText( "All commands and tools apply to the currently selected objects." );
                 monoStereoPlusToolbar .add( secondToolbar, BorderLayout .NORTH );
 
                 button = makeEditButton2( "Create a selection bookmark", "/icons/tools/newTool/bookmark.png" );
@@ -200,7 +240,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				                String kind = controller .getProperty( "kind" );
 				                String name = controller .getProperty( "label" );
 				                String iconPath = "/icons/tools/small/" + kind + ".png";
-				                JButton button = makeEditButton2( name, iconPath );
+				                String tooltip = "<html><b>" + name + "</b><br><br><p>Right-click to configure this tool.</p></html>";
+				                JButton button = makeEditButton2( tooltip, iconPath );
 				        		button .setActionCommand( "apply" );
 				        		button .addActionListener( controller );
 				        		if ( kind .equals( "bookmark" ) )
@@ -324,10 +365,13 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         }
 	}
 	
-	private AbstractButton newToolButton( ControlActions enabler, String group, String tooltip )
+	private AbstractButton newToolButton( ControlActions enabler, String group, String title, String helpHtml )
 	{
-		AbstractButton button = makeEditButton2( tooltip, "/icons/tools/newTool/" + group + ".png" );
-		button = enabler .setButtonAction( "addTool-" + group, button );
+		String iconPath = "/icons/tools/newTool/" + group + ".png";
+		String html = "<html><img src=\"" + ModelPanel.class.getResource( iconPath ) + "\">&nbsp;&nbsp;<b>" + title
+					+ "</b><br><br>" + helpHtml + "</html>";
+		final JButton button = makeEditButton2( html, iconPath );
+		enabler .setButtonAction( "addTool-" + group, button );
 		this .toolCreationButtons .put( group, button );
 		boolean on = this .controller .propertyIsTrue( "tool.enabled." + group );
 		button .setEnabled( on );
