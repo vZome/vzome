@@ -1263,14 +1263,18 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new ModuleTool( name, mSelection, mRealizedModel, tools );
         else if ( "plane" .equals( group ) )
             edit = new PlaneSelectionTool( name, mSelection, mField, tools );
-        else if ( "axialstretch" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true );
-        else if ( "axialsquish" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false );
-        else if ( "redstretch" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true );
-        else if ( "redsquash" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false );
+        else if ( "yellowstretch" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, false, false );
+        else if ( "yellowsquash" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, false, false );
+        else if ( "redstretch1" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, true, true );
+        else if ( "redsquash1" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, true, true );
+        else if ( "redstretch2" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, true, false );
+        else if ( "redsquash2" .equals( group ) )
+        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, true, false );
         else
         	edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
         return edit;

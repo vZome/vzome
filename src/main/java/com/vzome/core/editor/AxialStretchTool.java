@@ -25,12 +25,16 @@ public class AxialStretchTool extends TransformationTool
 {
     private final IcosahedralSymmetry symmetry;
 	private final boolean stretch;
+	private final boolean red;
+	private final boolean first;
 
-	public AxialStretchTool( String name, IcosahedralSymmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, boolean stretch )
+	public AxialStretchTool( String name, IcosahedralSymmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, boolean stretch, boolean red, boolean first )
     {
         super( name, selection, realized, tools, null );
-		this.symmetry = symmetry;
+		this .symmetry = symmetry;
 		this .stretch = stretch;
+		this .red = red;
+		this .first = first;
     }
 
     protected String checkSelection( boolean prepareTool )
@@ -68,6 +72,8 @@ public class AxialStretchTool extends TransformationTool
     	switch ( zone .getDirection() .getName() ) {
 
 		case "yellow":
+			if ( this .red )
+				return "A red axis strut must be selected.";
 	    	Direction blueOrbit = symmetry .getDirection( "blue" );
 	    	AlgebraicNumber blueScale = blueOrbit .getUnitLength();
         	o0 = blueOrbit .getAxis( Symmetry.PLUS, 2 ) .normal() .scale( blueScale );
@@ -81,24 +87,28 @@ public class AxialStretchTool extends TransformationTool
 			break;
 
 		case "red":
+			if ( ! this .red )
+				return "A yellow axis strut must be selected.";
 	    	blueOrbit = symmetry .getDirection( "blue" );
 	    	blueScale = blueOrbit .getUnitLength();
-        	o0 = blueOrbit .getAxis( Symmetry.PLUS, 56 ) .normal() .scale( blueScale );
-        	o1 = blueOrbit .getAxis( Symmetry.PLUS, 38 ) .normal() .scale( blueScale );
-        	o2 = blueOrbit .getAxis( Symmetry.PLUS, 40 ) .normal() .scale( blueScale );
         	redOrbit = symmetry .getDirection( "red" );
 	    	redScale = redOrbit .getUnitLength();
-        	n0 = redOrbit .getAxis( Symmetry.PLUS, 46 ) .normal() .scale( redScale );
-        	n1 = redOrbit .getAxis( Symmetry.PLUS, 1 ) .normal() .scale( redScale );
-        	n2 = redOrbit .getAxis( Symmetry.PLUS, 2 ) .normal() .scale( redScale );
-        	
-        	o0 = blueOrbit .getAxis( Symmetry.PLUS, 37 ) .normal() .scale( blueScale );
-        	o1 = blueOrbit .getAxis( Symmetry.PLUS, 25 ) .normal() .scale( blueScale );
-        	o2 = blueOrbit .getAxis( Symmetry.PLUS, 45 ) .normal() .scale( blueScale );
-        	n0 = blueOrbit .getAxis( Symmetry.PLUS, 37 ) .normal() .scale( blueScale );
-        	n1 = blueOrbit .getAxis( Symmetry.PLUS, 25 ) .normal() .scale( blueScale );
-        	redScale = redScale .times( symmetry .getField() .createPower( -1 ) );
-        	n2 = redOrbit .getAxis( Symmetry.PLUS, 45 ) .normal() .scale( redScale );
+	    	if ( this .first ) {
+	        	o0 = blueOrbit .getAxis( Symmetry.PLUS, 56 ) .normal() .scale( blueScale );
+	        	o1 = blueOrbit .getAxis( Symmetry.PLUS, 38 ) .normal() .scale( blueScale );
+	        	o2 = blueOrbit .getAxis( Symmetry.PLUS, 40 ) .normal() .scale( blueScale );
+	        	n0 = redOrbit .getAxis( Symmetry.PLUS, 46 ) .normal() .scale( redScale );
+	        	n1 = redOrbit .getAxis( Symmetry.PLUS, 1 ) .normal() .scale( redScale );
+	        	n2 = redOrbit .getAxis( Symmetry.PLUS, 2 ) .normal() .scale( redScale );
+	    	} else {
+	        	o0 = blueOrbit .getAxis( Symmetry.PLUS, 37 ) .normal() .scale( blueScale );
+	        	o1 = blueOrbit .getAxis( Symmetry.PLUS, 25 ) .normal() .scale( blueScale );
+	        	o2 = blueOrbit .getAxis( Symmetry.PLUS, 45 ) .normal() .scale( blueScale );
+	        	n0 = blueOrbit .getAxis( Symmetry.PLUS, 37 ) .normal() .scale( blueScale );
+	        	n1 = blueOrbit .getAxis( Symmetry.PLUS, 25 ) .normal() .scale( blueScale );
+	        	redScale = redScale .times( symmetry .getField() .createPower( -1 ) );
+	        	n2 = redOrbit .getAxis( Symmetry.PLUS, 45 ) .normal() .scale( redScale );
+	    	}
 			break;
 
 		default:
