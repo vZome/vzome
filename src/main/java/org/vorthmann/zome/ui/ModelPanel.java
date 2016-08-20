@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
@@ -110,13 +111,15 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 this .firstToolbar .setFloatable( false );
                 this .firstToolbar .setOrientation( JToolBar.HORIZONTAL );
 //                this .firstToolbar .setToolTipText( "Click on objects to select them, and enable creation of new tools accordingly." );
-                this .add( firstToolbar, BorderLayout .NORTH );
+                JScrollPane scroller = new JScrollPane( this .firstToolbar, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+                this .add( scroller, BorderLayout .NORTH );
 
                 this .bookmarkBar = new JToolBar();
                 this .bookmarkBar .setFloatable( false );
                 this .bookmarkBar .setOrientation( JToolBar.VERTICAL );
                 this .bookmarkBar .setToolTipText( "Selection bookmarks" );
-                monoStereoPlusToolbar .add( bookmarkBar, BorderLayout .LINE_START );
+                scroller = new JScrollPane( this .bookmarkBar, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+                monoStereoPlusToolbar .add( scroller, BorderLayout .LINE_START );
                 
                 AbstractButton button;
 
@@ -183,20 +186,25 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 firstToolbar .add( button );
                 button = newToolButton( enabler, "linear map", "Create a linear map tool", "" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "axialstretch", "Create a yellow stretch tool" );
+                button = newToolButton( enabler, "yellowstretch", "Create a yellow stretch tool" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "axialsquish", "Create a yellow squash tool" );
+                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redstretch", "Create a red stretch tool" );
+                button = newToolButton( enabler, "redstretch1", "Create a red stretch 1 tool" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redsquash", "Create a red squash tool" );
+                button = newToolButton( enabler, "redsquash1", "Create a red squash 1 tool" );
+                firstToolbar .add( button );
+                button = newToolButton( enabler, "redstretch2", "Create a red stretch 2 tool" );
+                firstToolbar .add( button );
+                button = newToolButton( enabler, "redsquash2", "Create a red squash 2 tool" );
                 firstToolbar .add( button );
 
                 this .secondToolbar = new JToolBar();
                 this .secondToolbar .setFloatable( false );
                 this .secondToolbar .setOrientation( JToolBar.HORIZONTAL );
 //                this .secondToolbar .setToolTipText( "All commands and tools apply to the currently selected objects." );
-                monoStereoPlusToolbar .add( secondToolbar, BorderLayout .NORTH );
+                scroller = new JScrollPane( this .secondToolbar, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+                monoStereoPlusToolbar .add( scroller, BorderLayout .NORTH );
 
                 button = makeEditButton2( "Create a selection bookmark", "/icons/tools/newTool/bookmark.png" );
         		button = enabler .setButtonAction( "addBookmark", button );
