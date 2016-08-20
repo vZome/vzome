@@ -203,6 +203,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			logger .warning( "Failed to create built-in point reflection tool." );
 		}
         try {
+			makeTool( "scaling.builtin/scale up", "scale up", this, symmetry ) .perform();
+		} catch ( Command.Failure e ) {
+			logger .warning( "Failed to create built-in scale up tool." );
+		}
+        try {
+			makeTool( "scaling.builtin/scale down", "scale down", this, symmetry ) .perform();
+		} catch ( Command.Failure e ) {
+			logger .warning( "Failed to create built-in scale down tool." );
+		}
+        try {
 			makeTool( "bookmark.builtin/ball at origin", "bookmark", this, symmetry ) .perform();
 		} catch ( Command.Failure e ) {
 			logger .warning( "Failed to create built-in origin bookmark." );
@@ -1243,6 +1253,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, true );
         else if ( "scaling" .equals( group ) )
         	edit = new ScalingTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
+        else if ( "scale up" .equals( group ) )
+        	edit = new ScalingTool( name, tools, getField() .createPower( 1 ), originPoint );
+        else if ( "scale down" .equals( group ) )
+        	edit = new ScalingTool( name, tools, getField() .createPower( -1 ), originPoint );
         else if ( "tetrahedral" .equals( group ) )
             edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
         else if ( "module" .equals( group ) )
