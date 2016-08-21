@@ -195,7 +195,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         startReader = ! newDocument && ! asTemplate;
         
-        editingModel = super.userHasEntitlement( "model.edit" ) ;//&& ! propertyIsTrue( "reader.preview" );
+        editingModel = super.userHasEntitlement( "model.edit" ) && ! propertyIsTrue( "reader.preview" );
         
         systemClipboard = propertyIsTrue( "enable.system.clipboard" )
                 ? new ClipboardController()
