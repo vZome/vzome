@@ -312,9 +312,11 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				                JButton button = makeEditButton2( tooltip, iconPath );
 				        		button .setActionCommand( "apply" );
 				        		button .addActionListener( controller );
-				        		if ( kind .equals( "bookmark" ) )
+				        		if ( kind .equals( "bookmark" ) ) {
+				        			tooltip = "<html><b>" + name + "</b></html>";
+				        			button .setToolTipText( tooltip );
 				        			bookmarkBar .add( button );
-				        		else {
+				        		} else {
 				        			button .addMouseListener( new MouseAdapter()
 				        			{
 				        				@Override
