@@ -467,6 +467,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		else if ( "LinearMapTool".equals( name ) )
 			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint, true );
 
+		else if ( "AxialStretchTool".equals( name ) ) {
+			IcosahedralSymmetry symmetry = (IcosahedralSymmetry) mField .getSymmetry( "icosahedral" );
+			edit = new AxialStretchTool( name, symmetry, mSelection, mRealizedModel, this, false, true, false );
+		}
 		else if ( "LinearTransformTool".equals( name ) )
 			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint, false );
 

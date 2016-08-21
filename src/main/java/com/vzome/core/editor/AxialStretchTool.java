@@ -4,9 +4,13 @@
 package com.vzome.core.editor;
 
 
+import org.w3c.dom.Element;
+
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.MatrixTransformation;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -23,10 +27,10 @@ import com.vzome.core.model.Strut;
 
 public class AxialStretchTool extends TransformationTool
 {
-    private final IcosahedralSymmetry symmetry;
-	private final boolean stretch;
-	private final boolean red;
-	private final boolean first;
+	private final IcosahedralSymmetry symmetry;
+	private boolean stretch;
+	private boolean red;
+	private boolean first;
 
 	public AxialStretchTool( String name, IcosahedralSymmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, boolean stretch, boolean red, boolean first )
     {
@@ -137,6 +141,29 @@ public class AxialStretchTool extends TransformationTool
     protected String getXmlElementName()
     {
         return "AxialStretchTool";
+    }
+    
+    @Override
+    protected void getXmlAttributes( Element element )
+    {
+    	super .getXmlAttributes( element );
+        if ( this .stretch )
+            element .setAttribute( "stretch", "true" );
+        element .setAttribute( "orbit", this .red? "red" : "yellow" );
+        if ( ! this .first )
+            element .setAttribute( "first", "false" );
+    }
+
+    @Override
+    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
+    {
+        String value = element .getAttribute( "stretch" );
+        this .stretch = value != null && value .equals( "true" );
+        value = element .getAttribute( "orbit" );
+        this .red = value .equals( "red" );
+        value = element .getAttribute( "first" );
+        this .first = value == null || ! value .equals( "false" );;
+    	super .setXmlAttributes( element, format );
     }
 
     @Override

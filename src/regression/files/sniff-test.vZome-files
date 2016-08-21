@@ -114,3 +114,6 @@ format-2.1.0-models.vZome-files
 #tests oriented octahedral symmetry tool in icosahedral
 2016/08-Aug/10-Scott-zoneOcta/orientedOctahedralSymmetry01.vZome
 
+#tests red/yellow axial stretch/squash
+2016/08-Aug/21-Scott-axialtooltest/testAxialStretch.vZome
+
