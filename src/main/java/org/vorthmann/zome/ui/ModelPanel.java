@@ -125,60 +125,112 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 
                 if ( controller .propertyIsTrue( "supports.symmetry.icosahedral" ) ) {
                     button = newToolButton( enabler, "icosahedral", "Create an icosahedral symmetry tool",
-                    		"<p>" +
-                            		"Each tool produces up to 59 copies of the<br>" +
-                            		"input selection, using the rotation<br>" +
-                            		"symmetries of an icosahedron.  To create a tool,<br>" +
-                            		"select a single ball that defines the center<br>" +
-                            		"of symmetry.<br><br>" +
-                            		"Combine with a point reflection tool to achieve<br>" +
-                            		"all 120 symmetries of the icosahedron,<br>" +
-                            		"including reflections.<br>" +
-                    		"</p>" );
+                		"<p>" +
+                        		"Each tool produces up to 59 copies of the input<br>" +
+                        		"selection, using the rotation symmetries of an<br>" +
+                        		"icosahedron.  To create a tool, select a single<br>" +
+                        		"ball that defines the center of symmetry." +
+                        		"<br><br>" +
+                        		"Combine with a point reflection tool to achieve<br>" +
+                        		"all 120 symmetries of the icosahedron, including<br>" +
+                        		"reflections.<br>" +
+                		"</p>" );
                     firstToolbar .add( button );
                 	button = newToolButton( enabler, "octahedral", "Create an octahedral symmetry tool",
-                    		"<p>" +
-                            		"Each tool is defined by a single ball,<br>" +
-                            		"defining the center of symmetry, and<br>" +
-                            		"a single blue or green strut, defining<br>" +
-                            		"one of five possible orientations for<br>" +
-                            		"the symmetry." +
-                    		"</p>" );
+                		"<p>" +
+                        		"Each tool produces up to 23 copies of the input<br>" +
+                        		"selection, using the rotation symmetries of a<br>" +
+                        		"cube or octahedron.  To create a tool, select a<br>" +
+                        		"ball that defines the center of symmetry, and<br>" +
+                        		"a single blue or green strut, defining one of<br>" +
+                        		"five possible orientations for the symmetry." +
+                        		"<br><br>" +
+                        		"Combine with a point reflection tool to achieve<br>" +
+                        		"all 48 symmetries of the octahedron, including<br>" +
+                        		"reflections.<br>" +
+                		"</p>" );
                     firstToolbar .add( button );
                 	button = newToolButton( enabler, "tetrahedral", "Create a tetrahedral symmetry tool",
-                    		"<p>" +
-                            		"Each tool is defined by a single ball,<br>" +
-                            		"defining the center of symmetry, and<br>" +
-                            		"a single blue or green strut, defining<br>" +
-                            		"one of five possible orientations for<br>" +
-                            		"the symmetry." +
-                    		"</p>" );
+                		"<p>" +
+                        		"Each tool produces up to 11 copies of the input<br>" +
+                        		"selection, using the rotation symmetries of a<br>" +
+                        		"tetrahedron.  To create a tool, select a ball<br>" +
+                        		"that defines the center of symmetry, and a single<br>" +
+                        		"blue or green strut, defining one of five<br>" +
+                        		"possible orientations for the symmetry." +
+                        		"<br><br>" +
+                        		"Combine with a point reflection tool to achieve<br>" +
+                        		"all 24 symmetries of the tetrahedron, including<br>" +
+                        		"reflections.<br>" +
+                		"</p>" );
                     firstToolbar .add( button );
                 } else {
                 	button = newToolButton( enabler, "octahedral", "Create an octahedral symmetry tool",
-                    		"<p>" +
-                            		"Each tool is defined by a single<br>" +
-                            		"ball, defining the center of symmetry.<br>" +
-                    		"</p>" );
+                		"<p>" +
+                        		"Each tool produces up to 23 copies of the input<br>" +
+                        		"selection, using the rotation symmetries of a<br>" +
+                        		"cube or octahedron.  To create a tool, select a<br>" +
+                        		"ball that defines the center of symmetry." +
+                        		"<br><br>" +
+                        		"Combine with a point reflection tool to achieve<br>" +
+                        		"all 48 symmetries of the octahedron, including<br>" +
+                        		"reflections.<br>" +
+                		"</p>" );
                     firstToolbar .add( button );
                 	button = newToolButton( enabler, "tetrahedral", "Create a tetrahedral symmetry tool",
-                    		"<p>" +
-                            		"Each tool is defined by a single<br>" +
-                            		"ball, defining the center of symmetry.<br>" +
-                    		"</p>" );
+                		"<p>" +
+                        		"Each tool produces up to 11 copies of the input<br>" +
+                        		"selection, using the rotation symmetries of a<br>" +
+                        		"tetrahedron.  To create a tool, select a ball<br>" +
+                        		"that defines the center of symmetry." +
+                        		"<br><br>" +
+                        		"Combine with a point reflection tool to achieve<br>" +
+                        		"all 24 symmetries of the tetrahedron, including<br>" +
+                        		"reflections.<br>" +
+                		"</p>" );
                     firstToolbar .add( button );
                 }
                 button = newToolButton( enabler, "point reflection", "Create a point reflection tool",
                 		"<p>" +
-                        		"Each tool is defined by a single<br>" +
-                        		"ball, defining the center of symmetry.<br>" +
+                        		"Each tool duplicates the selection by reflecting<br>" +
+                        		"each point through the defined center.  To create a<br>" +
+                        		"tool, select a single ball that defines that center.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "mirror", "Create a mirror reflection tool", "" );
+                button = newToolButton( enabler, "mirror", "Create a mirror reflection tool",
+                		"<p>" +
+                        		"Each tool duplicates the selection by reflecting<br>" +
+                        		"each object in a mirror plane.  To create a<br>" +
+                        		"tool, define the mirror plane by selecting a single<br>" +
+                        		"panel, or by selecting a strut orthogonal to the<br>" +
+                        		"plane and a ball lying in the plane.<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "scaling", "Create a scaling tool", "" );
+                button = newToolButton( enabler, "scaling", "Create a scaling tool",
+                		"<p>" +
+                        		"Each tool enlarges or shrinks the selected objects,<br>" +
+                        		"relative to a central point.  To create a tool,<br>" +
+                        		"select a ball representing the central point, and<br>" +
+                        		"two struts from the same orbit (color) with different<br>" +
+                        		"sizes." +
+                        		"<br><br>" +
+                        		"The selection order matters.  First select a strut<br>" +
+                        		"that you want to enlarge or shrink, then select a<br>" +
+                        		"strut that has the desired target size.<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "rotation", "Create a rotation tool", "" );
+                button = newToolButton( enabler, "rotation", "Create a rotation tool",
+                		"<p>" +
+                        		"Each tool enlarges or shrinks the selected objects,<br>" +
+                        		"relative to a central point.  To create a tool,<br>" +
+                        		"select a ball representing the central point, and<br>" +
+                        		"two struts from the same orbit (color) with different<br>" +
+                        		"sizes." +
+                        		"<br><br>" +
+                        		"The selection order matters.  First select a strut<br>" +
+                        		"that you want to enlarge or shrink, then select a<br>" +
+                        		"strut that has the desired target size.<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
                 button = newToolButton( enabler, "axial symmetry", "Create a rotational symmetry tool", "" );
                 firstToolbar .add( button );
