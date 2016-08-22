@@ -224,34 +224,73 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 firstToolbar .add( button );
                 button = newToolButton( enabler, "rotation", "Create a rotation tool",
                 		"<p>" +
-                        		"Each tool enlarges or shrinks the selected objects,<br>" +
-                        		"relative to a central point.  To create a tool,<br>" +
-                        		"select a ball representing the central point, and<br>" +
-                        		"two struts from the same orbit (color) with different<br>" +
-                        		"sizes." +
+                        		"Requires a strut as a rotation axis." +
                         		"<br><br>" +
-                        		"The selection order matters.  First select a strut<br>" +
-                        		"that you want to enlarge or shrink, then select a<br>" +
-                        		"strut that has the desired target size.<br>" +
+                        		"More tooltip assistance coming soon...<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "axial symmetry", "Create a rotational symmetry tool", "" );
+                button = newToolButton( enabler, "axial symmetry", "Create a rotational symmetry tool",
+                		"<p>" +
+                        		"Requires a strut as a rotation axis." +
+                        		"<br><br>" +
+                        		"More tooltip assistance coming soon...<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "translation", "Create a translation tool", "" );
+                button = newToolButton( enabler, "translation", "Create a translation tool",
+                		"<p>" +
+                        		"Requires two balls to define the translation offset." +
+                        		"<br><br>" +
+                        		"More tooltip assistance coming soon...<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "linear map", "Create a linear map tool", "" );
+                button = newToolButton( enabler, "linear map", "Create a linear map tool",
+                		"<p>" +
+                        		"Requires a ball and three struts, or a ball and six struts." +
+                        		"<br><br>" +
+                        		"More tooltip assistance coming soon...<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "yellowstretch", "Create a yellow stretch tool", "" );
+                button = newToolButton( enabler, "yellowstretch", "Create a yellow stretch tool",
+                		"<p>" +
+                        		"Requires a ball and a yellow strut." +
+                        		"<br><br>" +
+                        		"More tooltip assistance coming soon...<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool", "" );
+                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool",
+                		"<p>" +
+                        		"Requires a ball and a yellow strut." +
+                        		"<br><br>" +
+                        		"More tooltip assistance coming soon...<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redstretch1", "Create a red stretch 1 tool", "" );
+                button = newToolButton( enabler, "redstretch1", "Create a red stretch 1 tool",
+                		"<p>" +
+                        		"Requires a ball and a red strut." +
+                        		"<br><br>" +
+                        		"More tooltip assistance coming soon...<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redsquash1", "Create a red squash 1 tool", "" );
+                button = newToolButton( enabler, "redsquash1", "Create a red squash 1 tool",
+                		"<p>" +
+                        		"Requires a ball and a red strut." +
+                        		"<br><br>" +
+                        		"More tooltip assistance coming soon...<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redstretch2", "Create a red stretch 2 tool", "" );
+                button = newToolButton( enabler, "redstretch2", "Create a red stretch 2 tool",
+                		"<p>" +
+                        		"Requires a ball and a red strut." +
+                        		"<br><br>" +
+                        		"More tooltip assistance coming soon...<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redsquash2", "Create a red squash 2 tool", "" );
+                button = newToolButton( enabler, "redsquash2", "Create a red squash 2 tool",
+                		"<p>" +
+                        		"Requires a ball and a red strut." +
+                        		"<br><br>" +
+                        		"More tooltip assistance coming soon...<br>" +
+                		"</p>" );
                 firstToolbar .add( button );
 
                 this .secondToolbar = new JToolBar();
