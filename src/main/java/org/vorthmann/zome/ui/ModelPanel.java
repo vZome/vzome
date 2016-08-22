@@ -33,7 +33,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 {
     private final Component monocularCanvas, leftEyeCanvas, rightEyeCanvas;
     private MouseListener monocularClicks, leftEyeClicks, rightEyeClicks;
-    private final JToolBar oldToolBar, firstToolbar, secondToolbar, bookmarkBar;
+    private final JToolBar oldToolBar, firstToolbar, secondToolbar, bookmarkBar; // TODO these don't need to be fields
+    private final JScrollPane firstScroller, secondScroller, bookmarkScroller;
     private final boolean isEditor;
 	private final Controller controller, view;
 	private final JPanel mMonocularPanel;
@@ -111,15 +112,17 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 this .firstToolbar .setFloatable( false );
                 this .firstToolbar .setOrientation( JToolBar.HORIZONTAL );
 //                this .firstToolbar .setToolTipText( "Click on objects to select them, and enable creation of new tools accordingly." );
-                JScrollPane scroller = new JScrollPane( this .firstToolbar, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
-                this .add( scroller, BorderLayout .NORTH );
+                this .firstScroller = new JScrollPane( this .firstToolbar, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+                this .firstScroller .setBorder( null );
+                this .add( this .firstScroller, BorderLayout .NORTH );
 
                 this .bookmarkBar = new JToolBar();
                 this .bookmarkBar .setFloatable( false );
                 this .bookmarkBar .setOrientation( JToolBar.VERTICAL );
                 this .bookmarkBar .setToolTipText( "Selection bookmarks" );
-                scroller = new JScrollPane( this .bookmarkBar, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-                monoStereoPlusToolbar .add( scroller, BorderLayout .LINE_START );
+                this .bookmarkScroller = new JScrollPane( this .bookmarkBar, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+                this .bookmarkScroller .setBorder( null );
+                monoStereoPlusToolbar .add( this .bookmarkScroller, BorderLayout .LINE_START );
                 
                 AbstractButton button;
 
@@ -255,8 +258,9 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 this .secondToolbar .setFloatable( false );
                 this .secondToolbar .setOrientation( JToolBar.HORIZONTAL );
 //                this .secondToolbar .setToolTipText( "All commands and tools apply to the currently selected objects." );
-                scroller = new JScrollPane( this .secondToolbar, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
-                monoStereoPlusToolbar .add( scroller, BorderLayout .NORTH );
+                this .secondScroller = new JScrollPane( this .secondToolbar, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+                this .secondScroller .setBorder( null );
+                monoStereoPlusToolbar .add( this .secondScroller, BorderLayout .NORTH );
 
                 button = makeEditButton2( "Create a selection bookmark", "/icons/tools/newTool/bookmark.png" );
         		button = enabler .setButtonAction( "addBookmark", button );
@@ -418,6 +422,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
             	this .secondToolbar = null;
             	this .firstToolbar = null;
             	this .bookmarkBar = null;
+            	firstScroller = null; secondScroller = null; bookmarkScroller = null;
             }
 
             monocularClicks = new ContextualMenuMouseListener( monoController , new PickerContextualMenu( monoController, enabler, "monocular" ) );
@@ -432,6 +437,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         	this .secondToolbar = null;
         	this .firstToolbar = null;
         	this .bookmarkBar = null;
+        	firstScroller = null; secondScroller = null; bookmarkScroller = null;
         }
 	}
 	
@@ -516,6 +522,9 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	            if ( "article" .equals( e .getNewValue() ) ) {
 	            	if ( this .oldToolBar != null )
 	            		this .oldToolBar .setVisible( false );
+	            	this .firstScroller .setVisible( false );
+	            	this .secondScroller .setVisible( false );
+	            	this .bookmarkScroller .setVisible( false );
 	                monocularCanvas .removeMouseListener( monocularClicks );
 	                leftEyeCanvas .removeMouseListener( leftEyeClicks );
 	                rightEyeCanvas .removeMouseListener( rightEyeClicks );
@@ -523,6 +532,9 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	            else if ( ! "true" .equals( this .controller .getProperty( "no.toolbar" ) ) ) {
 	            	if ( this .oldToolBar != null )
 	            		this .oldToolBar .setVisible( true );
+	            	this .firstScroller .setVisible( true );
+	            	this .secondScroller .setVisible( true );
+	            	this .bookmarkScroller .setVisible( true );
 	                monocularCanvas .addMouseListener( monocularClicks );
 	                leftEyeCanvas .addMouseListener( leftEyeClicks );
 	                rightEyeCanvas .addMouseListener( rightEyeClicks );
