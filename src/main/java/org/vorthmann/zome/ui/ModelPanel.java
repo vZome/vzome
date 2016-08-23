@@ -132,8 +132,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"Each tool produces up to 59 copies of the input<br>" +
                         		"selection, using the rotation symmetries of an<br>" +
                         		"icosahedron.  To create a tool, select a single<br>" +
-                        		"ball that defines the center of symmetry." +
-                        		"<br><br>" +
+                        		"ball that defines the center of symmetry.<br>" +
+                        		"<br>" +
                         		"Combine with a point reflection tool to achieve<br>" +
                         		"all 120 symmetries of the icosahedron, including<br>" +
                         		"reflections.<br>" +
@@ -146,8 +146,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"cube or octahedron.  To create a tool, select a<br>" +
                         		"ball that defines the center of symmetry, and<br>" +
                         		"a single blue or green strut, defining one of<br>" +
-                        		"five possible orientations for the symmetry." +
-                        		"<br><br>" +
+                        		"five possible orientations for the symmetry.<br>" +
+                        		"<br>" +
                         		"Combine with a point reflection tool to achieve<br>" +
                         		"all 48 symmetries of the octahedron, including<br>" +
                         		"reflections.<br>" +
@@ -160,8 +160,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"tetrahedron.  To create a tool, select a ball<br>" +
                         		"that defines the center of symmetry, and a single<br>" +
                         		"blue or green strut, defining one of five<br>" +
-                        		"possible orientations for the symmetry." +
-                        		"<br><br>" +
+                        		"possible orientations for the symmetry.<br>" +
+                        		"<br>" +
                         		"Combine with a point reflection tool to achieve<br>" +
                         		"all 24 symmetries of the tetrahedron, including<br>" +
                         		"reflections.<br>" +
@@ -173,8 +173,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"Each tool produces up to 23 copies of the input<br>" +
                         		"selection, using the rotation symmetries of a<br>" +
                         		"cube or octahedron.  To create a tool, select a<br>" +
-                        		"ball that defines the center of symmetry." +
-                        		"<br><br>" +
+                        		"ball that defines the center of symmetry.<br>" +
+                        		"<br>" +
                         		"Combine with a point reflection tool to achieve<br>" +
                         		"all 48 symmetries of the octahedron, including<br>" +
                         		"reflections.<br>" +
@@ -185,8 +185,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"Each tool produces up to 11 copies of the input<br>" +
                         		"selection, using the rotation symmetries of a<br>" +
                         		"tetrahedron.  To create a tool, select a ball<br>" +
-                        		"that defines the center of symmetry." +
-                        		"<br><br>" +
+                        		"that defines the center of symmetry.<br>" +
+                        		"<br>" +
                         		"Combine with a point reflection tool to achieve<br>" +
                         		"all 24 symmetries of the tetrahedron, including<br>" +
                         		"reflections.<br>" +
@@ -209,14 +209,30 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"plane and a ball lying in the plane.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
+                button = newToolButton( enabler, "axial symmetry", "Create a rotational symmetry tool",
+                		"<p>" +
+                        		"Each tool creates enough copies of the selected objects to<br>" +
+                        		"create rotational symmetry around an axis.  To create a tool,<br>" +
+                        		"select a strut that defines that axis,  You can also define<br>" +
+                        		"the direction and center independently, by selecting a ball<br>" +
+                        		"for the center and a strut for the axis.  Note: not all struts<br>" +
+                        		"correspond to rotational symmetries!<br>" +
+                        		"<br>" +
+                        		"Combine with a point reflection or mirror reflection tool to<br>" +
+                        		"achieve more symmetries.<br>" +
+                		"</p>" );
+                firstToolbar .add( button );
+                
+                firstToolbar .addSeparator();
+                
                 button = newToolButton( enabler, "scaling", "Create a scaling tool",
                 		"<p>" +
                         		"Each tool enlarges or shrinks the selected objects,<br>" +
                         		"relative to a central point.  To create a tool,<br>" +
                         		"select a ball representing the central point, and<br>" +
                         		"two struts from the same orbit (color) with different<br>" +
-                        		"sizes." +
-                        		"<br><br>" +
+                        		"sizes.<br>" +
+                        		"<br>" +
                         		"The selection order matters.  First select a strut<br>" +
                         		"that you want to enlarge or shrink, then select a<br>" +
                         		"strut that has the desired target size.<br>" +
@@ -224,72 +240,159 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 firstToolbar .add( button );
                 button = newToolButton( enabler, "rotation", "Create a rotation tool",
                 		"<p>" +
-                        		"Requires a strut as a rotation axis." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( enabler, "axial symmetry", "Create a rotational symmetry tool",
-                		"<p>" +
-                        		"Requires a strut as a rotation axis." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
+                        		"Each tool rotates the selected objects around an axis<br>" +
+                        		"of symmetry.  To create a tool, select a strut that<br>" +
+                        		"defines that axis.  You can also define the direction<br>" +
+                        		"and center independently, by selecting a ball for the<br>" +
+                        		"center and a strut for the axis.  Note: not all struts<br>" +
+                        		"correspond to rotational symmetries!<br>" +
+                        		"<br>" +
+                        		"The direction of rotation depends on the strut<br>" +
+                        		"orientation, which is hard to discover, but easy to<br>" +
+                        		"control, by dragging out a new strut.<br>" +
+                        		"<br>" +
+                        		"By default, the input selection will be moved to the new,<br>" +
+                        		"rotated orientation.  After creating a tool, you can<br>" +
+                        		"right-click to configure the tool to create a copy, instead.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
                 button = newToolButton( enabler, "translation", "Create a translation tool",
                 		"<p>" +
-                        		"Requires two balls to define the translation offset." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
+                        		"Each tool moves the selected objects to a new location.<br>" +
+                        		"To create a tool, select two balls that are separated by<br>" +
+                        		"your desired translation offset.  Order of selection<br>" +
+                        		"matters: the first ball selected is the \"from\" location,<br>" +
+                        		"and the second is the \"to\" location.<br>" +
+                        		"<br>" +
+                        		"By default, the input selection will be moved to the new<br>" +
+                        		"location.  If you want to copy rather than move, you can<br>" +
+                        		"right-click after creating the tool, to configure it.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "linear map", "Create a linear map tool",
+                button = newToolButton( enabler, "redstretch1", "Create a weak red stretch tool",
                 		"<p>" +
-                        		"Requires a ball and three struts, or a ball and six struts." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
+                        		"Each tool applies a \"stretch\" transformation to the<br>" +
+                        		"selected objects, stretching along a red axis.  To create<br>" +
+                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+                        		"red strut as the direction of the stretch.  The ball and<br>" +
+                        		"strut need not be collinear.<br>" +
+                        		"<br>" +
+                        		"The mapping comes from the usual Zome projection of the<br>" +
+                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
+                        		"the central, blue dodecahedron into the compressed form in<br>" +
+                        		"the next layer outward.<br>" +
+                        		"<br>" +
+                        		"By default, the input selection will be removed, and replaced<br>" +
+                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
+                        		"you can right-click after creating the tool, to configure it.<br>" +
+                		"</p>" );
+                firstToolbar .add( button );
+                button = newToolButton( enabler, "redsquash1", "Create a weak red squash tool",
+                		"<p>" +
+                        		"Each tool applies a \"squash\" transformation to the<br>" +
+                        		"selected objects, compressing along a red axis.  To create<br>" +
+                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+                        		"red strut as the direction of the compression.  The ball and<br>" +
+                        		"strut need not be collinear.<br>" +
+                        		"<br>" +
+                        		"The mapping comes from the usual Zome projection of the<br>" +
+                        		"120-cell.  It is the mapping that transforms the central,<br>" +
+                        		"blue dodecahedron into the compressed form in the next<br>" +
+                        		"layer outward.<br>" +
+                        		"<br>" +
+                        		"By default, the input selection will be removed, and replaced<br>" +
+                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+                        		"you can right-click after creating the tool, to configure it.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
                 button = newToolButton( enabler, "yellowstretch", "Create a yellow stretch tool",
                 		"<p>" +
-                        		"Requires a ball and a yellow strut." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
+                        		"Each tool applies a \"stretch\" transformation to the<br>" +
+                        		"selected objects, stretching along a yellow axis.  To create<br>" +
+                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+                        		"yellow strut as the direction of the stretch.  The ball and<br>" +
+                        		"strut need not be collinear.<br>" +
+                        		"<br>" +
+                        		"The mapping comes from the usual Zome projection of the<br>" +
+                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
+                        		"the central, blue dodecahedron into the compressed form along<br>" +
+                        		"a yellow axis.<br>" +
+                        		"<br>" +
+                        		"By default, the input selection will be removed, and replaced<br>" +
+                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
+                        		"you can right-click after creating the tool, to configure it.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
                 button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool",
                 		"<p>" +
-                        		"Requires a ball and a yellow strut." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
+                        		"Each tool applies a \"squash\" transformation to the<br>" +
+                        		"selected objects, compressing along a yellow axis.  To create<br>" +
+                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+                        		"yellow strut as the direction of the compression.  The ball and<br>" +
+                        		"strut need not be collinear.<br>" +
+                        		"<br>" +
+                        		"The mapping comes from the usual Zome projection of the<br>" +
+                        		"120-cell.  It is the mapping that transforms the central,<br>" +
+                        		"blue dodecahedron into the compressed form along a yellow axis.<br>" +
+                        		"<br>" +
+                        		"By default, the input selection will be removed, and replaced<br>" +
+                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+                        		"you can right-click after creating the tool, to configure it.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redstretch1", "Create a red stretch 1 tool",
+                button = newToolButton( enabler, "redstretch2", "Create a strong red stretch tool",
                 		"<p>" +
-                        		"Requires a ball and a red strut." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
+                        		"Each tool applies a \"stretch\" transformation to the<br>" +
+                        		"selected objects, stretching along a red axis.  To create<br>" +
+                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+                        		"red strut as the direction of the stretch.  The ball and<br>" +
+                        		"strut need not be collinear.<br>" +
+                        		"<br>" +
+                        		"The mapping comes from the usual Zome projection of the<br>" +
+                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
+                        		"the central, blue dodecahedron into the compressed form in<br>" +
+                        		"the second layer outward along a red axis.<br>" +
+                        		"<br>" +
+                        		"By default, the input selection will be removed, and replaced<br>" +
+                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
+                        		"you can right-click after creating the tool, to configure it.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redsquash1", "Create a red squash 1 tool",
+                button = newToolButton( enabler, "redsquash2", "Create a strong red squash tool",
                 		"<p>" +
-                        		"Requires a ball and a red strut." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
+                        		"Each tool applies a \"squash\" transformation to the<br>" +
+                        		"selected objects, compressing along a red axis.  To create<br>" +
+                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+                        		"red strut as the direction of the compression.  The ball and<br>" +
+                        		"strut need not be collinear.<br>" +
+                        		"<br>" +
+                        		"The mapping comes from the usual Zome projection of the<br>" +
+                        		"120-cell.  It is the mapping that transforms the central,<br>" +
+                        		"blue dodecahedron into the compressed form in the second<br>" +
+                        		"layer outward along a red axis.<br>" +
+                        		"<br>" +
+                        		"By default, the input selection will be removed, and replaced<br>" +
+                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+                        		"you can right-click after creating the tool, to configure it.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redstretch2", "Create a red stretch 2 tool",
+                button = newToolButton( enabler, "linear map", "Create a linear map tool",
                 		"<p>" +
-                        		"Requires a ball and a red strut." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( enabler, "redsquash2", "Create a red squash 2 tool",
-                		"<p>" +
-                        		"Requires a ball and a red strut." +
-                        		"<br><br>" +
-                        		"More tooltip assistance coming soon...<br>" +
+                        		"<b>For experts and Linear Algebra students...</b><br>" +
+                        		"<br>" +
+                        		"Each tool applies a linear transformation to the selected<br>" +
+                        		"objects, possibly rotating, stretching, and compressing.  To<br>" +
+                        		"create a tool, select a ball as the center of the mapping,<br>" +
+                        		"three struts (in order) to define the input basis, and three<br>" +
+                        		"more struts to define the output basis.<br>" +
+                        		"<br>" +
+                        		"You can omit the input basis if it would consist of three<br>" +
+                        		"identical blue struts at right angles; the three struts you<br>" +
+                        		"select will be interpreted as the output basis.<br>" +
+                        		"<br>" +
+                        		"By default, the input selection will be removed, and replaced<br>" +
+                        		"with the transformed equivalent.  If you want to keep the inputs,<br>" +
+                        		"you can right-click after creating the tool, to configure it.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
 
