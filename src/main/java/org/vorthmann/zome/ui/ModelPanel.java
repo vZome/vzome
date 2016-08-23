@@ -421,7 +421,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 
                 button = makeEditButton( enabler, "joinballs", "Connect balls in a loop" );
                 secondToolbar .add( button );
-                button = makeEditButton( enabler, "chainBalls", "Connect balls in a chain" );
+                button = makeEditButton( enabler, "chainballs", "Connect balls in a chain" );
                 secondToolbar .add( button );
                 button = makeEditButton( enabler, "joinBallsAllToLast", "Connect all balls to last selected" );
                 secondToolbar .add( button );
