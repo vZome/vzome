@@ -269,113 +269,117 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"right-click after creating the tool, to configure it.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "redstretch1", "Create a weak red stretch tool",
-                		"<p>" +
-                        		"Each tool applies a \"stretch\" transformation to the<br>" +
-                        		"selected objects, stretching along a red axis.  To create<br>" +
-                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-                        		"red strut as the direction of the stretch.  The ball and<br>" +
-                        		"strut need not be collinear.<br>" +
-                        		"<br>" +
-                        		"The mapping comes from the usual Zome projection of the<br>" +
-                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
-                        		"the central, blue dodecahedron into the compressed form in<br>" +
-                        		"the next layer outward.<br>" +
-                        		"<br>" +
-                        		"By default, the input selection will be removed, and replaced<br>" +
-                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
-                        		"you can right-click after creating the tool, to configure it.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( enabler, "redsquash1", "Create a weak red squash tool",
-                		"<p>" +
-                        		"Each tool applies a \"squash\" transformation to the<br>" +
-                        		"selected objects, compressing along a red axis.  To create<br>" +
-                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-                        		"red strut as the direction of the compression.  The ball and<br>" +
-                        		"strut need not be collinear.<br>" +
-                        		"<br>" +
-                        		"The mapping comes from the usual Zome projection of the<br>" +
-                        		"120-cell.  It is the mapping that transforms the central,<br>" +
-                        		"blue dodecahedron into the compressed form in the next<br>" +
-                        		"layer outward.<br>" +
-                        		"<br>" +
-                        		"By default, the input selection will be removed, and replaced<br>" +
-                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
-                        		"you can right-click after creating the tool, to configure it.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( enabler, "yellowstretch", "Create a yellow stretch tool",
-                		"<p>" +
-                        		"Each tool applies a \"stretch\" transformation to the<br>" +
-                        		"selected objects, stretching along a yellow axis.  To create<br>" +
-                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-                        		"yellow strut as the direction of the stretch.  The ball and<br>" +
-                        		"strut need not be collinear.<br>" +
-                        		"<br>" +
-                        		"The mapping comes from the usual Zome projection of the<br>" +
-                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
-                        		"the central, blue dodecahedron into the compressed form along<br>" +
-                        		"a yellow axis.<br>" +
-                        		"<br>" +
-                        		"By default, the input selection will be removed, and replaced<br>" +
-                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
-                        		"you can right-click after creating the tool, to configure it.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool",
-                		"<p>" +
-                        		"Each tool applies a \"squash\" transformation to the<br>" +
-                        		"selected objects, compressing along a yellow axis.  To create<br>" +
-                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-                        		"yellow strut as the direction of the compression.  The ball and<br>" +
-                        		"strut need not be collinear.<br>" +
-                        		"<br>" +
-                        		"The mapping comes from the usual Zome projection of the<br>" +
-                        		"120-cell.  It is the mapping that transforms the central,<br>" +
-                        		"blue dodecahedron into the compressed form along a yellow axis.<br>" +
-                        		"<br>" +
-                        		"By default, the input selection will be removed, and replaced<br>" +
-                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
-                        		"you can right-click after creating the tool, to configure it.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( enabler, "redstretch2", "Create a strong red stretch tool",
-                		"<p>" +
-                        		"Each tool applies a \"stretch\" transformation to the<br>" +
-                        		"selected objects, stretching along a red axis.  To create<br>" +
-                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-                        		"red strut as the direction of the stretch.  The ball and<br>" +
-                        		"strut need not be collinear.<br>" +
-                        		"<br>" +
-                        		"The mapping comes from the usual Zome projection of the<br>" +
-                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
-                        		"the central, blue dodecahedron into the compressed form in<br>" +
-                        		"the second layer outward along a red axis.<br>" +
-                        		"<br>" +
-                        		"By default, the input selection will be removed, and replaced<br>" +
-                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
-                        		"you can right-click after creating the tool, to configure it.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( enabler, "redsquash2", "Create a strong red squash tool",
-                		"<p>" +
-                        		"Each tool applies a \"squash\" transformation to the<br>" +
-                        		"selected objects, compressing along a red axis.  To create<br>" +
-                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-                        		"red strut as the direction of the compression.  The ball and<br>" +
-                        		"strut need not be collinear.<br>" +
-                        		"<br>" +
-                        		"The mapping comes from the usual Zome projection of the<br>" +
-                        		"120-cell.  It is the mapping that transforms the central,<br>" +
-                        		"blue dodecahedron into the compressed form in the second<br>" +
-                        		"layer outward along a red axis.<br>" +
-                        		"<br>" +
-                        		"By default, the input selection will be removed, and replaced<br>" +
-                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
-                        		"you can right-click after creating the tool, to configure it.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
+	            
+                if ( controller .propertyIsTrue( "supports.symmetry.icosahedral" ) ) {
+	                button = newToolButton( enabler, "redstretch1", "Create a weak red stretch tool",
+	                		"<p>" +
+	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
+	                        		"selected objects, stretching along a red axis.  To create<br>" +
+	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+	                        		"red strut as the direction of the stretch.  The ball and<br>" +
+	                        		"strut need not be collinear.<br>" +
+	                        		"<br>" +
+	                        		"The mapping comes from the usual Zome projection of the<br>" +
+	                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
+	                        		"the central, blue dodecahedron into the compressed form in<br>" +
+	                        		"the next layer outward.<br>" +
+	                        		"<br>" +
+	                        		"By default, the input selection will be removed, and replaced<br>" +
+	                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
+	                        		"you can right-click after creating the tool, to configure it.<br>" +
+	                		"</p>" );
+	                firstToolbar .add( button );
+	                button = newToolButton( enabler, "redsquash1", "Create a weak red squash tool",
+	                		"<p>" +
+	                        		"Each tool applies a \"squash\" transformation to the<br>" +
+	                        		"selected objects, compressing along a red axis.  To create<br>" +
+	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+	                        		"red strut as the direction of the compression.  The ball and<br>" +
+	                        		"strut need not be collinear.<br>" +
+	                        		"<br>" +
+	                        		"The mapping comes from the usual Zome projection of the<br>" +
+	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
+	                        		"blue dodecahedron into the compressed form in the next<br>" +
+	                        		"layer outward.<br>" +
+	                        		"<br>" +
+	                        		"By default, the input selection will be removed, and replaced<br>" +
+	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+	                        		"you can right-click after creating the tool, to configure it.<br>" +
+	                		"</p>" );
+	                firstToolbar .add( button );
+	                button = newToolButton( enabler, "yellowstretch", "Create a yellow stretch tool",
+	                		"<p>" +
+	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
+	                        		"selected objects, stretching along a yellow axis.  To create<br>" +
+	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+	                        		"yellow strut as the direction of the stretch.  The ball and<br>" +
+	                        		"strut need not be collinear.<br>" +
+	                        		"<br>" +
+	                        		"The mapping comes from the usual Zome projection of the<br>" +
+	                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
+	                        		"the central, blue dodecahedron into the compressed form along<br>" +
+	                        		"a yellow axis.<br>" +
+	                        		"<br>" +
+	                        		"By default, the input selection will be removed, and replaced<br>" +
+	                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
+	                        		"you can right-click after creating the tool, to configure it.<br>" +
+	                		"</p>" );
+	                firstToolbar .add( button );
+	                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool",
+	                		"<p>" +
+	                        		"Each tool applies a \"squash\" transformation to the<br>" +
+	                        		"selected objects, compressing along a yellow axis.  To create<br>" +
+	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+	                        		"yellow strut as the direction of the compression.  The ball and<br>" +
+	                        		"strut need not be collinear.<br>" +
+	                        		"<br>" +
+	                        		"The mapping comes from the usual Zome projection of the<br>" +
+	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
+	                        		"blue dodecahedron into the compressed form along a yellow axis.<br>" +
+	                        		"<br>" +
+	                        		"By default, the input selection will be removed, and replaced<br>" +
+	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+	                        		"you can right-click after creating the tool, to configure it.<br>" +
+	                		"</p>" );
+	                firstToolbar .add( button );
+	                button = newToolButton( enabler, "redstretch2", "Create a strong red stretch tool",
+	                		"<p>" +
+	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
+	                        		"selected objects, stretching along a red axis.  To create<br>" +
+	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+	                        		"red strut as the direction of the stretch.  The ball and<br>" +
+	                        		"strut need not be collinear.<br>" +
+	                        		"<br>" +
+	                        		"The mapping comes from the usual Zome projection of the<br>" +
+	                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
+	                        		"the central, blue dodecahedron into the compressed form in<br>" +
+	                        		"the second layer outward along a red axis.<br>" +
+	                        		"<br>" +
+	                        		"By default, the input selection will be removed, and replaced<br>" +
+	                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
+	                        		"you can right-click after creating the tool, to configure it.<br>" +
+	                		"</p>" );
+	                firstToolbar .add( button );
+	                button = newToolButton( enabler, "redsquash2", "Create a strong red squash tool",
+	                		"<p>" +
+	                        		"Each tool applies a \"squash\" transformation to the<br>" +
+	                        		"selected objects, compressing along a red axis.  To create<br>" +
+	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+	                        		"red strut as the direction of the compression.  The ball and<br>" +
+	                        		"strut need not be collinear.<br>" +
+	                        		"<br>" +
+	                        		"The mapping comes from the usual Zome projection of the<br>" +
+	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
+	                        		"blue dodecahedron into the compressed form in the second<br>" +
+	                        		"layer outward along a red axis.<br>" +
+	                        		"<br>" +
+	                        		"By default, the input selection will be removed, and replaced<br>" +
+	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+	                        		"you can right-click after creating the tool, to configure it.<br>" +
+	                		"</p>" );
+	                firstToolbar .add( button );
+	            }
+                
                 button = newToolButton( enabler, "linear map", "Create a linear map tool",
                 		"<p>" +
                         		"<b>For experts and Linear Algebra students...</b><br>" +
@@ -452,6 +456,10 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				            {
 				            	Controller controller = (Controller) evt .getNewValue();
 				                String kind = controller .getProperty( "kind" );
+				                if ( "synestructics" .equals( kind ) )
+				                	return;
+				                if ( "dodecagonal" .equals( kind ) )
+				                	return;
 				                String name = controller .getProperty( "label" );
 				                String iconPath = "/icons/tools/small/" + kind + ".png";
 				                String tooltip = "<html><b>" + name + "</b><br><br><p>Right-click to configure this tool.</p></html>";
