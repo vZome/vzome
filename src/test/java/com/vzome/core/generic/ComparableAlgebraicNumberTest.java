@@ -2,12 +2,16 @@ package com.vzome.core.generic;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
+import com.vzome.core.algebra.SnubDodecField;
 import java.util.ArrayList;
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 
 /**
@@ -110,4 +114,63 @@ public class ComparableAlgebraicNumberTest extends ComparableTest<AlgebraicNumbe
 	public void testComparableToDifferent() {
 		super.testComparableToDifferent();
 	}
+
+    @Test
+    public void testComparableMatchesEvaluate() {
+        AlgebraicField[] fields = {
+            new PentagonField(),
+            new RootTwoField(),
+            new RootThreeField(),
+            new HeptagonField(),
+            new SnubDodecField( new PentagonField() ),
+        };
+
+        int passed = 0;
+        for(AlgebraicField field: fields ) {
+            // The original implementation of AlgebraicNumber.compareTo() was not consistent with AlgebraicNumber.evaluate().compareTo()
+            // AlgebraicNumber.compareTo() should order values sequentially corresponding to their position on a number line.
+            // This test specifically targets a particular condition where the original implementation sorted them incorrectly.
+            // The obscure condition occured when:
+            //  1) The unit factor of n1 is greater than the unit factor of n2
+            //  2) The evaluated value of n1 is less than the evaluated value of n2
+            // This test case verifies the corrected implementation.
+            //
+            // I was surprised that none of the other unit tests or regression tests failed
+            // when I corrected the implementation of AlgebraicVector.compareTo().
+            // Specifically, all of them passed that require sorting vectors,
+            // such as ExporterTest which has a lot of hard coded values as expected results.
+
+            int units1 = 4;
+            int units2 = 1;
+            int irrat1 = -4;
+            int irrat2 = 0;
+
+            assertTrue(units1 > units2);
+            assertTrue(units1 > 1);
+            assertTrue(irrat1 < irrat2);
+            assertTrue(irrat1 < 0);
+            assertTrue(irrat2 >= 0);
+
+            AlgebraicNumber n1 = field.createAlgebraicNumber(units1, irrat1, 1, 0); // e.g. (4-4*phi) is negative
+            AlgebraicNumber n2 = field.createAlgebraicNumber(units2, irrat2, 1, 0); // e.g.  1        is positive
+
+            assertNotEquals(n1, n2);
+
+            Double d1 = n1.evaluate();
+            Double d2 = n2.evaluate();
+
+            assertTrue(d1 < 0d);
+            assertTrue(d2 > 0d);
+
+            int nResult = n1.compareTo(n2);
+            int dResult = d1.compareTo(d2);
+
+            assertEquals(nResult, dResult);
+            assertTrue(dResult < 0);
+            passed ++;
+        }
+        // be sure we actually tested all of the fields
+        assertEquals(fields.length, passed);
+        assertTrue(passed > 0);
+    }
 }

@@ -93,17 +93,11 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         if (comparison != 0) {
             return comparison;
         }
-        for (int i = 0; i < factors.length; i++) {
-            BigRational n1 = this.factors[i];
-            BigRational n2 = other.factors[i];
-            comparison = n1.compareTo(n2);
-            if (comparison != 0) {
-                return comparison;
-            }
-        }
-        return comparison;
+        Double d1 = this.evaluate();
+        Double d2 = other.evaluate();
+        return d1.compareTo(d2);
     }
-
+    
     public AlgebraicField getField()
     {
         return this .field;
