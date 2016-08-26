@@ -14,7 +14,7 @@ public class ToolController extends DefaultController
 	private Tool tool;
 	private DocumentModel applier;  // TODO this should be a ToolsModel
 	private final String kind;
-	private final String label;
+	private String label;
 	private boolean deleteInputs;
 	private boolean selectInputs;
 	private boolean selectOutputs;
@@ -133,6 +133,21 @@ public class ToolController extends DefaultController
 
 		default:
 			return super .getProperty(name);
+		}
+	}
+
+	@Override
+	public void setProperty( String name, Object value )
+	{
+		switch ( name ) {
+
+		case "label":
+			this .label = (String) value;
+			this .properties() .firePropertyChange( "label", null, this .label );
+			return;
+
+		default:
+			super .setProperty( name, value );
 		}
 	}
 

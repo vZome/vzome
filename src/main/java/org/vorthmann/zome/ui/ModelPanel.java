@@ -31,7 +31,10 @@ import org.vorthmann.ui.Controller;
 
 public class ModelPanel extends JPanel implements PropertyChangeListener
 {
-    private final Component monocularCanvas, leftEyeCanvas, rightEyeCanvas;
+	private static final String TOOLTIP_PREFIX = "<html><b>";
+	private static final String TOOLTIP_SUFFIX = "</b><br><br><p>Right-click to configure this tool.</p></html>";
+
+	private final Component monocularCanvas, leftEyeCanvas, rightEyeCanvas;
     private MouseListener monocularClicks, leftEyeClicks, rightEyeClicks;
     private final JToolBar oldToolBar, firstToolbar, secondToolbar, bookmarkBar; // TODO these don't need to be fields
     private final JScrollPane firstScroller, secondScroller, bookmarkScroller;
@@ -462,7 +465,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				                	return;
 				                String name = controller .getProperty( "label" );
 				                String iconPath = "/icons/tools/small/" + kind + ".png";
-				                String tooltip = "<html><b>" + name + "</b><br><br><p>Right-click to configure this tool.</p></html>";
+				                String tooltip = TOOLTIP_PREFIX + name + TOOLTIP_SUFFIX;
 				                JButton button = makeEditButton2( tooltip, iconPath );
 				        		button .setActionCommand( "apply" );
 				        		button .addActionListener( controller );
@@ -492,6 +495,19 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				        			        }
 				        			    }
 									} );
+				        			controller .addPropertyListener( new PropertyChangeListener()
+				        			{
+										@Override
+										public void propertyChange( PropertyChangeEvent evt )
+										{
+											if ( "label" .equals( evt .getPropertyName() ) )
+											{
+												String label = (String) evt .getNewValue();
+								                String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
+												button .setToolTipText( tooltip );
+											}
+										}
+									});
 				        			secondToolbar .add( button );
 				        		}
 				            }

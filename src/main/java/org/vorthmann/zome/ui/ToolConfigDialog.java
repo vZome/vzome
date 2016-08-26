@@ -20,9 +20,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
@@ -33,7 +33,7 @@ import com.jogamp.newt.event.KeyEvent;
 public class ToolConfigDialog extends JDialog implements ActionListener
 {
     private final JButton iconButton;
-    private final JLabel toolLabel;
+    private final JTextField toolName;
     private final JTabbedPane tabs;
     private final JCheckBox selectInputsCheckbox, deleteInputsCheckbox, selectOutputsCheckbox, createOutputsCheckbox;
 	private Controller controller;
@@ -121,9 +121,19 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         	iconButton .setActionCommand( "apply" );
         	iconButton .addActionListener( this );
         	iconAndLabel .add( iconButton, BorderLayout .WEST );
-        	toolLabel = new JLabel();
-        	toolLabel .setHorizontalAlignment( SwingConstants .CENTER );
-        	iconAndLabel .add( toolLabel, BorderLayout .CENTER );
+        	toolName = new JTextField();
+        	toolName .setHorizontalAlignment( SwingConstants .CENTER );
+        	toolName .addActionListener( new ActionListener()
+        	{
+				@Override
+				public void actionPerformed( ActionEvent e )
+				{
+			        String name = toolName .getText();
+					controller .setProperty( "label", name );
+					closer .actionPerformed( e );
+				}
+			});
+        	iconAndLabel .add( toolName, BorderLayout .CENTER );
         }
         tabs = new JTabbedPane();
         this .add( tabs, BorderLayout .CENTER );
@@ -177,7 +187,7 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 		this.controller = controller;
 		this.controller .addPropertyListener( checkboxChanges );
 		iconButton .setIcon( button .getIcon() );
-		toolLabel .setText( controller .getProperty( "label" ) );
+		toolName .setText( controller .getProperty( "label" ) );
 		boolean selectInputs = controller .propertyIsTrue( "selectInputs" );
 		selectInputsCheckbox .setSelected( selectInputs );
 		boolean deleteInputs = controller .propertyIsTrue( "deleteInputs" );
