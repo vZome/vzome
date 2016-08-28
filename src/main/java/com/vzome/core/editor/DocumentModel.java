@@ -743,10 +743,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
     public void finishLoading( boolean openUndone, boolean asTemplate ) throws Command.Failure
     {
-        for ( Tool tool : getTools() )
-			firePropertyChange( "tool.instances", null, tool .getName() );
-		firePropertyChange( "tool.separator", null, "SEPARATOR" );
-
     	if ( mXML == null )
     		return;
 
