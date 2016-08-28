@@ -72,15 +72,17 @@ public class TranslationTool extends TransformationTool
         
         if ( p1 == null )
         {
-            if ( isAutomatic() )
+            if ( isAutomatic() || this .getName() .equals( "translation.builtin/move right" ) )
             {
                 p1 = originPoint;
+        		this .addParameter( p1 );
                 AlgebraicField field = originPoint .getField();
                 AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
                 AlgebraicNumber scale = field .createPower( 3 );
                 scale = scale .times( field .createRational( 2 ) );
                 xAxis = xAxis .scale( scale );
                 p2 = new FreePoint( xAxis );
+        		this .addParameter( p2 );
             }
             else
             {

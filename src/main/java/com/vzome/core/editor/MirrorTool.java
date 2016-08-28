@@ -16,6 +16,7 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.Transformation;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -35,7 +36,17 @@ public class MirrorTool extends TransformationTool
         Point center = null;
         Segment axis = null;
         Polygon mirrorPanel = null;
-        if ( isAutomatic() )
+        if ( this .getName() .equals( "mirror.builtin/reflection through XY plane" ) )
+        {
+            center = originPoint;
+    		this .addParameter( center );
+            AlgebraicField field = originPoint .getField();
+            AlgebraicVector zAxis = field .basisVector( 3, AlgebraicVector .Z ) .scale( field .createPower( Direction.USER_SCALE ) );
+            Point p2 = new FreePoint( zAxis );
+            axis = new SegmentJoiningPoints( center, p2 );
+    		this .addParameter( axis );
+        }
+        else if ( isAutomatic() )
         {
             center = originPoint;
             AlgebraicField field = originPoint .getField();

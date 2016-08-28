@@ -175,7 +175,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             	String name = symm .getName();
 				makeTool( name + ".builtin/" + name + " around origin", name, this, symm ) .perform();
 			} catch ( Command.Failure e ) {
-				logger .warning( "Failed to create " + symm .getName() + " tool." );
+				logger .severe( "Failed to create " + symm .getName() + " tool." );
 			}
         }
 
@@ -194,28 +194,18 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
         try {
 			makeTool( "tetrahedral.builtin/tetrahedral around origin", "tetrahedral", this, symmetry ) .perform();
-		} catch ( Command.Failure e ) {
-			logger .warning( "Failed to create built-in tetrahedral symmetry tool." );
-		}
-        try {
 			makeTool( "point reflection.builtin/reflection through origin", "point reflection", this, symmetry ) .perform();
-		} catch ( Command.Failure e ) {
-			logger .warning( "Failed to create built-in point reflection tool." );
-		}
-        try {
 			makeTool( "scaling.builtin/scale up", "scale up", this, symmetry ) .perform();
-		} catch ( Command.Failure e ) {
-			logger .warning( "Failed to create built-in scale up tool." );
-		}
-        try {
 			makeTool( "scaling.builtin/scale down", "scale down", this, symmetry ) .perform();
-		} catch ( Command.Failure e ) {
-			logger .warning( "Failed to create built-in scale down tool." );
-		}
-        try {
+			makeTool( "translation.builtin/move right", "translation", this, symmetry ) .perform();
+			makeTool( "mirror.builtin/reflection through XY plane", "mirror", this, symmetry ) .perform();
 			makeTool( "bookmark.builtin/ball at origin", "bookmark", this, symmetry ) .perform();
+			if ( symmetry instanceof IcosahedralSymmetry ) {
+				makeTool( "rotation.builtin/rotate around red through origin", "axial symmetry", this, symmetry ) .perform();
+				makeTool( "axial symmetry.builtin/symmetry around red through origin", "axial symmetry", this, symmetry ) .perform();
+			}
 		} catch ( Command.Failure e ) {
-			logger .warning( "Failed to create built-in origin bookmark." );
+			logger .severe( "Failed to create built-in tools." );
 		}
 
         this .renderedModel = new RenderedModel( field, this .symmetrySystem );
@@ -1229,7 +1219,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     public boolean isToolEnabled( String group, Symmetry symmetry )
     {
         Tool tool = (Tool) makeTool( group + ".0/UNUSED", group, null, symmetry ); // TODO: get rid of isAutomatic() and isTetrahedral() silliness, so the string won't get parsed
-    	return tool .isValidForSelection();
+    	return tool != null && tool .isValidForSelection();
     }
 
 	public void createTool( String name, String group, Tool.Registry tools, Symmetry symmetry )
@@ -1241,46 +1231,75 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	private UndoableEdit makeTool( String name, String group, Tool.Registry tools, Symmetry symmetry )
 	{
         UndoableEdit edit = null;
-        if ( "bookmark" .equals( group ) )
-            edit = new BookmarkTool( name, mSelection, mRealizedModel, tools );
-        else if ( "point reflection" .equals( group ) )
-            edit = new InversionTool( name, mSelection, mRealizedModel, tools, originPoint );
-        else if ( "mirror" .equals( group ) )
-            edit = new MirrorTool( name, mSelection, mRealizedModel, tools, originPoint );
-        else if ( "translation" .equals( group ) )
-            edit = new TranslationTool( name, mSelection, mRealizedModel, tools, originPoint );
-        else if ( "linear map" .equals( group ) )
-            edit = new LinearMapTool( name, mSelection, mRealizedModel, tools, originPoint, false );
-        else if ( "rotation" .equals( group ) )
-            edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, false );
-        else if ( "axial symmetry" .equals( group ) )
-            edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, true );
-        else if ( "scaling" .equals( group ) )
-        	edit = new ScalingTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
-        else if ( "scale up" .equals( group ) )
-        	edit = new ScalingTool( name, tools, getField() .createPower( 1 ), originPoint );
-        else if ( "scale down" .equals( group ) )
-        	edit = new ScalingTool( name, tools, getField() .createPower( -1 ), originPoint );
-        else if ( "tetrahedral" .equals( group ) )
-            edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
-        else if ( "module" .equals( group ) )
-            edit = new ModuleTool( name, mSelection, mRealizedModel, tools );
-        else if ( "plane" .equals( group ) )
-            edit = new PlaneSelectionTool( name, mSelection, mField, tools );
-        else if ( "yellowstretch" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, false, false );
-        else if ( "yellowsquash" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, false, false );
-        else if ( "redstretch1" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, true, true );
-        else if ( "redsquash1" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, true, true );
-        else if ( "redstretch2" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, true, false );
-        else if ( "redsquash2" .equals( group ) )
-        	edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, true, false );
-        else
-        	edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
+        switch (group) {
+
+        case "bookmark":
+			edit = new BookmarkTool( name, mSelection, mRealizedModel, tools );
+			break;
+		case "point reflection":
+			edit = new InversionTool( name, mSelection, mRealizedModel, tools, originPoint );
+			break;
+		case "mirror":
+			edit = new MirrorTool( name, mSelection, mRealizedModel, tools, originPoint );
+			break;
+		case "translation":
+			edit = new TranslationTool( name, mSelection, mRealizedModel, tools, originPoint );
+			break;
+		case "linear map":
+			edit = new LinearMapTool( name, mSelection, mRealizedModel, tools, originPoint, false );
+			break;
+		case "rotation":
+			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, false );
+			break;
+		case "axial symmetry":
+			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, true );
+			break;
+		case "scaling":
+			edit = new ScalingTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
+			break;
+		case "scale up":
+			edit = new ScalingTool( name, tools, getField() .createPower( 1 ), originPoint );
+			break;
+		case "scale down":
+			edit = new ScalingTool( name, tools, getField() .createPower( -1 ), originPoint );
+			break;
+		case "tetrahedral":
+			edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
+			break;
+		case "module":
+			edit = new ModuleTool( name, mSelection, mRealizedModel, tools );
+			break;
+		case "plane":
+			edit = new PlaneSelectionTool( name, mSelection, mField, tools );
+			break;
+		case "yellowstretch":
+			if ( symmetry instanceof IcosahedralSymmetry )
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, false, false );
+			break;
+		case "yellowsquash":
+			if ( symmetry instanceof IcosahedralSymmetry )
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, false, false );
+			break;
+		case "redstretch1":
+			if ( symmetry instanceof IcosahedralSymmetry )
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, true, true );
+			break;
+		case "redsquash1":
+			if ( symmetry instanceof IcosahedralSymmetry )
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, true, true );
+			break;
+		case "redstretch2":
+			if ( symmetry instanceof IcosahedralSymmetry )
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, true, false );
+			break;
+		case "redsquash2":
+			if ( symmetry instanceof IcosahedralSymmetry )
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, true, false );
+			break;
+		default:
+			edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
+			break;
+		}
         return edit;
 	}
 

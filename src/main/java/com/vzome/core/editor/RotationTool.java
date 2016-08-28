@@ -18,6 +18,7 @@ import com.vzome.core.construction.SegmentEndPoint;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
@@ -104,7 +105,16 @@ public class RotationTool extends SymmetryTool
         
         if ( axisStrut == null )
         {
-            if ( isAutomatic() )
+            if ( this .getName() .contains( ".builtin/" ) ) { // TODO: fix this lame mechanism; use an API
+                center = originPoint;
+        		this .addParameter( center );
+            	Direction redOrbit = symmetry .getDirection( "red" );
+                AlgebraicField field = symmetry .getField();
+    	    	AlgebraicNumber redScale = redOrbit .getUnitLength() .times( field .createPower( Direction.USER_SCALE ) );
+                axisStrut = new AnchoredSegment( redOrbit .getAxis( Symmetry.PLUS, 1 ), redScale, center );
+        		this .addParameter( axisStrut );
+            }
+            else if ( isAutomatic() )
             {
                 center = originPoint;
                 AlgebraicField field = symmetry .getField();
