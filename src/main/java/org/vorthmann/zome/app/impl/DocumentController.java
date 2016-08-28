@@ -1115,6 +1115,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                     }
                     writer .write( null, new IIOImage( image, null, null), iwParam );
                     writer .dispose();
+                    ios .close(); // disposing of the writer doesn't close the output stream
                     if ( animation == null )
                         openApplication( file );
                     else if ( ! animation .finished() ) {
