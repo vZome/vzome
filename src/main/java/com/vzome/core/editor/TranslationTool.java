@@ -65,7 +65,8 @@ public class TranslationTool extends TransformationTool
         				p1 = (Point) ((Connector) man) .getConstructions() .next();
         			else
         				p2 = (Point) ((Connector) man) .getConstructions() .next();
-        		} else {
+        		} else if ( !prepareTool ) {
+        			// allowed in legacy documents
         			return "Only balls can be selected for this tool.";
         		}
         	}
