@@ -234,8 +234,9 @@ public class ApplicationController extends DefaultController
                 action = "new";
             }
 
-            if ("new".equals(action)) {
-                action = "new-golden";
+            if ( "new" .equals( action ) ) {
+            	String fieldName = properties .getProperty( "default.field" );
+                action = "new-" + fieldName;
             }
 
             if ( action .startsWith( "new-" ) )
