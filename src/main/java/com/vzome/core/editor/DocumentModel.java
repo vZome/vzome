@@ -201,7 +201,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			makeTool( "mirror.builtin/reflection through XY plane", "mirror", this, symmetry ) .perform();
 			makeTool( "bookmark.builtin/ball at origin", "bookmark", this, symmetry ) .perform();
 			if ( symmetry instanceof IcosahedralSymmetry ) {
-				makeTool( "rotation.builtin/rotate around red through origin", "axial symmetry", this, symmetry ) .perform();
+				makeTool( "rotation.builtin/rotate around red through origin", "rotation", this, symmetry ) .perform();
 				makeTool( "axial symmetry.builtin/symmetry around red through origin", "axial symmetry", this, symmetry ) .perform();
 			}
 		} catch ( Command.Failure e ) {
