@@ -158,6 +158,8 @@ public class Java2dSnapshot extends DefaultController
                 return;
             Writer out = new FileWriter( file );
             exporter .export( this, out );
+            out .close();
+            openApplication( file );
         } catch ( Exception e ) {
             mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
         }

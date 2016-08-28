@@ -45,6 +45,7 @@ import javax.swing.ToolTipManager;
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
+import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.desktop.controller.ViewPlatformControlPanel;
@@ -536,18 +537,19 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         ToolTipManager ttm = ToolTipManager.sharedInstance();
         ttm .setLightWeightPopupEnabled( false );
 
-		this .saveAsAction = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, "save", "vZome", mController )
+        Controller saveAsController = new DefaultController()
         {
-            // this happens at the very end, after choose, save, set type
     		@Override
-            protected void openApplication( File file )
+    	    public void doFileAction( String command, final File file )
             {
+    			mController .doFileAction( command, file );
                 mFile = file;
                 String newTitle = file .getAbsolutePath();
                 mController .setProperty( "name", newTitle );
                 setTitle( newTitle );
             }
         };
+		this .saveAsAction = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, "save", "vZome", saveAsController );
 
         this .setJMenuBar( new DocumentMenuBar( mController, this ) );
 

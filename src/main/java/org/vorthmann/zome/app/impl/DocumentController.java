@@ -17,12 +17,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -39,7 +42,6 @@ import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.MouseToolFilter;
-import org.vorthmann.j3d.Platform;
 import org.vorthmann.j3d.Trackball;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
@@ -86,9 +88,6 @@ import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 /**
  * @author Scott Vorthmann 2003
@@ -1021,20 +1020,20 @@ public class DocumentController extends DefaultController implements J3dComponen
                 String html = readResource( "org/vorthmann/zome/app/animation.html" );
                 html = html .replaceFirst( "%%WIDTH%%", Integer .toString( size .width ) );
                 html = html .replaceFirst( "%%HEIGHT%%", Integer .toString( size .height ) );
-                writeFile( html, new File( dir, "index.html" ) );
+                File htmlFile = new File( dir, "index.html" );
+                writeFile( html, htmlFile );
                 String js = readResource( "org/vorthmann/zome/app/j360-loop.js" );
                 writeFile( js, new File( dir, "j360-loop.js" ) );
 
                 AnimationCaptureController animation = new AnimationCaptureController( this .mViewPlatform, dir );
                 captureImageFile( null, AnimationCaptureController.TYPE, animation );
+                this .openApplication( htmlFile );
                 return;
             }
             if ( command.startsWith( "capture." ) )
             {
                 final String extension = command .substring( "capture.".length() );
                 captureImageFile( file, extension, null );
-                Platform .setFileType( file, extension );
-                Platform .openApplication( file );
                 return;
             }
 //            if ( command .equals( "export.zomespace" ) )
@@ -1063,6 +1062,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 } finally {
                     out.close();
                 }
+                this .openApplication( file );
                 return;
             }
             if ( command.equals( "import.vef" ) 
@@ -1115,7 +1115,9 @@ public class DocumentController extends DefaultController implements J3dComponen
                     }
                     writer .write( null, new IIOImage( image, null, null), iwParam );
                     writer .dispose();
-                    if ( animation != null && ! animation .finished() ) {
+                    if ( animation == null )
+                        openApplication( file );
+                    else if ( ! animation .finished() ) {
                         // queue up the next capture in the sequence
                         EventQueue .invokeLater( new Runnable(){
 

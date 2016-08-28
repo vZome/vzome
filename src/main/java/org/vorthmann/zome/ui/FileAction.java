@@ -16,8 +16,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import org.vorthmann.j3d.Platform;
-
 /**
  * @author Scott Vorthmann
  *
@@ -54,16 +52,12 @@ public abstract class FileAction implements ActionListener
                     "command failure", JOptionPane.ERROR_MESSAGE );
             return false;
         }}
-
-    protected void openApplication( File file )
-    {
-		Platform .openApplication( file );
-    }
     
     protected static String readTextFromFile( File file )
     {
+    	InputStream input = null;
         try {
-            InputStream input = new FileInputStream(file);
+            input = new FileInputStream(file);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buf = new byte[1024];
             int num;
@@ -75,6 +69,15 @@ public abstract class FileAction implements ActionListener
         {
             logger .log( Level.WARNING, "unable to read file " + file .getAbsolutePath(), exc );
             return null;
+        }
+        finally
+        {
+        	if ( input != null )
+				try {
+					input .close();
+				} catch ( IOException e ) {
+		            logger .log( Level.SEVERE, "unable to close input file " + file .getAbsolutePath(), e );
+				}
         }
     }
     
@@ -100,10 +103,6 @@ public abstract class FileAction implements ActionListener
 		File file = new File( mFileChooser .getDirectory(), fileName );
         if ( ! actOrError( file ) )
             return;
-        if ( ! mOpening ) {
-            Platform .setFileType( file, mExtension );
-            openApplication( file );
-        }
     }
 	
 }
