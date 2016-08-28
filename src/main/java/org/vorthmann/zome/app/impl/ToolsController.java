@@ -27,6 +27,21 @@ public class ToolsController extends DefaultController implements PropertyChange
 		tools .addPropertyChangeListener( this );
 	}
 
+	@Override
+	public Controller getSubController( String name )
+	{
+		Controller subc = this .subcontrollers .get( name );
+		if ( subc != null )
+			return subc;
+        Tool tool = tools .getTool( name );
+        if ( tool == null )
+        	return null;
+        Controller controller = new ToolController( tool, tools );
+        controller .setNextController( this );
+		subcontrollers .put( name, controller );
+		return controller;
+	}
+
     @Override
     public String[] getCommandList( String listName )
     {
@@ -43,14 +58,13 @@ public class ToolsController extends DefaultController implements PropertyChange
 
 		case "tool.instances":
             String toolName = (String) evt .getNewValue(); // will be "group.N/label"
-            Tool tool = tools .getTool( toolName );
-            Controller controller = new ToolController( tool, tools );
-            controller .setNextController( this );
+            Controller controller = this .getSubController( toolName );
+            if ( controller .propertyIsTrue( "predefined" ) )
+            	// ignore the forced events at startup
+            	return;
     		this .properties() .firePropertyChange( new PropertyChangeEvent( this, "tool.added", null, controller ) );
-    		subcontrollers .put( toolName, controller );
 			break;
 			
-    	case "tool.separator":
 		case "tools.enabled":
     		this .properties() .firePropertyChange( evt ); // propagate to the UI
 			break;

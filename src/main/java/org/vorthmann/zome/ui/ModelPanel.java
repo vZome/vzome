@@ -272,8 +272,28 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"right-click after creating the tool, to configure it.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-	            
+                
+                firstToolbar .addSeparator();
+
                 if ( controller .propertyIsTrue( "supports.symmetry.icosahedral" ) ) {
+	                button = newToolButton( enabler, "redsquash1", "Create a weak red squash tool",
+	                		"<p>" +
+	                        		"Each tool applies a \"squash\" transformation to the<br>" +
+	                        		"selected objects, compressing along a red axis.  To create<br>" +
+	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
+	                        		"red strut as the direction of the compression.  The ball and<br>" +
+	                        		"strut need not be collinear.<br>" +
+	                        		"<br>" +
+	                        		"The mapping comes from the usual Zome projection of the<br>" +
+	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
+	                        		"blue dodecahedron into the compressed form in the next<br>" +
+	                        		"layer outward.<br>" +
+	                        		"<br>" +
+	                        		"By default, the input selection will be removed, and replaced<br>" +
+	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+	                        		"you can right-click after creating the tool, to configure it.<br>" +
+	                		"</p>" );
+	                firstToolbar .add( button );
 	                button = newToolButton( enabler, "redstretch1", "Create a weak red stretch tool",
 	                		"<p>" +
 	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
@@ -292,18 +312,18 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	                        		"you can right-click after creating the tool, to configure it.<br>" +
 	                		"</p>" );
 	                firstToolbar .add( button );
-	                button = newToolButton( enabler, "redsquash1", "Create a weak red squash tool",
+	                
+	                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool",
 	                		"<p>" +
 	                        		"Each tool applies a \"squash\" transformation to the<br>" +
-	                        		"selected objects, compressing along a red axis.  To create<br>" +
+	                        		"selected objects, compressing along a yellow axis.  To create<br>" +
 	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-	                        		"red strut as the direction of the compression.  The ball and<br>" +
+	                        		"yellow strut as the direction of the compression.  The ball and<br>" +
 	                        		"strut need not be collinear.<br>" +
 	                        		"<br>" +
 	                        		"The mapping comes from the usual Zome projection of the<br>" +
 	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
-	                        		"blue dodecahedron into the compressed form in the next<br>" +
-	                        		"layer outward.<br>" +
+	                        		"blue dodecahedron into the compressed form along a yellow axis.<br>" +
 	                        		"<br>" +
 	                        		"By default, the input selection will be removed, and replaced<br>" +
 	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
@@ -328,17 +348,19 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	                        		"you can right-click after creating the tool, to configure it.<br>" +
 	                		"</p>" );
 	                firstToolbar .add( button );
-	                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool",
+	                
+	                button = newToolButton( enabler, "redsquash2", "Create a strong red squash tool",
 	                		"<p>" +
 	                        		"Each tool applies a \"squash\" transformation to the<br>" +
-	                        		"selected objects, compressing along a yellow axis.  To create<br>" +
+	                        		"selected objects, compressing along a red axis.  To create<br>" +
 	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-	                        		"yellow strut as the direction of the compression.  The ball and<br>" +
+	                        		"red strut as the direction of the compression.  The ball and<br>" +
 	                        		"strut need not be collinear.<br>" +
 	                        		"<br>" +
 	                        		"The mapping comes from the usual Zome projection of the<br>" +
 	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
-	                        		"blue dodecahedron into the compressed form along a yellow axis.<br>" +
+	                        		"blue dodecahedron into the compressed form in the second<br>" +
+	                        		"layer outward along a red axis.<br>" +
 	                        		"<br>" +
 	                        		"By default, the input selection will be removed, and replaced<br>" +
 	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
@@ -360,24 +382,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	                        		"<br>" +
 	                        		"By default, the input selection will be removed, and replaced<br>" +
 	                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
-	                        		"you can right-click after creating the tool, to configure it.<br>" +
-	                		"</p>" );
-	                firstToolbar .add( button );
-	                button = newToolButton( enabler, "redsquash2", "Create a strong red squash tool",
-	                		"<p>" +
-	                        		"Each tool applies a \"squash\" transformation to the<br>" +
-	                        		"selected objects, compressing along a red axis.  To create<br>" +
-	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-	                        		"red strut as the direction of the compression.  The ball and<br>" +
-	                        		"strut need not be collinear.<br>" +
-	                        		"<br>" +
-	                        		"The mapping comes from the usual Zome projection of the<br>" +
-	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
-	                        		"blue dodecahedron into the compressed form in the second<br>" +
-	                        		"layer outward along a red axis.<br>" +
-	                        		"<br>" +
-	                        		"By default, the input selection will be removed, and replaced<br>" +
-	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
 	                        		"you can right-click after creating the tool, to configure it.<br>" +
 	                		"</p>" );
 	                firstToolbar .add( button );
@@ -419,6 +423,10 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 bookmarkBar .add( button );
                 bookmarkBar .addSeparator();
 
+                final Controller toolsController = controller .getSubController( "tools" );
+
+                addBookmark( toolsController .getSubController( "bookmark.builtin/ball at origin" ) );
+
                 button = makeEditButton( enabler, "delete", "Delete selected objects" );
                 secondToolbar .add( button );
                 button = makeEditButton( enabler, "hideball", "Hide selected objects" );
@@ -440,9 +448,24 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 secondToolbar .add( button );
                 
                 secondToolbar .addSeparator();
+                
+                // we want this presentation order to be controlled here, not in the core
+                addTool( toolsController .getSubController( "icosahedral.builtin/icosahedral around origin" ) );
+                addTool( toolsController .getSubController( "octahedral.builtin/octahedral around origin" ) );
+                addTool( toolsController .getSubController( "tetrahedral.builtin/tetrahedral around origin" ) );
+                addTool( toolsController .getSubController( "point reflection.builtin/reflection through origin" ) );
+                addTool( toolsController .getSubController( "mirror.builtin/reflection through XY plane" ) );
+                addTool( toolsController .getSubController( "axial symmetry.builtin/symmetry around red through origin" ) );
+                
+                secondToolbar .addSeparator();
 
-                final Controller toolsController = controller .getSubController( "tools" );
-            	
+                addTool( toolsController .getSubController( "scaling.builtin/scale down" ) );
+                addTool( toolsController .getSubController( "scaling.builtin/scale up" ) );
+                addTool( toolsController .getSubController( "rotation.builtin/rotate around red through origin" ) );
+                addTool( toolsController .getSubController( "translation.builtin/move right" ) );
+               
+                secondToolbar .addSeparator();
+
             	toolsController .addPropertyListener( new PropertyChangeListener()
             	{
 					@Override
@@ -450,66 +473,15 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 					{
 						switch ( evt .getPropertyName() ) {
 
-						case "tool.separator":
-		            		secondToolbar .addSeparator();
-							break;
-
 						case "tool.added":
 				            if ( evt .getOldValue() == null )
 				            {
 				            	Controller controller = (Controller) evt .getNewValue();
 				                String kind = controller .getProperty( "kind" );
-				                if ( "synestructics" .equals( kind ) )
-				                	return;
-				                if ( "dodecagonal" .equals( kind ) )
-				                	return;
-				                String name = controller .getProperty( "label" );
-				                String iconPath = "/icons/tools/small/" + kind + ".png";
-				                String tooltip = TOOLTIP_PREFIX + name + TOOLTIP_SUFFIX;
-				                JButton button = makeEditButton2( tooltip, iconPath );
-				        		button .setActionCommand( "apply" );
-				        		button .addActionListener( controller );
-				        		if ( kind .equals( "bookmark" ) ) {
-				        			tooltip = "<html><b>" + name + "</b></html>";
-				        			button .setToolTipText( tooltip );
-				        			bookmarkBar .add( button );
-				        		} else {
-				        			button .addMouseListener( new MouseAdapter()
-				        			{
-				        				@Override
-				        			    public void mousePressed( MouseEvent e )
-				        			    {
-				        			        maybeShowPopup( e );
-				        			    }
-
-				        				@Override
-				        			    public void mouseReleased( MouseEvent e )
-				        			    {
-				        			        maybeShowPopup( e );
-				        			    }
-
-				        			    private void maybeShowPopup( MouseEvent e )
-				        			    {
-				        			        if ( e.isPopupTrigger() ) {
-				        			            toolConfigDialog .showTool( button, controller );
-				        			        }
-				        			    }
-									} );
-				        			controller .addPropertyListener( new PropertyChangeListener()
-				        			{
-										@Override
-										public void propertyChange( PropertyChangeEvent evt )
-										{
-											if ( "label" .equals( evt .getPropertyName() ) )
-											{
-												String label = (String) evt .getNewValue();
-								                String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
-												button .setToolTipText( tooltip );
-											}
-										}
-									});
-				        			secondToolbar .add( button );
-				        		}
+				        		if ( kind .equals( "bookmark" ) )
+				        			addBookmark( controller );
+				        		else
+				        			addTool( controller );
 				            }
 							break;
 
@@ -605,6 +577,69 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         	this .bookmarkBar = null;
         	firstScroller = null; secondScroller = null; bookmarkScroller = null;
         }
+	}
+	
+	private void addTool( Controller controller )
+	{
+		if ( controller == null )
+			// the field may not support the tool that was requested
+			return;
+
+		String kind = controller .getProperty( "kind" );
+        String name = controller .getProperty( "label" );
+        String iconPath = "/icons/tools/small/" + kind + ".png";
+        String tooltip = TOOLTIP_PREFIX + name + TOOLTIP_SUFFIX;
+        JButton button = makeEditButton2( tooltip, iconPath );
+		button .setActionCommand( "apply" );
+		button .addActionListener( controller );
+		button .addMouseListener( new MouseAdapter()
+		{
+			@Override
+			public void mousePressed( MouseEvent e )
+			{
+				maybeShowPopup( e );
+			}
+
+			@Override
+			public void mouseReleased( MouseEvent e )
+			{
+				maybeShowPopup( e );
+			}
+
+			private void maybeShowPopup( MouseEvent e )
+			{
+				if ( e.isPopupTrigger() ) {
+					toolConfigDialog .showTool( button, controller );
+				}
+			}
+		} );
+		controller .addPropertyListener( new PropertyChangeListener()
+		{
+			@Override
+			public void propertyChange( PropertyChangeEvent evt )
+			{
+				if ( "label" .equals( evt .getPropertyName() ) )
+				{
+					String label = (String) evt .getNewValue();
+					String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
+					button .setToolTipText( tooltip );
+				}
+			}
+		});
+		secondToolbar .add( button );
+    	}
+	
+	private void addBookmark( Controller controller )
+	{
+		String name = controller .getProperty( "label" );
+		String iconPath = "/icons/tools/small/bookmark.png";
+		String tooltip = TOOLTIP_PREFIX + name + TOOLTIP_SUFFIX;
+		JButton button = makeEditButton2( tooltip, iconPath );
+		button .setActionCommand( "apply" );
+		button .addActionListener( controller );
+		tooltip = "<html><b>" + name + "</b></html>";
+		button .setToolTipText( tooltip );
+		bookmarkBar .add( button );
 	}
 	
 	private AbstractButton newToolButton( ControlActions enabler, String group, String title, String helpHtml )

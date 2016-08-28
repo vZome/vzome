@@ -119,6 +119,9 @@ public class ToolController extends DefaultController
 		case "kind":
 			return this .kind;
 
+		case "predefined":
+			return Boolean .toString( this .tool .getName() .contains( ".builtin/" ) );
+
 		case "selectInputs":
 			return Boolean .toString( this .selectInputs );
 

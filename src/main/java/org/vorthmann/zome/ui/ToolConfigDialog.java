@@ -20,12 +20,14 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
+import org.vorthmann.ui.CardPanel;
 import org.vorthmann.ui.Controller;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -34,12 +36,14 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 {
     private final JButton iconButton;
     private final JTextField toolName;
+    private final JLabel toolLabel;
+	private final CardPanel namePanel;
     private final JTabbedPane tabs;
     private final JCheckBox selectInputsCheckbox, deleteInputsCheckbox, selectOutputsCheckbox, createOutputsCheckbox;
 	private Controller controller;
 	private PropertyChangeListener checkboxChanges;
 	private final ActionListener closer;
-
+	
     public ToolConfigDialog( JFrame frame )
     {
         super( frame, true );
@@ -121,19 +125,27 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         	iconButton .setActionCommand( "apply" );
         	iconButton .addActionListener( this );
         	iconAndLabel .add( iconButton, BorderLayout .WEST );
-        	toolName = new JTextField();
-        	toolName .setHorizontalAlignment( SwingConstants .CENTER );
-        	toolName .addActionListener( new ActionListener()
-        	{
-				@Override
-				public void actionPerformed( ActionEvent e )
-				{
-			        String name = toolName .getText();
-					controller .setProperty( "label", name );
-					closer .actionPerformed( e );
-				}
-			});
-        	iconAndLabel .add( toolName, BorderLayout .CENTER );
+            namePanel = new CardPanel();
+            {
+            	toolName = new JTextField();
+            	toolName .setHorizontalAlignment( SwingConstants .CENTER );
+            	toolName .addActionListener( new ActionListener()
+            	{
+    				@Override
+    				public void actionPerformed( ActionEvent e )
+    				{
+    			        String name = toolName .getText();
+    					controller .setProperty( "label", name );
+    					closer .actionPerformed( e );
+    				}
+    			});
+                namePanel .add( "editable", toolName );
+
+            	toolLabel = new JLabel();
+            	toolLabel .setHorizontalAlignment( SwingConstants .CENTER );
+            	namePanel .add( "builtin", toolLabel );
+            }
+        	iconAndLabel .add( namePanel, BorderLayout .CENTER );
         }
         tabs = new JTabbedPane();
         this .add( tabs, BorderLayout .CENTER );
@@ -187,7 +199,10 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 		this.controller = controller;
 		this.controller .addPropertyListener( checkboxChanges );
 		iconButton .setIcon( button .getIcon() );
-		toolName .setText( controller .getProperty( "label" ) );
+		String label = controller .getProperty( "label" ) ;
+		toolName .setText( label );
+		toolLabel .setText(label );
+        namePanel .showCard( controller .propertyIsTrue( "predefined" )? "builtin" : "editable" );
 		boolean selectInputs = controller .propertyIsTrue( "selectInputs" );
 		selectInputsCheckbox .setSelected( selectInputs );
 		boolean deleteInputs = controller .propertyIsTrue( "deleteInputs" );
