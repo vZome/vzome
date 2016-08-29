@@ -1000,10 +1000,11 @@ public class DocumentController extends DefaultController implements J3dComponen
                 File dir = file .getParentFile();
                 if ( ! dir .exists() )
                     dir .mkdirs();
-                
-                FileOutputStream out = new FileOutputStream( file );
-                documentModel .serialize( out, this .properties );
-                out.close();
+
+                // A try-with-resources block closes the resource even if an exception occurs
+                try (FileOutputStream out = new FileOutputStream( file )) {
+                    documentModel .serialize( out, this .properties );
+                }
                 // just did a save, so lets record the document change count again,
                 //  so isEdited() will return false until more changes occur.
                 // IMPORTANT! TODO if we ever implement "save a copy", this code should NOT reset
@@ -1229,15 +1230,11 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private static void writeFile( String content, File file ) throws Exception
     {
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter( file );
+        // A try-with-resources block closes the resource even if an exception occurs
+        try (FileWriter writer = new FileWriter( file )) {
             writer .write( content );
         } catch (Exception ex) {
             throw ex;
-        } finally {
-            if(writer != null)
-                writer .close();
         }
     }
 

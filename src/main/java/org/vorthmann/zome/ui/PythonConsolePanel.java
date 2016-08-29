@@ -128,10 +128,9 @@ public class PythonConsolePanel extends JPanel implements Tool {
 		String fileName = mFileChooser .getFile();
 		if ( fileName != null ) {
 			File file = new File( mFileChooser .getDirectory(), fileName );
-            try {
-                Writer out = new FileWriter( file );
+            // A try-with-resources block closes the resource even if an exception occurs
+            try (Writer out = new FileWriter( file )) {
                 out .write( script );
-                out .close();
             }
             catch (Exception exc) {
                 JOptionPane .showMessageDialog( PythonConsolePanel.this,
