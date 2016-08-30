@@ -320,6 +320,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		else if ( "AffinePentagon".equals( name ) )
 			edit = new AffinePentagon( this.mSelection, this.mRealizedModel, groupInSelection );
 
+		else if ( "AffineHeptagon".equals( name ) )
+			edit = new AffineHeptagon( this.mSelection, this.mRealizedModel );
+
 		else if ( "AffineTransformAll".equals( name ) )
 			edit = new AffineTransformAll( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
 
