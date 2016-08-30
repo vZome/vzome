@@ -619,7 +619,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         else if ( action.equals( RealizeMetaParts.NAME ) )
             edit = new RealizeMetaParts( mSelection, mRealizedModel );
         else if ( action.equals( "affinePentagon" ) )
-            edit = new AffinePentagon( mSelection, mRealizedModel, false );
+            edit = new AffinePentagon( mSelection, mRealizedModel );
+        else if ( action.equals( "affineHeptagon" ) )
+            edit = new AffineHeptagon( mSelection, mRealizedModel );
         else if ( action.equals( "affineTransformAll" ) )
         	edit = new AffineTransformAll( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
         else if ( action.equals( "dodecagonsymm" ) )

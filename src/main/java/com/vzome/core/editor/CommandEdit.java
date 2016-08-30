@@ -327,7 +327,7 @@ public class CommandEdit extends ChangeManifestations
             // TODO work out a more generic migration technique
             if ( mCommand instanceof CommandObliquePentagon )
             {
-                UndoableEdit edit = new AffinePentagon( mSelection, mManifestations, false );
+                UndoableEdit edit = new AffinePentagon( mSelection, mManifestations );
                 context .performAndRecord( edit );
                 return;
             }
