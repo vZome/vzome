@@ -462,7 +462,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 addTool( toolsController .getSubController( "scaling.builtin/scale down" ) );
                 addTool( toolsController .getSubController( "scaling.builtin/scale up" ) );
                 addTool( toolsController .getSubController( "rotation.builtin/rotate around red through origin" ) );
-                addTool( toolsController .getSubController( "translation.builtin/move right" ) );
+                addTool( toolsController .getSubController( "translation.builtin/move right" ), "b1 move along +X" );
                
                 secondToolbar .addSeparator();
 
@@ -584,11 +584,14 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		if ( controller == null )
 			// the field may not support the tool that was requested
 			return;
-
+		this .addTool( controller, controller .getProperty( "label" ) );
+	}
+	
+	private void addTool( Controller controller, String label )
+	{
 		String kind = controller .getProperty( "kind" );
-        String name = controller .getProperty( "label" );
         String iconPath = "/icons/tools/small/" + kind + ".png";
-        String tooltip = TOOLTIP_PREFIX + name + TOOLTIP_SUFFIX;
+        String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
         JButton button = makeEditButton2( tooltip, iconPath );
 		button .setActionCommand( "apply" );
 		button .addActionListener( controller );
