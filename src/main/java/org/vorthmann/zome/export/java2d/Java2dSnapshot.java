@@ -147,18 +147,26 @@ public class Java2dSnapshot extends DefaultController
     public void doFileAction( String command, File file )
     {
         try {
-            SnapshotExporter exporter = null;
-            if ( command .equals( "export.2d.pdf" ) )
-                exporter = new PDFExporter();
-            else if ( command .equals( "export.2d.ps" ) )
-                exporter = new PostScriptExporter();
-            else if ( command .equals( "export.2d.svg" ) )
-                exporter = new SVGExporter();
-            if ( exporter == null )
+            SnapshotExporter snapshotExporter = null;
+            switch (command) {
+                case "export.2d.pdf":
+                    snapshotExporter = new PDFExporter();
+                    break;
+                case "export.2d.ps":
+                    snapshotExporter = new PostScriptExporter();
+                    break;
+                case "export.2d.svg":
+                    snapshotExporter = new SVGExporter();
+                    break;
+                default:
+                    break;
+            }
+            if ( snapshotExporter == null )
                 return;
-            Writer out = new FileWriter( file );
-            exporter .export( this, out );
-            out .close();
+            // A try-with-resources block closes the resource even if an exception occurs
+            try (Writer out = new FileWriter( file )) {
+                snapshotExporter .export( this, out );
+            }
             openApplication( file );
         } catch ( Exception e ) {
             mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );

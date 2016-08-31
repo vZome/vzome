@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1001,10 +1000,11 @@ public class DocumentController extends DefaultController implements J3dComponen
                 File dir = file .getParentFile();
                 if ( ! dir .exists() )
                     dir .mkdirs();
-                
-                FileOutputStream out = new FileOutputStream( file );
-                documentModel .serialize( out, this .properties );
-                out.close();
+
+                // A try-with-resources block closes the resource even if an exception occurs
+                try (FileOutputStream out = new FileOutputStream( file )) {
+                    documentModel .serialize( out, this .properties );
+                }
                 // just did a save, so lets record the document change count again,
                 //  so isEdited() will return false until more changes occur.
                 // IMPORTANT! TODO if we ever implement "save a copy", this code should NOT reset
@@ -1094,28 +1094,84 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
         imageCaptureViewer .captureImage( maxSize, new RenderingViewer.ImageCapture()
         {
+            private void setImageCompression(String format, ImageWriteParam iwParam)
+            {
+                if (iwParam.canWriteCompressed()) {
+                    // Ensure that the compressionType we want to use is supported
+                    String[] preferedTypes = null; // Listed in preferred order
+                    switch (format) {
+                        case "BMP":
+                            preferedTypes = new String[]{
+                                "BI_RGB",       // BI_RGB seems to result in a smaller file than BI_BITFIELDS in Windows 10
+                                "BI_BITFIELDS", // OK
+                                // "BI_PNG",    // File is created OK, but can't be opened by default viewer "Photos" in Windows 10
+                                // "BI_JPEG",   // File is created OK, but can't be opened by default viewer "Photos" in Windows 10
+                                // "BI_RLE8",   // IOException: Image can not be encoded with compression type BI_RLE8
+                                // "BI_RLE4",   // IOException: Image can not be encoded with compression type BI_RLE4
+                            };
+                            break;
+
+                        case "GIF":
+                            preferedTypes = new String[]{
+                                "lzw",
+                                "LZW",
+                            };
+                            break;
+
+                        case "JPEG":
+                            preferedTypes = new String[]{
+                                "JPEG",
+                            };
+                            break;
+                    }
+                    if (preferedTypes != null) {
+                        String[] compressionTypes = iwParam.getCompressionTypes();
+                        String chosenType = null;
+                        for (String preferredType : preferedTypes) {
+                            for (String compressionType : compressionTypes) {
+                                if (compressionType.equals(preferredType)) {
+                                    chosenType = preferredType;
+                                    break;
+                                }
+                            }
+                            if (chosenType != null) {
+                                break;
+                            }
+                        }
+                        if (chosenType != null) {
+                            System.out.println(format + " compression set to " + chosenType);
+                            iwParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                            iwParam.setCompressionType(chosenType); // this default is better for BMP, to avoid non-compression
+                            iwParam.setCompressionQuality(.95f);
+                        }
+                    }
+                }
+            }
+
             @Override
             public void captureImage( final RenderedImage image )
             {
-                String type = extension.toUpperCase();
-                if ( type.equals( "JPG" ) )
-                    type = "JPEG";
+                String format = extension.toUpperCase();
+                if ( format.equals( "JPG" ) )
+                    format = "JPEG";
                 try {
-                    File thisFile = ( animation != null )? animation .nextFile() : file;
-                    ImageOutputStream  ios =  ImageIO.createImageOutputStream( thisFile );
-                    Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName( type );
-                    ImageWriter writer = iter .next();
-                    writer .setOutput( ios );
+                    ImageWriter writer = ImageIO.getImageWritersByFormatName( format ) .next();
                     ImageWriteParam iwParam = writer .getDefaultWriteParam();
-                    if ( iwParam .canWriteCompressed() ) {
-                        String[] types = iwParam .getCompressionTypes();
-                        iwParam .setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
-                        iwParam .setCompressionType( types[ types.length - 1 ] ); // this default is better for BMP, to avoid non-compression
-                        iwParam .setCompressionQuality( .95f );
+                    this.setImageCompression(format, iwParam);
+                    File thisFile = ( animation != null ) ? animation .nextFile() : file;
+                    
+                    // A try-with-resources block closes the resource even if an exception occurs
+                    try (ImageOutputStream ios = ImageIO.createImageOutputStream( thisFile )) {
+                        writer .setOutput( ios );
+                        writer .write( null, new IIOImage( image, null, null), iwParam );
+                        writer .dispose(); // disposing of the writer doesn't close ios
+                        // ios is closed automatically by exiting the try-with-resources block
+                        // either normally or due to an exception
+                        // If this code is ever changed to not use the try-with-resources block
+                        // then uncomment the following line so that ios will be explicitly closed
+                        // ios.close();
                     }
-                    writer .write( null, new IIOImage( image, null, null), iwParam );
-                    writer .dispose();
-                    ios .close(); // disposing of the writer doesn't close the output stream
+
                     if ( animation == null )
                         openApplication( file );
                     else if ( ! animation .finished() ) {
@@ -1136,13 +1192,15 @@ public class DocumentController extends DefaultController implements J3dComponen
     
     private static String readFile( File file ) throws IOException
     {
-        InputStream bytes = new FileInputStream( file );
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num;
-        while ( ( num = bytes.read( buf, 0, 1024 ) ) > 0 )
-            out.write( buf, 0, num );
-        bytes .close();
+        // A try-with-resources block closes the resource even if an exception occurs
+        try (InputStream bytes = new FileInputStream( file )) {
+            byte[] buf = new byte[1024];
+            int num;
+            while ( ( num = bytes.read( buf, 0, 1024 ) ) > 0 ) {
+                out.write( buf, 0, num );
+            }
+        }
         return new String( out.toByteArray() );
     }
     
@@ -1172,15 +1230,11 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private static void writeFile( String content, File file ) throws Exception
     {
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter( file );
+        // A try-with-resources block closes the resource even if an exception occurs
+        try (FileWriter writer = new FileWriter( file )) {
             writer .write( content );
         } catch (Exception ex) {
             throw ex;
-        } finally {
-            if(writer != null)
-                writer .close();
         }
     }
 
