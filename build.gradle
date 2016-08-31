@@ -4,7 +4,7 @@ apply plugin: 'eclipse'
 //apply plugin: 'antlr4'
 
 group = 'com.vzome.core'
-version = '0.9.1'
+version = '0.9.2'
 
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 
@@ -15,8 +15,6 @@ targetCompatibility = 1.8
 
 ext.antlr4 = [
     antlrSource:    "src/main/antlr",
-    // Simplify multiple IDE integration by putting destinationDir under src/main/java 
-    // Some IDEs don't correctly read multiple source folders from build.gradle. 
     // Simplify multiple IDE integration by putting destinationDir under src/main/java
     // Some IDEs don't corectly read multiple source folders from build.gradle.
     destinationDir: "src/main/java/com/vzome/core/antlr/generated",
