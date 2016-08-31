@@ -4,6 +4,11 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -27,6 +32,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 	private static final int CONTROL = InputEvent.CTRL_MASK;
 	
 	private static final int CONTROL_OPTION = InputEvent.CTRL_MASK | InputEvent.ALT_MASK;
+
+    private static final long serialVersionUID = 1L;
 	
     private final JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, pythonMenuItem, importVEFItem;
 
@@ -173,7 +180,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.addSeparator();
         menu.add( createMenuItem( "Quit", "quit", KeyEvent.VK_Q, COMMAND ) );
 
-        this .add( menu );
+        super .add( menu );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Edit menu
 
@@ -222,7 +229,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         setColorMenuItem = enableIf( isEditor, createMenuItem( "Set Color...", "setItemColor" ) );
         menu .add( setColorMenuItem );
 
-        this .add( menu );
+        super .add( menu );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Construct menu
         menu = new JMenu( "Construct" );
@@ -270,28 +277,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 //            menu.add( enableIf( isEditor, createMenuItem( "6-Lattice", getExclusiveAction( "sixLattice" ) ) );
         }
 
-        // TODO restore this somehow
-//        try {
-//            Properties softMenu = Preferences .getUserPropertiesFile(
-//            "vZomeEditMenu.properties" );
-//            if ( softMenu != null ) {
-//                menu.addSeparator();
-//                for ( Iterator keys = softMenu .keySet() .iterator(); keys
-//                .hasNext(); ) {
-//                    String actionName = (String) keys .next();
-//                    String menuString = softMenu .getProperty( actionName );
-//                    menu.add( createMenuItem( menuString, getExclusiveAction( actionName
-//                    ) ) );
-//                }
-//            }
-//        } catch ( Throwable t ) {
-//            // !!! don't want to advertise this ability yet
-//        }
-
-        this .add( menu );
+        super .add( menu );
 
 
-        // ----------------------------------------- Symmetry menu
+        // ----------------------------------------- Tools menu
 
         menu = new JMenu( "Tools" );
         
@@ -334,58 +323,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu.add( enableIf( isEditor, createMenuItem( "T,T Symmetry", "TxTsymmetry" ) ) );
         }
 
-        this .add( menu );
+        super .add( menu );
 
-        // ----------------------------------------- Polytopes menu
-        menu = new JMenu( "Polytopes" );
-        menu .setEnabled( fullPower );
-//        this .add( menu );
-
-        String zeros = "0000";
-
-        if ( isGolden ) {
-            submenu = new JMenu( "H_4 Uniform" );
-            for ( int p = 0x1; p <= 0xF; p++ ) {
-                String dynkin = Integer.toString( p, 2 );
-                dynkin = zeros.substring( dynkin.length() ) + dynkin;
-                submenu.add( enableIf( isEditor, createMenuItem( dynkin + "   " + Integer.toString( p, 16 ), "polytope_H4" + dynkin ) ) );
-            }
-            menu.add( submenu );
-            submenu .setEnabled( fullPower );
-
-            submenu = new JMenu( "A_4 Uniform" );
-            for ( int p = 0x1; p <= 0xF; p++ ) {
-                String dynkin = Integer.toString( p, 2 );
-                dynkin = zeros.substring( dynkin.length() ) + dynkin;
-                submenu.add( enableIf( isEditor, createMenuItem( dynkin + "   " + Integer.toString( p, 16 ), "polytope_A4" + dynkin ) ) );
-            }
-            menu.add( submenu );
-            submenu .setEnabled( fullPower );
-        }
-
-        submenu = new JMenu( isGolden ? "B_4 Symmetric" : "B_4 Uniform" );
-        for ( int p = 0x1; p <= 0xF; p++ ) {
-            String dynkin = Integer.toString( p, 2 );
-            dynkin = zeros.substring( dynkin.length() ) + dynkin;
-            submenu
-                    .add( enableIf( isEditor, createMenuItem( dynkin + "   " + Integer.toString( p, 16 ), "polytope_B4" + dynkin ) ) );
-        }
-        menu.add( submenu );
-        submenu .setEnabled( fullPower );
-
-        submenu = new JMenu( isGolden ? "F_4 Symmetric" : "F_4 Uniform" );
-        for ( int p = 0x1; p <= 0xF; p++ ) {
-            String dynkin = Integer.toString( p, 2 );
-            dynkin = zeros.substring( dynkin.length() ) + dynkin;
-            submenu .add( enableIf( isEditor, createMenuItem( dynkin + "   " + Integer.toString( p, 16 ), "polytope_F4" + dynkin ) ) );
-        }
-        menu.add( submenu );
-        submenu .setEnabled( fullPower );
-
-        if ( developerExtras && isRootThree )
-            menu.add( enableIf( isEditor, createMenuItem( "Ghost Symmetric 24-cell", "ghostsymm24cell" ) ) );
-        if ( developerExtras && isGolden )
-            menu.add( enableIf( isEditor, createMenuItem( "van Oss 600-cell", "vanOss600cell" ) ) );
 
         // ----------------------------------------- System menu
 
@@ -470,7 +409,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         cbMenuItem .setSelected( setting );
         menu.add( cbMenuItem );
 
-        this.add( menu );
+        super.add( menu );
 
         // ----------------------------------------- Scripting menu
 
@@ -483,15 +422,26 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         zomicMenuItem = createMenuItem( "Zomic...", "showZomicWindow" );
         zomicMenuItem .setEnabled( fullPower );
         menu .add( zomicMenuItem );
-        this .add( menu );
+        super .add( menu );
 
+
+        // ----------------------------------------- Custom menu
+        if ( developerExtras ) {
+            menu = getCustomMenu();
+            if(menu != null) {
+                super .add( menu );
+            }
+        }
+
+
+        // ----------------------------------------- Help menu
         menu = new JMenu( "Help" );
         if ( "G4G10" .equals( controller .getProperty( "licensed.user" ) ) )
             menu .add( createMenuItem( "Welcome G4G10 Participant...", "openResource-org/vorthmann/zome/content/welcomeG4G10.vZome" ) );
         menu .add( createMenuItem( "Quick Start...", "openResource-org/vorthmann/zome/content/welcomeDodec.vZome" ) );
         menu .addSeparator(); 
         menu .add( createMenuItem( "About vZome...", "showAbout" ) );
-        this .add( menu );
+        super .add( menu );
 	}
 
 	@Override
@@ -540,4 +490,60 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menuItem .setAccelerator( KeyStroke.getKeyStroke( key, modifiers ) );
 		return menuItem;
 	}
+
+    /**
+     * @return JMenu with custom menu items added or null if no custom menu items are defined.
+     *
+     * Creates a custom menu from a properties formatted file in the user's preferences folder.
+     *
+     * There is no regard for how the custom commands will be processed at runtime.
+     * The menu items are added unconditionally and are not context sensitive.
+     * For example, they are loaded without regard for whether they will work with a particular model's field.
+     *
+     * The keys read from the file become the commands to be processed and the values become the menu text.
+
+     For example, the file might contain these entries:
+
+     assertSelection = Assert Selection
+     sixLattice = 6-Lattice
+     somePrereleasedFeature = TODO: Unreleased Feature
+     test.pick.cube = First Octant
+
+     */
+    private JMenu getCustomMenu() {
+        File customMenuFile = new File(Platform.getPreferencesFolder(), "vZomeCustomMenu.properties");
+        try {
+            if (customMenuFile.exists()) {
+                Properties customMenuItems = new Properties();
+                customMenuItems.load(new FileInputStream(customMenuFile));
+                if (!customMenuItems.isEmpty()) {
+                    JMenu menu = new JMenu("Custom");
+                    int itemCount = 0;
+                    for (Object key : customMenuItems.keySet()) {
+                        String actionName = key.toString();
+                        String menuString = customMenuItems.getProperty(actionName).trim();
+                        itemCount++;
+                        try {
+                            menu.add(createMenuItem(menuString, actionName));
+                        } catch (Exception ex) {
+                            // handle this exception within the loop so we can keep trying to load any other menu items
+                            log( "Error creating custom menu item: \"" + actionName + "=" + menuString + "\"", ex);
+                        }
+                    }
+                    if(itemCount > 0) {
+                        // if none of the menu items loaded successfully, then don't bother
+                        return menu;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log("Error loading custom menu from " + customMenuFile.getAbsolutePath(), ex);
+        }
+        return null;
+    }
+
+    private void log(String msg, Exception ex) {
+        // TODO: cleanup this error reporting... Maybe pass this info back to the controller via reportError()
+        Logger.getLogger(getClass().getName()).log(Level.WARNING, msg, ex);
+    }
 }
