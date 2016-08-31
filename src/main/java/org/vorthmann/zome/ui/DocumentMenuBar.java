@@ -257,8 +257,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         if ( isGolden ) {
             menu.add( enableIf( isEditor, createMenuItem( "\u03C6 Divide", ( "tauDivide" ) ) ) );
             menu.add( enableIf( isEditor, createMenuItem( "Affine Pentagon", ( "affinePentagon" ) ) ) );
-        } else if ( isHeptagon )
+        } else if ( isHeptagon ) {
             menu.add( enableIf( isEditor, createMenuItem( "1/\u03C3/\u03C1 Subdivisions", ( "heptagonDivide" ) ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Affine Heptagon", ( "affineHeptagon" ) ) ) );
+        }
 
         if ( developerExtras ) {
             menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
