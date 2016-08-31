@@ -296,100 +296,101 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		UndoableEdit edit = null;
 		String name = xml .getLocalName();
 
-		if ( "Snapshot" .equals( name ) )
+		switch (name) {
+		case "Snapshot":
 			edit = new Snapshot( -1, this );
-
-		else if ( "Branch" .equals( name ) )
+			break;
+		case "Branch":
 			edit = new Branch( this );
-
-        else if ( "Delete" .equals( name ) )
-            edit = new Delete( this.mSelection, this.mRealizedModel );
-
-        else if ( "ShowPoint".equals( name ) )
+			break;
+		case "Delete":
+			edit = new Delete( this.mSelection, this.mRealizedModel );
+			break;
+		case "ShowPoint":
 			edit = new ShowPoint( null, this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "setItemColor".equals( name ) )
+			break;
+		case "setItemColor":
 			edit = new ColorManifestations( this.mSelection, this.mRealizedModel, null, groupInSelection );
-
-		else if ( "ShowHidden".equals( name ) )
+			break;
+		case "ShowHidden":
 			edit = new ShowHidden( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "CrossProduct".equals( name ) )
+			break;
+		case "CrossProduct":
 			edit = new CrossProduct( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "AffinePentagon".equals( name ) )
+			break;
+		case "AffinePentagon":
 			edit = new AffinePentagon( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "AffineHeptagon".equals( name ) )
+			break;
+		case "AffineHeptagon":
 			edit = new AffineHeptagon( this.mSelection, this.mRealizedModel );
-
-		else if ( "AffineTransformAll".equals( name ) )
+			break;
+		case "AffineTransformAll":
 			edit = new AffineTransformAll( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
-
-		else if ( "HeptagonSubdivision".equals( name ) )
+			break;
+		case "HeptagonSubdivision":
 			edit = new HeptagonSubdivision( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "DodecagonSymmetry".equals( name ) )
+			break;
+		case "DodecagonSymmetry":
 			edit = new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
-
-		else if ( "GhostSymmetry24Cell".equals( name ) )
+			break;
+		case "GhostSymmetry24Cell":
 			edit = new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mEditorModel.getSymmetrySegment(),
 					groupInSelection );
-
-		else if ( "StrutCreation".equals( name ) )
+			break;
+		case "StrutCreation":
 			edit = new StrutCreation( null, null, null, this.mRealizedModel );
-
-		else if ( "BnPolyope".equals( name ) || "B4Polytope".equals( name ) )
+			break;
+		case "BnPolyope":
+		case "B4Polytope":
 			edit = new B4Polytope( this.mSelection, this.mRealizedModel, this .mField, null, 0, groupInSelection );
-
-		else if ( "Polytope4d".equals( name ) )
+			break;
+		case "Polytope4d":
 			edit = new Polytope4d( this.mSelection, this.mRealizedModel, null, 0, null, groupInSelection );
-
-		else if ( "LoadVEF".equals( name ) )
+			break;
+		case "LoadVEF":
 			edit = new LoadVEF( this.mSelection, this.mRealizedModel, null, null, null );
-
-		else if ( "GroupSelection".equals( name ) )
+			break;
+		case "GroupSelection":
 			edit = new GroupSelection( this.mSelection, false );
-
-		else if ( "BeginBlock".equals( name ) )
+			break;
+		case "BeginBlock":
 			edit = new BeginBlock();
-
-		else if ( "EndBlock".equals( name ) )
+			break;
+		case "EndBlock":
 			edit = new EndBlock();
-
-		else if ( "InvertSelection".equals( name ) )
+			break;
+		case "InvertSelection":
 			edit = new InvertSelection( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "JoinPoints".equals( name ) )
+			break;
+		case "JoinPoints":
 			edit = new JoinPoints( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "NewCentroid" .equals( name ) )
+			break;
+		case "NewCentroid":
 			edit = new Centroid( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "StrutIntersection".equals( name ) )
+			break;
+		case "StrutIntersection":
 			edit = new StrutIntersection( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "LinePlaneIntersect".equals( name ) )
+			break;
+		case "LinePlaneIntersect":
 			edit = new LinePlaneIntersect( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "SelectAll".equals( name ) )
+			break;
+		case "SelectAll":
 			edit = new SelectAll( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "DeselectAll".equals( name ) )
+			break;
+		case "DeselectAll":
 			edit = new DeselectAll( this.mSelection, groupInSelection );
-
-		else if ( "DeselectByClass".equals( name ) )
+			break;
+		case "DeselectByClass":
 			edit = new DeselectByClass( this.mSelection, false );
-
-		else if ( "SelectManifestation".equals( name ) )
+			break;
+		case "SelectManifestation":
 			edit = new SelectManifestation( null, false, this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "SelectNeighbors".equals( name ) )
+			break;
+		case "SelectNeighbors":
 			edit = new SelectNeighbors( this.mSelection, this.mRealizedModel, groupInSelection );
-
-		else if ( "SelectSimilarSize".equals( name ) )
-		{
-            /*
+			break;
+		case "SelectSimilarSize":
+			/*
             The normal pattern is to have the edits deserialize their own parameters from the XML in setXmlAttributes()
             but in the case of persisting the symmetry, it must be read here and passed into the c'tor
             since this is where the map from a name to an actual SymmetrySystem is maintained.
@@ -397,91 +398,92 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             Also see the comments of commit # 8c8cb08a1e4d71f91f24669b203fef0378230b19 on 3/8/2015
             */
 		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
-            edit = new SelectSimilarSizeStruts( symmetry, null, null, this .mSelection, this .mRealizedModel );
-		}
-		else if ( "SelectParallelStruts".equals( name ) )
-		{
-            // See the note above about deserializing symmetry from XML.
-		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
-            edit = new SelectParallelStruts( symmetry, this .mSelection, this .mRealizedModel );
-		}
-		else if ( "SelectAutomaticStruts".equals( name ) )
-		{
-            // See the note above about deserializing symmetry from XML.
-		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
-            edit = new SelectAutomaticStruts( symmetry, this .mSelection, this .mRealizedModel );
-		}
-		else if ( "SelectCollinear".equals( name ) )
-		{
-            edit = new SelectCollinear( this .mSelection, this .mRealizedModel );
-		}
-		else if ( "ValidateSelection".equals( name ) )
+			edit = new SelectSimilarSizeStruts( symmetry, null, null, this .mSelection, this .mRealizedModel );
+			break;
+		case "SelectParallelStruts":
+			// See the note above about deserializing symmetry from XML.
+		    SymmetrySystem symmsystem = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
+			edit = new SelectParallelStruts( symmsystem, this .mSelection, this .mRealizedModel );
+			break;
+		case "SelectAutomaticStruts":
+			// See the note above about deserializing symmetry from XML.
+			symmsystem = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
+			edit = new SelectAutomaticStruts( symmsystem, this .mSelection, this .mRealizedModel );
+			break;
+		case "SelectCollinear":
+			edit = new SelectCollinear( this .mSelection, this .mRealizedModel );
+			break;
+		case "ValidateSelection":
 			edit = new ValidateSelection( this.mSelection );
-
-		else if ( "SymmetryCenterChange".equals( name ) )
+			break;
+		case "SymmetryCenterChange":
 			edit = new SymmetryCenterChange( this.mEditorModel, null );
-
-		else if ( "SymmetryAxisChange".equals( name ) )
+			break;
+		case "SymmetryAxisChange":
 			edit = new SymmetryAxisChange( this.mEditorModel, null );
-
-		else if ( "RunZomicScript".equals( name ) )
+			break;
+		case "RunZomicScript":
 			edit = new RunZomicScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
-
-		else if ( "RunPythonScript".equals( name ) )
+			break;
+		case "RunPythonScript":
 			edit = new RunPythonScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
-
-		else if ( "BookmarkTool".equals( name ) )
+			break;
+		case "BookmarkTool":
 			edit = new BookmarkTool( name, this.mSelection, this.mRealizedModel, this );
-
-		else if ( "ModuleTool" .equals( name ) )
+			break;
+		case "ModuleTool":
 			edit = new ModuleTool( null, mSelection, mRealizedModel, this );
-
-		else if ( "PlaneSelectionTool" .equals( name ) )
+			break;
+		case "PlaneSelectionTool":
 			edit = new PlaneSelectionTool( null, mSelection, mField, this );
-
-		else if ( "SymmetryTool".equals( name ) )
+			break;
+		case "SymmetryTool":
 			edit = new SymmetryTool( null, null, this.mSelection, this.mRealizedModel, this, this.originPoint );
-
-		else if ( "ScalingTool".equals( name ) )
+			break;
+		case "ScalingTool":
 			edit = new ScalingTool( name, null, this.mSelection, this.mRealizedModel, this, this.originPoint );
-
-		else if ( "RotationTool".equals( name ) )
+			break;
+		case "RotationTool":
 			edit = new RotationTool( name, null, this.mSelection, this.mRealizedModel, this, this.originPoint );
-
-		else if ( "InversionTool".equals( name ) )
+			break;
+		case "InversionTool":
 			edit = new InversionTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
-
-		else if ( "MirrorTool".equals( name ) )
+			break;
+		case "MirrorTool":
 			edit = new MirrorTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
-
-		else if ( "TranslationTool".equals( name ) )
+			break;
+		case "TranslationTool":
 			edit = new TranslationTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
-
-		else if ( "LinearMapTool".equals( name ) )
+			break;
+		case "LinearMapTool":
 			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint, true );
-
-		else if ( "AxialStretchTool".equals( name ) ) {
-			IcosahedralSymmetry symmetry = (IcosahedralSymmetry) mField .getSymmetry( "icosahedral" );
-			edit = new AxialStretchTool( name, symmetry, mSelection, mRealizedModel, this, false, true, false );
-		}
-		else if ( "LinearTransformTool".equals( name ) )
+			break;
+		case "AxialStretchTool":
+			IcosahedralSymmetry icosasymm = (IcosahedralSymmetry) mField .getSymmetry( "icosahedral" );
+			edit = new AxialStretchTool( name, icosasymm, mSelection, mRealizedModel, this, false, true, false );
+			break;
+		case "LinearTransformTool":
 			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint, false );
-
-		else if ( "ToolApplied".equals( name ) )
+			break;
+		case "ToolApplied":
 			edit = new ApplyTool( this.mSelection, this.mRealizedModel, this, false );
-
-		else if ( "ApplyTool".equals( name ) )
+			break;
+		case "ApplyTool":
 			edit = new ApplyTool( this.mSelection, this.mRealizedModel, this, true );
-
-        else if ( RealizeMetaParts.NAME .equals( name ) )
-            edit = new RealizeMetaParts( mSelection, mRealizedModel );
-
-        else if ( ShowVertices.NAME .equals( name ) )
-            edit = new ShowVertices( mSelection, mRealizedModel );
-
-		else if ( "Symmetry4d".equals( name ) ) {
-            QuaternionicSymmetry h4symm = this .mField .getQuaternionSymmetry( "H_4" ); 
+			break;
+		case RealizeMetaParts.NAME:
+			edit = new RealizeMetaParts( mSelection, mRealizedModel );
+			break;
+		case ShowVertices.NAME:
+			edit = new ShowVertices( mSelection, mRealizedModel );
+			break;
+		case "SelectToolParameters":
+			edit = new SelectToolParameters( this.mSelection, this.mRealizedModel, this, null );
+			break;
+		case "Symmetry4d":
+			QuaternionicSymmetry h4symm = this .mField .getQuaternionSymmetry( "H_4" );
 			edit = new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
+			break;
 		}
 
 		if ( edit == null )
@@ -548,102 +550,135 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             return true;
     	}
     	
+//      if ( action.equals( "sixLattice" ) )
+//      edit = new SixLattice( mSelection, mRealizedModel, mDerivationModel );
+
+  // not supported currently, so I don't have to deal with the mTargetManifestation problem
+//  if ( action .equals( "reversePanel" ) )
+//      edit = new ReversePanel( mTargetManifestation, mSelection, mRealizedModel, mDerivationModel );
+
         UndoableEdit edit = null;
-        if ( action.equals( "selectAll" ) )
-            edit = mEditorModel.selectAll();
-        else if ( action.equals( "unselectAll" ) )
-            edit = mEditorModel.unselectAll();
-        else if ( action.equals( "unselectBalls" ) )
-            edit = mEditorModel.unselectConnectors();
-        else if ( action.equals( "unselectStruts" ) )
-            edit = mEditorModel.unselectStruts();
-        else if ( action.equals( "selectNeighbors" ) )
-            edit = mEditorModel.selectNeighbors();
-        else if ( action.equals( "SelectAutomaticStruts" ) )
-            edit = mEditorModel.selectAutomaticStruts(symmetrySystem);
-        else if ( action.equals( "SelectCollinear" ) )
-            edit = mEditorModel.selectCollinear();
-        else if ( action.equals( "SelectParallelStruts" ) )
-            edit = mEditorModel.selectParallelStruts(symmetrySystem);
-        else if ( action.equals( "invertSelection" ) )
-            edit = mEditorModel.invertSelection();
-        else if ( action.equals( "group" ) )
-            edit = mEditorModel.groupSelection();
-        else if ( action.equals( "ungroup" ) )
-            edit = mEditorModel.ungroupSelection();
-
-        else if ( action.equals( "assertSelection" ) )
-            edit = new ValidateSelection( mSelection );
-
-        else if ( action.equals( "delete" ) )
-            edit = new Delete( mSelection, mRealizedModel );
-
-//        else if ( action.equals( "sixLattice" ) )
-//            edit = new SixLattice( mSelection, mRealizedModel, mDerivationModel );
-
-        // not supported currently, so I don't have to deal with the mTargetManifestation problem
-//        else if ( action .equals( "reversePanel" ) )
-//            edit = new ReversePanel( mTargetManifestation, mSelection, mRealizedModel, mDerivationModel );
-        else if ( action.equals( "createStrut" ) )
-            edit = new StrutCreation( null, null, null, mRealizedModel );
-        else if ( action.startsWith( "setItemColor/" ) )
-        {
-            String value = action .substring( "setItemColor/" .length() );
-            edit = new ColorManifestations( mSelection, mRealizedModel, new Color( value ), false );
-        }
-        else if ( action.equals( "joinballs" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CLOSED_LOOP );
-        else if ( action .toLowerCase() .equals( "chainballs" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CHAIN_BALLS );
-        else if ( action.equals( "joinBallsAllToFirst" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_TO_FIRST );
-        else if ( action.equals( "joinBallsAllToLast" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_TO_LAST );
-        else if ( action.equals( "joinBallsAllPossible" ) )
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_POSSIBLE );
-        else if ( ShowVertices.NAME .toLowerCase() .equals( action .toLowerCase() ) )
-            edit = new ShowVertices( mSelection, mRealizedModel );
-        else if ( action.equals( "ballAtOrigin" ) )
-            edit = new ShowPoint( originPoint, mSelection, mRealizedModel, false );
-        else if ( action.equals( "ballAtSymmCenter" ) )
-            edit = new ShowPoint( mEditorModel.getCenterPoint(), mSelection, mRealizedModel, false );
-        else if ( action.equals( "linePlaneIntersect" ) )
-            edit = new LinePlaneIntersect( mSelection, mRealizedModel, false );
-        else if ( action.equals( "lineLineIntersect" ) )
-            edit = new StrutIntersection( mSelection, mRealizedModel, false );
-        else if ( action.equals( "heptagonDivide" ) )
-            edit = new HeptagonSubdivision( mSelection, mRealizedModel, false );
-        else if ( action.equals( "crossProduct" ) )
-            edit = new CrossProduct( mSelection, mRealizedModel, false );
-        else if ( action.equals( "centroid" ) )
-            edit = new Centroid( mSelection, mRealizedModel, false );
-        else if ( action.equals( "showHidden" ) )
-            edit = new ShowHidden( mSelection, mRealizedModel, false );
-        else if ( action.equals( RealizeMetaParts.NAME ) )
-            edit = new RealizeMetaParts( mSelection, mRealizedModel );
-        else if ( action.equals( "affinePentagon" ) )
-            edit = new AffinePentagon( mSelection, mRealizedModel );
-        else if ( action.equals( "affineHeptagon" ) )
-            edit = new AffineHeptagon( mSelection, mRealizedModel );
-        else if ( action.equals( "affineTransformAll" ) )
-        	edit = new AffineTransformAll( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
-        else if ( action.equals( "dodecagonsymm" ) )
-            edit = new DodecagonSymmetry( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
-        else if ( action.equals( "ghostsymm24cell" ) )
-            edit = new GhostSymmetry24Cell( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(), false );
-		else if ( action.equals( "apiProxy" ) )
+        switch (action) {
+		case "selectAll":
+			edit = mEditorModel.selectAll();
+			break;
+		case "unselectAll":
+			edit = mEditorModel.unselectAll();
+			break;
+		case "unselectBalls":
+			edit = mEditorModel.unselectConnectors();
+			break;
+		case "unselectStruts":
+			edit = mEditorModel.unselectStruts();
+			break;
+		case "selectNeighbors":
+			edit = mEditorModel.selectNeighbors();
+			break;
+		case "SelectAutomaticStruts":
+			edit = mEditorModel.selectAutomaticStruts(symmetrySystem);
+			break;
+		case "SelectCollinear":
+			edit = mEditorModel.selectCollinear();
+			break;
+		case "SelectParallelStruts":
+			edit = mEditorModel.selectParallelStruts(symmetrySystem);
+			break;
+		case "invertSelection":
+			edit = mEditorModel.invertSelection();
+			break;
+		case "group":
+			edit = mEditorModel.groupSelection();
+			break;
+		case "ungroup":
+			edit = mEditorModel.ungroupSelection();
+			break;
+		case "assertSelection":
+			edit = new ValidateSelection( mSelection );
+			break;
+		case "delete":
+			edit = new Delete( mSelection, mRealizedModel );
+			break;
+		case "createStrut":
+			edit = new StrutCreation( null, null, null, mRealizedModel );
+			break;
+		case "joinballs":
+			edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CLOSED_LOOP );
+			break;
+		case "joinBallsAllToFirst":
+			edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_TO_FIRST );
+			break;
+		case "joinBallsAllToLast":
+			edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_TO_LAST );
+			break;
+		case "joinBallsAllPossible":
+			edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_POSSIBLE );
+			break;
+		case "ballAtOrigin":
+			edit = new ShowPoint( originPoint, mSelection, mRealizedModel, false );
+			break;
+		case "ballAtSymmCenter":
+			edit = new ShowPoint( mEditorModel.getCenterPoint(), mSelection, mRealizedModel, false );
+			break;
+		case "linePlaneIntersect":
+			edit = new LinePlaneIntersect( mSelection, mRealizedModel, false );
+			break;
+		case "lineLineIntersect":
+			edit = new StrutIntersection( mSelection, mRealizedModel, false );
+			break;
+		case "heptagonDivide":
+			edit = new HeptagonSubdivision( mSelection, mRealizedModel, false );
+			break;
+		case "crossProduct":
+			edit = new CrossProduct( mSelection, mRealizedModel, false );
+			break;
+		case "centroid":
+			edit = new Centroid( mSelection, mRealizedModel, false );
+			break;
+		case "showHidden":
+			edit = new ShowHidden( mSelection, mRealizedModel, false );
+			break;
+		case RealizeMetaParts.NAME:
+			edit = new RealizeMetaParts( mSelection, mRealizedModel );
+			break;
+		case "affinePentagon":
+			edit = new AffinePentagon( mSelection, mRealizedModel );
+			break;
+		case "affineHeptagon":
+			edit = new AffineHeptagon( mSelection, mRealizedModel );
+			break;
+		case "affineTransformAll":
+			edit = new AffineTransformAll( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
+			break;
+		case "dodecagonsymm":
+			edit = new DodecagonSymmetry( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
+			break;
+		case "ghostsymm24cell":
+			edit = new GhostSymmetry24Cell( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(), false );
+			break;
+		case "apiProxy":
 			edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
-
-		else if ( action.startsWith( "polytope_" ) )
-        {
-            int beginIndex = "polytope_".length();
-            String group = action.substring( beginIndex, beginIndex + 2 );
-            String suffix = action.substring( beginIndex + 2 );
-            System.out.println( "computing " + group + " " + suffix );
-            int index = Integer.parseInt( suffix, 2 );
-            edit = new Polytope4d( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(),
-                    index, group, false );
-        }
+			break;
+		default:
+			if ( action.startsWith( "polytope_" ) )
+	        {
+	            int beginIndex = "polytope_".length();
+	            String group = action.substring( beginIndex, beginIndex + 2 );
+	            String suffix = action.substring( beginIndex + 2 );
+	            System.out.println( "computing " + group + " " + suffix );
+	            int index = Integer.parseInt( suffix, 2 );
+	            edit = new Polytope4d( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(),
+	                    index, group, false );
+	    	} else if ( action.startsWith( "setItemColor/" ) )
+	        {
+	            String value = action .substring( "setItemColor/" .length() );
+	            edit = new ColorManifestations( mSelection, mRealizedModel, new Color( value ), false );
+	        }
+	    	else if ( ShowVertices.NAME .toLowerCase() .equals( action .toLowerCase() ) ) {
+	    		edit = new ShowVertices( mSelection, mRealizedModel );
+	    	} else if ( action .toLowerCase() .equals( "chainballs" ) ) {
+	    		edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CHAIN_BALLS );
+	    	}
+		}
 
         if ( edit == null )
         {
