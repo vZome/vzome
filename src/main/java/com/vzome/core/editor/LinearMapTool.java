@@ -48,6 +48,31 @@ public class LinearMapTool extends TransformationTool
 		}
 		return true;
 	}
+	
+	public static class Factory implements SelectionSummary.Listener
+	{
+		private boolean enabled = false;
+		private final LinearMapTool instance;
+		
+		public Factory( Selection selection )
+		{
+			this .instance = new LinearMapTool( null, selection, null, null, null );
+		}
+		
+		@Override
+		public void selectionChanged( int total, int balls, int struts, int panels )
+		{
+			boolean wasEnabled = this .enabled;
+			if ( ( total == 7 && balls == 1 && struts == 6 )
+			  || ( total == 4 && balls == 1 && struts == 3 ) )
+				this .enabled = ( null == instance .checkSelection( false ) );
+			else
+				this .enabled = false;
+			if ( wasEnabled != this .enabled )
+				System .out .println( "enabled: " + this .enabled );
+		}
+		
+	}
 
     protected String checkSelection( boolean prepareTool )
     {

@@ -127,6 +127,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	private final Lights sceneLighting;
 
+	private SelectionSummary selectionSummary;
+
     public void addPropertyChangeListener( PropertyChangeListener listener )
     {
     	propertyChangeSupport .addPropertyChangeListener( listener );
@@ -164,6 +166,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .mRealizedModel = new RealizedModel( field, new Projection.Default( field ) );
 		
 		this .mSelection = new Selection();
+		this .selectionSummary = new SelectionSummary( this .mSelection );
+		this .selectionSummary .addListener( new LinearMapTool.Factory( this .mSelection ) );
 
         Symmetry[] symms = field .getSymmetries();
         for (Symmetry symm : symms) {
@@ -702,6 +706,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
                 edit .perform();
                 this .mHistory .mergeSelectionChanges();
                 this .mHistory .addEdit( edit, DocumentModel.this );
+                this .selectionSummary .notifyListeners();
             }
         }
         catch ( RuntimeException re )
