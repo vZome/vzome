@@ -4,19 +4,65 @@
 package com.vzome.core.editor;
 
 
+import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointReflection;
 import com.vzome.core.construction.Transformation;
+import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
 public class InversionTool extends TransformationTool
 {
-    public InversionTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    public InversionTool( String name, Selection selection, RealizedModel realized, Point originPoint )
     {
-        super( name, selection, realized, tools, originPoint );
+        super( name, selection, realized, null, originPoint );
     }
+	
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		private transient Connector center;
+		private transient Symmetry symmetry;
+		
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			super( model, context );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 1 && balls == 1 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new InversionTool( "point reflection." + index, getSelection(), getModel(), null );
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			this .symmetry = symmetry .getSymmetry();
+			assert selection .size() == 1;
+        	for ( Manifestation man : selection )
+        		center = (Connector) man;
+			return true;
+		}
+	}
+	
+    @Override
+    public void perform() throws Command.Failure
+    {
+    	String error = checkSelection( true );
+    	if ( error != null )
+    		// the old way of creating tools, validating the selection after the user action
+    		throw new Command.Failure( error );
+    	else
+    		defineTool();
+	}
 
     @Override
     protected String checkSelection( boolean prepareTool )

@@ -84,8 +84,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	private final EditorModel mEditorModel;
 	
-	private SymmetrySystem symmetrySystem;
-
     private final EditHistory mHistory;
     
     private final LessonModel lesson = new LessonModel();
@@ -127,7 +125,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	private final Lights sceneLighting;
 
-	private SelectionSummary selectionSummary;
+	private Map<String,ToolFactory> toolFactories = new HashMap<>();
 
     public void addPropertyChangeListener( PropertyChangeListener listener )
     {
@@ -166,8 +164,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .mRealizedModel = new RealizedModel( field, new Projection.Default( field ) );
 		
 		this .mSelection = new Selection();
-		this .selectionSummary = new SelectionSummary( this .mSelection );
-		this .selectionSummary .addListener( new LinearMapTool.Factory( this .mSelection ) );
 
         Symmetry[] symms = field .getSymmetries();
         for (Symmetry symm : symms) {
@@ -193,8 +189,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         String symmName = ( xml != null )? xml .getAttribute( "name" ) : symms[ 0 ] .getName();
 
         Symmetry symmetry = field .getSymmetry( symmName );
-        this .symmetrySystem = new SymmetrySystem( xml, symmetry, app .getColors(), app .getGeometries( symmetry ), true );
-        this .symmetrySystems .put( symmName, this .symmetrySystem );
+        SymmetrySystem symmetrySystem = new SymmetrySystem( xml, symmetry, app .getColors(), app .getGeometries( symmetry ), true );
+        this .symmetrySystems .put( symmName, symmetrySystem );
 
         try {
 			makeTool( "tetrahedral.builtin/tetrahedral around origin", "tetrahedral", this, symmetry ) .perform();
@@ -212,11 +208,19 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			logger .severe( "Failed to create built-in tools." );
 		}
 
-        this .renderedModel = new RenderedModel( field, this .symmetrySystem );
+        this .renderedModel = new RenderedModel( field, symmetrySystem );
 
 		this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
 		// the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
-		this .mEditorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint );
+		this .mEditorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint, symmetrySystem );
+		
+		this .toolFactories .put( "linear map", new LinearMapTool.Factory( mEditorModel, this ) );
+		this .toolFactories .put( "translation", new TranslationTool.Factory( mEditorModel, this ) );
+		this .toolFactories .put( "point reflection", new InversionTool.Factory( mEditorModel, this ) );
+		this .toolFactories .put( "mirror", new MirrorTool.Factory( mEditorModel, this ) );
+		this .toolFactories .put( "scaling", new ScalingTool.Factory( mEditorModel, this ) );
+		if ( symmetry instanceof IcosahedralSymmetry )
+			this .toolFactories .put( "icosahedral", new IcosahedralToolFactory( mEditorModel, this, (IcosahedralSymmetry) symmetry ) );
 
 		this .defaultView = new Camera();
         Element views = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "Viewing" ) .item( 0 );
@@ -451,23 +455,23 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new RotationTool( name, null, this.mSelection, this.mRealizedModel, this, this.originPoint );
 			break;
 		case "InversionTool":
-			edit = new InversionTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
+			edit = new InversionTool( name, this.mSelection, this.mRealizedModel, this.originPoint );
 			break;
 		case "MirrorTool":
-			edit = new MirrorTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
+			edit = new MirrorTool( name, this.mSelection, this.mRealizedModel, this.originPoint );
 			break;
 		case "TranslationTool":
 			edit = new TranslationTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
 			break;
 		case "LinearMapTool":
-			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint, true );
+			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this.originPoint, true );
 			break;
 		case "AxialStretchTool":
 			IcosahedralSymmetry icosasymm = (IcosahedralSymmetry) mField .getSymmetry( "icosahedral" );
 			edit = new AxialStretchTool( name, icosasymm, mSelection, mRealizedModel, this, false, true, false );
 			break;
 		case "LinearTransformTool":
-			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint, false );
+			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this.originPoint, false );
 			break;
 		case "ToolApplied":
 			edit = new ApplyTool( this.mSelection, this.mRealizedModel, this, false );
@@ -579,13 +583,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = mEditorModel.selectNeighbors();
 			break;
 		case "SelectAutomaticStruts":
-			edit = mEditorModel.selectAutomaticStruts(symmetrySystem);
+			edit = mEditorModel.selectAutomaticStruts();
 			break;
 		case "SelectCollinear":
 			edit = mEditorModel.selectCollinear();
 			break;
 		case "SelectParallelStruts":
-			edit = mEditorModel.selectParallelStruts(symmetrySystem);
+			edit = mEditorModel.selectParallelStruts();
 			break;
 		case "invertSelection":
 			edit = mEditorModel.invertSelection();
@@ -706,7 +710,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
                 edit .perform();
                 this .mHistory .mergeSelectionChanges();
                 this .mHistory .addEdit( edit, DocumentModel.this );
-                this .selectionSummary .notifyListeners();
+                this .mEditorModel .notifyListeners();
             }
         }
         catch ( RuntimeException re )
@@ -767,13 +771,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
     public void selectParallelStruts( Strut strut )
     {
-        UndoableEdit edit = new SelectParallelStruts( this.symmetrySystem, mSelection, mRealizedModel, strut );
+        UndoableEdit edit = new SelectParallelStruts( mEditorModel .getSymmetrySystem(), mSelection, mRealizedModel, strut );
         this .performAndRecord( edit );
     }
 
     public void selectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
-        UndoableEdit edit = new SelectSimilarSizeStruts( this.symmetrySystem, orbit, length, mSelection, mRealizedModel );
+        UndoableEdit edit = new SelectSimilarSizeStruts( mEditorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel );
         this .performAndRecord( edit );
     }
     
@@ -1014,7 +1018,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         childElement .appendChild( viewXml );
         vZomeRoot .appendChild( childElement );
 
-        childElement = this .symmetrySystem .getXml( doc );
+        childElement = this .mEditorModel .getSymmetrySystem() .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
         DomUtils .serialize( doc, out );
@@ -1256,12 +1260,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	UndoableEdit edit = new StrutCreation( point, zone, length, this .mRealizedModel );
         this .performAndRecord( edit );
     }
-    
-    public boolean isToolEnabled( String group, Symmetry symmetry )
-    {
-        Tool tool = (Tool) makeTool( group + ".0/UNUSED", group, null, symmetry ); // TODO: get rid of isAutomatic() and isTetrahedral() silliness, so the string won't get parsed
-    	return tool != null && tool .isValidForSelection();
-    }
 
 	public void createTool( String name, String group, Tool.Registry tools, Symmetry symmetry )
 	{
@@ -1278,16 +1276,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new BookmarkTool( name, mSelection, mRealizedModel, tools );
 			break;
 		case "point reflection":
-			edit = new InversionTool( name, mSelection, mRealizedModel, tools, originPoint );
+			edit = new InversionTool( name, mSelection, mRealizedModel, originPoint );
 			break;
 		case "mirror":
-			edit = new MirrorTool( name, mSelection, mRealizedModel, tools, originPoint );
+			edit = new MirrorTool( name, mSelection, mRealizedModel, originPoint );
 			break;
 		case "translation":
 			edit = new TranslationTool( name, mSelection, mRealizedModel, tools, originPoint );
 			break;
 		case "linear map":
-			edit = new LinearMapTool( name, mSelection, mRealizedModel, tools, originPoint, false );
+			edit = new LinearMapTool( name, mSelection, mRealizedModel, originPoint, false );
 			break;
 		case "rotation":
 			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, false );
@@ -1480,7 +1478,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
     public SymmetrySystem getSymmetrySystem()
     {
-        return this .symmetrySystem;
+        return this .mEditorModel .getSymmetrySystem();
     }
     
     public SymmetrySystem getSymmetrySystem( String name )
@@ -1490,6 +1488,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
     public void setSymmetrySystem( String name )
     {
-    	this .symmetrySystem = this .symmetrySystems .get( name );
+    	this .mEditorModel .setSymmetrySystem( this .symmetrySystems .get( name ) );
     }
+
+	public ToolFactory getToolFactory( String name )
+	{
+		return this .toolFactories .get( name );
+	}
 }

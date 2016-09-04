@@ -27,7 +27,33 @@ import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class ScalingTool extends SymmetryTool
-{
+{    
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			super( model, context );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 3 && balls == 1 && struts == 2 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new ScalingTool( "scaling." + index, null, getSelection(), getModel(), null, null );
+		}
+
+		@Override
+		protected boolean bindParameters(Selection selection, SymmetrySystem symmetry) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	}
+
 	private final AlgebraicNumber scaleFactor;
 	
     @Override

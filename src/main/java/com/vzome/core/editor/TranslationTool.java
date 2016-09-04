@@ -23,6 +23,33 @@ public class TranslationTool extends TransformationTool
         super( name, selection, realized, tools, originPoint );
     }
     
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			// TODO: remove isAutomatic() convention
+			super( model, context );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 2 && balls == 2 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new TranslationTool( "translation." + index, getSelection(), getModel(), null, null );
+		}
+
+		@Override
+		protected boolean bindParameters(Selection selection, SymmetrySystem symmetry) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	}
+
     @Override
     public String getDefaultName( String baseName )
     {

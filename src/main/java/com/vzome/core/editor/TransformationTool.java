@@ -75,7 +75,8 @@ public abstract class TransformationTool extends ChangeManifestations implements
 
     protected void defineTool()
     {
-		tools .addTool( this );
+    	if ( tools != null )
+    		tools .addTool( this );
     }
 
     private String name;
@@ -155,6 +156,8 @@ public abstract class TransformationTool extends ChangeManifestations implements
     {
         int dot = this .name .indexOf( "." );
         int slash = this .name .indexOf( "/" );
+        if ( slash < 0 )
+        	return false;
         String id = this .name .substring( dot, slash );
         return ".auto" .equals( id );
     }

@@ -14,17 +14,25 @@ import com.vzome.core.model.Strut;
 
 public class EditorModel
 {
-    public EditorModel( RealizedModel realized, Selection selection, boolean oldGroups, Point originPoint )
+    public EditorModel( RealizedModel realized, Selection selection, boolean oldGroups, Point originPoint, SymmetrySystem symmetrySystem )
 	{
         mRealized = realized;
         mSelection = selection;
         this.oldGroups = oldGroups;
+		this.symmetrySystem = symmetrySystem;
+        
+		this .selectionSummary = new SelectionSummary( this .mSelection );
 
         Manifestation m = realized .manifest( originPoint );
         m .addConstruction( originPoint );
         realized .add( m );
         realized .show( m );
         mCenterPoint = originPoint;
+    }
+    
+    public void addSelectionSummaryListener( SelectionSummary.Listener listener )
+    {
+    	this .selectionSummary .addListener( listener );
     }
     
     public RealizedModel getRealizedModel()
@@ -98,9 +106,9 @@ public class EditorModel
             return new NoOp();
     }
 
-    public UndoableEdit selectAutomaticStruts(SymmetrySystem symmetry)
+    public UndoableEdit selectAutomaticStruts()
     {
-        return new SelectAutomaticStruts(symmetry, mSelection, mRealized );
+        return new SelectAutomaticStruts( symmetrySystem, mSelection, mRealized );
     }
 
     public UndoableEdit selectCollinear()
@@ -108,8 +116,8 @@ public class EditorModel
         return new SelectCollinear(mSelection, mRealized );
     }
 
-	public UndoableEdit selectParallelStruts(SymmetrySystem symmetry) {
-		return new SelectParallelStruts(symmetry, mSelection, mRealized);
+	public UndoableEdit selectParallelStruts() {
+		return new SelectParallelStruts( symmetrySystem, mSelection, mRealized );
 	}
 
     public UndoableEdit invertSelection()
@@ -121,10 +129,14 @@ public class EditorModel
     private final RealizedModel mRealized;
 
     protected Selection mSelection;
-    
+
+	private SelectionSummary selectionSummary;
+
     private Point mCenterPoint;
     
     private Segment mSymmetryAxis;
+
+	private SymmetrySystem symmetrySystem;
 
     private final boolean oldGroups;
 
@@ -179,7 +191,6 @@ public class EditorModel
                 return null;
         return new SymmetryAxisChange( this, newAxis );
     }
-    
 
     public UndoableEdit groupSelection()
     {
@@ -208,4 +219,24 @@ public class EditorModel
     {
         return failedConstructions .contains( mRealized .manifest( cons ) );
     }
+
+	public Selection getSelection()
+	{
+		return this .mSelection;
+	}
+
+	public void notifyListeners()
+	{
+		this .selectionSummary .notifyListeners();
+	}
+
+	public SymmetrySystem getSymmetrySystem()
+	{
+		return this .symmetrySystem;
+	}
+
+	public void setSymmetrySystem( SymmetrySystem system )
+	{
+		this .symmetrySystem = system;
+	}
 }
