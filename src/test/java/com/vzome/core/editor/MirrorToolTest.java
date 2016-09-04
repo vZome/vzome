@@ -57,18 +57,18 @@ public class MirrorToolTest
 		panel2 .addConstruction( polygon2 );
 		
 		Selection selection = new Selection();
-		MirrorTool tool = new MirrorTool( "mirror.1/foo", selection, null, null, originPoint );
+		MirrorTool tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
 		assertNotNull( "(nothing selected)", tool .checkSelection( false ) );
 
 		selection = new Selection();
 		selection .select( panel1 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, null, originPoint );
+		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
 		assertNull( "(just panel selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( panel1 );
 		selection .select( panel2 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, null, originPoint );
+		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
 		assertNotNull( "(two panels selected)", tool .checkSelection( false ) );
 
 		Connector ball1 = new Connector( origin );
@@ -85,40 +85,40 @@ public class MirrorToolTest
 		selection = new Selection();
 		selection .select( panel1 );
 		selection .select( strut );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, null, originPoint );
+		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
 		assertNotNull( "(panel and strut selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( panel1 );
 		selection .select( ball1 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, null, originPoint );
+		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
 		assertNotNull( "(panel and ball selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( ball1 );
 		selection .select( strut );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, null, originPoint );
+		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
 		assertNull( "(strut and ball selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( ball1 );
 		selection .select( strut );
 		selection .select( strut2 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, null, originPoint );
+		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
 		assertNotNull( "(ball and 2 struts selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( ball1 );
 		selection .select( strut );
 		selection .select( ball2 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, null, originPoint );
+		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
 		assertNotNull( "(strut and 2 balls selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( ball1 );
 		selection .select( strut );
 		selection .select( panel1 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, null, originPoint );
+		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
 		assertNotNull( "(ball, strut, and panel selected)", tool .checkSelection( false ) );
 	}
 }

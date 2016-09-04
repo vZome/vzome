@@ -27,7 +27,54 @@ import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class RotationTool extends SymmetryTool
-{
+{	
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		private transient Symmetry symmetry;
+		
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			super( model, context );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 1 && struts == 1 ) || ( total == 2 && balls == 1 && struts == 1 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new RotationTool( "rotation." + index, this.symmetry, getSelection(), getModel(), null, false );
+		}
+		
+		protected Symmetry getSymmetry()
+		{
+			return this .symmetry;
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			this .symmetry = symmetry .getSymmetry();
+        	for ( Manifestation man : selection )
+        		if ( man instanceof Strut )
+        		{
+        			Strut axisStrut = (Strut) man;
+        	        AlgebraicVector vector = axisStrut .getOffset();
+        	        vector = this .symmetry .getField() .projectTo3d( vector, true ); // TODO: still necessary?
+        	        Axis axis = symmetry .getAxis( vector );
+        	        if ( axis == null )
+        	        	return false;
+        			Permutation perm = axis .getRotationPermutation();
+        	        if ( perm == null )
+        	        	return false;
+        		}
+			return true;
+		}
+	}
+
     private boolean fullRotation, corrected;
 
 	public String getDefaultName()
@@ -50,9 +97,9 @@ public class RotationTool extends SymmetryTool
      * @param tools
      * @param originPoint
      */
-    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint )
     {
-    	this( name, symmetry, selection, realized, tools, originPoint, false );
+    	this( name, symmetry, selection, realized, originPoint, false );
     	this .corrected = false; // for backward compatibility... may get overwritten in setXmlAttributes
     }
 
@@ -66,9 +113,9 @@ public class RotationTool extends SymmetryTool
      * @param originPoint
      * @param full
      */
-    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint, boolean full )
+    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint, boolean full )
     {
-        super( name, symmetry, selection, realized, tools, originPoint );
+        super( name, symmetry, selection, realized, null, originPoint );
         this .fullRotation = full;
         this .corrected = true;
     }

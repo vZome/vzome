@@ -22,7 +22,7 @@ public class InversionTool extends TransformationTool
 	
 	public static class Factory extends AbstractToolFactory implements ToolFactory
 	{
-		private transient Connector center;
+		private transient Connector center;  // TODO use these in createToolInternal()
 		private transient Symmetry symmetry;
 		
 		public Factory( EditorModel model, UndoableEdit.Context context )

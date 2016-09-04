@@ -219,8 +219,17 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .toolFactories .put( "point reflection", new InversionTool.Factory( mEditorModel, this ) );
 		this .toolFactories .put( "mirror", new MirrorTool.Factory( mEditorModel, this ) );
 		this .toolFactories .put( "scaling", new ScalingTool.Factory( mEditorModel, this ) );
-		if ( symmetry instanceof IcosahedralSymmetry )
+		this .toolFactories .put( "rotation", new RotationTool.Factory( mEditorModel, this ) );
+		this .toolFactories .put( "axial symmetry", new AxialSymmetryToolFactory( mEditorModel, this ) );
+		if ( symmetry instanceof IcosahedralSymmetry ) {
 			this .toolFactories .put( "icosahedral", new IcosahedralToolFactory( mEditorModel, this, (IcosahedralSymmetry) symmetry ) );
+			this .toolFactories .put( "redstretch1", new AxialStretchTool.Factory( mEditorModel, this, true, true, true ) );
+			this .toolFactories .put( "redsquash1", new AxialStretchTool.Factory( mEditorModel, this, true, false, true ) );
+			this .toolFactories .put( "redstretch2", new AxialStretchTool.Factory( mEditorModel, this, true, true, false ) );
+			this .toolFactories .put( "redsquash2", new AxialStretchTool.Factory( mEditorModel, this, true, false, false ) );
+			this .toolFactories .put( "yellowstretch", new AxialStretchTool.Factory( mEditorModel, this, false, true, false ) );
+			this .toolFactories .put( "yellowsquash", new AxialStretchTool.Factory( mEditorModel, this, false, false, false ) );
+		}
 
 		this .defaultView = new Camera();
         Element views = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "Viewing" ) .item( 0 );
@@ -452,7 +461,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new ScalingTool( name, null, this.mSelection, this.mRealizedModel, this, this.originPoint );
 			break;
 		case "RotationTool":
-			edit = new RotationTool( name, null, this.mSelection, this.mRealizedModel, this, this.originPoint );
+			edit = new RotationTool( name, null, this.mSelection, this.mRealizedModel, this.originPoint );
 			break;
 		case "InversionTool":
 			edit = new InversionTool( name, this.mSelection, this.mRealizedModel, this.originPoint );
@@ -468,7 +477,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			break;
 		case "AxialStretchTool":
 			IcosahedralSymmetry icosasymm = (IcosahedralSymmetry) mField .getSymmetry( "icosahedral" );
-			edit = new AxialStretchTool( name, icosasymm, mSelection, mRealizedModel, this, false, true, false );
+			edit = new AxialStretchTool( name, icosasymm, mSelection, mRealizedModel, false, true, false );
 			break;
 		case "LinearTransformTool":
 			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this.originPoint, false );
@@ -1288,10 +1297,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new LinearMapTool( name, mSelection, mRealizedModel, originPoint, false );
 			break;
 		case "rotation":
-			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, false );
+			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, originPoint, false );
 			break;
 		case "axial symmetry":
-			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint, true );
+			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, originPoint, true );
 			break;
 		case "scaling":
 			edit = new ScalingTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
@@ -1313,27 +1322,27 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			break;
 		case "yellowstretch":
 			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, false, false );
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, true, false, false );
 			break;
 		case "yellowsquash":
 			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, false, false );
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, false, false, false );
 			break;
 		case "redstretch1":
 			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, true, true );
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, true, true, true );
 			break;
 		case "redsquash1":
 			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, true, true );
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, false, true, true );
 			break;
 		case "redstretch2":
 			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, true, true, false );
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, true, true, false );
 			break;
 		case "redsquash2":
 			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, tools, false, true, false );
+				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, false, true, false );
 			break;
 		default:
 			edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );

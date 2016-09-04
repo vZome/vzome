@@ -27,14 +27,73 @@ import com.vzome.core.model.Strut;
 
 public class AxialStretchTool extends TransformationTool
 {
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		private transient IcosahedralSymmetry symmetry;
+		private final boolean red, stretch, first;
+		
+		public Factory( EditorModel model, UndoableEdit.Context context, boolean red, boolean stretch, boolean first )
+		{
+			super( model, context );
+			this.red = red;
+			this.stretch = stretch;
+			this.first = first;
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 2 && balls == 1 && struts == 1 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			String category;
+			if ( red )
+				if ( first )
+					category = stretch? "redstretch1" : "redsquash1";
+				else
+					category = stretch? "redstretch2" : "redsquash2";
+			else
+				category = stretch? "yellowstretch" : "yellowsquash";
+			return new AxialStretchTool( category + "." + index, this.symmetry, getSelection(), getModel(), stretch, red, first );
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmSystem )
+		{
+			Symmetry symmetry = symmSystem .getSymmetry();
+			if ( ! ( symmetry instanceof IcosahedralSymmetry ) )
+				return false;
+			this .symmetry = (IcosahedralSymmetry) symmetry;
+        	for ( Manifestation man : selection )
+        		if ( man instanceof Strut )
+        		{
+        			Strut axisStrut = (Strut) man;
+        	        AlgebraicVector vector = axisStrut .getOffset();
+        	        vector = symmetry .getField() .projectTo3d( vector, true ); // TODO: still necessary?
+        	        Axis axis = symmetry .getAxis( vector );
+        	        if ( axis == null )
+        	        	return false;
+        	        String orbitName = axis .getDirection() .getName();
+        	        if ( red )
+        	        	return orbitName .equals( "red" );
+        	        else
+        	        	return orbitName .equals( "yellow" );
+        		}
+			return true;
+		}
+	}
+
 	private final IcosahedralSymmetry symmetry;
 	private boolean stretch;
 	private boolean red;
 	private boolean first;
 
-	public AxialStretchTool( String name, IcosahedralSymmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, boolean stretch, boolean red, boolean first )
+	public AxialStretchTool( String name, IcosahedralSymmetry symmetry, Selection selection, RealizedModel realized, boolean stretch, boolean red, boolean first )
     {
-        super( name, selection, realized, tools, null );
+        super( name, selection, realized, null, null );
 		this .symmetry = symmetry;
 		this .stretch = stretch;
 		this .red = red;
