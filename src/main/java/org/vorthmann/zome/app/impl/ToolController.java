@@ -25,11 +25,14 @@ public class ToolController extends DefaultController
 		this .tool = tool;
 		this .applier = applier;
 
-		String idAndName = tool .getName(); // will be "kind.N/label"
+		String idAndName = tool .getName(); // will be "kind.N" with optional "/label"
 		int delim = idAndName .indexOf( "." );
 		this .kind = idAndName .substring( 0, delim );
 		delim = idAndName .indexOf( "/" );
-		this .label = idAndName .substring( delim + 1 );
+		if ( delim > 0 )
+			this .label = idAndName .substring( delim + 1 );
+		else
+			this .label = idAndName .replace( '.', ' ' );
 
 		this .selectOutputs = true;
 		switch (kind) {

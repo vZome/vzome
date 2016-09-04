@@ -13,7 +13,6 @@ import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -126,11 +125,13 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 this .bookmarkScroller = new JScrollPane( this .bookmarkBar, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
                 this .bookmarkScroller .setBorder( null );
                 monoStereoPlusToolbar .add( this .bookmarkScroller, BorderLayout .LINE_START );
-                
+
+                final Controller toolsController = controller .getSubController( "tools" );
+
                 AbstractButton button;
 
                 if ( controller .propertyIsTrue( "supports.symmetry.icosahedral" ) ) {
-                    button = newToolButton( enabler, "icosahedral", "Create an icosahedral symmetry tool",
+                    button = newToolButton( toolsController, "icosahedral", "Create an icosahedral symmetry tool",
                 		"<p>" +
                         		"Each tool produces up to 59 copies of the input<br>" +
                         		"selection, using the rotation symmetries of an<br>" +
@@ -142,7 +143,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"reflections.<br>" +
                 		"</p>" );
                     firstToolbar .add( button );
-                	button = newToolButton( enabler, "octahedral", "Create an octahedral symmetry tool",
+                	button = newToolButton( toolsController, "octahedral", "Create an octahedral symmetry tool",
                 		"<p>" +
                         		"Each tool produces up to 23 copies of the input<br>" +
                         		"selection, using the rotation symmetries of a<br>" +
@@ -156,7 +157,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"reflections.<br>" +
                 		"</p>" );
                     firstToolbar .add( button );
-                	button = newToolButton( enabler, "tetrahedral", "Create a tetrahedral symmetry tool",
+                	button = newToolButton( toolsController, "tetrahedral", "Create a tetrahedral symmetry tool",
                 		"<p>" +
                         		"Each tool produces up to 11 copies of the input<br>" +
                         		"selection, using the rotation symmetries of a<br>" +
@@ -171,7 +172,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 		"</p>" );
                     firstToolbar .add( button );
                 } else {
-                	button = newToolButton( enabler, "octahedral", "Create an octahedral symmetry tool",
+                	button = newToolButton( toolsController, "octahedral", "Create an octahedral symmetry tool",
                 		"<p>" +
                         		"Each tool produces up to 23 copies of the input<br>" +
                         		"selection, using the rotation symmetries of a<br>" +
@@ -183,7 +184,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"reflections.<br>" +
                 		"</p>" );
                     firstToolbar .add( button );
-                	button = newToolButton( enabler, "tetrahedral", "Create a tetrahedral symmetry tool",
+                	button = newToolButton( toolsController, "tetrahedral", "Create a tetrahedral symmetry tool",
                 		"<p>" +
                         		"Each tool produces up to 11 copies of the input<br>" +
                         		"selection, using the rotation symmetries of a<br>" +
@@ -196,14 +197,14 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 		"</p>" );
                     firstToolbar .add( button );
                 }
-                button = newToolButton( enabler, "point reflection", "Create a point reflection tool",
+                button = newToolButton( toolsController, "point reflection", "Create a point reflection tool",
                 		"<p>" +
                         		"Each tool duplicates the selection by reflecting<br>" +
                         		"each point through the defined center.  To create a<br>" +
                         		"tool, select a single ball that defines that center.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "mirror", "Create a mirror reflection tool",
+                button = newToolButton( toolsController, "mirror", "Create a mirror reflection tool",
                 		"<p>" +
                         		"Each tool duplicates the selection by reflecting<br>" +
                         		"each object in a mirror plane.  To create a<br>" +
@@ -212,7 +213,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"plane and a ball lying in the plane.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "axial symmetry", "Create a rotational symmetry tool",
+                button = newToolButton( toolsController, "axial symmetry", "Create a rotational symmetry tool",
                 		"<p>" +
                         		"Each tool creates enough copies of the selected objects to<br>" +
                         		"create rotational symmetry around an axis.  To create a tool,<br>" +
@@ -228,7 +229,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 
                 firstToolbar .addSeparator();
                 
-                button = newToolButton( enabler, "scaling", "Create a scaling tool",
+                button = newToolButton( toolsController, "scaling", "Create a scaling tool",
                 		"<p>" +
                         		"Each tool enlarges or shrinks the selected objects,<br>" +
                         		"relative to a central point.  To create a tool,<br>" +
@@ -241,7 +242,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"strut that has the desired target size.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "rotation", "Create a rotation tool",
+                button = newToolButton( toolsController, "rotation", "Create a rotation tool",
                 		"<p>" +
                         		"Each tool rotates the selected objects around an axis<br>" +
                         		"of symmetry.  To create a tool, select a strut that<br>" +
@@ -259,7 +260,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                         		"right-click to configure the tool to create a copy, instead.<br>" +
                 		"</p>" );
                 firstToolbar .add( button );
-                button = newToolButton( enabler, "translation", "Create a translation tool",
+                button = newToolButton( toolsController, "translation", "Create a translation tool",
                 		"<p>" +
                         		"Each tool moves the selected objects to a new location.<br>" +
                         		"To create a tool, select two balls that are separated by<br>" +
@@ -276,7 +277,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 firstToolbar .addSeparator();
 
                 if ( controller .propertyIsTrue( "supports.symmetry.icosahedral" ) ) {
-	                button = newToolButton( enabler, "redsquash1", "Create a weak red squash tool",
+	                button = newToolButton( toolsController, "redsquash1", "Create a weak red squash tool",
 	                		"<p>" +
 	                        		"Each tool applies a \"squash\" transformation to the<br>" +
 	                        		"selected objects, compressing along a red axis.  To create<br>" +
@@ -294,7 +295,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	                        		"you can right-click after creating the tool, to configure it.<br>" +
 	                		"</p>" );
 	                firstToolbar .add( button );
-	                button = newToolButton( enabler, "redstretch1", "Create a weak red stretch tool",
+	                button = newToolButton( toolsController, "redstretch1", "Create a weak red stretch tool",
 	                		"<p>" +
 	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
 	                        		"selected objects, stretching along a red axis.  To create<br>" +
@@ -313,7 +314,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	                		"</p>" );
 	                firstToolbar .add( button );
 	                
-	                button = newToolButton( enabler, "yellowsquash", "Create a yellow squash tool",
+	                button = newToolButton( toolsController, "yellowsquash", "Create a yellow squash tool",
 	                		"<p>" +
 	                        		"Each tool applies a \"squash\" transformation to the<br>" +
 	                        		"selected objects, compressing along a yellow axis.  To create<br>" +
@@ -330,7 +331,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	                        		"you can right-click after creating the tool, to configure it.<br>" +
 	                		"</p>" );
 	                firstToolbar .add( button );
-	                button = newToolButton( enabler, "yellowstretch", "Create a yellow stretch tool",
+	                button = newToolButton( toolsController, "yellowstretch", "Create a yellow stretch tool",
 	                		"<p>" +
 	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
 	                        		"selected objects, stretching along a yellow axis.  To create<br>" +
@@ -349,7 +350,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	                		"</p>" );
 	                firstToolbar .add( button );
 	                
-	                button = newToolButton( enabler, "redsquash2", "Create a strong red squash tool",
+	                button = newToolButton( toolsController, "redsquash2", "Create a strong red squash tool",
 	                		"<p>" +
 	                        		"Each tool applies a \"squash\" transformation to the<br>" +
 	                        		"selected objects, compressing along a red axis.  To create<br>" +
@@ -367,7 +368,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	                        		"you can right-click after creating the tool, to configure it.<br>" +
 	                		"</p>" );
 	                firstToolbar .add( button );
-	                button = newToolButton( enabler, "redstretch2", "Create a strong red stretch tool",
+	                button = newToolButton( toolsController, "redstretch2", "Create a strong red stretch tool",
 	                		"<p>" +
 	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
 	                        		"selected objects, stretching along a red axis.  To create<br>" +
@@ -387,7 +388,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	                firstToolbar .add( button );
 	            }
                 
-                button = newToolButton( enabler, "linear map", "Create a linear map tool",
+                button = newToolButton( toolsController, "linear map", "Create a linear map tool",
                 		"<p>" +
                         		"<b>For experts and Linear Algebra students...</b><br>" +
                         		"<br>" +
@@ -422,8 +423,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         		button .setEnabled( on );
                 bookmarkBar .add( button );
                 bookmarkBar .addSeparator();
-
-                final Controller toolsController = controller .getSubController( "tools" );
 
                 addBookmark( toolsController .getSubController( "bookmark.builtin/ball at origin" ) );
 
@@ -645,16 +644,33 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		bookmarkBar .add( button );
 	}
 	
-	private AbstractButton newToolButton( ControlActions enabler, String group, String title, String helpHtml )
+	private AbstractButton newToolButton( Controller toolsController, String group, String title, String helpHtml )
 	{
 		String iconPath = "/icons/tools/newTool/" + group + ".png";
 		String html = "<html><img src=\"" + ModelPanel.class.getResource( iconPath ) + "\">&nbsp;&nbsp;<b>" + title
 					+ "</b><br><br>" + helpHtml + "</html>";
 		final JButton button = makeEditButton2( html, iconPath );
-		enabler .setButtonAction( "addTool-" + group, button );
+		button .setActionCommand( "createTool" );
+		Controller buttonController = toolsController .getSubController( group );
+		button .addActionListener( buttonController );
+		button .setEnabled( buttonController != null && buttonController .propertyIsTrue( "enabled" ) );
+		if ( buttonController != null )
+			buttonController .addPropertyListener( new PropertyChangeListener()
+			{
+				@Override
+				public void propertyChange( PropertyChangeEvent evt )
+				{
+					switch ( evt .getPropertyName() ) {
+
+					case "enabled":
+						button .setEnabled( (Boolean) evt .getNewValue() );
+						break;
+					}
+				}
+			});
+		else
+			System .out .println( "no controller for tool Factory: " + group );
 		this .toolCreationButtons .put( group, button );
-		boolean on = this .controller .propertyIsTrue( "tool.enabled." + group );
-		button .setEnabled( on );
 		return button;
 	}
 	
@@ -712,14 +728,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	{
 		switch ( e .getPropertyName() ) {
 		
-		case "tools.enabled":
-			// selection changed, update button states
-			for ( Entry<String, AbstractButton> entry : this .toolCreationButtons .entrySet() ) {
-				boolean on = this .controller .propertyIsTrue( "tool.enabled." + entry .getKey() );
-				entry .getValue() .setEnabled( on );
-			}
-			break;
-
 		case "editor.mode":
 	        if ( isEditor )
 	        {

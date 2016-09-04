@@ -376,20 +376,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         system = cmd .substring( "setSymmetry.".length() );
                         mController .actionPerformed( e ); // TODO getExclusiveAction
                     }
-                    else if ( cmd .startsWith( "addTool-" ) )
-                    {
-                		String group = cmd .substring( "addTool-" .length() );
-                        String toolNumStr = toolsController .getProperty( "next.tool.number" );
-                        int toolNum = Integer .parseInt( toolNumStr );
-                		String toolId = group + "." + toolNum;
-//                    	String toolName = (String) JOptionPane .showInputDialog( (Component) e .getSource(),
-//                    			"Name the new tool:", "New Tool",
-//                    					JOptionPane.PLAIN_MESSAGE, null, null, toolId );
-//                    	if ( ( toolName == null ) || ( toolName .length() == 0 ) ) {
-//                    		return;
-//                    	}
-                        mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "newTool/" + toolId + "/" + toolId ) );
-                	}
                     else if ( cmd .startsWith( "showProperties-" ) )
                     {
             			String key = cmd .substring( "showProperties-" .length() );
@@ -782,9 +768,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         			actionListener = this .mController;
         		}
         		else if ( command .startsWith( "setSymmetry." ) ) {
-        			actionListener = this .localActions;
-        		}
-        		else if ( command .startsWith( "addTool-" ) ) {
         			actionListener = this .localActions;
         		}
         		else if ( command .startsWith( "showProperties-" ) ) {

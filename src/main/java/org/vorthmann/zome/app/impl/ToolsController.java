@@ -13,40 +13,62 @@ import org.vorthmann.ui.DefaultController;
 
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.Tool;
+import com.vzome.core.editor.ToolFactory;
 
 public class ToolsController extends DefaultController implements PropertyChangeListener
 {
 	private final DocumentModel tools;  // TODO this should be a ToolsModel
-	private final Map<String,Controller> subcontrollers = new TreeMap<>();
+	private final Map<String,Controller> toolControllers = new TreeMap<>();
+	private final Map<String,Controller> factoryControllers = new TreeMap<>();
 
     public ToolsController( DocumentModel tools )
     {
 		super();
 		
-		this.tools = tools;
+		this .tools = tools;
 		tools .addPropertyChangeListener( this );
 	}
 
 	@Override
 	public Controller getSubController( String name )
 	{
-		Controller subc = this .subcontrollers .get( name );
+		Controller subc = this .toolControllers .get( name );
 		if ( subc != null )
 			return subc;
-        Tool tool = tools .getTool( name );
-        if ( tool == null )
-        	return null;
+		subc = this .factoryControllers .get( name );
+		if ( subc != null )
+			return subc;
+
+		Tool tool = tools .getTool( name );
+        if ( tool != null ) {
+            Controller controller = new ToolController( tool, tools );
+            controller .setNextController( this );
+    		toolControllers .put( name, controller );
+    		return controller;
+        }
+        ToolFactory factory = tools .getToolFactory( name );
+        if ( factory != null ) {
+        	Controller controller = new ToolFactoryController( factory, this );
+            controller .setNextController( this );
+            factoryControllers .put( name, controller );
+    		return controller;
+        }
+        return null;
+	}
+	
+	void addTool( Tool tool )
+	{
         Controller controller = new ToolController( tool, tools );
         controller .setNextController( this );
-		subcontrollers .put( name, controller );
-		return controller;
+		toolControllers .put( tool .getName(), controller );
+		this .properties() .firePropertyChange( new PropertyChangeEvent( this, "tool.added", null, controller ) );
 	}
 
     @Override
     public String[] getCommandList( String listName )
     {
         if ( "tool.instances" .equals( listName ) )
-            return (String[]) subcontrollers .keySet() .toArray();
+            return (String[]) toolControllers .keySet() .toArray();
 
         return super .getCommandList( listName );
     }
@@ -65,10 +87,6 @@ public class ToolsController extends DefaultController implements PropertyChange
     		this .properties() .firePropertyChange( new PropertyChangeEvent( this, "tool.added", null, controller ) );
 			break;
 			
-		case "tools.enabled":
-    		this .properties() .firePropertyChange( evt ); // propagate to the UI
-			break;
-
 		default:
 			break;
 		}
@@ -80,7 +98,7 @@ public class ToolsController extends DefaultController implements PropertyChange
 		switch (name) {
 
 		case "next.tool.number":
-			return "" + subcontrollers .size();
+			return "" + toolControllers .size();
 
 		default:
 			return super .getProperty( name );

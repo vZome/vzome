@@ -658,24 +658,6 @@ public class DocumentController extends DefaultController implements J3dComponen
                         
             // mainScene is not listening to mRenderedModel yet, so batch the rendering changes to it
             this .syncRendering();
-            
-            this .documentModel .addSelectionListener( new ManifestationChanges()
-            {
-                @Override
-                public void manifestationRemoved( Manifestation man )
-                {
-                    properties() .firePropertyChange( "tools.enabled", null, null );
-                }
-                
-                @Override
-                public void manifestationColored(Manifestation arg0, Color arg1) {}
-                
-                @Override
-                public void manifestationAdded( Manifestation man )
-                {
-                    properties() .firePropertyChange( "tools.enabled", null, null );
-                }
-            });
             return;
         }
         
@@ -856,19 +838,6 @@ public class DocumentController extends DefaultController implements J3dComponen
                 for ( Direction orbit : usedOrbits ) {
                     symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
                 }
-            }
-            else if ( action.startsWith( "newTool/" ) )
-            {
-                String name = action .substring( "newTool/" .length() );
-                int nextDot = name .indexOf( "." );
-                String group = name .substring( 0, nextDot );
-                
-                Symmetry symmetry = symmetryController.getSymmetry();
-                if ( "icosahedral" .equals( group ) )
-                    // no longer supporting no-axis octahedral when in icosahedral mode
-                    symmetry = getSymmetryController( group ) .getSymmetry();
-                
-                documentModel .createTool( name, group, documentModel, symmetry );
             }
             
 // This was an experiment, to see if the applyQuaternionSymmetry() approach was workable.
@@ -1331,17 +1300,6 @@ public class DocumentController extends DefaultController implements J3dComponen
             String group = string .substring( "supports.symmetry." .length() );
             Symmetry symm = this .documentModel .getField() .getSymmetry( group );
             return Boolean .toString(symm != null);
-        }
-        
-        if ( string .startsWith( "tool.enabled." ) )
-        {
-            String group = string .substring( "tool.enabled." .length() );
-            
-            Symmetry symmetry = symmetryController .getSymmetry();
-            if ( "icosahedral" .equals( group ) )
-                symmetry = getSymmetryController( group ) .getSymmetry();
-            
-            return Boolean .toString( this .documentModel .isToolEnabled( group, symmetry ) );
         }
         
         if ( "clipboard" .equals( string ) )
