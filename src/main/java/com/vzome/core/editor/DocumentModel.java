@@ -197,7 +197,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			makeTool( "point reflection.builtin/reflection through origin", "point reflection", this, symmetry ) .perform();
 			makeTool( "scaling.builtin/scale up", "scale up", this, symmetry ) .perform();
 			makeTool( "scaling.builtin/scale down", "scale down", this, symmetry ) .perform();
-			makeTool( "translation.builtin/move right", "translation", this, symmetry ) .perform();
+			makeTool( "translation.builtin/b1 move along +X", "translation", this, symmetry ) .perform();
 			makeTool( "mirror.builtin/reflection through XY plane", "mirror", this, symmetry ) .perform();
 			makeTool( "bookmark.builtin/ball at origin", "bookmark", this, symmetry ) .perform();
 			if ( symmetry instanceof IcosahedralSymmetry ) {
@@ -214,6 +214,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		// the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
 		this .mEditorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint, symmetrySystem );
 		
+		this .toolFactories .put( "bookmark", new BookmarkTool.Factory( mEditorModel, this ) );
 		this .toolFactories .put( "linear map", new LinearMapTool.Factory( mEditorModel, this ) );
 		this .toolFactories .put( "translation", new TranslationTool.Factory( mEditorModel, this ) );
 		this .toolFactories .put( "point reflection", new InversionTool.Factory( mEditorModel, this ) );
@@ -514,6 +515,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			//   constructing UndoableEdits.
 			((TransformationTool) edit) .setRegistry( this );
 		}
+        else if ( edit instanceof BookmarkTool )
+        	((BookmarkTool) edit) .setRegistry( this );
 		
 		return edit;
 	}
@@ -1358,6 +1361,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		}
         if ( edit instanceof TransformationTool )
         	((TransformationTool) edit) .setRegistry( this );
+        else if ( edit instanceof BookmarkTool )
+        	((BookmarkTool) edit) .setRegistry( this );
         return edit;
 	}
 

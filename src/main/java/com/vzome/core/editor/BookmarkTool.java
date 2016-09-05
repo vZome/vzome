@@ -16,7 +16,33 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
 public class BookmarkTool extends ChangeManifestations implements Tool
-{
+{    
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			super( model, context );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total > 0 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new BookmarkTool( "bookmark." + index, getSelection(), getModel(), null );
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			return true;
+		}
+	}
+
     private String name;
     
     private final List<Construction> bookmarkedConstructions = new ArrayList<>();
@@ -77,7 +103,8 @@ public class BookmarkTool extends ChangeManifestations implements Tool
 
     protected void defineTool()
     {
-		tools .addTool( this );
+    	if ( tools != null )
+    		tools .addTool( this );
     }
 
     @Override
@@ -158,5 +185,10 @@ public class BookmarkTool extends ChangeManifestations implements Tool
 	public boolean isValidForSelection()
 	{
 		return ! this .mSelection .isEmpty();
+	}
+
+	public void setRegistry( Tool.Registry registry )
+	{
+		this .tools = registry;
 	}
 }

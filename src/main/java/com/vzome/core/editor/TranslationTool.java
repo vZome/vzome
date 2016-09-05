@@ -100,7 +100,7 @@ public class TranslationTool extends TransformationTool
         
         if ( p1 == null )
         {
-            if ( isAutomatic() || this .getName() .equals( "translation.builtin/move right" ) )
+            if ( isAutomatic() || this .getName() .startsWith( "translation.builtin/" ) )
             {
                 p1 = originPoint;
         		this .addParameter( p1 );
