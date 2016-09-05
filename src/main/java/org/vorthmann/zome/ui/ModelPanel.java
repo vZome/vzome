@@ -416,11 +416,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 this .secondScroller .setBorder( null );
                 monoStereoPlusToolbar .add( this .secondScroller, BorderLayout .NORTH );
 
-                button = makeEditButton2( "Create a selection bookmark", "/icons/tools/newTool/bookmark.png" );
-        		button = enabler .setButtonAction( "addBookmark", button );
-        		this .toolCreationButtons .put( "bookmark", button );
-        		boolean on = this .controller .propertyIsTrue( "tool.enabled.bookmark" );
-        		button .setEnabled( on );
+                button = newBookmarkButton( toolsController );
                 bookmarkBar .add( button );
                 bookmarkBar .addSeparator();
 
@@ -461,7 +457,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 addTool( toolsController .getSubController( "scaling.builtin/scale down" ) );
                 addTool( toolsController .getSubController( "scaling.builtin/scale up" ) );
                 addTool( toolsController .getSubController( "rotation.builtin/rotate around red through origin" ) );
-                addTool( toolsController .getSubController( "translation.builtin/move right" ), "b1 move along +X" );
+                addTool( toolsController .getSubController( "translation.builtin/b1 move along +X" ) );
                
                 secondToolbar .addSeparator();
 
@@ -671,6 +667,36 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		else
 			System .out .println( "no controller for tool Factory: " + group );
 		this .toolCreationButtons .put( group, button );
+		return button;
+	}
+	
+	private AbstractButton newBookmarkButton( Controller toolsController )
+	{
+		String iconPath = "/icons/tools/newTool/bookmark.png";
+		String html = "<html><img src=\"" + ModelPanel.class.getResource( iconPath ) + "\">&nbsp;&nbsp;<b>" + "Create a selection bookmark"
+					+ "</b><br><br>A selection bookmark lets you re-create<br>any selection at a later time.</html>";
+		final JButton button = makeEditButton2( html, iconPath );
+		button .setActionCommand( "createTool" );
+		Controller buttonController = toolsController .getSubController( "bookmark" );
+		button .addActionListener( buttonController );
+		button .setEnabled( buttonController != null && buttonController .propertyIsTrue( "enabled" ) );
+		if ( buttonController != null )
+			buttonController .addPropertyListener( new PropertyChangeListener()
+			{
+				@Override
+				public void propertyChange( PropertyChangeEvent evt )
+				{
+					switch ( evt .getPropertyName() ) {
+
+					case "enabled":
+						button .setEnabled( (Boolean) evt .getNewValue() );
+						break;
+					}
+				}
+			});
+		else
+			System .out .println( "no controller for tool Factory: bookmark" );
+		this .toolCreationButtons .put( "bookmark", button );
 		return button;
 	}
 	
