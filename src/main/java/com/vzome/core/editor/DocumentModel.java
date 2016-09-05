@@ -221,6 +221,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		this .toolFactories .put( "scaling", new ScalingTool.Factory( mEditorModel, this ) );
 		this .toolFactories .put( "rotation", new RotationTool.Factory( mEditorModel, this ) );
 		this .toolFactories .put( "axial symmetry", new AxialSymmetryToolFactory( mEditorModel, this ) );
+		this .toolFactories .put( "octahedral", new OctahedralToolFactory( mEditorModel, this ) );
+		this .toolFactories .put( "tetrahedral", new TetrahedralToolFactory( mEditorModel, this ) );
 		if ( symmetry instanceof IcosahedralSymmetry ) {
 			this .toolFactories .put( "icosahedral", new IcosahedralToolFactory( mEditorModel, this, (IcosahedralSymmetry) symmetry ) );
 			this .toolFactories .put( "redstretch1", new AxialStretchTool.Factory( mEditorModel, this, true, true, true ) );
@@ -455,10 +457,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new PlaneSelectionTool( null, mSelection, mField, this );
 			break;
 		case "SymmetryTool":
-			edit = new SymmetryTool( null, null, this.mSelection, this.mRealizedModel, this, this.originPoint );
+			edit = new SymmetryTool( null, null, this.mSelection, this.mRealizedModel, this.originPoint );
 			break;
 		case "ScalingTool":
-			edit = new ScalingTool( name, null, this.mSelection, this.mRealizedModel, this, this.originPoint );
+			edit = new ScalingTool( name, null, this.mSelection, this.mRealizedModel, this.originPoint );
 			break;
 		case "RotationTool":
 			edit = new RotationTool( name, null, this.mSelection, this.mRealizedModel, this.originPoint );
@@ -506,6 +508,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		if ( edit == null )
 			// any command unknown (i.e. from a newer version of vZome) becomes a CommandEdit
 			edit = new CommandEdit( null, mEditorModel, groupInSelection );
+		else if ( edit instanceof TransformationTool ) {
+			// This is a bit of a hack, but it avoids passing the hated Tool.Registry parameter everywhere.
+			//   I consider this a stop-gap measure, until I can refactor the whole approach to
+			//   constructing UndoableEdits.
+			((TransformationTool) edit) .setRegistry( this );
+		}
 		
 		return edit;
 	}
@@ -1303,16 +1311,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, originPoint, true );
 			break;
 		case "scaling":
-			edit = new ScalingTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
+			edit = new ScalingTool( name, symmetry, mSelection, mRealizedModel, originPoint );
 			break;
 		case "scale up":
-			edit = new ScalingTool( name, tools, getField() .createPower( 1 ), originPoint );
+			edit = new ScalingTool( name, getField() .createPower( 1 ), originPoint );
 			break;
 		case "scale down":
-			edit = new ScalingTool( name, tools, getField() .createPower( -1 ), originPoint );
+			edit = new ScalingTool( name, getField() .createPower( -1 ), originPoint );
 			break;
 		case "tetrahedral":
-			edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
+			edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, originPoint );
 			break;
 		case "module":
 			edit = new ModuleTool( name, mSelection, mRealizedModel, tools );
@@ -1345,9 +1353,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, false, true, false );
 			break;
 		default:
-			edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, tools, originPoint );
+			edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, originPoint );
 			break;
 		}
+        if ( edit instanceof TransformationTool )
+        	((TransformationTool) edit) .setRegistry( this );
         return edit;
 	}
 

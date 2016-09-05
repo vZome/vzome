@@ -44,9 +44,9 @@ public class TranslationTool extends TransformationTool
 		}
 
 		@Override
-		protected boolean bindParameters(Selection selection, SymmetrySystem symmetry) {
-			// TODO Auto-generated method stub
-			return false;
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			return true;
 		}
 	}
 

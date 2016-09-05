@@ -27,9 +27,9 @@ public class SymmetryTool extends TransformationTool
 {
     protected Symmetry symmetry;
     
-    public SymmetryTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    public SymmetryTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint )
     {
-        super( name, selection, realized, tools, originPoint );
+        super( name, selection, realized, null, originPoint );
         this.symmetry = symmetry;
     }
     

@@ -44,7 +44,7 @@ public class ScalingTool extends SymmetryTool
 		@Override
 		public Tool createToolInternal( int index )
 		{
-			return new ScalingTool( "scaling." + index, null, getSelection(), getModel(), null, null );
+			return new ScalingTool( "scaling." + index, null, getSelection(), getModel(), null );
 		}
 
 		@Override
@@ -62,15 +62,15 @@ public class ScalingTool extends SymmetryTool
         return "scaling";
     }
     
-    public ScalingTool( String name, Tool.Registry tools, AlgebraicNumber scaleFactor, Point originPoint )
+    public ScalingTool( String name, AlgebraicNumber scaleFactor, Point originPoint )
     {
-    	super( name, null, null, null, tools, originPoint );
+    	super( name, null, null, null, originPoint );
     	this .scaleFactor = scaleFactor;
     }
 
-    public ScalingTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    public ScalingTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint )
     {
-        super( name, symmetry, selection, realized, tools, originPoint );
+        super( name, symmetry, selection, realized, originPoint );
         this .scaleFactor = null;
     }
 

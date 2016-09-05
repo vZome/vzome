@@ -21,7 +21,7 @@ public class IcosahedralToolFactory extends AbstractToolFactory implements ToolF
 	@Override
 	public Tool createToolInternal( int index )
 	{
-		return new SymmetryTool( "icosahedral." + index, symmetry, getSelection(), getModel(), null, null );
+		return new SymmetryTool( "icosahedral." + index, symmetry, getSelection(), getModel(), null );
 	}
 
 	@Override

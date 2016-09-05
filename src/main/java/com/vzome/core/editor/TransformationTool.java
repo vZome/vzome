@@ -83,7 +83,7 @@ public abstract class TransformationTool extends ChangeManifestations implements
     
     protected Transformation[] transforms;
     
-    private final Tool.Registry tools;
+    private Tool.Registry tools;
     
     protected Point originPoint;
     
@@ -215,5 +215,10 @@ public abstract class TransformationTool extends ChangeManifestations implements
 	List<Construction> getParameters()
 	{
 		return this .parameters;
+	}
+
+	public void setRegistry( Tool.Registry registry )
+	{
+		this .tools = registry;
 	}
 }

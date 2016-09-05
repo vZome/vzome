@@ -38,9 +38,10 @@ public class LinearMapTool extends TransformationTool
 		}
 
 		@Override
-		protected boolean bindParameters(Selection selection, SymmetrySystem symmetry) {
-			// TODO Auto-generated method stub
-			return false;
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			// TODO check for linear independence
+			return true;
 		}
 	}
 

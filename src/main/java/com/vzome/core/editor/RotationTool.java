@@ -115,7 +115,7 @@ public class RotationTool extends SymmetryTool
      */
     public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint, boolean full )
     {
-        super( name, symmetry, selection, realized, null, originPoint );
+        super( name, symmetry, selection, realized, originPoint );
         this .fullRotation = full;
         this .corrected = true;
     }
