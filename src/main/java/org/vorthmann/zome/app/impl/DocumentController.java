@@ -697,8 +697,22 @@ public class DocumentController extends DefaultController implements J3dComponen
             } else if ( action.equals( "redoAll" ) ) {
                 this .documentModel .redoAll( - 1 );
             } else if ( action.startsWith( "redoUntilEdit." ) ) {
-                String editNum = action .substring( "redoUntilEdit.".length() );
-                this .documentModel .redoAll( Integer.parseInt( editNum ) );
+                String editNum = action .substring( "redoUntilEdit.".length() ).trim();
+                // editNum will be "null" if user canceled the numeric input dialog
+                // We'll also treat an empty string the same as canceling
+                if(! (editNum.equals("null") || editNum.equals("") ) ) {
+                    int eNum = -1;
+                    try {
+                        eNum = Integer.parseInt( editNum );
+                    } catch (Exception ex) {
+                        mErrors.reportError( "'" + editNum + "' is not a valid integer. Edit number must be a positive integer.", new Object[] {} );
+                    }
+                    if(eNum <= 0) {
+                        mErrors.reportError( "Edit number must be a positive integer.", new Object[] {} );
+                    } else {
+                        this.documentModel.redoAll(eNum);
+                    }
+                }
             }
             else if ( action .equals( "switchToArticle" ) )
             {
