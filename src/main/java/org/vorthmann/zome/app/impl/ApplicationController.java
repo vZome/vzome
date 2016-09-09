@@ -263,7 +263,11 @@ public class ApplicationController extends DefaultController
                     // creating a new Document
                     Properties docProps = new Properties();
                     docProps .setProperty( "new.document", "true" );
+                    if ( logger .isLoggable( Level .INFO ) )
+                        logger .info( "about to create a document" );
                     DocumentModel document = modelApp .createDocument( fieldName );
+                    if ( logger .isLoggable( Level .INFO ) )
+                        logger .info( "created the document" );
                     String title = "Untitled " + ++lastUntitled;
                     docProps .setProperty( "window.title", title );
                     docProps .setProperty( "edition", this .properties .getProperty( "edition" ) );
@@ -271,6 +275,8 @@ public class ApplicationController extends DefaultController
                     docProps .setProperty( "buildNumber", this .properties .getProperty( "buildNumber" ) );
                     docProps .setProperty( "gitCommit", this .properties .getProperty( "gitCommit" ) );
                     DocumentController newest = new DocumentController( document, this, docProps );
+                    if ( logger .isLoggable( Level .INFO ) )
+                        logger .info( "Created the DocumentController" );
                     newDocumentController( title, newest );
                 }
             }

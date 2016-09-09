@@ -12,8 +12,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.SwingWorker;
 
 
 /**
@@ -25,7 +28,7 @@ import java.util.logging.Logger;
  */
 public abstract class ExclusiveAction implements ActionListener
 {
-    public static class Excluder
+    public static class Excluder<V>
     {
         private final List<Component> mListeners = new ArrayList<>(40);
         
@@ -43,10 +46,10 @@ public abstract class ExclusiveAction implements ActionListener
         	return this.busy;
         }
         
-        public void grab( SwingWorker worker )
+        public <T> void grab( SwingWorker<T, V> worker )
         {
             grab();
-            worker .start();
+            worker .execute();
         }
 
         public void grab()
@@ -109,11 +112,25 @@ public abstract class ExclusiveAction implements ActionListener
     		return;
     	}
     	
-        final SwingWorker worker = new SwingWorker()
+        final SwingWorker<Exception, Object> worker = new SwingWorker<Exception, Object>()
         {            
             @Override
-            public Object construct()
+            public void done()
             {
+            	Exception error;
+				try {
+					error = get();
+	                if ( error != null )
+	                    showError( error );
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+                mExcluder .release();
+            }
+
+			@Override
+			protected Exception doInBackground() throws Exception
+			{
                 try {
                     doAction( e );
                     return null;
@@ -121,15 +138,6 @@ public abstract class ExclusiveAction implements ActionListener
                     logger .log( Level.INFO, e .getMessage(), e );
                     return e;
                 }
-            }
-            
-            @Override
-            public void finished()
-            {
-                Object error = get();
-                if ( error != null )
-                    showError( (Exception) error );
-                mExcluder .release();
             }
         };
         mExcluder .grab( worker );

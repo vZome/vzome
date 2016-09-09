@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -33,8 +32,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	private static final String TOOLTIP_PREFIX = "<html><b>";
 	private static final String TOOLTIP_SUFFIX = "</b><br><br><p>Right-click to configure this tool.</p></html>";
 
-	private final Component monocularCanvas, leftEyeCanvas, rightEyeCanvas;
-    private MouseListener monocularClicks, leftEyeClicks, rightEyeClicks;
+	private final Component monocularCanvas; //, leftEyeCanvas, rightEyeCanvas;
+    private MouseListener monocularClicks; //, leftEyeClicks, rightEyeClicks;
     private final JToolBar oldToolBar, firstToolbar, secondToolbar, bookmarkBar; // TODO these don't need to be fields
     private final JScrollPane firstScroller, secondScroller, bookmarkScroller;
     private final boolean isEditor;
@@ -51,8 +50,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         this .isEditor = isEditor;
         
         Controller monoController = controller .getSubController( "monocularPicking" );
-        Controller leftController = controller .getSubController( "leftEyePicking" );
-        Controller rightController = controller .getSubController( "rightEyePicking" );
+//        Controller leftController = controller .getSubController( "leftEyePicking" );
+//        Controller rightController = controller .getSubController( "rightEyePicking" );
         
         controller .addPropertyListener( this );
 
@@ -73,19 +72,19 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
             mMonocularPanel .add( monocularCanvas, BorderLayout.CENTER );
         }
         monoStereoPanel .add( mMonocularPanel, "mono" );
-        JPanel stereoPanel = new JPanel();
-        {
-            GridLayout grid = new GridLayout( 1, 2 );
-            stereoPanel .setLayout( grid );
-            leftEyeCanvas = ( (J3dComponentFactory) controller ) .createJ3dComponent( "mainViewer-leftEye" );
-            stereoPanel .add( leftEyeCanvas );
-            rightEyeCanvas = ( (J3dComponentFactory) controller ) .createJ3dComponent( "mainViewer-rightEye" );
-            stereoPanel .add( rightEyeCanvas );
-        }
-        monoStereoPanel .add( stereoPanel, "stereo" );
-        if ( showStereo )
-            monoStereoCardLayout .show( monoStereoPanel, "stereo" );
-        else
+//        JPanel stereoPanel = new JPanel();
+//        {
+//            GridLayout grid = new GridLayout( 1, 2 );
+//            stereoPanel .setLayout( grid );
+//            leftEyeCanvas = ( (J3dComponentFactory) controller ) .createJ3dComponent( "mainViewer-leftEye" );
+//            stereoPanel .add( leftEyeCanvas );
+//            rightEyeCanvas = ( (J3dComponentFactory) controller ) .createJ3dComponent( "mainViewer-rightEye" );
+//            stereoPanel .add( rightEyeCanvas );
+//        }
+//        monoStereoPanel .add( stereoPanel, "stereo" );
+//        if ( showStereo )
+//            monoStereoCardLayout .show( monoStereoPanel, "stereo" );
+//        else
             monoStereoCardLayout .show( monoStereoPanel, "mono" );
         view .addPropertyListener( new PropertyChangeListener()
         {
@@ -559,11 +558,11 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
             }
 
             monocularClicks = new ContextualMenuMouseListener( monoController , new PickerContextualMenu( monoController, enabler, "monocular" ) );
-            leftEyeClicks = new ContextualMenuMouseListener( leftController , new PickerContextualMenu( leftController, enabler, "leftEye" ) );
-            rightEyeClicks = new ContextualMenuMouseListener( rightController , new PickerContextualMenu( rightController, enabler, "rightEye" ) );
+//            leftEyeClicks = new ContextualMenuMouseListener( leftController , new PickerContextualMenu( leftController, enabler, "leftEye" ) );
+//            rightEyeClicks = new ContextualMenuMouseListener( rightController , new PickerContextualMenu( rightController, enabler, "rightEye" ) );
             monocularCanvas .addMouseListener( monocularClicks );
-            leftEyeCanvas .addMouseListener( leftEyeClicks );
-            rightEyeCanvas .addMouseListener( rightEyeClicks );
+//            leftEyeCanvas .addMouseListener( leftEyeClicks );
+//            rightEyeCanvas .addMouseListener( rightEyeClicks );
         }
         else {
         	this .oldToolBar = null;
@@ -764,8 +763,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	            	this .secondScroller .setVisible( false );
 	            	this .bookmarkScroller .setVisible( false );
 	                monocularCanvas .removeMouseListener( monocularClicks );
-	                leftEyeCanvas .removeMouseListener( leftEyeClicks );
-	                rightEyeCanvas .removeMouseListener( rightEyeClicks );
+//	                leftEyeCanvas .removeMouseListener( leftEyeClicks );
+//	                rightEyeCanvas .removeMouseListener( rightEyeClicks );
 	            }
 	            else if ( ! "true" .equals( this .controller .getProperty( "no.toolbar" ) ) ) {
 	            	if ( this .oldToolBar != null )
@@ -774,8 +773,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	            	this .secondScroller .setVisible( true );
 	            	this .bookmarkScroller .setVisible( true );
 	                monocularCanvas .addMouseListener( monocularClicks );
-	                leftEyeCanvas .addMouseListener( leftEyeClicks );
-	                rightEyeCanvas .addMouseListener( rightEyeClicks );
+//	                leftEyeCanvas .addMouseListener( leftEyeClicks );
+//	                rightEyeCanvas .addMouseListener( rightEyeClicks );
 	            }
 	        }
 			break;

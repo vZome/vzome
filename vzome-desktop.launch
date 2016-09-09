@@ -16,5 +16,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.vzome.platform.mac.Adapter"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-entitlement.model.edit true -entitlement.lesson.edit true -entitlement.all.tools true -licensed.user Nobody"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="vzome-desktop"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx3048M -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true -Djava.util.logging.config.file=logging.properties -Djava.ext.dirs=$JAVA_HOME"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx3048M -Dapple.laf.useScreenMenuBar=true -Dapple.awt.antialiasing=true -Djava.util.logging.config.file=logging.properties -Djava.ext.dirs=$JAVA_HOME -splash:src/main/resources/org/vorthmann/zome/ui/vZome-6-splash.png"/>
 </launchConfiguration>

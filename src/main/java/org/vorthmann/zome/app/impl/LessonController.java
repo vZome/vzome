@@ -9,8 +9,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.StringTokenizer;
 
+import javax.swing.SwingWorker;
+
 import org.vorthmann.ui.DefaultController;
-import org.vorthmann.ui.SwingWorker;
 
 import com.vzome.core.editor.LessonModel;
 import com.vzome.core.editor.Snapshot;
@@ -210,11 +211,11 @@ public class LessonController extends DefaultController
 
     public void renderThumbnails( final Snapshot.Recorder recorder, final ThumbnailRenderer renderer )
     {
-        SwingWorker worker = new SwingWorker()
+        SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>()
         {
-            @Override
-            public Object construct()
-            {
+			@Override
+			protected Object doInBackground() throws Exception
+			{
                 synchronized ( renderer )
                 {
                     for (int i = 0; i < model .size(); i++)
@@ -223,10 +224,8 @@ public class LessonController extends DefaultController
                     }
                 }
                 return null;
-            };
-            @Override
-            public void finished() {}
+            }
         };
-        worker .start();  //Start the background thread
+        worker .execute();  //Start the background thread
     }
 }

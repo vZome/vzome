@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -154,7 +155,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private MouseTool lessonPageClick, articleModeMainTrackball, modelModeMainTrackball;
 
-    private final Component modelCanvas, leftEyeCanvas, rightEyeCanvas;
+    private final Component modelCanvas; //, leftEyeCanvas, rightEyeCanvas;
 
     private MouseTool selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
 
@@ -162,7 +163,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private int changeCount = 0;
 
-    private final PickingController monoController, leftController, rightController;
+    private final PickingController monoController; //, leftController, rightController;
         
    /*
      * See the javadoc to control the logging:
@@ -199,12 +200,18 @@ public class DocumentController extends DefaultController implements J3dComponen
                 ? new ClipboardController()
                 : null;
         
+        System.out.println( "ToolsController" );
+                
         toolsController = new ToolsController( document );
         toolsController .setNextController( this );
         this .addPropertyListener( toolsController );
         
+        System.out.println( "PolytopesController" );
+        
         polytopesController = new PolytopesController( this .documentModel );
         polytopesController .setNextController( this );
+        
+        System.out.println( "RenderedModel" );
         
         mRenderedModel = new RenderedModel( this .documentModel .getField(), true );
         currentSnapshot = mRenderedModel;
@@ -281,6 +288,8 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
 
+        System.out.println( "CameraController" );
+        
         // this seems backwards, I know... the TrackballViewPlatformModel is the main
         // model, and only forwards two events to trackballVPM
         mViewPlatform = new CameraController( document .getViewModel() );
@@ -291,26 +300,34 @@ public class DocumentController extends DefaultController implements J3dComponen
         showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
+        System.out.println( "mainScene" );
+        
         RenderingViewer.Factory rvFactory = app .getJ3dFactory();
         mainScene = rvFactory .createRenderingChanges( sceneLighting, true, this );
         this .addPropertyListener( (PropertyChangeListener) mainScene );
 
+        System.out.println( "modelCanvas" );
+        
         modelCanvas = rvFactory .createJ3dComponent( "" ); // name not relevant there
         imageCaptureViewer = rvFactory.createRenderingViewer( mainScene, modelCanvas );
         mViewPlatform .addViewer( imageCaptureViewer );
         monoController = new PickingController( imageCaptureViewer, this );
         
-        leftEyeCanvas = rvFactory .createJ3dComponent( "" );
-        RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
-        mViewPlatform .addViewer( viewer );
-        viewer .setEye( RenderingViewer .LEFT_EYE );
-        leftController = new PickingController( viewer, this );
-
-        rightEyeCanvas = rvFactory .createJ3dComponent( "" );
-        viewer = rvFactory .createRenderingViewer( mainScene, rightEyeCanvas );
-        mViewPlatform .addViewer( viewer );
-        viewer .setEye( RenderingViewer .RIGHT_EYE );
-        rightController = new PickingController( viewer, this );
+//        System.out.println( "leftEyeCanvas" );
+//        
+//        leftEyeCanvas = rvFactory .createJ3dComponent( "" );
+//        RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
+//        mViewPlatform .addViewer( viewer );
+//        viewer .setEye( RenderingViewer .LEFT_EYE );
+//        leftController = new PickingController( viewer, this );
+//
+//        System.out.println( "rightEyeCanvas" );
+//        
+//        rightEyeCanvas = rvFactory .createJ3dComponent( "" );
+//        viewer = rvFactory .createRenderingViewer( mainScene, rightEyeCanvas );
+//        mViewPlatform .addViewer( viewer );
+//        viewer .setEye( RenderingViewer .RIGHT_EYE );
+//        rightController = new PickingController( viewer, this );
 
             // TODO define a standalone controller class for contextual menus, etc.
         Controller controlBallProps = new DefaultController()
@@ -336,8 +353,12 @@ public class DocumentController extends DefaultController implements J3dComponen
             }
         };
         controlBallProps .setNextController( this );
+        System.out.println( "mControlBallScene" );
+        
         mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, controlBallProps );
 
+        System.out.println( "ThumbnailRendererImpl" );
+        
         thumbnails = new ThumbnailRendererImpl( rvFactory, sceneLighting );
 
         mApp = app;
@@ -345,9 +366,13 @@ public class DocumentController extends DefaultController implements J3dComponen
         AlgebraicField field = this .documentModel .getField();
         previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
         
+        System.out.println( "LessonController" );
+        
         lessonController = new LessonController( this .documentModel .getLesson(), mViewPlatform );
         lessonController .setNextController( this );
 
+        System.out.println( "setSymmetrySystem" );
+        
         setSymmetrySystem( this .documentModel .getSymmetrySystem() );
 
         // can't do this before the setSymmetrySystem() call just above
@@ -357,6 +382,8 @@ public class DocumentController extends DefaultController implements J3dComponen
             this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
         }
 
+        System.out.println( "PartsController" );
+        
         partsController = new PartsController( symmetryController .getOrbitSource() );
         partsController .setNextController( this );
         mRenderedModel .addListener( partsController );
@@ -372,10 +399,10 @@ public class DocumentController extends DefaultController implements J3dComponen
             Component canvas = null;
             if ( name .endsWith( "monocular" ) )
                 canvas = modelCanvas;
-            else if ( name .endsWith( "leftEye" ) )
-                canvas = leftEyeCanvas;
-            else
-                canvas = rightEyeCanvas;
+//            else if ( name .endsWith( "leftEye" ) )
+//                canvas = leftEyeCanvas;
+//            else
+//                canvas = rightEyeCanvas;
             
             /*
              * Mouse tools here follow some general principles:
@@ -1369,12 +1396,12 @@ public class DocumentController extends DefaultController implements J3dComponen
         case "monocularPicking":
             return monoController;
 
-        case "leftEyePicking":
-            return leftController;
-
-        case "rightEyePicking":
-            return rightController;
-
+//        case "leftEyePicking":
+//            return leftController;
+//
+//        case "rightEyePicking":
+//            return rightController;
+//
         case "viewPlatform":
             return mViewPlatform;
 

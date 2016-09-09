@@ -123,6 +123,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         mController = controller;
         mController .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
+        System .out .println( "Starting DocumentFrame constructor" );
         
         String path = mController .getProperty( "window.file" );
         if ( path != null )
@@ -537,6 +538,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         };
 		this .saveAsAction = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, "save", "vZome", saveAsController );
 
+        System .out .println( "DocumentMenuBar" );
+
         this .setJMenuBar( new DocumentMenuBar( mController, this ) );
 
         this.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
@@ -549,7 +552,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             }
         } );
 
-		// Find the screen with the largest area if this is a multi-monitor system.
+        System .out .println( "getLocalGraphicsEnvironment" );
+
+        // Find the screen with the largest area if this is a multi-monitor system.
 		// Set the frame size to just a bit smaller than the screen
 		//	so the frame will fit on the screen if the user un-maximizes it.
 		// Default to opening the window as maximized on the selected (or default) monitor.
@@ -577,7 +582,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 		}
 		this.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 
+        System .out .println( "pack" );
+
         this.pack();
+
+        System .out .println( "setVisible" );
         this.setVisible( true );
         this.setFocusable( true );
 
@@ -587,6 +596,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			@Override
             protected void doAction( ActionEvent e ) throws Exception
             {
+		        System .out .println( "Starting finish.load" );
 				mController .doAction( "finish.load", e );
                 
                 String title = mController .getProperty( "window.title" );

@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
@@ -117,8 +118,6 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         }
     }
 
-    private static ApplicationUI theUI;
-
     private ApplicationUI() {}
 
     // This is not used on the Mac, where the MacAdapter is the main class.
@@ -143,7 +142,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
      * @return
      * @throws MalformedURLException
      */
-    public static ApplicationUI initialize( String[] args, URL codebase ) throws MalformedURLException
+    public static ApplicationUI initialize( final String[] args, URL codebase ) throws MalformedURLException
     {
     	/*
     	 * First, fail-fast if we can see any environmental issue that will prevent vZome from launching correctly.
@@ -163,114 +162,98 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 		 * Get the splash screen up before doing any more work.
          */
 
-        SplashScreen splash = null;
-        String splashImage = "org/vorthmann/zome/ui/vZome-6-splash.png";
-        if ( splashImage != null ) {
-            splash = new SplashScreen( splashImage );
-            splash .splash();
-            logger .info( "splash screen displayed" );
-        } 
-        else {
-            logger .severe( "splash screen not found at " + splashImage );
-        }
+        final String splashImage = "org/vorthmann/zome/ui/vZome-6-splash.png";
 
-        theUI = new ApplicationUI();
+        final ApplicationUI ui = new ApplicationUI();
 
-        /*
-         * Implementation Note:
-         *
-         * Note that the launch thread of any GUI application is in effect an initial 
-         * worker thread - it is not the event dispatch thread, where the bulk of processing
-         * takes place. Thus, once the launch thread realizes a window, then the launch 
-         * thread should almost always manipulate such a window through 
-         * <code>EventQueue.invokeLater</code>. (This is done for closing the splash 
-         * screen, for example.)
-         */
-
-        // NOW we're ready to spend the cost of further initialization, but on the event thread
-        EventQueue .invokeLater( new InitializationWorker( theUI, args, codebase, splash ) );
-        
-        return theUI;
-    }
-    
-    private static class InitializationWorker implements Runnable
-    {
-    	private final ApplicationUI ui;
-		private final String[] args;
-		private final URL codebase;
-		private final SplashScreen splash;
-
-		public InitializationWorker( ApplicationUI ui, String[] args, URL codebase, SplashScreen splash )
+    	EventQueue .invokeLater( new Runnable()
     	{
-			this.ui = ui;
-			this.args = args;
-			this.codebase = codebase;
-			this.splash = splash;
-    	}
+    		@Override
+    		public void run()
+    		{
+    			// This bit runs on the event dispatch thread, as it creates UI elements.
+    			final SplashScreen splash = new SplashScreen( splashImage );
+    			splash .splash();
+    			logger .info( "splash screen displayed" );
+    			
+    			// When that's done, we want to start up the application again on a worker thread,
+    			// and finally go back to the EDT to close the splash.
+    			new SwingWorker<Object,Object>()
+    			{
+					@Override
+					protected Object doInBackground() throws Exception
+					{
+						String defaultAction = "launch";
+				        Properties configuration = new Properties();
+				        for ( int i = 0; i < args.length; i++ ) {
+				            if ( args[i] .startsWith( "-" ) ) {
+				                String propName = args[i++] .substring( 1 );
+				                String propValue = args[i];
+				                configuration .setProperty( propName, propValue );
+				            }
+				            else
+					            try {
+					                URL url = new URL( codebase, args[i] );
+					                defaultAction = "openURL-" + url .toExternalForm();
+					            } catch ( MalformedURLException e ) {
+					            	logger .severe( "Unable to construct URL from codebase: " + codebase + ", url argument" + args[i] );
+				  	            }
+				        }
 
-		@Override
-		public void run()
-		{
-			String defaultAction = "launch";
-	        Properties configuration = new Properties();
-	        for ( int i = 0; i < args.length; i++ ) {
-	            if ( args[i] .startsWith( "-" ) ) {
-	                String propName = args[i++] .substring( 1 );
-	                String propValue = args[i];
-	                configuration .setProperty( propName, propValue );
-	            }
-	            else
-		            try {
-		                URL url = new URL( codebase, args[i] );
-		                defaultAction = "openURL-" + url .toExternalForm();
-		            } catch ( MalformedURLException e ) {
-		            	logger .severe( "Unable to construct URL from codebase: " + codebase + ", url argument" + args[i] );
-	  	            }
-	        }
+				        configuration .putAll( loadBuildProperties() );
 
-	        configuration .putAll( loadBuildProperties() );
+				        ui .mController = new ApplicationController( ui, configuration );
 
-	        ui .mController = new ApplicationController( ui, configuration );
+				        configuration .setProperty( "coreVersion", ui .mController .getProperty( "coreVersion" ) );
+						logConfig( configuration );
 
-	        configuration .setProperty( "coreVersion", ui .mController .getProperty( "coreVersion" ) );
-			logConfig( configuration );
+			            ui .errors =  new Controller.ErrorChannel()
+				        {
+							@Override
+				            public void reportError( String errorCode, Object[] arguments )
+				            {
+				            	// code copied from DocumentFrame!
+				            	
+				                if ( Controller.USER_ERROR_CODE.equals( errorCode ) ) {
+				                    errorCode = ( (Exception) arguments[0] ).getMessage();
+				                    // don't want a stack trace for a user error
+				                    logger.log( Level.WARNING, errorCode );
+				                } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
+				                    errorCode = ( (Exception) arguments[0] ).getMessage();
+				                    logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
+				                    errorCode = "internal error, see the log file at " + getLogFileName();
+				                } else {
+				                    logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
+				                    // TODO use resources
+				                }
+				                    // TODO use resources
+				                JOptionPane .showMessageDialog( null, errorCode, "Error", JOptionPane.ERROR_MESSAGE );
+				            }
 
-            ui.errors =  new Controller.ErrorChannel()
-	        {
-				@Override
-	            public void reportError( String errorCode, Object[] arguments )
-	            {
-	            	// code copied from DocumentFrame!
-	            	
-	                if ( Controller.USER_ERROR_CODE.equals( errorCode ) ) {
-	                    errorCode = ( (Exception) arguments[0] ).getMessage();
-	                    // don't want a stack trace for a user error
-	                    logger.log( Level.WARNING, errorCode );
-	                } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
-	                    errorCode = ( (Exception) arguments[0] ).getMessage();
-	                    logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
-	                    errorCode = "internal error, see the log file at " + getLogFileName();
-	                } else {
-	                    logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
-	                    // TODO use resources
-	                }
-	                    // TODO use resources
-	                JOptionPane .showMessageDialog( null, errorCode, "Error", JOptionPane.ERROR_MESSAGE );
-	            }
+							@Override
+				            public void clearError()
+				            {}
+				        };
+				        
+				        ui.mController .setErrorChannel( ui.errors );
+				        ui.mController .addPropertyListener( ui );
+				        
+				        ui.mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, defaultAction ) );
 
-				@Override
-	            public void clearError()
-	            {}
-	        };
-	        
-	        ui.mController .setErrorChannel( ui.errors );
-	        ui.mController .addPropertyListener( ui );
-	        
-	        ui.mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, defaultAction ) );
+						return null;
+					}
 
-        	if ( splash != null )
-        		splash .dispose();
-		}
+					@Override
+					protected void done()
+					{
+						// This runs again on the EDT.
+						splash .dispose();
+						super.done();
+					}
+    			} .execute();
+    		}
+    	});
+    	return ui;
     }
     
 	@Override
@@ -280,17 +263,25 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
 		case "newDocument":
 			Controller controller = (Controller) evt. getNewValue();
-			DocumentFrame window = new DocumentFrame( controller );
-	        window .setVisible( true );
-	        window .setAppUI( new PropertyChangeListener() {
-				
+			EventQueue .invokeLater( new Runnable()
+			{
 				@Override
-				public void propertyChange( PropertyChangeEvent evt )
+				public void run()
 				{
-					windowsToClose .remove( window );
+					// UI creation must happen on the event dispatch thread
+					DocumentFrame window = new DocumentFrame( controller );
+			        window .setVisible( true );
+			        window .setAppUI( new PropertyChangeListener() {
+						
+						@Override
+						public void propertyChange( PropertyChangeEvent evt )
+						{
+							windowsToClose .remove( window );
+						}
+					} );
+			        windowsToClose .add( window );
 				}
 			} );
-	        windowsToClose .add( window );
 			break;
 
 		default:

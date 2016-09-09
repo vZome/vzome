@@ -53,7 +53,7 @@ ext.vzomeArgs = [  // a list, not a map
 mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'
 // used by the 'application' Gradle plugin
 run.args( vzomeArgs )
-applicationDefaultJvmArgs = [ '-Xmx3048M', "-Djava.ext.dirs=${System.env.'JAVA_HOME'}/jre/lib" ]
+applicationDefaultJvmArgs = [ '-splash:src/main/resources/org/vorthmann/zome/ui/vZome-6-splash.png', '-Xmx3048M', "-Djava.ext.dirs=${System.env.'JAVA_HOME'}/jre/lib" ]
 jvmArgs.each { entry ->
     applicationDefaultJvmArgs << "-D$entry.key=$entry.value"
 }
@@ -123,7 +123,8 @@ sourceSets {
 jar {
     manifest {
         attributes 'Implementation-Title': 'vzome-desktop',
-                   'Implementation-Version': version
+                   'Implementation-Version': version,
+		   'SplashScreen-Image': 'org/vorthmann/zome/ui/vZome-6-splash.png'
     }
 }
 
