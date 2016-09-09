@@ -38,9 +38,47 @@ import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
+import java.awt.GraphicsDevice;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFactory
 {
+    private static class GraphicsConfigurationFactory {
+        private static final Logger logger = Logger.getLogger(new Throwable().getStackTrace()[0].getClassName());
+
+        private static GraphicsConfiguration GC;
+
+        private static GraphicsConfiguration getGraphicsConfiguration() {
+            if(GC == null) {
+                long start = System.currentTimeMillis();
+                GraphicsConfigTemplate3D gct = new GraphicsConfigTemplate3D();
+                gct .setSceneAntialiasing( GraphicsConfigTemplate3D .REQUIRED );
+                gct .setDepthSize( 32 );
+                GraphicsDevice defaultScreenDevice = GraphicsEnvironment .getLocalGraphicsEnvironment() .getDefaultScreenDevice();
+                // Each time that getBestConfiguration() is called on my Windows PC,
+                // a new JVM icon is shown on the taskbar for a total of 5 of them.
+                // They are all replaced with yet another one as soon as the main window is displayed.
+                // The multiple JVM icon symptom doesn't show up on Scott's Mac.
+                //
+                // Using this static class not only improves the startup time;
+                // it also eliminates all but one of the extraneous taskbar icons at startup.
+                // TODO: It would be nice if we could figure out how to avoid those taskbar icons all together.
+                GraphicsConfiguration gc = defaultScreenDevice.getBestConfiguration( gct );
+                if ( gc == null ) {
+                    gct .setDepthSize( 24 );
+                    gc = defaultScreenDevice.getBestConfiguration( gct );
+                }
+                if ( gc == null ) {
+                    gc = SimpleUniverse .getPreferredConfiguration();
+                }
+                GC = gc;
+                logger .log(Level.INFO, "GraphicsConfiguration initialization in milliseconds: {0}", ( System.currentTimeMillis() - start ));
+            }
+            return GC;
+        }
+    }
+
     protected final Appearances mAppearances;
     
     protected final Appearance outlines;
@@ -68,24 +106,10 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     {
         if ( canvas == null ) // this viewer is for offscreen rendering
         {
-            GraphicsConfigTemplate3D gct = new GraphicsConfigTemplate3D();
-            gct .setSceneAntialiasing( GraphicsConfigTemplate3D .REQUIRED );
-            gct .setDepthSize( 32 );
-            GraphicsConfiguration  gc = GraphicsEnvironment .getLocalGraphicsEnvironment() .getDefaultScreenDevice() .getBestConfiguration( gct );
-            if ( gc == null )
-            {
-                gct .setDepthSize( 24 );
-                gc = GraphicsEnvironment .getLocalGraphicsEnvironment() .getDefaultScreenDevice() .getBestConfiguration( gct );
-            }
-            if ( gc == null )
-            {
-                gc = SimpleUniverse .getPreferredConfiguration();
-            }
-            canvas = new CapturingCanvas3D( gc, true );
+            canvas = new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration(), true );
         }
         return new Java3dRenderingViewer( (Java3dSceneGraph) scene, (CapturingCanvas3D) canvas );
     }
-
 
     @Override
 	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, Controller controller )
@@ -257,19 +281,6 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     @Override
     public Component createJ3dComponent( String name )
     {
-        GraphicsConfigTemplate3D gct = new GraphicsConfigTemplate3D();
-        gct .setSceneAntialiasing( GraphicsConfigTemplate3D .REQUIRED );
-        gct .setDepthSize( 32 );
-        GraphicsConfiguration  gc = GraphicsEnvironment .getLocalGraphicsEnvironment() .getDefaultScreenDevice() .getBestConfiguration( gct );
-        if ( gc == null )
-        {
-            gct .setDepthSize( 24 );
-            gc = GraphicsEnvironment .getLocalGraphicsEnvironment() .getDefaultScreenDevice() .getBestConfiguration( gct );
-        }
-        if ( gc == null )
-        {
-            gc = SimpleUniverse .getPreferredConfiguration();
-        }
-        return new CapturingCanvas3D( gc );
+        return new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration() );
     }
 }
