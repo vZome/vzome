@@ -33,9 +33,11 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     private boolean mStandard, mAutomatic, hasHalfSizes;
     
     private final String[] scaleNames = new String[]{ "shorter", "short", "medium", "long" };
-    
+
+    public final AlgebraicNumber[] scales = new AlgebraicNumber[ scaleNames.length ];
+
     private AlgebraicNumber unitLength, unitLengthReciprocal;
-    
+
     public final void setAutomatic( boolean auto )
     {
         mAutomatic = auto;
@@ -63,6 +65,9 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         mStandard = isStd;
         mName = name;
         mSymmetryGroup = group;
+        for ( int i = 0; i < scales .length; i++ ) {
+            scales[ i ] = mSymmetryGroup .getField() .createPower( i - 1 );
+        }
         mPrototype = vector;
         mAxes = new Axis[ 2 ][ group .getChiralOrder() ];
         for ( int i = 0; i < mAxes[ Symmetry.PLUS ] .length; i++ ) {
@@ -319,7 +324,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     public String getScaleName( int scale )
     {
-        if ( scale <= 3 && scale >= 0 )
+        if ( scale < scaleNames.length && scale >= 0 )
             return scaleNames[ scale ];
         else
             return "scale " + (scale-1);
@@ -341,8 +346,6 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     public static final int USER_SCALE = 3;
     
-    public final AlgebraicNumber[] scales = new AlgebraicNumber[ 4 ];
-
     public AlgebraicNumber getLengthInUnits( AlgebraicNumber rawLength )
     {
         // reproduce the calculation in LengthModel .setActualLength()
@@ -355,24 +358,25 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
             return scaledLength .times( unitLengthReciprocal );
     }
 
-    public void getLengthExpression( StringBuffer buf, AlgebraicNumber length )
+    public String getLengthName( AlgebraicNumber length )
     {
-        AlgebraicField field = mSymmetryGroup .getField();
-        if ( scales[ 0 ] == null )
-        {
-            for ( int i = 0; i < scales .length; i++ )
-                scales[ i ] = field .createPower( i - 1 );
-        }
-        for ( int i = 0; i < scales .length; i++ )
-        {
-            if ( scales[ i ] .equals( length ) )
-            {
-                buf .append( scaleNames[ i ] );
-                buf .append( ": " );
-                return;
+        for ( int i = 0; i < scales .length; i++ ) {
+            if ( scales[ i ] .equals( length ) ) {
+                return scaleNames[ i ];
             }
         }
-        buf .append( scaleNames[ 1 ] );
+        return "";
+    }
+
+    public void getLengthExpression( StringBuffer buf, AlgebraicNumber length )
+    {
+        int bufLen = buf.length();
+        buf .append(getLengthName( length ) );
+        if(buf.length() == bufLen) {
+            // Be sure to append something before the colon delimiter
+            // so the StringTokenizer that uses buf doesn't choke on a missing token.
+            buf .append( " " );
+        }
         buf .append( ":" );
         length .getNumberExpression( buf, AlgebraicField .EXPRESSION_FORMAT );
     }
