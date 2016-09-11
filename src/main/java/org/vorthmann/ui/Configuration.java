@@ -9,4 +9,6 @@ public interface Configuration
 	public abstract boolean userHasEntitlement( String propName );
 
 	public abstract Configuration getConfiguration( String name );
+	
+	public abstract Controller asController();
 }

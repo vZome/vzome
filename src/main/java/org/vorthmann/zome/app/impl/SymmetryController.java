@@ -4,8 +4,6 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +46,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     public OrbitSet snapOrbits;
     public OrbitSet buildOrbits;
     public OrbitSet renderOrbits;
-    private final CameraController.Snapper snapper;
+    private CameraController.Snapper snapper;
     
     public OrbitSetController availableController;
     public OrbitSetController snapController;
@@ -71,7 +69,13 @@ public class SymmetryController extends DefaultController// implements RenderedM
     {
         this .setNextController( parent );
         this.symmetrySystem = model;
-        Symmetry symmetry = model .getSymmetry();
+    }
+    
+    public Controller asController()
+    {
+    	if ( availableOrbits != null )
+    		return this; // idempotency
+        Symmetry symmetry = this.symmetrySystem .getSymmetry();
         availableOrbits = new OrbitSet( symmetry );
         snapOrbits = new OrbitSet( symmetry );
         buildOrbits = new OrbitSet( symmetry );
@@ -105,20 +109,9 @@ public class SymmetryController extends DefaultController// implements RenderedM
             lengthModel .setNextController( buildController );
             orbitLengths .put( dir, lengthModel );
         }
-        if ( parent .propertyIsTrue( "disable.known.directions" ) )
+        if ( propertyIsTrue( "disable.known.directions" ) )
         	this .symmetrySystem .disableKnownDirection();
-
-        availableController .addPropertyListener( new PropertyChangeListener()
-        {
-            @Override
-            public void propertyChange( PropertyChangeEvent event )
-            {
-                if ( "orbits" .equals( event .getPropertyName() ) )
-                {
-//                    properties() .firePropertyChange( event ); // just forwarding
-                }
-            }
-        } );
+        return this;
     }
     
 

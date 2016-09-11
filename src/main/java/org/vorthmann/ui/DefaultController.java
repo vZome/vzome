@@ -218,4 +218,10 @@ public class DefaultController implements Controller
     			e.printStackTrace();
     		}
     }
+
+	@Override
+	public Controller asController()
+	{
+		return this;
+	}
 }

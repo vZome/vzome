@@ -1,13 +1,16 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 import org.vorthmann.ui.Controller;
 
@@ -56,8 +59,6 @@ public class StrutBuilderPanel extends JPanel
             this .add( lengthPanel, BorderLayout.SOUTH );
         }
         
-        systemChanged( symmName );
-
         this .controller .addPropertyListener( new PropertyChangeListener()
         {
             @Override
@@ -67,7 +68,17 @@ public class StrutBuilderPanel extends JPanel
 
             	case "symmetry":
                     String system = (String) event .getNewValue();
-                    systemChanged( system );
+                    Controller symmController = controller .getSubController( "symmetry." + system );
+                    symmController .asController();
+                    // currently on a worker thread, so schedule UI update on the EDT
+                    EventQueue .invokeLater( new Runnable()
+                    {
+						@Override
+						public void run()
+						{
+		                    systemChanged( symmController );
+						}
+					} );
 					break;
 
             	case "useGraphicalViews":
@@ -87,11 +98,29 @@ public class StrutBuilderPanel extends JPanel
 				}
             }
         } );
+        new SwingWorker<Controller, Object>()
+        {
+			@Override
+			protected Controller doInBackground() throws Exception
+			{
+				return symmController .asController();
+			}
+			
+			@Override
+			protected void done()
+			{
+				try {
+					systemChanged( get() );
+				} catch ( InterruptedException | ExecutionException e ) {
+					e.printStackTrace();
+				}
+				super.done();
+			}
+		} .execute();
     }
 
-    private void systemChanged( String system )
+    private void systemChanged( Controller symmController )
     {
-        Controller symmController = this .controller .getSubController( "symmetry." + system );
         orbitPanel .setController( symmController );
         final Controller orbitController = symmController .getSubController( "buildOrbits" );
         String dirName = orbitController .getProperty( "selectedOrbit" );

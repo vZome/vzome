@@ -353,7 +353,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     if ( symmetryDialog == null ) {
                     	delegate = mController .getSubController( "symmetry." + system );
                         symmetryDialog = new SymmetryDialog( DocumentFrame.this, delegate );
-                        symmetryDialog .setController( delegate );
                         directionsDialogs .put( system, symmetryDialog );
                     }
                     symmetryDialog .setVisible( true );

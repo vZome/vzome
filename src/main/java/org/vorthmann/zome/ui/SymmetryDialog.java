@@ -7,10 +7,12 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 import org.vorthmann.ui.Configuration;
 import org.vorthmann.ui.Controller;
@@ -53,6 +55,26 @@ public class SymmetryDialog extends EscapeDialog
         
         setSize( new Dimension( 600, 250 ) );
         setLocationRelativeTo( frame );
+        
+        new SwingWorker<Controller, Object>()
+        {
+			@Override
+			protected Controller doInBackground() throws Exception
+			{
+				return config .asController();
+			}
+			
+			@Override
+			protected void done()
+			{
+				try {
+					setController( get() );
+				} catch ( InterruptedException | ExecutionException e ) {
+					e.printStackTrace();
+				}
+				super.done();
+			}
+		} .execute();
     }
     
     public void setController( Controller controller )
