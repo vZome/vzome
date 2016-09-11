@@ -30,7 +30,7 @@ import org.vorthmann.j3d.MouseTool;
  * @author vorth
  *
  */
-public interface Controller extends ActionListener
+public interface Controller extends ActionListener, Configuration
 {
     // TODO replace ErrorChannel with JDK logging
     public interface ErrorChannel
@@ -70,14 +70,8 @@ public interface Controller extends ActionListener
 
     void repaintGraphics( String panelName, Graphics graphics, Dimension size );
 
-	String getProperty(String string);
-
 	void setProperty( String cmd, Object value );
 	
-    boolean propertyIsTrue( String propName );
-
-    boolean userHasEntitlement( String propName );
-
     void addPropertyListener( PropertyChangeListener listener );
 
     void removePropertyListener( PropertyChangeListener listener );

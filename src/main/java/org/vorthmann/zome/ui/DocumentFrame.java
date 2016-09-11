@@ -183,7 +183,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
             private final Map<String, JDialog> shapesDialogs = new HashMap<>();
 
-            private final Map<String, JDialog> directionsDialogs = new HashMap<>();
+            private final Map<String, SymmetryDialog> directionsDialogs = new HashMap<>();
 
 			@Override
             public void actionPerformed( ActionEvent e )
@@ -349,10 +349,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 	break;
                 
                 case "configureDirections":
-                    JDialog symmetryDialog = directionsDialogs.get( system );
+                	SymmetryDialog symmetryDialog = directionsDialogs.get( system );
                     if ( symmetryDialog == null ) {
                     	delegate = mController .getSubController( "symmetry." + system );
                         symmetryDialog = new SymmetryDialog( DocumentFrame.this, delegate );
+                        symmetryDialog .setController( delegate );
                         directionsDialogs .put( system, symmetryDialog );
                     }
                     symmetryDialog .setVisible( true );

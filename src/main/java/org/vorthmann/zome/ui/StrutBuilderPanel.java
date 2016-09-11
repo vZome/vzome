@@ -30,10 +30,8 @@ public class StrutBuilderPanel extends JPanel
         	constraintsPanel .setLayout( new BorderLayout() );
         	
                 final Controller symmController = this .controller .getSubController( "symmetry." + symmName );
-                
-                final Controller orbitController = symmController .getSubController( "buildOrbits" );
                 {
-                	orbitPanel = new OrbitPanel( orbitController, symmController .getSubController( "availableOrbits" ), enabler );
+                	orbitPanel = new OrbitPanel( symmController, "availableOrbits", "buildOrbits" );
                 	orbitPanel .setBorder( BorderFactory .createTitledBorder( "strut directions" ) );
                 	orbitPanel .setToolTipText( "Click and drag on a ball to create a strut, using directions selected here." );
             		constraintsPanel .add( orbitPanel, BorderLayout.CENTER );
@@ -94,7 +92,7 @@ public class StrutBuilderPanel extends JPanel
     private void systemChanged( String system )
     {
         Controller symmController = this .controller .getSubController( "symmetry." + system );
-        orbitPanel .systemChanged( symmController .getSubController( "buildOrbits" ), symmController .getSubController( "availableOrbits" ) );
+        orbitPanel .setController( symmController );
         final Controller orbitController = symmController .getSubController( "buildOrbits" );
         String dirName = orbitController .getProperty( "selectedOrbit" );
         if ( dirName == null )

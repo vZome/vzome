@@ -117,6 +117,14 @@ public class DefaultController implements Controller
         return "true" .equals( getProperty( propName ) );
     }
 
+	@Override
+	public Configuration getConfiguration( String name )
+	{
+        if ( mNextController != null )
+            return mNextController .getConfiguration( name );
+        return null;
+	}
+
     @Override
     public Controller getSubController( String string )
     {

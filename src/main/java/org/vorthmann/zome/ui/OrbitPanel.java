@@ -13,11 +13,11 @@ import java.beans.PropertyChangeListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.vorthmann.ui.CardPanel;
+import org.vorthmann.ui.Configuration;
 import org.vorthmann.ui.Controller;
 
 public class OrbitPanel extends JPanel implements PropertyChangeListener
@@ -34,12 +34,12 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 	private final JPanel orbitTriangle, orbitCheckboxes;
 	private final CardPanel cardPanel;
 	private MouseListener orbitPopup;
+	private String availableControllerName, enabledControllerName;
 	
-	public OrbitPanel( final Controller selectedOrbits, final Controller drawnOrbits, ControlActions enabler )
+	public OrbitPanel( final Configuration config, String available, String enabled )
 	{
-		this .enabledOrbits = selectedOrbits;
-		this .drawnOrbits = drawnOrbits;
-		
+		this .availableControllerName = available;
+		this .enabledControllerName = enabled;
 		orbitTriangle = new JPanel()
         {
             @Override
@@ -69,7 +69,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
                 row1 .setLayout( new GridLayout( 0, 3 ) );
                 row1 .add( createButton( "None", "setNoDirections", indirection ) );
                 final JCheckBox checkbox = createCheckbox( "single", "oneAtATime", indirection );
-                if ( "true" .equals( enabledOrbits .getProperty( "oneAtATime" ) ) )
+                if ( "true" .equals( config .getProperty( "oneAtATime" ) ) )
                     checkbox .setSelected( true );
                 row1 .add( createButton( "All", "setAllDirections", new ActionListener()
                 {
@@ -96,22 +96,21 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
             this .add( cardPanel, BorderLayout.CENTER );
         }
 
-        if ( enabler != null )
-        {
-            directionPopupMenu = new ContextualMenu();
-            directionPopupMenu.setLightWeightPopupEnabled( false );
-
-            directionPopupMenu.add( enabler .setMenuAction( "rZomeOrbits",         new JMenuItem( "real Zome" ) ) );
-            directionPopupMenu.add( enabler .setMenuAction( "predefinedOrbits",    new JMenuItem( "predefined" ) ) );
-            directionPopupMenu.add( enabler .setMenuAction( "usedOrbits",          new JMenuItem( "used in model" ) ) );
-            directionPopupMenu.add( enabler .setMenuAction( "setAllDirections",    new JMenuItem( "all" ) ) );
-            directionPopupMenu.add( enabler .setMenuAction( "configureDirections", new JMenuItem( "configure..." ) ) );
-        }
-        else
+//        if ( enabler != null )
+//        {
+//            directionPopupMenu = new ContextualMenu();
+//            directionPopupMenu.setLightWeightPopupEnabled( false );
+//
+//            directionPopupMenu.add( enabler .setMenuAction( "rZomeOrbits",         new JMenuItem( "real Zome" ) ) );
+//            directionPopupMenu.add( enabler .setMenuAction( "predefinedOrbits",    new JMenuItem( "predefined" ) ) );
+//            directionPopupMenu.add( enabler .setMenuAction( "usedOrbits",          new JMenuItem( "used in model" ) ) );
+//            directionPopupMenu.add( enabler .setMenuAction( "setAllDirections",    new JMenuItem( "all" ) ) );
+//            directionPopupMenu.add( enabler .setMenuAction( "configureDirections", new JMenuItem( "configure..." ) ) );
+//        }
+//        else
         	directionPopupMenu = null;
         
-        modeChanged( enabledOrbits .propertyIsTrue( "useGraphicalViews" ) );
-        systemChanged( selectedOrbits, drawnOrbits );
+        modeChanged( config .propertyIsTrue( "useGraphicalViews" ) );
 	}
     
 	void modeChanged( boolean graphical )
@@ -121,18 +120,20 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 		else
             cardPanel .showCard( "textual" );
 	}
-
-	public void systemChanged( Controller buildOrbits, Controller shownOrbits )
+	
+	public void setController( Controller symmController )
 	{
         if ( orbitPopup != null )
         	orbitTriangle .removeMouseListener( orbitPopup );
 
-        this .enabledOrbits .getMouseTool() .detach( orbitTriangle );
-        this .drawnOrbits .removePropertyListener( this );
-        this .enabledOrbits .removePropertyListener( this );
+        if ( this .enabledOrbits != null ) {
+            this .enabledOrbits .getMouseTool() .detach( orbitTriangle );
+            this .drawnOrbits .removePropertyListener( this );
+            this .enabledOrbits .removePropertyListener( this );
+        }
 
-        this .drawnOrbits = shownOrbits;
-		this .enabledOrbits = buildOrbits;
+        this .drawnOrbits = ( this .availableControllerName == null )? symmController : symmController .getSubController( this .availableControllerName );
+		this .enabledOrbits = symmController .getSubController( this .enabledControllerName );
 		
         enabledOrbits .addPropertyListener( this );
         drawnOrbits .addPropertyListener( this );

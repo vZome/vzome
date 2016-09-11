@@ -9,6 +9,7 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.vorthmann.ui.Configuration;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 
@@ -120,6 +121,20 @@ public class SymmetryController extends DefaultController// implements RenderedM
         } );
     }
     
+
+    @Override
+    public Configuration getConfiguration( String name )
+    {
+        if ( name .equals( "availableOrbits" ) )
+            return availableController;
+        if ( name .equals( "snapOrbits" ) )
+            return snapController;
+        if ( name .equals( "buildOrbits" ) )
+            return buildController;
+        if ( name .equals( "renderOrbits" ) )
+            return renderController;
+        return null;
+    }
 
     @Override
     public Controller getSubController( String name )

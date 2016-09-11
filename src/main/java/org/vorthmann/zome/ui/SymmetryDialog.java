@@ -12,11 +12,14 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import org.vorthmann.ui.Configuration;
 import org.vorthmann.ui.Controller;
 
 public class SymmetryDialog extends EscapeDialog
 {
-    public SymmetryDialog( Frame frame, Controller controller )
+	private final OrbitPanel availableOrbitsPanel, snapOrbitsPanel;
+	
+    public SymmetryDialog( Frame frame, Configuration config )
     {
         super( frame, "Direction Configuration", true );
         {
@@ -33,16 +36,15 @@ public class SymmetryDialog extends EscapeDialog
             {
                 JPanel mainPanel = new JPanel();
                 mainPanel .setLayout( new BoxLayout( mainPanel, BoxLayout.LINE_AXIS ) );
-                Controller orbitController = controller .getSubController( "availableOrbits" );
                 {
-                    JPanel panel = new OrbitPanel( orbitController, controller, null );
-                    panel .setBorder( BorderFactory .createTitledBorder( "available directions" ) );
-                    mainPanel .add( panel );
+                	availableOrbitsPanel = new OrbitPanel( config, null, "availableOrbits" );
+                	availableOrbitsPanel .setBorder( BorderFactory .createTitledBorder( "available directions" ) );
+                    mainPanel .add( availableOrbitsPanel );
                 }
                 {
-                    JPanel panel = new OrbitPanel( controller .getSubController( "snapOrbits" ), orbitController, null );
-                    panel .setBorder( BorderFactory .createTitledBorder( "snap directions" ) );
-                    mainPanel .add( panel );
+                	snapOrbitsPanel = new OrbitPanel( config, "availableOrbits", "snapOrbits" );
+                	snapOrbitsPanel .setBorder( BorderFactory .createTitledBorder( "snap directions" ) );
+                    mainPanel .add( snapOrbitsPanel );
                 }
                 content .add( mainPanel, BorderLayout.CENTER );
             }
@@ -51,5 +53,11 @@ public class SymmetryDialog extends EscapeDialog
         
         setSize( new Dimension( 600, 250 ) );
         setLocationRelativeTo( frame );
+    }
+    
+    public void setController( Controller controller )
+    {
+    	availableOrbitsPanel .setController( controller );
+    	snapOrbitsPanel .setController( controller );
     }
 }
