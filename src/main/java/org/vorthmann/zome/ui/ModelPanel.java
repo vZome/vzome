@@ -834,16 +834,23 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 
 			this .addSeparator();
 
-			this .add( setMenuAction( "setBuildOrbitAndLength", new JMenuItem( "Build With This" ) ) );
+	        Controller buildController = controller .getSubController( "builder" );
+
+			this .add( setMenuAction( "setBuildOrbitAndLength", new JMenuItem( "Build With This" ), buildController ) );
 			this .add( enabler .setMenuAction( "showProperties-"+key, new JMenuItem( "Show Properties" ) ) );
+		}
+		
+		private JMenuItem setMenuAction( String action, JMenuItem control, Controller controller )
+		{
+			control .setEnabled( true );
+			control .setActionCommand( action );
+        	control .addActionListener( controller );
+			return control;
 		}
 		
 		private JMenuItem setMenuAction( String action, JMenuItem control )
 		{
-			control .setEnabled( true );
-			control .setActionCommand( action );
-        	control .addActionListener( this .controller );
-			return control;
+			return setMenuAction( action, control, this .controller );
 		}
 	}
 }

@@ -2,6 +2,7 @@ package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.ExecutionException;
@@ -22,7 +23,7 @@ public class StrutBuilderPanel extends JPanel
     private final NewLengthPanel lengthPanel;
     private final OrbitPanel orbitPanel;
     
-    public StrutBuilderPanel( JFrame frame, final String symmName, final Controller controller, ControlActions enabler )
+    public StrutBuilderPanel( JFrame frame, final String symmName, final Controller controller, ActionListener frameActions )
     {
         this .controller = controller;
         this .setLayout( new BorderLayout() );
@@ -34,7 +35,7 @@ public class StrutBuilderPanel extends JPanel
         	
                 final Controller symmController = this .controller .getSubController( "symmetry." + symmName );
                 {
-                	orbitPanel = new OrbitPanel( symmController, "availableOrbits", "buildOrbits" );
+                	orbitPanel = new OrbitPanel( symmController, "availableOrbits", "buildOrbits", true );
                 	orbitPanel .setBorder( BorderFactory .createTitledBorder( "strut directions" ) );
                 	orbitPanel .setToolTipText( "Click and drag on a ball to create a strut, using directions selected here." );
             		constraintsPanel .add( orbitPanel, BorderLayout.CENTER );

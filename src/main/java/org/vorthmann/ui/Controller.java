@@ -75,6 +75,8 @@ public interface Controller extends ActionListener, Configuration
     void addPropertyListener( PropertyChangeListener listener );
 
     void removePropertyListener( PropertyChangeListener listener );
+    
+	void setUiActionListener( ActionListener listener );
 
     Controller getSubController( String string );
     

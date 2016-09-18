@@ -138,11 +138,18 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
-        if ( action .equals( "refreshDots" ) )
-        {
-            recalculateDots();
+        switch ( action ) {
+
+        case "refreshDots":
+			recalculateDots();
+			return;
+			
+        case "configureDirections":
+        case "usedOrbits":
+            super .doAction( action, e );
             return;
         }
+        
         if ( action .equals( "toggleHalf" ) || action .equals( "reset" )
           || action .equals( "short" ) || action .equals( "medium" ) || action .equals( "long" )
           || action .startsWith( "adjustScale." ) || action .equals( "scaleUp" ) || action .equals( "scaleDown" ) )
@@ -150,6 +157,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             getSubController( "currentLength" ) .doAction( action, e );
             return;
         }
+        
         if ( action .equals( "setNoDirections" ) )
         {
             orbits .clear();

@@ -377,17 +377,23 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( createMenuItem( "Shapes...", "configureShapes" ) );
         menu.add( createMenuItem( "Directions...", "configureDirections" ) );
 
-        JMenuItem cbMenuItem = actions .setMenuAction( "toggleOrbitViews", new JCheckBoxMenuItem( "Show Directions Graphically" ) );
-        boolean setting = "true".equals( controller .getProperty( "useGraphicalViews" ) );
-        cbMenuItem .setSelected( setting );
-        menu.add( cbMenuItem );
-        cbMenuItem .setEnabled( fullPower );
+        Controller buildController = controller .getSubController( "builder" );
 
-        final JMenuItem showStrutScalesItem = actions .setMenuAction( "toggleStrutScales", new JCheckBoxMenuItem( "Show Strut Scales" ) );
-        setting = "true" .equals( controller .getProperty( "showStrutScales" ) );
+        JMenuItem cbMenuItem = new JCheckBoxMenuItem( "Show Directions Graphically" );
+        cbMenuItem .setActionCommand( "toggleOrbitViews" );
+        cbMenuItem .addActionListener( buildController );
+        boolean setting = "true" .equals( buildController .getProperty( "useGraphicalViews" ) );
+        cbMenuItem .setSelected( setting );
+        cbMenuItem .setEnabled( fullPower );
+        menu.add( cbMenuItem );
+
+        final JMenuItem showStrutScalesItem = new JCheckBoxMenuItem( "Show Strut Scales" );
+        showStrutScalesItem .setActionCommand( "toggleStrutScales" );
+        showStrutScalesItem .addActionListener( buildController );
+        setting = "true" .equals( buildController .getProperty( "showStrutScales" ) );
         showStrutScalesItem .setSelected( setting );
         showStrutScalesItem .setEnabled( fullPower );
-        controller .addPropertyListener( new PropertyChangeListener(){
+        buildController .addPropertyListener( new PropertyChangeListener(){
 			@Override
             public void propertyChange( PropertyChangeEvent chg )
             {

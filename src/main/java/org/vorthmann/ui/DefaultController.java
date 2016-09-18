@@ -6,6 +6,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -22,6 +23,8 @@ public class DefaultController implements Controller
     protected ErrorChannel mErrors;
     
     protected Controller mNextController;
+
+	private ActionListener uiActions;
     
     protected PropertyChangeSupport properties()
     {
@@ -223,5 +226,16 @@ public class DefaultController implements Controller
 	public Controller asController()
 	{
 		return this;
+	}
+
+	@Override
+	public void setUiActionListener( ActionListener listener )
+	{
+		this .uiActions = listener;
+	}
+
+	public ActionListener getUiActionListener()
+	{
+		return uiActions;
 	}
 }

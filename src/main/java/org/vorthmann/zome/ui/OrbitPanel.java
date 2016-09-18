@@ -13,6 +13,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -30,16 +31,17 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 	}
 
 	private Controller enabledOrbits, drawnOrbits;
-	private final ContextualMenu directionPopupMenu;
 	private final JPanel orbitTriangle, orbitCheckboxes;
 	private final CardPanel cardPanel;
 	private MouseListener orbitPopup;
 	private String availableControllerName, enabledControllerName;
+	private boolean showPopup;
 	
-	public OrbitPanel( final Configuration config, String available, String enabled )
+	public OrbitPanel( final Configuration config, String available, String enabled, boolean showPopup )
 	{
 		this .availableControllerName = available;
 		this .enabledControllerName = enabled;
+		this .showPopup = showPopup;
 		orbitTriangle = new JPanel()
         {
             @Override
@@ -95,22 +97,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
                 cardPanel .add( "textual", scrollPanel );
             }
             this .add( cardPanel, BorderLayout.CENTER );
-        }
-
-//        if ( enabler != null )
-//        {
-//            directionPopupMenu = new ContextualMenu();
-//            directionPopupMenu.setLightWeightPopupEnabled( false );
-//
-//            directionPopupMenu.add( enabler .setMenuAction( "rZomeOrbits",         new JMenuItem( "real Zome" ) ) );
-//            directionPopupMenu.add( enabler .setMenuAction( "predefinedOrbits",    new JMenuItem( "predefined" ) ) );
-//            directionPopupMenu.add( enabler .setMenuAction( "usedOrbits",          new JMenuItem( "used in model" ) ) );
-//            directionPopupMenu.add( enabler .setMenuAction( "setAllDirections",    new JMenuItem( "all" ) ) );
-//            directionPopupMenu.add( enabler .setMenuAction( "configureDirections", new JMenuItem( "configure..." ) ) );
-//        }
-//        else
-        	directionPopupMenu = null;
-        
+        }        
         modeChanged( config .propertyIsTrue( "useGraphicalViews" ) );
 	}
     
@@ -140,8 +127,17 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
         drawnOrbits .addPropertyListener( this );
         enabledOrbits .getMouseTool() .attach( orbitTriangle );
 
-        if ( directionPopupMenu != null )
+        if ( showPopup )
         {
+        	ContextualMenu directionPopupMenu = new ContextualMenu();
+            directionPopupMenu.setLightWeightPopupEnabled( false );
+
+            directionPopupMenu .add( createMenuItem( "real Zome", "rZomeOrbits", this .drawnOrbits ) );
+            directionPopupMenu .add( createMenuItem( "predefined", "predefinedOrbits", this .drawnOrbits ) );
+            directionPopupMenu .add( createMenuItem( "used in model", "usedOrbits", this .drawnOrbits ) );
+            directionPopupMenu .add( createMenuItem( "all", "setAllDirections", this .drawnOrbits ) );
+            directionPopupMenu .add( createMenuItem( "configure...", "configureDirections", this .drawnOrbits ) );
+
             orbitPopup = new ContextualMenuMouseListener( enabledOrbits, directionPopupMenu );
             orbitTriangle .addMouseListener( orbitPopup );
             orbitCheckboxes .addMouseListener( orbitPopup );
@@ -235,6 +231,14 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 		default:
 			break;
 		}
+    }
+
+    protected static JMenuItem createMenuItem( String label, String actionCommand, ActionListener listener )
+    {
+    	JMenuItem item = new JMenuItem( label );
+        item .addActionListener( listener );
+        item .setActionCommand( actionCommand );        
+        return item;
     }
 
     protected static JButton createButton( String buttonText, String actionCommand, ActionListener listener )

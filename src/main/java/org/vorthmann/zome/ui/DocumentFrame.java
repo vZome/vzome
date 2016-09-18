@@ -326,18 +326,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     if ( color != null )
                     	mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
                 	break;
-                
-                case "usedOrbits":
-                	mController .actionPerformed( e ); // TO DO exclusive
-                	break;
-                
-                case "rZomeOrbits":
-                case "predefinedOrbits":
-                case "setAllDirections":
-                	delegate = mController .getSubController( "symmetry." + system );
-                	delegate .actionPerformed( e );
-                	break;
-                
+                                
                 case "configureShapes":
                     JDialog shapesDialog = shapesDialogs.get( system );
                     if ( shapesDialog == null ) {
@@ -390,6 +379,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 }
             }
         };
+        mController .setUiActionListener( this .localActions );
 
         // -------------------------------------- create panels and tools
 
@@ -483,7 +473,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 modelArticleEditPanel .setLayout( modelArticleCardLayout );
                 if ( this .isEditor )
                 {
-                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this, mController .getProperty( "symmetry" ), mController, this );
+                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this,
+                    						mController .getProperty( "symmetry" ),
+                    						mController .getSubController( "builder" ), this .localActions );
                     if ( this .fullPower )
                     {
                         tabbedPane .addTab( "build", buildPanel );
@@ -727,8 +719,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         	// these will be handled by the DocumentController
         	case "toggleWireframe":
-        	case "toggleOrbitViews":
-        	case "toggleStrutScales":
         	case "toggleFrameLabels":
         	case "toggleOutlines":
         		actionListener = this .mController;
@@ -758,10 +748,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         	case "showPolytopesDialog":
         	case "showZomicWindow":
         	case "showPythonWindow":
-        	case "rZomeOrbits":
-        	case "predefinedOrbits":
-        	case "usedOrbits":
-        	case "setAllDirections":
         	case "configureShapes":
         	case "configureDirections":
         	case "redoUntilEdit":

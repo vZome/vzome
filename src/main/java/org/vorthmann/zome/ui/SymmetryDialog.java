@@ -39,12 +39,12 @@ public class SymmetryDialog extends EscapeDialog
                 JPanel mainPanel = new JPanel();
                 mainPanel .setLayout( new BoxLayout( mainPanel, BoxLayout.LINE_AXIS ) );
                 {
-                	availableOrbitsPanel = new OrbitPanel( config, null, "availableOrbits" );
+                	availableOrbitsPanel = new OrbitPanel( config, null, "availableOrbits", false );
                 	availableOrbitsPanel .setBorder( BorderFactory .createTitledBorder( "available directions" ) );
                     mainPanel .add( availableOrbitsPanel );
                 }
                 {
-                	snapOrbitsPanel = new OrbitPanel( config, "availableOrbits", "snapOrbits" );
+                	snapOrbitsPanel = new OrbitPanel( config, "availableOrbits", "snapOrbits", false );
                 	snapOrbitsPanel .setBorder( BorderFactory .createTitledBorder( "snap directions" ) );
                     mainPanel .add( snapOrbitsPanel );
                 }

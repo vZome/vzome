@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.RenderedImage;
@@ -118,8 +119,6 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private Java2dSnapshot mSnapshot = null;
 
-    private boolean useGraphicalViews = false;
-    private boolean showStrutScales = false;
     private boolean mRequireShift = false;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
@@ -138,6 +137,8 @@ public class DocumentController extends DefaultController implements J3dComponen
     private SymmetryController symmetryController;
     
     private Segment workingPlaneAxis = null;
+    
+    private final StrutBuilderController buildController;
     
     private final ToolsController toolsController;
     
@@ -163,6 +164,8 @@ public class DocumentController extends DefaultController implements J3dComponen
     private int changeCount = 0;
 
     private final PickingController monoController; //, leftController, rightController;
+
+	private ActionListener uiActions;
         
    /*
      * See the javadoc to control the logging:
@@ -177,7 +180,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     public DocumentController( DocumentModel document, ApplicationController app, Properties props )
     {
-        setNextController( app );
+		setNextController( app );
 
         this .properties = props;
         this .documentModel = document;
@@ -200,6 +203,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 : null;
         
         System.out.println( "ToolsController" );
+        
+        buildController = new StrutBuilderController( this );
                 
         toolsController = new ToolsController( document );
         toolsController .setNextController( this );
@@ -295,8 +300,6 @@ public class DocumentController extends DefaultController implements J3dComponen
         mViewPlatform .setNextController( this );
 
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
-        useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
-        showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
         System.out.println( "mainScene" );
@@ -816,18 +819,6 @@ public class DocumentController extends DefaultController implements J3dComponen
 //                    mainScene .disableWorkingPlane( workingPlaneOrbits );
             }
 
-            else if ( action.equals( "toggleOrbitViews" ) ) {
-                boolean old = useGraphicalViews;
-                useGraphicalViews = ! old;
-                properties().firePropertyChange( "useGraphicalViews", old, this.useGraphicalViews );
-            }
-
-            else if ( action.equals( "toggleStrutScales" ) ) {
-                boolean old = showStrutScales;
-                showStrutScales = ! old;
-                properties().firePropertyChange( "showStrutScales", old, this.showStrutScales );
-            }
-
             else if ( action.startsWith( "setSymmetry." ) ) {
                 String system = action.substring( "setSymmetry.".length() );
                 this .documentModel .setSymmetrySystem( system );
@@ -893,6 +884,10 @@ public class DocumentController extends DefaultController implements J3dComponen
             else
             {
                 switch ( action ) {
+                
+                case "configureDirections":
+                	getUiActionListener() .actionPerformed( e );
+                	break;
                 
                 case "setSymmetryCenter":
                     this .documentModel .setParameter( null, "ball" );
@@ -1288,17 +1283,12 @@ public class DocumentController extends DefaultController implements J3dComponen
         mViewPlatform.setErrorChannel( errors );
         lessonController.setErrorChannel( errors );
         toolsController .setErrorChannel( errors );
+        buildController .setErrorChannel( errors );
     }
 
     @Override
     public String getProperty( String string )
     {
-        if ( "useGraphicalViews".equals( string ) ) {
-            return Boolean.toString( this.useGraphicalViews );
-        }
-        if ( "showStrutScales".equals( string ) ) {
-            return Boolean.toString( this.showStrutScales );
-        }
         if ( "startReader".equals( string ) )
             return Boolean.toString( startReader );
 
@@ -1410,6 +1400,9 @@ public class DocumentController extends DefaultController implements J3dComponen
         case "tools":
             return toolsController;
         
+        case "builder":
+            return buildController;
+        
         case "parts":
             return partsController; 
         
@@ -1439,11 +1432,7 @@ public class DocumentController extends DefaultController implements J3dComponen
     @Override
     public void setProperty( String cmd, Object value )
     {
-        if ( "useGraphicalViews".equals( cmd ) ) {
-            this.useGraphicalViews = "true".equals( value );
-            properties().firePropertyChange( cmd, false, this.useGraphicalViews );
-            return;
-        } else if ( "visible".equals( cmd ) ) {
+        if ( "visible".equals( cmd ) ) {
             // Window is listening, will bring itself to the front, or close itself
             // App controller will set topDocument, or remove the document.
             properties() .firePropertyChange( "visible", null, value );
@@ -1454,10 +1443,6 @@ public class DocumentController extends DefaultController implements J3dComponen
             sceneLighting .setProperty( cmd, value );
         } else if ( "terminating".equals( cmd ) ) {
             properties().firePropertyChange( cmd, null, value );
-        } else if ( "showStrutScales".equals( cmd ) ) {
-            boolean old = showStrutScales;
-            this.showStrutScales = "true" .equals( value );
-            properties().firePropertyChange( "showStrutScales", old, this.showStrutScales );
         }
         else if ( "clipboard" .equals( cmd ) ) {
             if( systemClipboard != null ) {
@@ -1534,18 +1519,6 @@ public class DocumentController extends DefaultController implements J3dComponen
             case "lookAtBall":
                 RealVector loc = documentModel .getLocation( singleConstruction );
                 mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
-                break;
-                
-            case "setBuildOrbitAndLength": {
-                AlgebraicVector offset = ((Strut) pickedManifestation) .getOffset();
-                Axis zone = symmetryController .getZone( offset );
-                Direction orbit = zone .getOrbit();
-                AlgebraicNumber length = zone .getLength( offset );
-                symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
-                symmetryController .buildController .doAction( "setSingleDirection." + orbit .getName(), null );
-                LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
-                lmodel .setActualLength( length );
-                }
                 break;
                 
             case "selectCollinear": 
@@ -1715,4 +1688,14 @@ public class DocumentController extends DefaultController implements J3dComponen
             return this .getProperty( propName );
         }
     }
+
+	public ActionListener getUiActions()
+	{
+		return uiActions;
+	}
+
+	public void setUiActions( ActionListener uiActions )
+	{
+		this.uiActions = uiActions;
+	}
 }

@@ -65,8 +65,8 @@ public class SymmetryController extends DefaultController// implements RenderedM
     
     public SymmetryController( Controller parent, SymmetrySystem model )
     {
-        this .setNextController( parent );
-        this.symmetrySystem = model;
+		this .setNextController( parent );
+        this .symmetrySystem = model;
     }
     
     public Controller asController()
@@ -166,17 +166,24 @@ public class SymmetryController extends DefaultController// implements RenderedM
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
-        if ( action .equals( "rZomeOrbits" )
-           || action .equals( "predefinedOrbits" )
-           || action .equals( "setAllDirections" ) )
-        {
+        switch ( action ) {
+
+        case "configureDirections":
+            super .doAction( action, e );
+            break;
+           
+        case "rZomeOrbits":
+        case "predefinedOrbits":
+        case "setAllDirections":
             availableController .doAction( action, e );
-        }
-        else if ( action .startsWith( "setStyle." ) )
-        {
-            String styleName =  action .substring( "setStyle." .length() );
-            this .symmetrySystem .setStyle( styleName );
-            super .doAction( action, e ); // falling through so that rendering gets adjusted
+            break;
+        
+        default:
+        	if ( action .startsWith( "setStyle." ) ) {
+        		String styleName =  action .substring( "setStyle." .length() );
+        		this .symmetrySystem .setStyle( styleName );
+        	}
+    		super .doAction( action, e ); // falling through so that rendering gets adjusted
         }
     }
     
