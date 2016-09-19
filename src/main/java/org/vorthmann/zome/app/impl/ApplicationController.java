@@ -111,6 +111,17 @@ public class ApplicationController extends DefaultController
         properties .putAll( userPreferences );
         properties .putAll( commandLineArgs );
 
+        // This seems to get rid of the "white-out" problem on David's (Windows) computer.
+        // Otherwise it shows up spuratically, but still frequently. 
+        // It is usually, but not always, triggered by such events as context menus,
+        // tool tips, or modal dialogs being rendered on top of the main frame.
+        // Since the problem has not been reported elsewhere, this fix will be configurable, rather than hard coded.
+        final String NOERASEBACKGROUND = "sun.awt.noerasebackground";
+        if( propertyIsTrue(NOERASEBACKGROUND)) { // if it's set to true in the prefs file or command line
+            System.setProperty(NOERASEBACKGROUND, "true"); // then set the System property so the AWT/Swing components will use it.
+            logger .config( NOERASEBACKGROUND + " is set to 'true'." );
+        }
+
         final FailureChannel failures = new FailureChannel()
         {	
 			@Override
