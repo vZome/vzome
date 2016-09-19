@@ -1,6 +1,7 @@
 package com.vzome.core.editor;
 
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.model.Connector;
 
 public class IcosahedralToolFactory extends AbstractToolFactory implements ToolFactory
 {
@@ -26,7 +27,6 @@ public class IcosahedralToolFactory extends AbstractToolFactory implements ToolF
 
 	@Override
 	protected boolean bindParameters(Selection selection, SymmetrySystem symmetry) {
-		// TODO Auto-generated method stub
-		return false;
+        return selection.size() == 1 && selection.iterator().next() instanceof Connector;
 	}
 }
