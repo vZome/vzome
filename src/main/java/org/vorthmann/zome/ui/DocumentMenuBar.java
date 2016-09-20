@@ -6,7 +6,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -517,21 +519,25 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                 Properties customMenuItems = new Properties();
                 customMenuItems.load(new FileInputStream(customMenuFile));
                 if (!customMenuItems.isEmpty()) {
-                    JMenu menu = new JMenu("Custom");
-                    int itemCount = 0;
+                    // Properties collection is unaffected by the order the items occur in the file
+                    //  so we'll sort them by menuText for consistent placement on the menu.
+                    // Note that a case insensitive sort is specified.
+                    // Menu items in the properties file can be prefixed with numbers to generate a particular display order
+                    Map<String, String> sortedMenuCommands  = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
                     for (Object key : customMenuItems.keySet()) {
                         String actionName = key.toString();
-                        String menuString = customMenuItems.getProperty(actionName).trim();
-                        itemCount++;
-                        try {
-                            menu.add(createMenuItem(menuString, actionName));
-                        } catch (Exception ex) {
-                            // handle this exception within the loop so we can keep trying to load any other menu items
-                            log( "Error creating custom menu item: \"" + actionName + "=" + menuString + "\"", ex);
+                        String menuText = customMenuItems.getProperty(actionName).trim();
+                        if(!menuText.isEmpty()) {
+                            // also note that we're swapping keys for elements
+                            // as we move from the Properties collection to the sortedMenuCommands
+                            sortedMenuCommands.put(menuText, actionName);
                         }
                     }
-                    if(itemCount > 0) {
-                        // if none of the menu items loaded successfully, then don't bother
+                    if (! sortedMenuCommands.isEmpty() ) {
+                        JMenu menu = new JMenu("Custom");
+                        for (String label : sortedMenuCommands.keySet()) {
+                            menu.add(createMenuItem(label, sortedMenuCommands.get(label)));
+                        }
                         return menu;
                     }
                 }
