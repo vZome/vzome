@@ -6,7 +6,6 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -36,7 +35,6 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import javax.vecmath.Point3d;
-import javax.vecmath.Quat4d;
 
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.MouseTool;
@@ -59,7 +57,6 @@ import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
@@ -96,8 +93,6 @@ public class DocumentController extends DefaultController implements J3dComponen
 {
     private DocumentModel documentModel;
     
-    private final PreviewStrut previewStrut;
-
     private final RenderedModel mRenderedModel;
 
     private RenderedModel currentSnapshot;
@@ -157,7 +152,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private final Component modelCanvas; //, leftEyeCanvas, rightEyeCanvas;
 
-    private MouseTool selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
+    private MouseTool selectionClick;
 
     private final Controller polytopesController;
 
@@ -202,10 +197,11 @@ public class DocumentController extends DefaultController implements J3dComponen
                 ? new ClipboardController()
                 : null;
         
-        System.out.println( "ToolsController" );
+        // this seems backwards, I know... the TrackballViewPlatformModel is the main
+        // model, and only forwards two events to trackballVPM
+        mViewPlatform = new CameraController( document .getViewModel() );
+        mViewPlatform .setNextController( this );
         
-        buildController = new StrutBuilderController( this );
-                
         toolsController = new ToolsController( document );
         toolsController .setNextController( this );
         this .addPropertyListener( toolsController );
@@ -292,13 +288,6 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
 
-        System.out.println( "CameraController" );
-        
-        // this seems backwards, I know... the TrackballViewPlatformModel is the main
-        // model, and only forwards two events to trackballVPM
-        mViewPlatform = new CameraController( document .getViewModel() );
-        mViewPlatform .setNextController( this );
-
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
@@ -315,6 +304,8 @@ public class DocumentController extends DefaultController implements J3dComponen
         mViewPlatform .addViewer( imageCaptureViewer );
         monoController = new PickingController( imageCaptureViewer, this );
         
+        buildController = new StrutBuilderController( this, mViewPlatform, document, mainScene, imageCaptureViewer );
+
 //        System.out.println( "leftEyeCanvas" );
 //        
 //        leftEyeCanvas = rvFactory .createJ3dComponent( "" );
@@ -364,9 +355,6 @@ public class DocumentController extends DefaultController implements J3dComponen
         thumbnails = new ThumbnailRendererImpl( rvFactory, sceneLighting );
 
         mApp = app;
-
-        AlgebraicField field = this .documentModel .getField();
-        previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
         
         System.out.println( "LessonController" );
         
@@ -423,6 +411,9 @@ public class DocumentController extends DefaultController implements J3dComponen
              * 
              */
 
+            if ( canvas == modelCanvas )
+            	buildController .getMouseTool() .attach( canvas );
+
             // these are for the model viewer (article mode)
             MouseTool mouseTool = new MouseToolDefault()
             {
@@ -435,28 +426,6 @@ public class DocumentController extends DefaultController implements J3dComponen
             };
             if ( canvas == modelCanvas )
                 lessonPageClick = mouseTool; // will not be attached, initially; gets attached on switchToArticle
-
-            mouseTool = new MouseToolFilter( mViewPlatform .getZoomScroller() )
-            {
-                @Override
-                public void mouseWheelMoved( MouseWheelEvent e )
-                {
-                    LengthController length = previewStrut .getLengthModel();
-                    if ( length != null )
-                    {
-                        // scroll to scale the preview strut (when it is rendered)
-                        length .getMouseTool() .mouseWheelMoved( e );
-                        // don't adjustPreviewStrut() here, let the prop change trigger it,
-                        // so we don't flicker for every tick of the mousewheel
-                    }
-                    else
-                    {
-                        // no strut build in progress, so zoom the view
-                        super .mouseWheelMoved( e );
-                    }
-                }
-            };
-            mouseTool .attach( canvas );
 
             mouseTool = mViewPlatform .getTrackball();
             if ( propertyIsTrue( "presenter.mode" ) )
@@ -532,66 +501,6 @@ public class DocumentController extends DefaultController implements J3dComponen
                 mouseTool .attach( canvas );
             if ( canvas == modelCanvas )
                 selectionClick = mouseTool;
-
-            // drag events to render or realize the preview strut;
-            //   only works when drag starts over a ball
-            mouseTool = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
-            {                
-                @Override
-                protected void dragStarted( Manifestation target, boolean b )
-                {
-                    if ( target instanceof Connector )
-                    {
-                        mErrors .clearError();
-                        Point point = (Point) target .getConstructions() .next();
-                        AlgebraicVector workingPlaneNormal = null;
-                        if ( useWorkingPlane && (workingPlaneAxis != null ) )
-                            workingPlaneNormal = workingPlaneAxis .getOffset();
-                        previewStrut .startRendering( symmetryController, point, workingPlaneNormal );
-                    }
-                }
-
-                @Override
-                protected void dragFinished( Manifestation target, boolean b )
-                {
-                    previewStrut .finishPreview( documentModel );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                previewStrutStart = mouseTool;
-
-            // trackball to adjust the preview strut (when it is rendered)
-            mouseTool = new LeftMouseDragAdapter( new Trackball()
-            {
-                @Override
-                protected void trackballRolled( Quat4d roll )
-                {
-                    previewStrut .trackballRolled( roll );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                previewStrutRoll = mouseTool;
-            
-            // working plane drag events to adjust the preview strut (when it is rendered)
-            mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
-            {
-                @Override
-                public void mouseDragged( MouseEvent e )
-                {
-                    Point3d imagePt = new Point3d();
-                    Point3d eyePt = new Point3d();
-                    imageCaptureViewer .pickPoint( e, imagePt, eyePt );
-                    previewStrut .workingPlaneDrag( imagePt, eyePt );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                previewStrutPlanarDrag = mouseTool;
             
             // mRenderedModel .setFactory( mViewer .getSceneGraphFactory() );
             // mRenderedModel .setTopGroup( mViewer .getSceneGraphRoot() );
@@ -670,8 +579,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             if ( partsController != null )
                 partsController .endSwitch();
         }
-        if ( previewStrut != null )
-            previewStrut .setSymmetryController( symmetryController );
+        buildController .setSymmetryController( symmetryController );
     }
 
     @Override
@@ -730,9 +638,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 currentView = mViewPlatform .getView();
                 
                 selectionClick .detach( modelCanvas );
-                previewStrutStart .detach( modelCanvas );
-                previewStrutRoll .detach( modelCanvas );
-                previewStrutPlanarDrag .detach( modelCanvas );
+                buildController .getMouseTool() .detach( modelCanvas );
                 modelModeMainTrackball .detach( modelCanvas );
                 
                 lessonPageClick .attach( modelCanvas );
@@ -758,9 +664,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 articleModeMainTrackball .detach( modelCanvas );
                 
                 selectionClick .attach( modelCanvas );
-                previewStrutStart .attach( modelCanvas );
-                previewStrutRoll .attach( modelCanvas );
-                previewStrutPlanarDrag .attach( modelCanvas );
+                buildController .getMouseTool() .attach( modelCanvas );
                 modelModeMainTrackball .attach( modelCanvas );
 
                 this .editingModel = true;
