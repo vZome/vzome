@@ -80,8 +80,8 @@ public class DaeExporter extends Exporter3d
             }
             else
             {
-                String shapeId = doc .addShape( rm );
-            	doc .addShapeInstance( rm, shapeId, man .getLocation() );
+                String nodeId = doc .addColoredShape( rm );
+            	doc .addShapeInstance( rm, nodeId, man .getLocation() );
             }
         }
         doc .write( writer );
@@ -107,9 +107,10 @@ public class DaeExporter extends Exporter3d
     	private Element visual_scene_node_template, oriented_shape_template, geometry_template, shape_template,
     					visual_scene, library_nodes, library_geometries,
     					material_template, library_materials, effect_template, library_effects;
-    	private int instanceNum = 0, shapeNum = 0, colorNum = 0;
+    	private int instanceNum = 0, shapeNum = 0, colorNum = 0, nodeNum = 0;
     	private Set<String> orientedShapeIds = new HashSet<>();
     	private Map<Polyhedron,String> shapeIds = new HashMap<>();
+    	private Map<String,Map<String,String>> coloredShapeIds = new HashMap<>();
     	private Map<Color,String> colorIds = new HashMap<>();
 
         ColladaDocument( String templatePath )
@@ -211,7 +212,6 @@ public class DaeExporter extends Exporter3d
 
         String addShape( RenderedManifestation rm )
         {
-        	String colorId = addColor( rm );
         	Polyhedron shape = rm .getShape();
         	String shapeId = shapeIds .get( shape );
         	if ( shapeId == null)
@@ -231,7 +231,6 @@ public class DaeExporter extends Exporter3d
                     vertices .append( FORMAT .format( vertex.z ) + " " );
                     ++ vertexCount;
                 }
-                boolean reverseFaces = rm .reverseOrder();
                 for (Polyhedron.Face face : shape .getFaceSet())
                 {
                 	int arity = face .size();
@@ -283,9 +282,6 @@ public class DaeExporter extends Exporter3d
         		Element geometry = (Element) geometry_template .cloneNode( true );
 				geometry .setAttribute( "id", geomId );
 				library_geometries .appendChild( geometry );
-        		Element shape_node = (Element) shape_template .cloneNode( true );
-				shape_node .setAttribute( "id", shapeId );
-				library_nodes .appendChild( shape_node );
                 try {
     				Element source = (Element) xpath .evaluate( "mesh/source[@name='position']", geometry, XPathConstants.NODE );
     				source .setAttribute( "id", positionsId );
@@ -322,12 +318,6 @@ public class DaeExporter extends Exporter3d
     				Element p = (Element) xpath .evaluate( "p", triangles_node, XPathConstants.NODE );
     				p .setTextContent( triangles .toString() );
 
-                	Element instance_geometry = (Element) xpath .evaluate( "instance_geometry", shape_node, XPathConstants.NODE );
-    				instance_geometry .setAttribute( "url", "#" + geomId );
-                	Element instance_material = (Element) xpath .evaluate( "bind_material//instance_material", instance_geometry, XPathConstants.NODE );
-                	instance_material .setAttribute( "symbol", materialId );
-                	instance_material .setAttribute( "target", "#" + colorId );
-
                 } catch ( XPathExpressionException e ) {
     				e.printStackTrace();
     			}
@@ -336,10 +326,41 @@ public class DaeExporter extends Exporter3d
 			return shapeId;
 		}
 
+        String addColoredShape( RenderedManifestation rm )
+        {
+        	String colorId = addColor( rm );
+        	String shapeId = addShape( rm );
+        	Map<String,String> nodeIds = coloredShapeIds .get( shapeId );
+        	if ( nodeIds == null ) {
+        		nodeIds = new HashMap<>();
+        		coloredShapeIds .put( shapeId, nodeIds );
+        	}
+        	String nodeId = nodeIds .get( colorId );
+        	if ( nodeId == null)
+        	{
+        		nodeId = "node" + Integer .toString( nodeNum++ );
+        		Element shape_node = (Element) shape_template .cloneNode( true );
+				shape_node .setAttribute( "id", nodeId );
+				library_nodes .appendChild( shape_node );
+                try {
+                	Element instance_geometry = (Element) xpath .evaluate( "instance_geometry", shape_node, XPathConstants.NODE );
+    				instance_geometry .setAttribute( "url", "#" + shapeId + "-geom" );
+                	Element instance_material = (Element) xpath .evaluate( "bind_material//instance_material", instance_geometry, XPathConstants.NODE );
+                	instance_material .setAttribute( "symbol", shapeId + "-material" );
+                	instance_material .setAttribute( "target", "#" + colorId );
+
+                } catch ( XPathExpressionException e ) {
+    				e.printStackTrace();
+    			}
+                nodeIds .put( colorId, nodeId );
+        	}
+			return nodeId;
+		}
+
         String addOrientedShape( RenderedManifestation rm )
         {
-        	String shapeId = addShape( rm );
-        	String orientedShapeId = shapeId + "-" + rm .getStrutZone();
+        	String nodeId = addColoredShape( rm );
+        	String orientedShapeId = nodeId + "-" + rm .getStrutZone();
         	if ( ! orientedShapeIds .contains( orientedShapeId ) )
         	{
         		Element oriented_shape = (Element) oriented_shape_template .cloneNode( true );
@@ -359,7 +380,7 @@ public class DaeExporter extends Exporter3d
     				sb .append( "0.0 0.0 0.0 1.0" );
     				matrix .setTextContent( sb .toString() );
     				Element instance_node = (Element) xpath .evaluate( "instance_node", oriented_shape, XPathConstants.NODE );
-    				instance_node .setAttribute( "url", "#" + shapeId );
+    				instance_node .setAttribute( "url", "#" + nodeId );
     				oriented_shape .setAttribute( "id", orientedShapeId );
     				library_nodes .appendChild( oriented_shape );
     			} catch ( XPathExpressionException e ) {
