@@ -93,8 +93,8 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
 
     public final RealVector toRealVector()
     {
-        // TODO assert this is 3d
-        return new RealVector( this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() );
+        RealVector raw = new RealVector( this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() );
+    	return this .field .adjustRealVector( raw );
     }
 
     /**

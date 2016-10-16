@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 
@@ -499,4 +500,9 @@ public abstract class AlgebraicField
         }
         return new AlgebraicMatrix( columns );
     }
+
+	public RealVector adjustRealVector( RealVector v )
+	{
+        return v;
+	}
 }

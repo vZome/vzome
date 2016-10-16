@@ -3,14 +3,24 @@
 
 package com.vzome.core.algebra;
 
+import javax.vecmath.Matrix3d;
+import javax.vecmath.Vector3d;
+
+import com.vzome.core.math.RealVector;
+
 
 public class HeptagonField extends AlgebraicField
 {    
-    public HeptagonField()
+	public HeptagonField()
     {
         super( "heptagon" );
 
         SIGMA_INV = fromIntArray( new int[]{ 0,1,0,1,1,1 } ) .reciprocal();
+        
+        double a_over_h = Math.sqrt( ( 1d + RHO_VALUE + SIGMA_VALUE ) / ( 2d + 2*SIGMA_VALUE - RHO_VALUE ) );
+        double sqrt2 = Math.sqrt( 2d );
+        double g = ( sqrt2 + 2*a_over_h ) / ( sqrt2 - a_over_h );
+        SHEAR = new Matrix3d( g, 1d, 1d, 1d, g, 1d, 1d, 1d, g );
     };
     
     private static final double RHO_VALUE = 1.8019377d, SIGMA_VALUE = 2.2469796d;
@@ -21,6 +31,16 @@ public class HeptagonField extends AlgebraicField
     
     private final AlgebraicNumber SIGMA_INV;
     
+    private final Matrix3d SHEAR;
+    
+    @Override
+	public RealVector adjustRealVector( RealVector rv )
+    {
+        Vector3d v = new Vector3d( rv.x, rv.y, rv.z );
+    	SHEAR .transform( v );
+		return new RealVector( v.x, v.y, v.z );
+	}
+
     private AlgebraicNumber fromIntArray( int[] ints )
     {
         return new AlgebraicNumber( this, new BigRational( ints[0], ints[1] ), new BigRational( ints[2], ints[3] ), new BigRational( ints[4], ints[5] ) );
