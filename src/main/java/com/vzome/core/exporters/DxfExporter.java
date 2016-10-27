@@ -47,7 +47,7 @@ public class DxfExporter extends Exporter3d
                 output .println( "vZome" ); // this is the "layer" the line appears in; it need not be predefined
                 AlgebraicVector start = ((Strut) man) .getLocation();
                 AlgebraicVector end = ((Strut) man) .getEnd();
-                RealVector rv = start .toRealVector();
+                RealVector rv = mModel .renderVector( start );
                 rv = rv .scale( RZOME_INCH_SCALING );
                 output .println( "10" );
                 output .println( format.format( rv .x ) );
@@ -55,7 +55,7 @@ public class DxfExporter extends Exporter3d
                 output .println( format.format( rv .y ) );
                 output .println( "30" );
                 output .println( format.format( rv .z ) );
-                rv = end .toRealVector();
+                rv = mModel .renderVector( end );
                 rv = rv .scale( RZOME_INCH_SCALING );
                 output .println( "11" );
                 output .println( format.format( rv .x ) );

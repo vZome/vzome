@@ -173,7 +173,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         int closestSense = Symmetry.PLUS;
         Axis closestAxis = this .getCanonicalAxis( Symmetry.PLUS, 0 );
         checked .add( closestAxis );
-        RealVector axisV = closestAxis .normal() .toRealVector();
+        RealVector axisV = closestAxis .normal() .toRealVector(); // TODO invert the Embedding to get this right
         double maxCosine = vector .dot( axisV ) / (vectorLength * axisV .length());
         if ( maxCosine < 0 ) {
             // wrong hemisphere, flip to the other one
@@ -221,7 +221,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         double maxCosine = -1d;
         for ( Iterator<Axis> axes = this .getAxes(); axes .hasNext(); ) {
             Axis axis = axes .next();
-            RealVector axisV = axis .normal() .toRealVector();
+            RealVector axisV = axis .normal() .toRealVector(); // TODO invert the Embedding to get this right
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {
                 maxCosine = cosine;

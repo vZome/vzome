@@ -412,7 +412,7 @@ public class Application
 
         field = new HeptagonField();
         fields .put( field .getName(), field );
-        OctahedralSymmetry symmetry = new OctahedralSymmetry( field, "blue", "octahedra" );
+        HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "octahedra" );
         mStyles.put( symmetry, new ArrayList<>() );
         addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
         mCommands .put( "octasymm-heptagon", new CommandSymmetry( symmetry ) );

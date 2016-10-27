@@ -11,8 +11,10 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
@@ -38,7 +40,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     private boolean oneSidedPanels = false;
 
     private RenderingChanges mainListener;
-
+    
 	private boolean enabled = true;
 
     private boolean colorPanels = true;
@@ -141,6 +143,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		}
 		
 	    RenderedManifestation rm = new RenderedManifestation( m );
+        rm .setModel( this );
 //	    resetAxis( rm );
 	    resetAttributes( rm, false );
         Polyhedron poly = rm .getShape();
@@ -457,6 +460,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         RenderedModel snapshot = new RenderedModel( this .field, false );
         for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
+            copy .setModel( this );
             snapshot .mRendered .add( copy );
         }
         return snapshot;
@@ -497,6 +501,17 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             }
         }
     }
+
+	public RealVector renderVector( AlgebraicVector av )
+	{
+		if ( av != null )
+			return getEmbedding() .embedInR3( av );
+		else
+            return new RealVector( 0d, 0d, 0d );
+	}
+
+	public Embedding getEmbedding()
+	{
+		return this .orbitSource .getSymmetry();
+	}
 }
-
-

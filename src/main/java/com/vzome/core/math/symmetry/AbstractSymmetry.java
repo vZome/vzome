@@ -22,7 +22,7 @@ import com.vzome.core.math.RealVector;
  */
 public abstract class AbstractSymmetry implements Symmetry
 {
-    protected final Map<String, Direction> mDirectionMap = new HashMap<>();
+	protected final Map<String, Direction> mDirectionMap = new HashMap<>();
     
     protected final List<Direction> mDirectionList = new ArrayList<>(); // TODO remove, redundant with orbitSet
     
@@ -339,7 +339,7 @@ public abstract class AbstractSymmetry implements Symmetry
             Axis axis = ( orientation >= 0 )
                 ? dir .getCanonicalAxis( sense, orientation ) // we found the orientation above, so we don't need to iterate over the whole orbit
                 : dir .getAxisBruteForce( vector ); // iterate over zones in the orbit
-            RealVector axisV = axis .normal() .toRealVector();
+            RealVector axisV = axis .normal() .toRealVector(); // TODO invert the Embedding to get this right
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {
                 maxCosine = cosine;
@@ -453,4 +453,9 @@ public abstract class AbstractSymmetry implements Symmetry
         return null;
     }
     
+    @Override
+	public RealVector embedInR3( AlgebraicVector v )
+    {
+		return v .toRealVector();
+	}
 }

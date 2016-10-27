@@ -764,11 +764,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	public RealVector getLocation( Construction target )
 	{
 		if ( target instanceof Point)
-			return ( (Point) target ).getLocation() .toRealVector();
+			return this .renderedModel .renderVector( ( (Point) target ).getLocation() );
 		else if ( target instanceof Segment )
-			return ( (Segment) target ).getStart() .toRealVector();
+			return this .renderedModel .renderVector( ( (Segment) target ).getStart() );
 		else if ( target instanceof Polygon )
-			return ( (Polygon) target ).getVertices()[ 0 ] .toRealVector();
+			return this .renderedModel .renderVector( ( (Polygon) target ).getVertices()[ 0 ] );
 		else
 			return new RealVector( 0, 0, 0 );
 	}
@@ -1512,7 +1512,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
     public void setSymmetrySystem( String name )
     {
-    	this .mEditorModel .setSymmetrySystem( this .symmetrySystems .get( name ) );
+    	SymmetrySystem system = this .symmetrySystems .get( name );
+    	this .mEditorModel .setSymmetrySystem( system );
     }
 
 	public ToolFactory getToolFactory( String name )

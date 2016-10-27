@@ -34,7 +34,7 @@ public class RulerExporter extends Exporter3d
             if ( man instanceof Connector )
             {
                 AlgebraicVector loc = ((Connector) man) .getLocation();
-                RealVector rv = loc .toRealVector();
+                RealVector rv = mModel .renderVector( loc );
                 double x = rv .x;
                 if ( x > maxX )
                     maxX = x;

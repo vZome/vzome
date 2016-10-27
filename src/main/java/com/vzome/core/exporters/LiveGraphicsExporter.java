@@ -78,7 +78,7 @@ public class LiveGraphicsExporter extends Exporter3d
                     // TODO need a unit test... don't know if the transform should be right or left
                     //   (migrated to rational vectors, but not tested)
                     loc = transform .timesColumn( loc ) .plus( rmLoc );
-                    RealVector rv = loc .toRealVector();
+                    RealVector rv = mModel .renderVector( loc );
                     output .print( "{" );
                     output .print( FORMAT.format( rv .x ) + ", " );
                     output .print( FORMAT.format( rv .y ) + ", " );

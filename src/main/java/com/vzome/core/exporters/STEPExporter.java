@@ -110,7 +110,7 @@ public class STEPExporter extends Exporter3d{
         for (AlgebraicVector gv : poly .getVertexList()) {
             if ( reverseFaces )
                 gv = gv .negate();
-            RealVector v = gv .toRealVector() .scale( SCALE );
+            RealVector v = mModel .renderVector( gv ) .scale( SCALE );
             realVectors .add( v );
             
             int cpIndex = ++index;

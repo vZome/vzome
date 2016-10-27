@@ -79,11 +79,11 @@ public class OpenGLExporter extends Exporter3d
                     int arity = face .size();
                     ++numShapes;
                     shape_indices .append( arity + ",   " );
-                    RealVector normal = face .getNormal() .toRealVector();
+                    RealVector normal = mModel .renderVector( face .getNormal() );
                     for ( int j = 0; j < arity; j++ ){
                         int index = face .get( flip? arity-j-1 : j );
-                        AlgebraicVector loc = vertices .get( index );
-                        RealVector vertex = loc .toRealVector();
+                        AlgebraicVector av = vertices .get( index );
+                        RealVector vertex = mModel .renderVector( av );
                         shape_vertices .append( vertex + ",\n" );
                         shape_normals .append( normal + ",\n" );
                         ++numShapes;
@@ -158,7 +158,7 @@ public class OpenGLExporter extends Exporter3d
     
     protected void appendLocation( AlgebraicVector loc, StringBuffer buf )
     {
-        buf .append( loc .toRealVector() );
+        buf .append( mModel .renderVector( loc ) );
         buf .append( ",\n" );
     }
 

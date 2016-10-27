@@ -8,6 +8,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.model.Manifestation;
 
 /**
@@ -20,7 +21,9 @@ public class RenderedManifestation
     
     private Polyhedron mShape;
     
-    private String mColorName;
+    private RenderedModel model;
+
+	private String mColorName;
     
     private Color color = null;
     
@@ -50,6 +53,11 @@ public class RenderedManifestation
 //        AlgebraicField factory = (AlgebraicField) m .getLocation() .getFactory();
         mOrientation = null; // factory .identity();
     }
+    
+	public void setModel( RenderedModel model )
+	{
+		this .model = model;
+	}
 
     public void setGraphicsObject( Object go )
     {
@@ -162,11 +170,13 @@ public class RenderedManifestation
 
     public RealVector getLocation()
     {
-        if ( location == null )
-            return new RealVector( 0d, 0d, 0d );
-        else
-            return location .toRealVector();
+    	return this .model .renderVector( this .location );
     }
+
+	public Embedding getEmbedding()
+	{
+		return this .model .getEmbedding();
+	}
 
 	@Override
     public int hashCode()

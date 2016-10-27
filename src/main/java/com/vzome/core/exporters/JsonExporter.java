@@ -90,7 +90,7 @@ public class JsonExporter extends Exporter3d
                 exportTransform( transformNum, transform, orientations );
             }
             
-            RealVector loc = rm .getLocation();
+            RealVector loc = mModel .renderVector( rm .getManifestation() .getLocation() );
             Color color = rm .getColor();
             if( color == null) {
                 color = Color.WHITE;
@@ -142,7 +142,7 @@ public class JsonExporter extends Exporter3d
         {
             AlgebraicVector columnSelect = modelField .basisVector( 3, i );
             AlgebraicVector columnI = transform .timesColumn( columnSelect );
-            RealVector colRV = columnI .toRealVector();
+            RealVector colRV = mModel .renderVector( columnI );
             if ( i > 0 )
                 buf .append( ", " );
             buf .append( FORMAT .format( colRV.x ) );
@@ -171,13 +171,13 @@ public class JsonExporter extends Exporter3d
             int arity = face .size();
             int index = face .get( reverseFaces? arity-1 : 0 );
             AlgebraicVector gv = faceVertices .get(index);
-            RealVector vert0 = gv .toRealVector();
+            RealVector vert0 = mModel .renderVector( gv );
             index = face .get( reverseFaces? arity-2 : 1 );
             gv = faceVertices .get(index);
-            RealVector vert1 = gv .toRealVector( );
+            RealVector vert1 = mModel .renderVector( gv );
             index = face .get( reverseFaces? arity-3 : 2 );
             gv = faceVertices .get(index);
-            RealVector vert2 = gv .toRealVector( );
+            RealVector vert2 = mModel .renderVector( gv );
             RealVector edge1 = vert1 .minus( vert0 );
             RealVector edge2 = vert2 .minus( vert1 );
             RealVector norm = edge1 .cross( edge2 ) .normalize();
@@ -185,7 +185,7 @@ public class JsonExporter extends Exporter3d
             for ( int j = 0; j < arity; j++ ){
                 index = face .get( reverseFaces? arity-j-1 : j );
                 gv = faceVertices .get(index);
-                RealVector vertex = gv .toRealVector( );
+                RealVector vertex = mModel .renderVector( gv );
 
                 if ( v0 == -1 )
                     v0 = vertexCount;

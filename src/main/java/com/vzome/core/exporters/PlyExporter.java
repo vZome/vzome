@@ -95,7 +95,7 @@ public class PlyExporter extends Exporter3d
             int index = vertexData .size();
             obj = index;
             vertexData .put( key, obj );
-            vertices .append( vertexVector .toRealVector() .spacedString() + "\n" );
+            vertices .append( this .mModel .renderVector( vertexVector ) .spacedString() + "\n" );
         }
         return obj;
     }

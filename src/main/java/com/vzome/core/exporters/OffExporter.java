@@ -79,7 +79,7 @@ public class OffExporter extends Exporter3d
 
         output .println( "# Vertices.  Each line is the XYZ coordinates of one vertex." );
         for(AlgebraicVector vector : sortedVertexList) {
-            RealVector rv = vector.toRealVector();
+            RealVector rv = mModel .renderVector( vector );
             output.print(FORMAT.format(rv.x) + " ");
             output.print(FORMAT.format(rv.y) + " ");
             output.print(FORMAT.format(rv.z) + "\n");

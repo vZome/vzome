@@ -71,7 +71,7 @@ public class PdbExporter extends Exporter3d
         StringBuilder locations = new StringBuilder();
         StringBuilder neighbors = new StringBuilder();
         for (Atom atom : atomsList) {
-            RealVector rv = atom .location .toRealVector();
+            RealVector rv = mModel .renderVector( atom .location );
             System .out .println( atom .location .toString() );
             locations .append( String .format( "HETATM%5d He   UNK  0001     %7.3f %7.3f %7.3f\n",
                     atom .index, (float) rv.x * scaleFactor, (float) rv.y * scaleFactor, (float) rv.z * scaleFactor ) );

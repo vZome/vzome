@@ -34,6 +34,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.Color;
@@ -100,7 +101,7 @@ public class DaeExporter extends Exporter3d
     }
 
 
-    private static class ColladaDocument
+    private class ColladaDocument
     {
     	private Document doc;
     	private XPath xpath;
@@ -213,6 +214,7 @@ public class DaeExporter extends Exporter3d
         String addShape( RenderedManifestation rm )
         {
         	Polyhedron shape = rm .getShape();
+        	Embedding embedding = rm .getEmbedding();
         	String shapeId = shapeIds .get( shape );
         	if ( shapeId == null)
         	{
@@ -225,7 +227,7 @@ public class DaeExporter extends Exporter3d
                 
                 for ( AlgebraicVector av : shape .getVertexList() )
                 {
-                    RealVector vertex = av .toRealVector();
+                	RealVector vertex = mModel .renderVector( av );
                     vertices .append( FORMAT .format( vertex.x ) + " " );
                     vertices .append( FORMAT .format( vertex.y ) + " " );
                     vertices .append( FORMAT .format( vertex.z ) + " " );
@@ -263,7 +265,7 @@ public class DaeExporter extends Exporter3d
 //                        if ( normalCount % 20 == 0 )
 //                            normals .append( "\n" );
                 	}
-                	RealVector norm = face .getNormal() .toRealVector() .normalize();
+                	RealVector norm = embedding .embedInR3( face .getNormal() ) .normalize();
                     normals .append( FORMAT .format( norm.x ) + " " );
                     normals .append( FORMAT .format( norm.y ) + " " );
                     normals .append( FORMAT .format( norm.z ) + " " );
@@ -399,7 +401,7 @@ public class DaeExporter extends Exporter3d
             	if ( location == null )
             		visual_scene_node .removeChild( translate );
             	else
-    				translate .setTextContent( location .toRealVector() .spacedString() );
+    				translate .setTextContent( rm .getEmbedding() .embedInR3( location ) .spacedString() );
 				Element instance_node = (Element) xpath .evaluate( "instance_node", visual_scene_node, XPathConstants.NODE );
 				instance_node .setAttribute( "url", "#" + shapeId );
 				visual_scene_node .setAttribute( "id", "instance" + Integer .toString( instanceNum++ ) );

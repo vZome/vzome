@@ -104,9 +104,9 @@ public class VRMLExporter extends Exporter3d
 //                transform = transform .neg();
             
             // TODO this is a pretty clumsy way to get the rows of the matrix out
-            RealVector mx = transform .timesRow( field .basisVector( 3, AlgebraicVector.X ) ) .toRealVector();
-            RealVector my = transform .timesRow( field .basisVector( 3, AlgebraicVector.Y ) ) .toRealVector();
-            RealVector mz = transform .timesRow( field .basisVector( 3, AlgebraicVector.Z ) ) .toRealVector();
+            RealVector mx = mModel .renderVector( transform .timesRow( field .basisVector( 3, AlgebraicVector.X ) ) ); // TODO do we really want renderVector here?
+            RealVector my = mModel .renderVector( transform .timesRow( field .basisVector( 3, AlgebraicVector.Y ) ) );
+            RealVector mz = mModel .renderVector( transform .timesRow( field .basisVector( 3, AlgebraicVector.Z ) ) );
             
             // All this was first from Java3d's AxisAngle4f and Matrix3f, but that proved to be
             // inadequate, not handling rotation of Pi radians.
@@ -167,7 +167,7 @@ public class VRMLExporter extends Exporter3d
         for (AlgebraicVector gv : poly .getVertexList()) {
             if ( reverseFaces )
                 gv = gv  .negate();
-            RealVector v = gv .toRealVector();
+            RealVector v = mModel .renderVector( gv );
             output .println( v .scale( SCALE ) .spacedString() + "," );
         }
         output .println( "] } coordIndex [" );
