@@ -1,4 +1,4 @@
-package com.vzome.core.editor;
+package com.vzome.fields.heptagon;
 
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
@@ -10,7 +10,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 
 public class HeptagonalAntiprismSymmetry extends OctahedralSymmetry
-{	    
+{
     private final Matrix3d SHEAR;
 
 	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
@@ -33,4 +33,10 @@ public class HeptagonalAntiprismSymmetry extends OctahedralSymmetry
     	SHEAR .transform( v3d );
 		return new RealVector( v3d.x, v3d.y, v3d.z );
 	}
+    
+    @Override
+    public String getDefaultStyle()
+    {
+        return "heptagonal";
+    }
 }

@@ -82,6 +82,7 @@ import com.vzome.core.viewing.DodecagonalShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.OctahedralShapes;
+import com.vzome.fields.heptagon.HeptagonalAntiprismSymmetry;
 
 public class Application
 {
@@ -126,7 +127,9 @@ public class Application
         mLights .setBackgroundColor( mColors .getColor( Colors.BACKGROUND ) );
 
         AbstractShapes defaultShapes = null;
-        
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         AlgebraicField field = new PentagonField();
         AlgebraicField pentField = field;
         fields .put( field .getName(), field );
@@ -231,6 +234,9 @@ public class Application
                 mCommands .put( "axialsymm-octa", new CommandAxialSymmetry( octaSymm ) );
             }
         }
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         field = new RootTwoField();
         fields .put( field .getName(), field );
         {
@@ -322,6 +328,9 @@ public class Application
                 mCommands .put( "axialsymm-synestructics", new CommandAxialSymmetry( symmetry ) );
             }
         }
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         field = new RootThreeField();
         fields .put( field .getName(), field );
         fields .put( "dodecagon", field );
@@ -362,7 +371,9 @@ public class Application
                 mCommands .put( "dodecagonsymm", "dodecagonsymm" );
             }
         }
-        
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         field = new SnubDodecField( pentField );
         fields .put( field .getName(), field );
         {
@@ -410,14 +421,21 @@ public class Application
             mCommands .put( "axialsymm-snubDodec", new CommandAxialSymmetry( symmetry ) );
         }
 
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         field = new HeptagonField();
         fields .put( field .getName(), field );
         HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "octahedra" );
         mStyles.put( symmetry, new ArrayList<>() );
-        addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
+        defaultShapes = new OctahedralShapes( "octahedral", "triangular", symmetry );
+        addStyle( defaultShapes );
+        addStyle( new ExportedVEFShapes( prefsFolder, "heptagon/antiprism", "heptagonal", symmetry, defaultShapes ) );
         mCommands .put( "octasymm-heptagon", new CommandSymmetry( symmetry ) );
-        mCommands .put( "tetrasymm-heptagon", new CommandTetrahedralSymmetry( symmetry ) );
         mCommands .put( "axialsymm-heptagon", new CommandAxialSymmetry( symmetry ) );
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        
         if ( enableCommands ) {
             mCommands .put( "pointsymm", new CommandCentralSymmetry() );
             mCommands .put( "mirrorsymm", new CommandMirrorSymmetry() );

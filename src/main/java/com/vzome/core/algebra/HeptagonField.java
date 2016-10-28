@@ -5,6 +5,7 @@ package com.vzome.core.algebra;
 
 
 
+
 public class HeptagonField extends AlgebraicField
 {    
 	public HeptagonField()
