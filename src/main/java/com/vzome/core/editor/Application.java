@@ -83,6 +83,7 @@ import com.vzome.core.viewing.ExportedVEFShapes;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.OctahedralShapes;
 import com.vzome.fields.heptagon.HeptagonalAntiprismSymmetry;
+import com.vzome.fields.heptagon.TriangularAntiprismSymmetry;
 
 public class Application
 {
@@ -425,13 +426,25 @@ public class Application
 
         field = new HeptagonField();
         fields .put( field .getName(), field );
-        HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "octahedra" );
-        mStyles.put( symmetry, new ArrayList<>() );
-        defaultShapes = new OctahedralShapes( "octahedral", "triangular", symmetry );
-        addStyle( defaultShapes );
-        addStyle( new ExportedVEFShapes( prefsFolder, "heptagon/antiprism", "heptagonal", symmetry, defaultShapes ) );
-        mCommands .put( "octasymm-heptagon", new CommandSymmetry( symmetry ) );
-        mCommands .put( "axialsymm-heptagon", new CommandAxialSymmetry( symmetry ) );
+        {
+            Symmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism" );
+            mStyles.put( symmetry, new ArrayList<>() );
+            defaultShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
+            addStyle( defaultShapes );
+            addStyle( new ExportedVEFShapes( prefsFolder, "heptagon/antiprism", "heptagonal antiprism", symmetry, defaultShapes ) );
+        }
+        {
+            Symmetry symmetry = new TriangularAntiprismSymmetry( field, "blue", "triangular antiprism" );
+            mStyles.put( symmetry, new ArrayList<>() );
+            defaultShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
+            addStyle( defaultShapes );
+        }
+        {
+            Symmetry symmetry = new OctahedralSymmetry( field, "blue", "octahedral" );
+            mStyles.put( symmetry, new ArrayList<>() );
+            defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symmetry );
+            addStyle( defaultShapes );
+        }
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
