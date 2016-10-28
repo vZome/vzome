@@ -33,11 +33,13 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.Polyhedron.Face;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
+
 import java.awt.GraphicsDevice;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -135,7 +137,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     // The resulting geometry does not support the polygon offset
     //  required to avoid "stitching" when the line geometry is rendered at the same Z-depth
     //  as the solid geometry.
-    Geometry makeOutlineGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix )
+    Geometry makeOutlineGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix, Embedding embedding )
     {
         Geometry geom = map .get( matrix );
 
@@ -161,7 +163,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
             for (AlgebraicVector gv : polyVertices) {
                 if ( matrix != null )
                     gv = matrix .timesColumn( gv );
-                RealVector v = gv .toRealVector();
+                RealVector v = embedding .embedInR3( gv );
                 strips .setCoordinate( i++, new Point3d( v.x, v.y, v.z ) );
             }
             i = 0;
@@ -193,7 +195,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
             map = new HashMap<>();
             outlineGeometries .put( poly, map );
         }
-        return makeOutlineGeometry( map, poly, rm .getOrientation() );
+        return makeOutlineGeometry( map, poly, rm .getOrientation(), rm .getEmbedding() );
     }
 
     Geometry makeSolidGeometry( RenderedManifestation rm )
@@ -204,10 +206,10 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
             map = new HashMap<>();
             solidGeometries .put( poly, map );
         }
-        return makeGeometry( map, poly, rm .getOrientation(), rm .reverseOrder(), true );
+        return makeGeometry( map, poly, rm .getOrientation(), rm .reverseOrder(), true, rm .getEmbedding() );
     }
 
-    Geometry makeGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix, boolean reverseFaces, boolean makeNormals )
+    Geometry makeGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix, boolean reverseFaces, boolean makeNormals, Embedding embedding )
     {
         Geometry geom = map .get( matrix );
         if ( geom == null ) {
@@ -219,7 +221,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
                 Point3d pt = new Point3d();
                 if ( matrix != null )
                     gv = matrix .timesColumn( gv );
-                RealVector v = gv .toRealVector();
+                RealVector v = embedding .embedInR3( gv );
                 pt.x = v.x; pt.y = v.y; pt.z = v.z;
                 coords[i++] = pt;
             }

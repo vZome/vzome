@@ -53,7 +53,6 @@ public class Java3dRenderingViewer implements RenderingViewer
         mPickCanvas = new PickCanvas( mCanvas,  mScene .getRoot() );
         mPickCanvas .setMode( PickTool.GEOMETRY );
         mPickCanvas .setTolerance( 0.1f );
-    
     }
     
     @Override

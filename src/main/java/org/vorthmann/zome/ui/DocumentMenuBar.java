@@ -340,7 +340,19 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             group.add( rbMenuItem );
             menu.add( rbMenuItem );
         }
-
+        else if ( isHeptagon ) {
+            rbMenuItem = actions .setMenuAction( "setSymmetry.heptagonal antiprism", new JRadioButtonMenuItem( "Heptagonal Antiprism System" ) );
+            rbMenuItem .setSelected( "heptagonal antiprism".equals( initSystem ) );
+            rbMenuItem .setEnabled( fullPower );
+            group.add( rbMenuItem );
+            menu.add( rbMenuItem );
+            rbMenuItem = actions .setMenuAction( "setSymmetry.triangular antiprism", new JRadioButtonMenuItem( "Triangular Antiprism System" ) );
+            rbMenuItem .setSelected( "triangular antiprism".equals( initSystem ) );
+            rbMenuItem .setEnabled( fullPower );
+            group.add( rbMenuItem );
+            menu.add( rbMenuItem );
+        }
+        
         rbMenuItem = actions .setMenuAction( "setSymmetry.octahedral", new JRadioButtonMenuItem( "Octahedral System" ) );
         rbMenuItem .setSelected( "octahedral".equals( initSystem ) );
         rbMenuItem .setEnabled( fullPower );

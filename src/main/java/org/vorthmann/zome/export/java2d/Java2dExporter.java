@@ -98,8 +98,8 @@ public class Java2dExporter extends Exporter3d
                 if ( m instanceof Strut ) {
                     AlgebraicVector start = ((Strut) m) .getLocation();
                     AlgebraicVector end = ((Strut) m) .getEnd();
-                    Vector3f v0 = mapCoordinates( start .toRealVector(), height, width, field, view );
-                    Vector3f v1 = mapCoordinates( end .toRealVector(), height, width, field, view );
+                    Vector3f v0 = mapCoordinates( mModel .renderVector( start ), height, width, field, view );
+                    Vector3f v1 = mapCoordinates( mModel .renderVector( end ), height, width, field, view );
                     mSnapshot .addLineSegment( color, v0, v1 );
                 }
                 continue;
@@ -107,7 +107,7 @@ public class Java2dExporter extends Exporter3d
             
             List<AlgebraicVector> vertices = shape .getVertexList();
             AlgebraicMatrix partOrientation = rm .getOrientation();
-            RealVector location = rm .getLocation();  // should *2?
+            RealVector location = mModel .renderVector( rm .getManifestation() .getLocation() );  // should *2?
             
             if ( location == null )
                 // avoid NPE reported by Antonio Montero
@@ -118,7 +118,7 @@ public class Java2dExporter extends Exporter3d
             {
                 AlgebraicVector gv = vertices .get( i );
                 gv = partOrientation .timesColumn( gv );
-                RealVector rv = location .plus( gv .toRealVector() );
+                RealVector rv = location .plus( mModel .renderVector( gv ) );
                 Vector3f v = mapCoordinates( rv, height, width, field, view );
                 mappedVertices .add( v );
             }
@@ -159,7 +159,7 @@ public class Java2dExporter extends Exporter3d
                 {
                     if ( mSnapshot .hasLighting() ) {
                         AlgebraicVector faceNormal = partOrientation .timesColumn( face .getNormal() );
-                        RealVector normal = faceNormal .toRealVector() .normalize();
+                        RealVector normal = mModel .renderVector( faceNormal ) .normalize();
                         Vector3f normalV = new Vector3f( (float) normal.x, (float) normal.y, (float) normal.z );
                         this .viewTransform .transform( normalV );
                         
