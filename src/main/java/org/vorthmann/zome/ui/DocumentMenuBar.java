@@ -515,14 +515,22 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
      * The menu items are added unconditionally and are not context sensitive.
      * For example, they are loaded without regard for whether they will work with a particular model's field.
      *
-     * The keys read from the file become the commands to be processed and the values become the menu text.
+     * The keys read from the file become the commands to be processed and the values become the menu item's text.
+     *
+     * If the menu item's text contains a caret immediately followed by a number (e.g. "^6")
+     * then that number with the COMMAND key modifier are enabled as a menu accelerator.
+     * The caret and number are removed from the menu item's text.
+     * The caret can occur anywhere in the menu item's text.
+     * Sorting of the menu items occurs before the menu accelerators are processed,
+     * so they can optionally be used to sort the menu items depending on their placement in the string.
+     * No checks are made for duplicate menu accelerator assignments, but Java handles them reasonably if they occur.
 
      For example, the file might contain these entries:
 
      assertSelection = Assert Selection
-     sixLattice = 6-Lattice
+     sixLattice = 6-Lattice ^6
      somePrereleasedFeature = TODO: Unreleased Feature
-     test.pick.cube = First Octant
+     test.pick.cube = ^8 First Octant
 
      */
     private JMenu getCustomMenu() {
@@ -549,7 +557,20 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                     if (! sortedMenuCommands.isEmpty() ) {
                         JMenu menu = new JMenu("Custom");
                         for (String label : sortedMenuCommands.keySet()) {
-                            menu.add(createMenuItem(label, sortedMenuCommands.get(label)));
+                            JMenuItem menuItem = null;
+                            String command = sortedMenuCommands.get(label);
+                            int caretPos = label.indexOf("^");
+                            if(caretPos > -1 && caretPos < label.length()-1) {
+                                int key = label.charAt(caretPos + 1);
+                                if(key >= KeyEvent.VK_0 && key <= KeyEvent.VK_9) {
+                                    label = label.replace("^" + (key - KeyEvent.VK_0), "").trim();
+                                    menuItem = createMenuItem(label, command, key, COMMAND);
+                                }                                
+                            }
+                            if(menuItem == null) {
+                                menuItem = createMenuItem(label, command);
+                            }
+                            menu.add(menuItem);
                         }
                         return menu;
                     }
