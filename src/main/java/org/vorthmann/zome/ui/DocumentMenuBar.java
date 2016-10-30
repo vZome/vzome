@@ -350,7 +350,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             rbMenuItem .setSelected( "triangular antiprism".equals( initSystem ) );
             rbMenuItem .setEnabled( fullPower );
             group.add( rbMenuItem );
-            menu.add( rbMenuItem );
+            // DISABLED until the symmetry group has been properly implemented
+            // menu.add( rbMenuItem );
         }
         
         rbMenuItem = actions .setMenuAction( "setSymmetry.octahedral", new JRadioButtonMenuItem( "Octahedral System" ) );

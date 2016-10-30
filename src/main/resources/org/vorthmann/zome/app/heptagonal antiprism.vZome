@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="NONE" coreVersion="0.9.0" edition="vZome" field="heptagon" version="6.0">
+  <EditHistory editNumber="260" lastStickyEdit="105">
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0" index="0" len="1 5 4" symm="heptagonal antiprism"/>
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0" index="3" len="1 5 4" sense="minus" symm="heptagonal antiprism"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 5 4 1 -4 -1 0 0 0"/>
+    <SelectManifestation point="1 5 4 0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <Branch>
+      <StrutCreation anchor="0 0 0 0 0 0 0 0 0" dir="red" index="0" len="0 2 1" symm="heptagonal antiprism"/>
+      <SelectManifestation endSegment="0 0 0 0 0 0 0 2 1" startSegment="0 0 0 0 0 0 0 0 0"/>
+      <RotationTool corrected="true" full="true" name="axial symmetry.1" symmetry="heptagonal antiprism"/>
+    </Branch>
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0" dir="red" index="0" len="1 5 4" symm="heptagonal antiprism"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 5 4 0 0 0 0 0 0"/>
+    <SelectManifestation point="1 5 4 1 -4 -1 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0" dir="red" index="7" len="1 5 4" symm="heptagonal antiprism"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0 1 5 4"/>
+    <SelectManifestation point="4 0 5 -4 0 -5 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0 1 5 4"/>
+    <SelectManifestation point="1 5 4 0 0 0 0 0 0"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <DeselectAll/>
+    <StrutCreation anchor="1 5 4 0 0 0 0 0 0" dir="2" index="9" len="0 1 0" sense="minus" symm="heptagonal antiprism"/>
+    <StrutCreation anchor="0 0 0 0 0 0 1 5 4" dir="2" index="9" len="0 1 0" symm="heptagonal antiprism"/>
+    <SelectManifestation point="0 1 0 0 0 0 1 4 4"/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0 1 5 4" dir="2" index="1" len="0 1 0" sense="minus" symm="heptagonal antiprism"/>
+    <SelectManifestation point="0 1 0 1 -1 0 1 4 4"/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="0 1 0 1 -1 0 1 4 4" startSegment="0 0 0 0 0 0 1 5 4"/>
+    <SelectManifestation endSegment="0 1 0 0 0 0 1 4 4" startSegment="0 0 0 0 0 0 1 5 4"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="1 5 4 0 0 0 0 0 0"/>
+    <SelectManifestation point="1 5 4 1 -4 -1 0 0 0"/>
+    <SelectManifestation point="1 5 4 1 -4 -1 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="1 5 4 1 -4 -1 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="1 5 4 0 0 0 0 0 0"/>
+    <SelectManifestation point="4 0 5 -4 0 -5 0 0 0"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="1 5 4 1 -4 -1 0 0 0" startSegment="0 0 0 0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="4 0 5 -4 0 -5 0 0 0" startSegment="1 5 4 0 0 0 0 0 0"/>
+    <EndBlock/>
+    <StrutIntersection/>
+    <StrutCreation anchor="1 5 4 0 0 0 0 0 0" dir="1" index="8" len="1 0 0" symm="heptagonal antiprism"/>
+    <StrutCreation anchor="1 5 4 0 0 0 0 0 0" dir="1" index="6" len="1 0 0" symm="heptagonal antiprism"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 -1 1 -1 1 -1 1 4 4"/>
+    <SelectManifestation point="0 1 0 1 -1 0 1 4 4"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 1 0 1 -1 0 1 4 4"/>
+    <SelectManifestation point="0 1 0 0 0 0 1 4 4"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 -1 0 -1 1 0 1 4 4"/>
+    <SelectManifestation point="0 -1 0 0 0 0 1 4 4"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 1 0 1 -1 0 1 4 4"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0 1 5 4"/>
+    <SelectManifestation point="5/2 5/2 9/2 -2 0 -5/2 0 0 0"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <StrutCreation anchor="0 0 0 0 0 0 1 5 4" dir="3" index="0" len="0 1 0" symm="heptagonal antiprism"/>
+    <BeginBlock/>
+    <SelectManifestation point="1/2 0 1/2 -1/2 1/2 -1/2 1 4 4"/>
+    <SelectManifestation point="0 1 0 0 0 0 1 4 4"/>
+    <DeselectAll/>
+    <SelectManifestation point="1/2 0 1/2 -1/2 1/2 -1/2 1 4 4"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 -1 0 -1 1 0 1 4 4"/>
+    <SelectManifestation point="1/2 -1 0 -1/2 1 0 1 4 4"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 -1 0 -1 1 0 1 4 4"/>
+    <SelectManifestation point="-1/2 0 -1/2 0 0 0 1 4 4"/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="0 0 0 0 0 0 1 5 4" startSegment="0 0 0 0 0 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 0 0 0 0"/>
+    <EndBlock/>
+    <MirrorTool name="mirror.1"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="1 5 4 0 0 0 0 0 0" startSegment="0 0 0 0 0 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 0 0 0 0"/>
+    <EndBlock/>
+    <RotationTool corrected="true" full="true" name="axial symmetry.2" symmetry="heptagonal antiprism"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-1/2 1 0 1/2 -1/2 1/2 1 4 4"/>
+    <SelectManifestation point="1/2 0 1/2 -1/2 1/2 -1/2 1 4 4"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.2" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 1 0 0 0 0 1 4 4"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.2" selectInputs="true"/>
+    <BeginBlock/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="5/2 5/2 9/2 -2 0 -5/2 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.2" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="1 5 4 0 0 0 0 0 0" startSegment="0 0 0 0 0 0 1 5 4"/>
+    <EndBlock/>
+    <Delete/>
+    <StrutCreation anchor="1 5 4 0 0 0 0 0 0" dir="2" index="9" len="1 0 1" sense="minus" symm="heptagonal antiprism"/>
+    <SelectManifestation endSegment="4 0 5 -4 0 -5 0 0 0" startSegment="1 5 4 0 0 0 0 0 0"/>
+    <Delete/>
+    <StrutCreation anchor="1 5 4 0 0 0 0 0 0" dir="1" index="8" len="0 1 0" symm="heptagonal antiprism"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 3 5 -1 1 -1 0 0 0"/>
+    <SelectManifestation point="1 4 4 0 0 0 0 1 0"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="0 5 4 1 -1 1 0 0 0"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="-1 7 3 1 -2 0 0 0 0"/>
+    <SelectManifestation endSegment="-1 7 3 1 -2 0 0 0 0" startSegment="1 5 4 0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="-1 7 3 1 -2 0 0 0 0" startSegment="1 5 4 0 0 0 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.2" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 5 3 0 0 0 1 0 1"/>
+    <SelectManifestation point="-1 7 3 1 -2 0 0 0 0"/>
+    <SelectManifestation point="1 5 4 0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool name="axial symmetry.2" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 5 3 0 0 0 1 0 1"/>
+    <SelectManifestation point="1 5 4 0 0 0 0 0 0"/>
+    <SelectManifestation point="1 4 4 -1 2 0 0 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool name="axial symmetry.2" selectInputs="true"/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0 1 5 4" dir="2" index="9" len="1 0 1" symm="heptagonal antiprism"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 1 0 0 0 0 1 4 4"/>
+    <SelectManifestation point="-1/2 1 0 1/2 -1/2 1/2 1 4 4"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <Delete/>
+    <SelectManifestation endSegment="5/2 5/2 9/2 -2 0 -5/2 0 0 0" startSegment="0 0 0 0 0 0 1 5 4"/>
+    <Delete/>
+    <StrutCreation anchor="0 0 0 0 0 0 1 5 4" dir="3" index="0" len="1 0 1" symm="heptagonal antiprism"/>
+    <SelectManifestation endSegment="1/2 0 1/2 -1/2 1/2 -1/2 1 4 4" startSegment="0 0 0 0 0 0 1 5 4"/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="-1/2 1 0 1/2 -1/2 1/2 -1 -4 -4"/>
+    <SelectManifestation point="0 1 0 0 0 0 -1 -4 -4"/>
+    <SelectManifestation point="1/2 0 1/2 -1/2 1/2 -1/2 -1 -4 -4"/>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation point="0 1 1/2 1/2 -1 0 0 5 3"/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 1 1/2 1/2 -1 0 0 5 3"/>
+    <SelectManifestation point="1 0 1 0 0 0 0 5 3"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0 1 5 4"/>
+    <SelectManifestation point="0 1 1/2 1/2 -1 0 0 5 3"/>
+    <SelectManifestation point="1 0 1 0 0 0 0 5 3"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0 1 5 4"/>
+    <SelectManifestation point="1 0 1 0 0 0 0 5 3"/>
+    <SelectManifestation point="1 -1/2 1 -1/2 1 0 0 5 3"/>
+    <EndBlock/>
+    <Polygon/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 0 1 5 4"/>
+      <polygonVertex at="0 1 1/2 1/2 -1 0 0 5 3"/>
+      <polygonVertex at="1 0 1 0 0 0 0 5 3"/>
+    </SelectManifestation>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <ApplyTool name="axial symmetry.2" selectInputs="true"/>
+    <setItemColor blue="71" green="7" red="244"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 5 3 0 0 0 1 0 1"/>
+      <polygonVertex at="-1 7 3 1 -2 0 0 0 0"/>
+      <polygonVertex at="1 5 4 0 0 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 5 3 0 0 0 -1 0 -1"/>
+      <polygonVertex at="1 5 4 0 0 0 0 0 0"/>
+      <polygonVertex at="-1 7 3 1 -2 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 5 3 0 0 0 -1 0 -1"/>
+      <polygonVertex at="1 4 4 -1 2 0 0 0 0"/>
+      <polygonVertex at="1 5 4 0 0 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 5 3 0 0 0 1 0 1"/>
+      <polygonVertex at="1 5 4 0 0 0 0 0 0"/>
+      <polygonVertex at="1 4 4 -1 2 0 0 0 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <setItemColor blue="255" green="143" red="4"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 0 1 0 0 0 0 5 3"/>
+    <SelectManifestation point="0 1 1/2 1/2 -1 0 0 5 3"/>
+    <SelectManifestation point="5/2 5/2 9/2 -2 0 -5/2 0 0 0"/>
+    <SelectManifestation point="-1 7 3 1 -2 0 0 0 0"/>
+    <SelectManifestation point="0 5 3 0 0 0 1 0 1"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation point="1 -1/2 1 -1/2 1 0 0 5 3"/>
+    <SelectManifestation point="1 0 1 0 0 0 0 5 3"/>
+    <SelectManifestation point="0 5 3 0 0 0 1 0 1"/>
+    <SelectManifestation point="1 4 4 -1 2 0 0 0 0"/>
+    <SelectManifestation point="0 9/2 5/2 2 0 5/2 0 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool name="axial symmetry.2" selectInputs="true"/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="1 0 1 0 0 0 0 5 3"/>
+      <polygonVertex at="0 1 1/2 1/2 -1 0 0 5 3"/>
+      <polygonVertex at="5/2 5/2 9/2 -2 0 -5/2 0 0 0"/>
+      <polygonVertex at="-1 7 3 1 -2 0 0 0 0"/>
+      <polygonVertex at="0 5 3 0 0 0 1 0 1"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.2" selectInputs="true"/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <setItemColor blue="102" green="102" red="102"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0 1 5 4"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation point="0 9/2 5/2 2 0 5/2 0 0 0"/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <Delete/>
+    <SelectManifestation point="-1 4 1 4 0 5 0 0 0"/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <Delete/>
+    <SelectManifestation point="1 4 4 -1 2 0 0 0 0"/>
+    <Delete/>
+    <SelectManifestation point="1 -1/2 1 -1/2 1 0 0 5 3"/>
+    <ApplyTool name="axial symmetry.1" selectInputs="true"/>
+    <Delete/>
+  </EditHistory>
+  <notes xmlns:xml="http://www.w3.org/XML/1998/namespace"/>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="182.88900756835938" far="365.77801513671994" near="0.45722252573404343" parallel="false" stereoAngle="0.0" width="82.30005340576162">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="heptagonal antiprism" renderingStyle="heptagonal antiprism">
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="255,255,255" name="1" prototype="2 -2 0 -1 2 -1 0 0 0"/>
+    <Direction color="255,255,255" name="2" prototype="0 1 -1 1 0 0 1 0 0"/>
+    <Direction color="255,255,255" name="3" prototype="0 1/2 0 1/2 -1/2 0 -1 0 0"/>
+    <Direction color="255,255,255" name="4" prototype="-1/2 1 0 -1 1 -1/2 -1/2 1 0"/>
+    <Direction color="255,255,255" name="5" prototype="1/2 -1/2 1/2 1/2 0 0 1/2 -1/2 1/2"/>
+    <Direction color="255,255,255" name="6" prototype="1 -1 1/2 1 -1 1 -1/2 1 0"/>
+    <Direction color="255,255,255" name="7" prototype="0 -1/2 0 0 1/2 0 -1/2 1 0"/>
+    <Direction color="255,255,255" name="8" prototype="-1 1 -1 -1 1 -1/2 -1/2 1 0"/>
+    <Direction color="255,255,255" name="9" prototype="-1/2 0 0 -1/2 1/2 -1/2 1/2 -1/2 1/2"/>
+    <Direction color="255,255,255" name="10" prototype="1 -1 1/2 1/2 -1 0 -1/2 1 0"/>
+  </SymmetrySystem>
+</vzome:vZome>

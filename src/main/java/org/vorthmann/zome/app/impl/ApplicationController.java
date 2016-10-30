@@ -180,8 +180,10 @@ public class ApplicationController extends DefaultController
         field = modelApp .getField( "heptagon" );
         symmetry = field .getSymmetry( "heptagonal antiprism" );
         {
-            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );
+            model = loadModelPanels( "org/vorthmann/zome/app/heptagonal antiprism.vZome" );
             mSymmetryModels.put( symmetry, model );
+
+            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );
             symmetry = field .getSymmetry( "triangular antiprism" );
             mSymmetryModels.put( symmetry, model );
             symmetry = field .getSymmetry( "octahedral" );
@@ -210,13 +212,6 @@ public class ApplicationController extends DefaultController
         }
 
         // addStyle( new ModeledShapes( "pentagonal", "pentagonal prismatic", DecagonSymmetry.INSTANCE ) );
-
-        if ( propertyIsTrue( "enable.heptagon.field" ) )
-        {
-            field = modelApp .getField( "heptagon" );
-            symmetry = field .getSymmetry( "octahedral" );
-            mSymmetryModels.put( symmetry, model );
-        }
 
         long endtime = System.currentTimeMillis();
         if ( logger .isLoggable( Level .INFO ) )
