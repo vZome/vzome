@@ -90,7 +90,8 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         orbitDots .clear();
 //        lastOrbit = null;  // cannot do this, we might have a valid value, for example after loading from XML
         boolean lastOrbitChanged = false;
-        for (Direction dir : allOrbits) {
+        for ( Direction dir : allOrbits )
+        {
             if ( lastOrbit == null )
             {
                 // just a way to initialize the lastOrbit
@@ -99,22 +100,30 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             }
             OrbitState orbit = new OrbitState();
             orbitDots .put( dir, orbit );
-
-            Axis axis = symmetry .getAxis( test, Collections .singleton( dir ) );
-            AlgebraicVector v = axis .normal();
-            double z =  v .getComponent( 2 ) .evaluate();
-            orbit.dotX = v .getComponent( 0 ) .evaluate();
-            orbit.dotX = orbit.dotX / z; // intersect with z=0 plane
-            orbit.dotY = v .getComponent( 1 ) .evaluate();
-            orbit.dotY = orbit.dotY / z; // intersect with z=0 plane
             
-//            if ( symmetry instanceof IcosahedralSymmetry )
-            {
-            // switch X and Y (why? don't know, it just works)
-            double temp = orbit.dotX;
-            orbit.dotX = orbit.dotY;
-            orbit.dotY = temp;
-        }
+            orbit .dotX = dir .getDotX();
+            if ( orbit .dotX >= 0d ) {
+            	// This orbit supports pre-computed dot locations
+            	orbit .dotY = dir .getDotY();
+            }
+            else {
+            	// The old way
+            	Axis axis = symmetry .getAxis( test, Collections .singleton( dir ) );
+            	AlgebraicVector v = axis .normal();
+            	double z =  v .getComponent( 2 ) .evaluate();
+            	orbit.dotX = v .getComponent( 0 ) .evaluate();
+            	orbit.dotX = orbit.dotX / z; // intersect with z=0 plane
+            	orbit.dotY = v .getComponent( 1 ) .evaluate();
+            	orbit.dotY = orbit.dotY / z; // intersect with z=0 plane
+            }
+
+        	//            if ( symmetry instanceof IcosahedralSymmetry )
+        	{
+        		// switch X and Y (why? don't know, it just works)
+        		double temp = orbit.dotX;
+        		orbit.dotX = orbit.dotY;
+        		orbit.dotY = temp;
+        	}
             
             if ( orbit.dotY > yMax )
                 yMax = orbit.dotY;
