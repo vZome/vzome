@@ -447,7 +447,8 @@ public class ApplicationController extends DefaultController
 
 				case "rootTwo":
 				case "rootThree":
-					return "true"; // these two are enabled for everyone
+				case "heptagon":
+					return "true"; // these are enabled for everyone
 
 				default:
 					// fall through, see if it is explicitly set
