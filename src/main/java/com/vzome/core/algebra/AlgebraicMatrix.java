@@ -169,9 +169,10 @@ public class AlgebraicMatrix
         return result;
     }
 
-    public void setElement( int i, int j, AlgebraicNumber value )
+    public AlgebraicMatrix setElement( int i, int j, AlgebraicNumber value )
     {
         this .matrix[ i ][ j ] = value;
+        return this;
     }
 
     public AlgebraicNumber getElement( int i, int j )

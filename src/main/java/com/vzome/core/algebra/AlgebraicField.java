@@ -307,8 +307,7 @@ public abstract class AlgebraicField
     public final AlgebraicVector basisVector( int dims, int axis )
     {
         AlgebraicVector result = origin( dims );
-        result .setComponent( axis, this .one() );
-        return result;
+        return result .setComponent( axis, this .one() );
     }
 
     // ======================================================================================

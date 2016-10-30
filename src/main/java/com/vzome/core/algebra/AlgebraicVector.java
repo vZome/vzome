@@ -125,9 +125,10 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
         return this .coordinates[ i ];
     }
 
-    public void setComponent( int component, AlgebraicNumber coord )
+    public AlgebraicVector setComponent( int component, AlgebraicNumber coord )
     {
         this .coordinates[ component ] = coord;
+        return this;
     }
 
     public AlgebraicVector negate()

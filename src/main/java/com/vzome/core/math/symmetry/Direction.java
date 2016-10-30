@@ -37,6 +37,8 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     public final AlgebraicNumber[] scales = new AlgebraicNumber[ scaleNames.length ];
 
     private AlgebraicNumber unitLength, unitLengthReciprocal;
+    
+    private double dotX = -1d, dotY = -1d;
 
     public final void setAutomatic( boolean auto )
     {
@@ -380,4 +382,20 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         buf .append( ":" );
         length .getNumberExpression( buf, AlgebraicField .EXPRESSION_FORMAT );
     }
+
+	public double getDotX()
+	{
+		return this .dotX;
+	}
+
+	public double getDotY()
+	{
+		return this .dotY;
+	}
+	
+	public void setDotLocation( double x, double y )
+	{
+		this .dotX = x;
+		this .dotY = y;
+	}
 }
