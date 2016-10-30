@@ -441,11 +441,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
 
         // ----------------------------------------- Custom menu
-        if ( developerExtras ) {
-            menu = getCustomMenu();
-            if(menu != null) {
-                super .add( menu );
-            }
+        menu = getCustomMenu();
+        if(menu != null) {
+        	super .add( menu );
         }
 
 
