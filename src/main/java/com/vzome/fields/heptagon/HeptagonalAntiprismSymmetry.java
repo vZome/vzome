@@ -7,13 +7,16 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
+import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Permutation;
+import com.vzome.core.math.symmetry.Symmetry;
 
 public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 {
     private static final double SIGMA_X_2 = HeptagonField.SIGMA_VALUE * 2.0d;
     private static final double SKEW_FACTOR = Math .sin( (3.0d/7.0d) * Math.PI );
+	private Axis preferredAxis;
 
 	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
 	{
@@ -33,6 +36,7 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
             redOrbit .createAxis( i + 7, 6, zAxisNeg );
         }
         redOrbit .setDotLocation( 1d, 0d );
+        this .preferredAxis = redOrbit .getAxis( Symmetry.PLUS, 0 );
 
         AlgebraicVector axis0 = hf .basisVector( 3, AlgebraicVector.X );
         Direction blueOrbit = createZoneOrbit( frameColor, 0, 7, axis0, true );
@@ -101,6 +105,12 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	protected void createOtherOrbits()
 	{
 //		super .createOtherOrbits();
+	}
+    
+    @Override
+	public Axis getPreferredAxis()
+	{
+		return this .preferredAxis;
 	}
 
 	@Override

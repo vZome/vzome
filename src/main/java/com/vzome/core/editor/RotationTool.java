@@ -9,8 +9,8 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -31,6 +31,7 @@ public class RotationTool extends SymmetryTool
 	public static class Factory extends AbstractToolFactory implements ToolFactory
 	{
 		private transient Symmetry symmetry;
+		private transient boolean noStrut;
 		
 		public Factory( EditorModel model, UndoableEdit.Context context )
 		{
@@ -40,7 +41,17 @@ public class RotationTool extends SymmetryTool
 		@Override
 		protected boolean countsAreValid( int total, int balls, int struts, int panels )
 		{
-			return ( total == 1 && struts == 1 ) || ( total == 2 && balls == 1 && struts == 1 );
+			if ( total == 1 && balls == 1 ) 
+			{
+				this .noStrut = true;
+				return true;
+			}
+			else if ( ( total == 1 && struts == 1 ) || ( total == 2 && balls == 1 && struts == 1 ) )
+			{
+				this .noStrut = false;
+				return true;
+			}
+			return false;
 		}
 
 		@Override
@@ -69,6 +80,12 @@ public class RotationTool extends SymmetryTool
         	        	return false;
         			Permutation perm = axis .getRotationPermutation();
         	        if ( perm == null )
+        	        	return false;
+        		}
+        		else if ( this .noStrut )
+        		{
+        			Axis axis = this .symmetry .getPreferredAxis();
+        	        if ( axis == null )
         	        	return false;
         		}
 			return true;
@@ -152,7 +169,14 @@ public class RotationTool extends SymmetryTool
         
         if ( axisStrut == null )
         {
-            if ( this .getName() .contains( ".builtin/" ) ) { // TODO: fix this lame mechanism; use an API
+        	Axis preferredAxis = this .symmetry .getPreferredAxis();
+        	if ( preferredAxis != null )
+        	{
+                AlgebraicField field = symmetry .getField();
+                axisStrut = new AnchoredSegment( preferredAxis, field .one(), center );
+        	}
+        	else if ( this .getName() .contains( ".builtin/" ) ) // TODO: fix this lame mechanism; use an API
+        	{
                 center = originPoint;
         		this .addParameter( center );
             	Direction redOrbit = symmetry .getDirection( "red" );
