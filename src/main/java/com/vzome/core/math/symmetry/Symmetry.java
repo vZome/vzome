@@ -74,4 +74,6 @@ public interface Symmetry extends Iterable<Direction>, Embedding
     public abstract int[] getIncidentOrientations( int orientation );
 
     public abstract Direction getSpecialOrbit( SpecialOrbit which );
+
+	Axis getPreferredAxis();
 }

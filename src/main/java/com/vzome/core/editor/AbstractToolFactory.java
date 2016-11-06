@@ -4,7 +4,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import com.vzome.core.editor.UndoableEdit.Context;
-import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.RealizedModel;
 
 public abstract class AbstractToolFactory implements ToolFactory

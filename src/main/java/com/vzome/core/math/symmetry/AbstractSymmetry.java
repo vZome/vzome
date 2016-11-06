@@ -113,6 +113,12 @@ public abstract class AbstractSymmetry implements Symmetry
         return mField;
     }
     
+    @Override
+	public Axis getPreferredAxis()
+	{
+		return null;
+	}
+	
     public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
