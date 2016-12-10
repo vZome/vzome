@@ -73,6 +73,7 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
+import com.vzome.fields.heptagon.HeptagonGossetPolytope;
 
 public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context, Tool .Registry
 {
@@ -366,6 +367,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			break;
 		case "Polytope4d":
 			edit = new Polytope4d( this.mSelection, this.mRealizedModel, null, 0, null, groupInSelection );
+			break;
+		case "HeptagonGossetPolytope":
+			edit = new HeptagonGossetPolytope( this.mSelection, this.mRealizedModel );
 			break;
 		case "LoadVEF":
 			edit = new LoadVEF( this.mSelection, this.mRealizedModel, null, null, null );
@@ -685,6 +689,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			break;
 		case "apiProxy":
 			edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
+			break;
+		case "heptagonGossetPolytope":
+			edit = new HeptagonGossetPolytope( this .mSelection, this .mRealizedModel );
 			break;
 		default:
 			if ( action.startsWith( "polytope_" ) )
