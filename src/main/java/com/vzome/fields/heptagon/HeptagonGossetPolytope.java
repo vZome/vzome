@@ -34,14 +34,60 @@ import com.vzome.core.model.RealizedModel;
  */
 public class HeptagonGossetPolytope extends ChangeManifestations
 {
+	private static class Edge
+	{
+		private final AlgebraicVector start, end;
+		private final double normSquared;
+
+		public Edge( AlgebraicVector start, AlgebraicVector end )
+		{
+			super();
+			this.start = start;
+			this.end = end;
+			AlgebraicVector offset = end .minus( start );
+			this .normSquared = offset .dot( offset ) .evaluate();
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((end == null) ? 0 : end.hashCode());
+			result = result + ((start == null) ? 0 : start.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			Edge other = (Edge) obj;
+			if ( end.equals( other.end ) && start.equals(other.start))
+				return true;
+			if ( end.equals( other.start ) && start.equals(other.end))
+				return true;
+			return false;
+		}
+	}
+	
 	private final AlgebraicVector[] ROOTS = new AlgebraicVector[ 8 ];
 	private final AlgebraicNumber scale;
 	private final AlgebraicField field;
 	private final Set<AlgebraicVector> vertices = new HashSet<AlgebraicVector>();
+	private final Set<Edge> edges = new HashSet<Edge>();
 	private final Map<AlgebraicVector, Point> vertices3d = new HashMap<AlgebraicVector, Point>();
 	private final Queue<AlgebraicVector> worklist = new LinkedList<AlgebraicVector>();
+	private final Queue<Edge> edgeWorklist = new LinkedList<Edge>();
 	
 	private int numEdges = 0, numVertices = 0;
+	private Edge shortestEdge = null;
 	
 	public HeptagonGossetPolytope( Selection selection, RealizedModel model )
 	{
@@ -64,18 +110,27 @@ public class HeptagonGossetPolytope extends ChangeManifestations
 	
 	public void perform()
 	{
-		this .generateEdge( null, ROOTS[ 0 ] );
+		this .scheduleVertex( null, ROOTS[ 0 ] );
 		while ( ! worklist .isEmpty() ) {
 			AlgebraicVector v = worklist .remove();
 			for ( AlgebraicVector root : ROOTS ) {
 				AlgebraicVector reflection = reflect( v, root );
-				this .generateEdge( v, reflection );
+				this .scheduleVertex( v, reflection );
+			}
+		}
+		this .scheduleEdge( this .shortestEdge );
+		while ( ! edgeWorklist .isEmpty() ) {
+			Edge edge = edgeWorklist .remove();
+			for ( AlgebraicVector root : ROOTS ) {
+				AlgebraicVector start = reflect( edge .start, root );
+				AlgebraicVector end = reflect( edge .end, root );
+				this .scheduleEdge( new Edge( start, end ) );
 			}
 		}
 		redo();
 	}
 	
-	private void generateEdge( AlgebraicVector vertex, AlgebraicVector reflection )
+	private void scheduleVertex( AlgebraicVector vertex, AlgebraicVector reflection )
 	{
 		Point p;
 		if ( vertices .add( reflection ) )
@@ -88,10 +143,25 @@ public class HeptagonGossetPolytope extends ChangeManifestations
 		}
 		else
 			p = this .vertices3d .get( reflection );
-		if ( vertex != null )
+		if ( vertex != null && ! vertex .equals( reflection ) )
 		{
-			Point p2 = this .vertices3d .get( vertex );
-			Segment seg = new SegmentJoiningPoints( p2, p );
+			Edge e = new Edge( vertex, reflection );
+			if ( shortestEdge == null )
+				this .shortestEdge = e;
+			else if ( e .normSquared < this .shortestEdge .normSquared ) {
+				this .shortestEdge = e;
+				System .out .println( e .end .toString() + "  " + e .start .toString() );
+			}
+		}
+	}
+	
+	private void scheduleEdge( Edge edge )
+	{
+		if ( edges .add( edge ) ) {
+			edgeWorklist .add( edge );
+			Point p1 = this .vertices3d .get( edge .start );
+			Point p2 = this .vertices3d .get( edge .end );
+			Segment seg = new SegmentJoiningPoints( p1, p2 );
 			manifestConstruction( seg );
 			System .out .println( "edge " + ++numEdges );
 		}
