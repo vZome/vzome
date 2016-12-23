@@ -105,7 +105,7 @@ public class Polytope4d extends ChangeManifestations
     public void getXmlAttributes( Element xml )
     {
         if ( quaternion != null )
-        	DomUtils .addAttribute( xml, "quaternion", quaternion .toString() );        
+        	DomUtils .addAttribute( xml, "quaternion", quaternion .toParsableString() );        
         DomUtils .addAttribute( xml, "group", this.groupName );
         DomUtils .addAttribute( xml, "wythoff", Integer .toString( this.index, 2 ) );
         if ( this .edgesToRender != 0xF )
