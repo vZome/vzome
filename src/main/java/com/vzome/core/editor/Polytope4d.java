@@ -128,6 +128,19 @@ public class Polytope4d extends ChangeManifestations
         String quatString = xml .getAttribute( "quaternion" );
         if ( quatString != null && ! "" .equals( quatString ) ) {
         	// newest format
+        	if ( quatString .contains( "+" ) ) {
+            	// First, deal with the bug we had in serialization...
+        		quatString = quatString .replace( ',', ' ' );
+        		quatString = quatString .replace( '(', ' ' );
+        		quatString = quatString .replace( ')', ' ' );
+        		quatString = quatString .replace( '+', ' ' );
+        		char irrat = this .field .getIrrational( 0 ) .charAt( 0 );
+        		quatString = quatString .replace( irrat, ' ' );
+        		quatString = quatString + " 0 0 0";  // This is probably OK, but
+        		//  it is known to work only for those particular files I have seen,
+        		//  in which the X, Y, and Z coordinates are all zero.
+        		xml .setAttribute( "quaternion", quatString );
+        	}
         	this.quaternion = format .parseRationalVector( xml, "quaternion" );
         }
         else {
