@@ -102,7 +102,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             orbitDots .put( dir, orbit );
             
             orbit .dotX = dir .getDotX();
-            if ( orbit .dotX >= 0d ) {
+            if ( orbit .dotX >= -90d ) {
             	// This orbit supports pre-computed dot locations
             	orbit .dotY = dir .getDotY();
             }
