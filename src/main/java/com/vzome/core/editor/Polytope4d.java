@@ -139,9 +139,8 @@ public class Polytope4d extends ChangeManifestations
         		quatString = quatString + " 0 0 0";  // This is probably OK, but
         		//  it is known to work only for those particular files I have seen,
         		//  in which the X, Y, and Z coordinates are all zero.
-        		xml .setAttribute( "quaternion", quatString );
         	}
-        	this.quaternion = format .parseRationalVector( xml, "quaternion" );
+        	this .quaternion = this .field .parseVector( quatString );
         }
         else {
         	// legacy formats

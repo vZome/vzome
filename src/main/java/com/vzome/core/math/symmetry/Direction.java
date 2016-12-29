@@ -38,7 +38,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
 
     private AlgebraicNumber unitLength, unitLengthReciprocal;
     
-    private double dotX = -1d, dotY = -1d;
+    private double dotX = -999d, dotY = -999d;
 
     public final void setAutomatic( boolean auto )
     {
