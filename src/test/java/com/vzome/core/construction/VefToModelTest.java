@@ -321,11 +321,11 @@ public class VefToModelTest
         NewConstructions effects = new NewConstructions();
         String vefData = "vZome VEF 6 field heptagon " +
             "2 " +
-            "(@,#,$) (320676541831796,-720553648886699,577839161714113) (-524489935216464,1178518186786496,-945098206316384) (0,0,0) " +
-            "(-@,-#,-$) (320676541831796,-720553648886699,577839161714113) (-196063713670231,440551165646117,-353294604284427) (0,0,0) ";
+            "(0,0,0) (@,#,$) (-@,-#7$,-$) (-173023461584739690778423250124917/3141337203685477234578,2,3) " +
+            "(0,0,0) (-524489935216464,1178518186786496,-945098206316384) (320676541831796,-720553648886699,577839161714113) (-196063713670231,440551165646117,-353294604284427) ";
 
         // be sure we're parsing a number that is bigger than a Long so it requires a BigInteger to hold it.
-        // check both positive and negative values
+        // check both positive and negative values as well as fractions with BigInteger numerators and denominators
         Long pos = Long.MAX_VALUE;
         BigInteger a = new BigInteger(pos.toString()); // 9223372036854775807
         BigInteger b = a.add(a); // 18446744073709551614
@@ -341,10 +341,12 @@ public class VefToModelTest
         Point p0 = (Point) effects .get( 0 );
         AlgebraicVector v0 = p0 .getLocation();
         assertNotNull( v0 );
+//        System.out.println("v0=" + v0.toString());
 
         Point p1 = (Point) effects .get( 1 );
         AlgebraicVector v1 = p1 .getLocation();
         assertNotNull( v1 );
+//        System.out.println("v1=" + v1.toString());
     }
 
     private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
