@@ -10,6 +10,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.BigRational;
+import java.math.BigInteger;
 import java.util.Stack;
 
 public abstract class VefParser
@@ -322,22 +323,23 @@ public abstract class VefParser
 
     private BigRational parseRationalNumber( String coord )
     {
-        int num = 0, denom = 1;
+        BigInteger num = BigInteger.ZERO;
+        BigInteger denom = BigInteger.ONE;
         int slash = coord .indexOf( '/' );
         if ( slash > 0 ) {
             try {
-                num = Integer .parseInt( coord .substring( 0, slash ) );
+                num = new BigInteger( coord .substring( 0, slash ) );
             } catch ( NumberFormatException e ) {
                 throw new RuntimeException( "VEF format error: rational numerator (\"" + coord + "\") must be an integer", e );
             }
             try {
-                denom = Integer .parseInt( coord .substring( slash+1 ) );
+                denom = new BigInteger( coord .substring( slash+1 ) );
             } catch ( NumberFormatException e ) {
                 throw new RuntimeException( "VEF format error: rational denominator (\"" + coord + "\") must be an integer", e );
             }
         } else {
             try {
-                num = Integer .parseInt( coord );
+                num = new BigInteger( coord );
             } catch ( NumberFormatException e ) {
                 throw new RuntimeException( "VEF format error: coordinate value (\"" + coord + "\") must be an integer or rational", e );
             }

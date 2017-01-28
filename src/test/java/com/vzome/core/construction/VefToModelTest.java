@@ -14,8 +14,10 @@ import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.algebra.SnubDodecField;
+import java.math.BigInteger;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -309,6 +311,40 @@ public class VefToModelTest
         AlgebraicVector v1 = p1 .getLocation();
         expected = field .createVector( new int[]{ 0, 1, 8, 1, -32, 1, -24, 1, 0, 1, -8, 1 } );
         assertEquals( expected, v1 );
+    }
+
+    @Test
+    public void testVefParseBigInteger()
+    {
+        AlgebraicField field = new HeptagonField();
+        AlgebraicVector quaternion = null;
+        NewConstructions effects = new NewConstructions();
+        String vefData = "vZome VEF 6 field heptagon " +
+            "2 " +
+            "(@,#,$) (320676541831796,-720553648886699,577839161714113) (-524489935216464,1178518186786496,-945098206316384) (0,0,0) " +
+            "(-@,-#,-$) (320676541831796,-720553648886699,577839161714113) (-196063713670231,440551165646117,-353294604284427) (0,0,0) ";
+
+        // be sure we're parsing a number that is bigger than a Long so it requires a BigInteger to hold it.
+        // check both positive and negative values
+        Long pos = Long.MAX_VALUE;
+        BigInteger a = new BigInteger(pos.toString()); // 9223372036854775807
+        BigInteger b = a.add(a); // 18446744073709551614
+        BigInteger c = a.multiply(a); // 85070591730234615847396907784232501249
+
+        vefData = vefData.replace("@", a.toString());
+        vefData = vefData.replace("#", b.toString());
+        vefData = vefData.replace("$", c.toString());
+
+        VefToModel parser = new VefToModel( quaternion, effects, field.one(), null );
+        parser .parseVEF( vefData, field );
+
+        Point p0 = (Point) effects .get( 0 );
+        AlgebraicVector v0 = p0 .getLocation();
+        assertNotNull( v0 );
+
+        Point p1 = (Point) effects .get( 1 );
+        AlgebraicVector v1 = p1 .getLocation();
+        assertNotNull( v1 );
     }
 
     private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
