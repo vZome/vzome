@@ -994,6 +994,32 @@ public class DocumentController extends DefaultController implements J3dComponen
                 //   the count just because we're writing a copy.  The reset will have to move to the
                 //   context of the save.
                 this .changeCount  = this .documentModel .getChangeCount();
+                
+            	String exports = this .getProperty( "save.exports" );
+            	if ( exports != null ) {
+            		for ( String captureOrExport : exports .split( " " ) ) {
+            			// captureOrExport should be "capture.png" or "export.dae" or similar
+            			String extension = "";
+            			if ( captureOrExport .startsWith( "capture." ) )
+            				extension = captureOrExport .substring( "capture." .length() );
+            			else
+            				extension = captureOrExport .substring( "export." .length() );
+                		File exportFile = new File( dir, file .getName() + "." + extension );
+                		doFileAction( captureOrExport, exportFile );
+                    }
+            	}
+                
+            	String script = this .getProperty( "save.script" );
+            	if ( script != null )
+            	{
+            		try {
+            			Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
+            					null, file .getParentFile() );
+            		} catch ( IOException e ) {
+            			System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+            			e .printStackTrace();
+            		}
+            	}
                 return;
             }
             if ( "capture-animation" .equals( command ) )
