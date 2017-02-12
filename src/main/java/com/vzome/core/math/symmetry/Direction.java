@@ -16,6 +16,14 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 
 /**
+ * A single orbit in a Symmetry group.
+ * Consists of a collection of zones (Axis), each of which is an infinite family of parallel lines.
+ * There is a prototype zone (Axis) which has index==0; ideally, that zone should
+ * have normal vector =~ (1,e,e), for 0 < e << 1, but this is not true, historically.
+ * 
+ * The orbit is represented by a single "dot" on the fundamental region triangle, and typically
+ * struts in the orbit are rendered with a shape and color unique from all other orbits.
+ * 
  * @author Scott Vorthmann
  */
 public class Direction implements Comparable<Direction>, Iterable<Axis>
@@ -30,7 +38,16 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     private final AlgebraicVector mPrototype;
     
-    private boolean mStandard, mAutomatic, hasHalfSizes;
+    private boolean mStandard; // Standard orbits are typically used as defaults in a presentation layer.
+    						   // They tend to correlate with axes of symmetry.
+    						   // This concept probably should be removed here, and added at the presentation layer.
+
+    private boolean mAutomatic; // Automatic orbits are not predefined statically, but are created as needed
+    							// for new vectors.
+    							// This concept probably should be removed here, and added at the presentation layer.
+
+    private boolean hasHalfSizes; // True if half struts are typically useful.
+    							  // This concept probably should be removed here, and added at the presentation layer.
     
     private final String[] scaleNames = new String[]{ "shorter", "short", "medium", "long" };
 

@@ -24,7 +24,7 @@ public interface Symmetry extends Iterable<Direction>, Embedding
 	    BLACK
     }
 
-    int PLUS = 0, MINUS = 1, NO_SENSE = 2;
+    int PLUS = Axis.PLUS, MINUS = Axis.MINUS;
 	
 	int NO_ROTATION = -1;
     

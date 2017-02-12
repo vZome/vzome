@@ -8,19 +8,28 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.DomUtils;
 
 
+/**
+ * Should be called Zone, an infinite family of parallel lines, one member of an orbit (Direction)
+ *   of a Symmetry group.
+ */
 public class Axis
 {
-	private final Direction mDirection;
+	private final Direction mDirection;  // the containing orbit
     
-    private int orientation;  // how the prototype for this direction maps to this
+    private int orientation;  // The permutation that maps the orbit (Direction) prototype zone to this zone
     
-    private int mSense;
+    public static final int PLUS = 0, MINUS = 1;  // Every reflection group has two rotation subgroups,
+    											  //  corresponding to "white" / "right-handed" right triangles or
+    											  //  "black" / "left-handed" right triangles.  The convention may be
+    											  //  different for different Symmetry groups, in terms of color, shape, and sense.
 
-	private final int mRotation;
+    private int mSense; // Either PLUS or MINUS, depending on which rotation subgroup this orbit is part of.
     
-    private Permutation mRotationPerm;
+    private Permutation mRotationPerm; // the permutation that is a rotation around this axis, or null
+	private final int   mRotation;     // the index of mRotationPerm, or NO_ROTATION
 
-	private final AlgebraicVector normal;   // not a unit vector
+	private final AlgebraicVector normal;   // The vector to which all lines in this zone are parallel; not a unit vector,
+											//   but has the canonical unit length for this orbit (Direction)
         
 	Axis( Direction dir, int index, int sense, int rotation, Permutation rotPerm, AlgebraicVector normal )
 	{
