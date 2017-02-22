@@ -35,11 +35,20 @@ public abstract class AbstractSymmetry implements Symmetry
     protected final AlgebraicField mField;
     
     protected final String defaultStyle;
-            
+
+    private AlgebraicMatrix principalReflection = null;
+    
     protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle )
+    {
+    	this( order, field, frameColor, defaultStyle, null );
+    }
+        
+    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle, AlgebraicMatrix principalReflection )
     {
         mField = field;
         mField .addSymmetry( this );
+        
+        this.principalReflection = principalReflection;
         
         this .defaultStyle = defaultStyle;
         
@@ -464,4 +473,9 @@ public abstract class AbstractSymmetry implements Symmetry
     {
 		return v .toRealVector();
 	}
+    
+    public AlgebraicMatrix getPrincipalReflection()
+    {
+    	return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
+    }
 }

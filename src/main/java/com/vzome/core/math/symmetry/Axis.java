@@ -25,20 +25,59 @@ public class Axis
 
     private int mSense; // Either PLUS or MINUS, depending on which rotation subgroup this orbit is part of.
     
+    /**
+     * Only false for orbits when Symmetry.getPrincipalReflection() != null,
+     * and then for only half of the axes.  See HeptagonalAntiprismSymmetry.
+     * For such groups, mSense==MINUS does not imply an inverted normal
+     * relative to mSense==PLUS, but probably a specific reflection.
+     * Each zone is oriented, and the inbound and outbound axes DO have opposite normals.
+     * 
+     * Typical group, where getZoneInversion() == null:
+     * 
+     *    sense    outbound        normal
+     *  --------+------------+------------------
+     *    PLUS  |   true     +    (+x, +y, +z)
+     *  --------+------------+------------------
+     *   MINUS  |   true     +    (-x, -y, -z)
+     *  --------+------------+------------------
+     *    PLUS  |   false    +    (-x, -y, -z)   // no Axis created, just aliased
+     *  --------+------------+------------------
+     *   MINUS  |   false    +    (+x, +y, +z)   // no Axis created, just aliased
+     *   
+     * Odd prismatic group, where getPrincipalReflection() != null:
+     * 
+     *    sense    outbound        normal
+     *  --------+------------+------------------
+     *    PLUS  |   true     +    (+x, +y, +z)
+     *  --------+------------+------------------
+     *   MINUS  |   true     +    (+x, +y, -z)   // PLUS outbound reflected in XY plane (for example)
+     *  --------+------------+------------------
+     *    PLUS  |   false    +    (-x, -y, -z)   // PLUS outbound reflected through origin
+     *  --------+------------+------------------
+     *   MINUS  |   false    +    (-x, -y, +z)
+     */
+    private boolean outbound = true;
+    
     private Permutation mRotationPerm; // the permutation that is a rotation around this axis, or null
 	private final int   mRotation;     // the index of mRotationPerm, or NO_ROTATION
 
 	private final AlgebraicVector normal;   // The vector to which all lines in this zone are parallel; not a unit vector,
 											//   but has the canonical unit length for this orbit (Direction)
-        
+    
 	Axis( Direction dir, int index, int sense, int rotation, Permutation rotPerm, AlgebraicVector normal )
+	{
+		this( dir, index, sense, rotation, rotPerm, normal, true );
+	}
+	
+	Axis( Direction dir, int index, int sense, int rotation, Permutation rotPerm, AlgebraicVector normal, boolean outbound )
 	{
 		this.mDirection = dir;
 		this .mRotation = rotation;
-        mRotationPerm = rotPerm;
+		mRotationPerm = rotPerm;
 		this.orientation = index;
 		this.normal = normal;
 		mSense = sense;
+		this.outbound = outbound;
 	}
 
     /**
@@ -49,7 +88,12 @@ public class Axis
      */
     public AlgebraicVector normal() { return normal; }
             
-    public final AlgebraicNumber getLength( AlgebraicVector vector )
+    public boolean isOutbound()
+    {
+		return this .outbound;
+	}
+
+	public final AlgebraicNumber getLength( AlgebraicVector vector )
     {
         return vector .getLength( normal );
     }
@@ -94,7 +138,7 @@ public class Axis
     @Override
 	public String toString()
 	{
-		return mDirection .toString() + " " + orientation;
+		return mDirection .toString() + " " + ( (mSense == Symmetry.PLUS) ? "+" : "-" ) + orientation + ( outbound ? "" : "i" );
 	}
 	
 	public Direction getOrbit()
@@ -138,8 +182,9 @@ public class Axis
      */
     public void rename( int sense, int orientation2 )
     {
-        mSense = sense;
-        orientation = orientation2;
+    	this .mSense = sense;
+        this .orientation = orientation2;
+        this .outbound = true;
     }
 
 

@@ -260,4 +260,9 @@ public class RenderedManifestation
 	{
 		return this .strutOrbit;
 	}
+	
+	public void offsetLocation( AlgebraicVector offset )
+	{
+		this .location = this .location .plus( offset );
+	}
 }

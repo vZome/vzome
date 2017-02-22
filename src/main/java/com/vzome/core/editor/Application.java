@@ -427,7 +427,16 @@ public class Application
         field = new HeptagonField();
         fields .put( field .getName(), field );
         {
-            Symmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism" );
+        	HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "triangular antiprism", true );
+            symmetry .createStandardOrbits( "blue" );
+            mStyles.put( symmetry, new ArrayList<>() );
+            defaultShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
+            addStyle( defaultShapes );
+            addStyle( new ExportedVEFShapes( prefsFolder, "heptagon/antiprism", "heptagonal antiprism", symmetry, defaultShapes ) );
+        }
+        {
+        	HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism" );
+            symmetry .createStandardOrbits( "blue" );
             mStyles.put( symmetry, new ArrayList<>() );
             defaultShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
             addStyle( defaultShapes );

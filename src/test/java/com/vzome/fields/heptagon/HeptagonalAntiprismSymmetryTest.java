@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.HeptagonField;
+import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -36,19 +38,10 @@ public class HeptagonalAntiprismSymmetryTest {
 	}
 
 	@Test
-	public void testBlueOrbit()
-	{
-		HeptagonField field = new HeptagonField();
-		Symmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", null );
-
-		Direction orbit = symm .getDirection( "blue" );
-	}
-
-	@Test
 	public void testOrientations()
 	{
 		HeptagonField field = new HeptagonField();
-		Symmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", null );
+		HeptagonalAntiprismSymmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", null );
 
 		AlgebraicMatrix m2 = symm .getMatrix( 2 );
 		AlgebraicMatrix m4 = symm .getMatrix( 4 );
@@ -56,4 +49,106 @@ public class HeptagonalAntiprismSymmetryTest {
 		
 		assertEquals( m2, m6 .times( m6 .times( m4 ) ) );
 	}
+
+	@Test
+    public void testGetAxisUncorrected()
+    {
+        HeptagonField field = new HeptagonField();
+        HeptagonalAntiprismSymmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism" );
+		symm .createStandardOrbits( "blue" );
+
+        RealVector v1 = new RealVector( 0.1, 0.1, 3.0 );
+        RealVector v2 = new RealVector( 0.1, 0.1, -3.0 );
+        RealVector v3 = new RealVector( 0.1, -0.1, 3.0 );
+        RealVector v4 = new RealVector( 0.1, -0.1, -3.0 );
+        RealVector v5 = new RealVector( -0.1, 0.1, 3.0 );
+        RealVector v6 = new RealVector( -0.1, 0.1, -3.0 );
+        RealVector v7 = new RealVector( -0.1, -0.1, 3.0 );
+        RealVector v8 = new RealVector( -0.1, -0.1, -3.0 );
+
+        Direction orbit = symm .getDirection( "red" );
+
+        Axis axis = orbit .getAxis( v1 );
+        Axis expected = orbit .getAxis( Axis.PLUS, 1 ); // these numbers are pretty arbitrary, for red...
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v2 );
+        expected = orbit .getAxis( Axis.PLUS, 7 ); // since there are really only "up" and "down"
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v3 );
+        expected = orbit .getAxis( Axis.MINUS, 11 );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v4 );
+        expected = orbit .getAxis( Axis.PLUS, 13 );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v5 );
+        expected = orbit .getAxis( Axis.PLUS, 3 );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v6 );
+        expected = orbit .getAxis( Axis.PLUS, 8 );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v7 );
+        expected = orbit .getAxis( Axis.MINUS, 8 );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v8 );
+        expected = orbit .getAxis( Axis.PLUS, 9 );
+        assertEquals( expected, axis );
+    }
+
+	@Test
+    public void testGetAxisCorrected()
+    {
+        HeptagonField field = new HeptagonField();
+        HeptagonalAntiprismSymmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism corrected", true );
+		symm .createStandardOrbits( "blue" );
+
+        RealVector v1 = new RealVector( 0.5, 0.1, 0.1 );
+        RealVector v2 = new RealVector( 0.5, 0.1, -0.1 );
+        RealVector v3 = new RealVector( 0.5, -0.1, 0.1 );
+        RealVector v4 = new RealVector( 0.5, -0.1, -0.1 );
+        RealVector v5 = new RealVector( -0.5, 0.1, 0.1 );
+        RealVector v6 = new RealVector( -0.5, 0.1, -0.1 );
+        RealVector v7 = new RealVector( -0.5, -0.1, 0.1 );
+        RealVector v8 = new RealVector( -0.5, -0.1, -0.1 );
+
+        Direction orbit = symm .getDirection( "blue" );
+
+        Axis axis = orbit .getAxis( v1 );
+        Axis expected = orbit .getAxis( Axis.PLUS, 0, true );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v2 );
+        expected = orbit .getAxis( Axis.MINUS, 0, true );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v3 );
+        expected = orbit .getAxis( Axis.MINUS, 7, true );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v4 );
+        expected = orbit .getAxis( Axis.PLUS, 7, true );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v5 );
+        expected = orbit .getAxis( Axis.PLUS, 7, false );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v6 );
+        expected = orbit .getAxis( Axis.MINUS, 7, false );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v7 );
+        expected = orbit .getAxis( Axis.MINUS, 0, false );
+        assertEquals( expected, axis );
+
+        axis = orbit .getAxis( v8 );
+        expected = orbit .getAxis( Axis.PLUS, 0, false );
+        assertEquals( expected, axis );
+    }
 }

@@ -72,11 +72,6 @@ public class DaeExporter extends Exporter3d
             {
                 String orientedShapeId = doc .addOrientedShape( rm );
                 AlgebraicVector location = man .getLocation();
-                if ( rm .reverseOrder() ) {
-                	// The strut is meant to be rendered "inside-out", but we can achieve the same affect just
-                	//   by offsetting it.
-                	location = ((Strut) man) .getEnd();
-                }
             	doc .addShapeInstance( rm, orientedShapeId, location );
             }
             else
@@ -213,6 +208,7 @@ public class DaeExporter extends Exporter3d
 
         String addShape( RenderedManifestation rm )
         {
+        	boolean reverseFaces = rm .reverseOrder();
         	Polyhedron shape = rm .getShape();
         	Embedding embedding = rm .getEmbedding();
         	String shapeId = shapeIds .get( shape );
@@ -238,7 +234,7 @@ public class DaeExporter extends Exporter3d
                 	int arity = face .size();
                     int v0 = -1, v1 = -1;
                 	for ( int j = 0; j < arity; j++ ){
-                		Integer index = face .get( /*reverseFaces? arity-j-1 :*/ j );
+                		Integer index = face .get( reverseFaces? arity-j-1 : j );
                         if ( v0 == -1 )
                         {
                             v0 = index;
@@ -370,8 +366,6 @@ public class DaeExporter extends Exporter3d
                 	StringBuffer sb = new StringBuffer();
     				Element matrix = (Element) xpath .evaluate( "matrix", oriented_shape, XPathConstants.NODE );
     				AlgebraicMatrix transform = rm .getOrientation();
-    				if ( rm .reverseOrder() )
-    					transform = transform .negate(); // we're using the offset trick instead... see doExport() above
     				for (int i = 0; i < 3; i++) {
         				for (int j = 0; j < 3; j++) {
     						AlgebraicNumber num = transform .getElement( i, j );

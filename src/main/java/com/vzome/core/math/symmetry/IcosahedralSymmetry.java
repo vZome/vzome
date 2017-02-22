@@ -196,13 +196,8 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     {
         AlgebraicVector xAxis = mField .basisVector( 3, AlgebraicVector .X );
         
+        // mMatrices not yet initialized, so this should create no zone (Axis)
         Direction dir = createZoneOrbit( frameColor, 0, 15, xAxis, true, true, mField .createRational( 2 ) );
-//        Direction dir = new Direction( "blue", this, 0, 15, xAxis, true );
-//        dir .setHalfSizes( true );
-//        dir .setUnitLength( mField .createRational( 2 );
-//        mDirectionList .add( dir );
-//        mDirectionMap .put( dir .getName(), dir );
-//        orbitSet .add( dir );
         
         dir .setScaleNames( new String[]{ "b0", "b1", "b2", "b3" } );
         createBlueAxes( dir, 0, 15, xAxis );

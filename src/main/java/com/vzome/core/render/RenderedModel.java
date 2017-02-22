@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -367,7 +368,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                 Color color = orbitSource .getColor( orbit ) .getPastel();
                 rm .setColor( color );
             } catch ( IllegalStateException e ) {
-                logger .warning( "Unable to set color for panel, normal = " + normal .toString() );
+            	if ( logger .isLoggable( Level.WARNING ) )
+            		logger .warning( "Unable to set color for panel, normal = " + normal .toString() );
             }
         }
         else
@@ -403,10 +405,39 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
 		int orn = axis .getOrientation();
 		AlgebraicMatrix orientation = mPolyhedra .getSymmetry() .getMatrix( orn );
+		
+		// Strut geometries only need to be mirrored for certain symmetries
+		AlgebraicMatrix reflection = orbitSource .getSymmetry() .getPrincipalReflection();
+		boolean needReflections = reflection != null;
 		boolean mirrored = false;
-		if ( axis .getSense() == Symmetry .MINUS ) {
-		    orientation = orientation .negate();
-		    mirrored = true;
+		if ( needReflections ) {
+			/*
+			 *  Odd prismatic group, where getPrincipalReflection() != null:
+			 */
+			if ( logger .isLoggable( Level.FINE ) ) {
+				logger .fine( "rendering " + offset + " as " + axis );				
+			}
+			if ( axis .getSense() == Axis .MINUS ) {
+				if ( logger .isLoggable( Level.FINER ) ) {
+					logger .finer( "mirroring orientation " + orn );				
+				}
+				if ( logger .isLoggable( Level.FINEST ) ) {
+					logger .finest( "matrix before: " + orientation );				
+				}
+			    orientation = reflection .times( orientation );
+				if ( logger .isLoggable( Level.FINEST ) ) {
+					logger .finest( "matrix after : " + orientation );				
+				}
+			    mirrored = true;
+			}
+			if ( ! axis .isOutbound() ) {
+				rm .offsetLocation( offset );
+			}
+		} else {
+			// MINUS orbits are handled just by offsetting... rendering the strut from the opposite end
+			if ( axis .getSense() == Axis .MINUS ) {
+				rm .offsetLocation( offset );
+			}
 		}
 		rm .setStrut( orbit, orn, len );
 		rm .setOrientation( orientation, mirrored );

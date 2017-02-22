@@ -76,4 +76,11 @@ public interface Symmetry extends Iterable<Direction>, Embedding
     public abstract Direction getSpecialOrbit( SpecialOrbit which );
 
 	Axis getPreferredAxis();
+
+	/**
+	 * Get the transformation matrix that maps zone 7 to zone -7 (for example).
+	 * If null, the matrix is implicitly a central inversion, negating vectors.
+	 * @return {@link AlgebraicMatrix}
+	 */
+	public abstract AlgebraicMatrix getPrincipalReflection();
 }

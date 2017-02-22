@@ -474,6 +474,8 @@ public class XmlSaveFormat
         	DomUtils .addAttribute( xml, indexAttr, Integer .toString( axis .getOrientation() ) );
         if ( axis .getSense() != Symmetry.PLUS )
         	DomUtils .addAttribute( xml, "sense", "minus" );
+        if ( ! axis .isOutbound() )
+        	DomUtils .addAttribute( xml, "outbound", "false" );
     }
 
     public final AlgebraicVector parseRationalVector( Element xml, String attrName )
@@ -587,7 +589,11 @@ public class XmlSaveFormat
             sense = Symmetry .MINUS;
 //            index *= -1;
         }
-        return group .getDirection( aname ) .getAxis( sense, index );
+        boolean outbound = true;
+        String outs = xml .getAttribute( "outbound" );
+        if ( outs != null && outs .equals( "false" ) )
+        	outbound = false;
+        return group .getDirection( aname ) .getAxis( sense, index, outbound );
     }
 
     public AlgebraicNumber parseNumber( Element xml, String attrName )

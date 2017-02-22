@@ -14,8 +14,85 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.symmetry.Direction;
 
 
-public class Polyhedron {
-    private static Logger logger = Logger .getLogger( "com.vzome.core.math.Polyhedron" );
+public class Polyhedron
+{
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((length == null) ? 0 : length.hashCode());
+		result = prime * result + ((m_faces == null) ? 0 : m_faces.hashCode());
+		result = prime * result
+				+ ((m_vertexList == null) ? 0 : m_vertexList.hashCode());
+		result = prime * result
+				+ ((m_vertices == null) ? 0 : m_vertices.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + numVertices;
+		result = prime * result + ((orbit == null) ? 0 : orbit.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Polyhedron other = (Polyhedron) obj;
+		if (length == null) {
+			if (other.length != null) {
+				return false;
+			}
+		} else if (!length.equals(other.length)) {
+			return false;
+		}
+		if (m_faces == null) {
+			if (other.m_faces != null) {
+				return false;
+			}
+		} else if (!m_faces.equals(other.m_faces)) {
+			return false;
+		}
+		if (m_vertexList == null) {
+			if (other.m_vertexList != null) {
+				return false;
+			}
+		} else if (!m_vertexList.equals(other.m_vertexList)) {
+			return false;
+		}
+		if (m_vertices == null) {
+			if (other.m_vertices != null) {
+				return false;
+			}
+		} else if (!m_vertices.equals(other.m_vertices)) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (numVertices != other.numVertices) {
+			return false;
+		}
+		if (orbit == null) {
+			if (other.orbit != null) {
+				return false;
+			}
+		} else if (!orbit.equals(other.orbit)) {
+			return false;
+		}
+		return true;
+	}
+
+	private static Logger logger = Logger .getLogger( "com.vzome.core.math.Polyhedron" );
     
 	protected int numVertices = 0;
 
@@ -184,9 +261,6 @@ public class Polyhedron {
         }
 	}
 	
-	
-
-
     public void setOrbit( Direction orbit )
     {
         this .orbit = orbit;

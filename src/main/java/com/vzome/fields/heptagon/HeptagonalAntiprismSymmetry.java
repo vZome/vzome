@@ -17,102 +17,29 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
     private static final double SIGMA_X_2 = HeptagonField.SIGMA_VALUE * 2.0d;
     private static final double SKEW_FACTOR = Math .sin( (3.0d/7.0d) * Math.PI );
 	private Axis preferredAxis;
+	private boolean correctedOrbits;
 
 	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
 	{
-		super( 14, field, frameColor, defaultStyle );
+		this( field, frameColor, defaultStyle, false );
 	}
 
-	@Override
-	protected void createFrameOrbit( String frameColor )
+	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle, boolean correctedOrbits )
 	{
-        HeptagonField hf = (HeptagonField) this .mField;
-
-        AlgebraicVector zAxis = hf .basisVector( 3, AlgebraicVector.Z );
-        AlgebraicVector zAxisNeg = zAxis .negate();
-        Direction redOrbit = createZoneOrbit( "red", 0, 1, zAxis, true );
-        for ( int i = 0; i < 7; i++ ) {
-            redOrbit .createAxis( i, 1, zAxis );
-            redOrbit .createAxis( i + 7, 6, zAxisNeg );
-        }
-        redOrbit .setDotLocation( 1d, 0d );
-        this .preferredAxis = redOrbit .getAxis( Symmetry.PLUS, 0 );
-
-        AlgebraicVector axis0 = hf .basisVector( 3, AlgebraicVector.X );
-        Direction blueOrbit = createZoneOrbit( frameColor, 0, 7, axis0, true );
-        blueOrbit .createAxis( 0, 7, axis0 );
-        blueOrbit .createAxis( 7, 7, axis0 );
-        blueOrbit .setDotLocation( 0d, 1d );
-
-        AlgebraicNumber one = hf .one();
-        AlgebraicNumber s = hf .sigmaReciprocal(); // 1 / sigma
-        AlgebraicNumber R = hf .createPower( 1 ) .times( hf .sigmaReciprocal() ); // rho / sigma
-
-        AlgebraicVector axis1 = hf .origin( 3 )
-        		.setComponent( AlgebraicVector.X, s )
-				.setComponent( AlgebraicVector.Y, R );
-        blueOrbit .createAxis( 1, 9, axis1 );
-        blueOrbit .createAxis( 8, 9, axis1 );
-
-        AlgebraicVector axis2 = hf .origin( 3 )
-        		.setComponent( AlgebraicVector.X, s .negate() )
-				.setComponent( AlgebraicVector.Y, one );
-        blueOrbit .createAxis( 2, 11, axis2 );
-        blueOrbit .createAxis( 9, 11, axis2 );
-
-        AlgebraicVector axis3 = hf .origin( 3 )
-        		.setComponent( AlgebraicVector.X, one .negate() )
-				.setComponent( AlgebraicVector.Y, s );
-        blueOrbit .createAxis( 3, 13, axis3 );
-        blueOrbit .createAxis( 10, 13, axis3 );
-
-        AlgebraicVector axis4 = hf .origin( 3 )
-        		.setComponent( AlgebraicVector.X, R .negate() )
-				.setComponent( AlgebraicVector.Y, s .negate() );
-        blueOrbit .createAxis( 4, 8, axis4 );
-        blueOrbit .createAxis( 11, 8, axis4 );
-
-        AlgebraicVector axis5 = hf .origin( 3 )
-				.setComponent( AlgebraicVector.Y, one .negate() );
-        blueOrbit .createAxis( 5, 10, axis5 );
-        blueOrbit .createAxis( 12, 10, axis5 );
-
-        AlgebraicVector axis6 = hf .origin( 3 )
-        		.setComponent( AlgebraicVector.X, R )
-				.setComponent( AlgebraicVector.Y, R .negate() );
-        blueOrbit .createAxis( 6, 12, axis6 );
-        blueOrbit .createAxis( 13, 12, axis6 );
-
-        AlgebraicVector z = hf .basisVector( 3, AlgebraicVector.Z );
-        mMatrices[ 0 ] = hf .identityMatrix( 3 );
-        mMatrices[ 1 ] = new AlgebraicMatrix( axis1, axis6 .negate(), z );
-        mMatrices[ 2 ] = new AlgebraicMatrix( axis2, axis0 .negate(), z );
-        mMatrices[ 3 ] = new AlgebraicMatrix( axis3, axis1 .negate(), z );
-        mMatrices[ 4 ] = new AlgebraicMatrix( axis4, axis2 .negate(), z );
-        mMatrices[ 5 ] = new AlgebraicMatrix( axis5, axis3 .negate(), z );
-        mMatrices[ 6 ] = new AlgebraicMatrix( axis6, axis4 .negate(), z );
-        AlgebraicVector zNeg = z .negate();
-        mMatrices[  7 ] = new AlgebraicMatrix( axis0, axis2 .negate(), zNeg );
-        mMatrices[  8 ] = mMatrices[ 1 ] .times( mMatrices[ 7 ] );
-        mMatrices[  9 ] = mMatrices[ 2 ] .times( mMatrices[ 7 ] );
-        mMatrices[ 10 ] = mMatrices[ 3 ] .times( mMatrices[ 7 ] );
-        mMatrices[ 11 ] = mMatrices[ 4 ] .times( mMatrices[ 7 ] );
-        mMatrices[ 12 ] = mMatrices[ 5 ] .times( mMatrices[ 7 ] );
-        mMatrices[ 13 ] = mMatrices[ 6 ] .times( mMatrices[ 7 ] );
-    }
-
-	@Override
-	protected void createOtherOrbits()
-	{
-//		super .createOtherOrbits();
-	}
-    
-    @Override
-	public Axis getPreferredAxis()
-	{
-		return this .preferredAxis;
+		super( 14, field, frameColor, defaultStyle,
+					correctedOrbits?
+							// reflection in Z (red) will yield the negative zones
+							new AlgebraicMatrix( field .basisVector( 3, AlgebraicVector.X ),
+									field .basisVector( 3, AlgebraicVector.Y ),
+									field .basisVector( 3, AlgebraicVector.Z ) .negate() )
+						: null // reflection through origin yields negative zones
+				); // calls createInitialPermutations, createFrameOrbit, createOtherOrbits
+		this.correctedOrbits = correctedOrbits;
 	}
 
+	/**
+	 * Called by the super constructor.
+	 */
 	@Override
 	protected void createInitialPermutations()
 	{
@@ -128,6 +55,105 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
     }
 
 	@Override
+	protected void createFrameOrbit( String frameColor )
+	{
+		// Breaking the bad pattern of orbit initialization in the AbstractSymmetry constructor,
+		//   we are just initializing matrices, here.
+		
+        HeptagonField hf = (HeptagonField) this .mField;
+
+        AlgebraicNumber one = hf .one();
+        AlgebraicNumber s = hf .sigmaReciprocal(); // 1 / sigma
+        AlgebraicNumber R = hf .createPower( 1 ) .times( hf .sigmaReciprocal() ); // rho / sigma
+
+        //                                   (-s,1)         Y
+        //                        +---+------ [2] ---------+-----------+--------+---+
+        //                       /   /                    /            (s,R)   /   /
+        //                      +---+--------+-----------+--------- [1] ------+---+
+        //                     /   /        /           /                    /   /
+        //                    /   /        /           /           /        /   /
+        //                       /        /           /           /        /   /
+        //          (-1,s) [3] -+--------+-----------+-----------+--------+---+
+        //                     /        /           /           /        /   /
+        //                /   /        /           /           /        /   /
+        //               /   /        /           /           /        /   /
+        //              /   /        /                       /        /    
+        //             +---+--------+---------  O  ---------+--------+- [0] (1,0)  X
+        //            /   /        /                       /        /    
+        //           /   /        /           /<--- s --->/        /   /
+        //          /   /        /           /<-------- R ------->/   /
+        //         /            /           /<---------- 1 --------->/
+        //        +- [4| ------+-----------+-----------+--------+---+
+        //       /    (-R,-s) /           /           /        /   /
+        //      /   /        /           /           /        /   /
+        //     /   /        /           /           /  (R,-R)    /
+        //    +---+--------+-----------+-----------+------ [6] -+
+        //   /   /        /                       /            /
+        //  +---+--------+--------- [5] ---------+--------+---+
+        //                        (0,-1)
+        
+        AlgebraicVector zAxis = hf .basisVector( 3, AlgebraicVector.Z );
+        AlgebraicVector zAxisNeg = zAxis .negate();
+        AlgebraicVector axis0 = hf .basisVector( 3, AlgebraicVector.X );
+        AlgebraicVector axis1 = hf .origin( 3 )
+        		.setComponent( AlgebraicVector.X, s )
+				.setComponent( AlgebraicVector.Y, R );
+        AlgebraicVector axis2 = hf .origin( 3 )
+        		.setComponent( AlgebraicVector.X, s .negate() )
+				.setComponent( AlgebraicVector.Y, one );
+        AlgebraicVector axis3 = hf .origin( 3 )
+        		.setComponent( AlgebraicVector.X, one .negate() )
+				.setComponent( AlgebraicVector.Y, s );
+        AlgebraicVector axis4 = hf .origin( 3 )
+        		.setComponent( AlgebraicVector.X, R .negate() )
+				.setComponent( AlgebraicVector.Y, s .negate() );
+        AlgebraicVector axis5 = hf .origin( 3 )
+				.setComponent( AlgebraicVector.Y, one .negate() );
+        AlgebraicVector axis6 = hf .origin( 3 )
+        		.setComponent( AlgebraicVector.X, R )
+				.setComponent( AlgebraicVector.Y, R .negate() );
+
+        // all mMatrices are mappings of [X,Y,Z] = [ axis0, -axis5, zAxis ]
+        mMatrices[  0 ] = hf .identityMatrix( 3 );
+        mMatrices[  1 ] = new AlgebraicMatrix( axis1, axis6 .negate(), zAxis );
+        mMatrices[  2 ] = new AlgebraicMatrix( axis2, axis0 .negate(), zAxis );
+        mMatrices[  3 ] = new AlgebraicMatrix( axis3, axis1 .negate(), zAxis );
+        mMatrices[  4 ] = new AlgebraicMatrix( axis4, axis2 .negate(), zAxis );
+        mMatrices[  5 ] = new AlgebraicMatrix( axis5, axis3 .negate(), zAxis );
+        mMatrices[  6 ] = new AlgebraicMatrix( axis6, axis4 .negate(), zAxis );
+        
+        mMatrices[  7 ] = new AlgebraicMatrix( axis0, axis2 .negate(), zAxisNeg );
+        mMatrices[  8 ] = mMatrices[ 1 ] .times( mMatrices[ 7 ] );
+        mMatrices[  9 ] = mMatrices[ 2 ] .times( mMatrices[ 7 ] );
+        mMatrices[ 10 ] = mMatrices[ 3 ] .times( mMatrices[ 7 ] );
+        mMatrices[ 11 ] = mMatrices[ 4 ] .times( mMatrices[ 7 ] );
+        mMatrices[ 12 ] = mMatrices[ 5 ] .times( mMatrices[ 7 ] );
+        mMatrices[ 13 ] = mMatrices[ 6 ] .times( mMatrices[ 7 ] );
+	}
+
+	@Override
+	protected void createOtherOrbits()
+	{
+		// Breaking the bad pattern of orbit initialization in the AbstractSymmetry constructor
+	}
+
+	public void createStandardOrbits( String frameColor )
+	{
+        Direction redOrbit = createZoneOrbit( "red", 0, 1, this .mField .basisVector( 3, AlgebraicVector.Z ), true );
+        redOrbit .setDotLocation( 1d, 0d );
+        this .preferredAxis = redOrbit .getAxis( Symmetry.PLUS, 0 );
+
+        Direction blueOrbit = createZoneOrbit( frameColor, 0, 7, this .mField .basisVector( 3, AlgebraicVector.X ), true );
+        blueOrbit .setDotLocation( 0d, 1d );
+    }
+    
+    @Override
+	public Axis getPreferredAxis()
+	{
+		return this .preferredAxis;
+	}
+
+	@Override
 	public RealVector embedInR3( AlgebraicVector v )
 	{
 		RealVector rv = super.embedInR3( v );
@@ -139,13 +165,10 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
     @Override
     public String getName()
     {
-        return "heptagonal antiprism";
-    }
-
-    @Override
-    public String getDefaultStyle()
-    {
-        return "heptagonal antiprism";
+    	if ( this .correctedOrbits )
+    		return "heptagonal antiprism corrected";
+    	else
+    		return "heptagonal antiprism";
     }
 
 	@Override
