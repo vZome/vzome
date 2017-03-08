@@ -172,6 +172,11 @@ public class RenderedManifestation
     {
     	return this .model .renderVector( this .location );
     }
+    
+    public AlgebraicVector getLocationAV()
+    {
+    	return this .location;
+    }
 
 	public Embedding getEmbedding()
 	{
