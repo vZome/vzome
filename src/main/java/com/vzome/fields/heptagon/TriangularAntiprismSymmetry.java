@@ -33,6 +33,12 @@ public class TriangularAntiprismSymmetry extends OctahedralSymmetry
     	SHEAR .transform( v3d );
 		return new RealVector( v3d.x, v3d.y, v3d.z );
 	}
+    
+    @Override
+    public boolean isTrivial()
+    {
+    	return false; // signals the POV-Ray exporter to generate the tranform
+    }
 
     @Override
     public String getName()

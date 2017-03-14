@@ -45,7 +45,7 @@ public class RenderedModelTest
 		@Override
 		public void manifestationAdded( RenderedManifestation rm )
 		{
-			int sense = rm .reverseOrder()? Axis.MINUS : Axis .PLUS;
+			int sense = rm .getStrutSense();
 			int zoneNum = rm .getStrutZone();
 			Direction orbit = rm .getStrutOrbit();
 			// inbound axis results in moving the RM location to the end of the Strut

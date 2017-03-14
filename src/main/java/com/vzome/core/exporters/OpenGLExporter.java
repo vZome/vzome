@@ -19,8 +19,8 @@ import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
@@ -62,15 +62,14 @@ public class OpenGLExporter extends Exporter3d
 		int numShapes = 0; // this is actually the number of ints written to shape_indices
 		int numTransforms = 0; // this is actually the number of arrays written to transformations
         int numVertices = 0;
-		HashMap<Polyhedron, Integer>[] shapes = TwoMaps.inAnArray();
+		HashMap<Polyhedron, Integer> shapes = new HashMap<>();
 		Map<AlgebraicMatrix, Integer> transforms = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
-            boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-            Integer shapeIndex = shapes[ flip?1:0 ] .get( shape );
+            Integer shapeIndex = shapes .get( shape );
             if (shapeIndex == null) {
                 shapeIndex = numShapes;
-                shapes[ flip?1:0 ] .put( shape, shapeIndex );
+                shapes .put( shape, shapeIndex );
                 List<AlgebraicVector> vertices = shape .getVertexList();
                 Set<Polyhedron.Face> faceSet = shape .getFaceSet();
                 ++numShapes;
@@ -81,7 +80,7 @@ public class OpenGLExporter extends Exporter3d
                     shape_indices .append( arity + ",   " );
                     RealVector normal = mModel .renderVector( face .getNormal() );
                     for ( int j = 0; j < arity; j++ ){
-                        int index = face .get( flip? arity-j-1 : j );
+                        int index = face .get( j );
                         AlgebraicVector av = vertices .get( index );
                         RealVector vertex = mModel .renderVector( av );
                         shape_vertices .append( vertex + ",\n" );

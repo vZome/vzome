@@ -49,23 +49,22 @@ public class StlExporter extends Exporter3d
             if (man instanceof Strut) {
                 Polyhedron shape = rm .getShape();
                 RealVector loc = rm .getLocation();
-                boolean reverseFaces = rm .reverseOrder();
                 shape .getFaceSet();
                 List<AlgebraicVector> faceVertices = shape .getVertexList();
                 for (Polyhedron.Face face : shape .getFaceSet()) {
                     int arity = face .size();
-                    int index = face .get( reverseFaces? arity-1 : 0 );
+                    int index = face .get( 0 );
                     RealVector vert0 = mModel .renderVector( faceVertices .get( index ) );
-                    index = face .get( reverseFaces? arity-2 : 1 );
+                    index = face .get( 1 );
                     RealVector vert1 = mModel .renderVector( faceVertices .get( index ) );
-                    index = face .get( reverseFaces? arity-3 : 2 );
+                    index = face .get( 2 );
                     RealVector vert2 = mModel .renderVector( faceVertices .get( index ) );
                     RealVector edge1 = vert1 .minus( vert0 );
                     RealVector edge2 = vert2 .minus( vert1 );
                     RealVector norm = edge1 .cross( edge2 ) .normalize();
                     RealVector v0 = null, v1 = null;
                     for ( int j = 0; j < arity; j++ ){
-                        index = face .get( reverseFaces? arity-j-1 : j );
+                        index = face .get( j );
                         RealVector vertex = loc .plus( mModel .renderVector( faceVertices .get( index ) ) );
                         vertex = vertex .scale( RZOME_INCH_SCALING );
 

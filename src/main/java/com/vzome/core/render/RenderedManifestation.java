@@ -10,6 +10,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Strut;
 
 /**
  * @author Scott Vorthmann
@@ -33,7 +34,7 @@ public class RenderedManifestation
     
     private Object mGraphicsObject;
     
-    private boolean mPickable = true, mMirrored = false;
+    private boolean mPickable = true;
 
     private AlgebraicVector location;
 
@@ -42,6 +43,8 @@ public class RenderedManifestation
     private AlgebraicNumber strutLength = null;
 
 	private Direction strutOrbit = null;
+
+	private int strutSense;
     
 //    private transient Axis mAxis = null;
 
@@ -135,10 +138,9 @@ public class RenderedManifestation
 		this.color = color;
 	}
 
-	public void setOrientation( AlgebraicMatrix m, boolean mirrored )
+	public void setOrientation( AlgebraicMatrix m )
     {
         mOrientation = m;
-        mMirrored = mirrored;
     }
 
     public AlgebraicMatrix getOrientation()
@@ -146,13 +148,6 @@ public class RenderedManifestation
         return mOrientation;
     }
 
-    /**
-     * @return
-     */
-    public boolean reverseOrder()
-    {
-        return mMirrored;
-    }
 //
 //    /**
 //     * Useful only for struts.  This is for optimization.
@@ -189,7 +184,6 @@ public class RenderedManifestation
         final int prime = 31;
         int result = 1;
         result = prime * result + ((location == null) ? 0 : location.hashCode());
-        result = prime * result + (mMirrored ? 1231 : 1237);
         result = prime * result + ((mShape == null) ? 0 : mShape.hashCode());
 //        result = prime * result + ((color == null) ? 0 : color.hashCode());
         result = prime * result + ((mOrientation == null) ? 0 : mOrientation.hashCode());
@@ -216,8 +210,6 @@ public class RenderedManifestation
 //                return false;
 //        } else if ( ! color.equals( other.color ) )
 //            return false;
-        if ( mMirrored != other.mMirrored )
-            return false;
         if ( ! mOrientation.equals( other.mOrientation ) )
             return false;
         if ( mShape == null ) {
@@ -235,7 +227,6 @@ public class RenderedManifestation
         copy .mColorName = this .mColorName;
         copy .color = this .color;
         copy .mGlow = this .mGlow;
-        copy .mMirrored = this .mMirrored;
         copy .mOrientation = this .mOrientation;
         copy .mShape = this .mShape;
         copy .mTransparency = this .mTransparency;
@@ -244,16 +235,22 @@ public class RenderedManifestation
         return copy;
     }
 
-    public void setStrut( Direction orbit, int zone, AlgebraicNumber length )
+    public void setStrut( Direction orbit, int zone, int sense, AlgebraicNumber length )
     {
 		this .strutOrbit = orbit;
         this .strutZone = zone;
+		this .strutSense = sense;
         this .strutLength = length;
     }
     
     public int getStrutZone()
     {
         return this .strutZone;
+    }
+
+    public int getStrutSense()
+    {
+        return this .strutSense;
     }
 
     public AlgebraicNumber getStrutLength()
@@ -266,8 +263,11 @@ public class RenderedManifestation
 		return this .strutOrbit;
 	}
 	
-	public void offsetLocation( AlgebraicVector offset )
+	void offsetLocation()
 	{
-		this .location = this .location .plus( offset );
+		if ( this .mManifestation != null ) {
+			Strut strut = (Strut) this .mManifestation;
+			this .location = strut .getEnd();
+		}
 	}
 }

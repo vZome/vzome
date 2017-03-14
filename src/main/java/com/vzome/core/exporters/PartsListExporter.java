@@ -16,8 +16,8 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
@@ -36,7 +36,7 @@ public class PartsListExporter extends Exporter3d
 	    output = new PrintWriter( writer );
 	    
         int numBalls = 0;
-        HashMap<Direction, Map<AlgebraicNumber, Integer> >[] orbits = TwoMaps.inAnArray();
+        HashMap<Direction, Map<AlgebraicNumber, Integer> > orbits = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
             Manifestation m = rm .getManifestation();
             if ( m instanceof Connector ) {
@@ -44,13 +44,12 @@ public class PartsListExporter extends Exporter3d
             }
             else if ( m instanceof Strut ) {
                 Polyhedron shape = rm .getShape();
-                boolean flip = rm .reverseOrder(); // part is left-handed
                 Direction orbit = shape .getOrbit();
-                Map<AlgebraicNumber, Integer> orbitHistogram = orbits[ flip?1:0 ] .get( orbit );
+                Map<AlgebraicNumber, Integer> orbitHistogram = orbits .get( orbit );
                 if ( orbitHistogram == null )
                 {
                     orbitHistogram = new HashMap<>();
-                    orbits[ flip?1:0 ] .put( orbit, orbitHistogram );
+                    orbits .put( orbit, orbitHistogram );
                 }
                 AlgebraicNumber len = shape .getLength();
                 Integer lengthCount = orbitHistogram .get( len );
@@ -66,17 +65,13 @@ public class PartsListExporter extends Exporter3d
         output .println( "balls" );
         output .println( "  " + numBalls );
 		
-        for ( int i = 0; i < orbits.length; i++ ) {
-            for (Direction orbit : orbits[i].keySet()) {
-                output .print( orbit .getName() );
-                if ( i == 1 )
-                    output .print( " (lefty)" );
-                output .println();
-                Map<AlgebraicNumber, Integer> histogram = orbits[i] .get( orbit );
-                for (AlgebraicNumber key : histogram .keySet()) {
-                    output .println( "  " + key .toString() + " : " + histogram .get( key ) );
-                }
-            }
+        for (Direction orbit : orbits.keySet()) {
+        	output .print( orbit .getName() );
+        	output .println();
+        	Map<AlgebraicNumber, Integer> histogram = orbits .get( orbit );
+        	for (AlgebraicNumber key : histogram .keySet()) {
+        		output .println( "  " + key .toString() + " : " + histogram .get( key ) );
+        	}
         }
 
 		output .close();

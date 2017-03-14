@@ -161,6 +161,12 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
         Double y = rv.y * SKEW_FACTOR;
 		return new RealVector( x, y, rv.z );
 	}
+    
+    @Override
+    public boolean isTrivial()
+    {
+    	return false; // signals the POV-Ray exporter to generate the tranform
+    }
 
     @Override
     public String getName()

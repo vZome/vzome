@@ -71,13 +71,12 @@ public class DaeExporter extends Exporter3d
             if ( man instanceof Strut )
             {
                 String orientedShapeId = doc .addOrientedShape( rm );
-                AlgebraicVector location = man .getLocation();
-            	doc .addShapeInstance( rm, orientedShapeId, location );
+            	doc .addShapeInstance( rm, orientedShapeId );
             }
             else
             {
                 String nodeId = doc .addColoredShape( rm );
-            	doc .addShapeInstance( rm, nodeId, man .getLocation() );
+            	doc .addShapeInstance( rm, nodeId );
             }
         }
         doc .write( writer );
@@ -208,7 +207,6 @@ public class DaeExporter extends Exporter3d
 
         String addShape( RenderedManifestation rm )
         {
-        	boolean reverseFaces = rm .reverseOrder();
         	Polyhedron shape = rm .getShape();
         	Embedding embedding = rm .getEmbedding();
         	String shapeId = shapeIds .get( shape );
@@ -234,7 +232,7 @@ public class DaeExporter extends Exporter3d
                 	int arity = face .size();
                     int v0 = -1, v1 = -1;
                 	for ( int j = 0; j < arity; j++ ){
-                		Integer index = face .get( reverseFaces? arity-j-1 : j );
+                		Integer index = face .get( j );
                         if ( v0 == -1 )
                         {
                             v0 = index;
@@ -387,15 +385,16 @@ public class DaeExporter extends Exporter3d
 			return orientedShapeId;
 		}
 
-		void addShapeInstance( RenderedManifestation rm, String shapeId, AlgebraicVector location )
+		void addShapeInstance( RenderedManifestation rm, String shapeId )
         {
             Element visual_scene_node = (Element) visual_scene_node_template .cloneNode( true );
             try {
 				Element translate = (Element) xpath .evaluate( "translate", visual_scene_node, XPathConstants.NODE );
+				RealVector location = rm .getLocation();
             	if ( location == null )
             		visual_scene_node .removeChild( translate );
             	else
-    				translate .setTextContent( rm .getEmbedding() .embedInR3( location ) .spacedString() );
+    				translate .setTextContent( location .spacedString() );
 				Element instance_node = (Element) xpath .evaluate( "instance_node", visual_scene_node, XPathConstants.NODE );
 				instance_node .setAttribute( "url", "#" + shapeId );
 				visual_scene_node .setAttribute( "id", "instance" + Integer .toString( instanceNum++ ) );

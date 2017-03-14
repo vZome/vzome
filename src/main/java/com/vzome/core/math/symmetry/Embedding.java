@@ -6,4 +6,6 @@ import com.vzome.core.math.RealVector;
 public interface Embedding
 {
 	RealVector embedInR3( AlgebraicVector v );
+	
+	boolean isTrivial();
 }

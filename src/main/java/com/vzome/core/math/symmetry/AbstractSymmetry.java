@@ -474,6 +474,12 @@ public abstract class AbstractSymmetry implements Symmetry
 		return v .toRealVector();
 	}
     
+    @Override
+    public boolean isTrivial()
+    {
+    	return true; // a trivial embedding, implemented by toRealVector()
+    }
+    
     public AlgebraicMatrix getPrincipalReflection()
     {
     	return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)

@@ -356,7 +356,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             if ( justShape || ! this .colorPanels )
                 return;
 
-            rm .setOrientation( field .identityMatrix( 3 ), false );
+            rm .setOrientation( field .identityMatrix( 3 ) );
             rm .setColor( Color.WHITE );
 
             try {
@@ -394,23 +394,13 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		
 		Polyhedron prototypeLengthShape = mPolyhedra .getStrutShape( orbit, len );
 		rm .setShape( prototypeLengthShape );
-		
-		if ( justShape )
-		    return;
-		
-		Color color = mPolyhedra .getColor( orbit );
-		if ( color == null )
-			color = orbitSource .getColor( orbit );
-		rm .setColor( color );
 
 		int orn = axis .getOrientation();
 		AlgebraicMatrix orientation = mPolyhedra .getSymmetry() .getMatrix( orn );
 		
 		// Strut geometries only need to be mirrored for certain symmetries
 		AlgebraicMatrix reflection = orbitSource .getSymmetry() .getPrincipalReflection();
-		boolean needReflections = reflection != null;
-		boolean mirrored = false;
-		if ( needReflections ) {
+		if ( reflection != null ) {
 			/*
 			 *  Odd prismatic group, where getPrincipalReflection() != null:
 			 */
@@ -421,27 +411,28 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 				if ( logger .isLoggable( Level.FINER ) ) {
 					logger .finer( "mirroring orientation " + orn );				
 				}
-				if ( logger .isLoggable( Level.FINEST ) ) {
-					logger .finest( "matrix before: " + orientation );				
-				}
-			    orientation = reflection .times( orientation );
-				if ( logger .isLoggable( Level.FINEST ) ) {
-					logger .finest( "matrix after : " + orientation );				
-				}
-			    mirrored = true;
+			    rm .setShape( prototypeLengthShape .getEvilTwin( reflection ) );
 			}
 			if ( ! axis .isOutbound() ) {
-				rm .offsetLocation( offset );
+				rm .offsetLocation();
 			}
 		} else {
 			// MINUS orbits are handled just by offsetting... rendering the strut from the opposite end
 			if ( axis .getSense() == Axis .MINUS ) {
-				rm .offsetLocation( offset );
+				rm .offsetLocation();
 			}
 		}
-		rm .setStrut( orbit, orn, len );
-		rm .setOrientation( orientation, mirrored );
+		rm .setStrut( orbit, orn, axis .getSense(), len );
+		rm .setOrientation( orientation );
 //            rm .setOrientation( RationalMatrices .identity( m .getLocation() .length / 2 ), false );
+		
+		if ( justShape )
+		    return;
+		
+		Color color = mPolyhedra .getColor( orbit );
+		if ( color == null )
+			color = orbitSource .getColor( orbit );
+		rm .setColor( color );
 	}
 
 	protected void resetAttributes( RenderedManifestation rm, boolean justShape, Connector m )
@@ -453,7 +444,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		if ( color == null )
 			color = orbitSource .getColor( null );
 		rm .setColor( color );
-		rm .setOrientation( field .identityMatrix( 3 ), false );
+		rm .setOrientation( field .identityMatrix( 3 ) );
 	}
 
     private Polyhedron makePanelPolyhedron( Panel panel )
