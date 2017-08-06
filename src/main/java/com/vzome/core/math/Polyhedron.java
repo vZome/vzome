@@ -31,6 +31,8 @@ public class Polyhedron implements Cloneable
     private final AlgebraicField field;
     
     private Polyhedron evilTwin; // for struts in symmetries with truly chiral orbits
+    
+    private boolean isEvil = false;
 
 	public Polyhedron( AlgebraicField field )
     {
@@ -55,6 +57,7 @@ public class Polyhedron implements Cloneable
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			this .isEvil = true;
 			
 			this .evilTwin .m_vertexList = new ArrayList<>();
 			// this loop should preserve the order, and thus indices for the faces below
@@ -148,11 +151,12 @@ public class Polyhedron implements Cloneable
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (isEvil ? 1231 : 1237);
 		result = prime * result + ((length == null) ? 0 : length.hashCode());
 		result = prime * result + ((m_faces == null) ? 0 : m_faces.hashCode());
 		result = prime * result
 				+ ((m_vertexList == null) ? 0 : m_vertexList.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + numVertices;
 		result = prime * result + ((orbit == null) ? 0 : orbit.hashCode());
 		return result;
 	}
@@ -169,6 +173,9 @@ public class Polyhedron implements Cloneable
 			return false;
 		}
 		Polyhedron other = (Polyhedron) obj;
+		if (isEvil != other.isEvil) {
+			return false;
+		}
 		if (length == null) {
 			if (other.length != null) {
 				return false;
@@ -190,11 +197,7 @@ public class Polyhedron implements Cloneable
 		} else if (!m_vertexList.equals(other.m_vertexList)) {
 			return false;
 		}
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.equals(other.name)) {
+		if (numVertices != other.numVertices) {
 			return false;
 		}
 		if (orbit == null) {
