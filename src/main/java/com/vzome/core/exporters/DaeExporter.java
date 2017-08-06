@@ -29,6 +29,7 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -49,8 +50,8 @@ public class DaeExporter extends Exporter3d
 {
 	private static final String DAE_TEMPLATE = "com/vzome/core/exporters/template-dae.xml";
 
-	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );	
-	
+	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
+			
 	public DaeExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    super( scene, colors, lights, model );
@@ -63,8 +64,8 @@ public class DaeExporter extends Exporter3d
 	    if (FORMAT instanceof DecimalFormat) {
             ((DecimalFormat) FORMAT) .applyPattern( "0.0000" );
         }
-
-        ColladaDocument doc = new ColladaDocument( DAE_TEMPLATE );
+	    
+        ColladaDocument doc = new ColladaDocument( DAE_TEMPLATE, this .mModel .getEmbedding(), this .mModel .getField() );
         
         for (RenderedManifestation rm : mModel) {
             Manifestation man = rm .getManifestation();
@@ -103,12 +104,13 @@ public class DaeExporter extends Exporter3d
     					visual_scene, library_nodes, library_geometries,
     					material_template, library_materials, effect_template, library_effects;
     	private int instanceNum = 0, shapeNum = 0, colorNum = 0, nodeNum = 0;
+    	private String embeddingMatrixText = null;
     	private Set<String> orientedShapeIds = new HashSet<>();
     	private Map<Polyhedron,String> shapeIds = new HashMap<>();
     	private Map<String,Map<String,String>> coloredShapeIds = new HashMap<>();
     	private Map<Color,String> colorIds = new HashMap<>();
 
-        ColladaDocument( String templatePath )
+        ColladaDocument( String templatePath, Embedding embedding, AlgebraicField field )
         {
 			super();
 
@@ -136,6 +138,7 @@ public class DaeExporter extends Exporter3d
                 library_nodes .removeChild( oriented_shape_template );
 
                 shape_template = (Element) xpath .evaluate( "//node[@id='shape-node']", doc .getDocumentElement(), XPathConstants.NODE );
+                library_nodes .removeChild( shape_template );
 
                 geometry_template = (Element) xpath .evaluate( "//geometry[@id='shape-geom']", doc .getDocumentElement(), XPathConstants.NODE );
                 library_geometries = (Element) geometry_template .getParentNode();
@@ -148,6 +151,32 @@ public class DaeExporter extends Exporter3d
                 effect_template = (Element) xpath .evaluate( "//effect[@id='color-fx']", doc .getDocumentElement(), XPathConstants.NODE );
                 library_effects = (Element) effect_template .getParentNode();
                 library_effects .removeChild( effect_template );
+
+        	    if ( embedding .isTrivial() )
+        	    	embeddingMatrixText = null;
+        	    else {
+        	    	// First, turn the embedding into a set of real column vectors.
+    				RealVector[] columns = new RealVector[3];
+    				for ( int i = 0; i < columns.length; i++ ) {
+						columns[i] = embedding .embedInR3( field .basisVector( 3, i ) );
+					}
+
+                	StringBuffer sb = new StringBuffer();
+    				for (int j = 0; j < 3; j++) {
+						sb .append( FORMAT .format( columns[ j ] .x ) + " " );
+					}
+    				sb .append( "0.0 " );
+    				for (int j = 0; j < 3; j++) {
+						sb .append( FORMAT .format( columns[ j ] .y ) + " " );
+					}
+    				sb .append( "0.0 " );
+    				for (int j = 0; j < 3; j++) {
+						sb .append( FORMAT .format( columns[ j ] .z ) + " " );
+					}
+    				sb .append( "0.0 " );
+    				sb .append( "0.0 0.0 0.0 1.0" );
+    				embeddingMatrixText = sb .toString();
+        	    }
 
             } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
                 e .printStackTrace();
@@ -208,7 +237,6 @@ public class DaeExporter extends Exporter3d
         String addShape( RenderedManifestation rm )
         {
         	Polyhedron shape = rm .getShape();
-        	Embedding embedding = rm .getEmbedding();
         	String shapeId = shapeIds .get( shape );
         	if ( shapeId == null)
         	{
@@ -221,7 +249,7 @@ public class DaeExporter extends Exporter3d
                 
                 for ( AlgebraicVector av : shape .getVertexList() )
                 {
-                	RealVector vertex = mModel .renderVector( av );
+                	RealVector vertex = av .toRealVector(); // cannot use embedding yet
                     vertices .append( FORMAT .format( vertex.x ) + " " );
                     vertices .append( FORMAT .format( vertex.y ) + " " );
                     vertices .append( FORMAT .format( vertex.z ) + " " );
@@ -259,7 +287,7 @@ public class DaeExporter extends Exporter3d
 //                        if ( normalCount % 20 == 0 )
 //                            normals .append( "\n" );
                 	}
-                	RealVector norm = embedding .embedInR3( face .getNormal() ) .normalize();
+                	RealVector norm = face .getNormal() .toRealVector() .normalize(); // cannot use embedding yet
                     normals .append( FORMAT .format( norm.x ) + " " );
                     normals .append( FORMAT .format( norm.y ) + " " );
                     normals .append( FORMAT .format( norm.z ) + " " );
@@ -390,11 +418,20 @@ public class DaeExporter extends Exporter3d
             Element visual_scene_node = (Element) visual_scene_node_template .cloneNode( true );
             try {
 				Element translate = (Element) xpath .evaluate( "translate", visual_scene_node, XPathConstants.NODE );
-				RealVector location = rm .getLocation();
+				AlgebraicVector location = rm .getLocationAV(); // don't want embedding yet
             	if ( location == null )
             		visual_scene_node .removeChild( translate );
             	else
-    				translate .setTextContent( location .spacedString() );
+    				translate .setTextContent( location .toRealVector() .spacedString() );
+            	
+            	// Apply the global embedding, if non-trivial.
+				Element matrix = (Element) xpath .evaluate( "matrix", visual_scene_node, XPathConstants.NODE );
+				if ( this .embeddingMatrixText == null )
+            		visual_scene_node .removeChild( matrix );
+            	else {
+            		matrix .setTextContent( embeddingMatrixText );
+				}
+				
 				Element instance_node = (Element) xpath .evaluate( "instance_node", visual_scene_node, XPathConstants.NODE );
 				instance_node .setAttribute( "url", "#" + shapeId );
 				visual_scene_node .setAttribute( "id", "instance" + Integer .toString( instanceNum++ ) );

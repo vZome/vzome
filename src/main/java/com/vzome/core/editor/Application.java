@@ -427,7 +427,7 @@ public class Application
         field = new HeptagonField();
         fields .put( field .getName(), field );
         {
-        	HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "triangular antiprism", true );
+        	HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism", true );
             symmetry .createStandardOrbits( "blue" );
             mStyles.put( symmetry, new ArrayList<>() );
             defaultShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );

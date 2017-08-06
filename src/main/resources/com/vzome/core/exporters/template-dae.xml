@@ -180,6 +180,12 @@
                 <instance_light url="#dim-light"/>
             </node>
             <node id="instance">
+                <matrix>
+                 1.0 0.0 0.0 20.0
+                 0.0 1.0 0.0 30.0
+                 0.0 0.0 1.0 40.0
+                 0.0 0.0 0.0 1.0 
+                </matrix>
                 <translate>200 100 200</translate>
                 <instance_node url="#oriented-shape"/>
             </node>
