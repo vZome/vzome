@@ -37,6 +37,7 @@ public class RenderedManifestation
     private boolean mPickable = true;
 
     private AlgebraicVector location;
+    private final AlgebraicVector fixedLocation;
 
     private int strutZone = -1;
 
@@ -53,6 +54,7 @@ public class RenderedManifestation
         mManifestation = m;
         if ( m != null )
             location = m .getLocation();
+        this .fixedLocation = location;
 //        AlgebraicField factory = (AlgebraicField) m .getLocation() .getFactory();
         mOrientation = null; // factory .identity();
     }
@@ -179,46 +181,56 @@ public class RenderedManifestation
 	}
 
 	@Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((location == null) ? 0 : location.hashCode());
-        result = prime * result + ((mShape == null) ? 0 : mShape.hashCode());
-//        result = prime * result + ((color == null) ? 0 : color.hashCode());
-        result = prime * result + ((mOrientation == null) ? 0 : mOrientation.hashCode());
-        return result;
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((fixedLocation == null) ? 0 : fixedLocation.hashCode());
+		result = prime * result
+				+ ((mOrientation == null) ? 0 : mOrientation.hashCode());
+		result = prime * result + ((mShape == null) ? 0 : mShape.hashCode());
+		result = prime * result + strutSense;
+		return result;
+	}
 
 	@Override
-    public boolean equals( Object obj )
-    {
-        if ( this == obj )
-            return true;
-        if ( obj == null )
-            return false;
-        if ( !(obj instanceof RenderedManifestation) )
-            return false;
-        RenderedManifestation other = (RenderedManifestation) obj;
-        if ( location == null ) {
-            if ( other.location != null )
-                return false;
-        } else if ( ! location.equals( other.location ) )
-            return false;
-//        if ( color == null ) {
-//            if ( other.color != null )
-//                return false;
-//        } else if ( ! color.equals( other.color ) )
-//            return false;
-        if ( ! mOrientation.equals( other.mOrientation ) )
-            return false;
-        if ( mShape == null ) {
-            if ( other.mShape != null )
-                return false;
-        } else if ( !mShape.equals( other.mShape ) )
-            return false;
-        return true;
-    }
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		RenderedManifestation other = (RenderedManifestation) obj;
+		if (fixedLocation == null) {
+			if (other.fixedLocation != null) {
+				return false;
+			}
+		} else if (!fixedLocation.equals(other.fixedLocation)) {
+			return false;
+		}
+		if (mOrientation == null) {
+			if (other.mOrientation != null) {
+				return false;
+			}
+		} else if (!mOrientation.equals(other.mOrientation)) {
+			return false;
+		}
+		if (mShape == null) {
+			if (other.mShape != null) {
+				return false;
+			}
+		} else if (!mShape.equals(other.mShape)) {
+			return false;
+		}
+		if (strutSense != other.strutSense) {
+			return false;
+		}
+		return true;
+	}
 
     public RenderedManifestation copy()
     {

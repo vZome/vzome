@@ -178,7 +178,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    if ( mainListener != null )
             mainListener .manifestationRemoved( rendered );
 	    if ( ! mRendered .remove( rendered ) )
-	         throw new IllegalStateException( "unable to remove RenderedManifestation" );
+	        throw new IllegalStateException( "unable to remove RenderedManifestation" );
         m .setRenderedObject( null );
 	}
 	            

@@ -57,7 +57,7 @@ public class Polyhedron implements Cloneable
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			this .isEvil = true;
+			this .evilTwin .isEvil = true;
 			
 			this .evilTwin .m_vertexList = new ArrayList<>();
 			// this loop should preserve the order, and thus indices for the faces below
