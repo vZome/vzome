@@ -178,9 +178,11 @@ public class ApplicationController extends DefaultController
         }
 
         field = modelApp .getField( "heptagon" );
-        symmetry = field .getSymmetry( "heptagonal antiprism" );
         {
             model = loadModelPanels( "org/vorthmann/zome/app/heptagonal antiprism.vZome" );
+            symmetry = field .getSymmetry( "heptagonal antiprism corrected" );
+            mSymmetryModels.put( symmetry, model );
+            symmetry = field .getSymmetry( "heptagonal antiprism" );
             mSymmetryModels.put( symmetry, model );
 
             model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );

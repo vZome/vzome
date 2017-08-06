@@ -3,6 +3,9 @@
 
 package com.vzome.desktop.controller;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
@@ -27,6 +30,8 @@ public abstract class ZoneVectorBall
     private Vector3d zoneVector3d;
 
     private Axis zone = null;
+
+    private static Logger logger = Logger .getLogger( "com.vzome.desktop.controller.ZoneVectorBall" );
 
     public ZoneVectorBall( CameraController viewModel )
     {
@@ -83,6 +88,8 @@ public abstract class ZoneVectorBall
             return;
         if ( zone != null && zone .equals(  oldAxis ) )
             return;
+		if ( logger .isLoggable( Level.FINER ) )
+			logger .finer( "preview finished at  " + zone + " for " + vector );
         zoneChanged( oldAxis, zone );
     }
     

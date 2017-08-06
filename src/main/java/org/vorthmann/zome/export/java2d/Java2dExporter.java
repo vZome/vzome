@@ -89,7 +89,6 @@ public class Java2dExporter extends Exporter3d
         List<Vector3f> mappedVertices = new ArrayList<>( 60 );
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
-            boolean flip = rm .reverseOrder(); // need to reverse face vertex order
             com.vzome.core.render.Color c = rm .getColor();
             Color color = (c == null)? Color.WHITE : new Color( c .getRGB() );
             
@@ -107,7 +106,7 @@ public class Java2dExporter extends Exporter3d
             
             List<AlgebraicVector> vertices = shape .getVertexList();
             AlgebraicMatrix partOrientation = rm .getOrientation();
-            RealVector location = mModel .renderVector( rm .getManifestation() .getLocation() );  // should *2?
+            RealVector location = rm .getLocation();  // should *2?
             
             if ( location == null )
                 // avoid NPE reported by Antonio Montero
@@ -129,7 +128,7 @@ public class Java2dExporter extends Exporter3d
                 boolean backFacing = false;
                 Vector3f v1 = null, v2 = null;
                 for ( int j = 0; j < arity; j++ ){
-                    Integer index = face .get( flip? arity-j-1 : j );
+                    Integer index = face .get( j );
                     Vector3f v = mappedVertices .get( index );
                     path .addVertex( v );
                     switch ( path .size() ) {

@@ -344,6 +344,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         AlgebraicField field = this .documentModel .getField();
         previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
+        previewStrut .setPropertyChangeSupport( this .properties() );
         
         lessonController = new LessonController( this .documentModel .getLesson(), mViewPlatform );
         lessonController .setNextController( this );

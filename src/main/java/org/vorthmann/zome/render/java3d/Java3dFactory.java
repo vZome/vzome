@@ -91,6 +91,8 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
 
     protected final Map<Polyhedron, Map<AlgebraicMatrix, Geometry> > outlineGeometries = new HashMap<>();
 
+    private static Logger logger = Logger .getLogger( "org.vorthmann.zome.render.java3d.Java3dFactory" );
+
     public Java3dFactory( Colors colors, Boolean useEmissiveColor )
     {
         mHasEmissiveColor = useEmissiveColor .booleanValue();
@@ -206,13 +208,16 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
             map = new HashMap<>();
             solidGeometries .put( poly, map );
         }
-        return makeGeometry( map, poly, rm .getOrientation(), rm .reverseOrder(), true, rm .getEmbedding() );
+        return makeGeometry( map, poly, rm .getOrientation(), true, rm .getEmbedding() );
     }
 
-    Geometry makeGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix, boolean reverseFaces, boolean makeNormals, Embedding embedding )
+    Geometry makeGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix, boolean makeNormals, Embedding embedding )
     {
         Geometry geom = map .get( matrix );
         if ( geom == null ) {
+
+    		if ( logger .isLoggable( Level.FINE ) )
+    			logger .fine( "creating geometry for " + poly + " and " + matrix );
 
             List<AlgebraicVector> vertices = poly .getVertexList();
             Point3d[] coords = new Point3d [ vertices .size() ];
@@ -242,7 +247,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
             for (Face face : faces) {
                 int arity = face .size();
                 for ( int j = 0; j < arity; j++ ){
-                    Integer index = face .get( reverseFaces? arity-j-1 : j );
+                    Integer index = face .get( j );
                     indices[i++] = index;
                 }
             }
