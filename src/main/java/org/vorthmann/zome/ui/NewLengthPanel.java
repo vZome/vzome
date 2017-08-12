@@ -211,13 +211,13 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                     unitText = new JLabel();
                     biggerFont = unitText .getFont() .deriveFont( 14f );
                     unitText .setFont( biggerFont );
-                    unitText .setHorizontalAlignment( SwingConstants .TRAILING );
+                    unitText .setHorizontalAlignment( SwingConstants .LEADING );
                     valuesColumn .add( unitText );
                 }
                 {
                     lengthText = new JLabel();
                     lengthText .setFont( biggerFont );
-                    lengthText .setHorizontalAlignment( SwingConstants .TRAILING );
+                    lengthText .setHorizontalAlignment( SwingConstants .LEADING );
                     valuesColumn .add( lengthText );
                 }
                 lengthDisplay .add( valuesColumn, BorderLayout .CENTER );
