@@ -32,7 +32,6 @@ public class PolytopesDialog extends EscapeDialog
     public PolytopesDialog( Frame frame, final Controller controller )
     {
         super( frame, "Generate a 4D Polytope", true );
-        setSize( new Dimension( 350, 350 ) );
         setLocationRelativeTo( frame );
 
         Container content = getContentPane();
@@ -214,6 +213,7 @@ public class PolytopesDialog extends EscapeDialog
             }
         } );
         buttons .add( build );
+        setSize( new Dimension( 120 + numberPanels[0].totalLabelWidth(), 350 ) ); // adjust width to the number of irrationals
     }
 
     @Override

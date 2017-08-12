@@ -16,6 +16,7 @@ public class NumberPanel extends JPanel
 {
     private final JTextArea[] fields;
 	private final Controller controller;
+    private final int totalLabelWidth;
     
 	public NumberPanel( Controller controller )
 	{
@@ -34,7 +35,8 @@ public class NumberPanel extends JPanel
         Font biggerFont = label .getFont() .deriveFont( 14f );
         Font biggestFont = label .getFont() .deriveFont( 20f );
         Dimension maxSize = new Dimension( 40, 20 );
-        
+
+        int labelsWidthTotal = 0;
         for ( int i = 0; i < values.length; i++ )
         {
             if ( i == 0 )
@@ -54,9 +56,16 @@ public class NumberPanel extends JPanel
             fields[ i ] .setMaximumSize( maxSize );
             fields[ i ] .setPreferredSize( maxSize );
             this .add( fields[ i ] );
+
+            labelsWidthTotal += (maxSize.width * 2); // leave space for the static text too
         }
+        totalLabelWidth = labelsWidthTotal;
 	}
-	
+
+    public int totalLabelWidth() {
+        return totalLabelWidth;
+    }
+    
     public void syncFromModel()
     {
         String[] values = controller .getCommandList( "values" );

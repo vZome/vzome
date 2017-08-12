@@ -61,7 +61,7 @@ public class LengthDialog extends EscapeDialog
         }
         content .add( bottomPanel, BorderLayout .SOUTH );
 
-        setSize( new Dimension( 250, 150 ) );
+        setSize( new Dimension( 40 + numberPanel.totalLabelWidth(), 150 ) ); // adjust width to the number of irrationals
         setLocationRelativeTo( frame );
     }
 
