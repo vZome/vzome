@@ -86,6 +86,9 @@ public class CommandEdit extends ChangeManifestations
         if ( logger .isLoggable( Level .FINER ) ) {
             logger .finer( "------------------- CommandEdit" );
         }
+        
+        if ( mCommand .ordersSelection() )
+        	setOrderedSelection( true ); // so undo will not reorder the selection
 
         ConstructionList constrsBefore = new ConstructionList();
         for (Manifestation man : mSelection) {

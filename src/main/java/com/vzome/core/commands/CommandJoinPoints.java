@@ -32,6 +32,12 @@ public class CommandJoinPoints extends AbstractCommand
     }
     
     @Override
+    public boolean ordersSelection()
+    {
+    	return true; // so undo will not reorder the selection... see CommandEdit.apply()
+    }
+    
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects ) throws Failure
     {
         ConstructionList result = new ConstructionList();

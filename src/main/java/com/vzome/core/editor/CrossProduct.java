@@ -22,29 +22,41 @@ public class CrossProduct extends ChangeManifestations
         Point p1 = null, p2 = null;
         Segment s1 = null;
         boolean success = false;
+        setOrderedSelection( true );
         for (Manifestation man : mSelection) {
-            unselect( man );
-            if ( man instanceof Connector )
-            {
-                Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();
-                if ( p1 == null )
-                    p1 = nextPoint;
-                else if ( s1 == null )
-                {
-                    p2 = nextPoint;
-                    s1 = new SegmentJoiningPoints( p1, nextPoint );
-                }
-                else 
-                {
-                    Segment segment = new SegmentJoiningPoints( p2, nextPoint );
-                    segment = new SegmentCrossProduct( s1, segment );
-                    select( manifestConstruction( segment ) );
-                    Point endpt = new SegmentEndPoint( segment );
-                    manifestConstruction( endpt );
-                    success = true;
-                    break;
-                }
-            }
+        	if ( success )
+        	{
+        		// Since this is an ordered selection, the selection will be emptied
+        		//  and repopulated on undo.  This lets us repopulate.
+            	recordSelected( man );
+        	}
+        	else {
+    			unselect( man ); // Yes, unselecting struts and panels, until success with three balls.
+    			                 // This is for backward compatibility.
+        		if ( man instanceof Connector )
+        		{
+        			Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();
+        			if ( p1 == null ) {
+        				p1 = nextPoint;
+        			}
+        			else if ( s1 == null )
+        			{
+        				p2 = nextPoint;
+        				s1 = new SegmentJoiningPoints( p1, nextPoint );
+        			}
+        			else if ( ! success )
+        			{
+        				Segment segment = new SegmentJoiningPoints( p2, nextPoint );
+        				segment = new SegmentCrossProduct( s1, segment );
+        				select( manifestConstruction( segment ) );
+        				Point endpt = new SegmentEndPoint( segment );
+        				manifestConstruction( endpt );
+        				success = true;
+        			}
+        			else
+        				recordSelected( man );
+        		}
+        	}
         }
         if ( ! success )
             throw new Command.Failure( "cross-product requires three selected vertices" );

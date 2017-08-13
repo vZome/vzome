@@ -3,13 +3,15 @@
 
 package com.vzome.core.editor;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Group;
@@ -20,11 +22,15 @@ import com.vzome.core.model.Strut;
 
 public abstract class ChangeSelection extends SideEffects
 {
-    protected final Selection mSelection;
+	protected final Selection mSelection;
     
     private boolean mDirty = false;
     
     private boolean groupingDoneInSelection;
+    
+    private boolean orderedSelection = false;
+    
+    private transient Deque<SideEffect> selectionEffects = null;
 
     protected static final Logger logger = Logger.getLogger( "com.vzome.core.editor.ChangeSelection" );
 
@@ -38,6 +44,34 @@ public abstract class ChangeSelection extends SideEffects
         mSelection = selection;
         groupingDoneInSelection = groupInSelection;
     }
+
+	public void setOrderedSelection( boolean orderedSelection )
+	{
+		this.orderedSelection = orderedSelection;
+	}
+
+	@Override
+	public void undo()
+	{
+		if ( this .orderedSelection ) {
+
+			Deque<SideEffect> stack = new ArrayDeque<SideEffect>();
+			this .selectionEffects = stack;
+			// selectionEffects must be set, so that selection-affecting side effects get pushed
+			super.undo();
+						
+			mSelection .clearForOrderedUndo();
+			
+			// to let the SideEffects undo correctly, selectionEffects must be cleared
+			this .selectionEffects = null;
+			while ( ! stack .isEmpty() ) {
+				SideEffect se = stack .pop();
+				se .undo();
+			}
+		}
+		else
+			super.undo();
+	}
 
     protected void getXmlAttributes( Element element ) {}
     
@@ -132,6 +166,13 @@ public abstract class ChangeSelection extends SideEffects
         select( man, false );
     }
     
+    public void recordSelected( Manifestation man )
+    {
+        if ( ! mSelection .manifestationSelected( man ) )
+            return;
+        plan( new RecordSelectedManifestation( man ) );
+    }
+    
     public void select( Manifestation man, boolean ignoreGroups )
     {
         if ( groupingDoneInSelection )  // the legacy form, pre 2.1.2
@@ -182,8 +223,6 @@ public abstract class ChangeSelection extends SideEffects
         
         private final boolean mOn;
 
-		private int index;
-
         public SelectManifestation( Manifestation man, boolean value )
         {
             mMan = man;
@@ -204,7 +243,7 @@ public abstract class ChangeSelection extends SideEffects
                 if ( mOn )
                     mSelection .select( mMan );
                 else
-                    this .index = mSelection .unselect( mMan );
+                    mSelection .unselect( mMan );
         }
 
         @Override
@@ -219,8 +258,13 @@ public abstract class ChangeSelection extends SideEffects
             else
                 if ( mOn )
                     mSelection .unselect( mMan );
-                else if ( this .index >= 0 )
-                    mSelection .reselect( mMan, this .index );
+                else if ( selectionEffects != null ) {
+                	// undoing a deselect in an orderedSelection edit;
+                	//  the actual selects will happen at the end, with pops
+                	selectionEffects .push( this );
+                }
+                else
+                    mSelection .select( mMan );
         }
 
         @Override
@@ -232,6 +276,44 @@ public abstract class ChangeSelection extends SideEffects
                 result .appendChild( man );
             }
             return result;
+        }
+    }
+
+    ////////////////////////
+    /// Support for correctly undoing commands that care about selection order.
+    ////////////////////////
+
+    private class RecordSelectedManifestation implements SideEffect
+    {
+    	private final Manifestation mMan;
+
+        public RecordSelectedManifestation( Manifestation man )
+        {
+    		mMan = man;
+            logger .finest( "constructing RecordSelectedManifestation" );
+        }
+
+        @Override
+		public void redo()
+        {
+            logger .finest( "redoing RecordSelectedManifestation" );
+		}
+
+		@Override
+		public void undo()
+		{
+            logger .finest( "undoing RecordSelectedManifestation" );
+            if ( selectionEffects == null )
+            	// in the pop phase in CS.undo()
+                mSelection .select( mMan );
+            else
+            	selectionEffects .push( this );
+		}
+
+		@Override
+		public Element getXml(Document doc)
+		{
+            return doc .createElement( "recordSelected" );
         }
     }
 
@@ -338,5 +420,4 @@ public abstract class ChangeSelection extends SideEffects
         }
         return anySelected;
     }
-
 }

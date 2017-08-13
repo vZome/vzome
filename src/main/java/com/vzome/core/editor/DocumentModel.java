@@ -504,10 +504,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			QuaternionicSymmetry h4symm = this .mField .getQuaternionSymmetry( "H_4" );
 			edit = new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
 			break;
-		case "SparseCrossProduct":
-			// for testing selection order after undo
-			edit = new SparseCrossProduct( this.mSelection, this.mRealizedModel, groupInSelection );
-			break;
 		}
 
 		if ( edit == null )
@@ -689,9 +685,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			break;
 		case "apiProxy":
 			edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
-			break;
-		case "sparseCrossProduct": // for testing selection order after undo
-			edit = new SparseCrossProduct( mSelection, mRealizedModel, false );
 			break;
 
 		default:

@@ -140,4 +140,9 @@ public abstract class AbstractCommand implements Command
 
     public void setQuaternion( AlgebraicVector offset )
     {}
+    
+    public boolean ordersSelection()
+    {
+    	return false;
+    }
 }

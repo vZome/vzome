@@ -21,6 +21,7 @@ public class HeptagonSubdivision extends ChangeManifestations
     public void perform() throws Command.Failure
     {
         Point p1 = null;
+        setOrderedSelection( true );
         for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Connector ) {

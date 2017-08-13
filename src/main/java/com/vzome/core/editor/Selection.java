@@ -4,7 +4,9 @@ package com.vzome.core.editor;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +22,7 @@ import com.vzome.core.model.ManifestationChanges;
 public class Selection implements Iterable<Manifestation>
 {
     // Note that LinkedHashSet maintains insertion-order, which is significant in this case.
-    private List<Manifestation> mManifestations = new ArrayList<>();
+    private Collection<Manifestation> mManifestations = new LinkedHashSet<>();
     
     private final List<ManifestationChanges> mListeners = new ArrayList<>();
     
@@ -72,9 +74,8 @@ public class Selection implements Iterable<Manifestation>
         }
     }
     
-    public int unselect( Manifestation m )
+    public void unselect( Manifestation m )
     {
-    	int index = mManifestations .indexOf( m );
         if ( mManifestations .remove( m ) )
         {
             if ( logger .isLoggable( Level .FINER ) )
@@ -83,24 +84,8 @@ public class Selection implements Iterable<Manifestation>
                 mc .manifestationRemoved( m );
             }
         }
-        return index;
     }
-
-    /**
-     * Insert the manifestation back into the selection at the index where it was previously.
-     * @param mMan
-     * @param index
-     */
-	public void reselect( Manifestation m, int index )
-	{
-        mManifestations .add( index, m );
-        if ( logger .isLoggable( Level .FINER ) )
-            logger .finer( "  select: " + m .toString() );
-        for (ManifestationChanges mc : mListeners) {
-            mc .manifestationAdded( m );
-        }
-	}
-
+    
     public void selectWithGrouping( Manifestation m )
     {
         if ( mManifestations .contains( m ) )
@@ -319,4 +304,10 @@ public class Selection implements Iterable<Manifestation>
     {
         return this .mManifestations .size();
     }
+
+	public void clearForOrderedUndo()
+	{
+		// for ChangeSelection undo when the selection is ordered
+		this .mManifestations .clear();
+	}
 }

@@ -102,6 +102,10 @@ public class JoinPoints extends ChangeManifestations {
     @Override
     public void perform() throws Failure {
         ArrayList<Point> inputs = new ArrayList<>();
+        
+        if ( joinMode != JoinModeEnum.ALL_POSSIBLE )
+        	setOrderedSelection( true );
+        
         for (Manifestation man : mSelection) {
             if (man instanceof Connector) {
                 inputs.add((Point) ((Connector) man).getConstructions().next());
