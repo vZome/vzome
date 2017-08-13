@@ -282,4 +282,11 @@ public class RenderedManifestation
 			this .location = strut .getEnd();
 		}
 	}
+	
+	void resetLocation()
+	{
+		if ( this .mManifestation != null ) {
+			location = this .mManifestation .getLocation();
+		}
+	}
 }

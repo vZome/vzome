@@ -415,12 +415,14 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 			}
 			if ( ! axis .isOutbound() ) {
 				rm .offsetLocation();
-			}
+			} else
+				rm .resetLocation(); // might be switching between systems
 		} else {
 			// MINUS orbits are handled just by offsetting... rendering the strut from the opposite end
 			if ( axis .getSense() == Axis .MINUS ) {
 				rm .offsetLocation();
-			}
+			} else
+				rm .resetLocation(); // might be switching between systems
 		}
 		rm .setStrut( orbit, orn, axis .getSense(), len );
 		rm .setOrientation( orientation );
