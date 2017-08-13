@@ -16,6 +16,7 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.Transformation;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -24,18 +25,55 @@ import com.vzome.core.model.Strut;
 
 public class MirrorTool extends TransformationTool
 {
-	public MirrorTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
-    {
-        super( name, selection, realized, tools, originPoint );
-    }
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			super( model, context );
+		}
 
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 2 && balls == 1 && struts == 1 )
+				|| ( total == 1 && panels == 1 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new MirrorTool( "mirror." + index, getSelection(), getModel(), null );
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			return true;
+		}
+	}
+
+	public MirrorTool( String name, Selection selection, RealizedModel realized, Point originPoint )
+    {
+        super( name, selection, realized, null, originPoint );
+    }
+	
     @Override
     protected String checkSelection( boolean prepareTool )
     {
         Point center = null;
         Segment axis = null;
         Polygon mirrorPanel = null;
-        if ( isAutomatic() )
+        if ( this .getName() .equals( "mirror.builtin/reflection through XY plane" ) )
+        {
+            center = originPoint;
+    		this .addParameter( center );
+            AlgebraicField field = originPoint .getField();
+            AlgebraicVector zAxis = field .basisVector( 3, AlgebraicVector .Z ) .scale( field .createPower( Direction.USER_SCALE ) );
+            Point p2 = new FreePoint( zAxis );
+            axis = new SegmentJoiningPoints( center, p2 );
+    		this .addParameter( axis );
+        }
+        else if ( isAutomatic() )
         {
             center = originPoint;
             AlgebraicField field = originPoint .getField();

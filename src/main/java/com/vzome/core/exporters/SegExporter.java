@@ -80,7 +80,7 @@ public class SegExporter extends Exporter3d
             val = index;
             vertexData .put( key, val );
             vertices .append( "v " );
-            RealVector vertex =  vertexVector .toRealVector();
+            RealVector vertex = this .mModel .renderVector( vertexVector );
             vertices .append( format .format( vertex.x ) + " " );
             vertices .append( format .format( vertex.y ) + " " );
             vertices .append( format .format( vertex.z ) + " " );

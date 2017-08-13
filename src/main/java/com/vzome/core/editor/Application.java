@@ -82,6 +82,8 @@ import com.vzome.core.viewing.DodecagonalShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.OctahedralShapes;
+import com.vzome.fields.heptagon.HeptagonalAntiprismSymmetry;
+import com.vzome.fields.heptagon.TriangularAntiprismSymmetry;
 
 public class Application
 {
@@ -94,6 +96,8 @@ public class Application
     private final Colors mColors;
 
     private final Command.FailureChannel failures;
+    
+    private final Properties properties;
 
     private Map<String, Exporter3d> exporters = new HashMap<>();
 
@@ -105,12 +109,14 @@ public class Application
     {
         this .failures = failures;
         
-        Properties props = loadDefaults();
+        properties = loadDefaults();
         if ( overrides != null )
         {
-        	props .putAll( overrides );
+        	properties .putAll( overrides );
         }
-        mColors = new Colors( props );
+        properties .putAll( loadBuildProperties() );
+        
+        mColors = new Colors( properties );
         File prefsFolder = new File( System.getProperty( "user.home" ), "vZome-Preferences" );
 
         for ( int i = 1; i <= 3; i++ ) {
@@ -122,7 +128,9 @@ public class Application
         mLights .setBackgroundColor( mColors .getColor( Colors.BACKGROUND ) );
 
         AbstractShapes defaultShapes = null;
-        
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         AlgebraicField field = new PentagonField();
         AlgebraicField pentField = field;
         fields .put( field .getName(), field );
@@ -227,6 +235,9 @@ public class Application
                 mCommands .put( "axialsymm-octa", new CommandAxialSymmetry( octaSymm ) );
             }
         }
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         field = new RootTwoField();
         fields .put( field .getName(), field );
         {
@@ -318,6 +329,9 @@ public class Application
                 mCommands .put( "axialsymm-synestructics", new CommandAxialSymmetry( symmetry ) );
             }
         }
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         field = new RootThreeField();
         fields .put( field .getName(), field );
         fields .put( "dodecagon", field );
@@ -358,7 +372,9 @@ public class Application
                 mCommands .put( "dodecagonsymm", "dodecagonsymm" );
             }
         }
-        
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         field = new SnubDodecField( pentField );
         fields .put( field .getName(), field );
         {
@@ -406,14 +422,42 @@ public class Application
             mCommands .put( "axialsymm-snubDodec", new CommandAxialSymmetry( symmetry ) );
         }
 
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         field = new HeptagonField();
         fields .put( field .getName(), field );
-        OctahedralSymmetry symmetry = new OctahedralSymmetry( field, "blue", "octahedra" );
-        mStyles.put( symmetry, new ArrayList<>() );
-        addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
-        mCommands .put( "octasymm-heptagon", new CommandSymmetry( symmetry ) );
-        mCommands .put( "tetrasymm-heptagon", new CommandTetrahedralSymmetry( symmetry ) );
-        mCommands .put( "axialsymm-heptagon", new CommandAxialSymmetry( symmetry ) );
+        {
+        	HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism", true );
+            symmetry .createStandardOrbits( "blue" );
+            mStyles.put( symmetry, new ArrayList<>() );
+            defaultShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
+            addStyle( defaultShapes );
+            addStyle( new ExportedVEFShapes( prefsFolder, "heptagon/antiprism", "heptagonal antiprism", symmetry, defaultShapes ) );
+        }
+        {
+        	HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism" );
+            symmetry .createStandardOrbits( "blue" );
+            mStyles.put( symmetry, new ArrayList<>() );
+            defaultShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
+            addStyle( defaultShapes );
+            addStyle( new ExportedVEFShapes( prefsFolder, "heptagon/antiprism", "heptagonal antiprism", symmetry, defaultShapes ) );
+        }
+        {
+            Symmetry symmetry = new TriangularAntiprismSymmetry( field, "blue", "triangular antiprism" );
+            mStyles.put( symmetry, new ArrayList<>() );
+            defaultShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
+            addStyle( defaultShapes );
+        }
+        {
+            Symmetry symmetry = new OctahedralSymmetry( field, "blue", "octahedral" );
+            mStyles.put( symmetry, new ArrayList<>() );
+            defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symmetry );
+            addStyle( defaultShapes );
+        }
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        
         if ( enableCommands ) {
             mCommands .put( "pointsymm", new CommandCentralSymmetry() );
             mCommands .put( "mirrorsymm", new CommandMirrorSymmetry() );
@@ -491,8 +535,7 @@ public class Application
                 edition = "vZome";
             String error = "Unknown " + edition + " file format.";
             if ( ! version .isEmpty() )
-                error += "\n " + Version.edition + " " + Version.label + " cannot open files\ncreated by "
-                        + edition + " " + version;
+                error += "\n Cannot open files created by " + edition + " " + version;
             logger .severe( error );
             throw new IllegalStateException( error );
         }
@@ -604,6 +647,21 @@ public class Application
         return defaults;
 	}
 
+	public static Properties loadBuildProperties()
+	{
+        String defaultRsrc = "vzome-core-build.properties";
+        Properties defaults = new Properties();
+        try {
+            ClassLoader cl = Application.class.getClassLoader();
+            InputStream in = cl.getResourceAsStream( defaultRsrc );
+            if ( in != null ) 
+            	defaults .load( in );
+        } catch ( IOException ioe ) {
+            logger.warning( "problem reading build properties: " + defaultRsrc );
+        }
+        return defaults;
+	}
+
 	public Colors getColors()
 	{
 		return this .mColors;
@@ -622,5 +680,10 @@ public class Application
 	public Lights getLights()
 	{
 		return this .mLights;
+	}
+
+	public String getCoreVersion()
+	{
+		return this .properties .getProperty( "version" );
 	}
 }

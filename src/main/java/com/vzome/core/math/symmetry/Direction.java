@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
@@ -16,26 +18,93 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 
 /**
+ * A single orbit in a Symmetry group.
+ * Consists of a collection of zones (Axis), each of which is an infinite family of parallel lines.
+ * There is a prototype zone (Axis) which has index==0; ideally, that zone should
+ * have normal vector =~ (1,e,e), for 0 < e << 1, but this is not true, historically.
+ * 
+ * The orbit is represented by a single "dot" on the fundamental region triangle, and typically
+ * struts in the orbit are rendered with a shape and color unique from all other orbits.
+ * 
  * @author Scott Vorthmann
  */
 public class Direction implements Comparable<Direction>, Iterable<Axis>
 {
-    private String mName;
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + index;
+		result = prime * result
+				+ ((mPrototype == null) ? 0 : mPrototype.hashCode());
+		result = prime * result
+				+ ((mSymmetryGroup == null) ? 0 : mSymmetryGroup.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Direction other = (Direction) obj;
+		if (index != other.index) {
+			return false;
+		}
+		if (mPrototype == null) {
+			if (other.mPrototype != null) {
+				return false;
+			}
+		} else if (!mPrototype.equals(other.mPrototype)) {
+			return false;
+		}
+		if (mSymmetryGroup == null) {
+			if (other.mSymmetryGroup != null) {
+				return false;
+			}
+		} else if (!mSymmetryGroup.equals(other.mSymmetryGroup)) {
+			return false;
+		}
+		return true;
+	}
+
+	private String mName;
     
-    private final Axis[][] mAxes;
+    private final Axis[][][] zoneNames;
     
-    private final Map<AlgebraicVector, Axis> mVectors = new HashMap<>();
+    private final Map<AlgebraicVector, Axis> zoneVectors = new HashMap<>();
     
     private final Symmetry mSymmetryGroup;
     
     private final AlgebraicVector mPrototype;
     
-    private boolean mStandard, mAutomatic, hasHalfSizes;
+    private boolean mStandard; // Standard orbits are typically used as defaults in a presentation layer.
+    						   // They tend to correlate with axes of symmetry.
+    						   // This concept probably should be removed here, and added at the presentation layer.
+
+    private boolean mAutomatic; // Automatic orbits are not predefined statically, but are created as needed
+    							// for new vectors.
+    							// This concept probably should be removed here, and added at the presentation layer.
+
+    private boolean hasHalfSizes; // True if half struts are typically useful.
+    							  // This concept probably should be removed here, and added at the presentation layer.
     
     private final String[] scaleNames = new String[]{ "shorter", "short", "medium", "long" };
-    
+
+    public final AlgebraicNumber[] scales = new AlgebraicNumber[ scaleNames.length ];
+
     private AlgebraicNumber unitLength, unitLengthReciprocal;
     
+    private double dotX = -999d, dotY = -999d;
+
+    private static Logger logger = Logger .getLogger( "com.vzome.core.math.symmetry.Orbit" );
+
     public final void setAutomatic( boolean auto )
     {
         mAutomatic = auto;
@@ -63,12 +132,16 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         mStandard = isStd;
         mName = name;
         mSymmetryGroup = group;
+        for ( int i = 0; i < scales .length; i++ ) {
+            scales[ i ] = mSymmetryGroup .getField() .createPower( i - 1 );
+        }
         mPrototype = vector;
-        mAxes = new Axis[ 2 ][ group .getChiralOrder() ];
-        for ( int i = 0; i < mAxes[ Symmetry.PLUS ] .length; i++ ) {
+        int order = group .getChiralOrder();
+        zoneNames = new Axis[ 2 ][ 2 ][ order ];
+        for ( int i = 0; i < order; i++ ) {
             AlgebraicMatrix transform = group .getMatrix( i );
             if ( transform == null )
-                return; // only happens for the "base" direction, like "blue" for icosa
+                return; // only happens for the "frame orbit", like "blue" for icosa
             Permutation perm = group .getPermutation( i );
             int j = perm .mapIndex( prototype );
             int rotated = perm .mapIndex( rotatedPrototype );
@@ -110,7 +183,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     @Override
     public Iterator<Axis> iterator()
     {
-        return mVectors .values() .iterator();
+        return zoneVectors .values() .iterator();
     }
     
     /**
@@ -134,7 +207,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     public Axis getAxis( AlgebraicVector vector )
     {
-        for (Axis axis : mVectors .values()) {
+        for (Axis axis : zoneVectors .values()) {
             AlgebraicVector normal = axis .normal();
             if ( normal .cross( vector ) .isOrigin() ) {
                 // parallel
@@ -142,8 +215,16 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
                 if ( dotProd .evaluate() > 0 )
                     return axis;
                 else {
-                    int opp = ( axis .getSense() + 1 ) % 2;
-                    return getAxis( opp, axis .getOrientation() );
+                	AlgebraicMatrix principalReflection = this .mSymmetryGroup .getPrincipalReflection();
+                	if ( principalReflection == null ) {
+                		// the traditional way... anti-parallel means just flip the sense
+                        int opp = ( axis .getSense() + 1 ) % 2;
+                        return getAxis( opp, axis .getOrientation() );
+                	}
+                	else {
+                		// anti-parallel mean flip inbound to outbound or vice-versa
+                		return getAxis( axis .getSense(), axis .getOrientation(), ! axis .isOutbound() );
+                	}
                 }
             }
         }
@@ -168,7 +249,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         int closestSense = Symmetry.PLUS;
         Axis closestAxis = this .getCanonicalAxis( Symmetry.PLUS, 0 );
         checked .add( closestAxis );
-        RealVector axisV = closestAxis .normal() .toRealVector();
+        RealVector axisV = closestAxis .normal() .toRealVector(); // TODO invert the Embedding to get this right
         double maxCosine = vector .dot( axisV ) / (vectorLength * axisV .length());
         if ( maxCosine < 0 ) {
             // wrong hemisphere, flip to the other one
@@ -214,21 +295,25 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     {        
         Axis closestAxis = null;
         double maxCosine = -1d;
-        for ( Iterator<Axis> axes = this .getAxes(); axes .hasNext(); ) {
-            Axis axis = axes .next();
-            RealVector axisV = axis .normal() .toRealVector();
+        for ( Axis axis : this ) {
+            RealVector axisV = axis .normal() .toRealVector(); // TODO invert the Embedding to get this right
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {
                 maxCosine = cosine;
                 closestAxis = axis;
             }
-        }
+		}
         return closestAxis;
     }
     
-    public Axis getAxis( int sense, int index )
+    public final Axis getAxis( int sense, int index )
     {
-        return mAxes[ sense ][ index ];
+        return this .getAxis( sense, index, true );
+    }
+    
+    public final Axis getAxis( int sense, int index, boolean outbound )
+    {
+        return zoneNames[ outbound? 1 : 0 ][ sense ][ index ];
     }
     
     public Direction withCorrection()
@@ -265,32 +350,90 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         AlgebraicVector aNorm = this .mSymmetryGroup .getField() .createVector( norm );
         this .createAxis( orientation, rotation, aNorm );
     }
+    
     /**
+     * Create a zone as a pair of opposite vectors, named as two Axes,
+     * or as two pair, in the case of symmetry groups that have a principal reflection.
+     * 
      * @param orientation the index of this axis (zone) in its Direction (orbit)
      * @param rotation the index of the permutation that is a rotation around this axis, or NO_ROTATION
      */
     public final void createAxis( int orientation, int rotation, AlgebraicVector norm )
     {
-        AlgebraicVector key = norm;
-        Axis axis = mVectors .get( key );
         Permutation perm = mSymmetryGroup .getPermutation( rotation );
-        if ( axis == null ) {
-            axis = new Axis( this, orientation, Symmetry.PLUS, rotation, perm, norm );
-            mVectors .put( key, axis );
-        } else if ( axis .getSense() == Symmetry .MINUS )
-            axis .rename( Symmetry.PLUS, orientation );
-        mAxes[ Symmetry.PLUS ][ orientation ] = axis;
-        norm = norm .negate();
-        if ( perm != null )
-            perm = perm .inverse();
-        key = norm;
-        axis = mVectors .get( key );
-        if ( axis == null ) {
-        	// This is a bug! We should have adjusted rotation to be perm .mapIndex( 0 );
-            axis = new Axis( this, orientation, Symmetry.MINUS, rotation, perm, norm );
-            mVectors .put( key, axis );
+        recordZone( this, orientation, Symmetry.PLUS, rotation, perm, norm, true );
+        
+        AlgebraicMatrix inversion = this .mSymmetryGroup .getPrincipalReflection();
+        if ( inversion == null ) {
+        	// the legacy case, most existing symmetry groups
+        	if ( perm != null )
+        		// This is a bug! We should have adjusted rotation to be perm .mapIndex( 0 );
+        		//  Now we're stuck with it, unless we can demonstrate that is has no impact
+        		//  on opening legacy models.
+        		perm = perm .inverse();
+        	recordZone( this, orientation, Symmetry.MINUS, rotation, perm, norm .negate(), true );
         }
-        mAxes[ Symmetry.MINUS ][ orientation ] = axis;
+        else {
+        	// This symmetry group has a principal reflection, so we create the zone
+        	//   and its reflection at the same time.
+        	// (First example is the "heptagon antiprism corrected" symmetry,
+        	//    though the "dodecagon" symmetry should have a corrected form, too.)
+        	int reverseRotation = rotation;
+        	Permutation reversePerm = perm;
+        	if ( perm != null ) {
+        		reversePerm = perm .inverse();
+        		reverseRotation = perm .mapIndex( 0 );
+        	}
+    		recordZone( this, orientation, Symmetry.PLUS, reverseRotation, reversePerm, norm .negate(), false );
+        	AlgebraicVector reflectedNorm = inversion .timesColumn( norm );
+        	recordZone( this, orientation, Symmetry.MINUS, reverseRotation, reversePerm, reflectedNorm, true );
+        	reflectedNorm = reflectedNorm .negate();
+    		recordZone( this, orientation, Symmetry.MINUS, rotation, perm, reflectedNorm, false );
+        }
+    }
+    
+    private final void recordZone( Direction dir, int orientation, int sense, int rotation, Permutation rotPerm, AlgebraicVector normal, boolean outbound )
+    {
+    	Axis zone =  zoneVectors .get( normal );
+    	if ( zone == null )
+    	{
+    		// vector never seen before
+    		zone = new Axis( this, orientation, sense, rotation, rotPerm, normal, outbound );
+        	this .zoneVectors .put( normal, zone );
+    		if ( logger .isLoggable( Level.FINER ) )
+    			logger .finer( "creating zone " + zone .toString() + " " + normal .toString() );
+    	}
+    	else 
+    	{
+    		// known vector, but maybe we have a better name for the zone
+    		if ( outbound && ! zone .isOutbound() ) 
+    		{
+    			// always upgrade from inbound to outbound, regardless of sense
+    			String oldName = zone .toString();
+                zone .rename( sense, orientation ); // outbound, implicitly
+    			if ( logger .isLoggable( Level.FINER ) )
+        			logger .finer( "zone " + oldName + " upgraded to " + zone .toString() );
+    		} 
+    		else if ( zone .isOutbound() && ! outbound )
+    		{
+    			// never downgrade from outbound to inbound, regardless of sense
+    			if ( logger .isLoggable( Level.FINEST ) )
+        			logger .finest( "zone " + zone .toString() + " aliased as " + ( ( sense == Axis.MINUS )? "-" : "" ) + orientation + ( outbound? "" : "i" ) );
+    		}
+    		else if ( sense == Axis.PLUS && ( zone .getSense() == Axis.MINUS ) )
+    		{
+    			// both outbound or both inbound, but upgrade from MINUS to PLUS
+    			String oldName = zone .toString();
+                zone .rename( sense, orientation ); // outbound, implicitly
+    			if ( logger .isLoggable( Level.FINER ) )
+        			logger .finer( "zone " + oldName + " upgraded to " + zone .toString() );
+    		}
+    		else {
+    			if ( logger .isLoggable( Level.FINEST ) )
+        			logger .finest( "zone " + zone .toString() + " aliased as " + ( ( sense == Axis.MINUS )? "-" : "" ) + orientation + ( outbound? "" : "i" ) );
+    		}
+    	}
+    	zoneNames[ outbound? 1 : 0 ][ sense ][ orientation ] = zone;
     }
 
     @Override
@@ -319,7 +462,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     public String getScaleName( int scale )
     {
-        if ( scale <= 3 && scale >= 0 )
+        if ( scale < scaleNames.length && scale >= 0 )
             return scaleNames[ scale ];
         else
             return "scale " + (scale-1);
@@ -341,8 +484,6 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     public static final int USER_SCALE = 3;
     
-    public final AlgebraicNumber[] scales = new AlgebraicNumber[ 4 ];
-
     public AlgebraicNumber getLengthInUnits( AlgebraicNumber rawLength )
     {
         // reproduce the calculation in LengthModel .setActualLength()
@@ -355,25 +496,42 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
             return scaledLength .times( unitLengthReciprocal );
     }
 
-    public void getLengthExpression( StringBuffer buf, AlgebraicNumber length )
+    public String getLengthName( AlgebraicNumber length )
     {
-        AlgebraicField field = mSymmetryGroup .getField();
-        if ( scales[ 0 ] == null )
-        {
-            for ( int i = 0; i < scales .length; i++ )
-                scales[ i ] = field .createPower( i - 1 );
-        }
-        for ( int i = 0; i < scales .length; i++ )
-        {
-            if ( scales[ i ] .equals( length ) )
-            {
-                buf .append( scaleNames[ i ] );
-                buf .append( ": " );
-                return;
+        for ( int i = 0; i < scales .length; i++ ) {
+            if ( scales[ i ] .equals( length ) ) {
+                return scaleNames[ i ];
             }
         }
-        buf .append( scaleNames[ 1 ] );
+        return "";
+    }
+
+    public void getLengthExpression( StringBuffer buf, AlgebraicNumber length )
+    {
+        int bufLen = buf.length();
+        buf .append(getLengthName( length ) );
+        if(buf.length() == bufLen) {
+            // Be sure to append something before the colon delimiter
+            // so the StringTokenizer that uses buf doesn't choke on a missing token.
+            buf .append( " " );
+        }
         buf .append( ":" );
         length .getNumberExpression( buf, AlgebraicField .EXPRESSION_FORMAT );
     }
+
+	public double getDotX()
+	{
+		return this .dotX;
+	}
+
+	public double getDotY()
+	{
+		return this .dotY;
+	}
+	
+	public void setDotLocation( double x, double y )
+	{
+		this .dotX = x;
+		this .dotY = y;
+	}
 }

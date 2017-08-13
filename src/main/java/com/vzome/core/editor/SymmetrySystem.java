@@ -47,15 +47,16 @@ public class SymmetrySystem implements OrbitSource
 	public SymmetrySystem( Element symmXml, Symmetry symmetry, Colors colors, List<Shapes> styles, boolean allowNonstandard )
 	{
 		this .symmetry = symmetry;
-        for (Shapes shape : styles) {
-            String name = shape .getName();
-            String alias = shape .getAlias();
-            this .styleNames .add( name );
-            this .styles .put( name, shape );
-            this .styles .put( shape .getPackage(), shape );
-            if ( alias != null && ! alias .equals( name ) )
-                this .styles .put( alias, shape );
-        }
+		if ( styles != null )
+			for (Shapes shape : styles) {
+				String name = shape .getName();
+				String alias = shape .getAlias();
+				this .styleNames .add( name );
+				this .styles .put( name, shape );
+				this .styles .put( shape .getPackage(), shape );
+				if ( alias != null && ! alias .equals( name ) )
+					this .styles .put( alias, shape );
+			}
         String styleName = symmetry .getDefaultStyle();
 		orbits = new OrbitSet( symmetry );
 		if ( symmXml == null ) 

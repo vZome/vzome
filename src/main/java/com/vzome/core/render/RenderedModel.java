@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -11,8 +12,10 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
@@ -38,7 +41,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     private boolean oneSidedPanels = false;
 
     private RenderingChanges mainListener;
-
+    
 	private boolean enabled = true;
 
     private boolean colorPanels = true;
@@ -141,6 +144,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		}
 		
 	    RenderedManifestation rm = new RenderedManifestation( m );
+        rm .setModel( this );
 //	    resetAxis( rm );
 	    resetAttributes( rm, false );
         Polyhedron poly = rm .getShape();
@@ -174,7 +178,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    if ( mainListener != null )
             mainListener .manifestationRemoved( rendered );
 	    if ( ! mRendered .remove( rendered ) )
-	         throw new IllegalStateException( "unable to remove RenderedManifestation" );
+	        throw new IllegalStateException( "unable to remove RenderedManifestation" );
         m .setRenderedObject( null );
 	}
 	            
@@ -352,7 +356,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             if ( justShape || ! this .colorPanels )
                 return;
 
-            rm .setOrientation( field .identityMatrix( 3 ), false );
+            rm .setOrientation( field .identityMatrix( 3 ) );
             rm .setColor( Color.WHITE );
 
             try {
@@ -364,7 +368,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                 Color color = orbitSource .getColor( orbit ) .getPastel();
                 rm .setColor( color );
             } catch ( IllegalStateException e ) {
-                logger .warning( "Unable to set color for panel, normal = " + normal .toString() );
+            	if ( logger .isLoggable( Level.WARNING ) )
+            		logger .warning( "Unable to set color for panel, normal = " + normal .toString() );
             }
         }
         else
@@ -389,6 +394,39 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		
 		Polyhedron prototypeLengthShape = mPolyhedra .getStrutShape( orbit, len );
 		rm .setShape( prototypeLengthShape );
+
+		int orn = axis .getOrientation();
+		AlgebraicMatrix orientation = mPolyhedra .getSymmetry() .getMatrix( orn );
+		
+		// Strut geometries only need to be mirrored for certain symmetries
+		AlgebraicMatrix reflection = orbitSource .getSymmetry() .getPrincipalReflection();
+		if ( reflection != null ) {
+			/*
+			 *  Odd prismatic group, where getPrincipalReflection() != null:
+			 */
+			if ( logger .isLoggable( Level.FINE ) ) {
+				logger .fine( "rendering " + offset + " as " + axis );				
+			}
+			if ( axis .getSense() == Axis .MINUS ) {
+				if ( logger .isLoggable( Level.FINER ) ) {
+					logger .finer( "mirroring orientation " + orn );				
+				}
+			    rm .setShape( prototypeLengthShape .getEvilTwin( reflection ) );
+			}
+			if ( ! axis .isOutbound() ) {
+				rm .offsetLocation();
+			} else
+				rm .resetLocation(); // might be switching between systems
+		} else {
+			// MINUS orbits are handled just by offsetting... rendering the strut from the opposite end
+			if ( axis .getSense() == Axis .MINUS ) {
+				rm .offsetLocation();
+			} else
+				rm .resetLocation(); // might be switching between systems
+		}
+		rm .setStrut( orbit, orn, axis .getSense(), len );
+		rm .setOrientation( orientation );
+//            rm .setOrientation( RationalMatrices .identity( m .getLocation() .length / 2 ), false );
 		
 		if ( justShape )
 		    return;
@@ -397,17 +435,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		if ( color == null )
 			color = orbitSource .getColor( orbit );
 		rm .setColor( color );
-
-		int orn = axis .getOrientation();
-		AlgebraicMatrix orientation = mPolyhedra .getSymmetry() .getMatrix( orn );
-		boolean mirrored = false;
-		if ( axis .getSense() == Symmetry .MINUS ) {
-		    orientation = orientation .negate();
-		    mirrored = true;
-		}
-		rm .setStrut( orbit, orn, len );
-		rm .setOrientation( orientation, mirrored );
-//            rm .setOrientation( RationalMatrices .identity( m .getLocation() .length / 2 ), false );
 	}
 
 	protected void resetAttributes( RenderedManifestation rm, boolean justShape, Connector m )
@@ -419,7 +446,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		if ( color == null )
 			color = orbitSource .getColor( null );
 		rm .setColor( color );
-		rm .setOrientation( field .identityMatrix( 3 ), false );
+		rm .setOrientation( field .identityMatrix( 3 ) );
 	}
 
     private Polyhedron makePanelPolyhedron( Panel panel )
@@ -457,6 +484,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         RenderedModel snapshot = new RenderedModel( this .field, false );
         for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
+            copy .setModel( this );
             snapshot .mRendered .add( copy );
         }
         return snapshot;
@@ -497,6 +525,17 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             }
         }
     }
+
+	public RealVector renderVector( AlgebraicVector av )
+	{
+		if ( av != null )
+			return getEmbedding() .embedInR3( av );
+		else
+            return new RealVector( 0d, 0d, 0d );
+	}
+
+	public Embedding getEmbedding()
+	{
+		return this .orbitSource .getSymmetry();
+	}
 }
-
-

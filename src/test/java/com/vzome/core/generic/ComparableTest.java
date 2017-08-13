@@ -109,7 +109,7 @@ public abstract class ComparableTest<T extends Comparable<T>>
 					+ y.toString() + " and "
 					+ z.toString() + " is NOT Transitive. "
 					+ "Y must be 'between' X and Z.";
-			assertTrue(msg, false);
+			fail(msg);
 		}
 	}
 
@@ -122,8 +122,7 @@ public abstract class ComparableTest<T extends Comparable<T>>
 		assertNotNull(obj);
 		try {
 			obj.compareTo(null);
-			String msg = "Expected NullPointerException was NOT thrown.";
-			assertTrue(msg, false);
+			fail("Expected NullPointerException was NOT thrown.");
 		}
 		catch(NullPointerException ex) {
 			// this is what the spec requires, so ignore the exception.

@@ -10,14 +10,14 @@ import com.vzome.core.math.symmetry.Symmetry;
 /**
  * @author Scott Vorthmann
  */
-public final class SymmetryTransformation extends Transformation
+public class SymmetryTransformation extends Transformation
 {
     // parameters
     private Point mCenter;
     
     // attributes
-    private Symmetry mSymmetry;
-    private int mOrientation;
+    protected Symmetry mSymmetry;
+    protected int mOrientation;
 
     /**
      * @param prototype

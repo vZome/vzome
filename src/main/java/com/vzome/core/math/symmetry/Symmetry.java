@@ -15,7 +15,7 @@ import com.vzome.core.math.RealVector;
  * @author Scott Vorthmann
  *
  */
-public interface Symmetry extends Iterable<Direction>
+public interface Symmetry extends Iterable<Direction>, Embedding
 {
 	public enum SpecialOrbit {
 	    BLUE,
@@ -24,7 +24,7 @@ public interface Symmetry extends Iterable<Direction>
 	    BLACK
     }
 
-    int PLUS = 0, MINUS = 1, NO_SENSE = 2;
+    int PLUS = Axis.PLUS, MINUS = Axis.MINUS;
 	
 	int NO_ROTATION = -1;
     
@@ -74,4 +74,13 @@ public interface Symmetry extends Iterable<Direction>
     public abstract int[] getIncidentOrientations( int orientation );
 
     public abstract Direction getSpecialOrbit( SpecialOrbit which );
+
+	Axis getPreferredAxis();
+
+	/**
+	 * Get the transformation matrix that maps zone 7 to zone -7 (for example).
+	 * If null, the matrix is implicitly a central inversion, negating vectors.
+	 * @return {@link AlgebraicMatrix}
+	 */
+	public abstract AlgebraicMatrix getPrincipalReflection();
 }

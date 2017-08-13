@@ -20,8 +20,8 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
@@ -54,24 +54,23 @@ public class STEPExporter extends Exporter3d{
     public void doExport( File directory, Writer writer, int height, int width ) throws Exception
     {
         int numShapes = 0;
-        HashMap<Polyhedron, String>[] shapes = TwoMaps.inAnArray();
+        HashMap<Polyhedron, String> shapes = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
-            boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-            String shapeName = shapes[ flip?1:0 ] .get( shape );
+            String shapeName = shapes .get( shape );
             if ( shapeName == null )
             {
                 shapeName = shape .getName();
                 if ( shapeName == null )
                     shapeName = "shape" + numShapes++;
-                shapes[ flip?1:0 ] .put( shape, shapeName );
+                shapes .put( shape, shapeName );
                 
 
                 writer = new FileWriter( new File( directory, shapeName + ".step" ) );
                 output = new PrintWriter( writer );
                 
                 
-                exportShape( shapeName, shape, flip );
+                exportShape( shapeName, shape );
 
                 output .close();
                 writer .close();
@@ -82,7 +81,7 @@ public class STEPExporter extends Exporter3d{
     }
 
 
-    private void exportShape( String shapeName, Polyhedron poly, boolean reverseFaces )
+    private void exportShape( String shapeName, Polyhedron poly )
     {
         InputStream input = getClass() .getClassLoader()
                                     .getResourceAsStream( PREAMBLE_FILE );
@@ -108,9 +107,7 @@ public class STEPExporter extends Exporter3d{
         // first, produce all the vertices
         ArrayList<RealVector> realVectors = new ArrayList<>();
         for (AlgebraicVector gv : poly .getVertexList()) {
-            if ( reverseFaces )
-                gv = gv .negate();
-            RealVector v = gv .toRealVector() .scale( SCALE );
+            RealVector v = mModel .renderVector( gv ) .scale( SCALE );
             realVectors .add( v );
             
             int cpIndex = ++index;

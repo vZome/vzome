@@ -23,6 +23,33 @@ public class TranslationTool extends TransformationTool
         super( name, selection, realized, tools, originPoint );
     }
     
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			// TODO: remove isAutomatic() convention
+			super( model, context );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 2 && balls == 2 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new TranslationTool( "translation." + index, getSelection(), getModel(), null, null );
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			return true;
+		}
+	}
+
     @Override
     public String getDefaultName( String baseName )
     {
@@ -65,20 +92,25 @@ public class TranslationTool extends TransformationTool
         				p1 = (Point) ((Connector) man) .getConstructions() .next();
         			else
         				p2 = (Point) ((Connector) man) .getConstructions() .next();
+        		} else if ( !prepareTool ) {
+        			// allowed in legacy documents
+        			return "Only balls can be selected for this tool.";
         		}
         	}
         
         if ( p1 == null )
         {
-            if ( isAutomatic() )
+            if ( isAutomatic() || this .getName() .startsWith( "translation.builtin/" ) )
             {
                 p1 = originPoint;
+        		this .addParameter( p1 );
                 AlgebraicField field = originPoint .getField();
                 AlgebraicVector xAxis = field .basisVector( 3, AlgebraicVector .X );
                 AlgebraicNumber scale = field .createPower( 3 );
                 scale = scale .times( field .createRational( 2 ) );
                 xAxis = xAxis .scale( scale );
                 p2 = new FreePoint( xAxis );
+        		this .addParameter( p2 );
             }
             else
             {

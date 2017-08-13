@@ -57,7 +57,6 @@ public class LiveGraphicsExporter extends Exporter3d
             output .println( "]," );
             
             Polyhedron poly = rm .getShape();
-            boolean reverseFaces = rm .reverseOrder(); // need to reverse face vertex order
             AlgebraicMatrix transform = rm .getOrientation();
             AlgebraicVector rmLoc = rm .getManifestation() .getLocation();
 
@@ -72,13 +71,13 @@ public class LiveGraphicsExporter extends Exporter3d
                 for ( int j = 0; j < arity; j++ ){
                     if ( j > 0 )
                         output .print( ", " );
-                    int index = face .get( reverseFaces? arity-j-1 : j );
+                    int index = face .get( j );
                     AlgebraicVector loc = vertices .get( index );
                     
                     // TODO need a unit test... don't know if the transform should be right or left
                     //   (migrated to rational vectors, but not tested)
                     loc = transform .timesColumn( loc ) .plus( rmLoc );
-                    RealVector rv = loc .toRealVector();
+                    RealVector rv = mModel .renderVector( loc );
                     output .print( "{" );
                     output .print( FORMAT.format( rv .x ) + ", " );
                     output .print( FORMAT.format( rv .y ) + ", " );

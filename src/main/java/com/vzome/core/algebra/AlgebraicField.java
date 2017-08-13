@@ -117,7 +117,7 @@ public abstract class AlgebraicField
         return new AlgebraicNumber( this, brs );
     }
 
-    public AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int power )
+    public AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
     {
         BigRational[] factors = new BigRational[ this .getOrder() ];
         factors[ 0 ] = new BigRational( ones, denominator );
@@ -125,8 +125,8 @@ public abstract class AlgebraicField
         for ( int i = 2; i < factors.length; i++ ) {
             factors[ i ] = new BigRational( 0 );
         }
-        if ( power != 0 ) {
-            AlgebraicNumber multiplier = this .createPower( power );
+        if ( scalePower != 0 ) {
+            AlgebraicNumber multiplier = this .createPower( scalePower );
             return new AlgebraicNumber( this, factors ) .times( multiplier );
         }
         else
@@ -307,8 +307,7 @@ public abstract class AlgebraicField
     public final AlgebraicVector basisVector( int dims, int axis )
     {
         AlgebraicVector result = origin( dims );
-        result .setComponent( axis, this .one() );
-        return result;
+        return result .setComponent( axis, this .one() );
     }
 
     // ======================================================================================

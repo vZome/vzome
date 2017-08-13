@@ -136,10 +136,6 @@ public abstract class AbstractShapes implements Shapes
                 strutGeometriesByOrbit.put( orbit, orbitStrutGeometry );
             }
 
-            if ( orbit .getSymmetry() .getField() .getName() .equals( "snubDodec" ) )
-            {
-                System .out .println( "\n\n======== " + orbit .getName() );
-            }
             lengthShape = orbitStrutGeometry .getStrutPolyhedron( length );
             strutShapesByLength.put( length, lengthShape );
             if ( lengthShape != null ) {
@@ -167,5 +163,4 @@ public abstract class AbstractShapes implements Shapes
     {
         return mSymmetry;
     }
-
 }

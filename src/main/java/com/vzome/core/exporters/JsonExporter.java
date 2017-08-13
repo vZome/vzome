@@ -20,8 +20,8 @@ import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 
 public class JsonExporter extends Exporter3d
@@ -60,7 +60,7 @@ public class JsonExporter extends Exporter3d
         StringBuffer instances = new StringBuffer();
         StringBuffer orientations = new StringBuffer();
         int numShapes = 0, numTransforms = 1;
-        HashMap<Polyhedron, Integer>[] shapes = TwoMaps.inAnArray();
+        HashMap<Polyhedron, Integer> shapes = new HashMap<>();
         Map<AlgebraicMatrix, Integer> transforms = new HashMap<>();
         AlgebraicMatrix identity = this .field .identityMatrix( 3 );
         Integer identityNum = 0;
@@ -69,14 +69,13 @@ public class JsonExporter extends Exporter3d
 
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
-            boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-            Integer shapeNum = shapes[ flip?1:0 ] .get( shape );
+            Integer shapeNum = shapes .get( shape );
             if ( shapeNum == null ) {
                 if ( numShapes != 0 )
                     output .print( ",\n\n" );
                 shapeNum = numShapes++;
-                shapes[ flip?1:0 ] .put( shape, shapeNum );
-                exportShape( shapeNum, shape, flip );
+                shapes .put( shape, shapeNum );
+                exportShape( shapeNum, shape );
             }
             AlgebraicMatrix transform = rm .getOrientation();
             if ( transform == null )
@@ -90,7 +89,7 @@ public class JsonExporter extends Exporter3d
                 exportTransform( transformNum, transform, orientations );
             }
             
-            RealVector loc = rm .getLocation();
+            RealVector loc = mModel .renderVector( rm .getManifestation() .getLocation() );
             Color color = rm .getColor();
             if( color == null) {
                 color = Color.WHITE;
@@ -142,7 +141,7 @@ public class JsonExporter extends Exporter3d
         {
             AlgebraicVector columnSelect = modelField .basisVector( 3, i );
             AlgebraicVector columnI = transform .timesColumn( columnSelect );
-            RealVector colRV = columnI .toRealVector();
+            RealVector colRV = mModel .renderVector( columnI );
             if ( i > 0 )
                 buf .append( ", " );
             buf .append( FORMAT .format( colRV.x ) );
@@ -157,7 +156,7 @@ public class JsonExporter extends Exporter3d
     
 
     // TODO: Get rid of the unused parameter
-    private void exportShape( Integer shapeNum, Polyhedron shape, boolean reverseFaces )
+    private void exportShape( Integer shapeNum, Polyhedron shape )
     {
         int vertexCount = 0;
         int normalCount = 0;
@@ -169,23 +168,23 @@ public class JsonExporter extends Exporter3d
         List<AlgebraicVector> faceVertices = shape .getVertexList();
         for (Polyhedron.Face face : shape .getFaceSet()) {
             int arity = face .size();
-            int index = face .get( reverseFaces? arity-1 : 0 );
+            int index = face .get( 0 );
             AlgebraicVector gv = faceVertices .get(index);
-            RealVector vert0 = gv .toRealVector();
-            index = face .get( reverseFaces? arity-2 : 1 );
+            RealVector vert0 = mModel .renderVector( gv );
+            index = face .get( 1 );
             gv = faceVertices .get(index);
-            RealVector vert1 = gv .toRealVector( );
-            index = face .get( reverseFaces? arity-3 : 2 );
+            RealVector vert1 = mModel .renderVector( gv );
+            index = face .get( 2 );
             gv = faceVertices .get(index);
-            RealVector vert2 = gv .toRealVector( );
+            RealVector vert2 = mModel .renderVector( gv );
             RealVector edge1 = vert1 .minus( vert0 );
             RealVector edge2 = vert2 .minus( vert1 );
             RealVector norm = edge1 .cross( edge2 ) .normalize();
             int v0 = -1, v1 = -1;
             for ( int j = 0; j < arity; j++ ){
-                index = face .get( reverseFaces? arity-j-1 : j );
+                index = face .get( j );
                 gv = faceVertices .get(index);
-                RealVector vertex = gv .toRealVector( );
+                RealVector vertex = mModel .renderVector( gv );
 
                 if ( v0 == -1 )
                     v0 = vertexCount;

@@ -13,6 +13,6 @@ public interface Version
 
     String edition = "vZome";
 
-    String label = "5.0, build 0";
+    String label = "5.0";
 }
 

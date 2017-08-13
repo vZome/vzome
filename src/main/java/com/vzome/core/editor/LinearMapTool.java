@@ -15,17 +15,47 @@ import com.vzome.core.model.Strut;
 
 public class LinearMapTool extends TransformationTool
 {
+	private static final String CATEGORY = "linear map";
+	
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			super( model, context );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 7 && balls == 1 && struts == 6 )
+				|| ( total == 4 && balls == 1 && struts == 3 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new LinearMapTool( CATEGORY + "." + index, getSelection(), getModel(), null, false );
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			// TODO check for linear independence
+			return true;
+		}
+	}
+
 	private final boolean originalScaling;
 
-    public LinearMapTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    public LinearMapTool( String name, Selection selection, RealizedModel realized, Point originPoint )
     {
-        this( name, selection, realized, tools, originPoint, false );
+        this( name, selection, realized, originPoint, false );
     }
 
     public LinearMapTool(
-        String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint, boolean originalScaling )
+        String name, Selection selection, RealizedModel realized, Point originPoint, boolean originalScaling )
     {
-        super( name, selection, realized, tools, originPoint );
+        super( name, selection, realized, null, originPoint );
         this.originalScaling = originalScaling;
     }
 
@@ -85,7 +115,7 @@ public class LinearMapTool extends TransformationTool
                 ++index;
             }
         }
-        
+                
         correct = correct && ( ( index == 3) || ( index == 6 ) );
         if ( !correct )
             return "linear map tool requires three adjacent, non-parallel struts (or two sets of three) and a single (optional) center ball";
@@ -95,6 +125,7 @@ public class LinearMapTool extends TransformationTool
         		center = this.originPoint;
         	this .transforms = new Transformation[ 1 ];
         	if ( index == 6 )
+                // TODO validate linear independence of oldBasis
         		transforms[ 0 ] = new ChangeOfBasis( oldBasis, newBasis, center );
         	else
         		transforms[ 0 ] = new ChangeOfBasis( oldBasis[ 0 ], oldBasis[ 1 ], oldBasis[ 2 ], center, originalScaling );
@@ -111,7 +142,7 @@ public class LinearMapTool extends TransformationTool
     @Override
     public String getCategory()
     {
-        return "linear map";
+        return CATEGORY;
     }
 
     @Override

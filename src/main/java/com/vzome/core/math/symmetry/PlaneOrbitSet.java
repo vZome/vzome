@@ -38,7 +38,7 @@ public class PlaneOrbitSet extends OrbitSet
 		double maxCosine = - 1d;
 		Axis closest = null;
         for (Axis axis : this .zones) {
-            RealVector axisV = axis .normal() .toRealVector();
+            RealVector axisV = axis .normal() .toRealVector(); // TODO invert the Embedding to get this right
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {
                 maxCosine = cosine;

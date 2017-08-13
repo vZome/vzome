@@ -22,7 +22,7 @@ import com.vzome.core.math.RealVector;
  */
 public abstract class AbstractSymmetry implements Symmetry
 {
-    protected final Map<String, Direction> mDirectionMap = new HashMap<>();
+	protected final Map<String, Direction> mDirectionMap = new HashMap<>();
     
     protected final List<Direction> mDirectionList = new ArrayList<>(); // TODO remove, redundant with orbitSet
     
@@ -35,11 +35,20 @@ public abstract class AbstractSymmetry implements Symmetry
     protected final AlgebraicField mField;
     
     protected final String defaultStyle;
-            
+
+    private AlgebraicMatrix principalReflection = null;
+    
     protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle )
+    {
+    	this( order, field, frameColor, defaultStyle, null );
+    }
+        
+    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle, AlgebraicMatrix principalReflection )
     {
         mField = field;
         mField .addSymmetry( this );
+        
+        this.principalReflection = principalReflection;
         
         this .defaultStyle = defaultStyle;
         
@@ -113,6 +122,12 @@ public abstract class AbstractSymmetry implements Symmetry
         return mField;
     }
     
+    @Override
+	public Axis getPreferredAxis()
+	{
+		return null;
+	}
+	
     public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
@@ -339,7 +354,7 @@ public abstract class AbstractSymmetry implements Symmetry
             Axis axis = ( orientation >= 0 )
                 ? dir .getCanonicalAxis( sense, orientation ) // we found the orientation above, so we don't need to iterate over the whole orbit
                 : dir .getAxisBruteForce( vector ); // iterate over zones in the orbit
-            RealVector axisV = axis .normal() .toRealVector();
+            RealVector axisV = axis .normal() .toRealVector(); // TODO invert the Embedding to get this right
             double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
             if ( cosine > maxCosine ) {
                 maxCosine = cosine;
@@ -453,4 +468,20 @@ public abstract class AbstractSymmetry implements Symmetry
         return null;
     }
     
+    @Override
+	public RealVector embedInR3( AlgebraicVector v )
+    {
+		return v .toRealVector();
+	}
+    
+    @Override
+    public boolean isTrivial()
+    {
+    	return true; // a trivial embedding, implemented by toRealVector()
+    }
+    
+    public AlgebraicMatrix getPrincipalReflection()
+    {
+    	return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
+    }
 }

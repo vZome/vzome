@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.VefModelExporter;
@@ -27,8 +26,7 @@ public class VefExporter extends Exporter3d
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    AlgebraicField field = mModel .getField();
-        AlgebraicNumber scale = field .createPower( -5 );
-	    Exporter exporter = new VefModelExporter( writer, field, scale );
+	    Exporter exporter = new VefModelExporter( writer, field );
 		
         for (RenderedManifestation rm : mModel) {
             Manifestation man = rm .getManifestation();

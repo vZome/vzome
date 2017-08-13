@@ -153,7 +153,9 @@ public class CommandImportVEFData extends AbstractCommand
         @Override
         protected void addVertex( int index, AlgebraicVector location )
         {
-            location = location .scale( scale );
+            if ( scale != null && ! usesActualScale() ) {
+                location = location .scale( scale );
+            }
             if ( mProjection != null )
                 location = mProjection .projectImage( location, wFirst() );
             mVertices[ index ] = new FreePoint( location );

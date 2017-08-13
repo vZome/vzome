@@ -49,28 +49,23 @@ public class StlExporter extends Exporter3d
             if (man instanceof Strut) {
                 Polyhedron shape = rm .getShape();
                 RealVector loc = rm .getLocation();
-                boolean reverseFaces = rm .reverseOrder();
                 shape .getFaceSet();
                 List<AlgebraicVector> faceVertices = shape .getVertexList();
                 for (Polyhedron.Face face : shape .getFaceSet()) {
                     int arity = face .size();
-                    int index = face .get( reverseFaces? arity-1 : 0 );
-                    AlgebraicVector gv = faceVertices .get( index );
-                    RealVector vert0 = gv .toRealVector();
-                    index = face .get( reverseFaces? arity-2 : 1 );
-                    gv = faceVertices .get(index);
-                    RealVector vert1 = gv .toRealVector();
-                    index = face .get( reverseFaces? arity-3 : 2 );
-                    gv = faceVertices .get(index);
-                    RealVector vert2 = gv .toRealVector();
+                    int index = face .get( 0 );
+                    RealVector vert0 = mModel .renderVector( faceVertices .get( index ) );
+                    index = face .get( 1 );
+                    RealVector vert1 = mModel .renderVector( faceVertices .get( index ) );
+                    index = face .get( 2 );
+                    RealVector vert2 = mModel .renderVector( faceVertices .get( index ) );
                     RealVector edge1 = vert1 .minus( vert0 );
                     RealVector edge2 = vert2 .minus( vert1 );
                     RealVector norm = edge1 .cross( edge2 ) .normalize();
                     RealVector v0 = null, v1 = null;
                     for ( int j = 0; j < arity; j++ ){
-                        index = face .get( reverseFaces? arity-j-1 : j );
-                        gv = faceVertices .get(index);
-                        RealVector vertex = loc .plus( gv .toRealVector() );
+                        index = face .get( j );
+                        RealVector vertex = loc .plus( mModel .renderVector( faceVertices .get( index ) ) );
                         vertex = vertex .scale( RZOME_INCH_SCALING );
 
                         if ( v0 == null )
@@ -94,10 +89,10 @@ public class StlExporter extends Exporter3d
             } else if ( man instanceof Panel )
             {
                 Panel panel = (Panel) man;
-                RealVector norm = panel .getNormal() .toRealVector() .normalize();
+                RealVector norm = mModel .renderVector( panel .getNormal() ) .normalize();
                 RealVector v0 = null, v1 = null;
                 for (AlgebraicVector vert : panel) {
-                    RealVector vertex = vert .toRealVector();
+                    RealVector vertex = mModel .renderVector( vert );
                     vertex = vertex .scale( VZOME_STRUT_MODEL_INCH_SCALING );
                     if ( v0 == null )
                         v0 = vertex;

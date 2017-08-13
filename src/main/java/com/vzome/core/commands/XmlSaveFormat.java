@@ -118,6 +118,8 @@ public class XmlSaveFormat
     {
         this.properties = props;
         this.writerVersion = writerVersion;
+        if ( ( writerVersion == null ) || writerVersion .isEmpty() )
+        	this.writerVersion = "before 2.1 Beta 7";
         mField = field;
         this .symmetries = symms;
         mScale = scale;
@@ -472,6 +474,8 @@ public class XmlSaveFormat
         	DomUtils .addAttribute( xml, indexAttr, Integer .toString( axis .getOrientation() ) );
         if ( axis .getSense() != Symmetry.PLUS )
         	DomUtils .addAttribute( xml, "sense", "minus" );
+        if ( ! axis .isOutbound() )
+        	DomUtils .addAttribute( xml, "outbound", "false" );
     }
 
     public final AlgebraicVector parseRationalVector( Element xml, String attrName )
@@ -585,7 +589,11 @@ public class XmlSaveFormat
             sense = Symmetry .MINUS;
 //            index *= -1;
         }
-        return group .getDirection( aname ) .getAxis( sense, index );
+        boolean outbound = true;
+        String outs = xml .getAttribute( "outbound" );
+        if ( outs != null && outs .equals( "false" ) )
+        	outbound = false;
+        return group .getDirection( aname ) .getAxis( sense, index, outbound );
     }
 
     public AlgebraicNumber parseNumber( Element xml, String attrName )
@@ -621,27 +629,12 @@ public class XmlSaveFormat
     {
         return ! "true".equals( properties .getProperty( "no.rendering" ) );
     }
-
-	public String getFormatError( Element element, String edition, String version, int svnRevision )
+    
+	public String getToolVersion( Element element )
 	{
 		String fileEdition = element .getAttribute( "edition" );
         if ( fileEdition == null || fileEdition .isEmpty() )
         	fileEdition = "vZome";
-        String thisVersion = edition + " " + version;
-        String fileVersion = fileEdition + " " + this.writerVersion;
-        if ( ( this.writerVersion == null ) || this.writerVersion .isEmpty() )
-        	fileVersion = "an old version of vZome (before 2.1 Beta 7)";
-        String error = thisVersion + " has a problem opening this file, which was authored using "
-        				+ fileVersion + ".\n\n";
-
-		String fileRev = element .getAttribute( "revision" );
-		int fileRevision = ( fileRev == null || fileRev .isEmpty() ) ? 0 : Integer .parseInt( fileRev );
-		if ( fileRevision <= svnRevision )
-			error += "Please ZIP up the contents of your vZome logs folder and send them to bugs@vzome.com.";
-		else if ( ! fileEdition .equals( edition ) )
-			error += "You need a copy of " + fileVersion + ", or perhaps a newer version of " + edition;
-		else
-			error += "You need a copy of " + fileVersion + ", or newer.";
-		return error;
+        return fileEdition + " " + this.writerVersion;
 	}
 }

@@ -66,7 +66,7 @@ public class SecondLifeExporter extends Exporter3d
                     continue;
                 ballIndices .put(loc, numBalls++);
                 loc = loc .scale( scale );
-                RealVector rv = loc .toRealVector();
+                RealVector rv = mModel .renderVector( loc );
                 if ( first )
                     first = false;
                 else

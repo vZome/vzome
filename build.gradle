@@ -4,7 +4,9 @@ apply plugin: 'eclipse'
 //apply plugin: 'antlr4'
 
 group = 'com.vzome.core'
-version = '0.8.10'
+version = '0.14.0'
+
+ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 
 description = "vzome-core"
 
@@ -13,8 +15,6 @@ targetCompatibility = 1.8
 
 ext.antlr4 = [
     antlrSource:    "src/main/antlr",
-    // Simplify multiple IDE integration by putting destinationDir under src/main/java 
-    // Some IDEs don't correctly read multiple source folders from build.gradle. 
     // Simplify multiple IDE integration by putting destinationDir under src/main/java
     // Some IDEs don't corectly read multiple source folders from build.gradle.
     destinationDir: "src/main/java/com/vzome/core/antlr/generated",
@@ -43,6 +43,19 @@ sourceSets {
     regression {
         java.srcDir file('src/regression/java')
     }
+}
+
+task recordBuildProperties {
+    def propsFile = file( "$buildDir/buildPropsResource/vzome-core-build.properties" )
+    ext.outputDir = propsFile .getParentFile()
+    doFirst {
+        writeProjectProperties( [ 'version', 'gitCommit' ], propsFile )
+    }
+    println 'recorded build properties'
+}
+processResources {
+    dependsOn recordBuildProperties
+    from recordBuildProperties.outputDir
 }
 
 
@@ -363,3 +376,22 @@ uploadArchives {
        }
     }
 }
+
+
+def writeProjectProperties( keys, propsFile )
+{
+    def outputDir = propsFile .getParentFile()
+    outputDir.exists() || outputDir.mkdirs()
+    def buildProps = new Properties()
+    project.properties.findAll( { it.key in keys } ) .each {
+        buildProps .put( it.key, it.value.toString() )
+    }
+    def writer = new FileWriter( propsFile )
+    try {
+        buildProps .store( writer, null )
+        writer.flush()
+    } finally {
+        writer.close()
+    }
+}
+

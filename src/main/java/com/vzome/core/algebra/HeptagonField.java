@@ -4,23 +4,25 @@
 package com.vzome.core.algebra;
 
 
+
+
 public class HeptagonField extends AlgebraicField
 {    
-    public HeptagonField()
+	public HeptagonField()
     {
         super( "heptagon" );
 
         SIGMA_INV = fromIntArray( new int[]{ 0,1,0,1,1,1 } ) .reciprocal();
     };
     
-    private static final double RHO_VALUE = 1.8019377d, SIGMA_VALUE = 2.2469796d;
+    public static final double RHO_VALUE = 1.8019377d, SIGMA_VALUE = 2.2469796d;
     
     public static final double ALTITUDE = Math.sqrt( SIGMA_VALUE * SIGMA_VALUE - 0.25d );
 
     private static final int A = 0, B = 1, C = 2;
     
     private final AlgebraicNumber SIGMA_INV;
-    
+
     private AlgebraicNumber fromIntArray( int[] ints )
     {
         return new AlgebraicNumber( this, new BigRational( ints[0], ints[1] ), new BigRational( ints[2], ints[3] ), new BigRational( ints[4], ints[5] ) );

@@ -20,11 +20,10 @@ import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 /**
- * Renders out to POV-Ray using #declare statements to reuse geometry.
  * @author vorth
  */
 public class VRMLExporter extends Exporter3d 
@@ -82,18 +81,17 @@ public class VRMLExporter extends Exporter3d
         AlgebraicField field = null;
         StringBuffer instances = new StringBuffer();
         int numShapes = 0;
-        HashMap<Polyhedron, String>[] shapes = TwoMaps.inAnArray();
+        HashMap<Polyhedron, String> shapes = new HashMap<>();
         Map<Color, String> colors = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
             if ( field == null )
                 field = shape .getField();
-            boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-            String shapeName = shapes[ flip?1:0 ] .get( shape );
+            String shapeName = shapes .get( shape );
             if ( shapeName == null ) {
                 shapeName = "shape" + numShapes++;
-                shapes[ flip?1:0 ] .put( shape, shapeName );
-                exportShape( shapeName, shape, flip );
+                shapes .put( shape, shapeName );
+                exportShape( shapeName, shape );
             }
             AlgebraicMatrix transform = rm .getOrientation();
             
@@ -103,10 +101,11 @@ public class VRMLExporter extends Exporter3d
 //            if ( flip )
 //                transform = transform .neg();
             
+            // TODO: use the Embedding
             // TODO this is a pretty clumsy way to get the rows of the matrix out
-            RealVector mx = transform .timesRow( field .basisVector( 3, AlgebraicVector.X ) ) .toRealVector();
-            RealVector my = transform .timesRow( field .basisVector( 3, AlgebraicVector.Y ) ) .toRealVector();
-            RealVector mz = transform .timesRow( field .basisVector( 3, AlgebraicVector.Z ) ) .toRealVector();
+            RealVector mx = mModel .renderVector( transform .timesRow( field .basisVector( 3, AlgebraicVector.X ) ) ); // TODO do we really want renderVector here?
+            RealVector my = mModel .renderVector( transform .timesRow( field .basisVector( 3, AlgebraicVector.Y ) ) );
+            RealVector mz = mModel .renderVector( transform .timesRow( field .basisVector( 3, AlgebraicVector.Z ) ) );
             
             // All this was first from Java3d's AxisAngle4f and Matrix3f, but that proved to be
             // inadequate, not handling rotation of Pi radians.
@@ -159,22 +158,20 @@ public class VRMLExporter extends Exporter3d
     }
 
 
-    private void exportShape( String shapeName, Polyhedron poly, boolean reverseFaces )
+    private void exportShape( String shapeName, Polyhedron poly )
     {
         output .println( "PROTO " + shapeName + " [] { IndexedFaceSet{ solid FALSE convex FALSE colorPerVertex FALSE" );
         output .println( "   coord Coordinate{ point [" );
         
         for (AlgebraicVector gv : poly .getVertexList()) {
-            if ( reverseFaces )
-                gv = gv  .negate();
-            RealVector v = gv .toRealVector();
+            RealVector v = mModel .renderVector( gv );
             output .println( v .scale( SCALE ) .spacedString() + "," );
         }
         output .println( "] } coordIndex [" );
         for (Polyhedron.Face face : poly .getFaceSet()) {
             int arity = face .size();
             for ( int j = 0; j < arity; j++ ){
-                Integer index = face .get( /*reverseFaces? arity-j-1 :*/ j );
+                Integer index = face .get( j );
                 output .print( index + ", " );
             }
             output .println( "-1," );

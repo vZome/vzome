@@ -66,8 +66,6 @@ public abstract class Manifestation implements GroupElement
     public void setRenderedObject( RenderedManifestation obj )
     {
         mRendered = obj;
-//        if ( obj != null )
-//            System .out.println( "set rendered object" );
     }
     
     public RenderedManifestation getRenderedObject()

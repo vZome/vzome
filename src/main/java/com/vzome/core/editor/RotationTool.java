@@ -9,8 +9,8 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -18,6 +18,7 @@ import com.vzome.core.construction.SegmentEndPoint;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
@@ -26,7 +27,71 @@ import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class RotationTool extends SymmetryTool
-{
+{	
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		private transient Symmetry symmetry;
+		private transient boolean noStrut;
+		
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			super( model, context );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			if ( total == 1 && balls == 1 ) 
+			{
+				this .noStrut = true;
+				return true;
+			}
+			else if ( ( total == 1 && struts == 1 ) || ( total == 2 && balls == 1 && struts == 1 ) )
+			{
+				this .noStrut = false;
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new RotationTool( "rotation." + index, this.symmetry, getSelection(), getModel(), null, false );
+		}
+		
+		protected Symmetry getSymmetry()
+		{
+			return this .symmetry;
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			this .symmetry = symmetry .getSymmetry();
+        	for ( Manifestation man : selection )
+        		if ( man instanceof Strut )
+        		{
+        			Strut axisStrut = (Strut) man;
+        	        AlgebraicVector vector = axisStrut .getOffset();
+        	        vector = this .symmetry .getField() .projectTo3d( vector, true ); // TODO: still necessary?
+        	        Axis axis = symmetry .getAxis( vector );
+        	        if ( axis == null )
+        	        	return false;
+        			Permutation perm = axis .getRotationPermutation();
+        	        if ( perm == null )
+        	        	return false;
+        		}
+        		else if ( this .noStrut )
+        		{
+        			Axis axis = this .symmetry .getPreferredAxis();
+        	        if ( axis == null )
+        	        	return false;
+        		}
+			return true;
+		}
+	}
+
     private boolean fullRotation, corrected;
 
 	public String getDefaultName()
@@ -49,9 +114,9 @@ public class RotationTool extends SymmetryTool
      * @param tools
      * @param originPoint
      */
-    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint )
     {
-    	this( name, symmetry, selection, realized, tools, originPoint, false );
+    	this( name, symmetry, selection, realized, originPoint, false );
     	this .corrected = false; // for backward compatibility... may get overwritten in setXmlAttributes
     }
 
@@ -65,9 +130,9 @@ public class RotationTool extends SymmetryTool
      * @param originPoint
      * @param full
      */
-    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint, boolean full )
+    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint, boolean full )
     {
-        super( name, symmetry, selection, realized, tools, originPoint );
+        super( name, symmetry, selection, realized, originPoint );
         this .fullRotation = full;
         this .corrected = true;
     }
@@ -104,7 +169,23 @@ public class RotationTool extends SymmetryTool
         
         if ( axisStrut == null )
         {
-            if ( isAutomatic() )
+        	Axis preferredAxis = this .symmetry .getPreferredAxis();
+        	if ( preferredAxis != null )
+        	{
+                AlgebraicField field = symmetry .getField();
+                axisStrut = new AnchoredSegment( preferredAxis, field .one(), center );
+        	}
+        	else if ( this .getName() .contains( ".builtin/" ) ) // TODO: fix this lame mechanism; use an API
+        	{
+                center = originPoint;
+        		this .addParameter( center );
+            	Direction redOrbit = symmetry .getDirection( "red" );
+                AlgebraicField field = symmetry .getField();
+    	    	AlgebraicNumber redScale = redOrbit .getUnitLength() .times( field .createPower( Direction.USER_SCALE ) );
+                axisStrut = new AnchoredSegment( redOrbit .getAxis( Symmetry.PLUS, 1 ), redScale, center );
+        		this .addParameter( axisStrut );
+            }
+            else if ( isAutomatic() )
             {
                 center = originPoint;
                 AlgebraicField field = symmetry .getField();

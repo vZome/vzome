@@ -23,13 +23,13 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.model.Manifestation;
+import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
@@ -146,18 +146,38 @@ public class POVRayExporter extends Exporter3d
         output .print( instances );
         instances = new StringBuffer();
         
+        Embedding embedding = mModel .getEmbedding();
+        String embeddingTransform = " ";
+        if ( ! embedding .isTrivial() )
+        {
+        	embeddingTransform = " transform embedding ";
+            output .print( "#declare embedding = transform { matrix < " );
+            for ( int i = 0; i < 3; i++ )
+            {
+                AlgebraicVector columnSelect = field .basisVector( 3, i );
+                RealVector columnI = embedding .embedInR3( columnSelect );
+                output .print( columnI .x );
+                output .print( ", " );
+                output .print( columnI .y );
+                output .print( ", " );
+                output .print( columnI .z );
+                output .print( ", " );
+            }
+            output .println( " 0, 0, 0 > }" );
+            output .flush();
+        }
+        
 		int numShapes = 0, numTransforms = 0;
-		HashMap<Polyhedron, String>[] shapes = TwoMaps.inAnArray();
+		HashMap<Polyhedron, String> shapes = new HashMap<>();
 		Map<AlgebraicMatrix, String> transforms = new HashMap<>();
 		Map<Color, String> colors = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();
-            boolean flip = rm .reverseOrder(); // need to reverse face vertex order
-            String shapeName = shapes[ flip?1:0 ] .get( shape );
+            String shapeName = shapes .get( shape );
             if ( shapeName == null ) {
                 shapeName = "shape" + numShapes++;
-                shapes[ flip?1:0 ] .put( shape, shapeName );
-                exportShape( shapeName, shape, flip );
+                shapes .put( shape, shapeName );
+                exportShape( shapeName, shape );
             }
             AlgebraicMatrix transform = rm .getOrientation();
             String transformName = transforms .get( transform );
@@ -177,20 +197,12 @@ public class POVRayExporter extends Exporter3d
             }
             instances .append( "object { " + shapeName + " transform " + transformName + " translate " );
             instances .append( "(<" );
-            Manifestation man = rm .getManifestation();
-            if ( man != null )
-            {
-                AlgebraicVector loc = man .getLocation();
-                if ( loc == null )
-                    loc = rm .getShape() .getField() .origin( 3 );
-                appendLocation( loc, instances );
-            }
-            else
-            {
-                appendLocation( rm .getLocation(), instances );
-            }
+            AlgebraicVector loc = rm .getLocationAV();
+            if ( loc == null )
+                loc = rm .getShape() .getField() .origin( 3 );
+            appendVector( loc, instances );
             instances .append( ">)" );
-            instances .append( " transform anim texture { " + colorName + " } }" );
+            instances .append( embeddingTransform + "transform anim texture { " + colorName + " } }" );
             instances .append( System .getProperty( "line.separator" ) );
         }
 
@@ -266,7 +278,7 @@ public class POVRayExporter extends Exporter3d
     /*
      * writes out a AlgebraicVector as (<1/2,1/2,0>*tau+<-3/2,0/2,0>)
      */
-	protected void appendLocation( AlgebraicVector loc, StringBuffer buf )
+	protected void appendVector( AlgebraicVector loc, StringBuffer buf )
 	{
         loc .getComponent( 0 ) .getNumberExpression( buf, AlgebraicField.EXPRESSION_FORMAT );
         buf .append( ", " );
@@ -274,17 +286,8 @@ public class POVRayExporter extends Exporter3d
         buf .append( ", " );
         loc .getComponent( 2 ) .getNumberExpression( buf, AlgebraicField.EXPRESSION_FORMAT );
 	}
- 
-    private void appendLocation( RealVector location, StringBuffer buf )
-    {
-        buf .append( location .x );
-        buf .append( ", " );
-        buf .append( location .y );
-        buf .append( ", " );
-        buf .append( location .z );
-    }
 
-    private void exportShape( String shapeName, Polyhedron poly, boolean reverseFaces )
+    private void exportShape( String shapeName, Polyhedron poly )
     {
         output .print( "#declare " + shapeName + " = " );
         List<AlgebraicVector> vertices = poly .getVertexList();
@@ -298,11 +301,11 @@ public class POVRayExporter extends Exporter3d
             for ( int j = 0; j <= arity; j++ ){
                 // POV-Ray requires that you explicitly repeat the first vertex to close the polygon
                 int m = j % arity;
-                int index = face .get( reverseFaces? arity-m-1 : m );
+                int index = face .get( m );
                 AlgebraicVector loc = vertices .get( index );
                 StringBuffer buf = new StringBuffer();
                 buf .append( "(<" );
-                appendLocation( loc, buf );
+                appendVector( loc, buf );
                 buf .append( ">)" );
                 output .print( buf.toString() );
             }
@@ -324,7 +327,7 @@ public class POVRayExporter extends Exporter3d
         {
             AlgebraicVector columnSelect = field .basisVector( 3, i );
             AlgebraicVector columnI = transform .timesColumn( columnSelect );
-            appendLocation( columnI, buf );
+            appendVector( columnI, buf );
             buf .append( ", " );
         }
         output .print( buf );

@@ -6,8 +6,13 @@ package com.vzome.core.editor;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.construction.MatrixTransformation;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Scaling;
 import com.vzome.core.construction.Segment;
@@ -22,21 +27,68 @@ import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class ScalingTool extends SymmetryTool
-{
+{    
+	public static class Factory extends AbstractToolFactory implements ToolFactory
+	{
+		public Factory( EditorModel model, UndoableEdit.Context context )
+		{
+			super( model, context );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 3 && balls == 1 && struts == 2 );
+		}
+
+		@Override
+		public Tool createToolInternal( int index )
+		{
+			return new ScalingTool( "scaling." + index, null, getSelection(), getModel(), null );
+		}
+
+		@Override
+		protected boolean bindParameters(Selection selection, SymmetrySystem symmetry) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	}
+
+	private final AlgebraicNumber scaleFactor;
+	
     @Override
     public String getCategory()
     {
         return "scaling";
     }
-
-    public ScalingTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    
+    public ScalingTool( String name, AlgebraicNumber scaleFactor, Point originPoint )
     {
-        super( name, symmetry, selection, realized, tools, originPoint );
+    	super( name, null, null, null, originPoint );
+    	this .scaleFactor = scaleFactor;
+    }
+
+    public ScalingTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint )
+    {
+        super( name, symmetry, selection, realized, originPoint );
+        this .scaleFactor = null;
     }
 
     @Override
     protected String checkSelection( boolean prepareTool )
     {
+    	if ( this .scaleFactor != null ) {
+    		// a predefined tool
+    		AlgebraicField field = this .scaleFactor .getField();
+    		this .transforms = new Transformation[ 1 ];
+            AlgebraicMatrix transform = new AlgebraicMatrix(
+                    field .basisVector( 3, AlgebraicVector.X ) .scale( this .scaleFactor ),
+                    field .basisVector( 3, AlgebraicVector.Y ) .scale( this .scaleFactor ),
+                    field .basisVector( 3, AlgebraicVector.Z ) .scale( this .scaleFactor ) );
+    		transforms[ 0 ] = new MatrixTransformation( transform, this .originPoint .getLocation() );
+    		return null;
+    	}
+    	
         Segment s1 = null, s2 = null;
         Point center = null;
         boolean correct = true;

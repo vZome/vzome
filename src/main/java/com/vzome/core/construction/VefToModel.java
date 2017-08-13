@@ -63,7 +63,7 @@ public class VefToModel extends VefParser
     protected void addVertex( int index, AlgebraicVector location )
     {
         logger .finest( "addVertex location = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
-        if ( scale != null )
+        if ( scale != null && ! usesActualScale())
         {
             location = location .scale( scale );
             logger .finest( "scaled = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
