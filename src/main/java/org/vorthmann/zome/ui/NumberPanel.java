@@ -1,20 +1,20 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.Dimension;
-import java.awt.Font;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.border.BevelBorder;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import org.vorthmann.ui.Controller;
 
 public class NumberPanel extends JPanel
 {
-    private final JTextArea[] fields;
+    private final JTextPane[] fields;
 	private final Controller controller;
     private final int totalLabelWidth;
     
@@ -26,19 +26,20 @@ public class NumberPanel extends JPanel
         this .setLayout( new BoxLayout( this, BoxLayout.LINE_AXIS ) );
         this .setBorder( BorderFactory .createEmptyBorder( 4, 4, 4, 4 ) );
         
-        // TODO : add text fields
         String[] labels = controller .getCommandList( "labels" );
         String[] values = controller .getCommandList( "values" );
-        fields = new JTextArea[ values .length ];
+        fields = new JTextPane[ values .length ];
 
-        JLabel label = new JLabel( "(  " );
-        Font biggerFont = label .getFont() .deriveFont( 14f );
-        Font biggestFont = label .getFont() .deriveFont( 20f );
         Dimension maxSize = new Dimension( 40, 20 );
+
+        SimpleAttributeSet fieldAttribs = new SimpleAttributeSet();
+        StyleConstants.setAlignment(fieldAttribs, StyleConstants.ALIGN_RIGHT);
+        StyleConstants.setFontSize(fieldAttribs, 14);
 
         int labelsWidthTotal = 0;
         for ( int i = 0; i < values.length; i++ )
         {
+            JLabel label;
             if ( i == 0 )
                 label = new JLabel( "( " );
             else if ( i == 1 )
@@ -47,12 +48,14 @@ public class NumberPanel extends JPanel
                 label = new JLabel( labels[ i-1 ] + " ) / " );
             else
                 label = new JLabel( labels[ i-1 ] + " + " );
-            label .setFont( biggestFont );
+
+            label .setFont( label .getFont() .deriveFont( 20f ) );
             this .add( label );
 
-            fields[ i ] = new JTextArea( values[ i ] );
+            fields[ i ] = new JTextPane();
+            fields[ i ] .setText( values[ i ] );
+            fields[ i ]. setParagraphAttributes(fieldAttribs, true);
             fields[ i ] .setBorder( BorderFactory .createBevelBorder( BevelBorder .LOWERED ) );
-            fields[ i ] .setFont( biggerFont );
             fields[ i ] .setMaximumSize( maxSize );
             fields[ i ] .setPreferredSize( maxSize );
             this .add( fields[ i ] );
@@ -75,9 +78,9 @@ public class NumberPanel extends JPanel
 
 	public void syncToModel()
 	{
-        StringBuffer buf = new StringBuffer();
-        for ( int i = 0; i < fields.length; i++ ) {
-            buf .append( fields[ i ] .getText() );
+        StringBuilder buf = new StringBuilder();
+        for (JTextPane field : fields) {
+            buf.append(field.getText());
             buf .append( " " );
         }
 		controller .setProperty( "values", buf .toString() );
