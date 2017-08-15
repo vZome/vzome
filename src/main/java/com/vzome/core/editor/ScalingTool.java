@@ -19,6 +19,7 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -30,6 +31,8 @@ public class ScalingTool extends SymmetryTool
 {    
 	public static class Factory extends AbstractToolFactory implements ToolFactory
 	{
+		private transient Symmetry symmetry;
+
 		public Factory( EditorModel model, UndoableEdit.Context context )
 		{
 			super( model, context );
@@ -44,13 +47,36 @@ public class ScalingTool extends SymmetryTool
 		@Override
 		public Tool createToolInternal( int index )
 		{
-			return new ScalingTool( "scaling." + index, null, getSelection(), getModel(), null );
+			return new ScalingTool( "scaling." + index, this .symmetry, getSelection(), getModel(), null );
 		}
 
 		@Override
-		protected boolean bindParameters(Selection selection, SymmetrySystem symmetry) {
-			// TODO Auto-generated method stub
-			return false;
+		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		{
+			AlgebraicVector offset1 = null;
+			AlgebraicVector offset2 = null;
+        	for ( Manifestation man : selection )
+        		if ( man instanceof Strut ) {
+        			Strut strut = (Strut) man;
+        			if ( offset1 == null )
+        				offset1 = strut .getOffset();
+        			else
+        				offset2 = strut .getOffset();
+        		}
+        	Axis zone1 = symmetry .getAxis( offset1 );
+        	Axis zone2 = symmetry .getAxis( offset2 );
+        	Direction orbit1 = zone1 .getDirection();
+        	Direction orbit2 = zone2 .getDirection();
+        	if ( orbit1 != orbit2 )
+        		return false;
+        	if ( orbit1 .isAutomatic() )
+        		return false;
+        	AlgebraicNumber l1 = zone1 .getLength( offset1 );
+        	AlgebraicNumber l2 = zone2 .getLength( offset2 );
+        	if ( l1 .equals( l2 ) )
+        		return false;
+        	this .symmetry = symmetry .getSymmetry();
+			return true;
 		}
 	}
 
