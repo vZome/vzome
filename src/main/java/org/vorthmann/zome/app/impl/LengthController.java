@@ -389,7 +389,7 @@ public class LengthController extends DefaultController
 
         if ( "scaleFactorHtml" .equals( string ) )
         {
-            return field .getIrrational( 0 ) + "<font size=+1>" + currentScale .getProperty( "scaleHtml" ) + "</font>";
+            return field .getIrrational( 1 ) + "<font size=+1>" + currentScale .getProperty( "scaleHtml" ) + "</font>";
         }
 
         return super.getProperty( string );

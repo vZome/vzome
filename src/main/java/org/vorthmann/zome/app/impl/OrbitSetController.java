@@ -111,6 +111,9 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             	Axis axis = symmetry .getAxis( test, Collections .singleton( dir ) );
             	AlgebraicVector v = axis .normal();
             	double z =  v .getComponent( 2 ) .evaluate();
+                if(z == 0.0d) {
+                    z = 1.0d; // hack to partially fix DodecagonalSymmetry layout, but I think blue is still in wrong position.
+                }
             	orbit.dotX = v .getComponent( 0 ) .evaluate();
             	orbit.dotX = orbit.dotX / z; // intersect with z=0 plane
             	orbit.dotY = v .getComponent( 1 ) .evaluate();
