@@ -37,7 +37,7 @@ public class RenderedManifestation
     private boolean mPickable = true;
 
     private AlgebraicVector location;
-    private final AlgebraicVector fixedLocation;
+    private AlgebraicVector fixedLocation;
 
     private int strutZone = -1;
 
@@ -236,6 +236,7 @@ public class RenderedManifestation
     {
         RenderedManifestation copy = new RenderedManifestation( null );
         copy .location = this .location;
+        copy .fixedLocation = this .fixedLocation;
         copy .mColorName = this .mColorName;
         copy .color = this .color;
         copy .mGlow = this .mGlow;
