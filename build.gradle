@@ -317,7 +317,7 @@ regression.dependsOn makeRegressionOutputDir
             testYear = regressionYear
         }
         def testFile = "${testYear}/${month}"
-        def testOut = "build/test-results/regression/TEST-${month}.xml"
+        def testOut = "build/test-results/regression/TEST-${testYear}-${month}.xml"
         if( project .hasProperty( "regressionOutput" ) ){
             testOut = regressionOutput
         }
