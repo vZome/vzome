@@ -131,6 +131,57 @@ public class VefToModelTest
     }
 
     @Test
+    public void testScalingByVector() {
+        final AlgebraicVector quaternion = null;
+        final NewConstructions effects = new NewConstructions();
+        final AlgebraicVector offset = null;
+        final AlgebraicField field = new RootThreeField();
+
+        AlgebraicNumber scale = field.one();
+
+        VefToModel parser = new VefToModel(quaternion, effects, scale, offset);
+
+        String vefData = "vZome VEF 8 field rootThree "
+                + "actual scale 1 "
+                + "3 "
+                + "0 0 0 0 "
+                + "0 1 2 3 "
+                + "4 5 6 7 "
+                ;
+
+        // The scale parameter passed to parser should be ignored for now
+        // because of the keyword "actual" in vefData
+        AlgebraicVector expected = field.createVector(new int[] {
+            5, 1, 0, 1,
+            6, 1, 0, 1,
+            7, 1, 0, 1
+        });
+        parser.parseVEF(vefData, field);
+        assertTrue(parser.usesActualScale());
+        Point p0 = (Point) effects.get(2);
+        AlgebraicVector v0 = p0.getLocation();
+        assertEquals(expected, v0);
+
+        // The scale parameter passed to parser is still being ignored
+        // because of the keyword "actual" in vefData
+        // but the scale in vefData is changed to scaleVector, so we multiply each component of our expected value as necessary.
+        vefData = vefData.replace("actual scale 1 ", "actual scale vector 0 1/2 (0,1/4) 4/10 ");
+        expected = field.createVector(new int[] {
+             5, 2, 0, 1,     // 5 * 1/2 = 5/2
+             3, 2, 0, 1,     // 6 * 1/4 = 3/2
+            14, 5, 0, 1      // 7 * 4/10 = 14/5
+        });
+
+        effects.clear();
+        parser.parseVEF(vefData, field);
+        assertTrue(parser.usesActualScale());
+        p0 = (Point) effects.get(2);
+        v0 = p0.getLocation();
+        assertEquals(expected, v0);
+
+    }
+
+    @Test
     public void testMixedVectorFormat()
     {
         final AlgebraicVector quaternion = null;

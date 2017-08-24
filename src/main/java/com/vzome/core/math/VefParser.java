@@ -15,6 +15,11 @@ import java.util.Stack;
 
 public abstract class VefParser
 {
+    // Version 8 supports:
+    // Scale can optionally be represented as an AlgebraicVector with separate scale per coordinate
+    // or as an AlgebraicNumber with the same scale for all coordinates (original behavior)
+    public static final int VERSION_SCALE_VECTOR = 8;
+
     // Version 7 supports:
     // New "rational" field which requires only rational numbers as input and matches any actual field
     // Mix of rational and/or irrational numeric format for parsing scale and vertices
@@ -99,7 +104,7 @@ public abstract class VefParser
         mVersion = 0;
         isRational = false;
         useActualScale = false;
-        AlgebraicNumber scale = field .createAlgebraicNumber( 1, 0, 1, 0 );
+
         if ( token .equals( "vZome" ) ) {
             // format 4, with version number
             try {
@@ -157,15 +162,39 @@ public abstract class VefParser
             }
         }
         
+        AlgebraicVector scaleVector = new AlgebraicVector( field, 4 );
         if ( token .equals( "scale" ) ) {
             try {
                 token = tokens .nextToken();
-            } catch ( NoSuchElementException e1 ) {
+                // format >= 8 allows discreet scaling per coordinate with keyword "vector"
+                if ( token.equals("vector") ) {
+                    try {
+                        for (int tokNum = 0; tokNum < 4; tokNum++) {
+                            token = tokens.nextToken();
+                            AlgebraicNumber coord = parseIntegralNumber(token);
+                            scaleVector.setComponent(tokNum, coord); // format is W X Y Z
+                        }
+                    } catch (NoSuchElementException e) {
+                        throw new IllegalStateException("VEF format error: scale vector requires 4 coordinates");
+                    }
+                }
+                else {
+                    AlgebraicNumber scale = parseIntegralNumber( token );
+                    for (int i = 0; i < 4; i++) {
+                        scaleVector.setComponent(i, scale);
+                    }
+                }
+                token = tokens.nextToken();
+            } catch (NoSuchElementException e) {
                 throw new IllegalStateException( "VEF format error: no tokens after \"scale\"" );
             }
-            scale = parseIntegralNumber( token );
-            token = tokens .nextToken();
         }
+        else {
+            for (int i = 0; i < 4; i++) {
+                scaleVector.setComponent(i, field.one());
+            }
+        }
+        
         int numVertices;
         try {
             numVertices = Integer .parseInt( token );
@@ -182,7 +211,7 @@ public abstract class VefParser
                 } catch ( NoSuchElementException e1 ) {
                     throw new IllegalStateException( "VEF format error: not enough vertices in list" );
                 }
-                AlgebraicNumber coord = parseIntegralNumber( token ) .times( scale );
+                AlgebraicNumber coord = parseIntegralNumber( token ) .times( scaleVector.getComponent(tokNum) );
                 
                 // I think this is the right way to deal with VERSION_W_FIRST and the concomitant
                 //  "incorrect" quaternion multiplication used for projection.  All that is necessary
