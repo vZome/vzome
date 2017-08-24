@@ -209,14 +209,21 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .add( enableIf( isEditor, createMenuItem( "Select All", ( "selectAll" ), KeyEvent.VK_A, COMMAND ) ) );
         menu .add( enableIf( isEditor, createMenuItem( "Select Neighbors", ( "selectNeighbors" ), KeyEvent.VK_A, COMMAND_OPTION ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Invert Selection", ( "invertSelection" ) ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Deselect Balls", ( "unselectBalls" ) ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Deselect Struts and Panels", ( "unselectStruts" ) ) ) );
 		
 		submenu = new JMenu("Select...");
-		submenu.add( enableIf( isEditor, createMenuItem( "All Collinear", ( "SelectCollinear" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "Parallel Struts", ( "SelectParallelStruts" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "selectBalls" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "selectStruts" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "selectPanels" ) ) ) );
 		submenu.add( enableIf( isEditor, createMenuItem( "Automatic Struts", ( "SelectAutomaticStruts" ) ) ) );
-        // submenu .add( createMenuItem( "First Octant", getExclusiveAction( "test.pick.cube" ) ) );
+//		submenu.add( enableIf( isEditor, createMenuItem( "All Collinear", ( "SelectCollinear" ) ) ) );
+//      submenu.add( enableIf( isEditor, createMenuItem( "Parallel Struts", ( "SelectParallelStruts" ) ) ) );
+		menu.add(submenu);
+
+		submenu = new JMenu("Deselect...");
+        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "deselectBalls" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "deselectStruts" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "deselectPanels" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "All", ( "unselectAll" ) ) ) );
 		menu.add(submenu);
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

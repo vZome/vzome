@@ -94,6 +94,7 @@ public class PartsController extends DefaultController implements RenderingChang
         public final int rgbColor;          // converts com.vzome.core.render.Color to java.awt.Color
         public final String sizeNameStr;    // for indexing and display
         public final String lengthStr;      // for indexing and display
+        public final AlgebraicNumber strutLength; // for context menu select/deselect strut actions
         public final Integer automaticDirectionIndex; // for sorting and grouping
         public final Double realLength;     // for sorting
         public final Class<? extends Manifestation> partClass; // for sorting and grouping
@@ -103,6 +104,7 @@ public class PartsController extends DefaultController implements RenderingChang
             rgbColor = Color.WHITE.getRGB();
             sizeNameStr = name;
             lengthStr = "";
+            strutLength = null;
             automaticDirectionIndex = -1;
             realLength = 0D;
             partClass = partType;
@@ -114,6 +116,7 @@ public class PartsController extends DefaultController implements RenderingChang
             rgbColor = Color.WHITE.getRGB();
             sizeNameStr = "";
             lengthStr = "";
+            strutLength = null;
             automaticDirectionIndex = -1;
             realLength = 0D;
             partClass = ball.getClass();
@@ -130,6 +133,7 @@ public class PartsController extends DefaultController implements RenderingChang
             StringTokenizer tokens = new StringTokenizer(lengthExpression, ":" );
             sizeNameStr = tokens.nextToken();
             lengthStr = tokens.nextToken();
+            strutLength = length;
             automaticDirectionIndex = orbit.isAutomatic()
                     ? Integer.parseInt(orbitStr)
                     : -1;
@@ -161,6 +165,7 @@ public class PartsController extends DefaultController implements RenderingChang
             rgbColor = color.getRGB();
             sizeNameStr = "";
             lengthStr = "";
+            strutLength = null;
             automaticDirectionIndex = autoDirIdx;
             realLength = 0D;
             partClass = panel.getClass();
