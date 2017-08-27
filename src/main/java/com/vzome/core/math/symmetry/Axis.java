@@ -179,12 +179,13 @@ public class Axis
     /**
      * @param plus
      * @param orientation2
+     * @param outbound 
      */
-    public void rename( int sense, int orientation2 )
+    public void rename( int sense, int orientation2, boolean outbound )
     {
     	this .mSense = sense;
         this .orientation = orientation2;
-        this .outbound = true;
+        this .outbound = outbound;
     }
 
 

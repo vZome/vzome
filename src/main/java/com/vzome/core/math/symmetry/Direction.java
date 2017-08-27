@@ -410,7 +410,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     		{
     			// always upgrade from inbound to outbound, regardless of sense
     			String oldName = zone .toString();
-                zone .rename( sense, orientation ); // outbound, implicitly
+                zone .rename( sense, orientation, true );
     			if ( logger .isLoggable( Level.FINER ) )
         			logger .finer( "zone " + oldName + " upgraded to " + zone .toString() );
     		} 
@@ -424,7 +424,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     		{
     			// both outbound or both inbound, but upgrade from MINUS to PLUS
     			String oldName = zone .toString();
-                zone .rename( sense, orientation ); // outbound, implicitly
+                zone .rename( sense, orientation, outbound );
     			if ( logger .isLoggable( Level.FINER ) )
         			logger .finer( "zone " + oldName + " upgraded to " + zone .toString() );
     		}

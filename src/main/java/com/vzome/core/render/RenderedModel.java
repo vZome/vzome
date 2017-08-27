@@ -413,7 +413,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 				}
 			    rm .setShape( prototypeLengthShape .getEvilTwin( reflection ) );
 			}
-			if ( ! axis .isOutbound() ) {
+			if ( ! axis .isOutbound() ) {  // see declaration for details
 				rm .offsetLocation();
 			} else
 				rm .resetLocation(); // might be switching between systems
@@ -426,7 +426,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		}
 		rm .setStrut( orbit, orn, axis .getSense(), len );
 		rm .setOrientation( orientation );
-//            rm .setOrientation( RationalMatrices .identity( m .getLocation() .length / 2 ), false );
 		
 		if ( justShape )
 		    return;
