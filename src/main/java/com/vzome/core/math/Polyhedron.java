@@ -33,6 +33,8 @@ public class Polyhedron implements Cloneable
     private Polyhedron evilTwin; // for struts in symmetries with truly chiral orbits
     
     private boolean isEvil = false;
+    
+    private boolean isPanel = false;
 
 	public Polyhedron( AlgebraicField field )
     {
@@ -308,6 +310,16 @@ public class Polyhedron implements Cloneable
     {
         return this .length;
     }
+
+	public boolean isPanel()
+	{
+		return isPanel;
+	}
+
+	public void setPanel( boolean isPanel )
+	{
+		this.isPanel = isPanel;
+	}
 }
 
 

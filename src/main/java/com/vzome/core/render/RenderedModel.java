@@ -451,6 +451,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     private Polyhedron makePanelPolyhedron( Panel panel )
     {
         Polyhedron poly = new Polyhedron( this .field );
+        poly .setPanel( true );
         int arity = 0;
         for( AlgebraicVector gv : panel) {
             arity++;
