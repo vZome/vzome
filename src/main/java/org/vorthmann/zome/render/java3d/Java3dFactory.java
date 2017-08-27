@@ -141,7 +141,7 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     //  as the solid geometry.
     Geometry makeOutlineGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix, Embedding embedding )
     {
-        Geometry geom = map .get( matrix );
+        Geometry geom = ( map == null )? null : map .get( matrix );
 
         if ( geom == null ) {
 
@@ -183,7 +183,10 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
             }
 
             geom = strips;
-            map .put( matrix, geom );
+
+            // map is null when shape is a panel
+            if ( map != null )
+            	map .put( matrix, geom );
         }
 
         return geom;
@@ -192,28 +195,46 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     Geometry makeOutlineGeometry( RenderedManifestation rm )
     {
     	Polyhedron poly = rm .getShape();
-        Map<AlgebraicMatrix, Geometry> map = outlineGeometries .get( poly );
-        if ( map == null ){
-            map = new HashMap<>();
-            outlineGeometries .put( poly, map );
-        }
+        Map<AlgebraicMatrix, Geometry> map = null;
+    	if ( ! poly .isPanel() )
+    	{
+    		// Panels are all unique shapes, so there is no point in caching the geometries,
+    		//   and it causes trouble for embeddings, since panel shapes don't change, but
+    		//   their embedded rendering must.
+    		
+            map = outlineGeometries .get( poly );
+            if ( map == null ){
+                map = new HashMap<>();
+                outlineGeometries .put( poly, map );
+            }
+    	}
         return makeOutlineGeometry( map, poly, rm .getOrientation(), rm .getEmbedding() );
     }
 
     Geometry makeSolidGeometry( RenderedManifestation rm )
     {
     	Polyhedron poly = rm .getShape();
-        Map<AlgebraicMatrix, Geometry> map = solidGeometries .get( poly );
-        if ( map == null ){
-            map = new HashMap<>();
-            solidGeometries .put( poly, map );
-        }
+    	Map<AlgebraicMatrix, Geometry> map = null;
+    	if ( ! poly .isPanel() )
+    	{
+    		// Panels are all unique shapes, so there is no point in caching the geometries,
+    		//   and it causes trouble for embeddings, since panel shapes don't change, but
+    		//   their embedded rendering must.
+    		
+            map = solidGeometries .get( poly );
+            if ( map == null ){
+                map = new HashMap<>();
+                solidGeometries .put( poly, map );
+            }
+    	}
         return makeGeometry( map, poly, rm .getOrientation(), true, rm .getEmbedding() );
     }
 
     Geometry makeGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix, boolean makeNormals, Embedding embedding )
     {
-        Geometry geom = map .get( matrix );
+    	// map is null when poly is a panel... see above
+        Geometry geom = ( map == null )? null : map .get( matrix );
+
         if ( geom == null ) {
 
     		if ( logger .isLoggable( Level.FINE ) )
@@ -274,7 +295,10 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
             geom = gi .getGeometryArray();
             if ( makeNormals )
                 geom .setCapability( Geometry.ALLOW_INTERSECT );
-            map .put( matrix, geom );
+
+            // map is null when shape is a panel
+            if ( map != null )
+            	map .put( matrix, geom );
         }
 
         return geom;
