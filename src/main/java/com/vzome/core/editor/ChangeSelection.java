@@ -22,6 +22,12 @@ import com.vzome.core.model.Strut;
 
 public abstract class ChangeSelection extends SideEffects
 {
+    public enum ActionEnum {
+        IGNORE,
+        SELECT,
+        DESELECT
+    }
+
 	protected final Selection mSelection;
     
     private boolean mDirty = false;
@@ -87,6 +93,25 @@ public abstract class ChangeSelection extends SideEffects
             DomUtils .addAttribute( result, "grouping", "2.1.1" );
         getXmlAttributes( result );
         return result;
+    }
+
+    protected void adjustSelection(Manifestation man, ActionEnum action) {
+        switch (action) {
+            case SELECT:
+                select(man);
+                break;
+
+            case DESELECT:
+                unselect(man);
+                break;
+
+            case IGNORE:
+                break;
+
+            default:
+                logger.warning("unexpected action: " + action.toString() );
+                break;
+        }
     }
 
     /**

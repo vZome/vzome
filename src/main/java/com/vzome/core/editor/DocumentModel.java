@@ -45,6 +45,7 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentCrossProduct;
 import com.vzome.core.construction.SegmentJoiningPoints;
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.*;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.OpenGLExporter;
@@ -400,8 +401,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		case "DeselectAll":
 			edit = new DeselectAll( this.mSelection, groupInSelection );
 			break;
-		case "DeselectByClass":
-			edit = new DeselectByClass( this.mSelection, false );
+		case "AdjustSelectionByClass":
+		case "DeselectByClass": // legacy command now handled by AdjustSelectionByClass
+			edit = new AdjustSelectionByClass( this.mSelection, this.mRealizedModel, IGNORE, IGNORE, IGNORE);
 			break;
 		case "SelectManifestation":
 			edit = new SelectManifestation( null, false, this.mSelection, this.mRealizedModel, groupInSelection );
@@ -409,7 +411,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		case "SelectNeighbors":
 			edit = new SelectNeighbors( this.mSelection, this.mRealizedModel, groupInSelection );
 			break;
-		case "SelectSimilarSize":
+		case "AdjustSelectionByOrbitLength":
+		case "SelectSimilarSize": // legacy command now handled by AdjustSelectionByOrbitLength
 			/*
             The normal pattern is to have the edits deserialize their own parameters from the XML in setXmlAttributes()
             but in the case of persisting the symmetry, it must be read here and passed into the c'tor
@@ -417,18 +420,19 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             These edits are still responsible for saving the symmetry name to XML in getXmlAttributes().
             Also see the comments of commit # 8c8cb08a1e4d71f91f24669b203fef0378230b19 on 3/8/2015
             */
-		    SymmetrySystem symmetry = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
-			edit = new SelectSimilarSizeStruts( symmetry, null, null, this .mSelection, this .mRealizedModel );
+
+			edit = new AdjustSelectionByOrbitLength( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
+                    null, null, this .mSelection, this .mRealizedModel, IGNORE, IGNORE );
 			break;
 		case "SelectParallelStruts":
 			// See the note above about deserializing symmetry from XML.
-		    SymmetrySystem symmsystem = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
-			edit = new SelectParallelStruts( symmsystem, this .mSelection, this .mRealizedModel );
+			edit = new SelectParallelStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
+                    this .mSelection, this .mRealizedModel );
 			break;
 		case "SelectAutomaticStruts":
 			// See the note above about deserializing symmetry from XML.
-			symmsystem = this .symmetrySystems .get( xml .getAttribute( "symmetry" ) );
-			edit = new SelectAutomaticStruts( symmsystem, this .mSelection, this .mRealizedModel );
+			edit = new SelectAutomaticStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
+                    this .mSelection, this .mRealizedModel );
 			break;
 		case "SelectCollinear":
 			edit = new SelectCollinear( this .mSelection, this .mRealizedModel );
@@ -594,10 +598,28 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = mEditorModel.unselectAll();
 			break;
 		case "unselectBalls":
-			edit = mEditorModel.unselectConnectors();
+			edit = mEditorModel.unselectConnectors(); // legacy
 			break;
 		case "unselectStruts":
-			edit = mEditorModel.unselectStruts();
+			edit = mEditorModel.unselectStrutsAndPanels(); // legacy
+			break;
+		case "deselectBalls":
+			edit = mEditorModel.deselectConnectors();
+			break;
+		case "deselectStruts":
+			edit = mEditorModel.deselectStruts();
+			break;
+		case "deselectPanels":
+			edit = mEditorModel.deselectPanels();
+			break;
+		case "selectBalls":
+			edit = mEditorModel.selectConnectors();
+			break;
+		case "selectStruts":
+			edit = mEditorModel.selectStruts();
+			break;
+		case "selectPanels":
+			edit = mEditorModel.selectPanels();
 			break;
 		case "selectNeighbors":
 			edit = mEditorModel.selectNeighbors();
@@ -798,10 +820,28 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
     public void selectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
-        UndoableEdit edit = new SelectSimilarSizeStruts( mEditorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel );
+        UndoableEdit edit = new AdjustSelectionByOrbitLength(mEditorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel, SELECT, IGNORE);
         this .performAndRecord( edit );
     }
     
+    public void deselectSimilarStruts( Direction orbit, AlgebraicNumber length )
+    {
+        UndoableEdit edit = new AdjustSelectionByOrbitLength(mEditorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel, DESELECT, IGNORE);
+        this .performAndRecord( edit );
+    }
+
+    public void selectSimilarPanels( Direction orbit )
+    {
+        UndoableEdit edit = new AdjustSelectionByOrbitLength(mEditorModel .getSymmetrySystem(), orbit, null, mSelection, mRealizedModel, IGNORE, SELECT);
+        this .performAndRecord( edit );
+    }
+
+    public void deselectSimilarPanels( Direction orbit )
+    {
+        UndoableEdit edit = new AdjustSelectionByOrbitLength(mEditorModel .getSymmetrySystem(), orbit, null, mSelection, mRealizedModel, IGNORE, DESELECT);
+        this .performAndRecord( edit );
+    }
+
     public Color getSelectionColor()
     {
     	Manifestation last = null;
