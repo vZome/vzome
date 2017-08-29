@@ -35,7 +35,8 @@ public class RenderedManifestation
     private Object mGraphicsObject;
     
     private boolean mPickable = true;
-
+    
+    private boolean isOffset = false;
     private AlgebraicVector location;
     private AlgebraicVector fixedLocation;
 
@@ -186,6 +187,7 @@ public class RenderedManifestation
 		int result = 1;
 		result = prime * result
 				+ ((fixedLocation == null) ? 0 : fixedLocation.hashCode());
+		result = prime * result + (isOffset ? 1231 : 1237);
 		result = prime * result
 				+ ((mOrientation == null) ? 0 : mOrientation.hashCode());
 		result = prime * result + ((mShape == null) ? 0 : mShape.hashCode());
@@ -210,6 +212,9 @@ public class RenderedManifestation
 				return false;
 			}
 		} else if (!fixedLocation.equals(other.fixedLocation)) {
+			return false;
+		}
+		if (isOffset != other.isOffset) {
 			return false;
 		}
 		if (mOrientation == null) {
@@ -281,6 +286,7 @@ public class RenderedManifestation
 		if ( this .mManifestation != null ) {
 			Strut strut = (Strut) this .mManifestation;
 			this .location = strut .getEnd();
+			this .isOffset = true;
 		}
 	}
 	
@@ -288,6 +294,7 @@ public class RenderedManifestation
 	{
 		if ( this .mManifestation != null ) {
 			location = this .mManifestation .getLocation();
+			this .isOffset = false;
 		}
 	}
 }
