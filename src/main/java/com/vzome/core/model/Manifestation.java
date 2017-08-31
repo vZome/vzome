@@ -79,6 +79,8 @@ public abstract class Manifestation implements GroupElement
     }
     
     public abstract AlgebraicVector getLocation();
+
+    public abstract AlgebraicVector getCentroid();
     
     private Group mContainer;
     

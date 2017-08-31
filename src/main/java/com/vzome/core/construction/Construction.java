@@ -49,8 +49,6 @@ import com.vzome.core.algebra.AlgebraicField;
  */
 public abstract class Construction
 {
-    public static final Construction[] ARRAY_PROTOTYPE = new Construction[0];
-    
     protected final AlgebraicField field;
     
     /**

@@ -45,6 +45,11 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentCrossProduct;
 import com.vzome.core.construction.SegmentJoiningPoints;
+import com.vzome.core.editor.ManifestationColorMappers.CentroidNearestSpecialOrbitColorMap;
+import com.vzome.core.editor.ManifestationColorMappers.ManifestationColorMapper;
+import com.vzome.core.editor.ManifestationColorMappers.NearestSpecialOrbitColorMap;
+import com.vzome.core.editor.ManifestationColorMappers.SystemCentroidColorMap;
+import com.vzome.core.editor.ManifestationColorMappers.SystemColorMap;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.OpenGLExporter;
@@ -332,6 +337,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		case "setItemColor":
 			edit = new ColorManifestations( this.mSelection, this.mRealizedModel, null, groupInSelection );
 			break;
+		case "MapToColor":
+			// Different Color Mappers require different parameters, including symmetry,
+			//  so they are all handled together in getColorMapper()
+			// See the note below about deserializing symmetry from XML.
+			 edit = getColorMapper(xml.getAttribute("colorMapper"), xml.getAttribute("symmetry"));
+			break;
 		case "ShowHidden":
 			edit = new ShowHidden( this.mSelection, this.mRealizedModel, groupInSelection );
 			break;
@@ -354,8 +365,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
 			break;
 		case "GhostSymmetry24Cell":
-			edit = new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mEditorModel.getSymmetrySegment(),
-					groupInSelection );
+			edit = new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mEditorModel.getSymmetrySegment(), groupInSelection );
 			break;
 		case "StrutCreation":
 			edit = new StrutCreation( null, null, null, this.mRealizedModel );
@@ -520,6 +530,23 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		
 		return edit;
 	}
+	
+	private MapColors getColorMapper(String mapperName, String symmetrySystemName) {
+        SymmetrySystem symm = symmetrySystems.get(symmetrySystemName);
+        ManifestationColorMapper colorMapper
+                = mapperName.equals("SystemColorMap") ? new SystemColorMap(symm)
+                : mapperName.equals("SystemCentroidColorMap") ? new SystemCentroidColorMap(symm)
+                : mapperName.equals("NearestSpecialOrbitColorMap") ? new NearestSpecialOrbitColorMap(symm)
+                : mapperName.equals("CentroidNearestSpecialOrbitColorMap") ? new CentroidNearestSpecialOrbitColorMap(symm)
+                : ManifestationColorMappers.getColorMapper(mapperName);
+        
+        if (colorMapper == null) {
+            // Provide a do-nothing placeholder for an unrecognized (future???) mapper
+            colorMapper = new ManifestationColorMappers.Identity();
+            logger.warning("Substituting " + colorMapper.getName() + " for unknown mapperName " + mapperName);
+        }
+        return new MapColors(mSelection, mRealizedModel, colorMapper);
+    }
 	
 	public String copySelectionVEF()
 	{
@@ -688,8 +715,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			break;
 
 		default:
-			if ( action.startsWith( "polytope_" ) )
-	        {
+			if ( action.startsWith( "polytope_" ) ) {
 	            int beginIndex = "polytope_".length();
 	            String group = action.substring( beginIndex, beginIndex + 2 );
 	            String suffix = action.substring( beginIndex + 2 );
@@ -697,14 +723,20 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	            int index = Integer.parseInt( suffix, 2 );
 	            edit = new Polytope4d( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(),
 	                    index, group, false );
-	    	} else if ( action.startsWith( "setItemColor/" ) )
-	        {
+	    	} 
+			else if ( action.startsWith( "setItemColor/" ) ) {
 	            String value = action .substring( "setItemColor/" .length() );
 	            edit = new ColorManifestations( mSelection, mRealizedModel, new Color( value ), false );
-	        }
-	    	else if ( ShowVertices.NAME .toLowerCase() .equals( action .toLowerCase() ) ) {
+	    	} 
+			else if ( action.startsWith( "MapToColor/" ) ) {
+				String mapperName = action.substring("MapToColor/".length());
+				String symmetrySystemName = mEditorModel .getSymmetrySystem().getName();
+				edit = getColorMapper(mapperName, symmetrySystemName);
+	        } 
+			else if ( ShowVertices.NAME .toLowerCase() .equals( action .toLowerCase() ) ) {
 	    		edit = new ShowVertices( mSelection, mRealizedModel );
-	    	} else if ( action .toLowerCase() .equals( "chainballs" ) ) {
+	    	} 
+			else if ( action .toLowerCase() .equals( "chainballs" ) ) {
 	    		edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CHAIN_BALLS );
 	    	}
 		}

@@ -31,7 +31,7 @@ import com.vzome.core.render.Shapes;
 
 public class SymmetrySystem implements OrbitSource
 {
-    private static Logger logger = Logger .getLogger( "com.vzome.core.editor" );
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.editor" );
     private static int NEXT_NEW_AXIS = 0;
     
 	private final Symmetry symmetry;
@@ -165,8 +165,8 @@ public class SymmetrySystem implements OrbitSource
 	
 	public Direction createAnonymousOrbit( AlgebraicVector vector )
 	{
-        Symmetry symmetry = orbits .getSymmetry();
-        AlgebraicField field = symmetry .getField();
+        Symmetry symm = orbits .getSymmetry();
+        AlgebraicField field = symm .getField();
         AlgebraicNumber longer = field .createPower( 1 );
         AlgebraicNumber shorter = field .createPower( -1 );
                 
@@ -208,11 +208,28 @@ public class SymmetrySystem implements OrbitSource
             vector = shortVector;
         
         String colorName = "" + NEXT_NEW_AXIS++;  // we want it easy to keep these unique when loading files (see above)
-        Direction dir = symmetry .createNewZoneOrbit( colorName, 0, Symmetry.NO_ROTATION, vector );
+        Direction dir = symm .createNewZoneOrbit( colorName, 0, Symmetry.NO_ROTATION, vector );
         dir .setAutomatic( true );
         orbits .add( dir );
         this .orbitColors .put( dir, Color.WHITE );
         return dir;
+    }
+
+    public Color getColor( AlgebraicVector vector ) {
+        if( vector.isOrigin() ) {
+            return Color.WHITE;
+        }
+        // try to get from cache
+        Axis line = this .vectorToAxis .get( vector );
+        if(line == null) {
+            // calculate
+            line = this .symmetry .getAxis( vector, this .orbits );
+        }
+        // don't create a new unnecessary Automatic direction just to determine the color
+        // as in the case where this is called for color mapping a ball
+        return (line == null)
+                ? Color.WHITE
+                : getColor(line.getDirection());
     }
 
 	@Override

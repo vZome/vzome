@@ -309,6 +309,10 @@ public abstract class ChangeManifestations extends ChangeSelection
 
     // Commonly used Filtered Iterators
 
+    protected Manifestations.ManifestationIterator getRenderedSelection() {
+        return Manifestations.visibleManifestations(mSelection, Manifestations.Filters::isRendered);
+    }
+
     protected Manifestations.ConnectorIterator getConnectors() {
         return Manifestations.getConnectors(mManifestations);
     }

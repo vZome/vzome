@@ -15,7 +15,7 @@ public class Color
 
     public static final Color GREY_TRANSPARENT = new Color( 25, 25, 25, 50 );
 
-    public int red, green, blue, alpha;
+    private int red, green, blue, alpha;
 
     public Color( String rgbaHex )
     {
@@ -79,7 +79,7 @@ public class Color
         if ( !( other instanceof Color ) )
             return false;
         Color c = (Color) other;
-        return red == c.red && green==c.green && blue==c.blue && alpha==c.alpha;
+        return red == c.red && green == c.green && blue == c.blue && alpha == c.alpha;
     }
     
     public Color getPastel()
@@ -88,7 +88,7 @@ public class Color
         int g = green + (0xFF - green) / 2;
         int b = blue + (0xFF - blue) / 2;
         
-        return new Color( r, g, b );
+        return new Color( r, g, b, alpha );
     }
 
 
@@ -108,7 +108,7 @@ public class Color
     @Override
     public String toString()
     {
-        return red + "," + green + "," + blue + ( (alpha<0xFF)? ","+alpha : "" );
+        return red + "," + green + "," + blue + ( (alpha<0xFF)? "," + alpha : "" );
     }
 
     public static Color parseColor( String str )
@@ -139,4 +139,67 @@ public class Color
 	{
 		return this.alpha;
 	}
+
+    public static Color getInverted(Color color) {
+        return (color == null)
+                ? null
+                : new Color(
+                        0xFF - color.red,
+                        0xFF - color.green,
+                        0xFF - color.blue,
+                        color.alpha);
+    }
+
+    /**
+     * @param color color to be modified.
+     * @param scale0to1 is adjusted internally to be between 0 and 1.
+     * @return The original color maximized then having each component
+     * multiplied by the specified scale (between 0 and 1).
+     * Multiplying by 0 returns BLACK.
+     * Multiplying by 1 returns the maximized color.
+     */
+    public static Color getScaledTo(Color color, double scale0to1) {
+        if(color == null) {
+            return null;
+        }
+        Color maxColor = Color.getMaximum(color);
+        double scale = Math.min( Math.max( 0.0, scale0to1 ), 1.0 );
+        if(scale == 0.0)
+            return Color.BLACK;
+        if(scale == 1.0)
+            return maxColor;
+        Double red = maxColor.getRed() * scale;
+        Double green = maxColor.getGreen() * scale;
+        Double blue = maxColor.getBlue() * scale;
+        return new Color(red.intValue(), green.intValue(), blue.intValue(), color.getAlpha());
+    }
+
+    /**
+     * @param color
+     * @return A new color where each of the RGB components are proportional to the parameter
+     * but scaled so that the component with the highest value becomes 0xFF.
+     * Other components are scaled proportionally. The alpha component is unchanged.
+     * If the color is null or BLACK (0,0,0) or if one or more elements are already at 0xFF
+     * then the original value is returned unchanged.
+     */
+    public static Color getMaximum(Color color) {
+        if(color == null) {
+            return null;
+        }
+        int most = Math.max(Math.max(color.red, color.green), color.blue);
+        return (most == 0 || most == 0xFF)
+                ? color
+                : new Color(
+                        0xFF * color.red / most,
+                        0xFF * color.green / most,
+                        0xFF * color.blue / most,
+                        color.alpha);
+
+    }
+
+    public static Color getPastel(Color color) {
+        return (color == null)
+                ? null
+                : color.getPastel();
+    }
 }

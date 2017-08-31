@@ -266,14 +266,6 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
         throw new IllegalStateException( "vector is the origin!" );
     }
     
-    public static AlgebraicVector getNormal(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
-        return v1.minus(v0).cross(v2.minus(v0));
-    }
-
-    public static boolean areCollinear(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
-        return getNormal(v0, v1, v2).isOrigin();
-    }
-
     public AlgebraicField getField()
     {
         return this .field;
