@@ -140,6 +140,16 @@ public class Color
 		return this.alpha;
 	}
 
+    public static Color getCompliment(Color color) {
+        return (color == null)
+                ? null
+                : new Color(
+                        (128 + color.red) % 256,
+                        (128 + color.green) % 256,
+                        (128 + color.blue) % 256,
+                        color.alpha);
+    }
+
     public static Color getInverted(Color color) {
         return (color == null)
                 ? null

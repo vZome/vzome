@@ -42,6 +42,7 @@ public class ManifestationColorMappers {
         RegisterMapper( new CentroidByOctantAndDirectionColorMap() );
         RegisterMapper( new CoordinatePlaneColorMap() );
         RegisterMapper( new Identity() );
+        RegisterMapper( new ColorComplimentor());
         RegisterMapper( new ColorInverter() );
         RegisterMapper( new ColorMaximizer() );
         RegisterMapper( new ColorSoftener() );
@@ -131,6 +132,16 @@ public class ManifestationColorMappers {
         @Override
         protected Color applyTo(RenderedManifestation rendered) {
             return rendered.getColor();
+        }
+    }
+
+    /**
+     * returns complimented color
+     */
+    public static class ColorComplimentor extends ManifestationColorMapper {
+        @Override
+        protected Color applyTo(RenderedManifestation rendered) {
+            return Color.getCompliment(super.applyTo(rendered) );
         }
     }
 
