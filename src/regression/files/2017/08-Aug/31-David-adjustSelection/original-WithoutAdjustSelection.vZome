@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="14" coreVersion="0.14.0" edition="vZome" field="golden" version="6.0">
+  <EditHistory editNumber="42" lastStickyEdit="40">
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="9" len="1 1"/>
+    <SelectAll/>
+    <ApplyTool name="tetrahedral.builtin/tetrahedral around origin" selectInputs="true"/>
+    <JoinPoints closedLoop="false" joinMode="ALL_POSSIBLE"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1 2 -1 -2 -1 -2"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation point="1 2 1 2 1 2"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool name="tetrahedral.builtin/tetrahedral around origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectAll/>
+    <DeselectAll/>
+    <EndBlock/>
+    <Snapshot id="0"/>
+    <BeginBlock/>
+    <SelectAll/>
+    <DeselectByClass class="balls"/>
+    <EndBlock/>
+    <Snapshot id="1"/>
+    <Hide/>
+    <Snapshot id="2"/>
+    <ShowHidden/>
+    <BeginBlock/>
+    <SelectAll/>
+    <DeselectByClass class="struts"/>
+    <EndBlock/>
+    <Snapshot id="3"/>
+    <Hide/>
+    <Snapshot id="4"/>
+    <ShowHidden/>
+    <DeselectAll/>
+    <Snapshot id="5"/>
+    <SelectSimilarSize length="2 4" orbit="green" symmetry="icosahedral"/>
+    <Snapshot id="6"/>
+    <Hide/>
+    <Snapshot id="7"/>
+    <ShowHidden/>
+    <DeselectAll/>
+  </EditHistory>
+  <notes>
+    <page snapshot="0" title="Starting point">
+      <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.018181801714094538" y="0.9976218204794535" z="0.06648402356725747"/>
+        <LookDirection x="-0.37414558845729445" y="0.0684525285991187" z="-0.9248401645507908"/>
+      </ViewModel>
+      <content xml:space="preserve">This file is part of the core regression test suite.
+It specifically uses the DeselectByClass and SelectSimilarSizeStruts commends which are reimplemented asAdjustSelectionByClass and  AdjustSelectionByOrbitLength respectively.
+Neither of these commands have been executed thus far. 
+
+This file was generated with vzome-core version 6.14.
+
+When this file is opened using the new replacement methods, the various articles should appear as they are described.
+
+
+
+</content>
+    </page>
+    <page snapshot="1" title="DeselectByClass - Balls">
+      <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.018181801714094538" y="0.9976218204794535" z="0.06648402356725747"/>
+        <LookDirection x="-0.37414558845729445" y="0.0684525285991187" z="-0.9248401645507908"/>
+      </ViewModel>
+      <content xml:space="preserve">Selected all and then use DeselectByClass to deselected balls</content>
+    </page>
+    <page snapshot="2" title="Hide Selected Struts and Panels">
+      <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.018181801714094538" y="0.9976218204794535" z="0.06648402356725747"/>
+        <LookDirection x="-0.37414558845729445" y="0.0684525285991187" z="-0.9248401645507908"/>
+      </ViewModel>
+      <content xml:space="preserve">Hide previously selected struts and panels. 5 ball should be visible.</content>
+    </page>
+    <page snapshot="3" title="DeselectByClass - Struts">
+      <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.018181801714094538" y="0.9976218204794535" z="0.06648402356725747"/>
+        <LookDirection x="-0.37414558845729445" y="0.0684525285991187" z="-0.9248401645507908"/>
+      </ViewModel>
+      <content xml:space="preserve">Show al hidden, select all then deselect struts and panels using DeselectByClass. All balls should be selected and all parts should be visible here</content>
+    </page>
+    <page snapshot="4" title="Hide selected Balls">
+      <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.018181801714094538" y="0.9976218204794535" z="0.06648402356725747"/>
+        <LookDirection x="-0.37414558845729445" y="0.0684525285991187" z="-0.9248401645507908"/>
+      </ViewModel>
+      <content xml:space="preserve">Hide previously selecte balls leaving all struts and panels visible.</content>
+    </page>
+    <page snapshot="5" title="Back to where we started">
+      <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.018181801714094538" y="0.9976218204794535" z="0.06648402356725747"/>
+        <LookDirection x="-0.37414558845729445" y="0.0684525285991187" z="-0.9248401645507908"/>
+      </ViewModel>
+      <content xml:space="preserve">Show all hidden then deselect all. Everything is visible.</content>
+    </page>
+    <page snapshot="6" title="SelectSimilarSizeStruts - Green Struts">
+      <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.018181801714094538" y="0.9976218204794535" z="0.06648402356725747"/>
+        <LookDirection x="-0.37414558845729445" y="0.0684525285991187" z="-0.9248401645507908"/>
+      </ViewModel>
+      <content xml:space="preserve">Use right click context menu on a green strut to select all 6 similar struts</content>
+    </page>
+    <page snapshot="7" title="Hide selected green struts">
+      <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.018181801714094538" y="0.9976218204794535" z="0.06648402356725747"/>
+        <LookDirection x="-0.37414558845729445" y="0.0684525285991187" z="-0.9248401645507908"/>
+      </ViewModel>
+      <content xml:space="preserve">All green struts should be hidden at this point. 4 yellow struts and 4 green panels and 5 balls should remain visible.</content>
+    </page>
+  </notes>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.3991675492554585" y="0.7898138447834697" z="0.4656816060461714"/>
+      <LookDirection x="-0.4169582164153963" y="0.29597395276359634" z="-0.8593865632235452"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="154,117,74" name="sand"/>
+    <Direction color="116,195,0" name="apple"/>
+    <Direction color="136,37,0" name="cinnamon"/>
+    <Direction color="18,73,48" name="spruce"/>
+    <Direction color="107,53,26" name="brown"/>
+  </SymmetrySystem>
+</vzome:vZome>
