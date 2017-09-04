@@ -177,11 +177,13 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     public DocumentController( DocumentModel document, ApplicationController app, Properties props )
     {
-        setNextController( app );
-
+        // initialize this.properties before calling setNextController()
+        // so it can safely call getProperty()
         this .properties = props;
         this .documentModel = document;
         
+        setNextController( app );
+   
         if ( this .documentModel .isMigrated() )
             this .changeCount = -1; // this will force isEdited() to return true
 
