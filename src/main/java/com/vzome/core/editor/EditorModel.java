@@ -7,6 +7,7 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.*;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -89,14 +90,53 @@ public class EditorModel
 
 	public UndoableEdit unselectConnectors()
 	{
-        return new DeselectByClass( mSelection, true );
+        return new AdjustSelectionByClass(mSelection, mRealized, DESELECT, IGNORE, IGNORE);
     }
-    
+
+    public UndoableEdit unselectStrutsAndPanels() {
+        return new AdjustSelectionByClass(mSelection, mRealized, IGNORE, DESELECT, DESELECT);
+    }
+
+    /**
+     * This legacy method name is misleading because it actually deselects both struts and panels.
+     * @deprecated As of 8/23/2017: Use {@link #unselectStrutsAndPanels()} instead.
+     */
+    @Deprecated
 	public UndoableEdit unselectStruts()
 	{
-        return new DeselectByClass( mSelection, false );
+        return unselectStrutsAndPanels();
     }
-    
+
+	public UndoableEdit deselectConnectors()
+	{
+        return new AdjustSelectionByClass( mSelection, mRealized, DESELECT, IGNORE, IGNORE );
+    }
+
+	public UndoableEdit deselectStruts()
+	{
+        return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, DESELECT, IGNORE );
+    }
+
+	public UndoableEdit deselectPanels()
+	{
+        return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, IGNORE, DESELECT );
+    }
+
+	public UndoableEdit selectConnectors()
+	{
+        return new AdjustSelectionByClass( mSelection, mRealized, SELECT, IGNORE, IGNORE );
+    }
+
+	public UndoableEdit selectStruts()
+	{
+        return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, SELECT, IGNORE );
+    }
+
+	public UndoableEdit selectPanels()
+	{
+        return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, IGNORE, SELECT );
+    }
+
     public UndoableEdit selectNeighbors()
     {
         ChangeSelection edit = new SelectNeighbors( mSelection, mRealized, false );
