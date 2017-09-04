@@ -1291,36 +1291,43 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	public void undo( boolean useBlocks )
 	{
 		mHistory .undo( useBlocks );
+        this .mEditorModel .notifyListeners();
 	}
 
 	public void redo( boolean useBlocks ) throws Command.Failure
 	{
 		mHistory .redo( useBlocks );
+        this .mEditorModel .notifyListeners();
 	}
 
 	public void undo()
 	{
 		mHistory .undo();
+        this .mEditorModel .notifyListeners();
 	}
 
 	public void redo() throws Command.Failure
 	{
 		mHistory .redo();
+        this .mEditorModel .notifyListeners();
 	}
 
 	public void undoToBreakpoint()
 	{
 		mHistory .undoToBreakpoint();
+        this .mEditorModel .notifyListeners();
 	}
 
 	public void undoToManifestation( Manifestation man )
 	{
 		mHistory .undoToManifestation( man );
+        this .mEditorModel .notifyListeners();
 	}
 
 	public void redoToBreakpoint() throws Command.Failure
 	{
 		mHistory .redoToBreakpoint();
+        this .mEditorModel .notifyListeners();
 	}
 
 	public void setBreakpoint()
@@ -1331,11 +1338,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	public void undoAll()
 	{
 		mHistory .undoAll();
+        this .mEditorModel .notifyListeners();
 	}
 
 	public void redoAll( int i ) throws Command .Failure
 	{
 		mHistory .redoAll( i );
+        this .mEditorModel .notifyListeners();
 	}
 
     public UndoableEdit deselectAll()
