@@ -42,7 +42,7 @@ public class ManifestationColorMappers {
         RegisterMapper( new CentroidByOctantAndDirectionColorMap() );
         RegisterMapper( new CoordinatePlaneColorMap() );
         RegisterMapper( new Identity() );
-        RegisterMapper( new ColorComplimentor());
+        RegisterMapper( new ColorComplementor());
         RegisterMapper( new ColorInverter() );
         RegisterMapper( new ColorMaximizer() );
         RegisterMapper( new ColorSoftener() );
@@ -51,10 +51,14 @@ public class ManifestationColorMappers {
     public static void RegisterMapper(ManifestationColorMapper mapper) {
         if(mapper != null) {
             colorMappers.put(mapper.getName(), mapper);
+            if ( mapper .getName() .equals( "ColorComplementor" ) )
+            	// accommodate original spelling
+            	colorMappers.put( "ColorComplimentor", mapper);
         }
     }
 
-    public static ManifestationColorMapper getColorMapper(String mapperName) {
+    public static ManifestationColorMapper getColorMapper( String mapperName )
+    {
         // Handle all of the types with c'tor parameters, initialize() overridden, or other special handling.
         final String strTransparency = "TransparencyMapper@";
         if( mapperName.startsWith(strTransparency) ) {
@@ -62,7 +66,7 @@ public class ManifestationColorMappers {
             int alpha = Integer.parseInt(strAlpha);
             return new TransparencyMapper(alpha);
         }
-        // Any class which overrides initialize() should get a fresh instance each time.
+        // Any class that overrides initialize() should get a fresh instance each time.
         switch(mapperName) {
             case "TransparencyMapper":
                 return new TransparencyMapper(255); // alpha value will be initialized from the XML later
@@ -136,12 +140,12 @@ public class ManifestationColorMappers {
     }
 
     /**
-     * returns complimented color
+     * returns complementary color
      */
-    public static class ColorComplimentor extends ManifestationColorMapper {
+    public static class ColorComplementor extends ManifestationColorMapper {
         @Override
         protected Color applyTo(RenderedManifestation rendered) {
-            return Color.getCompliment(super.applyTo(rendered) );
+            return Color.getComplement(super.applyTo(rendered) );
         }
     }
 

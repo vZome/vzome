@@ -3,7 +3,7 @@
   <EditHistory editNumber="3" lastStickyEdit="-1">
     <Polytope4d group="H4" quaternion="3 5 0 0 0 0 0 0" wythoff="1000"/>
     <SelectAll/>
-    <MapToColor colorMapper="ColorComplimentor"/>
+    <MapToColor colorMapper="ColorComplementor"/>
   </EditHistory>
   <notes/>
   <sceneModel ambientLight="41,41,41" background="175,200,220">

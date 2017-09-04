@@ -140,7 +140,7 @@ public class Color
 		return this.alpha;
 	}
 
-    public static Color getCompliment(Color color) {
+    public static Color getComplement(Color color) {
         return (color == null)
                 ? null
                 : new Color(
