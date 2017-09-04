@@ -120,7 +120,7 @@ public class Colors implements Iterable<String>
     
     public static String getColorName( Color color )
     {
-        return RGB_ORBIT + " " + color.red + " " + color.green + " " + color.blue;
+        return RGB_ORBIT + " " + color.getRed() + " " + color.getGreen() + " " + color.getBlue();
     }
 
     public Color getColor( String name )

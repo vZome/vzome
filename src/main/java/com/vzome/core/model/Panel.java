@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import java.util.ArrayList;
 
 public class Panel extends Manifestation implements Iterable<AlgebraicVector>
@@ -27,6 +28,12 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
     public AlgebraicVector getLocation()
     {
         return null;
+    }
+
+	@Override
+    public AlgebraicVector getCentroid()
+    {
+        return AlgebraicVectors.calculateCentroid(mVertices);
     }
 
     /**
@@ -126,7 +133,7 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         AlgebraicVector v0 = mVertices.get( 0 );
         AlgebraicVector v1 = mVertices.get( 1 );
         AlgebraicVector v2 = mVertices.get( 2 );
-        return AlgebraicVector.getNormal(v0, v1, v2);
+        return AlgebraicVectors.getNormal(v0, v1, v2);
     }
 
 	@Override

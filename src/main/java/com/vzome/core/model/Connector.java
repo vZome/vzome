@@ -24,6 +24,12 @@ public class Connector extends Manifestation implements Comparable<Connector>
 	}
 
 	@Override
+	public AlgebraicVector getCentroid()
+    {
+		return m_center;
+	}
+
+	@Override
 	public int hashCode()
 	{
 	    return m_center .hashCode();

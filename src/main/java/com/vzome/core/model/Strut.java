@@ -1,6 +1,7 @@
 package com.vzome.core.model;
 
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 
 /**
  * @author Scott Vorthmann
@@ -77,6 +78,12 @@ public class Strut extends Manifestation implements Comparable<Strut>
     public AlgebraicVector getLocation()
     {
         return m_end1;
+    }
+
+	@Override
+    public AlgebraicVector getCentroid()
+    {
+        return AlgebraicVectors.getCentroid(new AlgebraicVector[] { m_end1, m_end2 });
     }
 
     public AlgebraicVector getEnd()

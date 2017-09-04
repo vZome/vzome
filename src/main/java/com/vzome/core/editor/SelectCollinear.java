@@ -1,6 +1,7 @@
 package com.vzome.core.editor;
 
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
@@ -120,7 +121,7 @@ public class SelectCollinear extends ChangeManifestations {
     }
 
     private boolean isCollinear(AlgebraicVector vec) {
-        return AlgebraicVector.areCollinear(vec, vector1, vector2);
+        return AlgebraicVectors.areCollinear(vec, vector1, vector2);
     }
 
     @Override
