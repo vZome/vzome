@@ -87,6 +87,8 @@ import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
+import org.vorthmann.zome.app.impl.PartsController.PartInfo;
+import org.vorthmann.zome.ui.PartsPanel.PartsPanelActionEvent;
 
 /**
  * @author Scott Vorthmann 2003
@@ -866,6 +868,59 @@ public class DocumentController extends DefaultController implements J3dComponen
             {
                 String vefContent = getProperty( "clipboard" );
                 documentModel .pasteVEF( vefContent );
+            }
+            else if ( PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
+            {
+                // this is a select or deselect command from the PartsPanel context menu
+                PartsPanelActionEvent ppae = PartsPanelActionEvent.class.cast(e);
+                PartInfo partInfo = ppae.row.partInfo;
+                String cmd = action.toLowerCase();
+                switch(ppae.row.partClassGroupingOrder) {
+                    case BALLS_TOTAL:
+                        documentModel.doEdit(cmd+"Balls");
+                        break;
+
+                    case STRUTS_TOTAL:
+                        documentModel.doEdit(cmd+"Struts");
+                        break;
+
+                    case PANELS_TOTAL:
+                        documentModel.doEdit(cmd+"Panels");
+                        break;
+
+                    case STRUTS:
+                    {
+                        Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
+                        AlgebraicNumber unitScalar = orbit.getLengthInUnits(symmetryController.getSymmetry().getField().one());
+                        AlgebraicNumber rawLength = partInfo.strutLength.dividedBy(unitScalar);
+                        switch(cmd) {
+                            case "select":
+                                documentModel .selectSimilarStruts( orbit, rawLength ); // does performAndRecord
+                                break;
+                            case "deselect":
+                                documentModel .deselectSimilarStruts( orbit, rawLength ); // does performAndRecord
+                                break;
+                        }
+                    }
+                    break;
+
+                    case PANELS:
+                    {
+                        Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
+                        switch(cmd) {
+                            case "select":
+                                documentModel .selectSimilarPanels( orbit ); // does performAndRecord
+                                break;
+                            case "deselect":
+                                documentModel .deselectSimilarPanels( orbit ); // does performAndRecord
+                                break;
+                        }
+                    }
+                    break;
+
+                    default:
+                        break;
+                }
             }
             else
             {

@@ -10,13 +10,19 @@ import com.vzome.core.model.Strut;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
@@ -31,12 +37,33 @@ import org.vorthmann.zome.app.impl.PartsController.PartInfo;
 public class PartsPanel extends JPanel
 {
     private static final long serialVersionUID = 1L;
+    private final Controller controller;
+    private final JTable bomTable;
+    private final PartsTableModel partsTableModel;
+    private Point popupTriggerLocation = null;
+
+    public class PartsPanelActionEvent extends ActionEvent {
+        private static final long serialVersionUID = 1L;
+        public final PartsTableRow row;
+        public PartsPanelActionEvent(ActionEvent e, PartsTableRow row) {
+            super(e.getSource(), e.getID(), e.getActionCommand(), e.getWhen(), e.getModifiers());
+            this.row = row;
+        }
+    }
+
     public PartsPanel( Controller controller )
     {
         super( new BorderLayout() );
-        PartsTableModel partsTableModel = new PartsTableModel();
+        this.controller = controller;
+        partsTableModel = new PartsTableModel();
         controller .addPropertyListener( partsTableModel );
-        JTable bomTable = new JTable( partsTableModel );
+        bomTable = new JTable( partsTableModel ){
+            @Override
+            public Point getPopupLocation(MouseEvent event) {
+                popupTriggerLocation = event == null ? null : event.getPoint();
+                return super.getPopupLocation(event);
+            }
+        };
         bomTable .setDefaultRenderer( Color.class, new ColorRenderer(true) );
         bomTable .setRowSelectionAllowed( false );
         bomTable .setCellSelectionEnabled( false );
@@ -48,7 +75,36 @@ public class PartsPanel extends JPanel
         column = bomTable .getColumnModel() .getColumn( 2 );
         column .setMaxWidth( 50 );
         JScrollPane bomScroller = new JScrollPane( bomTable );
+
+        final JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu.add(newMenuItem("Select"));
+        popupMenu.add(newMenuItem("Deselect"));
+        bomTable.setComponentPopupMenu(popupMenu);
+
         super.add( bomScroller );
+    }
+
+    private JMenuItem newMenuItem(String text) {
+        JMenuItem menuItem = new JMenuItem(text);
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleContextMenuEvent(e);
+            }
+        });
+        return menuItem;
+    }
+
+    private void handleContextMenuEvent(ActionEvent e) {
+        String action = e.getActionCommand();
+        int rowAtPoint = bomTable.rowAtPoint(popupTriggerLocation);
+        PartsTableRow row = partsTableModel.getRow(rowAtPoint);
+        try {
+            controller.doAction(action, new PartsPanelActionEvent(e, row));
+        } catch (Exception ex) {
+            // should never actually be thrown even though the method signature claims it could.
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -59,11 +115,11 @@ public class PartsPanel extends JPanel
     public static final class PartsTableRow implements Comparable<PartsTableRow>
     {
         private static final int COUNT_COLUMN = 0;
-        private final PartInfo partInfo;
-        private final PartGroupingOrderEnum partClassGroupingOrder;
-        private final Color color;
-        private final Boolean isAutomaticDirection;
-        private final String key;
+        public final PartInfo partInfo;
+        public final PartGroupingOrderEnum partClassGroupingOrder;
+        public final Color color;
+        public final Boolean isAutomaticDirection;
+        public final String key;
         private Integer count = 0;
 
         /**
@@ -189,7 +245,7 @@ public class PartsPanel extends JPanel
     /**
      * The order listed here is the order the rows will be grouped and sorted for display
      */
-    private enum PartGroupingOrderEnum {
+    public enum PartGroupingOrderEnum {
         BALLS_TOTAL,
         STRUTS_TOTAL,
         STRUTS,
@@ -202,7 +258,7 @@ public class PartsPanel extends JPanel
     private final class PartsTableModel extends AbstractTableModel implements PropertyChangeListener
     {
         private static final long serialVersionUID = 1L;
-        private final String[] columnNames = { "count", "orbit", "size", "length" };
+        private final String[] columnNames = { "count", "orbit", "size", "length (orbit units)" };
         private final TreeSet<PartsTableRow> tableRows = new TreeSet<>(); // self-sorting since PartsTableRow implements Comparable
         private final PartsTableRow ballsTotalRow = new PartsTableRow("balls", Connector.class, 1 );
         private final PartsTableRow strutsTotalRow = new PartsTableRow("struts", Strut.class, 0 );
