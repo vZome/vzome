@@ -235,8 +235,50 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .add( enableIf( isEditor, createMenuItem( "Show All Hidden", ( "showHidden" ), KeyEvent.VK_H, CONTROL_OPTION ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        setColorMenuItem = enableIf( isEditor, createMenuItem( "Set Color...", "setItemColor" ) );
-        menu .add( setColorMenuItem );
+
+        setColorMenuItem = enableIf(isEditor, createMenuItem("Set Color...", "setItemColor"));
+        if(!developerExtras) {
+            menu .add( setColorMenuItem );
+        } else {
+            submenu = new JMenu("Color...");
+            final String mapToColor = "MapToColor/";
+            submenu .add( setColorMenuItem );
+            {
+                JMenu submenu2 = new JMenu("Set Transparency...");
+                final String mapToTransparency = mapToColor + "TransparencyMapper@";
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Opaque", mapToTransparency + "255" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "95%", mapToTransparency + "242" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "75%", mapToTransparency + "192" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "50%", mapToTransparency + "127" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "25%", mapToTransparency + "63" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "5%", mapToTransparency + "13" ) ) );
+                submenu.add(submenu2);
+            }
+            {
+                JMenu submenu2 = new JMenu("Effects...");
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Complement", mapToColor + "ColorComplementor" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Invert", mapToColor + "ColorInverter" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Maximize", mapToColor + "ColorMaximizer" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Soften", mapToColor + "ColorSoftener" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Darken with Distance", mapToColor + "DarkenWithDistance" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Darken near Origin", mapToColor + "DarkenNearOrigin" ) ) );
+                submenu.add(submenu2);
+            }
+            {
+                JMenu submenu2 = new JMenu("Map Colors...");
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Radial by Centroid", mapToColor + "RadialCentroidColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Radial by Standard Basis", mapToColor + "RadialStandardBasisColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "To Octant", mapToColor + "CentroidByOctantAndDirectionColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "To Coordinate Plane", mapToColor + "CoordinatePlaneColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "System Colors", mapToColor + "SystemColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "System by Centroid", mapToColor + "SystemCentroidColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Nearest Special Orbit", mapToColor + "NearestSpecialOrbitColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Nearest Special Orbit by Centroid", mapToColor + "CentroidNearestSpecialOrbitColorMap" ) ) );
+                submenu.add(submenu2);
+            }
+            submenu .add( enableIf( isEditor, createMenuItem( "Copy Last Selected", mapToColor + "CopyLastSelectedColor" ) ) );
+            menu.add(submenu);
+        }
 
         super .add( menu );
 
