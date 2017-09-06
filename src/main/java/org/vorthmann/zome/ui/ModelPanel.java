@@ -11,8 +11,6 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -41,8 +39,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	private final Controller controller, view;
 	private final JPanel mMonocularPanel;
 	private final ToolConfigDialog toolConfigDialog;
-	private Map<String, AbstractButton> toolCreationButtons = new HashMap<String, AbstractButton>();
-
+	private int nextBookmarkIcon = 0;
+	
 	public ModelPanel( Controller controller, ControlActions enabler, boolean isEditor, boolean fullPower )
 	{
 		super( new BorderLayout() );
@@ -630,7 +628,9 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	private void addBookmark( Controller controller )
 	{
 		String name = controller .getProperty( "label" );
-		String iconPath = "/icons/tools/small/bookmark.png";
+		int icon = this .nextBookmarkIcon;
+		this .nextBookmarkIcon = ( icon + 1 ) % 4;
+		String iconPath = "/icons/tools/small/bookmark_" + icon + ".png";
 		String tooltip = TOOLTIP_PREFIX + name + TOOLTIP_SUFFIX;
 		JButton button = makeEditButton2( tooltip, iconPath );
 		button .setActionCommand( "apply" );
@@ -666,7 +666,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 			});
 		else
 			System .out .println( "no controller for tool Factory: " + group );
-		this .toolCreationButtons .put( group, button );
 		return button;
 	}
 	
@@ -696,7 +695,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 			});
 		else
 			System .out .println( "no controller for tool Factory: bookmark" );
-		this .toolCreationButtons .put( "bookmark", button );
 		return button;
 	}
 	
