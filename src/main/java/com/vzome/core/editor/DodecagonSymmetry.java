@@ -23,11 +23,11 @@ public class DodecagonSymmetry extends ChangeManifestations
     
     private final Symmetry symmetry;
     
-    public DodecagonSymmetry( Selection selection, RealizedModel realized, Point center, boolean groupInSelection )
+    public DodecagonSymmetry( Selection selection, RealizedModel realized, Point center, Symmetry symmetry, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
         this .center = center;
-        this .symmetry = (center==null)? null : center .getField() .getSymmetry( "dodecagonal" );
+        this .symmetry = symmetry;
     }
     
     @Override

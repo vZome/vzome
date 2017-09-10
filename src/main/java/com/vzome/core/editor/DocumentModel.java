@@ -3,6 +3,10 @@
 
 package com.vzome.core.editor;
 
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.DESELECT;
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.IGNORE;
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -12,9 +16,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -50,7 +54,6 @@ import com.vzome.core.editor.ManifestationColorMappers.ManifestationColorMapper;
 import com.vzome.core.editor.ManifestationColorMappers.NearestSpecialOrbitColorMap;
 import com.vzome.core.editor.ManifestationColorMappers.SystemCentroidColorMap;
 import com.vzome.core.editor.ManifestationColorMappers.SystemColorMap;
-import static com.vzome.core.editor.ChangeSelection.ActionEnum.*;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.OpenGLExporter;
@@ -64,7 +67,6 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
-import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
@@ -80,7 +82,7 @@ import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 
-public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context, Tool .Registry
+public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 {
 	private final RealizedModel mRealizedModel;
 
@@ -94,9 +96,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     
     private final LessonModel lesson = new LessonModel();
     
-	private final AlgebraicField mField;
+	private final AlgebraicField field;
 	
-	private final Map<String, Tool> tools = new LinkedHashMap<>();
+	private final ToolsModel tools;
 	
 	private final Command.FailureChannel failures;
 
@@ -131,7 +133,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 
 	private final Lights sceneLighting;
 
-	private Map<String,ToolFactory> toolFactories = new HashMap<>();
+	private final FieldApplication kind;
 
     public void addPropertyChangeListener( PropertyChangeListener listener )
     {
@@ -153,12 +155,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	propertyChangeSupport .firePropertyChange( propertyName, oldValue, newValue );
     }
 
-	public DocumentModel( final AlgebraicField field, Command.FailureChannel failures, Element xml, final Application app )
+	public DocumentModel( final FieldApplication kind, Command.FailureChannel failures, Element xml, final Application app )
 	{
 		super();
-
-		this .mField = field;
-		AlgebraicVector origin = field .origin( 3 );
+		this .kind = kind;
+		this .field = kind .getField();
+		AlgebraicVector origin = this .field .origin( 3 );
 		this .originPoint = new FreePoint( origin );
 		this .failures = failures;
 		this .mXML = xml;
@@ -167,23 +169,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		
 		this .coreVersion = app .getCoreVersion();
 
-		this .mRealizedModel = new RealizedModel( field, new Projection.Default( field ) );
+		this .mRealizedModel = new RealizedModel( this .field, new Projection.Default( this .field ) );
 		
 		this .mSelection = new Selection();
-
-        Symmetry[] symms = field .getSymmetries();
-        for (Symmetry symm : symms) {
-            SymmetrySystem osm = new SymmetrySystem( null, symm, app .getColors(), app .getGeometries( symm ), true );
-            // one of these will be overwritten below, if we are loading from a file that has it set
-            this .symmetrySystems .put( osm .getName(), osm );
-            
-            try {
-            	String name = symm .getName();
-				makeTool( name + ".builtin/" + name + " around origin", name, this, symm ) .perform();
-			} catch ( Command.Failure e ) {
-				logger .severe( "Failed to create " + symm .getName() + " tool." );
-			}
-        }
 
 		if ( xml != null ) {
 	        NodeList nl = xml .getElementsByTagName( "SymmetrySystem" );
@@ -192,52 +180,35 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	        else
 	            xml = null;
 		}
-        String symmName = ( xml != null )? xml .getAttribute( "name" ) : symms[ 0 ] .getName();
+		FieldApplication.SymmetryPerspective symmPerspective = kind .getDefaultSymmetryPerspective();
+        if ( xml != null ) {
+            String symmName = xml .getAttribute( "name" );	
+            symmPerspective = kind .getSymmetryPerspective( symmName );
+        }
+		
+		this .tools = new ToolsModel( this, this .originPoint );
 
-        Symmetry symmetry = field .getSymmetry( symmName );
-        SymmetrySystem symmetrySystem = new SymmetrySystem( xml, symmetry, app .getColors(), app .getGeometries( symmetry ), true );
-        this .symmetrySystems .put( symmName, symmetrySystem );
+        Collection<FieldApplication.SymmetryPerspective> symms = kind .getSymmetryPerspectives();
+        for ( FieldApplication.SymmetryPerspective symmPerspective1 : symms )
+        {
+            SymmetrySystem osm = new SymmetrySystem( null, symmPerspective1, app .getColors(), true );
+            // one of these will be overwritten below, if we are loading from a file that has it set
+            this .symmetrySystems .put( osm .getName(), osm );
+        }
 
-        try {
-			makeTool( "tetrahedral.builtin/tetrahedral around origin", "tetrahedral", this, symmetry ) .perform();
-			makeTool( "point reflection.builtin/reflection through origin", "point reflection", this, symmetry ) .perform();
-			makeTool( "scaling.builtin/scale up", "scale up", this, symmetry ) .perform();
-			makeTool( "scaling.builtin/scale down", "scale down", this, symmetry ) .perform();
-			makeTool( "translation.builtin/b1 move along +X", "translation", this, symmetry ) .perform();
-			makeTool( "mirror.builtin/reflection through XY plane", "mirror", this, symmetry ) .perform();
-			makeTool( "bookmark.builtin/ball at origin", "bookmark", this, symmetry ) .perform();
-			if ( symmetry instanceof IcosahedralSymmetry ) {
-				makeTool( "rotation.builtin/rotate around red through origin", "rotation", this, symmetry ) .perform();
-				makeTool( "axial symmetry.builtin/symmetry around red through origin", "axial symmetry", this, symmetry ) .perform();
-			}
-		} catch ( Command.Failure e ) {
-			logger .severe( "Failed to create built-in tools." );
-		}
+        SymmetrySystem symmetrySystem = new SymmetrySystem( xml, symmPerspective, app .getColors(), true );
+        this .symmetrySystems .put( symmPerspective .getName(), symmetrySystem );
 
-        this .renderedModel = new RenderedModel( field, symmetrySystem );
+        this .renderedModel = new RenderedModel( this .field, symmetrySystem );
 
 		this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
 		// the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
 		this .mEditorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint, symmetrySystem );
+		this .tools .setEditorModel( this .mEditorModel );
 		
-		this .toolFactories .put( "bookmark", new BookmarkTool.Factory( mEditorModel, this ) );
-		this .toolFactories .put( "linear map", new LinearMapTool.Factory( mEditorModel, this ) );
-		this .toolFactories .put( "translation", new TranslationTool.Factory( mEditorModel, this ) );
-		this .toolFactories .put( "point reflection", new InversionTool.Factory( mEditorModel, this ) );
-		this .toolFactories .put( "mirror", new MirrorTool.Factory( mEditorModel, this ) );
-		this .toolFactories .put( "scaling", new ScalingTool.Factory( mEditorModel, this ) );
-		this .toolFactories .put( "rotation", new RotationTool.Factory( mEditorModel, this ) );
-		this .toolFactories .put( "axial symmetry", new AxialSymmetryToolFactory( mEditorModel, this ) );
-		this .toolFactories .put( "octahedral", new OctahedralToolFactory( mEditorModel, this ) );
-		this .toolFactories .put( "tetrahedral", new TetrahedralToolFactory( mEditorModel, this ) );
-		if ( symmetry instanceof IcosahedralSymmetry ) {
-			this .toolFactories .put( "icosahedral", new IcosahedralToolFactory( mEditorModel, this, (IcosahedralSymmetry) symmetry ) );
-			this .toolFactories .put( "redstretch1", new AxialStretchTool.Factory( mEditorModel, this, true, true, true ) );
-			this .toolFactories .put( "redsquash1", new AxialStretchTool.Factory( mEditorModel, this, true, false, true ) );
-			this .toolFactories .put( "redstretch2", new AxialStretchTool.Factory( mEditorModel, this, true, true, false ) );
-			this .toolFactories .put( "redsquash2", new AxialStretchTool.Factory( mEditorModel, this, true, false, false ) );
-			this .toolFactories .put( "yellowstretch", new AxialStretchTool.Factory( mEditorModel, this, false, true, false ) );
-			this .toolFactories .put( "yellowsquash", new AxialStretchTool.Factory( mEditorModel, this, false, false, false ) );
+		// cannot be done in the constructors
+		for ( SymmetrySystem symmetrySys : this .symmetrySystems .values()) {
+			symmetrySys .createToolFactories( this .tools );
 		}
 
 		this .defaultView = new Camera();
@@ -363,17 +334,17 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new HeptagonSubdivision( this.mSelection, this.mRealizedModel, groupInSelection );
 			break;
 		case "DodecagonSymmetry":
-			edit = new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
+			edit = new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), this .mEditorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
 			break;
 		case "GhostSymmetry24Cell":
-			edit = new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mEditorModel.getSymmetrySegment(), groupInSelection );
+			edit = new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mEditorModel.getSymmetrySegment(), this .mEditorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
 			break;
 		case "StrutCreation":
 			edit = new StrutCreation( null, null, null, this.mRealizedModel );
 			break;
 		case "BnPolyope":
 		case "B4Polytope":
-			edit = new B4Polytope( this.mSelection, this.mRealizedModel, this .mField, null, 0, groupInSelection );
+			edit = new B4Polytope( this.mSelection, this.mRealizedModel, this .field, null, 0, groupInSelection );
 			break;
 		case "Polytope4d":
 			edit = new Polytope4d( this.mSelection, this.mRealizedModel, null, 0, null, groupInSelection );
@@ -457,53 +428,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new SymmetryAxisChange( this.mEditorModel, null );
 			break;
 		case "RunZomicScript":
-			edit = new RunZomicScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
+			edit = new RunZomicScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint(),
+						(IcosahedralSymmetry) this .mEditorModel .getSymmetrySystem() .getSymmetry() );
 			break;
 		case "RunPythonScript":
 			edit = new RunPythonScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
-			break;
-		case "BookmarkTool":
-			edit = new BookmarkTool( name, this.mSelection, this.mRealizedModel, this );
-			break;
-		case "ModuleTool":
-			edit = new ModuleTool( null, mSelection, mRealizedModel, this );
-			break;
-		case "PlaneSelectionTool":
-			edit = new PlaneSelectionTool( null, mSelection, mField, this );
-			break;
-		case "SymmetryTool":
-			edit = new SymmetryTool( null, null, this.mSelection, this.mRealizedModel, this.originPoint );
-			break;
-		case "ScalingTool":
-			edit = new ScalingTool( name, null, this.mSelection, this.mRealizedModel, this.originPoint );
-			break;
-		case "RotationTool":
-			edit = new RotationTool( name, null, this.mSelection, this.mRealizedModel, this.originPoint );
-			break;
-		case "InversionTool":
-			edit = new InversionTool( name, this.mSelection, this.mRealizedModel, this.originPoint );
-			break;
-		case "MirrorTool":
-			edit = new MirrorTool( name, this.mSelection, this.mRealizedModel, this.originPoint );
-			break;
-		case "TranslationTool":
-			edit = new TranslationTool( name, this.mSelection, this.mRealizedModel, this, this.originPoint );
-			break;
-		case "LinearMapTool":
-			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this.originPoint, true );
-			break;
-		case "AxialStretchTool":
-			IcosahedralSymmetry icosasymm = (IcosahedralSymmetry) mField .getSymmetry( "icosahedral" );
-			edit = new AxialStretchTool( name, icosasymm, mSelection, mRealizedModel, false, true, false );
-			break;
-		case "LinearTransformTool":
-			edit = new LinearMapTool( name, this.mSelection, this.mRealizedModel, this.originPoint, false );
-			break;
-		case "ToolApplied":
-			edit = new ApplyTool( this.mSelection, this.mRealizedModel, this, false );
-			break;
-		case "ApplyTool":
-			edit = new ApplyTool( this.mSelection, this.mRealizedModel, this, true );
 			break;
 		case RealizeMetaParts.NAME:
 			edit = new RealizeMetaParts( mSelection, mRealizedModel );
@@ -511,26 +440,24 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		case ShowVertices.NAME:
 			edit = new ShowVertices( mSelection, mRealizedModel );
 			break;
-		case "SelectToolParameters":
-			edit = new SelectToolParameters( this.mSelection, this.mRealizedModel, this, null );
-			break;
 		case "Symmetry4d":
-			QuaternionicSymmetry h4symm = this .mField .getQuaternionSymmetry( "H_4" );
+			QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
 			edit = new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
 			break;
 		}
+		if ( edit != null ) return edit;
 
-		if ( edit == null )
-			// any command unknown (i.e. from a newer version of vZome) becomes a CommandEdit
-			edit = new CommandEdit( null, mEditorModel, groupInSelection );
-		else if ( edit instanceof TransformationTool ) {
-			// This is a bit of a hack, but it avoids passing the hated Tool.Registry parameter everywhere.
-			//   I consider this a stop-gap measure, until I can refactor the whole approach to
-			//   constructing UndoableEdits.
-			((TransformationTool) edit) .setRegistry( this );
+		edit = this .tools .createEdit( xml );
+
+		if ( edit != null ) return edit;
+
+		for ( SymmetrySystem system : this .symmetrySystems .values() ) {
+			edit = system .createToolEdit( xml );
+			if ( edit != null ) return edit;
 		}
-        else if ( edit instanceof BookmarkTool )
-        	((BookmarkTool) edit) .setRegistry( this );
+
+		// any command unknown (i.e. from a newer version of vZome) becomes a CommandEdit
+		edit = new CommandEdit( null, mEditorModel, groupInSelection );
 		
 		return edit;
 	}
@@ -555,7 +482,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 	public String copySelectionVEF()
 	{
 		StringWriter out = new StringWriter();
-		Exporter exporter = new VefModelExporter( out, mField );
+		Exporter exporter = new VefModelExporter( out, field );
         for (Manifestation man : mSelection) {
             exporter .exportManifestation( man );
         }
@@ -573,18 +500,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             UndoableEdit edit = new LoadVEF( this.mSelection, this.mRealizedModel, vefContent, null, null );
             performAndRecord( edit );
         }
-	}
-
-	public void applyTool( Tool tool, Tool.Registry registry, int modes )
-	{
-		UndoableEdit edit = new ApplyTool( this.mSelection, this.mRealizedModel, tool, registry, modes, true );
-        performAndRecord( edit );
-	}
-	
-	public void selectToolParameters( TransformationTool tool )
-	{
-		UndoableEdit edit = new SelectToolParameters( this.mSelection, this.mRealizedModel, this, tool );
-        performAndRecord( edit );
 	}
 	
 	public void applyQuaternionSymmetry( QuaternionicSymmetry left, QuaternionicSymmetry right )
@@ -727,10 +642,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 			edit = new AffineTransformAll( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
 			break;
 		case "dodecagonsymm":
-			edit = new DodecagonSymmetry( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
+			edit = new DodecagonSymmetry( mSelection, mRealizedModel, mEditorModel.getCenterPoint(),
+					this .mEditorModel .getSymmetrySystem() .getSymmetry(), false );
 			break;
 		case "ghostsymm24cell":
-			edit = new GhostSymmetry24Cell( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(), false );
+			edit = new GhostSymmetry24Cell( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(), this .mEditorModel .getSymmetrySystem() .getSymmetry(), false );
 			break;
 		case "apiProxy":
 			edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
@@ -918,7 +834,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             @Override
             public QuaternionicSymmetry getQuaternionSet( String name )
             {
-                return mField .getQuaternionSymmetry( name);
+                return kind .getQuaternionSymmetry( name);
             }
         };
         
@@ -926,7 +842,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         String buildNum = mXML .getAttribute( "buildNumber" );
         if ( buildNum != null )
         	writerVersion += " build " + buildNum;
-        format .initialize( mField, orbitSetField, scale, writerVersion, new Properties() );
+        format .initialize( field, orbitSetField, scale, writerVersion, new Properties() );
 
         Element hist = (Element) mXML .getElementsByTagName( "EditHistory" ) .item( 0 );
         if ( hist == null )
@@ -1045,7 +961,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     {
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
         vZomeRoot .setAttribute( "xmlns:vzome", XmlSaveFormat.CURRENT_FORMAT );
-        vZomeRoot .setAttribute( "field", mField.getName() );
+        vZomeRoot .setAttribute( "field", field.getName() );
         Element result = mHistory .getDetailXml( doc );
         vZomeRoot .appendChild( result );
         return vZomeRoot;
@@ -1083,7 +999,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
         if ( value != null )
         	vZomeRoot .setAttribute( "buildNumber", value );
         vZomeRoot .setAttribute( "coreVersion", this .coreVersion );
-        vZomeRoot .setAttribute( "field", mField.getName() );
+        vZomeRoot .setAttribute( "field", field.getName() );
 
         Element childElement;
         {
@@ -1122,7 +1038,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	UndoableEdit edit = null;
     	if ( command.equals( "runZomicScript" ) || command.equals( "zomic" ) )
     	{
-    		edit = new RunZomicScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint() );
+    		edit = new RunZomicScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint(),
+					(IcosahedralSymmetry) this .mEditorModel .getSymmetrySystem() .getSymmetry() );
     		this .performAndRecord( edit );
     	}
     	else if ( command.equals( "runPythonScript" ) || command.equals( "py" ) )
@@ -1137,41 +1054,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     		Segment symmAxis = mEditorModel .getSymmetrySegment();
     		AlgebraicVector quat = ( symmAxis == null ) ? null : symmAxis.getOffset();
     		if ( quat != null )
-    			quat = quat .scale( mField .createPower( - 5 ) );
-    		AlgebraicNumber scale = mField .createPower( 5 );
+    			quat = quat .scale( field .createPower( - 5 ) );
+    		AlgebraicNumber scale = field .createPower( 5 );
     		edit = new LoadVEF( mSelection, mRealizedModel, script, quat, scale );
     		this .performAndRecord( edit );
     	}
     }
 
-    @Override
-    public void addTool( Tool tool )
-    {
-    	String name = tool .getName();
-    	tools .put( name, tool );
-        firePropertyChange( "tool.instances", null, name );
-    }
-
-    @Override
-    public Tool findEquivalent( Tool tool )
-    {
-    	for ( Map.Entry<String, Tool> entry : tools .entrySet() )
-    	{
-    		if ( entry .getValue() .equals( tool ) )
-    			return entry .getValue();
-		}
-    	return null;
-    }
-
-    @Override
-    public Tool getTool( String toolName )
-    {
-    	return tools .get( toolName );
-    }
-
     public AlgebraicField getField()
     {
-    	return this .mField;
+    	return this .field;
     }
 
 	public void addSelectionListener( ManifestationChanges listener )
@@ -1238,7 +1130,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
             buf.append( "\n\nlength in orbit units: " );
             len .getNumberExpression( buf, AlgebraicField.DEFAULT_FORMAT );
 
-            if ( mField instanceof PentagonField)
+            if ( field instanceof PentagonField)
             {
                 buf.append( "\n\nlength in Zome b1 struts: " );
                 if (FORMAT instanceof DecimalFormat) {
@@ -1362,91 +1254,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	UndoableEdit edit = new StrutCreation( point, zone, length, this .mRealizedModel );
         this .performAndRecord( edit );
     }
-
-	public void createTool( String name, String group, Tool.Registry tools, Symmetry symmetry )
-	{
-        UndoableEdit edit = makeTool( name, group, tools, symmetry );
-        performAndRecord( edit );
-	}
-	
-	private UndoableEdit makeTool( String name, String group, Tool.Registry tools, Symmetry symmetry )
-	{
-        UndoableEdit edit = null;
-        switch (group) {
-
-        case "bookmark":
-			edit = new BookmarkTool( name, mSelection, mRealizedModel, tools );
-			break;
-		case "point reflection":
-			edit = new InversionTool( name, mSelection, mRealizedModel, originPoint );
-			break;
-		case "mirror":
-			edit = new MirrorTool( name, mSelection, mRealizedModel, originPoint );
-			break;
-		case "translation":
-			edit = new TranslationTool( name, mSelection, mRealizedModel, tools, originPoint );
-			break;
-		case "linear map":
-			edit = new LinearMapTool( name, mSelection, mRealizedModel, originPoint, false );
-			break;
-		case "rotation":
-			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, originPoint, false );
-			break;
-		case "axial symmetry":
-			edit = new RotationTool( name, symmetry, mSelection, mRealizedModel, originPoint, true );
-			break;
-		case "scaling":
-			edit = new ScalingTool( name, symmetry, mSelection, mRealizedModel, originPoint );
-			break;
-		case "scale up":
-			edit = new ScalingTool( name, getField() .createPower( 1 ), originPoint );
-			break;
-		case "scale down":
-			edit = new ScalingTool( name, getField() .createPower( -1 ), originPoint );
-			break;
-		case "tetrahedral":
-			edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, originPoint );
-			break;
-		case "module":
-			edit = new ModuleTool( name, mSelection, mRealizedModel, tools );
-			break;
-		case "plane":
-			edit = new PlaneSelectionTool( name, mSelection, mField, tools );
-			break;
-		case "yellowstretch":
-			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, true, false, false );
-			break;
-		case "yellowsquash":
-			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, false, false, false );
-			break;
-		case "redstretch1":
-			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, true, true, true );
-			break;
-		case "redsquash1":
-			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, false, true, true );
-			break;
-		case "redstretch2":
-			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, true, true, false );
-			break;
-		case "redsquash2":
-			if ( symmetry instanceof IcosahedralSymmetry )
-				edit = new AxialStretchTool( name, (IcosahedralSymmetry) symmetry, mSelection, mRealizedModel, false, true, false );
-			break;
-		default:
-			edit = new SymmetryTool( name, symmetry, mSelection, mRealizedModel, originPoint );
-			break;
-		}
-        if ( edit instanceof TransformationTool )
-        	((TransformationTool) edit) .setRegistry( this );
-        else if ( edit instanceof BookmarkTool )
-        	((BookmarkTool) edit) .setRegistry( this );
-        return edit;
-	}
 
 	public Exporter3d getNaiveExporter( String format, Camera view, Colors colors, Lights lights, RenderedModel currentSnapshot )
 	{
@@ -1577,9 +1384,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
 		return this .mRealizedModel;
 	}
 
-    public Iterable<Tool> getTools()
+    public ToolsModel getToolsModel()
     {
-        return this .tools .values();
+        return this .tools;
     }
     
     public SymmetrySystem getSymmetrySystem()
@@ -1598,8 +1405,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context,
     	this .mEditorModel .setSymmetrySystem( system );
     }
 
-	public ToolFactory getToolFactory( String name )
+	public FieldApplication getFieldApplication()
 	{
-		return this .toolFactories .get( name );
+		return this .kind;
 	}
 }

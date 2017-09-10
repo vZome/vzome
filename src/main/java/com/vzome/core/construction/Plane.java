@@ -8,8 +8,6 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Trivector3dHomogeneous;
-import com.vzome.core.math.symmetry.Axis;
-import com.vzome.core.math.symmetry.Symmetry;
 
 /**
  * @author Scott Vorthmann
@@ -43,16 +41,16 @@ public abstract class Plane extends Construction
 
         // try to find some cleaner vector to use for the line direction, to reduce the likelihood
         //   of ill-conditioned intersection computations
-        Symmetry[] symms = getField() .getSymmetries();
-        for (Symmetry symm : symms) {
-            Axis axis = symm.getAxis(normal);
-            if ( axis != null )
-            {
-                if ( ! axis .getDirection() .isAutomatic() )
-                    normal = axis .normal();
-                break;
-            }
-        }
+//        Symmetry[] symms = getField() .getSymmetryPerspectives();
+//        for (Symmetry symm : symms) {
+//            Axis axis = symm.getAxis(normal);
+//            if ( axis != null )
+//            {
+//                if ( ! axis .getDirection() .isAutomatic() )
+//                    normal = axis .normal();
+//                break;
+//            }
+//        }
 
         mNormal = normal;
         // symm center is used for the base, and might be a 4D vector

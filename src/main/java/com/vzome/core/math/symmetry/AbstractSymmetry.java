@@ -46,7 +46,6 @@ public abstract class AbstractSymmetry implements Symmetry
     protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle, AlgebraicMatrix principalReflection )
     {
         mField = field;
-        mField .addSymmetry( this );
         
         this.principalReflection = principalReflection;
         

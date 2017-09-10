@@ -20,16 +20,47 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class SymmetryTool extends TransformationTool
 {
-    protected Symmetry symmetry;
+	private static final String ID = "symmetry";
+	private static final String LABEL = "Create a general symmetry tool";
+	private static final String TOOLTIP = "<p>" +
+    		"General symmetry tool.<br>" +
+		"</p>";
+	
+	public static class Factory extends AbstractToolFactory
+	{
+		public Factory( ToolsModel tools, Symmetry symmetry )
+		{
+			super( tools, symmetry, ID, LABEL, TOOLTIP );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 1 && balls == 1 );
+		}
+
+		@Override
+		public Tool createToolInternal( String id )
+		{
+			return new SymmetryTool( id, getSymmetry(), getToolsModel() );
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection )
+		{
+	        return selection.size() == 1 && selection.iterator().next() instanceof Connector;
+		}
+	}
+
+	protected Symmetry symmetry;
     
-    public SymmetryTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint )
+    public SymmetryTool( String id, Symmetry symmetry, ToolsModel tools )
     {
-        super( name, selection, realized, null, originPoint );
+        super( id, tools );
         this.symmetry = symmetry;
     }
     
@@ -64,14 +95,6 @@ public class SymmetryTool extends TransformationTool
 		}
 		return true;
 	}
-
-	@Override
-    public String getDefaultName( String baseName )
-    {
-        int nextDot = baseName .indexOf( "." );
-        baseName = baseName .substring( 0, nextDot );
-        return baseName + " around origin";
-    }
 
 	@Override
     protected String checkSelection( boolean prepareTool )
@@ -182,7 +205,7 @@ public class SymmetryTool extends TransformationTool
         		}
                 if ( prepareTool ) {
                 	AlgebraicMatrix inverse = orientation .inverse();
-        			OctahedralSymmetry octa = (OctahedralSymmetry) symmetry .getField() .getSymmetry( "octahedral" );
+        			OctahedralSymmetry octa = new OctahedralSymmetry( symmetry .getField(), null, null );
         	    	int order = octa .getChiralOrder();
         	    	this .transforms = new Transformation[ order-1 ];
         	    	for ( int i = 0; i < order-1; i++ ) {
@@ -247,14 +270,5 @@ public class SymmetryTool extends TransformationTool
         String symmName = element .getAttribute( "symmetry" );
         this.symmetry = format .parseSymmetry( symmName );
         super .setXmlAttributes( element, format );
-    }
-
-    @Override
-    public String getCategory()
-    {
-        String subgroup = getName();
-        int nextDot = subgroup .indexOf( "." );
-        subgroup = subgroup .substring( 0, nextDot );
-        return subgroup;
     }
 }

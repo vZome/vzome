@@ -8,19 +8,17 @@ import org.w3c.dom.Element;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.editor.Tool.Registry;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class SelectToolParameters extends ChangeManifestations
 {
-	private TransformationTool tool;
-	private Registry registry;
+	private Tool tool;
+	private ToolsModel tools;
 
-	SelectToolParameters( Selection selection, RealizedModel model, Tool.Registry registry, TransformationTool tool )
+	SelectToolParameters( ToolsModel tools, Tool tool )
 	{
-		super( selection, model );
-		this .registry = registry;
+		super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel() );
+		this.tools = tools;
 		this .tool = tool;
 	}
 
@@ -47,14 +45,14 @@ public class SelectToolParameters extends ChangeManifestations
     @Override
     protected void getXmlAttributes( Element element )
     {
-        element .setAttribute( "name", this.tool .getName() );
+        element .setAttribute( "name", this.tool .getId() );
     }
 
     @Override
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         String toolName = element .getAttribute( "name" );
-        this .tool = (TransformationTool) registry .getTool( toolName );
+        this .tool = tools .get( toolName );
     }
 
 }

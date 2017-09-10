@@ -18,6 +18,8 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     private final int[][] INCIDENCES = new int[60][3];
     
 	public final Permutation IDENTITY = new Permutation( this, null );
+
+	private Axis preferredAxis;
     
     public IcosahedralSymmetry( AlgebraicField field, String defaultStyle )
     {
@@ -220,12 +222,19 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     }
     
     @Override
+	public Axis getPreferredAxis()
+	{
+		return this .preferredAxis;
+	}
+
+    @Override
     protected void createOtherOrbits()
     {
-        
     	Direction dir;
     	dir = createZoneOrbit( "red",      0, 3,           vector( new int[]{ 0,1,1,1, 1,1,0,1, 0,1,0,1 } ), true );
         dir .setScaleNames( new String[]{ "r0", "r1", "r2", "r3" } );
+        
+        this .preferredAxis = dir .getAxis( Symmetry.PLUS, 1 );
         
         dir = createZoneOrbit( "yellow",   0, 27,          vector( new int[]{ 1,1,1,1, 0,1,0,1, -1,1,0,1 } ), true, false, mField .createPower( -1 ) );
         dir .setScaleNames( new String[]{ "y0", "y1", "y2", "y3" } );

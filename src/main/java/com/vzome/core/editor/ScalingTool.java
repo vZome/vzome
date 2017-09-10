@@ -19,23 +19,33 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class ScalingTool extends SymmetryTool
-{    
-	public static class Factory extends AbstractToolFactory implements ToolFactory
+{	
+	private static final String ID = "scaling";
+	private static final String LABEL = "Create a scaling tool";
+	private static final String TOOLTIP = "<p>" +
+    		"Each tool enlarges or shrinks the selected objects,<br>" +
+    		"relative to a central point.  To create a tool,<br>" +
+    		"select a ball representing the central point, and<br>" +
+    		"two struts from the same orbit (color) with different<br>" +
+    		"sizes.<br>" +
+    		"<br>" +
+    		"The selection order matters.  First select a strut<br>" +
+    		"that you want to enlarge or shrink, then select a<br>" +
+    		"strut that has the desired target size.<br>" +
+		"</p>";
+	
+	public static class Factory extends AbstractToolFactory
 	{
-		private transient Symmetry symmetry;
-
-		public Factory( EditorModel model, UndoableEdit.Context context )
+		public Factory( ToolsModel tools, Symmetry symmetry )
 		{
-			super( model, context );
+			super( tools, symmetry, ID, LABEL, TOOLTIP );
 		}
 
 		@Override
@@ -45,14 +55,34 @@ public class ScalingTool extends SymmetryTool
 		}
 
 		@Override
-		public Tool createToolInternal( int index )
+		public Tool createToolInternal( String id )
 		{
-			return new ScalingTool( "scaling." + index, this .symmetry, getSelection(), getModel(), null );
+			ScalingTool tool = new ScalingTool( id, getSymmetry(), this .getToolsModel() );
+			
+			int scalePower = 0;;
+			switch ( id ) {
+
+			case "scaling.builtin/scale up":
+				scalePower = 1;
+				break;
+
+			case "scaling.builtin/scale down":
+				scalePower = -1;
+				break;
+
+			default:
+				return tool;  // non-predefined, no scale factor set
+			}
+			AlgebraicField field = this .getToolsModel() .getEditorModel() .getRealizedModel() .getField();
+			tool .setScaleFactor( field .createPower( scalePower ) );
+			return tool;
 		}
 
+		// This is never called for the predefined tool, so symmetry can be null.
 		@Override
-		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		protected boolean bindParameters( Selection selection )
 		{
+			Symmetry symmetry = getSymmetry();
 			AlgebraicVector offset1 = null;
 			AlgebraicVector offset2 = null;
         	for ( Manifestation man : selection )
@@ -75,36 +105,34 @@ public class ScalingTool extends SymmetryTool
         	AlgebraicNumber l2 = zone2 .getLength( offset2 );
         	if ( l1 .equals( l2 ) )
         		return false;
-        	this .symmetry = symmetry .getSymmetry();
 			return true;
 		}
 	}
 
-	private final AlgebraicNumber scaleFactor;
+	private AlgebraicNumber scaleFactor;
 	
     @Override
     public String getCategory()
     {
-        return "scaling";
+        return ID;
+    }
+        
+    public ScalingTool( String id, Symmetry symmetry, ToolsModel tools )
+    {
+        super( id, symmetry, tools );
+        this .scaleFactor = null;
     }
     
-    public ScalingTool( String name, AlgebraicNumber scaleFactor, Point originPoint )
+    void setScaleFactor( AlgebraicNumber scaleFactor )
     {
-    	super( name, null, null, null, originPoint );
-    	this .scaleFactor = scaleFactor;
-    }
-
-    public ScalingTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint )
-    {
-        super( name, symmetry, selection, realized, originPoint );
-        this .scaleFactor = null;
+		this.scaleFactor = scaleFactor;
     }
 
     @Override
     protected String checkSelection( boolean prepareTool )
     {
     	if ( this .scaleFactor != null ) {
-    		// a predefined tool
+    		// a predefined tool; does not use this .symmetry
     		AlgebraicField field = this .scaleFactor .getField();
     		this .transforms = new Transformation[ 1 ];
             AlgebraicMatrix transform = new AlgebraicMatrix(

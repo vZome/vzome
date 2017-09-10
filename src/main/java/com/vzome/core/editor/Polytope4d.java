@@ -167,7 +167,7 @@ public class Polytope4d extends ChangeManifestations
             this.proj = new QuaternionProjection( field, null, quaternion .scale( field .createPower( -5 ) ) );
         if ( "H4" .equals( groupName ) )
         {
-            QuaternionicSymmetry qsymm = field .getQuaternionSymmetry( "H_4" ); 
+            QuaternionicSymmetry qsymm = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", field ); // TODO inject this
             CommandUniformH4Polytope h4Builder = new CommandUniformH4Polytope( field, qsymm, 0 );
             h4Builder .generate(this .proj, this .index, this .edgesToRender, this .edgeScales, new ConstructionChanges()
             {
@@ -182,7 +182,7 @@ public class Polytope4d extends ChangeManifestations
         else
         {
             CoxeterGroup group = null;
-            if ( "A4" .equals( groupName ) )
+            if ( "A4" .equals( groupName ) )  // TODO inject these
                 group = new A4Group( this.field ) ;
             else if ( "D4" .equals( groupName ) )
                 group = new D4Group( this.field );

@@ -9,6 +9,7 @@ import com.vzome.core.algebra.AlgebraicVectors;
 public class Strut extends Manifestation implements Comparable<Strut>
 {
 	private final AlgebraicVector m_end1, m_end2;
+	private AlgebraicVector zoneVector;
 
     public Strut( AlgebraicVector end1, AlgebraicVector end2 )
     {
@@ -16,6 +17,19 @@ public class Strut extends Manifestation implements Comparable<Strut>
 
         m_end1 = end1;
         m_end2 = end2;
+    }
+    
+    public AlgebraicVector getZoneVector()
+    {
+    	if ( this .zoneVector != null )
+    		return this .zoneVector;
+    	else
+    		return this .getOffset();
+    }
+    
+    public void setZoneVector( AlgebraicVector vector )
+    {
+    	this .zoneVector = vector;
     }
 
 	@Override

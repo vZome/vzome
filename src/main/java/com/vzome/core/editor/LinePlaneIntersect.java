@@ -5,14 +5,14 @@ package com.vzome.core.editor;
 
 
 import com.vzome.core.construction.Line;
-import com.vzome.core.construction.LineExtensionOfSegment;
+import com.vzome.core.construction.LineFromPointAndVector;
 import com.vzome.core.construction.LinePlaneIntersectionPoint;
 import com.vzome.core.construction.Plane;
 import com.vzome.core.construction.PlaneExtensionOfPolygon;
+import com.vzome.core.construction.PlaneFromPointAndNormal;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
-import com.vzome.core.construction.Segment;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -29,8 +29,8 @@ public class LinePlaneIntersect extends ChangeManifestations
     @Override
     public void perform()
     {
-        Polygon panel = null;
-        Segment segment = null;
+        Panel panel = null;
+        Strut strut = null;
         Point p0 = null, p1 = null, p2 = null;
         for (Manifestation man : mSelection) {
             unselect( man );
@@ -44,30 +44,33 @@ public class LinePlaneIntersect extends ChangeManifestations
                 else if ( p2 == null )
                     p2 = nextPoint;
             }
-            else if ( ( man instanceof Strut ) && ( segment == null ) )
+            else if ( ( man instanceof Strut ) && ( strut == null ) )
             {
-                segment = (Segment) ((Strut) man) .getConstructions() .next();
+                strut = ((Strut) man);
             }
             else if ( ( man instanceof Panel ) && panel == null )
             {
-                panel = (Polygon) ((Panel) man) .getConstructions() .next();
+                panel = ((Panel) man);
             }
         }
+        Point point = null;
+        Plane plane = null;
+        Line line = new LineFromPointAndVector( strut .getLocation(), strut .getZoneVector() );
         if ( p2 != null && panel == null )
         {
             // three points rather than a panel
             Point[] points = new Point[]{ p0, p1, p2 };
-            panel = new PolygonFromVertices( points );
+            Polygon polygon = new PolygonFromVertices( points );
+            plane = new PlaneExtensionOfPolygon( polygon );
         }
-        if ( segment != null && panel != null )
+        else if ( strut != null && panel != null )
         {
-            Plane plane = new PlaneExtensionOfPolygon( panel );
-            Line line = new LineExtensionOfSegment( segment );
-            Point point = new LinePlaneIntersectionPoint( plane, line );
-
-            if ( ! point .isImpossible() ) {
-                select( manifestConstruction( point ) );
-            }
+            plane = new PlaneFromPointAndNormal( panel .getFirstVertex(), panel .getZoneVector() );
+        }
+        if ( plane != null && ! plane .isImpossible() ) {
+        	point = new LinePlaneIntersectionPoint( plane, line );
+        	if ( ! point .isImpossible() )
+        		select( manifestConstruction( point ) );
         }
         redo();
     }

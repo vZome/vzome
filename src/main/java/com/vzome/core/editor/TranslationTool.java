@@ -7,28 +7,39 @@ package com.vzome.core.editor;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.commands.Command;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointToPointTranslation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class TranslationTool extends TransformationTool
 {
-    public TranslationTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools, Point originPoint )
+    public TranslationTool( String id, ToolsModel tools )
     {
-        super( name, selection, realized, tools, originPoint );
+        super( id, tools );
     }
     
-	public static class Factory extends AbstractToolFactory implements ToolFactory
+	private static final String ID = "translation";
+	private static final String LABEL = "Create a translation tool";
+	private static final String TOOLTIP = "<p>" +
+    		"Each tool moves the selected objects to a new location.<br>" +
+    		"To create a tool, select two balls that are separated by<br>" +
+    		"your desired translation offset.  Order of selection<br>" +
+    		"matters: the first ball selected is the \"from\" location,<br>" +
+    		"and the second is the \"to\" location.<br>" +
+    		"<br>" +
+    		"By default, the input selection will be moved to the new<br>" +
+    		"location.  If you want to copy rather than move, you can<br>" +
+    		"right-click after creating the tool, to configure it.<br>" +
+		"</p>";
+	
+	public static class Factory extends AbstractToolFactory
 	{
-		public Factory( EditorModel model, UndoableEdit.Context context )
+		public Factory( ToolsModel tools )
 		{
-			// TODO: remove isAutomatic() convention
-			super( model, context );
+			super( tools, null, ID, LABEL, TOOLTIP );
 		}
 
 		@Override
@@ -38,38 +49,16 @@ public class TranslationTool extends TransformationTool
 		}
 
 		@Override
-		public Tool createToolInternal( int index )
+		public Tool createToolInternal( String id )
 		{
-			return new TranslationTool( "translation." + index, getSelection(), getModel(), null, null );
+			return new TranslationTool( id, getToolsModel() );
 		}
 
 		@Override
-		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		protected boolean bindParameters( Selection selection )
 		{
 			return true;
 		}
-	}
-
-    @Override
-    public String getDefaultName( String baseName )
-    {
-        return "translation along X axis";
-    }
-
-	@Override
-	public boolean isValidForSelection()
-	{
-		return null == checkSelection( false );
-	}
-
-    @Override
-    public void perform() throws Command.Failure
-    {
-    	String error = checkSelection( true );
-    	if ( error != null )
-    		throw new Command.Failure( error );
-    	else
-    		defineTool();
 	}
 
     @Override
@@ -100,7 +89,7 @@ public class TranslationTool extends TransformationTool
         
         if ( p1 == null )
         {
-            if ( isAutomatic() || this .getName() .startsWith( "translation.builtin/" ) )
+            if ( isAutomatic() || isPredefined() )
             {
                 p1 = originPoint;
         		this .addParameter( p1 );
@@ -145,6 +134,6 @@ public class TranslationTool extends TransformationTool
     @Override
     public String getCategory()
     {
-        return "translation";
+        return ID;
     }
 }

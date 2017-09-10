@@ -14,63 +14,55 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
-public class ModuleTool extends ChangeManifestations implements Tool
+public class ModuleTool extends Tool
 {
+	private static final String ID = "module";
+	private static final String LABEL = "Create a module tool";
+	private static final String TOOLTIP = "<p>" +
+    		"Each tool duplicates the original module.<br>" +
+		"</p>";
+
+	public static class Factory extends AbstractToolFactory
+	{
+		public Factory( ToolsModel tools )
+		{
+			super( tools, null, ID, LABEL, TOOLTIP );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total > 0);
+		}
+
+		@Override
+		public Tool createToolInternal( String id )
+		{
+			return new ModuleTool( id, getToolsModel() );
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection )
+		{
+			return true;
+		}
+	}
+
     private String name;
     
     private final List<Manifestation> bookmarkedSelection = new ArrayList<>();
         
-    private Tool.Registry tools;
-
-    public ModuleTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools )
+    public ModuleTool( String id, ToolsModel tools )
     {
-        super( selection, realized, false );
-        this.name = name;
-        this.tools = tools;
+        super( id, tools );
         mSelection .copy( bookmarkedSelection );
     }
-
-	// Not quite the same as overriding equals since the tool name is not compared
-    // We're basically just checking if the tool's input parameters match
-	public boolean hasEquivalentParameters( Object that )
-	{
-		if (this == that) {
-			return true;
-		}
-		if (that == null) {
-			return false;
-		}
-		if (getClass() != that.getClass()) {
-			return false;
-		}
-		ModuleTool other = (ModuleTool) that;
-		if (bookmarkedSelection == null) {
-			if (other.bookmarkedSelection != null) {
-				return false;
-			}
-		} else if (!bookmarkedSelection.equals(other.bookmarkedSelection)) {
-			return false;
-		}
-		return true;
-	}
 
 	@Override
 	public boolean isSticky()
     {
         return true;
-    }
-
-    @Override
-    public void perform() throws Command.Failure
-    {
-        defineTool();
-    }
-
-    protected void defineTool()
-    {
-		tools .addTool( this );
     }
 
     @Override
@@ -118,12 +110,6 @@ public class ModuleTool extends ChangeManifestations implements Tool
     }
 
     @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
     protected String getXmlElementName()
     {
         return "ModuleTool";
@@ -144,17 +130,13 @@ public class ModuleTool extends ChangeManifestations implements Tool
     @Override
     public String getCategory()
     {
-        return "module";
-    }
-
-    public String getDefaultName()
-    {
-        return "module";
+        return ID;
     }
 
 	@Override
-	public boolean isValidForSelection() {
+	protected String checkSelection( boolean prepareTool )
+	{
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 }

@@ -17,8 +17,10 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
+import com.vzome.core.math.Projection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Panel;
+import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class MirrorToolTest
@@ -57,18 +59,18 @@ public class MirrorToolTest
 		panel2 .addConstruction( polygon2 );
 		
 		Selection selection = new Selection();
-		MirrorTool tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
+		Tool tool = createTool( selection, originPoint );
 		assertNotNull( "(nothing selected)", tool .checkSelection( false ) );
 
 		selection = new Selection();
 		selection .select( panel1 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
+		tool = createTool( selection, originPoint );
 		assertNull( "(just panel selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( panel1 );
 		selection .select( panel2 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
+		tool = createTool( selection, originPoint );
 		assertNotNull( "(two panels selected)", tool .checkSelection( false ) );
 
 		Connector ball1 = new Connector( origin );
@@ -85,40 +87,50 @@ public class MirrorToolTest
 		selection = new Selection();
 		selection .select( panel1 );
 		selection .select( strut );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
+		tool = createTool( selection, originPoint );
 		assertNotNull( "(panel and strut selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( panel1 );
 		selection .select( ball1 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
+		tool = createTool( selection, originPoint );
 		assertNotNull( "(panel and ball selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( ball1 );
 		selection .select( strut );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
+		tool = createTool( selection, originPoint );
 		assertNull( "(strut and ball selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( ball1 );
 		selection .select( strut );
 		selection .select( strut2 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
+		tool = createTool( selection, originPoint );
 		assertNotNull( "(ball and 2 struts selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( ball1 );
 		selection .select( strut );
 		selection .select( ball2 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
+		tool = createTool( selection, originPoint );
 		assertNotNull( "(strut and 2 balls selected)", tool .checkSelection( false ) );
 		
 		selection = new Selection();
 		selection .select( ball1 );
 		selection .select( strut );
 		selection .select( panel1 );
-		tool = new MirrorTool( "mirror.1/foo", selection, null, originPoint );
+		tool = createTool( selection, originPoint );
 		assertNotNull( "(ball, strut, and panel selected)", tool .checkSelection( false ) );
+	}
+	
+	private Tool createTool( Selection selection, Point originPoint )
+	{
+		AlgebraicField field = originPoint .getField();
+		RealizedModel model = new RealizedModel( field, new Projection.Default( field ) );
+		EditorModel editor = new EditorModel( model, selection, false, originPoint, null );
+		ToolsModel tools = new ToolsModel( null, originPoint );
+		tools .setEditorModel( editor );
+		return new MirrorTool.Factory( tools ) .createToolInternal( "1/foo" );
 	}
 }

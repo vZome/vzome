@@ -6,10 +6,9 @@ package com.vzome.core.editor;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Line;
-import com.vzome.core.construction.LineExtensionOfSegment;
+import com.vzome.core.construction.LineFromPointAndVector;
 import com.vzome.core.construction.LineLineIntersectionPoint;
 import com.vzome.core.construction.Point;
-import com.vzome.core.construction.Segment;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
@@ -38,10 +37,8 @@ public class StrutIntersection extends ChangeManifestations
         if ( s1 == null || s2 == null )
             throw new Failure( "two struts are required" );
 
-        Segment seg1 = (Segment) s1 .getConstructions() .next();
-        Line l1 = new LineExtensionOfSegment( seg1 );
-        Segment seg2 = (Segment) s2 .getConstructions() .next();
-        Line l2 = new LineExtensionOfSegment( seg2 );
+        Line l1 = new LineFromPointAndVector( s1 .getLocation(), s1 .getZoneVector() );
+        Line l2 = new LineFromPointAndVector( s2 .getLocation(), s2 .getZoneVector() );
         Point point = new LineLineIntersectionPoint( l1, l2 );
         
         if ( point .isImpossible() )
