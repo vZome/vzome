@@ -2,58 +2,29 @@ package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.util.EnumSet;
 
 import org.vorthmann.ui.DefaultController;
 
-import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.Tool;
-import com.vzome.core.editor.TransformationTool;
+import com.vzome.api.Tool;
+import com.vzome.api.Tool.InputBehaviors;
+import com.vzome.api.Tool.OutputBehaviors;
 
 public class ToolController extends DefaultController
 {
 	private Tool tool;
-	private DocumentModel applier;  // TODO this should be a ToolsModel
-	private final String kind;
-	private String label;
 	private boolean deleteInputs;
 	private boolean selectInputs;
 	private boolean selectOutputs;
 	private boolean justSelect;
 
-	public ToolController( Tool tool, DocumentModel applier )
+	public ToolController( Tool tool )
 	{
 		this .tool = tool;
-		this .applier = applier;
-
-		String idAndName = tool .getName(); // will be "kind.N" with optional "/label"
-		int delim = idAndName .indexOf( "." );
-		this .kind = idAndName .substring( 0, delim );
-		delim = idAndName .indexOf( "/" );
-		if ( delim > 0 )
-			this .label = idAndName .substring( delim + 1 );
-		else
-			this .label = idAndName .replace( '.', ' ' );
-
+		EnumSet<InputBehaviors> inputBehaviors = tool .defaultInputBehaviors();
+		this .deleteInputs = inputBehaviors .contains( InputBehaviors.DELETE );
+		this .selectInputs = inputBehaviors .contains( InputBehaviors.SELECT );
 		this .selectOutputs = true;
-		switch (kind) {
-
-		case "rotation":
-		case "scaling":
-		case "translation":
-		case "linear map":
-		case "yellowstretch":
-		case "yellowsquash":
-		case "redstretch1":
-		case "redsquash1":
-		case "redstretch2":
-		case "redsquash2":
-			this .deleteInputs = true;
-			break;
-
-		default:
-			this .selectInputs = true;
-			break;
-		}
 		this .justSelect = false;
 	}
 
@@ -63,21 +34,22 @@ public class ToolController extends DefaultController
 		switch ( e .getActionCommand() ) {
 
 		case "apply":
-			// TODO use the checkbox modes, override with modifiers
-			int modes = 0;
+			// TODO use the checkbox modes, override with key modifiers
+			EnumSet<InputBehaviors> inputBehaviors = EnumSet.noneOf(InputBehaviors.class);
 			if ( deleteInputs )
-				modes |= ActionEvent.CTRL_MASK;
+				inputBehaviors .add( InputBehaviors.DELETE );
 			if ( selectInputs )
-				modes |= ActionEvent.SHIFT_MASK;
-			if ( !selectOutputs )
-				modes |= ActionEvent.ALT_MASK;
-			if ( justSelect )
-				modes |= ActionEvent.META_MASK;
-			this .applier .applyTool( tool, this .applier, modes );
+				inputBehaviors .add( InputBehaviors.SELECT );
+			EnumSet<OutputBehaviors> outputBehaviors = EnumSet.noneOf(OutputBehaviors.class);
+			if ( !justSelect )
+				outputBehaviors .add( OutputBehaviors.CREATE );
+			if ( selectOutputs )
+				outputBehaviors .add( OutputBehaviors.SELECT );
+			this .tool .apply( inputBehaviors, outputBehaviors );
 			break;
 
 		case "selectParams":
-			this .applier .selectToolParameters( (TransformationTool) tool );
+			this .tool .selectParameters();
 			break;
 
 		case "selectInputs":
@@ -117,13 +89,13 @@ public class ToolController extends DefaultController
 		switch ( name ) {
 
 		case "label":
-			return this .label;
+			return this .tool .getLabel();
 
 		case "kind":
-			return this .kind;
+			return this .tool .getCategory();
 
 		case "predefined":
-			return Boolean .toString( this .tool .getName() .contains( ".builtin/" ) );
+			return Boolean .toString( this .tool .isPredefined() );
 
 		case "selectInputs":
 			return Boolean .toString( this .selectInputs );
@@ -148,8 +120,8 @@ public class ToolController extends DefaultController
 		switch ( name ) {
 
 		case "label":
-			this .label = (String) value;
-			this .properties() .firePropertyChange( "label", null, this .label );
+			this .tool .setLabel( (String) value );
+			this .properties() .firePropertyChange( "label", null, (String) value );
 			return;
 
 		default:

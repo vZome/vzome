@@ -66,6 +66,12 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         setLayout( new BorderLayout() );
         setTitle( "tool configuration" );
         
+        // The old key modifiers, from core, in case we want to bring back transient overrides.
+//        selectInputs = ( modes & ActionEvent.SHIFT_MASK ) != 0;
+//        deselectOutputs = ( modes & ActionEvent.ALT_MASK ) != 0;
+//        justSelect = ( modes & ActionEvent.META_MASK ) != 0;
+//        deleteInputs = ( modes & ActionEvent.CTRL_MASK ) != 0;
+
         checkboxChanges = new PropertyChangeListener()
 		{
 			@Override

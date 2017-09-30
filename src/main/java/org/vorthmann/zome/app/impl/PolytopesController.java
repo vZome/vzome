@@ -42,7 +42,7 @@ public class PolytopesController extends DefaultController
             edgeScales[ i ] = field .createPower( 0 );
         }
         // TODO: get the list from the field itself
-        if ( null == field .getQuaternionSymmetry( "H_4" ) ) {
+        if ( null == document .getFieldApplication() .getQuaternionSymmetry( "H_4" ) ) {
         	groups = new String[]{ "A4", "B4/C4", "D4", "F4" };
         	group = "F4";
         } else {

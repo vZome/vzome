@@ -26,10 +26,10 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.zome.ui.ApplicationUI;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
@@ -152,66 +152,66 @@ public class ApplicationController extends DefaultController
 
         RenderedModel model;
         
-        AlgebraicField field = modelApp .getField( "golden" );
-        Symmetry symmetry = field .getSymmetry( "icosahedral" );
+        FieldApplication field = modelApp .getDocumentKind( "golden" );
+        Symmetry symmetry = field .getSymmetryPerspective( "icosahedral" ) .getSymmetry();
         {
             if ( propertyIsTrue( "rzome.trackball" ) )
-                model = loadModelPanels( "org/vorthmann/zome/app/rZomeTrackball-vef.vZome" );
+                model = loadModelPanels( "org/vorthmann/zome/app/rZomeTrackball-vef.vZome", symmetry );
             else if ( userHasEntitlement( "developer.extras" ) )
-            	model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-developer.vZome" );
+            	model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-developer.vZome", symmetry );
             else
-                model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-vef.vZome" );
+                model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-vef.vZome", symmetry );
             mSymmetryModels.put( symmetry, model );
         }
-        symmetry = field .getSymmetry( "octahedral" );
+        symmetry = field .getSymmetryPerspective( "octahedral" ) .getSymmetry();
         {
             // this has to happen after the OctahedralSymmetry constructor, which registers with the field
-            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );
+            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome", symmetry );
             mSymmetryModels.put( symmetry, model );
         }
 
-        field = modelApp .getField( "snubDodec" );
-        symmetry = field .getSymmetry( "icosahedral" );
-        {
-            model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-vef.vZome" );
-            mSymmetryModels.put( symmetry, model );
-        }
-
-        field = modelApp .getField( "heptagon" );
-        {
-            model = loadModelPanels( "org/vorthmann/zome/app/heptagonal antiprism.vZome" );
-            symmetry = field .getSymmetry( "heptagonal antiprism corrected" );
-            mSymmetryModels.put( symmetry, model );
-            symmetry = field .getSymmetry( "heptagonal antiprism" );
-            mSymmetryModels.put( symmetry, model );
-
-            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );
-            symmetry = field .getSymmetry( "triangular antiprism" );
-            mSymmetryModels.put( symmetry, model );
-            symmetry = field .getSymmetry( "octahedral" );
-            mSymmetryModels.put( symmetry, model );
-        }
-
-        field = modelApp .getField( "rootTwo" );
-        symmetry = field .getSymmetry( "octahedral" );
-        {
-            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );
-            mSymmetryModels.put( symmetry, model );
-            symmetry = field .getSymmetry( "synestructics" );
-            mSymmetryModels.put( symmetry, model );
-        }
-
-        field = modelApp .getField( "rootThree" );
-        symmetry = field .getSymmetry( "octahedral" );
-        {
-            // yes, reusing the model from above
-            mSymmetryModels.put( symmetry, model );
-        }
-        symmetry = field .getSymmetry( "dodecagonal" );
-        {
-            model = loadModelPanels( "org/vorthmann/zome/app/dodecagonal.vZome" );
-            mSymmetryModels.put( symmetry, model );
-        }
+//        field = modelApp .getField( "snubDodec" );
+//        symmetry = field .getSymmetryPerspective( "icosahedral" );
+//        {
+//            model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-vef.vZome" );
+//            mSymmetryModels.put( symmetry, model );
+//        }
+//
+//        field = modelApp .getField( "heptagon" );
+//        {
+//            model = loadModelPanels( "org/vorthmann/zome/app/heptagonal antiprism.vZome" );
+//            symmetry = field .getSymmetryPerspective( "heptagonal antiprism corrected" );
+//            mSymmetryModels.put( symmetry, model );
+//            symmetry = field .getSymmetryPerspective( "heptagonal antiprism" );
+//            mSymmetryModels.put( symmetry, model );
+//
+//            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );
+//            symmetry = field .getSymmetryPerspective( "triangular antiprism" );
+//            mSymmetryModels.put( symmetry, model );
+//            symmetry = field .getSymmetryPerspective( "octahedral" );
+//            mSymmetryModels.put( symmetry, model );
+//        }
+//
+//        field = modelApp .getField( "rootTwo" );
+//        symmetry = field .getSymmetryPerspective( "octahedral" );
+//        {
+//            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );
+//            mSymmetryModels.put( symmetry, model );
+//            symmetry = field .getSymmetryPerspective( "synestructics" );
+//            mSymmetryModels.put( symmetry, model );
+//        }
+//
+//        field = modelApp .getField( "rootThree" );
+//        symmetry = field .getSymmetryPerspective( "octahedral" );
+//        {
+//            // yes, reusing the model from above
+//            mSymmetryModels.put( symmetry, model );
+//        }
+//        symmetry = field .getSymmetryPerspective( "dodecagonal" );
+//        {
+//            model = loadModelPanels( "org/vorthmann/zome/app/dodecagonal.vZome" );
+//            mSymmetryModels.put( symmetry, model );
+//        }
 
         // addStyle( new ModeledShapes( "pentagonal", "pentagonal prismatic", DecagonSymmetry.INSTANCE ) );
 
@@ -278,8 +278,7 @@ public class ApplicationController extends DefaultController
                     docProps .setProperty( "version", this .properties .getProperty( "version" ) );
                     docProps .setProperty( "buildNumber", this .properties .getProperty( "buildNumber" ) );
                     docProps .setProperty( "gitCommit", this .properties .getProperty( "gitCommit" ) );
-                    DocumentController newest = new DocumentController( document, this, docProps );
-                    newDocumentController( title, newest );
+                    newDocumentController( title, document, docProps );
                 }
             }
             else if ( action .startsWith( "openResource-" ) )
@@ -355,8 +354,7 @@ public class ApplicationController extends DefaultController
 	private void loadDocumentController( final String name, final InputStream bytes, final Properties properties ) throws Exception
 	{
 		DocumentModel document = modelApp .loadDocument( bytes );
-		DocumentController newest = new DocumentController( document, ApplicationController.this, properties );
-		newDocumentController( name, newest );
+		newDocumentController( name, document, properties );
 	}
 
     RenderingViewer.Factory getJ3dFactory()
@@ -466,8 +464,9 @@ public class ApplicationController extends DefaultController
     	return docControllers .get( name );
     }
 
-    private void newDocumentController( final String name, final DocumentController newest )
+    private void newDocumentController( final String name, final DocumentModel document, final Properties props )
     {
+        DocumentController newest = new DocumentController( document, this, props );
     	this .registerDocumentController( name, newest );
         // trigger window creation in the UI
 		this .properties() .firePropertyChange( "newDocument", null, newest );
@@ -506,7 +505,7 @@ public class ApplicationController extends DefaultController
 		});
     }
 
-    private RenderedModel loadModelPanels( String path )
+    private RenderedModel loadModelPanels( String path, Symmetry symmetry )
     {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         InputStream bytes = cl.getResourceAsStream( path );
@@ -514,7 +513,7 @@ public class ApplicationController extends DefaultController
         try {
     		DocumentModel document = this .modelApp .loadDocument( bytes );
     		// a RenderedModel that only creates panels
-    		document .setRenderedModel( new RenderedModel( document .getField(), true ) 	 	 
+    		document .setRenderedModel( new RenderedModel( symmetry ) 	 	 
     		{
 				@Override
     			protected void resetAttributes( RenderedManifestation rm, 	 	 
@@ -562,13 +561,8 @@ public class ApplicationController extends DefaultController
         }
         else if ( listName .startsWith( "symmetries." ) )
         {
-            String fieldName = listName.substring( 11 );
-            AlgebraicField field = modelApp .getField( fieldName );
-            Symmetry[] symms = field.getSymmetries();
-            String[] result = new String[symms.length];
-            for ( int i = 0; i < symms.length; i++ )
-                result[i] = symms[i].getName();
-            return result;
+//        	return (String[]) this .symmetryPerspective .getGeometries() .stream() .map( e -> e .getName() ) .toArray();
+            return null;  // TODO probably unused
         }
         return new String[0];
     }

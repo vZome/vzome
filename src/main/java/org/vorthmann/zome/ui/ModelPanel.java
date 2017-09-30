@@ -5,18 +5,17 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,22 +23,24 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.vorthmann.j3d.J3dComponentFactory;
+import org.vorthmann.ui.CardPanel;
 import org.vorthmann.ui.Controller;
 
-public class ModelPanel extends JPanel implements PropertyChangeListener
+public class ModelPanel extends JPanel implements PropertyChangeListener, SymmetryToolbarsPanel.ButtonFactory
 {
 	private static final String TOOLTIP_PREFIX = "<html><b>";
 	private static final String TOOLTIP_SUFFIX = "</b><br><br><p>Right-click to configure this tool.</p></html>";
 
 	private final Component monocularCanvas, leftEyeCanvas, rightEyeCanvas;
     private MouseListener monocularClicks, leftEyeClicks, rightEyeClicks;
-    private final JToolBar oldToolBar, firstToolbar, secondToolbar, bookmarkBar; // TODO these don't need to be fields
-    private final JScrollPane firstScroller, secondScroller, bookmarkScroller;
+    private final JToolBar oldToolBar, bookmarkBar;
+    private final JScrollPane bookmarkScroller;
     private final boolean isEditor;
 	private final Controller controller, view;
 	private final JPanel mMonocularPanel;
-	private final ToolConfigDialog toolConfigDialog;
 	private int nextBookmarkIcon = 0;
+	private final CardPanel toolbarCards;
+	private final Collection<SymmetryToolbarsPanel> toolBarPanels = new ArrayList<SymmetryToolbarsPanel>();
 	
 	public ModelPanel( Controller controller, ControlActions enabler, boolean isEditor, boolean fullPower )
 	{
@@ -98,23 +99,21 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         	}
         } );
 
-        this .toolConfigDialog = new ToolConfigDialog( (JFrame) this.getParent() );
-
         if ( isEditor )
         {
             if ( ! controller .propertyIsTrue( "no.toolbar" ) )
             {
-            	// -------------------- Create the dynamic toolbar
-            	
-                boolean hasOldToolBar = controller .propertyIsTrue( "original.tools" );
+                final Controller toolsController = controller .getSubController( "tools" );
 
-                this .firstToolbar = new JToolBar();
-                this .firstToolbar .setFloatable( false );
-                this .firstToolbar .setOrientation( JToolBar.HORIZONTAL );
-//                this .firstToolbar .setToolTipText( "Click on objects to select them, and enable creation of new tools accordingly." );
-                this .firstScroller = new JScrollPane( this .firstToolbar, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
-                this .firstScroller .setBorder( null );
-                this .add( this .firstScroller, BorderLayout .NORTH );
+                toolbarCards = new CardPanel();
+                for ( String symmetrySystem : controller .getCommandList( "symmetryPerspectives" ) ) {
+                    Controller symmController = controller .getSubController( "symmetry." + symmetrySystem );
+                    SymmetryToolbarsPanel panel = new SymmetryToolbarsPanel( symmController, toolsController, enabler, this );
+                    this .toolBarPanels .add( panel );
+                    this .toolbarCards .add( symmetrySystem, panel );
+				}
+                this .toolbarCards .showCard( controller .getProperty( "symmetry" ) );
+                monoStereoPlusToolbar .add( this .toolbarCards, BorderLayout .NORTH );
 
                 this .bookmarkBar = new JToolBar();
                 this .bookmarkBar .setFloatable( false );
@@ -124,340 +123,11 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
                 this .bookmarkScroller .setBorder( null );
                 monoStereoPlusToolbar .add( this .bookmarkScroller, BorderLayout .LINE_START );
 
-                final Controller toolsController = controller .getSubController( "tools" );
-
-                AbstractButton button;
-
-                if ( controller .propertyIsTrue( "supports.symmetry.icosahedral" ) ) {
-                    button = newToolButton( toolsController, "icosahedral", "Create an icosahedral symmetry tool",
-                		"<p>" +
-                        		"Each tool produces up to 59 copies of the input<br>" +
-                        		"selection, using the rotation symmetries of an<br>" +
-                        		"icosahedron.  To create a tool, select a single<br>" +
-                        		"ball that defines the center of symmetry.<br>" +
-                        		"<br>" +
-                        		"Combine with a point reflection tool to achieve<br>" +
-                        		"all 120 symmetries of the icosahedron, including<br>" +
-                        		"reflections.<br>" +
-                		"</p>" );
-                    firstToolbar .add( button );
-                	button = newToolButton( toolsController, "octahedral", "Create an octahedral symmetry tool",
-                		"<p>" +
-                        		"Each tool produces up to 23 copies of the input<br>" +
-                        		"selection, using the rotation symmetries of a<br>" +
-                        		"cube or octahedron.  To create a tool, select a<br>" +
-                        		"ball that defines the center of symmetry, and<br>" +
-                        		"a single blue or green strut, defining one of<br>" +
-                        		"five possible orientations for the symmetry.<br>" +
-                        		"<br>" +
-                        		"Combine with a point reflection tool to achieve<br>" +
-                        		"all 48 symmetries of the octahedron, including<br>" +
-                        		"reflections.<br>" +
-                		"</p>" );
-                    firstToolbar .add( button );
-                	button = newToolButton( toolsController, "tetrahedral", "Create a tetrahedral symmetry tool",
-                		"<p>" +
-                        		"Each tool produces up to 11 copies of the input<br>" +
-                        		"selection, using the rotation symmetries of a<br>" +
-                        		"tetrahedron.  To create a tool, select a ball<br>" +
-                        		"that defines the center of symmetry, and a single<br>" +
-                        		"blue or green strut, defining one of five<br>" +
-                        		"possible orientations for the symmetry.<br>" +
-                        		"<br>" +
-                        		"Combine with a point reflection tool to achieve<br>" +
-                        		"all 24 symmetries of the tetrahedron, including<br>" +
-                        		"reflections.<br>" +
-                		"</p>" );
-                    firstToolbar .add( button );
-                } else {
-                	button = newToolButton( toolsController, "octahedral", "Create an octahedral symmetry tool",
-                		"<p>" +
-                        		"Each tool produces up to 23 copies of the input<br>" +
-                        		"selection, using the rotation symmetries of a<br>" +
-                        		"cube or octahedron.  To create a tool, select a<br>" +
-                        		"ball that defines the center of symmetry.<br>" +
-                        		"<br>" +
-                        		"Combine with a point reflection tool to achieve<br>" +
-                        		"all 48 symmetries of the octahedron, including<br>" +
-                        		"reflections.<br>" +
-                		"</p>" );
-                    firstToolbar .add( button );
-                	button = newToolButton( toolsController, "tetrahedral", "Create a tetrahedral symmetry tool",
-                		"<p>" +
-                        		"Each tool produces up to 11 copies of the input<br>" +
-                        		"selection, using the rotation symmetries of a<br>" +
-                        		"tetrahedron.  To create a tool, select a ball<br>" +
-                        		"that defines the center of symmetry.<br>" +
-                        		"<br>" +
-                        		"Combine with a point reflection tool to achieve<br>" +
-                        		"all 24 symmetries of the tetrahedron, including<br>" +
-                        		"reflections.<br>" +
-                		"</p>" );
-                    firstToolbar .add( button );
-                }
-                button = newToolButton( toolsController, "point reflection", "Create a point reflection tool",
-                		"<p>" +
-                        		"Each tool duplicates the selection by reflecting<br>" +
-                        		"each point through the defined center.  To create a<br>" +
-                        		"tool, select a single ball that defines that center.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( toolsController, "mirror", "Create a mirror reflection tool",
-                		"<p>" +
-                        		"Each tool duplicates the selection by reflecting<br>" +
-                        		"each object in a mirror plane.  To create a<br>" +
-                        		"tool, define the mirror plane by selecting a single<br>" +
-                        		"panel, or by selecting a strut orthogonal to the<br>" +
-                        		"plane and a ball lying in the plane.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( toolsController, "axial symmetry", "Create a rotational symmetry tool",
-                		"<p>" +
-                        		"Each tool creates enough copies of the selected objects to<br>" +
-                        		"create rotational symmetry around an axis.  To create a tool,<br>" +
-                        		"select a strut that defines that axis,  You can also define<br>" +
-                        		"the direction and center independently, by selecting a ball<br>" +
-                        		"for the center and a strut for the axis.  Note: not all struts<br>" +
-                        		"correspond to rotational symmetries!<br>" +
-                        		"<br>" +
-                        		"Combine with a point reflection or mirror reflection tool to<br>" +
-                        		"achieve more symmetries.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                
-                firstToolbar .addSeparator();
-                
-                button = newToolButton( toolsController, "scaling", "Create a scaling tool",
-                		"<p>" +
-                        		"Each tool enlarges or shrinks the selected objects,<br>" +
-                        		"relative to a central point.  To create a tool,<br>" +
-                        		"select a ball representing the central point, and<br>" +
-                        		"two struts from the same orbit (color) with different<br>" +
-                        		"sizes.<br>" +
-                        		"<br>" +
-                        		"The selection order matters.  First select a strut<br>" +
-                        		"that you want to enlarge or shrink, then select a<br>" +
-                        		"strut that has the desired target size.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( toolsController, "rotation", "Create a rotation tool",
-                		"<p>" +
-                        		"Each tool rotates the selected objects around an axis<br>" +
-                        		"of symmetry.  To create a tool, select a strut that<br>" +
-                        		"defines that axis.  You can also define the direction<br>" +
-                        		"and center independently, by selecting a ball for the<br>" +
-                        		"center and a strut for the axis.  Note: not all struts<br>" +
-                        		"correspond to rotational symmetries!<br>" +
-                        		"<br>" +
-                        		"The direction of rotation depends on the strut<br>" +
-                        		"orientation, which is hard to discover, but easy to<br>" +
-                        		"control, by dragging out a new strut.<br>" +
-                        		"<br>" +
-                        		"By default, the input selection will be moved to the new,<br>" +
-                        		"rotated orientation.  After creating a tool, you can<br>" +
-                        		"right-click to configure the tool to create a copy, instead.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                button = newToolButton( toolsController, "translation", "Create a translation tool",
-                		"<p>" +
-                        		"Each tool moves the selected objects to a new location.<br>" +
-                        		"To create a tool, select two balls that are separated by<br>" +
-                        		"your desired translation offset.  Order of selection<br>" +
-                        		"matters: the first ball selected is the \"from\" location,<br>" +
-                        		"and the second is the \"to\" location.<br>" +
-                        		"<br>" +
-                        		"By default, the input selection will be moved to the new<br>" +
-                        		"location.  If you want to copy rather than move, you can<br>" +
-                        		"right-click after creating the tool, to configure it.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-                
-                firstToolbar .addSeparator();
-
-                if ( controller .propertyIsTrue( "supports.symmetry.icosahedral" ) ) {
-	                button = newToolButton( toolsController, "redsquash1", "Create a weak red squash tool",
-	                		"<p>" +
-	                        		"Each tool applies a \"squash\" transformation to the<br>" +
-	                        		"selected objects, compressing along a red axis.  To create<br>" +
-	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-	                        		"red strut as the direction of the compression.  The ball and<br>" +
-	                        		"strut need not be collinear.<br>" +
-	                        		"<br>" +
-	                        		"The mapping comes from the usual Zome projection of the<br>" +
-	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
-	                        		"blue dodecahedron into the compressed form in the next<br>" +
-	                        		"layer outward.<br>" +
-	                        		"<br>" +
-	                        		"By default, the input selection will be removed, and replaced<br>" +
-	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
-	                        		"you can right-click after creating the tool, to configure it.<br>" +
-	                		"</p>" );
-	                firstToolbar .add( button );
-	                button = newToolButton( toolsController, "redstretch1", "Create a weak red stretch tool",
-	                		"<p>" +
-	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
-	                        		"selected objects, stretching along a red axis.  To create<br>" +
-	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-	                        		"red strut as the direction of the stretch.  The ball and<br>" +
-	                        		"strut need not be collinear.<br>" +
-	                        		"<br>" +
-	                        		"The mapping comes from the usual Zome projection of the<br>" +
-	                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
-	                        		"the central, blue dodecahedron into the compressed form in<br>" +
-	                        		"the next layer outward.<br>" +
-	                        		"<br>" +
-	                        		"By default, the input selection will be removed, and replaced<br>" +
-	                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
-	                        		"you can right-click after creating the tool, to configure it.<br>" +
-	                		"</p>" );
-	                firstToolbar .add( button );
-	                
-	                button = newToolButton( toolsController, "yellowsquash", "Create a yellow squash tool",
-	                		"<p>" +
-	                        		"Each tool applies a \"squash\" transformation to the<br>" +
-	                        		"selected objects, compressing along a yellow axis.  To create<br>" +
-	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-	                        		"yellow strut as the direction of the compression.  The ball and<br>" +
-	                        		"strut need not be collinear.<br>" +
-	                        		"<br>" +
-	                        		"The mapping comes from the usual Zome projection of the<br>" +
-	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
-	                        		"blue dodecahedron into the compressed form along a yellow axis.<br>" +
-	                        		"<br>" +
-	                        		"By default, the input selection will be removed, and replaced<br>" +
-	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
-	                        		"you can right-click after creating the tool, to configure it.<br>" +
-	                		"</p>" );
-	                firstToolbar .add( button );
-	                button = newToolButton( toolsController, "yellowstretch", "Create a yellow stretch tool",
-	                		"<p>" +
-	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
-	                        		"selected objects, stretching along a yellow axis.  To create<br>" +
-	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-	                        		"yellow strut as the direction of the stretch.  The ball and<br>" +
-	                        		"strut need not be collinear.<br>" +
-	                        		"<br>" +
-	                        		"The mapping comes from the usual Zome projection of the<br>" +
-	                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
-	                        		"the central, blue dodecahedron into the compressed form along<br>" +
-	                        		"a yellow axis.<br>" +
-	                        		"<br>" +
-	                        		"By default, the input selection will be removed, and replaced<br>" +
-	                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
-	                        		"you can right-click after creating the tool, to configure it.<br>" +
-	                		"</p>" );
-	                firstToolbar .add( button );
-	                
-	                button = newToolButton( toolsController, "redsquash2", "Create a strong red squash tool",
-	                		"<p>" +
-	                        		"Each tool applies a \"squash\" transformation to the<br>" +
-	                        		"selected objects, compressing along a red axis.  To create<br>" +
-	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-	                        		"red strut as the direction of the compression.  The ball and<br>" +
-	                        		"strut need not be collinear.<br>" +
-	                        		"<br>" +
-	                        		"The mapping comes from the usual Zome projection of the<br>" +
-	                        		"120-cell.  It is the mapping that transforms the central,<br>" +
-	                        		"blue dodecahedron into the compressed form in the second<br>" +
-	                        		"layer outward along a red axis.<br>" +
-	                        		"<br>" +
-	                        		"By default, the input selection will be removed, and replaced<br>" +
-	                        		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
-	                        		"you can right-click after creating the tool, to configure it.<br>" +
-	                		"</p>" );
-	                firstToolbar .add( button );
-	                button = newToolButton( toolsController, "redstretch2", "Create a strong red stretch tool",
-	                		"<p>" +
-	                        		"Each tool applies a \"stretch\" transformation to the<br>" +
-	                        		"selected objects, stretching along a red axis.  To create<br>" +
-	                        		"a tool, select a ball as the center of the mapping, and a<br>" +
-	                        		"red strut as the direction of the stretch.  The ball and<br>" +
-	                        		"strut need not be collinear.<br>" +
-	                        		"<br>" +
-	                        		"The mapping comes from the usual Zome projection of the<br>" +
-	                        		"120-cell.  It is the inverse of the mapping that transforms<br>" +
-	                        		"the central, blue dodecahedron into the compressed form in<br>" +
-	                        		"the second layer outward along a red axis.<br>" +
-	                        		"<br>" +
-	                        		"By default, the input selection will be removed, and replaced<br>" +
-	                        		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
-	                        		"you can right-click after creating the tool, to configure it.<br>" +
-	                		"</p>" );
-	                firstToolbar .add( button );
-	            }
-                
-                button = newToolButton( toolsController, "linear map", "Create a linear map tool",
-                		"<p>" +
-                        		"<b>For experts and Linear Algebra students...</b><br>" +
-                        		"<br>" +
-                        		"Each tool applies a linear transformation to the selected<br>" +
-                        		"objects, possibly rotating, stretching, and compressing.  To<br>" +
-                        		"create a tool, select a ball as the center of the mapping,<br>" +
-                        		"three struts (in order) to define the input basis, and three<br>" +
-                        		"more struts to define the output basis.<br>" +
-                        		"<br>" +
-                        		"You can omit the input basis if it would consist of three<br>" +
-                        		"identical blue struts at right angles; the three struts you<br>" +
-                        		"select will be interpreted as the output basis.<br>" +
-                        		"<br>" +
-                        		"By default, the input selection will be removed, and replaced<br>" +
-                        		"with the transformed equivalent.  If you want to keep the inputs,<br>" +
-                        		"you can right-click after creating the tool, to configure it.<br>" +
-                		"</p>" );
-                firstToolbar .add( button );
-
-                this .secondToolbar = new JToolBar();
-                this .secondToolbar .setFloatable( false );
-                this .secondToolbar .setOrientation( JToolBar.HORIZONTAL );
-//                this .secondToolbar .setToolTipText( "All commands and tools apply to the currently selected objects." );
-                this .secondScroller = new JScrollPane( this .secondToolbar, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
-                this .secondScroller .setBorder( null );
-                monoStereoPlusToolbar .add( this .secondScroller, BorderLayout .NORTH );
-
-                button = newBookmarkButton( toolsController );
+                AbstractButton button = newBookmarkButton( controller .getSubController( "bookmark" ) );
                 bookmarkBar .add( button );
                 bookmarkBar .addSeparator();
 
                 addBookmark( toolsController .getSubController( "bookmark.builtin/ball at origin" ) );
-
-                button = makeEditButton( enabler, "delete", "Delete selected objects" );
-                secondToolbar .add( button );
-                button = makeEditButton( enabler, "hideball", "Hide selected objects" );
-                secondToolbar .add( button );
-                
-                secondToolbar .addSeparator();
-
-                button = makeEditButton( enabler, "joinballs", "Connect balls in a loop" );
-                secondToolbar .add( button );
-                button = makeEditButton( enabler, "chainballs", "Connect balls in a chain" );
-                secondToolbar .add( button );
-                button = makeEditButton( enabler, "joinBallsAllToLast", "Connect all balls to last selected" );
-                secondToolbar .add( button );
-                button = makeEditButton( enabler, "joinBallsAllPossible", "Connect balls in all possible ways" );
-                secondToolbar .add( button );
-                button = makeEditButton( enabler, "panel", "Make a panel polygon" );
-                secondToolbar .add( button );
-                button = makeEditButton( enabler, "centroid", "Construct centroid of points" );
-                secondToolbar .add( button );
-                
-                secondToolbar .addSeparator();
-                
-                // we want this presentation order to be controlled here, not in the core
-                addTool( toolsController .getSubController( "icosahedral.builtin/icosahedral around origin" ) );
-                addTool( toolsController .getSubController( "octahedral.builtin/octahedral around origin" ) );
-                addTool( toolsController .getSubController( "tetrahedral.builtin/tetrahedral around origin" ) );
-                addTool( toolsController .getSubController( "point reflection.builtin/reflection through origin" ) );
-                addTool( toolsController .getSubController( "mirror.builtin/reflection through XY plane" ) );
-                addTool( toolsController .getSubController( "axial symmetry.builtin/symmetry around red through origin" ) );
-                
-                secondToolbar .addSeparator();
-
-                addTool( toolsController .getSubController( "scaling.builtin/scale down" ) );
-                addTool( toolsController .getSubController( "scaling.builtin/scale up" ) );
-                addTool( toolsController .getSubController( "rotation.builtin/rotate around red through origin" ) );
-                addTool( toolsController .getSubController( "translation.builtin/b1 move along +X" ) );
-               
-                secondToolbar .addSeparator();
 
             	toolsController .addPropertyListener( new PropertyChangeListener()
             	{
@@ -473,8 +143,11 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				                String kind = controller .getProperty( "kind" );
 				        		if ( kind .equals( "bookmark" ) )
 				        			addBookmark( controller );
-				        		else
-				        			addTool( controller );
+				        		else {
+				        			for (SymmetryToolbarsPanel panel : toolBarPanels ) {
+					        			panel .addTool( controller );
+									}
+				        		}
 				            }
 							break;
 
@@ -484,6 +157,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 				    }
 				});
                 
+                boolean hasOldToolBar = controller .propertyIsTrue( "original.tools" );
             	if ( hasOldToolBar ) {
                     // --------------------------------------- Create the fixed toolbar.
 
@@ -550,10 +224,9 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
             }
             else {
             	this .oldToolBar = null;
-            	this .secondToolbar = null;
-            	this .firstToolbar = null;
             	this .bookmarkBar = null;
-            	firstScroller = null; secondScroller = null; bookmarkScroller = null;
+            	this .bookmarkScroller = null;
+            	this .toolbarCards = null;
             }
 
             monocularClicks = new ContextualMenuMouseListener( monoController , new PickerContextualMenu( monoController, enabler, "monocular" ) );
@@ -565,66 +238,12 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
         }
         else {
         	this .oldToolBar = null;
-        	this .secondToolbar = null;
-        	this .firstToolbar = null;
         	this .bookmarkBar = null;
-        	firstScroller = null; secondScroller = null; bookmarkScroller = null;
+        	this .bookmarkScroller = null;
+        	this .toolbarCards = null;
         }
 	}
-	
-	private void addTool( Controller controller )
-	{
-		if ( controller == null )
-			// the field may not support the tool that was requested
-			return;
-		this .addTool( controller, controller .getProperty( "label" ) );
-	}
-	
-	private void addTool( Controller controller, String label )
-	{
-		String kind = controller .getProperty( "kind" );
-        String iconPath = "/icons/tools/small/" + kind + ".png";
-        String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
-        JButton button = makeEditButton2( tooltip, iconPath );
-		button .setActionCommand( "apply" );
-		button .addActionListener( controller );
-		button .addMouseListener( new MouseAdapter()
-		{
-			@Override
-			public void mousePressed( MouseEvent e )
-			{
-				maybeShowPopup( e );
-			}
-
-			@Override
-			public void mouseReleased( MouseEvent e )
-			{
-				maybeShowPopup( e );
-			}
-
-			private void maybeShowPopup( MouseEvent e )
-			{
-				if ( e.isPopupTrigger() ) {
-					toolConfigDialog .showTool( button, controller );
-				}
-			}
-		} );
-		controller .addPropertyListener( new PropertyChangeListener()
-		{
-			@Override
-			public void propertyChange( PropertyChangeEvent evt )
-			{
-				if ( "label" .equals( evt .getPropertyName() ) )
-				{
-					String label = (String) evt .getNewValue();
-					String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
-					button .setToolTipText( tooltip );
-				}
-			}
-		});
-		secondToolbar .add( button );
-    	}
-	
+		
 	private void addBookmark( Controller controller )
 	{
 		String name = controller .getProperty( "label" );
@@ -632,7 +251,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		this .nextBookmarkIcon = ( icon + 1 ) % 4;
 		String iconPath = "/icons/tools/small/bookmark_" + icon + ".png";
 		String tooltip = TOOLTIP_PREFIX + name + TOOLTIP_SUFFIX;
-		JButton button = makeEditButton2( tooltip, iconPath );
+		JButton button = makeIconButton( tooltip, iconPath );
 		button .setActionCommand( "apply" );
 		button .addActionListener( controller );
 		tooltip = "<html><b>" + name + "</b></html>";
@@ -640,43 +259,13 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		bookmarkBar .add( button );
 	}
 	
-	private AbstractButton newToolButton( Controller toolsController, String group, String title, String helpHtml )
-	{
-		String iconPath = "/icons/tools/newTool/" + group + ".png";
-		String html = "<html><img src=\"" + ModelPanel.class.getResource( iconPath ) + "\">&nbsp;&nbsp;<b>" + title
-					+ "</b><br><br>" + helpHtml + "</html>";
-		final JButton button = makeEditButton2( html, iconPath );
-		button .setActionCommand( "createTool" );
-		Controller buttonController = toolsController .getSubController( group );
-		button .addActionListener( buttonController );
-		button .setEnabled( buttonController != null && buttonController .propertyIsTrue( "enabled" ) );
-		if ( buttonController != null )
-			buttonController .addPropertyListener( new PropertyChangeListener()
-			{
-				@Override
-				public void propertyChange( PropertyChangeEvent evt )
-				{
-					switch ( evt .getPropertyName() ) {
-
-					case "enabled":
-						button .setEnabled( (Boolean) evt .getNewValue() );
-						break;
-					}
-				}
-			});
-		else
-			System .out .println( "no controller for tool Factory: " + group );
-		return button;
-	}
-	
-	private AbstractButton newBookmarkButton( Controller toolsController )
+	private AbstractButton newBookmarkButton( Controller buttonController )
 	{
 		String iconPath = "/icons/tools/newTool/bookmark.png";
 		String html = "<html><img src=\"" + ModelPanel.class.getResource( iconPath ) + "\">&nbsp;&nbsp;<b>" + "Create a selection bookmark"
 					+ "</b><br><br>A selection bookmark lets you re-create<br>any selection at a later time.</html>";
-		final JButton button = makeEditButton2( html, iconPath );
+		final JButton button = makeIconButton( html, iconPath );
 		button .setActionCommand( "createTool" );
-		Controller buttonController = toolsController .getSubController( "bookmark" );
 		button .addActionListener( buttonController );
 		button .setEnabled( buttonController != null && buttonController .propertyIsTrue( "enabled" ) );
 		if ( buttonController != null )
@@ -698,13 +287,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		return button;
 	}
 	
-	private AbstractButton makeEditButton( ControlActions enabler, String command, String tooltip )
-	{
-		AbstractButton button = makeEditButton2( tooltip, "/icons/tools/small/" + command + ".png" );
-		button = enabler .setButtonAction( command, button );
-		return button;
-	}
-	
 	private AbstractButton makeLegacyEditButton( ControlActions enabler, String command, String tooltip )
 	{
 		String imageName = command;
@@ -712,7 +294,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 			imageName = command .substring( 0, command.length() - 8 );
 		else if ( imageName .endsWith( "-golden" ) )
 			imageName = command .substring( 0, command.length() - 7 );
-		AbstractButton button = makeEditButton2( tooltip, "/icons/" + imageName + "_on.png" );
+		AbstractButton button = makeIconButton( tooltip, "/icons/" + imageName + "_on.png" );
 		button = enabler .setButtonAction( command, button );
 		Dimension dim = new Dimension( 100, 63 );
 		button .setPreferredSize( dim );
@@ -720,7 +302,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 		return button;
 	}
 	
-	private JButton makeEditButton2( String tooltip, String imgLocation )
+	public JButton makeIconButton( String tooltip, String imgLocation )
 	{
         // Create and initialize the button.
 		JButton button = new JButton();
@@ -752,14 +334,18 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	{
 		switch ( e .getPropertyName() ) {
 		
+		case "symmetry":
+			String symmName = (String) e .getNewValue();
+            this .toolbarCards .showCard( symmName );
+			break;
+			
 		case "editor.mode":
 	        if ( isEditor )
 	        {
 	            if ( "article" .equals( e .getNewValue() ) ) {
 	            	if ( this .oldToolBar != null )
 	            		this .oldToolBar .setVisible( false );
-	            	this .firstScroller .setVisible( false );
-	            	this .secondScroller .setVisible( false );
+	            	this .toolbarCards .setVisible( false );
 	            	this .bookmarkScroller .setVisible( false );
 	                monocularCanvas .removeMouseListener( monocularClicks );
 	                leftEyeCanvas .removeMouseListener( leftEyeClicks );
@@ -768,8 +354,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener
 	            else if ( ! "true" .equals( this .controller .getProperty( "no.toolbar" ) ) ) {
 	            	if ( this .oldToolBar != null )
 	            		this .oldToolBar .setVisible( true );
-	            	this .firstScroller .setVisible( true );
-	            	this .secondScroller .setVisible( true );
+	            	this .toolbarCards .setVisible( true );
 	            	this .bookmarkScroller .setVisible( true );
 	                monocularCanvas .addMouseListener( monocularClicks );
 	                leftEyeCanvas .addMouseListener( leftEyeClicks );

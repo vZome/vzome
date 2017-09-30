@@ -6,19 +6,15 @@ import java.beans.PropertyChangeListener;
 
 import org.vorthmann.ui.DefaultController;
 
-import com.vzome.core.editor.Tool;
-import com.vzome.core.editor.ToolFactory;
+import com.vzome.api.Tool;
 
 public class ToolFactoryController extends DefaultController implements PropertyChangeListener
 {
-	private final ToolFactory factory;
-	private int nextIndex = 0;
-	private ToolsController toolsController;
+	private final Tool.Factory factory;
 
-	public ToolFactoryController( ToolFactory factory, ToolsController toolsController )
+	public ToolFactoryController( Tool.Factory factory )
 	{
 		this .factory = factory;
-		this.toolsController = toolsController;
 		factory .addListener( this );
 	}
 
@@ -42,6 +38,12 @@ public class ToolFactoryController extends DefaultController implements Property
 	{
 		switch ( name ) {
 
+		case "title":
+			return this .factory .getLabel();
+
+		case "tooltip":
+			return this .factory .getToolTip();
+
 		case "enabled":
 			return Boolean .toString( this .factory .isEnabled() );
 
@@ -56,8 +58,7 @@ public class ToolFactoryController extends DefaultController implements Property
 		switch ( e .getActionCommand() ) {
 
 		case "createTool":
-			Tool tool = factory .createTool( ++nextIndex );
-			toolsController .addTool( tool );
+			factory .createTool();
 			break;
 
 		default:
