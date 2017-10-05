@@ -20,9 +20,11 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
+import com.vzome.core.editor.IcosahedralToolFactory;
+import com.vzome.core.editor.LinearMapTool;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
@@ -33,7 +35,7 @@ public class GenerateLinearMaps
 	private Application app;
 	private FieldApplication kind;
 	private AlgebraicField field;
-	private Symmetry symmetry;
+	private IcosahedralSymmetry symmetry;
 	private Connector origin;
 	private Direction red, yellow, blue, green;
 	private final ArrayList<String> acceptableOrbitNames;
@@ -52,7 +54,7 @@ public class GenerateLinearMaps
 
 		kind = app .getDocumentKind( "golden" );
 		field = kind .getField();
-	    symmetry = kind .getSymmetryPerspective( "icosahedral" ) .getSymmetry();
+	    symmetry = (IcosahedralSymmetry) kind .getSymmetryPerspective( "icosahedral" ) .getSymmetry();
 		red = symmetry .getDirection( "red" );
 		yellow = symmetry .getDirection( "yellow" );
 		blue = symmetry .getDirection( "blue" );
@@ -139,12 +141,12 @@ public class GenerateLinearMaps
 			select( strut2 );
 			select( strut( origin, a3, l3 ) );
 			select( origin ); // center for the transform
-			Tool.Factory factory = doc .getSymmetrySystem() .getToolFactory( "linear map" );
+			Tool.Factory factory = new LinearMapTool.Factory( doc .getToolsModel(), symmetry );
 			Tool mappingTool = factory .createTool();
 
 			deselect();
 			
-			factory = doc .getSymmetrySystem() .getToolFactory( "icosahedral" );
+            factory = new IcosahedralToolFactory( doc .getToolsModel(), symmetry );
 			Tool symmetryTool = factory .createTool();
 
 			deselect();

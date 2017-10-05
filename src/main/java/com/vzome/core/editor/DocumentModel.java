@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -113,6 +114,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	private Camera defaultView;
 	
 	private final String coreVersion;
+    
+	// The factories are here just for deserialization, not for use by controllers
+	private final Map<String,Tool.Factory> toolFactories = new HashMap<>();
 
     private static final Logger logger = Logger .getLogger( "com.vzome.core.editor" );
     private static final Logger thumbnailLogger = Logger.getLogger( "com.vzome.core.thumbnails" );
@@ -210,7 +214,14 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		for ( SymmetrySystem symmetrySys : this .symmetrySystems .values()) {
 			symmetrySys .createToolFactories( this .tools );
 		}
-
+		
+		this .kind .registerToolFactories( this .toolFactories, this .tools );
+		
+        // bookmark tool is explicitly loaded by the Controller
+       
+        AbstractToolFactory factory = new BookmarkTool.Factory( tools );
+        factory .createPredefinedTool( "ball at origin" );
+        
 		this .defaultView = new Camera();
         Element views = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "Viewing" ) .item( 0 );
         if ( views != null ) {
@@ -451,17 +462,29 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
 		if ( edit != null ) return edit;
 
-		for ( SymmetrySystem system : this .symmetrySystems .values() ) {
-			edit = system .createToolEdit( xml );
-			if ( edit != null ) return edit;
-		}
+		edit = this .createToolEdit( xml );
+
+		if ( edit != null ) return edit;
 
 		// any command unknown (i.e. from a newer version of vZome) becomes a CommandEdit
 		edit = new CommandEdit( null, mEditorModel, groupInSelection );
 		
 		return edit;
 	}
-	
+
+    public UndoableEdit createToolEdit( Element xml )
+    {
+        UndoableEdit edit = null;
+        String className = xml .getLocalName();
+        String toolId = xml .getAttribute( "name" );
+        if ( toolId == null )
+            return null;
+        AbstractToolFactory factory = (AbstractToolFactory) this .toolFactories .get( className );
+        if ( factory != null )
+            edit = factory .deserializeTool( toolId );
+        return edit;
+    }
+
 	private MapColors getColorMapper(String mapperName, String symmetrySystemName) {
         SymmetrySystem symm = symmetrySystems.get(symmetrySystemName);
         ManifestationColorMapper colorMapper

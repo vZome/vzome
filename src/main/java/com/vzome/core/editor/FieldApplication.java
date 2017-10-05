@@ -2,8 +2,10 @@ package com.vzome.core.editor;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.vzome.api.Tool;
+import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -37,4 +39,6 @@ public interface FieldApplication
 	QuaternionicSymmetry getQuaternionSymmetry( String name );
 
 	String getName();
+
+    void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools );
 }

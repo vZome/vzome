@@ -15,6 +15,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vzome.api.Tool;
+import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -44,7 +45,6 @@ public class SymmetrySystem implements OrbitSource
     private boolean noKnownDirections = false;
 
     private final SymmetryPerspective symmetryPerspective;
-	private final Map<String,Tool.Factory> toolFactories = new HashMap<>();
 	private final Map<Tool.Kind,List<Tool.Factory>> toolFactoryLists = new HashMap<>();
 	private final Map<Tool.Kind,List<Tool>> toolLists = new HashMap<>();
 
@@ -128,45 +128,16 @@ public class SymmetrySystem implements OrbitSource
 	public void createToolFactories( ToolsModel tools )
 	{
         // Here we go from support for viewing, to support for editing
+	    
         for ( Tool.Kind kind : Tool.Kind.values() )
         {
-    		List<Tool.Factory> list = this .symmetryPerspective .createToolFactories( kind, tools );
-    		// toolFactoryLists manifest to the Controller automatically
-    		this .toolFactoryLists .put( kind, list );
-    		for ( Tool.Factory factory : list ) {
-    			// toolFactories are available for tool creation during document load
-    			this .toolFactories .put( factory .getId(), factory );
-    		}
+            List<Tool.Factory> list = this .symmetryPerspective .createToolFactories( kind, tools );
+            // toolFactoryLists manifest to the Controller automatically
+            this .toolFactoryLists .put( kind, list );
 
-    		List<Tool> toolList = this .symmetryPerspective .predefineTools( kind, tools );
-    		this .toolLists .put( kind, toolList );
+            List<Tool> toolList = this .symmetryPerspective .predefineTools( kind, tools );
+            this .toolLists .put( kind, toolList );
         }
-        
-        // bookmark tool is explicitly loaded by the Controller
-       
-        AbstractToolFactory factory = new BookmarkTool.Factory( tools );
-		this .toolFactories .put( factory .getId(), factory );
-		factory .createPredefinedTool( "ball at origin" );
-		
-		// These tool factories have to be available for loading legacy documents.
-		
-		factory = new ModuleTool.Factory( tools );
-		this .toolFactories .put( factory .getId(), factory );
-		factory = new PlaneSelectionTool.Factory( tools );
-		this .toolFactories .put( factory .getId(), factory );
-		
-		factory = new LinearMapTool.Factory( tools, this .symmetry )
-		{
-			@Override
-			public com.vzome.core.editor.Tool createToolInternal( String id )
-			{
-				return new LinearMapTool( id, getToolsModel(), true ); // true instead of false
-			}
-		};
-		this .toolFactories .put( "LinearMapTool", factory ); // see createToolEdit, below
-		
-		factory = (AbstractToolFactory) this .toolFactories .get( "linear map" );
-		this .toolFactories .put( "map", factory ); // for some generated documents
    	}
 	
 	public String getName()
@@ -372,32 +343,6 @@ public class SymmetrySystem implements OrbitSource
 	public List<Tool.Factory> getToolFactories( Tool.Kind kind )
 	{
 		return this .toolFactoryLists .get( kind );
-	}
-	
-	public Tool.Factory getToolFactory( String category )
-	{
-		return this .toolFactories .get( category );
-	}
-
-	public UndoableEdit createToolEdit( Element xml )
-	{
-		UndoableEdit edit = null;
-        String className = xml .getLocalName();
-        String toolId = xml .getAttribute( "name" );
-        if ( toolId == null )
-        	return null;
-        int dotIndex = toolId .indexOf( "." );
-        if ( dotIndex <= 0 )
-        	return null;
-        String category = toolId .substring( 0, dotIndex );
-        if ( className .equals( "LinearMapTool" ) )
-        	// look up the legacy factory; see createToolFactories above
-        	category = className;
-        String suffix = toolId .substring( dotIndex + 1 );
-        AbstractToolFactory factory = (AbstractToolFactory) this .toolFactories .get( category );
-        if ( factory != null )
-        	edit = factory .deserializeTool( toolId );
-        return edit;
 	}
 
 	public List<Tool> getPredefinedTools( Tool.Kind kind )

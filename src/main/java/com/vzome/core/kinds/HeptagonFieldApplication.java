@@ -4,16 +4,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.vzome.api.Tool;
+import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.editor.AxialSymmetryToolFactory;
+import com.vzome.core.editor.BookmarkTool;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.InversionTool;
 import com.vzome.core.editor.LinearMapTool;
 import com.vzome.core.editor.MirrorTool;
+import com.vzome.core.editor.ModuleTool;
 import com.vzome.core.editor.OctahedralToolFactory;
+import com.vzome.core.editor.PlaneSelectionTool;
 import com.vzome.core.editor.RotationTool;
 import com.vzome.core.editor.ScalingTool;
 import com.vzome.core.editor.SymmetryTool;
@@ -314,4 +319,24 @@ public class HeptagonFieldApplication implements FieldApplication
 	{
 		return null;
 	}
+
+    @Override
+    public void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools )
+    {
+        // Any SymmetryTool factory here is good enough
+        toolFactories .put( "SymmetryTool", new OctahedralToolFactory( tools, null ) );
+        toolFactories .put( "RotationTool", new RotationTool.Factory( tools, null ) );
+        toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, null ) );
+        toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
+        toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
+        toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
+        toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
+        toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null ) );
+
+        // These tool factories have to be available for loading legacy documents.
+        
+        toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, null ) );
+        toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
+        toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
+    }
 }

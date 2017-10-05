@@ -8,17 +8,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.vzome.api.Tool;
+import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.editor.AbstractToolFactory;
 import com.vzome.core.editor.AxialStretchTool;
 import com.vzome.core.editor.AxialSymmetryToolFactory;
+import com.vzome.core.editor.BookmarkTool;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.IcosahedralToolFactory;
 import com.vzome.core.editor.InversionTool;
 import com.vzome.core.editor.LinearMapTool;
 import com.vzome.core.editor.MirrorTool;
+import com.vzome.core.editor.ModuleTool;
 import com.vzome.core.editor.OctahedralToolFactory;
+import com.vzome.core.editor.PlaneSelectionTool;
 import com.vzome.core.editor.RotationTool;
 import com.vzome.core.editor.ScalingTool;
 import com.vzome.core.editor.TetrahedralToolFactory;
@@ -65,14 +68,14 @@ public class GoldenFieldApplication implements FieldApplication
         private final IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( field, "solid connectors" );
         
         private final AbstractShapes icosadefaultShapes = new ExportedVEFShapes( null, "default", "solid connectors", icosaSymm );
-    	private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", icosaSymm, icosadefaultShapes );
-    	private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", icosaSymm );
-    	private final AbstractShapes tinyDodecs = new ExportedVEFShapes( null, "dodecs", "small dodecahedra", "tiny dodecahedra", icosaSymm, tinyShapes );
-    	private final AbstractShapes bigZome = new ExportedVEFShapes( null, "bigzome", "Big Zome", icosaSymm, tinyShapes );
-    	private final AbstractShapes noTwist = new ExportedVEFShapes( null, "noTwist", "no-twist 121 zone", icosaSymm );
-    	private final AbstractShapes vienne2 = new ExportedVEFShapes( null, "vienne2", "Vienne", icosaSymm, icosadefaultShapes );
-    	private final AbstractShapes vienne3 = new ExportedVEFShapes( null, "vienne3", "Vienne lifelike", icosaSymm, vienne2 );
-    	private final AbstractShapes vienne = new ExportedVEFShapes( null, "vienne", "Vienne 121 zone", icosaSymm );
+        private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", icosaSymm, icosadefaultShapes );
+        private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", icosaSymm );
+        private final AbstractShapes tinyDodecs = new ExportedVEFShapes( null, "dodecs", "small dodecahedra", "tiny dodecahedra", icosaSymm, tinyShapes );
+        private final AbstractShapes bigZome = new ExportedVEFShapes( null, "bigzome", "Big Zome", icosaSymm, tinyShapes );
+        private final AbstractShapes noTwist = new ExportedVEFShapes( null, "noTwist", "no-twist 121 zone", icosaSymm );
+        private final AbstractShapes vienne2 = new ExportedVEFShapes( null, "vienne2", "Vienne", icosaSymm, icosadefaultShapes );
+        private final AbstractShapes vienne3 = new ExportedVEFShapes( null, "vienne3", "Vienne lifelike", icosaSymm, vienne2 );
+        private final AbstractShapes vienne = new ExportedVEFShapes( null, "vienne", "Vienne 121 zone", icosaSymm );
     			
 		@Override
 		public Symmetry getSymmetry()
@@ -377,6 +380,30 @@ public class GoldenFieldApplication implements FieldApplication
 			return null;
 		}
 	}
+
+    @Override
+    public void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools )
+    {
+        IcosahedralSymmetry symm = (IcosahedralSymmetry) icosahedralPerspective .getSymmetry();
+        // symm matters for this one, since it is final in the tool
+        toolFactories .put( "AxialStretchTool", new AxialStretchTool.Factory( tools, symm, false, false, false ) );
+        
+        // We might as well use symm in the rest, though it will be overwritten by SymmetryTool.setXmlAttributes()
+        toolFactories .put( "SymmetryTool", new IcosahedralToolFactory( tools, symm ) );
+        toolFactories .put( "RotationTool", new RotationTool.Factory( tools, symm ) );
+        toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, symm ) );
+        toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
+        toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
+        toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
+        toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
+        toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null ) );
+
+        // These tool factories have to be available for loading legacy documents.
+        
+        toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, symm ) );
+        toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
+        toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
+    }
 
     public static void main( String[] args )
     {

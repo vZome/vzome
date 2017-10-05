@@ -136,7 +136,7 @@ public class AxialStretchTool extends TransformationTool
 			else
 				return stretch? "yellowstretch" : "yellowsquash";
 		}
-		
+		        
 		private static String getLabel( boolean red, boolean stretch, boolean first )
 		{
 			String label;
@@ -178,7 +178,7 @@ public class AxialStretchTool extends TransformationTool
 		@Override
 		public Tool createToolInternal( String id )
 		{
-			String category = getCategory( red, stretch, first );
+			String category = id .substring( 0, id .indexOf( "." ) );
 			return new AxialStretchTool( id, (IcosahedralSymmetry) getSymmetry(), getToolsModel(), stretch, red, first, category );
 		}
 
@@ -205,7 +205,7 @@ public class AxialStretchTool extends TransformationTool
 		}
 	}
 
-	private final IcosahedralSymmetry symmetry;
+	private IcosahedralSymmetry symmetry;
 	private boolean stretch;
 	private boolean red;
 	private boolean first;
@@ -343,7 +343,10 @@ public class AxialStretchTool extends TransformationTool
         this .red = value .equals( "red" );
         value = element .getAttribute( "first" );
         this .first = value == null || ! value .equals( "false" );;
-    	super .setXmlAttributes( element, format );
+
+        String symmName = element .getAttribute( "symmetry" );
+        this .symmetry = (IcosahedralSymmetry) format .parseSymmetry( "icosahedral" );
+        super .setXmlAttributes( element, format );
     }
 
     @Override
