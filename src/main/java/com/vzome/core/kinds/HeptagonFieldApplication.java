@@ -303,8 +303,11 @@ public class HeptagonFieldApplication implements FieldApplication
 	{
 		switch ( symmName ) {
 
-		case "heptagonal antiprism":
+		case "heptagonal antiprism corrected":
 			return this .heptAntiprismPerspective;
+
+		case "heptagonal antiprism":
+			return this .originalPerspective;
 
 		case "octahedral":
 			return this .octahedralPerspective;

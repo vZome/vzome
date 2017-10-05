@@ -7,7 +7,7 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.RealizedModel;
 
-public abstract class AbstractToolFactory implements Factory
+public abstract class AbstractToolFactory implements Factory, SelectionSummary.Listener
 {
 	private boolean enabled = false;
 	private final PropertyChangeSupport pcs;
@@ -25,21 +25,18 @@ public abstract class AbstractToolFactory implements Factory
 		this.label = label;
 		this.tooltip = tooltip;
 		this .pcs = new PropertyChangeSupport( this );
-		final EditorModel editor = tools .getEditorModel();
-		editor .addSelectionSummaryListener( new SelectionSummary.Listener()
-		{
-			@Override
-			public void selectionChanged( int total, int balls, int struts, int panels )
-			{
-				boolean wasEnabled = enabled;
-				if ( countsAreValid( total, balls, struts, panels ) )
-					enabled = bindParameters( getSelection() );
-				else
-					enabled = false;
-				if ( wasEnabled != enabled )
-					pcs .firePropertyChange( "enabled", wasEnabled, enabled );
-			}
-		} );
+	}
+
+	@Override
+	public void selectionChanged( int total, int balls, int struts, int panels )
+	{
+		boolean wasEnabled = enabled;
+		if ( countsAreValid( total, balls, struts, panels ) )
+			enabled = bindParameters( getSelection() );
+		else
+			enabled = false;
+		if ( wasEnabled != enabled )
+			pcs .firePropertyChange( "enabled", wasEnabled, enabled );
 	}
 
 	public Symmetry getSymmetry()

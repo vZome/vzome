@@ -95,6 +95,8 @@ public class ScalingTool extends SymmetryTool
         		}
         	Axis zone1 = symmetry .getAxis( offset1 );
         	Axis zone2 = symmetry .getAxis( offset2 );
+        	if ( zone1 == null || zone2 == null )
+        		return false;
         	Direction orbit1 = zone1 .getDirection();
         	Direction orbit2 = zone2 .getDirection();
         	if ( orbit1 != orbit2 )

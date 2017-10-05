@@ -76,7 +76,7 @@ public class GoldenFieldApplication implements FieldApplication
         private final AbstractShapes vienne2 = new ExportedVEFShapes( null, "vienne2", "Vienne", icosaSymm, icosadefaultShapes );
         private final AbstractShapes vienne3 = new ExportedVEFShapes( null, "vienne3", "Vienne lifelike", icosaSymm, vienne2 );
         private final AbstractShapes vienne = new ExportedVEFShapes( null, "vienne", "Vienne 121 zone", icosaSymm );
-    			
+        
 		@Override
 		public Symmetry getSymmetry()
 		{

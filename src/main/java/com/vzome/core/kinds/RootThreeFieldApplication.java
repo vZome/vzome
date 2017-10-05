@@ -187,7 +187,7 @@ public class RootThreeFieldApplication implements FieldApplication
 		@Override
 		public String getName()
 		{
-			return "dodecagonal antiprism";
+			return "dodecagonal";
 		}
 
 		@Override

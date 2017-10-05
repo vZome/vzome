@@ -15,7 +15,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vzome.api.Tool;
-import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -134,6 +133,9 @@ public class SymmetrySystem implements OrbitSource
             List<Tool.Factory> list = this .symmetryPerspective .createToolFactories( kind, tools );
             // toolFactoryLists manifest to the Controller automatically
             this .toolFactoryLists .put( kind, list );
+            for ( Tool.Factory factory : list ) {
+				tools .getEditorModel() .addSelectionSummaryListener( (SelectionSummary.Listener) factory );
+			}
 
             List<Tool> toolList = this .symmetryPerspective .predefineTools( kind, tools );
             this .toolLists .put( kind, toolList );
