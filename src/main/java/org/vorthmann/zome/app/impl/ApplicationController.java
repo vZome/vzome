@@ -26,11 +26,13 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.zome.ui.ApplicationUI;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Strut;
@@ -170,50 +172,48 @@ public class ApplicationController extends DefaultController
             mSymmetryModels.put( symmetry, model );
         }
 
-//        field = modelApp .getField( "snubDodec" );
-//        symmetry = field .getSymmetryPerspective( "icosahedral" );
-//        {
-//            model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-vef.vZome" );
-//            mSymmetryModels.put( symmetry, model );
-//        }
-//
-//        field = modelApp .getField( "heptagon" );
-//        {
-//            model = loadModelPanels( "org/vorthmann/zome/app/heptagonal antiprism.vZome" );
-//            symmetry = field .getSymmetryPerspective( "heptagonal antiprism corrected" );
-//            mSymmetryModels.put( symmetry, model );
-//            symmetry = field .getSymmetryPerspective( "heptagonal antiprism" );
-//            mSymmetryModels.put( symmetry, model );
-//
-//            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );
-//            symmetry = field .getSymmetryPerspective( "triangular antiprism" );
-//            mSymmetryModels.put( symmetry, model );
-//            symmetry = field .getSymmetryPerspective( "octahedral" );
-//            mSymmetryModels.put( symmetry, model );
-//        }
-//
-//        field = modelApp .getField( "rootTwo" );
-//        symmetry = field .getSymmetryPerspective( "octahedral" );
-//        {
-//            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome" );
-//            mSymmetryModels.put( symmetry, model );
-//            symmetry = field .getSymmetryPerspective( "synestructics" );
-//            mSymmetryModels.put( symmetry, model );
-//        }
-//
-//        field = modelApp .getField( "rootThree" );
-//        symmetry = field .getSymmetryPerspective( "octahedral" );
-//        {
-//            // yes, reusing the model from above
-//            mSymmetryModels.put( symmetry, model );
-//        }
-//        symmetry = field .getSymmetryPerspective( "dodecagonal" );
-//        {
-//            model = loadModelPanels( "org/vorthmann/zome/app/dodecagonal.vZome" );
-//            mSymmetryModels.put( symmetry, model );
-//        }
+        field = modelApp .getDocumentKind( "snubDodec" );
+        symmetry = field .getSymmetryPerspective( "icosahedral" ) .getSymmetry();
+        {
+            model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-vef.vZome", symmetry );
+            mSymmetryModels.put( symmetry, model );
+        }
 
-        // addStyle( new ModeledShapes( "pentagonal", "pentagonal prismatic", DecagonSymmetry.INSTANCE ) );
+        field = modelApp .getDocumentKind( "rootTwo" );
+        symmetry = field .getSymmetryPerspective( "octahedral" ) .getSymmetry();
+        {
+            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome", symmetry );
+            mSymmetryModels.put( symmetry, model );
+            symmetry = field .getSymmetryPerspective( "synestructics" ) .getSymmetry();
+            mSymmetryModels.put( symmetry, model );
+        }
+
+        field = modelApp .getDocumentKind( "rootThree" );
+        symmetry = field .getSymmetryPerspective( "octahedral" ) .getSymmetry();
+        {
+            // yes, reusing the model from above
+            mSymmetryModels.put( symmetry, model );
+        }
+        symmetry = field .getSymmetryPerspective( "dodecagonal" ) .getSymmetry();
+        {
+            model = loadModelPanels( "org/vorthmann/zome/app/dodecagonal.vZome", symmetry );
+            mSymmetryModels.put( symmetry, model );
+        }
+
+        field = modelApp .getDocumentKind( "heptagon" );
+        {
+            symmetry = field .getSymmetryPerspective( "heptagonal antiprism" ) .getSymmetry();
+            model = loadModelPanels( "org/vorthmann/zome/app/heptagonal antiprism.vZome", symmetry );
+            mSymmetryModels.put( symmetry, model );
+            symmetry = field .getSymmetryPerspective( "heptagonal antiprism corrected" ) .getSymmetry();
+            mSymmetryModels.put( symmetry, model );
+
+            symmetry = field .getSymmetryPerspective( "octahedral" ) .getSymmetry();
+            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome", symmetry );
+            mSymmetryModels.put( symmetry, model );
+//            symmetry = field .getSymmetryPerspective( "triangular antiprism" ) .getSymmetry();
+//            mSymmetryModels.put( symmetry, model );
+        }
 
         long endtime = System.currentTimeMillis();
         if ( logger .isLoggable( Level .INFO ) )
@@ -516,8 +516,20 @@ public class ApplicationController extends DefaultController
     		document .setRenderedModel( new RenderedModel( symmetry ) 	 	 
     		{
 				@Override
-    			protected void resetAttributes( RenderedManifestation rm, 	 	 
-    					boolean justShape, Strut strut ) {} 	 	 
+    			protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
+				{
+					// For struts, we still want to find the zone, since we may need it to do
+					//   a well-behaved line-line intersection
+					AlgebraicVector offset = strut .getOffset();
+					if ( offset .isOrigin() )
+					    return; // should catch this earlier
+					Axis axis = getOrbitSource() .getAxis( offset );
+					if ( axis == null )
+						return; // this should only happen when using the bare Symmetry-based OrbitSource
+					
+					// This lets the Strut represent Lines better.
+					strut .setZoneVector( axis .normal() );
+				} 	 	 
 
 				@Override
     			protected void resetAttributes(RenderedManifestation rm, 	 	 
