@@ -45,6 +45,10 @@ sourceSets {
     }
 }
 
+task wrapper(type: Wrapper) {
+   gradleVersion = '4.1' //version required
+}
+
 task recordBuildProperties {
     def propsFile = file( "$buildDir/buildPropsResource/vzome-core-build.properties" )
     ext.outputDir = propsFile .getParentFile()
