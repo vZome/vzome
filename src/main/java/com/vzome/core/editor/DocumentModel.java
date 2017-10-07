@@ -36,6 +36,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vzome.api.Tool;
+import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -217,10 +218,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		
 		this .kind .registerToolFactories( this .toolFactories, this .tools );
 		
-        // bookmark tool is explicitly loaded by the Controller
-       
-        AbstractToolFactory factory = new BookmarkTool.Factory( tools );
-        factory .createPredefinedTool( "ball at origin" );
+        this .bookmarkFactory = new BookmarkTool.Factory( tools );
+		this .mEditorModel .addSelectionSummaryListener( (SelectionSummary.Listener) this .bookmarkFactory );
+
+		this .bookmarkFactory .createPredefinedTool( "ball at origin" );
         
 		this .defaultView = new Camera();
         Element views = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "Viewing" ) .item( 0 );
@@ -1096,6 +1097,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 
+	private AbstractToolFactory bookmarkFactory;
+
     /**
      * @deprecated As of 8/11/2016:
      * This code will continue to function properly,
@@ -1431,5 +1434,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	public FieldApplication getFieldApplication()
 	{
 		return this .kind;
+	}
+
+	public Factory getBookmarkFactory()
+	{
+		return this .bookmarkFactory;
 	}
 }

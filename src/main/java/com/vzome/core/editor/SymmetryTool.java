@@ -238,6 +238,11 @@ public class SymmetryTool extends TransformationTool
 				if ( axis != null )
 					return "No struts needed for symmetry";
 			}
+			
+    	default:
+	        if ( prepareTool )
+	        	prepareFullSymmetry( center );
+			break;
 		}
         
         return null;
