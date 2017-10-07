@@ -22,6 +22,10 @@ compileJava {
 	targetCompatibility = 1.8
 }
 
+task wrapper(type: Wrapper) {
+   gradleVersion = '4.1' //version required
+}
+
 task recordBuildProperties {
     def propsFile = file( "$buildDir/buildPropsResource/build.properties" )
     ext.outputDir = propsFile .getParentFile()
