@@ -320,8 +320,12 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         	//        		imageURL = getClass() .getResource( "/icons/" + imageName + "_on.png" );
         	//        		icon = new ImageIcon( imageURL, label );
         	//        		button .setRolloverIcon( icon );
-        } else
+        } else {
+        	Dimension dim = new Dimension( 37, 31 );
+        	button .setPreferredSize( dim );
+        	button .setMaximumSize( dim );
         	System.err.println( "Resource not found: " + imgLocation );
+        }
 
         button .setVerticalTextPosition( SwingConstants.TOP );
         button .setHorizontalTextPosition( SwingConstants.CENTER );

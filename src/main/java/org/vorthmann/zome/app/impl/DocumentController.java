@@ -1482,7 +1482,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             return lessonController;
         
         case "bookmark":
-            return new ToolFactoryController( new BookmarkTool.Factory( this .documentModel .getToolsModel() ) );
+            return new ToolFactoryController( this .documentModel .getBookmarkFactory() );
         
         case "snapshot.2d": {
             if ( mSnapshot == null ) {
