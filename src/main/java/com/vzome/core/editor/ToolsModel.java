@@ -5,11 +5,15 @@ import java.beans.PropertyChangeSupport;
 import java.util.EnumSet;
 import java.util.TreeMap;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.vzome.api.Tool.InputBehaviors;
 import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.construction.Point;
+import com.vzome.core.math.DomUtils;
 
 public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 {
@@ -24,6 +28,21 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		super();
 		this .context = context;
 		this .originPoint = originPoint;
+	}
+	
+	void loadFromXml( Element xml )
+	{
+		NodeList nodes = xml .getChildNodes();
+		for ( int i = 0; i < nodes .getLength(); i++ ) {
+			Node node = nodes .item( i );
+			if ( node instanceof Element ) {
+				Element toolElem = (Element) node;
+				String id = toolElem .getAttribute( "id" );
+				String label = toolElem .getAttribute( "label" );
+				Tool tool = this .get( id );
+				tool .setLabel( label );
+			}
+		}
 	}
 	
 	public int reserveId()
@@ -118,4 +137,17 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 	{
 		return this .originPoint;
 	}
+
+	public Element getXml( Document doc )
+	{
+        Element result = doc .createElement( "Tools" );
+        for ( Tool tool : this .values() ) 
+        	if ( ! tool .isPredefined() ){
+        		Element toolElem = doc .createElement( "Tool" );
+        		DomUtils .addAttribute( toolElem, "id", tool .getId() );
+        		DomUtils .addAttribute( toolElem, "label", tool .getLabel() );
+        		result .appendChild( toolElem );
+        	}
+        return result;
+    }
 }

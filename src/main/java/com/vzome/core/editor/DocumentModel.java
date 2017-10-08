@@ -959,6 +959,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         	}
         }
 
+        // This has to wait until all the tools are defined, in mHistory .synchronize() above
+        Element toolsXml = (Element) mXML .getElementsByTagName( "Tools" ) .item( 0 );
+        if ( toolsXml != null )
+        	this .tools .loadFromXml( toolsXml );
+
         this .migrated = openUndone || format.isMigration() || ! implicitSnapshots .isEmpty();
     }
     
@@ -1052,6 +1057,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         vZomeRoot .appendChild( childElement );
 
         childElement = this .mEditorModel .getSymmetrySystem() .getXml( doc );
+        vZomeRoot .appendChild( childElement );
+
+        childElement = this .tools .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
         DomUtils .serialize( doc, out );
