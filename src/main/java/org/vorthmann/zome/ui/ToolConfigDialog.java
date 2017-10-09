@@ -44,7 +44,7 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 	private PropertyChangeListener checkboxChanges;
 	private final ActionListener closer;
 	
-    public ToolConfigDialog( JFrame frame )
+    public ToolConfigDialog( JFrame frame, boolean forBookmark )
     {
         super( frame, true );
 
@@ -117,44 +117,47 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 
         getRootPane() .registerKeyboardAction( closer, KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 ), JComponent.WHEN_IN_FOCUSED_WINDOW );
 
+        this .setMinimumSize( new Dimension( 320, 25 ) );
+
         JPanel iconAndLabel = new JPanel();
         this .add( iconAndLabel, BorderLayout .NORTH );
         iconAndLabel .setLayout( new BorderLayout() );
         {
-        	iconButton = new JButton();
+            iconButton = new JButton();
             URL imageURL = getClass() .getResource( "/icons/tools/small/scaling.png" ); // any would work; will get replaced
-        	Icon icon = new ImageIcon( imageURL );
-        	iconButton .setIcon( icon );
-        	Dimension dim = new Dimension( icon .getIconWidth()+13, icon .getIconHeight()+13 );
-        	iconButton .setPreferredSize( dim );
-        	iconButton .setMaximumSize( dim );
-        	iconButton .setActionCommand( "apply" );
-        	iconButton .addActionListener( this );
-        	iconAndLabel .add( iconButton, BorderLayout .WEST );
+            Icon icon = new ImageIcon( imageURL );
+            iconButton .setIcon( icon );
+            Dimension dim = new Dimension( icon .getIconWidth()+13, icon .getIconHeight()+13 );
+            iconButton .setPreferredSize( dim );
+            iconButton .setMaximumSize( dim );
+            iconButton .setActionCommand( "apply" );
+            iconButton .addActionListener( this );
+            iconAndLabel .add( iconButton, BorderLayout .WEST );
             namePanel = new CardPanel();
             {
-            	toolName = new JTextField();
-            	toolName .setHorizontalAlignment( SwingConstants .CENTER );
-            	toolName .addActionListener( new ActionListener()
-            	{
-    				@Override
-    				public void actionPerformed( ActionEvent e )
-    				{
-    			        String name = toolName .getText();
-    					controller .setProperty( "label", name );
-    					closer .actionPerformed( e );
-    				}
-    			});
+                toolName = new JTextField();
+                toolName .setHorizontalAlignment( SwingConstants .CENTER );
+                toolName .addActionListener( new ActionListener()
+                {
+                    @Override
+                    public void actionPerformed( ActionEvent e )
+                    {
+                        String name = toolName .getText();
+                        controller .setProperty( "label", name );
+                        closer .actionPerformed( e );
+                    }
+                });
                 namePanel .add( "editable", toolName );
 
-            	toolLabel = new JLabel();
-            	toolLabel .setHorizontalAlignment( SwingConstants .CENTER );
-            	namePanel .add( "builtin", toolLabel );
+                toolLabel = new JLabel();
+                toolLabel .setHorizontalAlignment( SwingConstants .CENTER );
+                namePanel .add( "builtin", toolLabel );
             }
-        	iconAndLabel .add( namePanel, BorderLayout .CENTER );
+            iconAndLabel .add( namePanel, BorderLayout .CENTER );
         }
         tabs = new JTabbedPane();
-        this .add( tabs, BorderLayout .CENTER );
+        if ( ! forBookmark )
+            this .add( tabs, BorderLayout .CENTER );
         {
         	JPanel inputsOutputs = new JPanel();
         	tabs .addTab( "behavior", inputsOutputs );

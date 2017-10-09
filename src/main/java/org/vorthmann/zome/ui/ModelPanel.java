@@ -5,6 +5,8 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -16,6 +18,7 @@ import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -41,14 +44,17 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 	private int nextBookmarkIcon = 0;
 	private final CardPanel toolbarCards;
 	private final Collection<SymmetryToolbarsPanel> toolBarPanels = new ArrayList<SymmetryToolbarsPanel>();
-	
+	private final ToolConfigDialog bookmarkConfigDialog;
+
 	public ModelPanel( Controller controller, ControlActions enabler, boolean isEditor, boolean fullPower )
 	{
 		super( new BorderLayout() );
 		this .controller = controller;
         this .view = controller .getSubController( "viewPlatform" );
         this .isEditor = isEditor;
-        
+
+        this .bookmarkConfigDialog = new ToolConfigDialog( (JFrame) this.getParent(), true );
+
         Controller monoController = controller .getSubController( "monocularPicking" );
         Controller leftController = controller .getSubController( "leftEyePicking" );
         Controller rightController = controller .getSubController( "rightEyePicking" );
@@ -254,8 +260,42 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 		JButton button = makeIconButton( tooltip, iconPath );
 		button .setActionCommand( "apply" );
 		button .addActionListener( controller );
+        button .addMouseListener( new MouseAdapter()
+        {
+            @Override
+            public void mousePressed( MouseEvent e )
+            {
+                maybeShowPopup( e );
+            }
+
+            @Override
+            public void mouseReleased( MouseEvent e )
+            {
+                maybeShowPopup( e );
+            }
+
+            private void maybeShowPopup( MouseEvent e )
+            {
+                if ( e.isPopupTrigger() ) {
+                    bookmarkConfigDialog .showTool( button, controller );
+                }
+            }
+        } );
 		tooltip = "<html><b>" + name + "</b></html>";
 		button .setToolTipText( tooltip );
+        controller .addPropertyListener( new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange( PropertyChangeEvent evt )
+            {
+                if ( "label" .equals( evt .getPropertyName() ) )
+                {
+                    String label = (String) evt .getNewValue();
+                    String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
+                    button .setToolTipText( tooltip );
+                }
+            }
+        });
 		bookmarkBar .add( button );
 	}
 	

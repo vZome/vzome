@@ -31,7 +31,7 @@ public class SymmetryToolbarsPanel extends JPanel
 		super();
 		this.factory = factory;
 
-        this .toolConfigDialog = new ToolConfigDialog( (JFrame) this.getParent() );
+        this .toolConfigDialog = new ToolConfigDialog( (JFrame) this.getParent(), false );
 
         this .setLayout( new GridLayout( 2, 1 ) );
         
