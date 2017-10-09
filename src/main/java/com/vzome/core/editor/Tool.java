@@ -3,6 +3,8 @@
 
 package com.vzome.core.editor;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -22,12 +24,18 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
 
 	private boolean predefined;
 	private String label;
+	private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
 
 	public Tool( String id, ToolsModel tools )
 	{
 		super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel(), false );
 		this .tools = tools;
 		this .id = id;
+	}
+	
+	public void addPropertyChangeListener( PropertyChangeListener listener )
+	{
+		this .pcs .addPropertyChangeListener( listener );
 	}
 
 	public void setCategory( String category )
@@ -144,6 +152,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
 	public void setLabel( String label )
 	{
 		this .label = label;
+		this .pcs .firePropertyChange( "label", null, label );
 	}
 
 	@Override
