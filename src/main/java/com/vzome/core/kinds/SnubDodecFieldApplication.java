@@ -1,0 +1,243 @@
+package com.vzome.core.kinds;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import com.vzome.api.Tool;
+import com.vzome.api.Tool.Factory;
+import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.SnubDodecField;
+import com.vzome.core.editor.AxialStretchTool;
+import com.vzome.core.editor.AxialSymmetryToolFactory;
+import com.vzome.core.editor.BookmarkTool;
+import com.vzome.core.editor.FieldApplication;
+import com.vzome.core.editor.IcosahedralToolFactory;
+import com.vzome.core.editor.InversionTool;
+import com.vzome.core.editor.LinearMapTool;
+import com.vzome.core.editor.MirrorTool;
+import com.vzome.core.editor.ModuleTool;
+import com.vzome.core.editor.PlaneSelectionTool;
+import com.vzome.core.editor.RotationTool;
+import com.vzome.core.editor.ScalingTool;
+import com.vzome.core.editor.TetrahedralToolFactory;
+import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.TranslationTool;
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.QuaternionicSymmetry;
+import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.render.Shapes;
+import com.vzome.core.viewing.AbstractShapes;
+import com.vzome.core.viewing.ExportedVEFShapes;
+
+/**
+ * Everything here is stateless, or at worst, a cache (like Shapes).
+ * An instance of this can be shared by many DocumentModels.
+ * This is why it does not have tool factories, though it does
+ * dictate what tool factories will be present.
+ * 
+ * @author vorth
+ *
+ */
+public class SnubDodecFieldApplication implements FieldApplication
+{
+	private final AlgebraicField field = new SnubDodecField( new PentagonField() );
+
+	@Override
+	public String getName()
+	{
+		return this .field .getName();
+	}
+
+	@Override
+	public AlgebraicField getField()
+	{
+		return this .field;
+	}
+
+    private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()
+    {
+        private final IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" )
+        {
+        	@Override
+        	protected void createOtherOrbits()
+        	{
+        		super .createOtherOrbits();
+        		/*
+        		 * 
+
+          PENTAGON
+          4 + tau*-4 + xi*0 + tau*xi*0 + xi^2*-2 + tau*xi^2*2, -4 + tau*0 + xi*0 + tau*xi*0 + xi^2*2 + tau*xi^2*0, 0 + tau*0 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*2
+          4 -4 0 0 -2 2 -4 0 0 0 2 0 0 0 0 0 0 2
+          (2,-2,0,0,-4,4) (0,2,0,0,0,-4) (2,0,0,0,0,0)
+
+
+          TRIANGLE
+          0 + tau*-4 + xi*-2 + tau*xi*0 + xi^2*0 + tau*xi^2*2, -4 + tau*4 + xi*0 + tau*xi*-2 + xi^2*2 + tau*xi^2*-2, -4 + tau*0 + xi*-2 + tau*xi*-2 + xi^2*2 + tau*xi^2*0
+          0 -4 -2 0 0 2 -4 4 0 -2 2 -2 -4 0 -2 -2 2 0
+          (2,0,0,-2,-4,0) (-2,2,-2,0,4,-4) (0,2,-2,-2,0,-4)
+
+
+          DIAGONAL
+          8 + tau*0 + xi*0 + tau*xi*4 + xi^2*-4 + tau*xi^2*0, 0 + tau*-4 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*0, 0 + tau*0 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*0
+          8 0 0 4 -4 0 0 -4 0 0 0 0 0 0 0 0 0 0
+          (0,-4,4,0,0,8) (0,0,0,0,-4,0) (0,0,0,0,0,0)
+
+        		 */      
+        		AlgebraicNumber scale = mField .createPower( -3 );
+        		createZoneOrbit( "snubPentagon", 0, NO_ROTATION, rationalVector( new int[]{ 4,-4,0,0,-2,2,  -4,0,0,0,2,0,  0,0,0,0,0,2 } ), false, false, scale );
+        		createZoneOrbit( "snubTriangle", 0, NO_ROTATION, rationalVector( new int[]{ 0,-4,-2,0,0,2,  -4,4,0,-2,2,-2,  -4,0,-2,-2,2,0 } ), false, false, scale );
+        		createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, rationalVector( new int[]{ 8,0,0,4,-4,0,  0,-4,0,0,0,0,  0,0,0,0,0,0 } ), false, false, scale );
+        	}
+        };
+        
+//        mCommands .put( "icosasymm-snubDodec", new CommandSymmetry( symmetry ) );
+//        mCommands .put( "tetrasymm-snubDodec", new CommandTetrahedralSymmetry( symmetry ) );
+//        mCommands .put( "axialsymm-snubDodec", new CommandAxialSymmetry( symmetry ) );
+
+        private final AbstractShapes defaultShapes = new ExportedVEFShapes( null, "default", "solid connectors", symmetry );
+    	private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", symmetry, defaultShapes );
+    	private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", symmetry );
+    			
+		@Override
+		public Symmetry getSymmetry()
+		{
+			return this .symmetry;
+		}
+		
+		@Override
+		public String getName()
+		{
+			return "icosahedral";
+		}
+
+		@Override
+		public List<Shapes> getGeometries()
+		{
+			return Arrays.asList( defaultShapes, lifelikeShapes, tinyShapes );
+		}
+		
+		@Override
+		public Shapes getDefaultGeometry()
+		{
+			return this .defaultShapes;
+		}
+
+		@Override
+		public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
+		{
+			List<Tool.Factory> result = new ArrayList<>();
+			switch ( kind ) {
+
+			case SYMMETRY:
+				result .add( new IcosahedralToolFactory( tools, this .symmetry ) );
+				result .add( new TetrahedralToolFactory( tools, this .symmetry ) );
+				result .add( new InversionTool.Factory( tools ) );
+				result .add( new MirrorTool.Factory( tools ) );
+				result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
+				break;
+
+			case TRANSFORM:
+				result .add( new ScalingTool.Factory( tools, this .symmetry ) );
+				result .add( new RotationTool.Factory( tools, this .symmetry ) );
+				result .add( new TranslationTool.Factory( tools ) );
+				break;
+
+			case LINEAR_MAP:
+				result .add( new LinearMapTool.Factory( tools, this .symmetry ) );
+				break;
+
+			default:
+				break;
+			}
+			return result;
+		}
+
+		@Override
+		public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
+		{
+			List<Tool> result = new ArrayList<>();
+			switch ( kind ) {
+
+			case SYMMETRY:
+				result .add( new IcosahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "icosahedral around origin" ) );
+				result .add( new TetrahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "tetrahedral around origin" ) );
+				result .add( new InversionTool.Factory( tools ) .createPredefinedTool( "reflection through origin" ) );
+				result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
+				result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around red through origin" ) );
+				break;
+
+			case TRANSFORM:
+				result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
+				result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
+				result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around red through origin" ) );
+				result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
+				break;
+
+			default:
+				break;
+			}
+			return result;
+		}
+	};
+	
+
+	@Override
+	public Collection<SymmetryPerspective> getSymmetryPerspectives()
+	{
+		return Arrays.asList( this .icosahedralPerspective );
+	}
+
+	@Override
+	public SymmetryPerspective getDefaultSymmetryPerspective()
+	{
+		return this .icosahedralPerspective;
+	}
+
+	@Override
+	public SymmetryPerspective getSymmetryPerspective( String symmName )
+	{
+		switch ( symmName ) {
+
+		case "icosahedral":
+			return this .icosahedralPerspective;
+
+		default:
+			return null;
+		}
+	}
+
+	@Override
+	public QuaternionicSymmetry getQuaternionSymmetry( String name )
+	{
+		return null;
+	}
+
+    @Override
+    public void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools )
+    {
+        IcosahedralSymmetry symm = (IcosahedralSymmetry) icosahedralPerspective .getSymmetry();
+        // symm matters for this one, since it is final in the tool
+        toolFactories .put( "AxialStretchTool", new AxialStretchTool.Factory( tools, symm, false, false, false ) );
+        
+        // We might as well use symm in the rest, though it will be overwritten by SymmetryTool.setXmlAttributes()
+        toolFactories .put( "SymmetryTool", new IcosahedralToolFactory( tools, symm ) );
+        toolFactories .put( "RotationTool", new RotationTool.Factory( tools, symm ) );
+        toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, symm ) );
+        toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
+        toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
+        toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
+        toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
+        toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, symm ) );
+
+        // These tool factories have to be available for loading legacy documents.
+        
+        toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, symm ) );
+        toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
+        toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
+    }
+}

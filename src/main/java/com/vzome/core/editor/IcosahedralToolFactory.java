@@ -3,14 +3,24 @@ package com.vzome.core.editor;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.model.Connector;
 
-public class IcosahedralToolFactory extends AbstractToolFactory implements ToolFactory
+public class IcosahedralToolFactory extends AbstractToolFactory
 {
-	private final IcosahedralSymmetry symmetry;
-
-	public IcosahedralToolFactory( EditorModel model, UndoableEdit.Context context, IcosahedralSymmetry symmetry )
+	private static final String ID = "icosahedral";
+	private static final String LABEL = "Create an icosahedral symmetry tool";
+	private static final String TOOLTIP = "<p>" +
+    		"Each tool produces up to 59 copies of the input<br>" +
+    		"selection, using the rotation symmetries of an<br>" +
+    		"icosahedron.  To create a tool, select a single<br>" +
+    		"ball that defines the center of symmetry.<br>" +
+    		"<br>" +
+    		"Combine with a point reflection tool to achieve<br>" +
+    		"all 120 symmetries of the icosahedron, including<br>" +
+    		"reflections.<br>" +
+		"</p>";
+	
+	public IcosahedralToolFactory( ToolsModel tools, IcosahedralSymmetry symmetry )
 	{
-		super( model, context );
-		this .symmetry = symmetry;
+		super( tools, symmetry, ID, LABEL, TOOLTIP );
 	}
 
 	@Override
@@ -20,13 +30,14 @@ public class IcosahedralToolFactory extends AbstractToolFactory implements ToolF
 	}
 
 	@Override
-	public Tool createToolInternal( int index )
+	public Tool createToolInternal( String id )
 	{
-		return new SymmetryTool( "icosahedral." + index, symmetry, getSelection(), getModel(), null );
+		return new SymmetryTool( id, getSymmetry(), getToolsModel() );
 	}
 
 	@Override
-	protected boolean bindParameters(Selection selection, SymmetrySystem symmetry) {
+	protected boolean bindParameters( Selection selection )
+	{
         return selection.size() == 1 && selection.iterator().next() instanceof Connector;
 	}
 }

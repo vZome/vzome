@@ -6,7 +6,6 @@ package com.vzome.core.editor;
 
 import org.w3c.dom.Element;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Bivector3d;
@@ -19,16 +18,38 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
-public class PlaneSelectionTool extends ChangeSelection implements Tool
+public class PlaneSelectionTool extends Tool
 {
-    private String name;
-    
+	public static class Factory extends AbstractToolFactory
+	{
+		public Factory( ToolsModel tools )
+		{
+			super( tools, null, "plane", "", "" );
+		}
+
+		@Override
+		protected boolean countsAreValid( int total, int balls, int struts, int panels )
+		{
+			return ( total == 3 && balls == 3 );
+		}
+
+		@Override
+		public Tool createToolInternal( String id )
+		{
+			return new ModuleTool( id, getToolsModel() );
+		}
+
+		@Override
+		protected boolean bindParameters( Selection selection )
+		{
+			return true;
+		}
+	}
+
     private Bivector3d plane;
     
     private AlgebraicVector anchor;
-        
-    private Tool.Registry tools;
-
+    
 	private boolean halfSpace = false;
 	private boolean boundaryOpen = false;
 	private boolean above = true;
@@ -37,64 +58,10 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
 	private boolean includePanels = true;
 	private boolean includePartials = false;
 
-    public PlaneSelectionTool( String name, Selection selection, AlgebraicField field, Tool.Registry tools )
+    public PlaneSelectionTool( String id, ToolsModel tools )
     {
-        super( selection, false );
-        this .name = name;
-        this .tools = tools;
+        super( id, tools );
     }
-
-	// Not quite the same as overriding equals since the tool name is not compared
-    // We're basically just checking if the tool's input parameters match
-	public boolean hasEquivalentParameters( Object that )
-	{
-		if (this == that) {
-			return true;
-		}
-		if (that == null) {
-			return false;
-		}
-		if (getClass() != that.getClass()) {
-			return false;
-		}
-		PlaneSelectionTool other = (PlaneSelectionTool) that;
-		if (above != other.above) {
-			return false;
-		}
-		if (anchor == null) {
-			if (other.anchor != null) {
-				return false;
-			}
-		} else if (!anchor.equals(other.anchor)) {
-			return false;
-		}
-		if (boundaryOpen != other.boundaryOpen) {
-			return false;
-		}
-		if (halfSpace != other.halfSpace) {
-			return false;
-		}
-		if (includeBalls != other.includeBalls) {
-			return false;
-		}
-		if (includePanels != other.includePanels) {
-			return false;
-		}
-		if (includePartials != other.includePartials) {
-			return false;
-		}
-		if (includeStruts != other.includeStruts) {
-			return false;
-		}
-		if (plane == null) {
-			if (other.plane != null) {
-				return false;
-			}
-		} else if (!plane.equals(other.plane)) {
-			return false;
-		}
-		return true;
-	}
 
 	@Override
 	public boolean isSticky()
@@ -139,13 +106,6 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
         Vector3d v2 = new Vector3d( p3 .minus( p1 ) );
         plane = v1 .outer( v2 );
         anchor = p1;
-
-        defineTool();
-    }
-
-    protected void defineTool()
-    {
-		tools .addTool( this );
     }
 
     @Override
@@ -255,12 +215,6 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
     }
 
     @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
     protected String getXmlElementName()
     {
         return "PlaneSelectionTool";
@@ -269,13 +223,14 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
     @Override
     protected void getXmlAttributes( Element element )
     {
-        element .setAttribute( "name", this.name );
+        element .setAttribute( "name", this.getId() );
     }
 
     @Override
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Command.Failure
     {
-        this.name = element .getAttribute( "name" );
+        super .setXmlAttributes( element, format );
+        
         this .includeBalls = ! "false" .equals( element .getAttribute( "balls" ) );
         this .includeStruts = ! "false" .equals( element .getAttribute( "struts" ) );
         this .includePanels = "true" .equals( element .getAttribute( "panels" ) );
@@ -311,8 +266,9 @@ public class PlaneSelectionTool extends ChangeSelection implements Tool
     }
 
 	@Override
-	public boolean isValidForSelection() {
+	protected String checkSelection( boolean prepareTool )
+	{
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 }

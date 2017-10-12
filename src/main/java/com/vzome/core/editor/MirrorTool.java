@@ -20,16 +20,25 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class MirrorTool extends TransformationTool
 {
-	public static class Factory extends AbstractToolFactory implements ToolFactory
+	private static final String ID = "mirror";
+	private static final String LABEL = "Create a mirror reflection tool";
+	private static final String TOOLTIP = "<p>" +
+	    		"Each tool duplicates the selection by reflecting<br>" +
+	    		"each object in a mirror plane.  To create a<br>" +
+	    		"tool, define the mirror plane by selecting a single<br>" +
+	    		"panel, or by selecting a strut orthogonal to the<br>" +
+	    		"plane and a ball lying in the plane.<br>" +
+			"</p>";
+	
+	public static class Factory extends AbstractToolFactory
 	{
-		public Factory( EditorModel model, UndoableEdit.Context context )
+		public Factory( ToolsModel tools )
 		{
-			super( model, context );
+			super( tools, null, ID, LABEL, TOOLTIP );
 		}
 
 		@Override
@@ -40,21 +49,21 @@ public class MirrorTool extends TransformationTool
 		}
 
 		@Override
-		public Tool createToolInternal( int index )
+		public Tool createToolInternal( String id )
 		{
-			return new MirrorTool( "mirror." + index, getSelection(), getModel(), null );
+			return new MirrorTool( id, getToolsModel() );
 		}
 
 		@Override
-		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		protected boolean bindParameters( Selection selection )
 		{
 			return true;
 		}
 	}
 
-	public MirrorTool( String name, Selection selection, RealizedModel realized, Point originPoint )
+	public MirrorTool( String id, ToolsModel tools )
     {
-        super( name, selection, realized, null, originPoint );
+        super( id, tools );
     }
 	
     @Override
@@ -63,7 +72,7 @@ public class MirrorTool extends TransformationTool
         Point center = null;
         Segment axis = null;
         Polygon mirrorPanel = null;
-        if ( this .getName() .equals( "mirror.builtin/reflection through XY plane" ) )
+        if ( this .getId() .equals( "mirror.builtin/reflection through XY plane" ) )
         {
             center = originPoint;
     		this .addParameter( center );
@@ -163,12 +172,6 @@ public class MirrorTool extends TransformationTool
     @Override
     public String getCategory()
     {
-        return "mirror";
-    }
-
-    @Override
-    public String getDefaultName( String baseName )
-    {
-        return "reflect through X axis";
+        return ID;
     }
 }

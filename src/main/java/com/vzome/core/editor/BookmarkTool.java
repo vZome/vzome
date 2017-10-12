@@ -6,22 +6,24 @@ package com.vzome.core.editor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.Element;
-
 import com.vzome.core.commands.Command;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
-public class BookmarkTool extends ChangeManifestations implements Tool
+public class BookmarkTool extends Tool
 {    
-	public static class Factory extends AbstractToolFactory implements ToolFactory
+	private static final String ID = "bookmark";
+	private static final String LABEL = "Create a selection bookmark";
+	private static final String TOOLTIP = "<p>" +
+    		"A selection bookmark lets you re-create<br>any selection at a later time." +
+		"</p>";
+	
+	public static class Factory extends AbstractToolFactory
 	{
-		public Factory( EditorModel model, UndoableEdit.Context context )
+		public Factory( ToolsModel tools )
 		{
-			super( model, context );
+			super( tools, null, ID, LABEL, TOOLTIP );
 		}
 
 		@Override
@@ -31,55 +33,24 @@ public class BookmarkTool extends ChangeManifestations implements Tool
 		}
 
 		@Override
-		public Tool createToolInternal( int index )
+		public Tool createToolInternal( String id )
 		{
-			return new BookmarkTool( "bookmark." + index, getSelection(), getModel(), null );
+			return new BookmarkTool( id, this .getToolsModel() );
 		}
 
 		@Override
-		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		protected boolean bindParameters( Selection selection )
 		{
 			return true;
 		}
 	}
-
-    private String name;
     
     private final List<Construction> bookmarkedConstructions = new ArrayList<>();
-        
-    private Tool.Registry tools;
-    
-    public BookmarkTool( String name, Selection selection, RealizedModel realized, Tool.Registry tools )
+            
+    public BookmarkTool( String id, ToolsModel tools )
     {
-        super( selection, realized, false );
-        this.name = name;
-        this.tools = tools;
+        super( id, tools );
     }
-
-	// Not quite the same as overriding equals since the tool name is not compared
-    // We're basically just checking if the tool's input parameters match
-	public boolean hasEquivalentParameters( Object that )
-	{
-		if (this == that) {
-			return true;
-		}
-		if (that == null) {
-			return false;
-		}
-		if (getClass() != that.getClass()) {
-			return false;
-		}
-		BookmarkTool other = (BookmarkTool) that;
-		if (bookmarkedConstructions == null) {
-			if (other.bookmarkedConstructions != null) {
-				return false;
-			}
-		} else if (!bookmarkedConstructions
-				.equals(other.bookmarkedConstructions)) {
-			return false;
-		}
-		return true;
-	}
 
 	@Override
 	public boolean isSticky()
@@ -98,13 +69,6 @@ public class BookmarkTool extends ChangeManifestations implements Tool
         		Construction result = duper .duplicateConstruction( man );
         		bookmarkedConstructions .add( result );
         	}
-        defineTool();
-    }
-
-    protected void defineTool()
-    {
-    	if ( tools != null )
-    		tools .addTool( this );
     }
 
     @Override
@@ -116,9 +80,13 @@ public class BookmarkTool extends ChangeManifestations implements Tool
     @Override
     public void prepare( ChangeManifestations edit )
     {
-        for (Construction con : bookmarkedConstructions) {
-            edit .manifestConstruction( con );
-        }
+    	if ( this .bookmarkedConstructions .isEmpty() ) {
+			edit .manifestConstruction( new FreePoint( this .mManifestations .getField() .origin( 3 ) ) );
+    	}
+    	else
+    		for (Construction con : bookmarkedConstructions) {
+    			edit .manifestConstruction( con );
+    		}
         edit .redo();
     }
 
@@ -134,22 +102,13 @@ public class BookmarkTool extends ChangeManifestations implements Tool
     @Override
     public void redo()
     {
-        // TODO manifest a symmetry construction... that is why this class extends ChangeConstructions
         // this edit is now sticky (not really undoable)
-//        tools .addTool( this );
     }
 
     @Override
     public void undo()
     {
         // this edit is now sticky (not really undoable)
-//        tools .removeTool( this );
-    }
-
-    @Override
-    public String getName()
-    {
-        return name;
     }
 
     @Override
@@ -159,36 +118,14 @@ public class BookmarkTool extends ChangeManifestations implements Tool
     }
     
     @Override
-    protected void getXmlAttributes( Element element )
-    {
-        element .setAttribute( "name", this.name );
-    }
-
-    @Override
-    protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Command.Failure
-    {
-        this.name = element .getAttribute( "name" );
-    }
-
-    @Override
     public String getCategory()
     {
-        return "bookmark";
-    }
-
-    public String getDefaultName()
-    {
-        return "SHOULD NOT HAPPEN";
+        return ID;
     }
 
 	@Override
-	public boolean isValidForSelection()
+	protected String checkSelection( boolean prepareTool )
 	{
-		return ! this .mSelection .isEmpty();
-	}
-
-	public void setRegistry( Tool.Registry registry )
-	{
-		this .tools = registry;
+		return null;
 	}
 }

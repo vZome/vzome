@@ -22,19 +22,148 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class AxialStretchTool extends TransformationTool
 {
-	public static class Factory extends AbstractToolFactory implements ToolFactory
+	private static final String TOOLTIP_REDSQUASH1 = "<p>" +
+    		"Each tool applies a \"squash\" transformation to the<br>" +
+    		"selected objects, compressing along a red axis.  To create<br>" +
+    		"a tool, select a ball as the center of the mapping, and a<br>" +
+    		"red strut as the direction of the compression.  The ball and<br>" +
+    		"strut need not be collinear.<br>" +
+    		"<br>" +
+    		"The mapping comes from the usual Zome projection of the<br>" +
+    		"120-cell.  It is the mapping that transforms the central,<br>" +
+    		"blue dodecahedron into the compressed form in the next<br>" +
+    		"layer outward.<br>" +
+    		"<br>" +
+    		"By default, the input selection will be removed, and replaced<br>" +
+    		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+    		"you can right-click after creating the tool, to configure it.<br>" +
+	    "</p>";
+	private static final String TOOLTIP_REDSTRETCH1 = "<p>" +
+    		"Each tool applies a \"stretch\" transformation to the<br>" +
+    		"selected objects, stretching along a red axis.  To create<br>" +
+    		"a tool, select a ball as the center of the mapping, and a<br>" +
+    		"red strut as the direction of the stretch.  The ball and<br>" +
+    		"strut need not be collinear.<br>" +
+    		"<br>" +
+    		"The mapping comes from the usual Zome projection of the<br>" +
+    		"120-cell.  It is the inverse of the mapping that transforms<br>" +
+    		"the central, blue dodecahedron into the compressed form in<br>" +
+    		"the next layer outward.<br>" +
+    		"<br>" +
+    		"By default, the input selection will be removed, and replaced<br>" +
+    		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
+    		"you can right-click after creating the tool, to configure it.<br>" +
+	    "</p>";
+    private static final String TOOLTIP_YELLOWSQUASH = "<p>" +
+    		"Each tool applies a \"squash\" transformation to the<br>" +
+    		"selected objects, compressing along a yellow axis.  To create<br>" +
+    		"a tool, select a ball as the center of the mapping, and a<br>" +
+    		"yellow strut as the direction of the compression.  The ball and<br>" +
+    		"strut need not be collinear.<br>" +
+    		"<br>" +
+    		"The mapping comes from the usual Zome projection of the<br>" +
+    		"120-cell.  It is the mapping that transforms the central,<br>" +
+    		"blue dodecahedron into the compressed form along a yellow axis.<br>" +
+    		"<br>" +
+    		"By default, the input selection will be removed, and replaced<br>" +
+    		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+    		"you can right-click after creating the tool, to configure it.<br>" +
+    	"</p>";
+    private static final String TOOLTIP_YELLOWSTRETCH = "<p>" +
+    		"Each tool applies a \"stretch\" transformation to the<br>" +
+    		"selected objects, stretching along a yellow axis.  To create<br>" +
+    		"a tool, select a ball as the center of the mapping, and a<br>" +
+    		"yellow strut as the direction of the stretch.  The ball and<br>" +
+    		"strut need not be collinear.<br>" +
+    		"<br>" +
+    		"The mapping comes from the usual Zome projection of the<br>" +
+    		"120-cell.  It is the inverse of the mapping that transforms<br>" +
+    		"the central, blue dodecahedron into the compressed form along<br>" +
+    		"a yellow axis.<br>" +
+    		"<br>" +
+    		"By default, the input selection will be removed, and replaced<br>" +
+    		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
+    		"you can right-click after creating the tool, to configure it.<br>" +
+    	"</p>";
+    private static final String TOOLTIP_REDSQUASH2 = "<p>" +
+    		"Each tool applies a \"squash\" transformation to the<br>" +
+    		"selected objects, compressing along a red axis.  To create<br>" +
+    		"a tool, select a ball as the center of the mapping, and a<br>" +
+    		"red strut as the direction of the compression.  The ball and<br>" +
+    		"strut need not be collinear.<br>" +
+    		"<br>" +
+    		"The mapping comes from the usual Zome projection of the<br>" +
+    		"120-cell.  It is the mapping that transforms the central,<br>" +
+    		"blue dodecahedron into the compressed form in the second<br>" +
+    		"layer outward along a red axis.<br>" +
+    		"<br>" +
+    		"By default, the input selection will be removed, and replaced<br>" +
+    		"with the squashed equivalent.  If you want to keep the inputs,<br>" +
+    		"you can right-click after creating the tool, to configure it.<br>" +
+    	"</p>";
+    private static final String TOOLTIP_REDSTRETCH2 = "<p>" +
+    		"Each tool applies a \"stretch\" transformation to the<br>" +
+    		"selected objects, stretching along a red axis.  To create<br>" +
+    		"a tool, select a ball as the center of the mapping, and a<br>" +
+    		"red strut as the direction of the stretch.  The ball and<br>" +
+    		"strut need not be collinear.<br>" +
+    		"<br>" +
+    		"The mapping comes from the usual Zome projection of the<br>" +
+    		"120-cell.  It is the inverse of the mapping that transforms<br>" +
+    		"the central, blue dodecahedron into the compressed form in<br>" +
+    		"the second layer outward along a red axis.<br>" +
+    		"<br>" +
+    		"By default, the input selection will be removed, and replaced<br>" +
+    		"with the stretched equivalent.  If you want to keep the inputs,<br>" +
+    		"you can right-click after creating the tool, to configure it.<br>" +
+        "</p>";
+
+	public static class Factory extends AbstractToolFactory
 	{
-		private transient IcosahedralSymmetry symmetry;
 		private final boolean red, stretch, first;
-		
-		public Factory( EditorModel model, UndoableEdit.Context context, boolean red, boolean stretch, boolean first )
+
+		private static String getCategory( boolean red, boolean stretch, boolean first )
 		{
-			super( model, context );
+			if ( red )
+				if ( first )
+					return stretch? "redstretch1" : "redsquash1";
+				else
+					return stretch? "redstretch2" : "redsquash2";
+			else
+				return stretch? "yellowstretch" : "yellowsquash";
+		}
+		        
+		private static String getLabel( boolean red, boolean stretch, boolean first )
+		{
+			String label;
+			if ( red )
+				if ( first )
+					label = stretch? "weak red stretch" : "weak red squash";
+				else
+					label = stretch? "strong red stretch" : "strong red squash";
+			else
+				label = stretch? "yellow stretch" : "yellow squash";
+			return "Create a " + label + " tool";
+		}
+
+		private static String getToolTip( boolean red, boolean stretch, boolean first )
+		{
+			if ( red )
+				if ( first )
+					return stretch? TOOLTIP_REDSTRETCH1 : TOOLTIP_REDSQUASH1;
+				else
+					return stretch? TOOLTIP_REDSTRETCH2 : TOOLTIP_REDSQUASH2;
+			else
+				return stretch? TOOLTIP_YELLOWSTRETCH : TOOLTIP_YELLOWSQUASH;
+		}
+
+		public Factory( ToolsModel tools, IcosahedralSymmetry symmetry, boolean red, boolean stretch, boolean first )
+		{
+			super( tools, symmetry, getCategory( red, stretch, first ), getLabel( red, stretch, first ), getToolTip( red, stretch, first ) );
 			this.red = red;
 			this.stretch = stretch;
 			this.first = first;
@@ -47,26 +176,16 @@ public class AxialStretchTool extends TransformationTool
 		}
 
 		@Override
-		public Tool createToolInternal( int index )
+		public Tool createToolInternal( String id )
 		{
-			String category;
-			if ( red )
-				if ( first )
-					category = stretch? "redstretch1" : "redsquash1";
-				else
-					category = stretch? "redstretch2" : "redsquash2";
-			else
-				category = stretch? "yellowstretch" : "yellowsquash";
-			return new AxialStretchTool( category + "." + index, this.symmetry, getSelection(), getModel(), stretch, red, first );
+			String category = id .substring( 0, id .indexOf( "." ) );
+			return new AxialStretchTool( id, (IcosahedralSymmetry) getSymmetry(), getToolsModel(), stretch, red, first, category );
 		}
 
 		@Override
-		protected boolean bindParameters( Selection selection, SymmetrySystem symmSystem )
+		protected boolean bindParameters( Selection selection )
 		{
-			Symmetry symmetry = symmSystem .getSymmetry();
-			if ( ! ( symmetry instanceof IcosahedralSymmetry ) )
-				return false;
-			this .symmetry = (IcosahedralSymmetry) symmetry;
+			IcosahedralSymmetry symmetry = (IcosahedralSymmetry) getSymmetry();
         	for ( Manifestation man : selection )
         		if ( man instanceof Strut )
         		{
@@ -86,18 +205,20 @@ public class AxialStretchTool extends TransformationTool
 		}
 	}
 
-	private final IcosahedralSymmetry symmetry;
+	private IcosahedralSymmetry symmetry;
 	private boolean stretch;
 	private boolean red;
 	private boolean first;
+	private final String category;
 
-	public AxialStretchTool( String name, IcosahedralSymmetry symmetry, Selection selection, RealizedModel realized, boolean stretch, boolean red, boolean first )
+	public AxialStretchTool( String id, IcosahedralSymmetry symmetry, ToolsModel tools, boolean stretch, boolean red, boolean first, String category )
     {
-        super( name, selection, realized, null, null );
+        super( id, tools );
 		this .symmetry = symmetry;
 		this .stretch = stretch;
 		this .red = red;
 		this .first = first;
+		this .category = category;
     }
 
     protected String checkSelection( boolean prepareTool )
@@ -222,18 +343,15 @@ public class AxialStretchTool extends TransformationTool
         this .red = value .equals( "red" );
         value = element .getAttribute( "first" );
         this .first = value == null || ! value .equals( "false" );;
-    	super .setXmlAttributes( element, format );
+
+        String symmName = element .getAttribute( "symmetry" );
+        this .symmetry = (IcosahedralSymmetry) format .parseSymmetry( "icosahedral" );
+        super .setXmlAttributes( element, format );
     }
 
     @Override
     public String getCategory()
     {
-        return "axial stretch";
-    }
-
-    @Override
-    public String getDefaultName( String baseName )
-    {
-        return "SHOULD NEVER HAPPEN";
+        return this .category;
     }
 }

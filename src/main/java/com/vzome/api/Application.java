@@ -8,12 +8,12 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Properties;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.FieldApplication;
+import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
-import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.Shapes;
 
@@ -58,10 +58,13 @@ public class Application
     
     public Polyhedron getBallShape( String fieldName, String symmetryName, String style )
     {
-		AlgebraicField field = this .delegate .getField( fieldName );
-		Symmetry symm = field .getSymmetry( symmetryName );
-		Shapes shapes = this .delegate .getGeometry( symm, style );
-		return shapes .getConnectorShape();
+		FieldApplication fieldApp = this .delegate .getDocumentKind( fieldName );
+		SymmetryPerspective symmPer = fieldApp .getSymmetryPerspective( symmetryName );
+		for ( Shapes shapes : symmPer .getGeometries() ) {
+			if ( shapes .getName() .equals( style ) )
+				return shapes .getConnectorShape();
+		}
+		return null;
 	}
 	
 	public Colors getColors()

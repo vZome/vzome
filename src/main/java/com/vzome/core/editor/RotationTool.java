@@ -21,21 +21,44 @@ import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.math.symmetry.Symmetry.SpecialOrbit;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class RotationTool extends SymmetryTool
 {	
-	public static class Factory extends AbstractToolFactory implements ToolFactory
+	private static final String ID = "rotation";
+	private static final String LABEL = "Create a rotation tool";
+	private static final String TOOLTIP = "<p>" +
+    		"Each tool rotates the selected objects around an axis<br>" +
+    		"of symmetry.  To create a tool, select a strut that<br>" +
+    		"defines that axis.  You can also define the direction<br>" +
+    		"and center independently, by selecting a ball for the<br>" +
+    		"center and a strut for the axis.  Note: not all struts<br>" +
+    		"correspond to rotational symmetries!<br>" +
+    		"<br>" +
+    		"The direction of rotation depends on the strut<br>" +
+    		"orientation, which is hard to discover, but easy to<br>" +
+    		"control, by dragging out a new strut.<br>" +
+    		"<br>" +
+    		"By default, the input selection will be moved to the new,<br>" +
+    		"rotated orientation.  After creating a tool, you can<br>" +
+    		"right-click to configure the tool to create a copy, instead.<br>" +
+		"</p>";
+	
+	public static class Factory extends AbstractToolFactory
 	{
-		private transient Symmetry symmetry;
 		private transient boolean noStrut;
 		
-		public Factory( EditorModel model, UndoableEdit.Context context )
+		public Factory( ToolsModel tools, Symmetry symmetry )
 		{
-			super( model, context );
+			this( tools, symmetry, ID, LABEL, TOOLTIP );
+		}
+		
+		public Factory( ToolsModel tools, Symmetry symmetry, String id, String label, String tooltip )
+		{
+			super( tools, symmetry, id, label, tooltip );
 		}
 
 		@Override
@@ -55,26 +78,21 @@ public class RotationTool extends SymmetryTool
 		}
 
 		@Override
-		public Tool createToolInternal( int index )
+		public Tool createToolInternal( String id )
 		{
-			return new RotationTool( "rotation." + index, this.symmetry, getSelection(), getModel(), null, false );
+			return new RotationTool( id, getSymmetry(), getToolsModel(), false );
 		}
 		
-		protected Symmetry getSymmetry()
-		{
-			return this .symmetry;
-		}
-
 		@Override
-		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		protected boolean bindParameters( Selection selection )
 		{
-			this .symmetry = symmetry .getSymmetry();
+			Symmetry symmetry = getSymmetry();
         	for ( Manifestation man : selection )
         		if ( man instanceof Strut )
         		{
         			Strut axisStrut = (Strut) man;
         	        AlgebraicVector vector = axisStrut .getOffset();
-        	        vector = this .symmetry .getField() .projectTo3d( vector, true ); // TODO: still necessary?
+        	        vector = symmetry .getField() .projectTo3d( vector, true ); // TODO: still necessary?
         	        Axis axis = symmetry .getAxis( vector );
         	        if ( axis == null )
         	        	return false;
@@ -84,7 +102,7 @@ public class RotationTool extends SymmetryTool
         		}
         		else if ( this .noStrut )
         		{
-        			Axis axis = this .symmetry .getPreferredAxis();
+        			Axis axis = symmetry .getPreferredAxis();
         	        if ( axis == null )
         	        	return false;
         		}
@@ -94,45 +112,21 @@ public class RotationTool extends SymmetryTool
 
     private boolean fullRotation, corrected;
 
-	public String getDefaultName()
-    {
-        return "rotation around Z axis";
-    }
-
     @Override
     public String getCategory()
     {
-        return "rotation";
+        return ID;
     }
 
-    /**
-     * Create a RotationTool while loading a saved model.
-     * @param name
-     * @param symmetry
-     * @param selection
-     * @param realized
-     * @param tools
-     * @param originPoint
-     */
-    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint )
+    public RotationTool( String id, Symmetry symmetry, ToolsModel editor )
     {
-    	this( name, symmetry, selection, realized, originPoint, false );
+    	this( id, symmetry, editor, false );
     	this .corrected = false; // for backward compatibility... may get overwritten in setXmlAttributes
     }
 
-    /**
-     * Create a new RotationTool.
-     * @param name
-     * @param symmetry
-     * @param selection
-     * @param realized
-     * @param tools
-     * @param originPoint
-     * @param full
-     */
-    public RotationTool( String name, Symmetry symmetry, Selection selection, RealizedModel realized, Point originPoint, boolean full )
+    public RotationTool( String id, Symmetry symmetry, ToolsModel tools, boolean full )
     {
-        super( name, symmetry, selection, realized, originPoint );
+        super( id, symmetry, tools );
         this .fullRotation = full;
         this .corrected = true;
     }
@@ -143,29 +137,28 @@ public class RotationTool extends SymmetryTool
         Point center = null;
         Segment axisStrut = null;
         boolean correct = true;
-        if ( ! isAutomatic() )
-        	for (Manifestation man : mSelection) {
-        		if ( prepareTool )
-        			unselect( man );
-        		if ( man instanceof Connector )
+        for (Manifestation man : mSelection) {
+        	if ( prepareTool )
+        		unselect( man );
+        	if ( man instanceof Connector )
+        	{
+        		if ( center != null )
         		{
-        			if ( center != null )
-        			{
-        				correct = false;
-        				break;
-        			}
-        			center = (Point) ((Connector) man) .getConstructions() .next();
+        			correct = false;
+        			break;
         		}
-        		else if ( man instanceof Strut )
-        		{
-        			if ( axisStrut != null )
-        			{
-        				correct = false;
-        				break;
-        			}
-        			axisStrut = (Segment) ((Strut) man) .getConstructions() .next();
-        		}
+        		center = (Point) ((Connector) man) .getConstructions() .next();
         	}
+        	else if ( man instanceof Strut )
+        	{
+        		if ( axisStrut != null )
+        		{
+        			correct = false;
+        			break;
+        		}
+        		axisStrut = (Segment) ((Strut) man) .getConstructions() .next();
+        	}
+        }
         
         if ( axisStrut == null )
         {
@@ -173,13 +166,14 @@ public class RotationTool extends SymmetryTool
         	if ( preferredAxis != null )
         	{
                 AlgebraicField field = symmetry .getField();
+                center = originPoint;
                 axisStrut = new AnchoredSegment( preferredAxis, field .one(), center );
         	}
-        	else if ( this .getName() .contains( ".builtin/" ) ) // TODO: fix this lame mechanism; use an API
+        	else if ( this .isPredefined() )
         	{
                 center = originPoint;
         		this .addParameter( center );
-            	Direction redOrbit = symmetry .getDirection( "red" );
+            	Direction redOrbit = symmetry .getSpecialOrbit( SpecialOrbit.RED );
                 AlgebraicField field = symmetry .getField();
     	    	AlgebraicNumber redScale = redOrbit .getUnitLength() .times( field .createPower( Direction.USER_SCALE ) );
                 axisStrut = new AnchoredSegment( redOrbit .getAxis( Symmetry.PLUS, 1 ), redScale, center );

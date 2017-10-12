@@ -69,11 +69,10 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         this .mPolyhedra = ( orbitSource == null )? null : orbitSource .getShapes();
     }
     
-    public RenderedModel( final AlgebraicField field, boolean enabled )
+    public RenderedModel( final Symmetry symmetry )
     {
-        this( field, new OrbitSource()
-        {
-        	private final Symmetry symmetry = field .getSymmetries() [0];
+    	this( symmetry .getField(), new OrbitSource()
+    	{
         	private final OrbitSet orbits = new OrbitSet( symmetry );
         	
             @Override
@@ -85,7 +84,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             @Override
 			public Axis getAxis( AlgebraicVector vector )
 			{
-				return this .symmetry .getAxis( vector );
+				return symmetry .getAxis( vector );
 			}
 
 			@Override
@@ -102,9 +101,14 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 			@Override
 			public Symmetry getSymmetry()
 			{
-				return this .symmetry;
+				return symmetry;
 			}
-		} );
+		});
+    }
+    
+    public RenderedModel( final AlgebraicField field, boolean enabled )
+    {
+        this( field, null );
         this .enabled = enabled;
     }
     
@@ -363,6 +367,10 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                 Axis axis = orbitSource .getAxis( normal );
                 if ( axis == null )
                     return;
+
+        		// This lets the Panel represent Planes better.
+                panel .setZoneVector( axis .normal() );
+        		
                 Direction orbit = axis .getDirection();
 
                 Color color = orbitSource .getColor( orbit ) .getPastel();
@@ -386,6 +394,10 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		Axis axis = orbitSource .getAxis( offset );
 		if ( axis == null )
 			return; // this should only happen when using the bare Symmetry-based OrbitSource
+		
+		// This lets the Strut represent Lines better.
+		strut .setZoneVector( axis .normal() );
+		
 		Direction orbit = axis .getDirection();
 		
 		// TODO remove this length computation... see the comment on AbstractShapes.getStrutShape()

@@ -9,8 +9,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Bivector3dHomogeneous;
 import com.vzome.core.algebra.Vector3dHomogeneous;
-import com.vzome.core.math.symmetry.Axis;
-import com.vzome.core.math.symmetry.Symmetry;
 
 /**
  * @author Scott Vorthmann
@@ -54,16 +52,16 @@ public abstract class Line extends Construction
         
         // try to find some cleaner vector to use for the line direction, to reduce the likelihood
         //   of ill-conditioned intersection computations
-        Symmetry[] symms = getField() .getSymmetries();
-        for (Symmetry symm : symms) {
-            Axis axis = symm.getAxis(norm);
-            if ( axis != null )
-            {
-                if ( ! axis .getDirection() .isAutomatic() )
-                    norm = axis .normal();
-                break;
-            }
-        }
+//        Symmetry[] symms = getField() .getSymmetryPerspectives();
+//        for (Symmetry symm : symms) {
+//            Axis axis = symm.getAxis(norm);
+//            if ( axis != null )
+//            {
+//                if ( ! axis .getDirection() .isAutomatic() )
+//                    norm = axis .normal();
+//                break;
+//            }
+//        }
 
         mDirection = norm;
         mStart = start;

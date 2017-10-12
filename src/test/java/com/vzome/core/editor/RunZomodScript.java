@@ -37,9 +37,9 @@ public class RunZomodScript extends RunZomicScript
         return program;
     }
 
-    public RunZomodScript( Selection selection, RealizedModel realized, String text, Point origin )
+    public RunZomodScript( Selection selection, RealizedModel realized, String text, Point origin, IcosahedralSymmetry symmetry )
     {
-        super( selection, realized, text, origin );
+        super( selection, realized, text, origin, symmetry );
     }
 
 }

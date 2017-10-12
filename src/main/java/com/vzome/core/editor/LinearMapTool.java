@@ -8,20 +8,38 @@ import com.vzome.core.construction.ChangeOfBasis;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
+import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class LinearMapTool extends TransformationTool
 {
 	private static final String CATEGORY = "linear map";
-	
-	public static class Factory extends AbstractToolFactory implements ToolFactory
+	private static final String LABEL = "Create a linear map tool";
+	private static final String TOOLTIP = "<p>" +
+    		"<b>For experts and Linear Algebra students...</b><br>" +
+    		"<br>" +
+    		"Each tool applies a linear transformation to the selected<br>" +
+    		"objects, possibly rotating, stretching, and compressing.  To<br>" +
+    		"create a tool, select a ball as the center of the mapping,<br>" +
+    		"three struts (in order) to define the input basis, and three<br>" +
+    		"more struts to define the output basis.<br>" +
+    		"<br>" +
+    		"You can omit the input basis if it would consist of three<br>" +
+    		"identical blue struts at right angles; the three struts you<br>" +
+    		"select will be interpreted as the output basis.<br>" +
+    		"<br>" +
+    		"By default, the input selection will be removed, and replaced<br>" +
+    		"with the transformed equivalent.  If you want to keep the inputs,<br>" +
+    		"you can right-click after creating the tool, to configure it.<br>" +
+		"</p>";
+
+	public static class Factory extends AbstractToolFactory
 	{
-		public Factory( EditorModel model, UndoableEdit.Context context )
+		public Factory( ToolsModel tools, Symmetry symmetry )
 		{
-			super( model, context );
+			super( tools, symmetry, CATEGORY, LABEL, TOOLTIP );
 		}
 
 		@Override
@@ -32,13 +50,13 @@ public class LinearMapTool extends TransformationTool
 		}
 
 		@Override
-		public Tool createToolInternal( int index )
+		public Tool createToolInternal( String id )
 		{
-			return new LinearMapTool( CATEGORY + "." + index, getSelection(), getModel(), null, false );
+			return new LinearMapTool( id, getToolsModel(), false );
 		}
 
 		@Override
-		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		protected boolean bindParameters( Selection selection )
 		{
 			// TODO check for linear independence
 			return true;
@@ -47,37 +65,11 @@ public class LinearMapTool extends TransformationTool
 
 	private final boolean originalScaling;
 
-    public LinearMapTool( String name, Selection selection, RealizedModel realized, Point originPoint )
+    public LinearMapTool( String name, ToolsModel tools, boolean originalScaling )
     {
-        this( name, selection, realized, originPoint, false );
-    }
-
-    public LinearMapTool(
-        String name, Selection selection, RealizedModel realized, Point originPoint, boolean originalScaling )
-    {
-        super( name, selection, realized, null, originPoint );
+        super( name, tools );
         this.originalScaling = originalScaling;
     }
-
-	// Not quite the same as overriding equals since the tool name is not compared
-    // We're basically just checking if the tool's input parameters match
-	public boolean hasEquivalentParameters( Object that )
-	{
-		if (this == that) {
-			return true;
-		}
-		if (!super.equals(that)) {
-			return false;
-		}
-		if (getClass() != that.getClass()) {
-			return false;
-		}
-		LinearMapTool other = (LinearMapTool) that;
-		if (originalScaling != other.originalScaling) {
-			return false;
-		}
-		return true;
-	}
 
     protected String checkSelection( boolean prepareTool )
     {
@@ -136,18 +128,12 @@ public class LinearMapTool extends TransformationTool
     @Override
     protected String getXmlElementName()
     {
-        return "LinearTransformTool";
+        return "LinearTransformTool"; // confusing, but this is the new default serialization for LinearMapTool
     }
 
     @Override
     public String getCategory()
     {
         return CATEGORY;
-    }
-
-    @Override
-    public String getDefaultName( String baseName )
-    {
-        return "SHOULD NEVER HAPPEN";
     }
 }

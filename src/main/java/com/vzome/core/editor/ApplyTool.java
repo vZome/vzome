@@ -3,17 +3,18 @@
 
 package com.vzome.core.editor;
 
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.api.Tool.InputBehaviors;
+import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class ApplyTool extends ChangeManifestations
 {
@@ -69,32 +70,22 @@ public class ApplyTool extends ChangeManifestations
     }
 
     private Tool tool;
-    
-    private Tool.Registry registry;
-    
+        
     private boolean selectInputs, deselectOutputs, justSelect, hideInputs, deleteInputs, redundantOutputs;
 
-//    public ApplyTool( Selection selection, RealizedModel realized, ToolEvent event )
-//    {
-//    	this( selection, realized, event .getTool(), event .getRegistry(), event .getModes(), true );
-//    }
+	private final ToolsModel tools;
     
-    public ApplyTool( Selection selection, RealizedModel realized, Tool.Registry registry, boolean redundantOutputs )
+    public ApplyTool( ToolsModel tools, Tool tool, EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction, boolean redundantOutputs )
     {
-        this( selection, realized, null, registry, 0, redundantOutputs );
-    }
-    
-    public ApplyTool( Selection selection, RealizedModel realized, Tool tool, Tool.Registry registry, int modes, boolean redundantOutputs )
-    {
-        super( selection, realized, false );
+        super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel(), false );
+		this.tools = tools;
         
-        this.tool = tool;
-        this.registry = registry;
-        selectInputs = ( modes & ActionEvent.SHIFT_MASK ) != 0;
-        deselectOutputs = ( modes & ActionEvent.ALT_MASK ) != 0;
-        justSelect = ( modes & ActionEvent.META_MASK ) != 0;
-        deleteInputs = ( modes & ActionEvent.CTRL_MASK ) != 0;
+        this .tool = tool;
+        selectInputs = inputAction .contains( InputBehaviors.SELECT );
+        deleteInputs = inputAction .contains( InputBehaviors.DELETE );
         hideInputs = false;
+        deselectOutputs = ! outputAction .contains( OutputBehaviors.SELECT );
+        justSelect = ! outputAction .contains( OutputBehaviors.CREATE );
         this .redundantOutputs = redundantOutputs;
     }
 
@@ -110,7 +101,7 @@ public class ApplyTool extends ChangeManifestations
     @Override
     protected void getXmlAttributes( Element element )
     {
-        element .setAttribute( "name", this.tool .getName() );
+        element .setAttribute( "name", this .tool .getId() );
         if ( selectInputs )
             element .setAttribute( "selectInputs", "true" );
         if ( deselectOutputs )
@@ -127,7 +118,7 @@ public class ApplyTool extends ChangeManifestations
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         String toolName = element .getAttribute( "name" );
-        this .tool = registry .getTool( toolName );
+        this .tool = this .tools .get( toolName );
         this .selectInputs = isAttributeTrue( element, "selectInputs" );
         this .deselectOutputs = isAttributeTrue( element, "deselectOutputs" );
         this .justSelect = isAttributeTrue( element, "justSelect" );

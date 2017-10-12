@@ -1,14 +1,17 @@
 package com.vzome.experiments;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import com.vzome.api.Tool;
+import com.vzome.api.Tool.InputBehaviors;
+import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -16,9 +19,12 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.FieldApplication;
+import com.vzome.core.editor.IcosahedralToolFactory;
+import com.vzome.core.editor.LinearMapTool;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
@@ -27,8 +33,9 @@ import com.vzome.core.render.RenderedModel;
 public class GenerateLinearMaps
 {
 	private Application app;
+	private FieldApplication kind;
 	private AlgebraicField field;
-	private Symmetry symmetry;
+	private IcosahedralSymmetry symmetry;
 	private Connector origin;
 	private Direction red, yellow, blue, green;
 	private final ArrayList<String> acceptableOrbitNames;
@@ -45,8 +52,9 @@ public class GenerateLinearMaps
 			}
 		}, new Properties() );
 
-		field = app .getField( "golden" );
-	    symmetry = field .getSymmetry( "icosahedral" );
+		kind = app .getDocumentKind( "golden" );
+		field = kind .getField();
+	    symmetry = (IcosahedralSymmetry) kind .getSymmetryPerspective( "icosahedral" ) .getSymmetry();
 		red = symmetry .getDirection( "red" );
 		yellow = symmetry .getDirection( "yellow" );
 		blue = symmetry .getDirection( "blue" );
@@ -68,7 +76,7 @@ public class GenerateLinearMaps
 	private boolean tryMapping( Axis a1, AlgebraicNumber l1, Axis a2, AlgebraicNumber l2, Axis a3, AlgebraicNumber l3 )
 	{
 		this .doc = this .app .createDocument( "golden" );
-		this .doc .setRenderedModel( new RenderedModel( field, doc .getSymmetrySystem() )
+		this .doc .setRenderedModel( new RenderedModel( kind .getField(), doc .getSymmetrySystem() )
 		{
 			@Override
 			public void manifestationAdded( Manifestation m )
@@ -133,11 +141,13 @@ public class GenerateLinearMaps
 			select( strut2 );
 			select( strut( origin, a3, l3 ) );
 			select( origin ); // center for the transform
-			doc .createTool( "map.1/Generated Mapping", "linear map", doc, symmetry );
+			Tool.Factory factory = new LinearMapTool.Factory( doc .getToolsModel(), symmetry );
+			Tool mappingTool = factory .createTool();
 
 			deselect();
 			
-			doc .createTool( "icosahedral.1/icosahedral around origin", "icosahedral", doc, symmetry );
+            factory = new IcosahedralToolFactory( doc .getToolsModel(), symmetry );
+			Tool symmetryTool = factory .createTool();
 
 			deselect();
 			
@@ -155,8 +165,8 @@ public class GenerateLinearMaps
 			join();
 			
 			select( p2 ); // input for the transform
-			doc .applyTool( doc .getTool( "icosahedral.1/icosahedral around origin" ), doc, ActionEvent.SHIFT_MASK );
-			doc .applyTool( doc .getTool( "map.1/Generated Mapping" ), doc, ActionEvent.CTRL_MASK );
+			symmetryTool .apply( EnumSet.of( InputBehaviors.SELECT ), EnumSet.noneOf(OutputBehaviors.class) );
+			mappingTool .apply( EnumSet.of( InputBehaviors.DELETE ), EnumSet.noneOf(OutputBehaviors.class) );
 
 			deselect();
 			

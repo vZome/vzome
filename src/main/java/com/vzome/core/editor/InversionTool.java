@@ -4,30 +4,34 @@
 package com.vzome.core.editor;
 
 
-import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointReflection;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class InversionTool extends TransformationTool
-{
-    public InversionTool( String name, Selection selection, RealizedModel realized, Point originPoint )
-    {
-        super( name, selection, realized, null, originPoint );
-    }
+{	
+	private static final String ID = "point reflection";
+	private static final String LABEL = "Create a point reflection tool";
+	private static final String TOOLTIP = "<p>" +
+			    "Each tool duplicates the selection by reflecting<br>" +
+			    "each point through the defined center.  To create a<br>" +
+			    "tool, select a single ball that defines that center.<br>" +
+			"</p>";
 	
-	public static class Factory extends AbstractToolFactory implements ToolFactory
+	public InversionTool( String toolName, ToolsModel tools )
 	{
-		private transient Connector center;  // TODO use these in createToolInternal()
-		private transient Symmetry symmetry;
+        super( toolName, tools );
+	}
+
+	public static class Factory extends AbstractToolFactory
+	{
+		private transient Connector center;  // TODO use this in createToolInternal()
 		
-		public Factory( EditorModel model, UndoableEdit.Context context )
+		public Factory( ToolsModel tools )
 		{
-			super( model, context );
+			super( tools, null, ID, LABEL, TOOLTIP );
 		}
 
 		@Override
@@ -37,31 +41,19 @@ public class InversionTool extends TransformationTool
 		}
 
 		@Override
-		public Tool createToolInternal( int index )
+		public Tool createToolInternal( String id )
 		{
-			return new InversionTool( "point reflection." + index, getSelection(), getModel(), null );
+			return new InversionTool( id, getToolsModel() );
 		}
 
 		@Override
-		protected boolean bindParameters( Selection selection, SymmetrySystem symmetry )
+		protected boolean bindParameters( Selection selection )
 		{
-			this .symmetry = symmetry .getSymmetry();
 			assert selection .size() == 1;
         	for ( Manifestation man : selection )
         		center = (Connector) man;
 			return true;
 		}
-	}
-	
-    @Override
-    public void perform() throws Command.Failure
-    {
-    	String error = checkSelection( true );
-    	if ( error != null )
-    		// the old way of creating tools, validating the selection after the user action
-    		throw new Command.Failure( error );
-    	else
-    		defineTool();
 	}
 
     @Override
@@ -107,12 +99,6 @@ public class InversionTool extends TransformationTool
     @Override
     public String getCategory()
     {
-        return "point reflection";
-    }
-
-    @Override
-    public String getDefaultName( String baseName )
-    {
-        return "point reflect through origin";
+        return ID;
     }
 }

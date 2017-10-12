@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 {
     private final List<AlgebraicVector> mVertices;
+	private AlgebraicVector zoneVector;
 
     /**
      * Create a panel from a list of AlgebraicVectors
@@ -23,11 +24,29 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         // copy the list in case the caller modifies it later.
         mVertices = new ArrayList<>(vertices);
     }
+    
+    public AlgebraicVector getZoneVector()
+    {
+    	if ( this .zoneVector != null )
+    		return this .zoneVector;
+    	else
+    		return this .getNormal();
+    }
+    
+    public void setZoneVector( AlgebraicVector vector )
+    {
+    	this .zoneVector = vector;
+    }
 
     @Override
     public AlgebraicVector getLocation()
     {
         return null;
+    }
+
+    public AlgebraicVector getFirstVertex()
+    {
+        return this .mVertices .get( 0 );
     }
 
 	@Override

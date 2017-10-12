@@ -3,45 +3,80 @@ package com.vzome.core.editor;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import com.vzome.core.editor.UndoableEdit.Context;
+import com.vzome.api.Tool.Factory;
+import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.RealizedModel;
 
-public abstract class AbstractToolFactory implements ToolFactory
+public abstract class AbstractToolFactory implements Factory, SelectionSummary.Listener
 {
 	private boolean enabled = false;
 	private final PropertyChangeSupport pcs;
-	private Context context;
-	private EditorModel model;
+	private ToolsModel tools;
+	private final String label;
+	private final String tooltip;
+	private final String id;
+	private final Symmetry symmetry;
 	
-	public AbstractToolFactory( EditorModel model, UndoableEdit.Context context )
+	public AbstractToolFactory( ToolsModel tools, Symmetry symmetry, String id, String label, String tooltip )
 	{
-		this.model = model;
-		this.context = context;
+		this.tools = tools;
+		this.symmetry = symmetry;
+		this.id = id;
+		this.label = label;
+		this.tooltip = tooltip;
 		this .pcs = new PropertyChangeSupport( this );
-		model .addSelectionSummaryListener( new SelectionSummary.Listener()
-		{
-			@Override
-			public void selectionChanged( int total, int balls, int struts, int panels )
-			{
-				boolean wasEnabled = enabled;
-				if ( countsAreValid( total, balls, struts, panels ) )
-					enabled = bindParameters( model .getSelection(), model .getSymmetrySystem() );
-				else
-					enabled = false;
-				if ( wasEnabled != enabled )
-					pcs .firePropertyChange( "enabled", wasEnabled, enabled );
-			}
-		} );
 	}
 
+	@Override
+	public void selectionChanged( int total, int balls, int struts, int panels )
+	{
+		boolean wasEnabled = enabled;
+		if ( countsAreValid( total, balls, struts, panels ) )
+			enabled = bindParameters( getSelection() );
+		else
+			enabled = false;
+		if ( wasEnabled != enabled )
+			pcs .firePropertyChange( "enabled", wasEnabled, enabled );
+	}
+
+	public Symmetry getSymmetry()
+	{
+		return symmetry;
+	}
+
+	public String getId()
+	{
+		return id;
+	}
+
+	public String getLabel()
+	{
+		return this .label;
+	}
+
+	public String getToolTip()
+	{
+		return this .tooltip;
+	}
+
+	protected ToolsModel getToolsModel()
+	{
+		return this .tools;
+	}
+
+	protected EditorModel getEditorModel()
+	{
+		return this .tools .getEditorModel();
+	}
+	
 	protected Selection getSelection()
 	{
-		return model .getSelection();
+		return getEditorModel() .getSelection();
 	}
 	
 	protected RealizedModel getModel()
 	{
-		return model .getRealizedModel();
+		return getEditorModel() .getRealizedModel();
 	}
 	
 	@Override
@@ -55,18 +90,55 @@ public abstract class AbstractToolFactory implements ToolFactory
 		this .pcs .addPropertyChangeListener( listener );
 	}
 	
+	private static final String NEW_PREFIX = "tool-";
+	
 	@Override
-	public Tool createTool( int index )
+	public Tool createTool()
 	{
-		Tool tool = createToolInternal( index );
+		int index = this .tools .reserveId();
+		Tool tool = createToolInternal( NEW_PREFIX + index );
+		tool .setCategory( this .getId() );
+		tool .setLabel( this .getId() + " " + index );
+		this .tools .put( tool .getId(), tool );
 		if ( tool instanceof UndoableEdit )
-			context .performAndRecord( (UndoableEdit) tool );
+			this .tools .getContext() .performAndRecord( (UndoableEdit) tool );
 		return tool;
 	}
-	
-	protected abstract Tool createToolInternal( int index );
+
+	public Tool createPredefinedTool( String label )
+	{
+		Tool tool = createToolInternal( this .getId() + ".builtin/" + label );
+		tool .setLabel( label );
+		tool .setCategory( this .getId() );
+		tool .setPredefined( true );
+		tool .checkSelection( true );
+		this .tools .put( tool .getId(), tool );
+		return tool;
+	}
+
+	public Tool deserializeTool( String id )
+	{
+		Tool tool = createToolInternal( id );
+		if ( id .startsWith( NEW_PREFIX ) ) {
+			int num = Integer .parseInt( id .substring( NEW_PREFIX.length() ) );
+			this .tools .setMaxId( num );
+		} // else
+		   // legacy user tools don't consume NEW_PREFIX id space
+		tool .setLabel( tool .getId() ); // TODO do better
+
+		int nextDot = id .indexOf( "." );
+		if ( nextDot > 0 ) {
+			tool .setCategory( id .substring( 0, nextDot ) );
+		} else {
+			tool .setCategory( this .getId() );
+		}
+		this .tools .put( tool .getId(), tool );
+		return tool;
+	}
+
+	public abstract Tool createToolInternal( String id );
 
 	protected abstract boolean countsAreValid( int total, int balls, int struts, int panels );
 	
-	protected abstract boolean bindParameters( Selection selection, SymmetrySystem symmetry );
+	protected abstract boolean bindParameters( Selection selection );
 }

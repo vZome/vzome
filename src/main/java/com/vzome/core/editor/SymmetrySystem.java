@@ -3,10 +3,10 @@
 
 package com.vzome.core.editor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
@@ -14,9 +14,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -37,27 +39,19 @@ public class SymmetrySystem implements OrbitSource
 	private final Symmetry symmetry;
     private final OrbitSet orbits;
     private final Map<Direction, Color> orbitColors = new HashMap<>();
-    private final Map<String,Shapes> styles = new HashMap<>();
-    private final List<String> styleNames = new ArrayList<>();
     private Shapes shapes;
     private Map<AlgebraicVector,Axis> vectorToAxis = new HashMap<>();
-
     private boolean noKnownDirections = false;
 
-	public SymmetrySystem( Element symmXml, Symmetry symmetry, Colors colors, List<Shapes> styles, boolean allowNonstandard )
+    private final SymmetryPerspective symmetryPerspective;
+	private final Map<Tool.Kind,List<Tool.Factory>> toolFactoryLists = new HashMap<>();
+	private final Map<Tool.Kind,List<Tool>> toolLists = new HashMap<>();
+
+	public SymmetrySystem( Element symmXml, FieldApplication.SymmetryPerspective symmetryPerspective, Colors colors, boolean allowNonstandard )
 	{
-		this .symmetry = symmetry;
-		if ( styles != null )
-			for (Shapes shape : styles) {
-				String name = shape .getName();
-				String alias = shape .getAlias();
-				this .styleNames .add( name );
-				this .styles .put( name, shape );
-				this .styles .put( shape .getPackage(), shape );
-				if ( alias != null && ! alias .equals( name ) )
-					this .styles .put( alias, shape );
-			}
-        String styleName = symmetry .getDefaultStyle();
+		this.symmetryPerspective = symmetryPerspective;
+		this .symmetry = symmetryPerspective .getSymmetry();
+        String styleName = symmetryPerspective .getDefaultGeometry() .getName();
 		orbits = new OrbitSet( symmetry );
 		if ( symmXml == null ) 
 		{
@@ -127,13 +121,26 @@ public class SymmetrySystem implements OrbitSource
                 orbitColors .put( dir, color );
             }
 		}
-        this .shapes = this .styles .get( styleName );
-        
-        if ( this .shapes == null ) {
-        	logger .warning( "UNKNOWN STYLE NAME: " + styleName );
-            this .shapes = this .styles .get( symmetry .getDefaultStyle() );
+        this .setStyle( styleName );
+   	}
+	
+	public void createToolFactories( ToolsModel tools )
+	{
+        // Here we go from support for viewing, to support for editing
+	    
+        for ( Tool.Kind kind : Tool.Kind.values() )
+        {
+            List<Tool.Factory> list = this .symmetryPerspective .createToolFactories( kind, tools );
+            // toolFactoryLists manifest to the Controller automatically
+            this .toolFactoryLists .put( kind, list );
+            for ( Tool.Factory factory : list ) {
+				tools .getEditorModel() .addSelectionSummaryListener( (SelectionSummary.Listener) factory );
+			}
+
+            List<Tool> toolList = this .symmetryPerspective .predefineTools( kind, tools );
+            this .toolLists .put( kind, toolList );
         }
-	}
+   	}
 	
 	public String getName()
 	{
@@ -286,12 +293,22 @@ public class SymmetrySystem implements OrbitSource
 
     public void setStyle( String styleName )
     {
-        this .shapes = this .styles .get( styleName );
+    	Optional<Shapes> found = this .symmetryPerspective .getGeometries() .stream()
+        		.filter( e -> styleName .equals( e .getName() )
+        				   || styleName .equals( e .getAlias() )
+        				   || styleName .equals( e .getPackage() ) )
+        		.findFirst();
+    	if ( found .isPresent() )
+    		this .shapes = found .get();
+    	else {
+        	logger .warning( "UNKNOWN STYLE NAME: " + styleName );
+        	this .shapes = this .symmetryPerspective .getDefaultGeometry();
+        }
     }
 
     public String[] getStyleNames()
     {
-        return this .styleNames .toArray( new String[]{} );
+    	return this .symmetryPerspective .getGeometries() .stream() .map( e -> e .getName() ) .toArray( String[]::new );
     }
 
     public Shapes getStyle()
@@ -323,5 +340,15 @@ public class SymmetrySystem implements OrbitSource
 			
 			return this .shapes .getStrutShape( orbit, len );
 		}
+	}
+
+	public List<Tool.Factory> getToolFactories( Tool.Kind kind )
+	{
+		return this .toolFactoryLists .get( kind );
+	}
+
+	public List<Tool> getPredefinedTools( Tool.Kind kind )
+	{
+		return this .toolLists .get( kind );
 	}
 }

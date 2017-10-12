@@ -6,13 +6,42 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
 
-public class OctahedralToolFactory extends AbstractToolFactory implements ToolFactory
+public class OctahedralToolFactory extends AbstractToolFactory
 {
-	private transient Symmetry symmetry;
-
-	public OctahedralToolFactory( EditorModel model, UndoableEdit.Context context )
+	private static final String ID = "octahedral";
+	private static final String LABEL = "Create an octahedral symmetry tool";
+	private static final String TOOLTIP1 = "<p>" +
+    		"Each tool produces up to 23 copies of the input<br>" +
+    		"selection, using the rotation symmetries of a<br>" +
+    		"cube or octahedron.  To create a tool, select a<br>" +
+    		"ball that defines the center of symmetry, and<br>" +
+    		"a single blue or green strut, defining one of<br>" +
+    		"five possible orientations for the symmetry.<br>" +
+    		"<br>" +
+    		"Combine with a point reflection tool to achieve<br>" +
+    		"all 48 symmetries of the octahedron, including<br>" +
+    		"reflections.<br>" +
+		"</p>";
+	
+	private static final String TOOLTIP2 = "<p>" +
+    		"Each tool produces up to 23 copies of the input<br>" +
+    		"selection, using the rotation symmetries of a<br>" +
+    		"cube or octahedron.  To create a tool, select a<br>" +
+    		"ball that defines the center of symmetry.<br>" +
+    		"<br>" +
+    		"Combine with a point reflection tool to achieve<br>" +
+    		"all 48 symmetries of the octahedron, including<br>" +
+    		"reflections.<br>" +
+		"</p>";
+	
+	public OctahedralToolFactory( ToolsModel tools, Symmetry symmetry )
 	{
-		super( model, context );
+		this( tools, symmetry, ID, LABEL, TOOLTIP2 );
+	}
+
+	public OctahedralToolFactory( ToolsModel tools, Symmetry symmetry, String id, String label, String tooltip )
+	{
+		super( tools, symmetry, id, label, tooltip );
 	}
 
 	@Override
@@ -22,22 +51,17 @@ public class OctahedralToolFactory extends AbstractToolFactory implements ToolFa
 	}
 
 	@Override
-	public Tool createToolInternal( int index )
+	public Tool createToolInternal( String id )
 	{
-		return new SymmetryTool( "octahedral." + index, symmetry, getSelection(), getModel(), null );
-	}
-
-	protected Symmetry getSymmetry()
-	{
-		return this .symmetry;
+		return new SymmetryTool( id, getSymmetry(), getToolsModel() );
 	}
 
 	@Override
-	protected boolean bindParameters( Selection selection, SymmetrySystem symmetrySystem )
+	protected boolean bindParameters( Selection selection )
 	{
-		this .symmetry = symmetrySystem .getSymmetry();
+		Symmetry symmetry = getSymmetry();
 		int total = getSelection() .size();
-		if ( symmetry instanceof IcosahedralSymmetry ) {
+		if ( symmetry instanceof IcosahedralSymmetry ) { // TODO make this OO
 			if ( total != 2 )
 				return false;
 			for ( Manifestation man : selection )

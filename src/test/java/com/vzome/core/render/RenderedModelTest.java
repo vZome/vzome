@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -13,14 +11,15 @@ import org.junit.Test;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
+import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
+import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Strut;
-import com.vzome.core.viewing.OctahedralShapes;
-import com.vzome.fields.heptagon.HeptagonalAntiprismSymmetry;
 
 /**
  * While creating HeptagonalAntiprismSymmetry, with inbound/outbound zones,
@@ -106,15 +105,14 @@ public class RenderedModelTest
 	@Test
 	public void testZoneConsistency()
 	{
-		HeptagonField field = new HeptagonField();
+		HeptagonFieldApplication app = new HeptagonFieldApplication();
+		HeptagonField field = (HeptagonField) app .getField();
 		AlgebraicVector origin = field .origin( 3 );
 
-		HeptagonalAntiprismSymmetry symmetry = new HeptagonalAntiprismSymmetry( field, "blue", "octa", true );
-		symmetry .createStandardOrbits( "blue" );
-
-        Shapes shapes = new OctahedralShapes( "foo", "octa", symmetry );
-        List<Shapes> styles = Collections .singletonList( shapes );
-		SymmetrySystem sys = new SymmetrySystem( null, symmetry, new Colors( new Properties() ), styles, true );
+		SymmetryPerspective perspective = app .getDefaultSymmetryPerspective();
+		Symmetry symmetry = perspective .getSymmetry();
+		
+		SymmetrySystem sys = new SymmetrySystem( null, perspective, new Colors( new Properties() ), true );
 		
 		RenderedModel model = new RenderedModel( field, sys );
 		ZoneChecker checker = new ZoneChecker();

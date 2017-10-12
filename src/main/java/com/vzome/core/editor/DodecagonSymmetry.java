@@ -13,6 +13,7 @@ import com.vzome.core.construction.Transformation;
 import com.vzome.core.construction.TransformedPoint;
 import com.vzome.core.construction.TransformedPolygon;
 import com.vzome.core.construction.TransformedSegment;
+import com.vzome.core.math.symmetry.DodecagonalSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -23,11 +24,11 @@ public class DodecagonSymmetry extends ChangeManifestations
     
     private final Symmetry symmetry;
     
-    public DodecagonSymmetry( Selection selection, RealizedModel realized, Point center, boolean groupInSelection )
+    public DodecagonSymmetry( Selection selection, RealizedModel realized, Point center, Symmetry symmetry, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
         this .center = center;
-        this .symmetry = (center==null)? null : center .getField() .getSymmetry( "dodecagonal" );
+        this .symmetry = new DodecagonalSymmetry( symmetry .getField(), null );
     }
     
     @Override

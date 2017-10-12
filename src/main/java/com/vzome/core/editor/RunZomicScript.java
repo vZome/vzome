@@ -29,13 +29,12 @@ public class RunZomicScript extends ChangeManifestations
     private final Point origin;
     private IcosahedralSymmetry symm;
 
-    public RunZomicScript( Selection selection, RealizedModel realized, String text, Point origin )
+    public RunZomicScript( Selection selection, RealizedModel realized, String text, Point origin, IcosahedralSymmetry symmetry )
     {
         super( selection, realized, false );
         this .programText = text;
         this .origin = origin;
-        if ( origin != null )
-            this .symm = (IcosahedralSymmetry) origin .getField() .getSymmetry( "icosahedral" );
+		this .symm = symmetry;
     }
 
 	@Override

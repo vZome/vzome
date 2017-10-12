@@ -3,12 +3,7 @@
 package com.vzome.core.algebra;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.StringTokenizer;
-
-import com.vzome.core.math.symmetry.QuaternionicSymmetry;
-import com.vzome.core.math.symmetry.Symmetry;
 
 public abstract class AlgebraicField
 {
@@ -37,10 +32,6 @@ public abstract class AlgebraicField
     }
 
     private final String name;
-
-    private final ArrayList<Symmetry> symmetries = new ArrayList<>();
-
-    private final Map<String, QuaternionicSymmetry> quaternionSymmetries = new HashMap<>();
 
     private final AlgebraicNumber one = this .createRational( 1 );
 
@@ -246,36 +237,6 @@ public abstract class AlgebraicField
             result[ i ] = v1[ i ] .minus( v2[ i ] );
         }
         return result;
-    }
-
-    public void addSymmetry( Symmetry symmetry )
-    {
-        this.symmetries.add( symmetry );
-    }
-
-    public Symmetry getSymmetry( String name )
-    {
-        for (Symmetry symmetry : symmetries) {
-            if (symmetry.getName().equals(name)) {
-                return symmetry;
-            }
-        }
-        return null;
-    }
-
-    public Symmetry[] getSymmetries()
-    {
-        return symmetries.toArray( new Symmetry[symmetries.size()] );
-    }
-
-    public void addQuaternionSymmetry( QuaternionicSymmetry symm )
-    {
-        quaternionSymmetries .put( symm .getName(), symm );
-    }
-
-    public QuaternionicSymmetry getQuaternionSymmetry( String name )
-    {
-        return quaternionSymmetries .get( name );
     }
 
     /**
