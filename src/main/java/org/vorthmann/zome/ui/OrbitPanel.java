@@ -34,6 +34,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 	private final JPanel orbitTriangle, orbitCheckboxes;
 	private final CardPanel cardPanel;
 	private MouseListener orbitPopup;
+	private JCheckBox singleCheckbox;
 	
 	public OrbitPanel( final Controller selectedOrbits, final Controller drawnOrbits, ControlActions enabler )
 	{
@@ -68,19 +69,19 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
                 JPanel row1 = new JPanel();
                 row1 .setLayout( new GridLayout( 0, 3 ) );
                 row1 .add( createButton( "None", "setNoDirections", indirection ) );
-                final JCheckBox checkbox = createCheckbox( "single", "oneAtATime", indirection );
+                singleCheckbox = createCheckbox( "single", "oneAtATime", indirection );
                 if ( "true" .equals( enabledOrbits .getProperty( "oneAtATime" ) ) )
-                    checkbox .setSelected( true );
+                    singleCheckbox .setSelected( true );
                 row1 .add( createButton( "All", "setAllDirections", new ActionListener()
                 {
                     @Override
                     public void actionPerformed( ActionEvent evt )
                     {
                     	indirection .actionPerformed( evt );
-                        checkbox .setSelected( false );
+                        singleCheckbox .setSelected( false );
                     }
                 } ) );
-                row1 .add( checkbox, BorderLayout.WEST );
+                row1 .add( singleCheckbox, BorderLayout.WEST );
                 controlStrip .add( row1, BorderLayout.NORTH );
             }
             this .add( controlStrip, BorderLayout.NORTH );
@@ -134,6 +135,8 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
         this .drawnOrbits = shownOrbits;
 		this .enabledOrbits = buildOrbits;
 		
+        this .singleCheckbox .setSelected( enabledOrbits .propertyIsTrue( "oneAtATime" ) );
+
         enabledOrbits .addPropertyListener( this );
         drawnOrbits .addPropertyListener( this );
         enabledOrbits .getMouseTool() .attach( orbitTriangle );

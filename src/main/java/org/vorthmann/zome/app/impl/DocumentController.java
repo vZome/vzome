@@ -19,11 +19,8 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -45,8 +42,10 @@ import org.vorthmann.j3d.Trackball;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
+import org.vorthmann.zome.app.impl.PartsController.PartInfo;
 import org.vorthmann.zome.export.java2d.Java2dExporter;
 import org.vorthmann.zome.export.java2d.Java2dSnapshot;
+import org.vorthmann.zome.ui.PartsPanel.PartsPanelActionEvent;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -61,7 +60,9 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.editor.BookmarkTool;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
@@ -87,8 +88,6 @@ import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
-import org.vorthmann.zome.app.impl.PartsController.PartInfo;
-import org.vorthmann.zome.ui.PartsPanel.PartsPanelActionEvent;
 
 /**
  * @author Scott Vorthmann 2003
@@ -203,10 +202,19 @@ public class DocumentController extends DefaultController implements J3dComponen
                 ? new ClipboardController()
                 : null;
         
-        toolsController = new ToolsController( document );
+        toolsController = new ToolsController( document .getToolsModel() );
         toolsController .setNextController( this );
         this .addPropertyListener( toolsController );
         
+		toolsController .addTool( document .getToolsModel() .get( "bookmark.builtin/ball at origin" ) );
+        
+        for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
+        {
+        	String name = symper .getName();
+        	SymmetryController symmController = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
+            this .symmetries .put( name, symmController );
+        }
+
         polytopesController = new PolytopesController( this .documentModel );
         polytopesController .setNextController( this );
         
@@ -610,14 +618,10 @@ public class DocumentController extends DefaultController implements J3dComponen
             return canvas;
         }
     }
-    
+
     private SymmetryController getSymmetryController( String name )
     {
         SymmetryController result = this .symmetries .get( name );
-        if ( result == null ) {
-            result = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
-            this .symmetries .put( name, result );
-        }
         return result;
     }
 
@@ -1382,7 +1386,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         if ( string .startsWith( "supports.symmetry." ) )
         {
             String group = string .substring( "supports.symmetry." .length() );
-            Symmetry symm = this .documentModel .getField() .getSymmetry( group );
+            Symmetry symm = this .documentModel .getFieldApplication() .getSymmetryPerspective( group ) .getSymmetry();
             return Boolean .toString(symm != null);
         }
         
@@ -1477,6 +1481,9 @@ public class DocumentController extends DefaultController implements J3dComponen
         case "lesson":
             return lessonController;
         
+        case "bookmark":
+            return new ToolFactoryController( this .documentModel .getBookmarkFactory() );
+        
         case "snapshot.2d": {
             if ( mSnapshot == null ) {
                 Java2dExporter exporter = new Java2dExporter( mViewPlatform.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
@@ -1539,14 +1546,9 @@ public class DocumentController extends DefaultController implements J3dComponen
     @Override
     public String[] getCommandList( String listName )
     {
-        if ( "tool.templates" .equals( listName ) )
+        if ( "symmetryPerspectives" .equals( listName ) )
         {
-            List<String> all = new ArrayList<>();
-            List<String> genericTools = Arrays .asList( new String[]{ "translation", "scaling", "point reflection", "linear map", "module", "bookmark", "plane" } );
-            all .addAll( genericTools );
-            List<String> symmTools = Arrays .asList( symmetryController .getCommandList( listName ) );
-            all .addAll( symmTools );
-            return all .toArray( new String[all.size()] );
+        	return this .symmetries .keySet() .toArray( new String[]{} );
         }
         return super.getCommandList( listName );
     }
@@ -1563,13 +1565,6 @@ public class DocumentController extends DefaultController implements J3dComponen
             case "undoToManifestation":
                 this .documentModel .undoToManifestation( pickedManifestation );
                 break;
-
-//            case "symmTool-icosahedral":
-//                Symmetry symmetry = ((SymmetryController) getSymmetryController( "icosahedral" )) .getSymmetry();
-//
-//                this .document .createTool( "icosahedral.99/", "icosahedral", toolsController, symmetry );
-//                this .document .createAndApplyTool( pickedManifestation, "icosahedral", toolsController, symmetry );
-//              break;
 
             case "setSymmetryCenter":
                 this .documentModel .setParameter( singleConstruction, "ball" );

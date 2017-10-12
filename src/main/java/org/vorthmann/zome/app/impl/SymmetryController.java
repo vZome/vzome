@@ -6,12 +6,16 @@ package org.vorthmann.zome.app.impl;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 
+import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.symmetry.Axis;
@@ -55,7 +59,11 @@ public class SymmetryController extends DefaultController// implements RenderedM
     public OrbitSetController renderController;
     
     public Map<Direction, LengthController> orbitLengths = new HashMap<>();
-        
+
+	private final Map<String, Controller> symmetryToolFactories = new LinkedHashMap<>();
+	private final Map<String, Controller> transformToolFactories = new LinkedHashMap<>();
+  	private final Map<String, Controller> linearMapToolFactories = new LinkedHashMap<>();
+      
     public Symmetry getSymmetry()
     {
         return this .symmetrySystem .getSymmetry();
@@ -68,7 +76,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     
     public SymmetryController( Controller parent, SymmetrySystem model )
     {
-        this .setNextController( parent );
+		this .setNextController( parent );
         this.symmetrySystem = model;
         Symmetry symmetry = model .getSymmetry();
         availableOrbits = new OrbitSet( symmetry );
@@ -120,36 +128,17 @@ public class SymmetryController extends DefaultController// implements RenderedM
         } );
     }
     
-
-    @Override
-    public Controller getSubController( String name )
-    {
-        if ( name .equals( "availableOrbits" ) )
-            return availableController;
-        if ( name .equals( "snapOrbits" ) )
-            return snapController;
-        if ( name .equals( "buildOrbits" ) )
-            return buildController;
-        if ( name .equals( "renderOrbits" ) )
-            return renderController;
-        if ( name .startsWith( "length." ) )
-        {
-            String dirName = name .substring( "length." .length() );
-            Direction dir = this .symmetrySystem .getOrbits() .getDirection( dirName );
-            return getLengthController( dir );
-        }
-        return null;
-    }
-    
     @Override
     public String[] getCommandList( String listName )
     {
-        if ( "styles" .equals( listName ) )
-        {
-            return this .symmetrySystem .getStyleNames();
-        }
-        if ( listName .equals( "orbits" ) )
-        {
+    	switch ( listName ) {
+
+    	case "styles":
+			
+    		return this .symmetrySystem .getStyleNames();
+
+    	case "orbits":
+			
             String[] result = new String[ this .symmetrySystem .getOrbits() .size() ];
             int i = 0;
             for (Direction orbit : this .symmetrySystem .getOrbits()) {
@@ -157,12 +146,85 @@ public class SymmetryController extends DefaultController// implements RenderedM
                 i++;
             }
             return result;
-        }
-        if ( "tool.templates" .equals( listName ) )
-        {
-            return new String[]{ "icosahedral", "octahedral", "tetrahedral", "rotation", "mirror" };
-        }
-        return new String[0];
+
+    	case "symmetryToolFactories":
+
+    		// This will be called only once, before any relevant getSubController, so it is OK to do creations
+    		for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.SYMMETRY ) )
+				this .symmetryToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+			return this .symmetryToolFactories .keySet() .toArray( new String[]{} );
+
+    	case "transformToolFactories":
+
+    		// This will be called only once, before any relevant getSubController, so it is OK to do creations
+    		for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.TRANSFORM ) )
+				this .transformToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+			return this .transformToolFactories .keySet() .toArray( new String[]{} );
+
+    	case "linearMapToolFactories":
+
+    		// This will be called only once, before any relevant getSubController, so it is OK to do creations
+    		for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.LINEAR_MAP ) )
+				this .linearMapToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+			return this .linearMapToolFactories .keySet() .toArray( new String[]{} );
+
+    	case "builtInSymmetryTools":
+
+    		// This will be called only once, before any relevant getSubController, so it is OK to do creations
+    		List<String> toolNames = new ArrayList<>();
+    		for ( Tool tool : this .symmetrySystem .getPredefinedTools( Tool.Kind.SYMMETRY ) )
+    			toolNames .add( tool .getId() );
+    		return toolNames .toArray( new String[]{} );
+
+
+    	case "builtInTransformTools":
+
+    		// This will be called only once, before any relevant getSubController, so it is OK to do creations
+    		List<String> transformToolNames = new ArrayList<>();
+    		for ( Tool tool : this .symmetrySystem .getPredefinedTools( Tool.Kind.TRANSFORM ) )
+    			transformToolNames .add( tool .getId() );
+    		return transformToolNames .toArray( new String[]{} );
+
+		default:
+			return super .getCommandList( listName );
+		}
+    }
+
+    @Override
+    public Controller getSubController( String name )
+    {
+    	switch ( name ) {
+
+    	case "availableOrbits":
+            return availableController;
+
+    	case "snapOrbits":
+            return snapController;
+
+    	case "buildOrbits":
+            return buildController;
+
+    	case "renderOrbits":
+            return renderController;
+
+		default:
+	        if ( name .startsWith( "length." ) )
+	        {
+	            String dirName = name .substring( "length." .length() );
+	            Direction dir = this .symmetrySystem .getOrbits() .getDirection( dirName );
+	            return getLengthController( dir );
+	        }
+	        Controller result = this .symmetryToolFactories .get( name );
+	        if ( result != null )
+	        	return result;
+	        result = this .transformToolFactories .get( name );
+	        if ( result != null )
+	        	return result;
+	        result = this .linearMapToolFactories .get( name );
+	        if ( result != null )
+	        	return result;
+	        return null;
+		}
     }
 
     @Override
