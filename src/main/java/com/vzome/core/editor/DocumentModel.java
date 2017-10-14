@@ -342,6 +342,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case "AffineTransformAll":
 			edit = new AffineTransformAll( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
 			break;
+			
+		case "Parallelepiped":
+			edit = new Parallelepiped( this.mSelection, this.mRealizedModel );
+			break;
+
 		case "HeptagonSubdivision":
 			edit = new HeptagonSubdivision( this.mSelection, this.mRealizedModel, groupInSelection );
 			break;
@@ -665,6 +670,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case "affineTransformAll":
 			edit = new AffineTransformAll( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
 			break;
+			
+		case "parallelepiped":
+			edit = new Parallelepiped( mSelection, mRealizedModel );
+			break;
+			
 		case "dodecagonsymm":
 			edit = new DodecagonSymmetry( mSelection, mRealizedModel, mEditorModel.getCenterPoint(),
 					this .mEditorModel .getSymmetrySystem() .getSymmetry(), false );
