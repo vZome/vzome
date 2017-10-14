@@ -80,7 +80,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
     }
 
     @Override
-    protected void createOtherOrbits()
+	protected void createOtherOrbits()
     {
         AlgebraicVector xAxis = mField.basisVector( 3, AlgebraicVector.X );
         AlgebraicVector yAxis = mField.basisVector( 3, AlgebraicVector.Y );

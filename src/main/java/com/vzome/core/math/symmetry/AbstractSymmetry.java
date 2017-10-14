@@ -138,7 +138,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, false );
     }
 
-    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, false );
@@ -160,7 +160,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, standard, false, mField .one() );
     }
 
-    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, halfSizes, unitLength );
@@ -168,6 +168,13 @@ public abstract class AbstractSymmetry implements Symmetry
 
     protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
     {
+        Direction existingDir = this .mDirectionMap .get( name );
+        if ( existingDir != null ) {
+        	// Probably overriding the default octahedral yellow or green.  See GoldenFieldApplication.
+        	this .mDirectionMap .remove( name );
+        	this .orbitSet .remove( existingDir );
+        	this .mDirectionList .remove( existingDir );
+        }
         Direction dir = new Direction( name, this, prototype, rotatedPrototype, norm, standard );
         if ( halfSizes )
             dir .setHalfSizes( true );

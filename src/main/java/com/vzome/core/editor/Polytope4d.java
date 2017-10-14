@@ -12,10 +12,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AttributeMap;
-import com.vzome.core.commands.CommandUniformH4Polytope;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.construction.Construction;
-import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -23,12 +20,6 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
-import com.vzome.core.math.symmetry.A4Group;
-import com.vzome.core.math.symmetry.B4Group;
-import com.vzome.core.math.symmetry.CoxeterGroup;
-import com.vzome.core.math.symmetry.D4Group;
-import com.vzome.core.math.symmetry.F4Group;
-import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.model.RealizedModel;
 
@@ -44,55 +35,40 @@ public class Polytope4d extends ChangeManifestations
     private int edgesToRender = 0xF;
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private String renderGroupName;
+	private final FieldApplication fieldApp;
 
     public Polytope4d( Selection selection, RealizedModel realized,
+    		FieldApplication fieldApp,
             AlgebraicVector quaternion, int index, String groupName,
-            int edgesToRender, AlgebraicNumber[] edgeScales, String renderGroupName )
+            int edgesToRender, AlgebraicNumber[] edgeScales,
+            String renderGroupName, boolean groupInSelection )
     {
-    	super( selection, realized, false );
+    	super( selection, realized, groupInSelection );
+		this.fieldApp = fieldApp;
+    	this.field = fieldApp .getField();
 
     	this.index = index;
     	this.quaternion = quaternion;
     	this.groupName = groupName;
-    	this.field = realized .getField();
 
     	this .renderGroupName = renderGroupName;
     	this .edgesToRender = edgesToRender;
-    	this .edgeScales = edgeScales;
+    	if ( edgeScales != null )
+    		this .edgeScales = edgeScales;
+    	else
+            for (int i = 0; i < this .edgeScales .length; i++)
+            {
+                this .edgeScales[ i ] = this .field .createPower( 0 );
+            }
     }
 
     public Polytope4d( Selection selection, RealizedModel realized,
-                        Segment symmAxis, int index, String groupName,
-                        int edgesToRender, AlgebraicNumber[] edgeScales, String renderGroupName )
+    		FieldApplication fieldApp,
+    		Segment symmAxis, int index, String groupName, boolean groupInSelection )
     {
-        super( selection, realized, false );
-
-        this.index = index;
-        this.quaternion = ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d();
-        this.groupName = groupName;
-        this.field = realized .getField();
-        
-        this .renderGroupName = renderGroupName;
-        this .edgesToRender = edgesToRender;
-        this .edgeScales = edgeScales;
-    }
-
-    public Polytope4d( Selection selection, RealizedModel realized,
-                        Segment symmAxis, int index, String groupName, boolean groupInSelection )
-    {
-        super( selection, realized, groupInSelection );
-
-        this.index = index;
-        this.quaternion = ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d();
-        this.groupName = groupName;
-        this.field = realized .getField();
-        
-        this .renderGroupName = groupName;
-        this .edgesToRender = index;
-        for (int i = 0; i < this .edgeScales .length; i++)
-        {
-            this .edgeScales[ i ] = this .field .createPower( 0 );
-        }
+        this( selection, realized, fieldApp,
+        		( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d(),
+        		index, groupName, index, null, groupName, groupInSelection );
     }
 
     @Override
@@ -165,34 +141,7 @@ public class Polytope4d extends ChangeManifestations
             this.proj = new Projection .Default( field );
         else
             this.proj = new QuaternionProjection( field, null, quaternion .scale( field .createPower( -5 ) ) );
-        if ( "H4" .equals( groupName ) )
-        {
-            QuaternionicSymmetry qsymm = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", field ); // TODO inject this
-            CommandUniformH4Polytope h4Builder = new CommandUniformH4Polytope( field, qsymm, 0 );
-            h4Builder .generate(this .proj, this .index, this .edgesToRender, this .edgeScales, new ConstructionChanges()
-            {
-                @Override
-                public void constructionAdded( Construction c )
-                {
-                    // TODO refactor to replace this with a WythoffListener
-                    manifestConstruction( c );
-                }
-            } );
-        }
-        else
-        {
-            CoxeterGroup group = null;
-            if ( "A4" .equals( groupName ) )  // TODO inject these
-                group = new A4Group( this.field ) ;
-            else if ( "D4" .equals( groupName ) )
-                group = new D4Group( this.field );
-            else if ( "F4" .equals( groupName ) )
-                group = new F4Group( this.field );
-            else if ( groupName .startsWith( "B4" ) )
-                group = new B4Group( this.field );
-            WythoffConstruction .constructPolytope( group, this.index, this .edgesToRender, this .edgeScales, group, new WythoffListener() );
-        }
-        
+        this .fieldApp .constructPolytope( groupName, this.index, this .edgesToRender, this .edgeScales, new WythoffListener() );
         redo();
     }
 
@@ -219,7 +168,7 @@ public class Polytope4d extends ChangeManifestations
         @Override
         public Object addVertex( AlgebraicVector vertex )
         {
-            Point p = vertices .get( vertex );
+        	Point p = vertices .get( vertex );
             if ( p == null )
             {
                 AlgebraicVector projected = vertex;
