@@ -50,17 +50,13 @@ import org.vorthmann.zome.ui.PartsPanel.PartsPanelActionEvent;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.algebra.RootThreeField;
-import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.BookmarkTool;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
@@ -630,7 +626,8 @@ public class DocumentController extends DefaultController implements J3dComponen
         String name =  symmetrySystem .getName();
         symmetryController = getSymmetryController( name );
 
-        mControlBallModel = mApp.getSymmetryModel( symmetryController.getSymmetry() );
+        String modelResourcePath = this .symmetryController .getProperty( "modelResourcePath" );
+        mControlBallModel = this .mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
         if ( mControlBallScene != null ) {
             mControlBallScene.reset();
             for ( RenderedManifestation rm : mControlBallModel )
@@ -939,31 +936,6 @@ public class DocumentController extends DefaultController implements J3dComponen
                     break;
 
                 default:
-                    Symmetry symm = symmetryController .getSymmetry();
-                    String symmName = symm .getName();
-                    AlgebraicField field = symm .getField();
-                    if ( action.equals( "axialsymm" ) )
-                    {
-                        if ( field instanceof RootTwoField ) 
-                            action += "-roottwo"; 
-                        else if ( field instanceof RootThreeField ) 
-                            action += "-rootthree"; 
-                        else if ( field instanceof HeptagonField ) 
-                            action += "-heptagon"; 
-                        else if ( "octahedral" .equals( symmName ) ) 
-                            action += "-octa"; 
-                        else if ( "icosahedral" .equals( symmName ) ) 
-                            action += "-icosa"; 
-                    } else if ( action.equals( "tetrasymm" ) || action.equals( "octasymm" ) ) 
-                        if ( field instanceof RootTwoField ) 
-                            action += "-roottwo"; 
-                        else if ( field instanceof RootThreeField ) 
-                            action += "-rootthree"; 
-                        else if ( field instanceof HeptagonField ) 
-                            action += "-heptagon"; 
-                        else 
-                            action += "-golden"; 
-                             
                     boolean handled = documentModel .doEdit( action );
                     if ( ! handled )
                         super .doAction( action, e );

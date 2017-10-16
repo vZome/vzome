@@ -43,8 +43,11 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 	
 	private final boolean fullPower;
 
+	private final Controller controller;
+
 	public DocumentMenuBar( final Controller controller, ControlActions actions )
 	{
+		this .controller = controller;
 		this .actions = actions;
 
 		controller .addPropertyListener( this );
@@ -349,20 +352,20 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         else
         	this .showToolsMenuItem = null;
 
-        if ( isGolden ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm-golden", KeyEvent.VK_I, COMMAND ) ) );
-        } else if ( isSnubDodec )
-            menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm-snubDodec", KeyEvent.VK_I, COMMAND ) ) );
-
-        if ( developerExtras && isRootThree ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Dodecagonal Symmetry", "dodecagonsymm", KeyEvent.VK_D, COMMAND ) ) );
+        Controller symmetryController = controller .getSubController( "symmetry" );
+        // TODO: replace legacy commands with default tools
+        if ( isGolden || isSnubDodec ) {
+            menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm", symmetryController, KeyEvent.VK_I, COMMAND ) ) );
         }
-        menu.add( enableIf( isEditor, createMenuItem( "Cubic / Octahedral Symmetry", "octasymm", KeyEvent.VK_C, COMMAND_OPTION ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", KeyEvent.VK_T, COMMAND_OPTION ) ) );
+        if ( developerExtras && isRootThree ) {
+            menu.add( enableIf( isEditor, createMenuItem( "Dodecagonal Symmetry", "dodecagonsymm", symmetryController, KeyEvent.VK_D, COMMAND ) ) );
+        }
+        menu.add( enableIf( isEditor, createMenuItem( "Cubic / Octahedral Symmetry", "octasymm", symmetryController, KeyEvent.VK_C, COMMAND_OPTION ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", symmetryController, KeyEvent.VK_T, COMMAND_OPTION ) ) );
         if ( oldTools ) {
-        	menu.add( enableIf( isEditor, createMenuItem( "Axial Symmetry", "axialsymm", KeyEvent.VK_R, COMMAND ) ) );
-        	menu.add( enableIf( isEditor, createMenuItem( "Mirror Reflection", "mirrorsymm" , KeyEvent.VK_M, COMMAND ) ) );
-        	menu.add( enableIf( isEditor, createMenuItem( "Translate", "translate", KeyEvent.VK_T, COMMAND ) ) );
+        	menu.add( enableIf( isEditor, createMenuItem( "Axial Symmetry", "axialsymm", symmetryController, KeyEvent.VK_R, COMMAND ) ) );
+        	menu.add( enableIf( isEditor, createMenuItem( "Mirror Reflection", "mirrorsymm" , symmetryController, KeyEvent.VK_M, COMMAND ) ) );
+        	menu.add( enableIf( isEditor, createMenuItem( "Translate", "translate", symmetryController, KeyEvent.VK_T, COMMAND ) ) );
         }
         menu.add( enableIf( isEditor, createMenuItem( "Point Reflection", "pointsymm" ) ) );
         
@@ -384,19 +387,19 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         ButtonGroup group = new ButtonGroup();
         JMenuItem rbMenuItem;
         if ( isGolden || isSnubDodec ) {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.icosahedral", new JRadioButtonMenuItem( "Icosahedral System" ) );
+            rbMenuItem = actions .setMenuAction( "setSymmetry.icosahedral", controller, new JRadioButtonMenuItem( "Icosahedral System" ) );
             rbMenuItem .setSelected( "icosahedral".equals( initSystem ) );
             rbMenuItem .setEnabled( fullPower );
             group.add( rbMenuItem );
             menu.add( rbMenuItem );
         }
         else if ( isHeptagon ) {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.heptagonal antiprism corrected", new JRadioButtonMenuItem( "Heptagonal Antiprism System" ) );
+            rbMenuItem = actions .setMenuAction( "setSymmetry.heptagonal antiprism corrected", controller, new JRadioButtonMenuItem( "Heptagonal Antiprism System" ) );
             rbMenuItem .setSelected( "heptagonal antiprism corrected".equals( initSystem ) );
             rbMenuItem .setEnabled( fullPower );
             group.add( rbMenuItem );
             menu.add( rbMenuItem );
-            rbMenuItem = actions .setMenuAction( "setSymmetry.triangular antiprism", new JRadioButtonMenuItem( "Triangular Antiprism System" ) );
+            rbMenuItem = actions .setMenuAction( "setSymmetry.triangular antiprism", controller, new JRadioButtonMenuItem( "Triangular Antiprism System" ) );
             rbMenuItem .setSelected( "triangular antiprism".equals( initSystem ) );
             rbMenuItem .setEnabled( fullPower );
             group.add( rbMenuItem );
@@ -404,7 +407,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             // menu.add( rbMenuItem );
         }
         
-        rbMenuItem = actions .setMenuAction( "setSymmetry.octahedral", new JRadioButtonMenuItem( "Octahedral System" ) );
+        rbMenuItem = actions .setMenuAction( "setSymmetry.octahedral", controller, new JRadioButtonMenuItem( "Octahedral System" ) );
         rbMenuItem .setSelected( "octahedral".equals( initSystem ) );
         rbMenuItem .setEnabled( fullPower );
         group.add( rbMenuItem );
@@ -412,7 +415,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         if ( isRootThree )
         {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.dodecagonal", new JRadioButtonMenuItem( "Dodecagon System" ) );
+            rbMenuItem = actions .setMenuAction( "setSymmetry.dodecagonal", controller, new JRadioButtonMenuItem( "Dodecagon System" ) );
             rbMenuItem .setSelected( "dodecagonal".equals( initSystem ) );
             rbMenuItem .setEnabled( fullPower );
             group.add( rbMenuItem );
@@ -420,7 +423,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         }
         else if ( isRootTwo )
         {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.synestructics", new JRadioButtonMenuItem( "Synestructics System" ) );
+            rbMenuItem = actions .setMenuAction( "setSymmetry.synestructics", controller, new JRadioButtonMenuItem( "Synestructics System" ) );
             rbMenuItem .setSelected( "synestructics".equals( initSystem ) );
             rbMenuItem .setEnabled( fullPower );
             group.add( rbMenuItem );
@@ -431,7 +434,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         
         if ( developerExtras )
         {
-            JMenuItem wfMenuItem = actions .setMenuAction( "toggleWireframe", new JCheckBoxMenuItem( "Wireframe" ) );
+            JMenuItem wfMenuItem = actions .setMenuAction( "toggleWireframe", controller, new JCheckBoxMenuItem( "Wireframe" ) );
             boolean isWireframe = "true".equals( controller .getProperty( "wireframe" ) );
             wfMenuItem .setSelected( isWireframe );
             menu.add( wfMenuItem );
@@ -440,13 +443,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( createMenuItem( "Shapes...", "configureShapes" ) );
         menu.add( createMenuItem( "Directions...", "configureDirections" ) );
 
-        JMenuItem cbMenuItem = actions .setMenuAction( "toggleOrbitViews", new JCheckBoxMenuItem( "Show Directions Graphically" ) );
+        JMenuItem cbMenuItem = actions .setMenuAction( "toggleOrbitViews", controller, new JCheckBoxMenuItem( "Show Directions Graphically" ) );
         boolean setting = "true".equals( controller .getProperty( "useGraphicalViews" ) );
         cbMenuItem .setSelected( setting );
         menu.add( cbMenuItem );
         cbMenuItem .setEnabled( fullPower );
 
-        final JMenuItem showStrutScalesItem = actions .setMenuAction( "toggleStrutScales", new JCheckBoxMenuItem( "Show Strut Scales" ) );
+        final JMenuItem showStrutScalesItem = actions .setMenuAction( "toggleStrutScales", controller, new JCheckBoxMenuItem( "Show Strut Scales" ) );
         setting = "true" .equals( controller .getProperty( "showStrutScales" ) );
         showStrutScalesItem .setSelected( setting );
         showStrutScalesItem .setEnabled( fullPower );
@@ -464,12 +467,12 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 //        cbMenuItem.setSelected( setting );
 //        menu.add( cbMenuItem );
 
-        cbMenuItem = actions .setMenuAction( "toggleFrameLabels", new JCheckBoxMenuItem( "Show Frame Labels" ) );
+        cbMenuItem = actions .setMenuAction( "toggleFrameLabels", controller, new JCheckBoxMenuItem( "Show Frame Labels" ) );
         setting = "true".equals( controller .getProperty( "showFrameLabels" ) );
         cbMenuItem .setSelected( setting );
         menu.add( cbMenuItem );
 
-        cbMenuItem = actions .setMenuAction( "toggleOutlines", new JCheckBoxMenuItem( "Render Outlines" ) );
+        cbMenuItem = actions .setMenuAction( "toggleOutlines", controller, new JCheckBoxMenuItem( "Render Outlines" ) );
         setting = "true".equals( controller.getProperty( "drawOutlines" ) );
         cbMenuItem .setSelected( setting );
         menu.add( cbMenuItem );
@@ -547,7 +550,12 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
     private JMenuItem createMenuItem( String label, String command, int key, int modifiers )
     {
-    	JMenuItem menuItem = actions .setMenuAction( command, new JMenuItem( label ) );
+    	return this .createMenuItem( label, command, this .controller, key, modifiers );
+	}
+
+    private JMenuItem createMenuItem( String label, String command, Controller controller, int key, int modifiers )
+    {
+    	JMenuItem menuItem = actions .setMenuAction( command, controller, new JMenuItem( label ) );
     	menuItem .setEnabled( true );
         if ( key != KeyEvent .CHAR_UNDEFINED )
             menuItem .setAccelerator( KeyStroke.getKeyStroke( key, modifiers ) );

@@ -102,11 +102,11 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
             directionPopupMenu = new ContextualMenu();
             directionPopupMenu.setLightWeightPopupEnabled( false );
 
-            directionPopupMenu.add( enabler .setMenuAction( "rZomeOrbits",         new JMenuItem( "real Zome" ) ) );
-            directionPopupMenu.add( enabler .setMenuAction( "predefinedOrbits",    new JMenuItem( "predefined" ) ) );
-            directionPopupMenu.add( enabler .setMenuAction( "usedOrbits",          new JMenuItem( "used in model" ) ) );
-            directionPopupMenu.add( enabler .setMenuAction( "setAllDirections",    new JMenuItem( "all" ) ) );
-            directionPopupMenu.add( enabler .setMenuAction( "configureDirections", new JMenuItem( "configure..." ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "rZomeOrbits",         drawnOrbits, new JMenuItem( "real Zome" ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "predefinedOrbits",    drawnOrbits, new JMenuItem( "predefined" ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "usedOrbits",          drawnOrbits, new JMenuItem( "used in model" ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "setAllDirections",    drawnOrbits, new JMenuItem( "all" ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "configureDirections", drawnOrbits, new JMenuItem( "configure..." ) ) );
         }
         else
         	directionPopupMenu = null;
