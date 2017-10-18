@@ -107,7 +107,7 @@ public final class OctahedralSymmetryPerspective implements SymmetryPerspective
 			break;
 
 		case LINEAR_MAP:
-			result .add( new LinearMapTool.Factory( tools, this .symmetry ) );
+			result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
 			break;
 
 		default:

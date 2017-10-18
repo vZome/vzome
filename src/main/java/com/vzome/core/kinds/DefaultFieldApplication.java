@@ -117,11 +117,11 @@ public class DefaultFieldApplication implements FieldApplication
 	    toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
 	    toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
 	    toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
-	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null ) );
+	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
 	
 	    // These tool factories have to be available for loading legacy documents.
 	    
-	    toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, null ) );
+	    toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, null, true ) );
 	    toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
 	    toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
 	}

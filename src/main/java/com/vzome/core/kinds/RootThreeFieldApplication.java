@@ -104,7 +104,7 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
 				break;
 
 			case LINEAR_MAP:
-				result .add( new LinearMapTool.Factory( tools, this .symmetry ) );
+				result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
 				break;
 
 			default:

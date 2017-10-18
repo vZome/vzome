@@ -170,7 +170,7 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 				result .add( new AxialStretchTool.Factory( tools, this .icosaSymm, true, false, false ) );
 				result .add( new AxialStretchTool.Factory( tools, this .icosaSymm, false, true, false ) );
 				result .add( new AxialStretchTool.Factory( tools, this .icosaSymm, false, false, false ) );
-				result .add( new LinearMapTool.Factory( tools, this .icosaSymm ) );
+				result .add( new LinearMapTool.Factory( tools, this .icosaSymm, false ) );
 				break;
 
 			default:
@@ -299,11 +299,11 @@ public class GoldenFieldApplication extends DefaultFieldApplication
         toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
         toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
         toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
-        toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null ) );
-
-        // These tool factories have to be available for loading legacy documents.
-        
-        toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, symm ) );
+	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
+		
+	    // These tool factories have to be available for loading legacy documents.
+	    
+	    toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, null, true ) );
         toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
         toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
     }

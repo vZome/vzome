@@ -37,9 +37,12 @@ public class LinearMapTool extends TransformationTool
 
 	public static class Factory extends AbstractToolFactory
 	{
-		public Factory( ToolsModel tools, Symmetry symmetry )
+		private final boolean originalScaling;
+		
+		public Factory( ToolsModel tools, Symmetry symmetry, boolean originalScaling )
 		{
 			super( tools, symmetry, CATEGORY, LABEL, TOOLTIP );
+			this .originalScaling = originalScaling;
 		}
 
 		@Override
@@ -52,7 +55,7 @@ public class LinearMapTool extends TransformationTool
 		@Override
 		public Tool createToolInternal( String id )
 		{
-			return new LinearMapTool( id, getToolsModel(), false );
+			return new LinearMapTool( id, getToolsModel(), this .originalScaling );
 		}
 
 		@Override
