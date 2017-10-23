@@ -124,6 +124,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         mController .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
         
+        int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
+
+        // Keep the tool tip showing
+        ToolTipManager.sharedInstance().setDismissDelay( 20000 );
+
         String path = mController .getProperty( "window.file" );
         if ( path != null )
         	this .mFile = new File( path ); // this enables "save" in localActions
