@@ -30,7 +30,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -54,8 +53,6 @@ public class ApplicationController extends DefaultController
     
     private final Properties properties = new Properties();
     
-    private final Map<Symmetry, RenderedModel> mSymmetryModels = new HashMap<>();
-
     private RenderingViewer.Factory rvFactory;
 
     private final com.vzome.core.editor.Application modelApp;
@@ -63,6 +60,8 @@ public class ApplicationController extends DefaultController
 	private final File preferencesFile;
 
     private int lastUntitled = 0;
+
+	private Map<String, RenderedModel> symmetryModels = new HashMap<String, RenderedModel>();
     
 	public ApplicationController( ActionListener ui, Properties commandLineArgs )
     {
@@ -152,74 +151,55 @@ public class ApplicationController extends DefaultController
             }
         }
 
-        RenderedModel model;
-        
-        FieldApplication field = modelApp .getDocumentKind( "golden" );
-        Symmetry symmetry = field .getSymmetryPerspective( "icosahedral" ) .getSymmetry();
-        {
-            if ( propertyIsTrue( "rzome.trackball" ) )
-                model = loadModelPanels( "org/vorthmann/zome/app/rZomeTrackball-vef.vZome", symmetry );
-            else if ( userHasEntitlement( "developer.extras" ) )
-            	model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-developer.vZome", symmetry );
-            else
-                model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-vef.vZome", symmetry );
-            mSymmetryModels.put( symmetry, model );
-        }
-        symmetry = field .getSymmetryPerspective( "octahedral" ) .getSymmetry();
-        {
-            // this has to happen after the OctahedralSymmetry constructor, which registers with the field
-            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome", symmetry );
-            mSymmetryModels.put( symmetry, model );
-        }
-
-        field = modelApp .getDocumentKind( "snubDodec" );
-        symmetry = field .getSymmetryPerspective( "icosahedral" ) .getSymmetry();
-        {
-            model = loadModelPanels( "org/vorthmann/zome/app/icosahedral-vef.vZome", symmetry );
-            mSymmetryModels.put( symmetry, model );
-        }
-
-        field = modelApp .getDocumentKind( "rootTwo" );
-        symmetry = field .getSymmetryPerspective( "octahedral" ) .getSymmetry();
-        {
-            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome", symmetry );
-            mSymmetryModels.put( symmetry, model );
-            symmetry = field .getSymmetryPerspective( "synestructics" ) .getSymmetry();
-            mSymmetryModels.put( symmetry, model );
-        }
-
-        field = modelApp .getDocumentKind( "rootThree" );
-        symmetry = field .getSymmetryPerspective( "octahedral" ) .getSymmetry();
-        {
-            // yes, reusing the model from above
-            mSymmetryModels.put( symmetry, model );
-        }
-        symmetry = field .getSymmetryPerspective( "dodecagonal" ) .getSymmetry();
-        {
-            model = loadModelPanels( "org/vorthmann/zome/app/dodecagonal.vZome", symmetry );
-            mSymmetryModels.put( symmetry, model );
-        }
-
-        field = modelApp .getDocumentKind( "heptagon" );
-        {
-            symmetry = field .getSymmetryPerspective( "heptagonal antiprism" ) .getSymmetry();
-            model = loadModelPanels( "org/vorthmann/zome/app/heptagonal antiprism.vZome", symmetry );
-            mSymmetryModels.put( symmetry, model );
-            symmetry = field .getSymmetryPerspective( "heptagonal antiprism corrected" ) .getSymmetry();
-            mSymmetryModels.put( symmetry, model );
-
-            symmetry = field .getSymmetryPerspective( "octahedral" ) .getSymmetry();
-            model = loadModelPanels( "org/vorthmann/zome/app/octahedral-vef.vZome", symmetry );
-            mSymmetryModels.put( symmetry, model );
-//            symmetry = field .getSymmetryPerspective( "triangular antiprism" ) .getSymmetry();
-//            mSymmetryModels.put( symmetry, model );
-        }
-
         long endtime = System.currentTimeMillis();
         if ( logger .isLoggable( Level .INFO ) )
             logger .log(Level.INFO, "ApplicationController initialization in milliseconds: {0}", ( endtime - starttime ));
    	}
-	
+
+    public RenderedModel getSymmetryModel( String path, Symmetry symmetry )
+    {
+    	RenderedModel result = this .symmetryModels .get( path );
+    	// The cache does not care if the symmetry matches.
+    	if ( result != null )
+    		return result;
+    	
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        InputStream bytes = cl.getResourceAsStream( path );
+
+        try {
+    		DocumentModel document = this .modelApp .loadDocument( bytes );
+    		// a RenderedModel that only creates panels
+    		document .setRenderedModel( new RenderedModel( symmetry ) 	 	 
+    		{
+				@Override
+    			protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
+				{
+					// For struts, we still want to find the zone, since we may need it to do
+					//   a well-behaved line-line intersection
+					AlgebraicVector offset = strut .getOffset();
+					if ( offset .isOrigin() )
+					    return; // should catch this earlier
+					Axis axis = getOrbitSource() .getAxis( offset );
+					if ( axis == null )
+						return; // this should only happen when using the bare Symmetry-based OrbitSource
+					
+					// This lets the Strut represent Lines better.
+					strut .setZoneVector( axis .normal() );
+				} 	 	 
+
+				@Override
+    			protected void resetAttributes(RenderedManifestation rm, 	 	 
+    					boolean justShape, Connector m) {} 	 	 
+    		} .withColorPanels( false ) ); 
+    		document .finishLoading( false, false );
+            result = document .getRenderedModel();
+            this .symmetryModels .put( path, result );
+            return result;
+        } catch ( Exception e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
 	@Override
 	public void doAction( String action, ActionEvent event )
 	{
@@ -505,43 +485,6 @@ public class ApplicationController extends DefaultController
 		});
     }
 
-    private RenderedModel loadModelPanels( String path, Symmetry symmetry )
-    {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        InputStream bytes = cl.getResourceAsStream( path );
-
-        try {
-    		DocumentModel document = this .modelApp .loadDocument( bytes );
-    		// a RenderedModel that only creates panels
-    		document .setRenderedModel( new RenderedModel( symmetry ) 	 	 
-    		{
-				@Override
-    			protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
-				{
-					// For struts, we still want to find the zone, since we may need it to do
-					//   a well-behaved line-line intersection
-					AlgebraicVector offset = strut .getOffset();
-					if ( offset .isOrigin() )
-					    return; // should catch this earlier
-					Axis axis = getOrbitSource() .getAxis( offset );
-					if ( axis == null )
-						return; // this should only happen when using the bare Symmetry-based OrbitSource
-					
-					// This lets the Strut represent Lines better.
-					strut .setZoneVector( axis .normal() );
-				} 	 	 
-
-				@Override
-    			protected void resetAttributes(RenderedManifestation rm, 	 	 
-    					boolean justShape, Connector m) {} 	 	 
-    		} .withColorPanels( false ) ); 
-    		document .finishLoading( false, false );
-            return document .getRenderedModel();
-        } catch ( Exception e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
     public Colors getColors()
     {
         return this .modelApp .getColors();
@@ -557,11 +500,6 @@ public class ApplicationController extends DefaultController
     // return mRVFactory;
     // }
 
-    public RenderedModel getSymmetryModel( Symmetry symm )
-    {
-        return mSymmetryModels.get( symm );
-    }
-    
 	@Override
     public String[] getCommandList( String listName )
     {

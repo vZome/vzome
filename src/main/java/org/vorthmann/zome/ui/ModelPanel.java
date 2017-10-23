@@ -335,7 +335,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 		else if ( imageName .endsWith( "-golden" ) )
 			imageName = command .substring( 0, command.length() - 7 );
 		AbstractButton button = makeIconButton( tooltip, "/icons/" + imageName + "_on.png" );
-		button = enabler .setButtonAction( command, button );
+		button = enabler .setButtonAction( command, this .controller, button );
 		Dimension dim = new Dimension( 100, 63 );
 		button .setPreferredSize( dim );
 		button .setMaximumSize( dim );
@@ -458,12 +458,12 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 
 			this .addSeparator();
 
-			this .add( enabler .setMenuAction( "setBackgroundColor", new JMenuItem( "Set Background Color..." ) ) );
+			this .add( enabler .setMenuAction( "setBackgroundColor", this .controller, new JMenuItem( "Set Background Color..." ) ) );
 
 			this .addSeparator();
 
 			this .add( setMenuAction( "setBuildOrbitAndLength", new JMenuItem( "Build With This" ) ) );
-			this .add( enabler .setMenuAction( "showProperties-"+key, new JMenuItem( "Show Properties" ) ) );
+			this .add( enabler .setMenuAction( "showProperties-"+key, this .controller, new JMenuItem( "Show Properties" ) ) );
 		}
 		
 		private JMenuItem setMenuAction( String action, JMenuItem control )

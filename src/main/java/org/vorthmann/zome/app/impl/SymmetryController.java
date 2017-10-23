@@ -32,18 +32,24 @@ public class SymmetryController extends DefaultController// implements RenderedM
     @Override
     public String getProperty( String string )
     {
-        if ( "renderingStyle" .equals( string ) )
-        {
+    	switch ( string ) {
+
+    	case "renderingStyle":
             return this .symmetrySystem .getStyle() .getName();
-        }
-        else if ( string .startsWith( "orbitColor." ) )
-        {
-            String name = string .substring( "orbitColor." .length() );
-            Direction dir = buildOrbits .getDirection( name );
-            Color color = getColor( dir );
-            return color .toString();
-        }
-        return super.getProperty( string );
+
+    	case "modelResourcePath":
+			return this .symmetrySystem .getModelResourcePath();
+
+		default:
+	        if ( string .startsWith( "orbitColor." ) )
+	        {
+	            String name = string .substring( "orbitColor." .length() );
+	            Direction dir = buildOrbits .getDirection( name );
+	            Color color = getColor( dir );
+	            return color .toString();
+	        }
+	        return super.getProperty( string );
+		}
     }
     
     private SymmetrySystem symmetrySystem;
@@ -241,6 +247,11 @@ public class SymmetryController extends DefaultController// implements RenderedM
             String styleName =  action .substring( "setStyle." .length() );
             this .symmetrySystem .setStyle( styleName );
             super .doAction( action, e ); // falling through so that rendering gets adjusted
+        }
+        else {
+        	boolean handled = this .symmetrySystem .doAction( action );
+        	if ( ! handled )
+        		super .doAction( action, e );
         }
     }
     

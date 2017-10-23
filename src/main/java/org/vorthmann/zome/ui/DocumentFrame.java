@@ -656,14 +656,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         } .actionPerformed( null );
     }
 
-    private ExclusiveAction getExclusiveAction( final String action )
+    private ExclusiveAction getExclusiveAction( final String action, final Controller controller )
     {
         return new ExclusiveAction( getExcluder() )
         {
 			@Override
             protected void doAction( ActionEvent e ) throws Exception
             {
-                mController.doAction( action, e );
+				controller .doAction( action, e );
             }
 
 			@Override
@@ -675,7 +675,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     }
     
     @Override
-    public AbstractButton setButtonAction( String command, AbstractButton control )
+    public AbstractButton setButtonAction( String command, Controller controller, AbstractButton control )
     {
     	control .setActionCommand( command );
     	boolean enable = true;
@@ -702,7 +702,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     	control .setEnabled( enable );
         if ( control .isEnabled() )
         {
-        	ActionListener actionListener = this .mController;
+        	ActionListener actionListener = controller;
         	switch ( command ) {
             
     		// these can fall through to the ApplicationController
@@ -721,17 +721,17 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         	case "toggleStrutScales":
         	case "toggleFrameLabels":
         	case "toggleOutlines":
-        		actionListener = this .mController;
+        		actionListener = controller;
         		break;
 
 			case "open":
         	case "newFromTemplate":
         	case "openDeferringRedo":
-        		actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vZome", mController );
+        		actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vZome", controller );
         		break;
                 
         	case "import.vef":
-        		actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vef", mController );
+        		actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vef", controller );
         		break;
                 
         	case "saveAs":
@@ -760,12 +760,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 break;
                                                 
         	case "capture-animation":
-        		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, "png", mController );
+        		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, "png", controller );
                 break;
                                                 
         	default:
         		if ( command .startsWith( "openResource-" ) ) {
-        			actionListener = this .mController;
+        			actionListener = controller;
         		}
         		else if ( command .startsWith( "setSymmetry." ) ) {
         			actionListener = this .localActions;
@@ -775,7 +775,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         		}
         		else if ( command .startsWith( "capture." ) ) {
         			String ext = command .substring( "capture." .length() );
-            		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, mController );
+            		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
         		}
         		else if ( command .startsWith( "export." ) ) {
         			String ext = command .substring( "export." .length() );
@@ -787,10 +787,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 					default:
 						break;
 					}
-            		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, mController );
+            		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
         		}
         		else {
-            		actionListener = getExclusiveAction( command );
+            		actionListener = getExclusiveAction( command, controller );
                     this .mExcluder .addExcludable( control );
         		}
                 break;
@@ -801,9 +801,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     }
     
     @Override
-    public JMenuItem setMenuAction( String command, JMenuItem menuItem )
+    public JMenuItem setMenuAction( String command, Controller controller, JMenuItem menuItem )
     {
-    	return (JMenuItem) this .setButtonAction( command, menuItem );
+    	return (JMenuItem) this .setButtonAction( command, controller, menuItem );
     }
 
 	@Override

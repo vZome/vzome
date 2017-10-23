@@ -20,6 +20,7 @@ public class SymmetryToolbarsPanel extends JPanel
 	private final ButtonFactory factory;
 	private final JToolBar secondToolbar;
 	private final ToolConfigDialog toolConfigDialog;
+	private final Controller controller;
 
 	public interface ButtonFactory {
 		
@@ -29,7 +30,8 @@ public class SymmetryToolbarsPanel extends JPanel
 	public SymmetryToolbarsPanel( Controller symmController, Controller toolsController, ControlActions enabler, ButtonFactory factory )
 	{
 		super();
-		this.factory = factory;
+		this .controller = symmController;
+		this .factory = factory;
 
         this .toolConfigDialog = new ToolConfigDialog( (JFrame) this.getParent(), false );
 
@@ -192,7 +194,7 @@ public class SymmetryToolbarsPanel extends JPanel
 	private AbstractButton makeEditButton( ControlActions enabler, String command, String tooltip )
 	{
 		AbstractButton button = factory .makeIconButton( tooltip, "/icons/tools/small/" + command + ".png" );
-		button = enabler .setButtonAction( command, button );
+		button = enabler .setButtonAction( command, this .controller, button );
 		return button;
 	}
 
