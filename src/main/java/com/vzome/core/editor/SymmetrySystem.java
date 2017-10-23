@@ -18,7 +18,10 @@ import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.commands.AbstractCommand;
+import com.vzome.core.commands.Command;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.UndoableEdit.Context;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -46,10 +49,14 @@ public class SymmetrySystem implements OrbitSource
     private final SymmetryPerspective symmetryPerspective;
 	private final Map<Tool.Kind,List<Tool.Factory>> toolFactoryLists = new HashMap<>();
 	private final Map<Tool.Kind,List<Tool>> toolLists = new HashMap<>();
+	private final Context context;
+	private EditorModel editor;
 
-	public SymmetrySystem( Element symmXml, FieldApplication.SymmetryPerspective symmetryPerspective, Colors colors, boolean allowNonstandard )
+	public SymmetrySystem( Element symmXml, FieldApplication.SymmetryPerspective symmetryPerspective,
+			UndoableEdit.Context context, Colors colors, boolean allowNonstandard )
 	{
-		this.symmetryPerspective = symmetryPerspective;
+		this .symmetryPerspective = symmetryPerspective;
+		this .context = context;
 		this .symmetry = symmetryPerspective .getSymmetry();
         String styleName = symmetryPerspective .getDefaultGeometry() .getName();
 		orbits = new OrbitSet( symmetry );
@@ -123,7 +130,12 @@ public class SymmetrySystem implements OrbitSource
 		}
         this .setStyle( styleName );
    	}
-	
+
+	public void setEditorModel( EditorModel editor )
+	{
+		this.editor = editor;
+	}
+
 	public void createToolFactories( ToolsModel tools )
 	{
         // Here we go from support for viewing, to support for editing
@@ -350,5 +362,22 @@ public class SymmetrySystem implements OrbitSource
 	public List<Tool> getPredefinedTools( Tool.Kind kind )
 	{
 		return this .toolLists .get( kind );
+	}
+
+	public boolean doAction( String action )
+	{
+    	Command command = this .symmetryPerspective .getLegacyCommand( action );
+    	if ( command != null )
+    	{
+    		CommandEdit edit = new CommandEdit( (AbstractCommand) command, this .editor, false );
+            this .context .performAndRecord( edit );
+            return true;
+    	}
+		return false;
+	}
+
+	public String getModelResourcePath()
+	{
+		return this .symmetryPerspective .getModelResourcePath();
 	}
 }

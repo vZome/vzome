@@ -3,10 +3,11 @@
 
 package com.vzome.core.editor;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -22,15 +23,6 @@ import org.xml.sax.SAXException;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
-import com.vzome.core.commands.CommandCentralSymmetry;
-import com.vzome.core.commands.CommandCentroid;
-import com.vzome.core.commands.CommandHide;
-import com.vzome.core.commands.CommandImportVEFData;
-import com.vzome.core.commands.CommandMidpoint;
-import com.vzome.core.commands.CommandMirrorSymmetry;
-import com.vzome.core.commands.CommandPolygon;
-import com.vzome.core.commands.CommandTauDivision;
-import com.vzome.core.commands.CommandTranslate;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
@@ -63,9 +55,7 @@ import com.vzome.core.viewing.Lights;
 public class Application
 {
     private final Map<String, FieldApplication> fieldApps = new HashMap<>();
-        
-    private final Map<String, Object> mCommands = new HashMap<>(); // TODO: DJH: Don't allow non-Command objects in this Map.
-
+    
     private final Colors mColors;
 
     private final Command.FailureChannel failures;
@@ -90,7 +80,7 @@ public class Application
         properties .putAll( loadBuildProperties() );
         
         mColors = new Colors( properties );
-        File prefsFolder = new File( System.getProperty( "user.home" ), "vZome-Preferences" );
+//        File prefsFolder = new File( System.getProperty( "user.home" ), "vZome-Preferences" );
 
         for ( int i = 1; i <= 3; i++ ) {
             Color color = mColors .getColorPref( "light.directional." + i );
@@ -101,37 +91,6 @@ public class Application
         mLights .setBackgroundColor( mColors .getColor( Colors.BACKGROUND ) );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        FieldApplication kind = new GoldenFieldApplication();
-        fieldApps .put( kind .getName(), kind );
-        kind = new RootTwoFieldApplication();
-        fieldApps .put( kind .getName(), kind );
-        kind = new RootThreeFieldApplication();
-        fieldApps .put( kind .getName(), kind );
-        fieldApps .put( "dodecagon", kind ); // for legacy documents
-        kind = new HeptagonFieldApplication();
-        fieldApps .put( kind .getName(), kind );        
-        kind = new SnubDodecFieldApplication();
-        fieldApps .put( kind .getName(), kind );        
-
-        if ( enableCommands ) {
-            mCommands .put( "pointsymm", new CommandCentralSymmetry() );
-            mCommands .put( "mirrorsymm", new CommandMirrorSymmetry() );
-            mCommands .put( "translate", new CommandTranslate() );
-            mCommands .put( "centroid", new CommandCentroid() );
-            mCommands .put( "hideball", new CommandHide() );
-            mCommands .put( "hide", new CommandHide() );
-            mCommands .put( "panel", new CommandPolygon() );
-            mCommands .put( "tauDivide", new CommandTauDivision() );
-            mCommands .put( "midpoint", new CommandMidpoint() );
-            mCommands .put( "import.vef", new CommandImportVEFData() );
-        }
-
-//        field = new Heptagon6Field();
-//        fields .put( field .getName(), field );
-//        symmetry = new OctahedralSymmetry( field, "blue", "octahedra" );
-//        mStyles.put( symmetry, new ArrayList<Shapes>() );
-//        addStyle( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
         
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
@@ -198,14 +157,14 @@ public class Application
             fieldName = element .getAttributeNS( XmlSaveFormat.CURRENT_FORMAT, "field" );
         if ( fieldName .isEmpty() )
             fieldName = "golden";
-        FieldApplication kind = fieldApps .get( fieldName );
+        FieldApplication kind = this .getDocumentKind( fieldName );
         
         return new DocumentModel( kind, failures, element, this );
     }
 
 	public DocumentModel createDocument( String fieldName )
 	{
-		FieldApplication kind = fieldApps .get( fieldName );
+		FieldApplication kind = this .getDocumentKind( fieldName );
 		return new DocumentModel( kind, failures, null, this );
 	}
 
@@ -213,7 +172,7 @@ public class Application
 	{
 		String fieldName = "golden";
 		// TODO: use fieldName from VEF input
-		FieldApplication kind = fieldApps .get( fieldName );
+		FieldApplication kind = this .getDocumentKind( fieldName );
 		DocumentModel result = new DocumentModel( kind, failures, null, this );
 		result .doScriptAction( extension, content );
 		return result;
@@ -221,17 +180,52 @@ public class Application
 
 	public AlgebraicField getField( String name )
 	{
-		return fieldApps .get( name ) .getField();
+		return this .getDocumentKind( name ) .getField();
 	}
 
 	public FieldApplication getDocumentKind( String name )
 	{
-		return fieldApps .get( name );
+		// This is lazy, so we don't initialize anything the user doesn't need.
+		
+        FieldApplication kind = fieldApps .get( name );
+        if ( kind == null ) {
+        	switch ( name ) {
+
+        	case "golden":
+		        kind = new GoldenFieldApplication();
+				break;
+
+        	case "rootTwo":
+		        kind = new RootTwoFieldApplication();
+				break;
+
+        	case "rootThree":
+		        kind = new RootThreeFieldApplication();
+		        fieldApps .put( "dodecagon", kind ); // for legacy documents
+				break;
+
+        	case "heptagon":
+		        kind = new HeptagonFieldApplication();
+				break;
+
+        	case "snubDodec":
+		        kind = new SnubDodecFieldApplication();
+				break;
+
+			default:
+				return null;
+			}
+            fieldApps .put( kind .getName(), kind );
+        }
+        
+		return kind;
 	}
 
 	public Set<String> getFieldNames()
 	{
-		return fieldApps .keySet();
+		// Cannot get the keyset from fieldApps, since we are being lazy in constructing that.
+		
+		return new HashSet( Arrays.asList( "golden", "rootTwo", "rootThree", "heptagon", "snubDodec" ) );
 	}
 
 	public static Properties loadDefaults()
@@ -267,11 +261,6 @@ public class Application
 	public Colors getColors()
 	{
 		return this .mColors;
-	}
-
-	public Map<String, Object> getCommands()
-	{
-		return this .mCommands;
 	}
 
     public Exporter3d getExporter( String format )

@@ -141,7 +141,7 @@ public class GenerateLinearMaps
 			select( strut2 );
 			select( strut( origin, a3, l3 ) );
 			select( origin ); // center for the transform
-			Tool.Factory factory = new LinearMapTool.Factory( doc .getToolsModel(), symmetry );
+			Tool.Factory factory = new LinearMapTool.Factory( doc .getToolsModel(), symmetry, false );
 			Tool mappingTool = factory .createTool();
 
 			deselect();

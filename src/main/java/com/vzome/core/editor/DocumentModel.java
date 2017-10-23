@@ -132,8 +132,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
 
-	private final Map<String, Object> commands; // TODO: DJH: Don't allow non-Command objects in this Map.
-
     private final Map<String,SymmetrySystem> symmetrySystems = new HashMap<>();
 
 	private final Lights sceneLighting;
@@ -169,7 +167,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		this .originPoint = new FreePoint( origin );
 		this .failures = failures;
 		this .mXML = xml;
-		this .commands = app .getCommands();
 		this .sceneLighting = app .getLights();
 		
 		this .coreVersion = app .getCoreVersion();
@@ -196,12 +193,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         Collection<FieldApplication.SymmetryPerspective> symms = kind .getSymmetryPerspectives();
         for ( FieldApplication.SymmetryPerspective symmPerspective1 : symms )
         {
-            SymmetrySystem osm = new SymmetrySystem( null, symmPerspective1, app .getColors(), true );
+            SymmetrySystem osm = new SymmetrySystem( null, symmPerspective1, this, app .getColors(), true );
             // one of these will be overwritten below, if we are loading from a file that has it set
             this .symmetrySystems .put( osm .getName(), osm );
         }
 
-        SymmetrySystem symmetrySystem = new SymmetrySystem( xml, symmPerspective, app .getColors(), true );
+        SymmetrySystem symmetrySystem = new SymmetrySystem( xml, symmPerspective, this, app .getColors(), true );
         this .symmetrySystems .put( symmPerspective .getName(), symmetrySystem );
 
         this .renderedModel = new RenderedModel( this .field, symmetrySystem );
@@ -214,6 +211,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		// cannot be done in the constructors
 		for ( SymmetrySystem symmetrySys : this .symmetrySystems .values()) {
 			symmetrySys .createToolFactories( this .tools );
+			symmetrySys .setEditorModel( this .mEditorModel );
 		}
 		
 		this .kind .registerToolFactories( this .toolFactories, this .tools );
@@ -364,7 +362,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 			edit = new B4Polytope( this.mSelection, this.mRealizedModel, this .field, null, 0, groupInSelection );
 			break;
 		case "Polytope4d":
-			edit = new Polytope4d( this.mSelection, this.mRealizedModel, null, 0, null, groupInSelection );
+			edit = new Polytope4d( this.mSelection, this.mRealizedModel, this .kind, null, 0, null, groupInSelection );
 			break;
 		case "LoadVEF":
 			edit = new LoadVEF( this.mSelection, this.mRealizedModel, null, null, null );
@@ -545,7 +543,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     		action = "showHidden";
 		}
 
-    	Command command = (Command) commands .get( action );
+    	Command command = this .kind .getLegacyCommand( action );
     	if ( command != null )
     	{
     		CommandEdit edit = new CommandEdit( (AbstractCommand) command, mEditorModel, false );
@@ -693,7 +691,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	            String suffix = action.substring( beginIndex + 2 );
 	            System.out.println( "computing " + group + " " + suffix );
 	            int index = Integer.parseInt( suffix, 2 );
-	            edit = new Polytope4d( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(),
+	            edit = new Polytope4d( mSelection, mRealizedModel, this .kind, mEditorModel.getSymmetrySegment(),
 	                    index, group, false );
 	    	} 
 			else if ( action.startsWith( "setItemColor/" ) ) {
@@ -1392,13 +1390,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, AlgebraicVector quaternion, AlgebraicNumber[] edgeScales )
     {
-        UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, quaternion, index, group, edgesToRender, edgeScales, renderGroup );
-        this .performAndRecord( edit );
-    }
-
-    public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, AlgebraicNumber[] edgeScales )
-    {
-        UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, mEditorModel.getSymmetrySegment(), index, group, edgesToRender, edgeScales, renderGroup );
+        UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, this .kind, quaternion, index, group, edgesToRender, edgeScales, renderGroup, false );
         this .performAndRecord( edit );
     }
     

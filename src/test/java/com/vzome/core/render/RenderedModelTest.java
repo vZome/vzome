@@ -112,7 +112,7 @@ public class RenderedModelTest
 		SymmetryPerspective perspective = app .getDefaultSymmetryPerspective();
 		Symmetry symmetry = perspective .getSymmetry();
 		
-		SymmetrySystem sys = new SymmetrySystem( null, perspective, new Colors( new Properties() ), true );
+		SymmetrySystem sys = new SymmetrySystem( null, perspective, null, new Colors( new Properties() ), true );
 		
 		RenderedModel model = new RenderedModel( field, sys );
 		ZoneChecker checker = new ZoneChecker();

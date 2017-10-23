@@ -26,6 +26,7 @@ import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
+import com.vzome.core.math.symmetry.WythoffConstruction;
 
 /**
  * @author Scott Vorthmann
@@ -184,14 +185,8 @@ public class CommandUniformH4Polytope extends CommandTransform
         this .symm = new H4Symmetry( field );
         this .mRoots = qsymm .getRoots();
     }
-        
-    public CommandUniformH4Polytope()
-    {
-        mPolytopeIndex = -1;
-        this.field = null;
-        this.symm = null;
-        this .mRoots = null;
-    }
+    
+    public CommandUniformH4Polytope() {} // nullary constructor required for deserializing legacy files
 
     /*
      * Currently, there is no way to set this via the UI... only reading it from XML
@@ -296,16 +291,92 @@ public class CommandUniformH4Polytope extends CommandTransform
         else
             // make sure the attr is set, so it get saved with the file
             attributes .put(POLYTOPE_INDEX_ATTR_NAME, mPolytopeIndex);
-        
-        generate( proj, mPolytopeIndex, mPolytopeIndex, null, effects );
+
+        generate( mPolytopeIndex, mPolytopeIndex, null, new ConstructionChangesAdapter( effects, proj, field .createPower( 5 ) ) );
         
         return new ConstructionList();
     }
     
-    public void generate( Projection proj, int index, int renderEdges, AlgebraicNumber[] edgeScales, ConstructionChanges effects )
-    {   
-        AlgebraicNumber SCALE_UP_5 = field .createPower( 5 );
+    private static class ConstructionChangesAdapter implements WythoffConstruction.Listener
+    {
+        private final Map<AlgebraicVector, Point> vertices = new HashMap<>();
+        private final ConstructionChanges effects;
+		private final Projection proj;
+		private final AlgebraicNumber scale;
+        
+        ConstructionChangesAdapter( ConstructionChanges effects, Projection proj, AlgebraicNumber scale )
+        {
+			this.effects = effects;
+			this.proj = proj;
+			this.scale = scale;
+        }
 
+        @Override
+        public Object addEdge( Object p1, Object p2 )
+        {
+            Segment edge = new SegmentJoiningPoints( (Point) p1, (Point) p2 );
+            this .effects .constructionAdded( edge );
+            return edge;
+        }
+
+        @Override
+        public Object addFace( Object[] vertices )
+        {
+            return null;
+        }
+
+        @Override
+        public Object addVertex( AlgebraicVector vertex )
+        {
+            Point p = vertices .get( vertex );
+            if ( p == null ) {
+                AlgebraicVector projected = vertex;
+                
+                logger .finer( "before   : " );
+                printGoldenVector( projected );
+
+                if ( proj != null )
+                    projected = proj .projectImage( projected, true );
+
+                logger .finer( "projected: " );
+                printGoldenVector( projected );
+
+                projected = projected .scale( scale );
+
+                logger .finer( "scaled   : " );
+                printGoldenVector( projected );
+
+                p = new FreePoint( projected );
+                p .setIndex( vertices .size() );
+                this .effects .constructionAdded( p );
+                
+                vertices .put( vertex, p );
+            }
+            return p;
+        }
+
+        private void printGoldenVector( AlgebraicVector gv )
+        {
+//            vefVertices .append( gv .getX() .toString( IntegralNumber.VEF_FORMAT ) );
+//            vefVertices .append( "\t" );
+//            vefVertices .append( gv .getY() .toString( IntegralNumber.VEF_FORMAT ) );
+//            vefVertices .append( "\t" );
+//            vefVertices .append( gv .getZ() .toString( IntegralNumber.VEF_FORMAT ) );
+//            vefVertices .append( "\t" );
+//            vefVertices .append( gv .getW() .toString( IntegralNumber.VEF_FORMAT ) );
+//            vefVertices .append( "\n" ); 
+
+            if ( logger .isLoggable( Level .FINER ) )
+            {
+                StringBuffer buf = new StringBuffer();
+                gv .getVectorExpression( buf, AlgebraicField .DEFAULT_FORMAT );
+                logger .finer( buf .toString() );
+            }
+        }
+    }
+
+    public void generate( int index, int renderEdges, AlgebraicNumber[] edgeScales, WythoffConstruction.Listener listener )
+    {   
         AlgebraicVector[] reflections = new AlgebraicVector[4];
         AlgebraicVector prototype = symm .getPrototype( index );
 
@@ -326,79 +397,30 @@ public class CommandUniformH4Polytope extends CommandTransform
             if ( ( renderEdges & ( 1 << mirror ) ) != 0 )
                 reflections[ mirror ] = symm .reflect( mirror, prototype );
 
-        Map<AlgebraicVector, Point> vertices = new HashMap<>();
         Set<Edge> edges = new HashSet<>();
-        StringBuffer vefVertices = new StringBuffer();
         StringBuffer vefEdges = new StringBuffer();
         for (Quaternion outerRoot : mRoots) { 
             for (Quaternion innerRoot : mRoots) {
                 AlgebraicVector vertex = outerRoot.rightMultiply(prototype);
                 vertex = innerRoot.leftMultiply(vertex);
-                AlgebraicVector key = vertex;
-                Point p = vertices .get( key );
-                boolean newVertex = p == null;
-                if ( newVertex ) {
-                    AlgebraicVector projected = vertex;
-                    
-                    logger .finer( "before   : " );
-                    printGoldenVector( projected, vefVertices );
 
-                    if ( proj != null )
-                        projected = proj .projectImage( projected, true );
-
-                    logger .finer( "projected: " );
-                    printGoldenVector( projected, vefVertices );
-
-                    projected = projected .scale( SCALE_UP_5 );
-
-                    logger .finer( "scaled   : " );
-                    printGoldenVector( projected, vefVertices );
-
-                    p = new FreePoint( projected );
-                    p .setIndex( vertices .size() );
-                    effects .constructionAdded( p );
-                    
-                    vertices .put( key, p );
-                }
+                Point p = (Point) listener .addVertex( vertex );
+                
                 for (int mirror = 0; mirror < 4; mirror++) {
                     if (reflections[ mirror ] != null) {
                         AlgebraicVector other = outerRoot.rightMultiply(reflections[ mirror ]);
-                        other = innerRoot.leftMultiply(other);
-                        key = other;
+                        other = innerRoot.leftMultiply( other );
                         if ( ! other .equals( vertex ) )
                         {
-                            Point p2 = vertices .get( key );
-                            if ( p2 == null ) {
-                                AlgebraicVector projected = other;
-                                
-                                logger .finer( "before   : " );
-                                printGoldenVector( projected, vefVertices );
-
-                                if ( proj != null )
-                                    projected = proj .projectImage( projected, true );
-
-                                logger .finer( "projected: " );
-                                printGoldenVector( projected, vefVertices );
-
-                                projected = projected .scale( SCALE_UP_5 );
-
-                                logger .finer( "scaled   : " );
-                                printGoldenVector( projected, vefVertices );
-
-                                p2 = new FreePoint( projected );
-                                p2 .setIndex( vertices .size() );
-                                effects .constructionAdded( p2 );
-                                
-                                vertices .put( key, p2 );
-                            }
-                            Edge edge = new Edge( p .getIndex(), p2 .getIndex() );
+                        	Point p2 = (Point) listener .addVertex( other );
+                            
+                        	Edge edge = new Edge( p .getIndex(), p2 .getIndex() );
                             if ( edges .contains( edge ) )
                                 continue;
                             edges .add( edge );
                             vefEdges .append( p .getIndex() + "\t" + p2 .getIndex() + "\n" );
                             
-                            Segment segment = new SegmentJoiningPoints( p, p2 );
-                            effects .constructionAdded( segment );
+                            listener .addEdge( p, p2 );
                         }
                     }
                 }
@@ -417,25 +439,6 @@ public class CommandUniformH4Polytope extends CommandTransform
 //        }
         }
             
-    }
-
-    private void printGoldenVector( AlgebraicVector gv, StringBuffer vefVertices )
-    {
-//        vefVertices .append( gv .getX() .toString( IntegralNumber.VEF_FORMAT ) );
-//        vefVertices .append( "\t" );
-//        vefVertices .append( gv .getY() .toString( IntegralNumber.VEF_FORMAT ) );
-//        vefVertices .append( "\t" );
-//        vefVertices .append( gv .getZ() .toString( IntegralNumber.VEF_FORMAT ) );
-//        vefVertices .append( "\t" );
-//        vefVertices .append( gv .getW() .toString( IntegralNumber.VEF_FORMAT ) );
-//        vefVertices .append( "\n" ); 
-
-        if ( logger .isLoggable( Level .FINER ) )
-        {
-            StringBuffer buf = new StringBuffer();
-            gv .getVectorExpression( buf, AlgebraicField .DEFAULT_FORMAT );
-            logger .finer( buf .toString() );
-        }
     }
     
     private static class Edge

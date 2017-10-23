@@ -9,18 +9,23 @@ import java.util.Map;
 
 import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
-import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.commands.Command;
+import com.vzome.core.commands.CommandAxialSymmetry;
+import com.vzome.core.commands.CommandQuaternionSymmetry;
+import com.vzome.core.commands.CommandSymmetry;
+import com.vzome.core.commands.CommandTetrahedralSymmetry;
+import com.vzome.core.commands.CommandUniformH4Polytope;
+import com.vzome.core.commands.CommandVanOss600Cell;
 import com.vzome.core.editor.AxialStretchTool;
 import com.vzome.core.editor.AxialSymmetryToolFactory;
 import com.vzome.core.editor.BookmarkTool;
-import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.IcosahedralToolFactory;
 import com.vzome.core.editor.InversionTool;
 import com.vzome.core.editor.LinearMapTool;
 import com.vzome.core.editor.MirrorTool;
 import com.vzome.core.editor.ModuleTool;
-import com.vzome.core.editor.OctahedralToolFactory;
 import com.vzome.core.editor.PlaneSelectionTool;
 import com.vzome.core.editor.RotationTool;
 import com.vzome.core.editor.ScalingTool;
@@ -28,12 +33,13 @@ import com.vzome.core.editor.TetrahedralToolFactory;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.TranslationTool;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
-import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.render.Shapes;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
@@ -47,25 +53,51 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  * @author vorth
  *
  */
-public class GoldenFieldApplication implements FieldApplication
+public class GoldenFieldApplication extends DefaultFieldApplication
 {
-	private final AlgebraicField field = new PentagonField();
-
-	@Override
-	public String getName()
+	public GoldenFieldApplication()
 	{
-		return this .field .getName();
-	}
+		super( new PentagonField() );
 
-	@Override
-	public AlgebraicField getField()
-	{
-		return this .field;
+		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
+		AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();
+		
+		symm .createZoneOrbit( "red", 0, Symmetry .NO_ROTATION, new int[] { 1, 1, 1, 2, 1, 2, 0, 1, 0, 1, 0, 1 }, true );
+		symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 } );
+		symm .createZoneOrbit( "yellow", 0, 4, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 }, true, false, getField()
+				.createPower( - 1 ) );
+
+		symm .createZoneOrbit( "green", 1, 8, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 }, true, true, getField()
+				.createRational( 2 ) );
+
+		symm .createZoneOrbit( "lavender", 0, Symmetry .NO_ROTATION, new int[] { 2, 1, - 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
+
+		symm .createZoneOrbit( "olive", 0, Symmetry .NO_ROTATION, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
+
+		symm .createZoneOrbit( "maroon", 0, Symmetry .NO_ROTATION, new int[] { - 1, 1, 1, 1, 3, 1, - 1, 1, 1, 1, - 1, 1 } );
+
+		symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[] { - 1, 1, 1, 1, - 1, 1, 1, 1, - 2, 1, 2, 1 } );
+
+		symm .createZoneOrbit( "red", 0, Symmetry .NO_ROTATION, new int[] { 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 } );
+
+		symm .createZoneOrbit( "purple", 0, Symmetry .NO_ROTATION, new int[] { 1, 1, 1, 1, 0, 1, 0, 1, - 1, 1, 0, 1 }, false, false, getField()
+				.createPower( - 1 ) );
+
+		symm .createZoneOrbit( "black", 0, Symmetry .NO_ROTATION, new int[] { 1, 2, 0, 1, 0, 1, 1, 2, - 1, 2, 1, 2 }, false, false, getField()
+				.createRational( 2 ) );
+
+		symm .createZoneOrbit( "turquoise", 0, Symmetry .NO_ROTATION, new int[] { 1, 1, 2, 1, 3, 1, 4, 1, 3, 1, 4, 1 } );
+
+		AbstractShapes defaultShapes = new ExportedVEFShapes( null, "octahedral", "trapezoids", symm, null );
+		octahedralPerspective .addShapes( defaultShapes );
+		octahedralPerspective .setDefaultGeometry( defaultShapes );
+		octahedralPerspective .addShapes( new ExportedVEFShapes( null, "octahedralFast", "small octahedra", symm, null ) );
+		octahedralPerspective .addShapes( new ExportedVEFShapes( null, "octahedralRealistic", "vZome logo", symm, defaultShapes ) );
 	}
 
     private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()
     {
-        private final IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( field, "solid connectors" );
+        private final IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( getField(), "solid connectors" );
         
         private final AbstractShapes icosadefaultShapes = new ExportedVEFShapes( null, "default", "solid connectors", icosaSymm );
         private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", icosaSymm, icosadefaultShapes );
@@ -76,7 +108,17 @@ public class GoldenFieldApplication implements FieldApplication
         private final AbstractShapes vienne2 = new ExportedVEFShapes( null, "vienne2", "Vienne", icosaSymm, icosadefaultShapes );
         private final AbstractShapes vienne3 = new ExportedVEFShapes( null, "vienne3", "Vienne lifelike", icosaSymm, vienne2 );
         private final AbstractShapes vienne = new ExportedVEFShapes( null, "vienne", "Vienne 121 zone", icosaSymm );
-        
+
+        private final Command icosasymm = new CommandSymmetry( icosaSymm );
+        private final Command tetrasymm = new CommandTetrahedralSymmetry( icosaSymm );
+        private final Command axialsymm = new CommandAxialSymmetry( icosaSymm );
+        private final Command h4symmetry = new CommandQuaternionSymmetry( H4, H4 );
+        private final Command h4rotations = new CommandQuaternionSymmetry( H4_ROT, H4_ROT );
+        private final Command IxTsymmetry = new CommandQuaternionSymmetry( H4, T2 );
+        private final Command TxTsymmetry = new CommandQuaternionSymmetry( T2, T2 );
+        private final Command vanOss600cell = new CommandVanOss600Cell();
+        private final Command octasymm = new CommandSymmetry( icosaSymm );
+
 		@Override
 		public Symmetry getSymmetry()
 		{
@@ -128,7 +170,7 @@ public class GoldenFieldApplication implements FieldApplication
 				result .add( new AxialStretchTool.Factory( tools, this .icosaSymm, true, false, false ) );
 				result .add( new AxialStretchTool.Factory( tools, this .icosaSymm, false, true, false ) );
 				result .add( new AxialStretchTool.Factory( tools, this .icosaSymm, false, false, false ) );
-				result .add( new LinearMapTool.Factory( tools, this .icosaSymm ) );
+				result .add( new LinearMapTool.Factory( tools, this .icosaSymm, false ) );
 				break;
 
 			default:
@@ -163,181 +205,45 @@ public class GoldenFieldApplication implements FieldApplication
 			}
 			return result;
 		}
-	};
-	
-    private final SymmetryPerspective octahedralPerspective = new SymmetryPerspective()
-    {
-        private final OctahedralSymmetry octaSymm = new OctahedralSymmetry( field, "blue", "trapezoids" )
-        {
-    		@Override
-    		public Direction getSpecialOrbit( SpecialOrbit which )
-    		{
-    			switch ( which ) {
-
-    			case BLUE:
-    				return this .getDirection( "blue" );
-
-    			case RED:
-    				return this .getDirection( "green" );
-
-    			case YELLOW:
-    				return this .getDirection( "yellow" );
-
-    			default:
-    				return null; // TODO pick/define an orbit that needs no correction
-    			}
-    		}
-
-    		@Override
-    		protected void createOtherOrbits()
-    		{
-    			createZoneOrbit( "yellow", 0, 4, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 }, true, false, mField
-    					.createPower( - 1 ) );
-
-    			createZoneOrbit( "green", 1, 8, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 }, true, true, mField
-    					.createRational( 2 ) );
-
-    			createZoneOrbit( "lavender", 0, NO_ROTATION, new int[] { 2, 1, - 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
-
-    			createZoneOrbit( "olive", 0, NO_ROTATION, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
-
-    			createZoneOrbit( "maroon", 0, NO_ROTATION, new int[] { - 1, 1, 1, 1, 3, 1, - 1, 1, 1, 1, - 1, 1 } );
-
-    			createZoneOrbit( "brown", 0, NO_ROTATION, new int[] { - 1, 1, 1, 1, - 1, 1, 1, 1, - 2, 1, 2, 1 } );
-
-    			createZoneOrbit( "red", 0, NO_ROTATION, new int[] { 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 } );
-
-    			createZoneOrbit( "purple", 0, NO_ROTATION, new int[] { 1, 1, 1, 1, 0, 1, 0, 1, - 1, 1, 0, 1 }, false, false, mField
-    					.createPower( - 1 ) );
-
-    			createZoneOrbit( "black", 0, NO_ROTATION, new int[] { 1, 2, 0, 1, 0, 1, 1, 2, - 1, 2, 1, 2 }, false, false, mField
-    					.createRational( 2 ) );
-
-    			createZoneOrbit( "turquoise", 0, NO_ROTATION, new int[] { 1, 1, 2, 1, 3, 1, 4, 1, 3, 1, 4, 1 } );
-    		}
-    	};
-        
-    	private final AbstractShapes octaDefaultShapes =  new ExportedVEFShapes( null, "octahedral", "trapezoids", octaSymm, null );
-    	private final AbstractShapes octahedralFast = new ExportedVEFShapes( null, "octahedralFast", "small octahedra", octaSymm, null );
-    	private final AbstractShapes octahedralRealistic = new ExportedVEFShapes( null, "octahedralRealistic", "vZome logo", octaSymm, octaDefaultShapes );
-		
-		@Override
-		public Symmetry getSymmetry()
-		{
-			return octaSymm;
-		}
-		
-		@Override
-		public String getName()
-		{
-			return "octahedral";
-		}
 
 		@Override
-		public List<Shapes> getGeometries()
+		public Command getLegacyCommand( String action )
 		{
-			return Arrays.asList( octaDefaultShapes, octahedralFast, octahedralRealistic );
-		}
-		
-		@Override
-		public Shapes getDefaultGeometry()
-		{
-			return this .octaDefaultShapes;
-		}
-
-		@Override
-		public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
-		{
-			List<Tool.Factory> result = new ArrayList<>();
-			switch ( kind ) {
-
-			case SYMMETRY:
-				result .add( new OctahedralToolFactory( tools, this .octaSymm ) );
-				result .add( new TetrahedralToolFactory( tools, this .octaSymm ) );
-				result .add( new InversionTool.Factory( tools ) );
-				result .add( new MirrorTool.Factory( tools ) );
-				result .add( new AxialSymmetryToolFactory( tools, this .octaSymm ) );
-				break;
-
-			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, this .octaSymm ) );
-				result .add( new RotationTool.Factory( tools, this .octaSymm ) );
-				result .add( new TranslationTool.Factory( tools ) );
-				break;
-
-			case LINEAR_MAP:
-				result .add( new LinearMapTool.Factory( tools, this .octaSymm ) );
-				break;
-
+			switch ( action ) {
+			case "icosasymm"    : return icosasymm;
+			case "tetrasymm"    : return tetrasymm;
+			case "axialsymm"    : return axialsymm;
+			case "h4symmetry"   : return h4symmetry;
+			case "h4rotations"  : return h4rotations;
+			case "IxTsymmetry"  : return IxTsymmetry;
+			case "TxTsymmetry"  : return TxTsymmetry;
+			case "vanOss600cell": return vanOss600cell;
+			case "octasymm"     : return octasymm;
 			default:
-				break;
+				return null;
 			}
-			return result;
 		}
 
 		@Override
-		public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
+		public String getModelResourcePath()
 		{
-			List<Tool> result = new ArrayList<>();
-			switch ( kind ) {
+			return "org/vorthmann/zome/app/icosahedral-vef.vZome";
 
-			case SYMMETRY:
-				result .add( new OctahedralToolFactory( tools, this .octaSymm ) .createPredefinedTool( "octahedral around origin" ) );
-				result .add( new TetrahedralToolFactory( tools, this .octaSymm ) .createPredefinedTool( "tetrahedral around origin" ) );
-				result .add( new InversionTool.Factory( tools ) .createPredefinedTool( "reflection through origin" ) );
-				result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
-//				result .add( new AxialSymmetryToolFactory( tools, this .octaSymm ) .createPredefinedTool( "symmetry around blue through origin" ) );
-				break;
-
-			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, this .octaSymm ) .createPredefinedTool( "scale down" ) );
-				result .add( new ScalingTool.Factory( tools, this .octaSymm ) .createPredefinedTool( "scale up" ) );
-//				result .add( new RotationTool.Factory( tools, this .octaSymm ) .createPredefinedTool( "rotate around blue through origin" ) );
-				result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
-				break;
-
-			default:
-				break;
-			}
-			return result;
+//        if ( propertyIsTrue( "rzome.trackball" ) )
+//            return "org/vorthmann/zome/app/rZomeTrackball-vef.vZome";
+//        else if ( userHasEntitlement( "developer.extras" ) )
+//        	  return "org/vorthmann/zome/app/icosahedral-developer.vZome";
 		}
 	};
-	
-    private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", field );
-    private final QuaternionicSymmetry H4_ROT = new QuaternionicSymmetry( "H4_ROT", "com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef", field );
-    private final QuaternionicSymmetry T2 = new QuaternionicSymmetry( "2T", "com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef", field );
-
-//    {
-//
-//    	if ( enableCommands ) {
-//    		mCommands .put( "icosasymm-golden", new CommandSymmetry( icosaSymm ) );
-//    		mCommands .put( "tetrasymm-golden", new CommandTetrahedralSymmetry( icosaSymm ) );
-//    		mCommands .put( "axialsymm-icosa", new CommandAxialSymmetry( icosaSymm ) );
-//    		mCommands .put( "h4symmetry", new CommandQuaternionSymmetry( H4, H4 ) );
-//    		mCommands .put( "h4rotations", new CommandQuaternionSymmetry( H4_ROT, H4_ROT ) );
-//    		mCommands .put( "IxTsymmetry", new CommandQuaternionSymmetry( H4, T2 ) );
-//    		mCommands .put( "TxTsymmetry", new CommandQuaternionSymmetry( T2, T2 ) );
-//    		mCommands .put( "vanOss600cell", new CommandVanOss600Cell() );
-//    		mCommands .put( "runZomicScript", true );
-//    		mCommands .put( "runPythonScript", true );
-//    		for ( int p = 0x1; p <= 0xF; p++ ) {
-//    			String dynkin = Integer.toString( p, 2 );
-//    			dynkin = "0000" .substring( dynkin.length() ) + dynkin;
-//    			mCommands .put( "h4polytope_" + dynkin, new CommandUniformH4Polytope( field, H4, p ) );
-//    		}
-//    	}
-//
-//
-//    	if ( enableCommands ) {
-//    		mCommands .put( "octasymm-golden", new CommandSymmetry( octaSymm ) );
-//    		mCommands .put( "axialsymm-octa", new CommandAxialSymmetry( octaSymm ) );
-//    	}
-//    }
+		
+    private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", getField() );
+    private final QuaternionicSymmetry H4_ROT = new QuaternionicSymmetry( "H4_ROT", "com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef", getField() );
+    private final QuaternionicSymmetry T2 = new QuaternionicSymmetry( "2T", "com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef", getField() );
 
 	@Override
 	public Collection<SymmetryPerspective> getSymmetryPerspectives()
 	{
-		return Arrays.asList( this .icosahedralPerspective, this .octahedralPerspective );
+		return Arrays.asList( this .icosahedralPerspective, super .getDefaultSymmetryPerspective() );
 	}
 
 	@Override
@@ -354,11 +260,8 @@ public class GoldenFieldApplication implements FieldApplication
 		case "icosahedral":
 			return this .icosahedralPerspective;
 
-		case "octahedral":
-			return this .octahedralPerspective;
-
 		default:
-			return null;
+			return super .getSymmetryPerspective( symmName );
 		}
 	}
 
@@ -396,15 +299,36 @@ public class GoldenFieldApplication implements FieldApplication
         toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
         toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
         toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
-        toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null ) );
-
-        // These tool factories have to be available for loading legacy documents.
-        
-        toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, symm ) );
+	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
+		
+	    // These tool factories have to be available for loading legacy documents.
+	    
+	    toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, null, true ) );
         toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
         toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
     }
 
+    private CommandUniformH4Polytope h4Builder = null;
+    
+	@Override
+	public void constructPolytope( String groupName, int index, int edgesToRender, AlgebraicNumber[] edgeScales, Listener listener )
+	{
+		switch ( groupName ) {
+
+		case "H4":
+			if ( this .h4Builder == null ) {
+	            QuaternionicSymmetry qsymm = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", this .getField() );
+	            this .h4Builder = new CommandUniformH4Polytope( this .getField(), qsymm, 0 );
+			}
+			this .h4Builder .generate( index, edgesToRender, edgeScales, listener );
+            break;
+
+		default:
+			super .constructPolytope( groupName, index, edgesToRender, edgeScales, listener );
+			break;
+		}
+	}
+	
     public static void main( String[] args )
     {
     	final float EPSILON = 5E-10f;

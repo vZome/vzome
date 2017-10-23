@@ -12,6 +12,10 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.SnubDodecField;
+import com.vzome.core.commands.Command;
+import com.vzome.core.commands.CommandAxialSymmetry;
+import com.vzome.core.commands.CommandSymmetry;
+import com.vzome.core.commands.CommandTetrahedralSymmetry;
 import com.vzome.core.editor.AxialStretchTool;
 import com.vzome.core.editor.AxialSymmetryToolFactory;
 import com.vzome.core.editor.BookmarkTool;
@@ -30,6 +34,7 @@ import com.vzome.core.editor.TranslationTool;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.render.Shapes;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
@@ -95,14 +100,14 @@ public class SnubDodecFieldApplication implements FieldApplication
         	}
         };
         
-//        mCommands .put( "icosasymm-snubDodec", new CommandSymmetry( symmetry ) );
-//        mCommands .put( "tetrasymm-snubDodec", new CommandTetrahedralSymmetry( symmetry ) );
-//        mCommands .put( "axialsymm-snubDodec", new CommandAxialSymmetry( symmetry ) );
-
         private final AbstractShapes defaultShapes = new ExportedVEFShapes( null, "default", "solid connectors", symmetry );
     	private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", symmetry, defaultShapes );
     	private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", symmetry );
-    			
+
+    	private final Command icosasymm = new CommandSymmetry( symmetry );
+    	private final Command tetrasymm = new CommandTetrahedralSymmetry( symmetry );
+    	private final Command axialsymm = new CommandAxialSymmetry( symmetry );
+
 		@Override
 		public Symmetry getSymmetry()
 		{
@@ -148,7 +153,7 @@ public class SnubDodecFieldApplication implements FieldApplication
 				break;
 
 			case LINEAR_MAP:
-				result .add( new LinearMapTool.Factory( tools, this .symmetry ) );
+				result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
 				break;
 
 			default:
@@ -182,6 +187,24 @@ public class SnubDodecFieldApplication implements FieldApplication
 				break;
 			}
 			return result;
+		}
+
+		@Override
+		public Command getLegacyCommand( String action )
+		{
+			switch ( action ) {
+			case "icosasymm"    : return icosasymm;
+			case "tetrasymm"    : return tetrasymm;
+			case "axialsymm"    : return axialsymm;
+			default:
+				return null;
+			}
+		}
+
+		@Override
+		public String getModelResourcePath()
+		{
+			return "org/vorthmann/zome/app/icosahedral-vef.vZome";
 		}
 	};
 	
@@ -232,12 +255,22 @@ public class SnubDodecFieldApplication implements FieldApplication
         toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
         toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
         toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
-        toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, symm ) );
-
-        // These tool factories have to be available for loading legacy documents.
-        
-        toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, symm ) );
+	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
+		
+	    // These tool factories have to be available for loading legacy documents.
+	    
+	    toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, null, true ) );
         toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
         toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
     }
+
+	@Override
+	public void constructPolytope( String groupName, int index,
+			int edgesToRender, AlgebraicNumber[] edgeScales, Listener listener ) {}
+
+	@Override
+	public Command getLegacyCommand( String action )
+	{
+		return null;
+	}
 }

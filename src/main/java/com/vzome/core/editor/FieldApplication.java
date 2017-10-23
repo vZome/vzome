@@ -7,8 +7,11 @@ import java.util.Map;
 import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.commands.Command;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.render.Shapes;
 
 public interface FieldApplication
@@ -26,9 +29,15 @@ public interface FieldApplication
 		List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel model );
 		
 		List<Tool> predefineTools( Tool.Kind kind, ToolsModel model );
+
+		Command getLegacyCommand( String action );
+
+		String getModelResourcePath();
 	}
 	
 	AlgebraicField getField();
+	
+	void constructPolytope( String groupName, int index, int edgesToRender, AlgebraicNumber[] edgeScales, WythoffConstruction.Listener listener );
 
 	Collection<SymmetryPerspective> getSymmetryPerspectives();
 
@@ -41,4 +50,6 @@ public interface FieldApplication
 	String getName();
 
     void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools );
+
+	Command getLegacyCommand( String action );
 }
