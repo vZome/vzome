@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="rootThree" version="3.0 beta 3 + DEV" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
+  <EditHistory editNumber="78">
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" index="0" len="0 6"/>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" index="0" len="0 18"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 18 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 18 0 0 0 0"/>
+    <EndBlock/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="dodecagonal" dir="green" index="11" len="0 6"/>
+    <StrutCreation anchor="9 6 0 -3 0 0" symm="dodecagonal" dir="green" index="11" len="6 0"/>
+    <SelectManifestation point="15 9 -3 -3 0 0"/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" index="7" len="18 0"/>
+    <SelectManifestation point="0 0 -18 0 0 0"/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="red" index="7" len="3 0"/>
+    <StrutCreation anchor="3/2 0 -3 -3/2 0 0" symm="octahedral" dir="red" index="7" len="3 0"/>
+    <StrutCreation anchor="3 0 -6 -3 0 0" symm="octahedral" dir="red" index="7" len="1 0"/>
+    <StrutCreation anchor="7/2 0 -7 -7/2 0 0" symm="octahedral" dir="red" index="7" len="1 0"/>
+    <StrutCreation anchor="4 0 -8 -4 0 0" symm="octahedral" dir="red" index="7" len="1 0"/>
+    <StrutCreation anchor="9/2 0 -9 -9/2 0 0" symm="octahedral" dir="red" index="7" len="1/3 0"/>
+    <SelectManifestation point="14/3 0 -28/3 -14/3 0 0"/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" index="4" len="0 6"/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <CentralSymmetry>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </CentralSymmetry>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 -18 0 0 0"/>
+    <SelectManifestation point="-14/3 0 -28/3 -14/3 0 0"/>
+    <EndBlock/>
+    <Polygon>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 -6"/>
+    <SelectManifestation point="-14/3 0 -28/3 -14/3 0 0"/>
+    <SelectManifestation point="-9 0 0 -9 0 0"/>
+    <EndBlock/>
+    <Polygon>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-9 0 0 -9 0 0"/>
+    <SelectManifestation point="-14/3 0 -28/3 -14/3 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <EndBlock/>
+    <Polygon>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-14/3 0 -28/3 -14/3 0 0"/>
+    <SelectManifestation point="0 0 -18 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <EndBlock/>
+    <Polygon>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 -6"/>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+      <polygonVertex at="-9 0 0 -9 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 -6"/>
+      <polygonVertex at="0 0 -18 0 0 0"/>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-9 0 0 -9 0 0"/>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+      <polygonVertex at="0 0 0 0 0 6"/>
+    </SelectManifestation>
+    <InvertSelection/>
+    <EndBlock/>
+    <Hide>
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </Hide>
+    <SelectAll/>
+    <DodecagonSymmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="14/3 0 -28/3 -14/3 0 0"/>
+      <polygonVertex at="9 0 0 -9 0 0"/>
+      <polygonVertex at="0 0 0 0 0 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 -6"/>
+      <polygonVertex at="14/3 0 -28/3 -14/3 0 0"/>
+      <polygonVertex at="0 0 -18 0 0 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <DodecagonSymmetry/>
+    <setItemColor red="255" green="255" blue="255"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 -18 0 0 0"/>
+      <polygonVertex at="14/3 0 -28/3 -14/3 0 0"/>
+      <polygonVertex at="0 0 0 0 0 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 -6"/>
+      <polygonVertex at="0 0 -18 0 0 0"/>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <DodecagonSymmetry/>
+    <setItemColor red="102" green="102" blue="102"/>
+  </EditHistory>
+</vzome:vZome>

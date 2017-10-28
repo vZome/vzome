@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" edition="vZome" field="golden" revision="9999" version="5.0, build 0">
+  <EditHistory editNumber="140" lastStickyEdit="76">
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <LoadVEF scale="3 5">vZome VEF 6 field golden 9 (0,0) (-16,27) (-21,33) (-2,4) (0,0) (5,-7) (-16,25) (-13,22)
+      (0,0) (0,1) (0,-1) (0,1) (0,0) (20,-31) (26,-43) (2,-3) (0,0) (4,-5) (5,-9) (0,0) (0,0) (25,-39) (10,-17)
+      (-11,18) (0,0) (-6,11) (20,-33) (16,-25) (0,0) (-22,37) (-1,1) (14,-22) (0,0) (-1,3) (4,-7) (3,-4) 0 4 3
+      0 1 2 3 3 4 5 6 5 3 0 1 6 7 3 7 6 8 0 
+</LoadVEF>
+    <SelectManifestation>
+      <polygonVertex at="1 9 -2 -3 4 2"/>
+      <polygonVertex at="3 7 1 -5 5 3"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+    </SelectManifestation>
+    <CentralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
+    <SelectManifestation>
+      <polygonVertex at="1 9 -2 -3 4 2"/>
+      <polygonVertex at="3 7 1 -5 5 3"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+    </SelectManifestation>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <setItemColor blue="204" green="153" red="0"/>
+    <SelectManifestation>
+      <polygonVertex at="1 7 -6 -3 2 4"/>
+      <polygonVertex at="4 5 -5 -3 1 6"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <CentralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
+    <SelectManifestation>
+      <polygonVertex at="1 7 -6 -3 2 4"/>
+      <polygonVertex at="4 5 -5 -3 1 6"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <setItemColor blue="0" green="204" red="255"/>
+    <SelectManifestation>
+      <polygonVertex at="7 5 1 -7 1 1"/>
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="8 5 -1 -5 -1 2"/>
+    </SelectManifestation>
+    <CentralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
+    <SelectManifestation>
+      <polygonVertex at="7 5 1 -7 1 1"/>
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="8 5 -1 -5 -1 2"/>
+    </SelectManifestation>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <setItemColor blue="0" green="0" red="204"/>
+    <SelectManifestation>
+      <polygonVertex at="8 5 -1 -5 -1 2"/>
+      <polygonVertex at="7 5 1 -7 1 1"/>
+      <polygonVertex at="1 7 -6 -3 2 4"/>
+      <polygonVertex at="4 5 -5 -3 1 6"/>
+      <polygonVertex at="3 7 1 -5 5 3"/>
+      <polygonVertex at="1 9 -2 -3 4 2"/>
+    </SelectManifestation>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <setItemColor blue="102" green="102" red="102"/>
+    <SelectManifestation>
+      <polygonVertex at="2 -6 0 0 4 8"/>
+      <polygonVertex at="2 -6 0 1 7 6"/>
+      <polygonVertex at="-4 1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="-4 1 0 0 7 7"/>
+    </SelectManifestation>
+    <CentralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <setItemColor blue="255" green="255" red="255"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="-2 6 0 0 4 8"/>
+      <polygonVertex at="-2 6 0 1 7 6"/>
+      <polygonVertex at="4 -1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="4 -1 0 0 7 7"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <EndBlock/>
+    <ShowHidden/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="-2 6 0 0 4 8"/>
+      <polygonVertex at="-2 6 0 1 7 6"/>
+      <polygonVertex at="4 -1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="4 -1 0 0 7 7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <ShowHidden/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="-2 6 0 0 4 8"/>
+      <polygonVertex at="-2 6 0 1 7 6"/>
+      <polygonVertex at="4 -1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="4 -1 0 0 7 7"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-2 6 0 0 4 8"/>
+      <polygonVertex at="-2 6 0 1 7 6"/>
+      <polygonVertex at="4 -1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="4 -1 0 0 7 7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <ShowHidden/>
+    <SelectManifestation>
+      <polygonVertex at="-2 6 0 0 4 8"/>
+      <polygonVertex at="-2 6 0 1 7 6"/>
+      <polygonVertex at="4 -1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="4 -1 0 0 7 7"/>
+    </SelectManifestation>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="-2 6 0 0 4 8"/>
+      <polygonVertex at="-2 6 0 1 7 6"/>
+      <polygonVertex at="4 -1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="4 -1 0 0 7 7"/>
+    </SelectManifestation>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <ShowHidden/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <ShowHidden/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="11" len="2 4"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="5" len="2 4"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="14" len="2 4"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="2" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="2 3 1 1 3 4" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <SymmetryTool name="tetrahedral.4/tetrahedral.4" symmetry="icosahedral"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="2 3 1 1 3 4" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="1 2 0 1 3 5" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <SymmetryTool name="tetrahedral.5/tetrahedral.5" symmetry="icosahedral"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="1 2 0 1 3 5" startSegment="0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="1 2 0 -1 3 5" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <SymmetryTool name="tetrahedral.6/tetrahedral.6" symmetry="icosahedral"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="1 2 0 -1 3 5" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="2 3 -1 -1 3 4" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <SymmetryTool name="tetrahedral.7/tetrahedral.7" symmetry="icosahedral"/>
+    <BeginBlock/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Delete/>
+    <ShowHidden/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="2 -6 0 0 4 8"/>
+      <polygonVertex at="2 -6 0 1 7 6"/>
+      <polygonVertex at="-4 1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="-4 1 0 0 7 7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool justSelect="true" name="tetrahedral.builtin/tetrahedral around origin" selectInputs="true"/>
+    <setItemColor blue="111" green="111" red="200"/>
+    <SelectManifestation>
+      <polygonVertex at="1 5 1 -2 8 5"/>
+      <polygonVertex at="-1 7 -1 -1 7 5"/>
+      <polygonVertex at="6 3 -2 -4 1 7"/>
+      <polygonVertex at="5 3 -1 -6 4 5"/>
+      <polygonVertex at="-1 5 -5 -3 3 7"/>
+      <polygonVertex at="2 3 -4 -2 1 9"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.4/tetrahedral.4" selectInputs="true"/>
+    <setItemColor blue="80" green="161" red="188"/>
+    <SelectManifestation>
+      <polygonVertex at="0 7 -3 1 5 6"/>
+      <polygonVertex at="-1 8 0 0 6 5"/>
+      <polygonVertex at="8 5 0 0 1 5"/>
+      <polygonVertex at="6 7 -3 1 1 4"/>
+      <polygonVertex at="3 8 2 -4 4 3"/>
+      <polygonVertex at="6 5 2 -4 3 5"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.5/tetrahedral.5" selectInputs="true"/>
+    <setItemColor blue="189" green="173" red="116"/>
+    <SelectManifestation>
+      <polygonVertex at="0 7 3 -1 5 6"/>
+      <polygonVertex at="-1 7 1 1 7 5"/>
+      <polygonVertex at="6 3 2 4 1 7"/>
+      <polygonVertex at="4 5 5 3 1 6"/>
+      <polygonVertex at="3 7 -1 5 5 3"/>
+      <polygonVertex at="6 5 -2 4 3 5"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.6/tetrahedral.6" selectInputs="true"/>
+    <setItemColor blue="117" green="168" red="117"/>
+    <SelectManifestation>
+      <polygonVertex at="1 5 -1 2 8 5"/>
+      <polygonVertex at="-2 6 0 1 7 6"/>
+      <polygonVertex at="4 -1 2 2 3 9"/>
+      <polygonVertex at="3 -1 1 4 6 7"/>
+      <polygonVertex at="-2 4 4 3 3 8"/>
+      <polygonVertex at="2 3 4 2 1 9"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.7/tetrahedral.7" selectInputs="true"/>
+    <setItemColor blue="169" green="127" red="155"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="2 -6 0 0 4 8"/>
+      <polygonVertex at="2 -6 0 1 7 6"/>
+      <polygonVertex at="-4 1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="-4 1 0 0 7 7"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-4 1 2 2 3 9"/>
+      <polygonVertex at="0 0 2 2 2 10"/>
+      <polygonVertex at="0 0 2 3 5 8"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-4 1 0 0 7 7"/>
+      <polygonVertex at="0 0 0 1 9 6"/>
+      <polygonVertex at="0 0 0 0 6 8"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="2 -6 0 1 7 6"/>
+      <polygonVertex at="-2 -5 0 0 5 7"/>
+      <polygonVertex at="2 -6 0 0 4 8"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool justSelect="true" name="tetrahedral.builtin/tetrahedral around origin" selectInputs="true"/>
+    <setItemColor blue="120" green="120" red="206"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="1 5 1 -2 8 5"/>
+      <polygonVertex at="-1 7 -1 -1 7 5"/>
+      <polygonVertex at="6 3 -2 -4 1 7"/>
+      <polygonVertex at="5 3 -1 -6 4 5"/>
+      <polygonVertex at="-1 5 -5 -3 3 7"/>
+      <polygonVertex at="2 3 -4 -2 1 9"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-1 7 -1 -1 7 5"/>
+      <polygonVertex at="2 5 0 0 5 7"/>
+      <polygonVertex at="1 5 1 -2 8 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="6 3 -2 -4 1 7"/>
+      <polygonVertex at="5 3 -1 -6 4 5"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="2 3 -4 -2 1 9"/>
+      <polygonVertex at="-1 5 -5 -3 3 7"/>
+      <polygonVertex at="1 3 -3 -4 4 7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool justSelect="true" name="tetrahedral.4/tetrahedral.4" selectInputs="true"/>
+    <setItemColor blue="93" green="168" red="205"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 7 -3 1 5 6"/>
+      <polygonVertex at="-1 8 0 0 6 5"/>
+      <polygonVertex at="8 5 0 0 1 5"/>
+      <polygonVertex at="6 7 -3 1 1 4"/>
+      <polygonVertex at="3 8 2 -4 4 3"/>
+      <polygonVertex at="6 5 2 -4 3 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="8 5 0 0 1 5"/>
+      <polygonVertex at="6 7 -3 1 1 4"/>
+      <polygonVertex at="5 8 0 0 2 3"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="6 5 2 -4 3 5"/>
+      <polygonVertex at="3 8 2 -4 4 3"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-1 8 0 0 6 5"/>
+      <polygonVertex at="2 5 0 0 5 7"/>
+      <polygonVertex at="0 7 -3 1 5 6"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool justSelect="true" name="tetrahedral.5/tetrahedral.5" selectInputs="true"/>
+    <setItemColor blue="192" green="171" red="111"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 7 3 -1 5 6"/>
+      <polygonVertex at="-1 7 1 1 7 5"/>
+      <polygonVertex at="6 3 2 4 1 7"/>
+      <polygonVertex at="4 5 5 3 1 6"/>
+      <polygonVertex at="3 7 -1 5 5 3"/>
+      <polygonVertex at="6 5 -2 4 3 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-1 7 1 1 7 5"/>
+      <polygonVertex at="2 5 0 0 5 7"/>
+      <polygonVertex at="0 7 3 -1 5 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="6 5 -2 4 3 5"/>
+      <polygonVertex at="3 7 -1 5 5 3"/>
+      <polygonVertex at="4 7 1 3 3 4"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="6 3 2 4 1 7"/>
+      <polygonVertex at="4 5 5 3 1 6"/>
+      <polygonVertex at="3 5 3 5 3 5"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool justSelect="true" name="tetrahedral.6/tetrahedral.6" selectInputs="true"/>
+    <setItemColor blue="149" green="188" red="143"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="1 5 -1 2 8 5"/>
+      <polygonVertex at="-2 6 0 1 7 6"/>
+      <polygonVertex at="4 -1 2 2 3 9"/>
+      <polygonVertex at="3 -1 1 4 6 7"/>
+      <polygonVertex at="-2 4 4 3 3 8"/>
+      <polygonVertex at="2 3 4 2 1 9"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-2 6 0 1 7 6"/>
+      <polygonVertex at="2 5 0 0 5 7"/>
+      <polygonVertex at="1 5 -1 2 8 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="2 3 4 2 1 9"/>
+      <polygonVertex at="-2 4 4 3 3 8"/>
+      <polygonVertex at="1 3 3 4 4 7"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="4 -1 2 2 3 9"/>
+      <polygonVertex at="3 -1 1 4 6 7"/>
+      <polygonVertex at="0 0 2 3 5 8"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool justSelect="true" name="tetrahedral.7/tetrahedral.7" selectInputs="true"/>
+    <setItemColor blue="189" green="144" red="165"/>
+  </EditHistory>
+  <notes xmlns:xml="http://www.w3.org/XML/1998/namespace"/>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="477.65057373046875" far="955.3011474609388" near="1.194126452120043" parallel="false" stereoAngle="0.0" width="214.9427581787108">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.15507399862457283" y="0.9692197593287056" z="-0.19122006452615983"/>
+      <LookDirection x="-0.9677578497069769" y="0.11014906451081705" z="-0.22652136304975218"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="154,117,74" name="sand"/>
+    <Direction color="116,195,0" name="apple"/>
+    <Direction color="136,37,0" name="cinnamon"/>
+    <Direction color="18,73,48" name="spruce"/>
+    <Direction color="107,53,26" name="brown"/>
+    <Direction color="255,255,255" name="0" prototype="19 -11 -17 10 28 -17"/>
+  </SymmetrySystem>
+</vzome:vZome>

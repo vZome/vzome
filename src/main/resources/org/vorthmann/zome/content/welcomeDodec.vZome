@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="0.9.0" field="golden">
+  <EditHistory editNumber="25" lastStickyEdit="25">
+    <Snapshot id="1"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="9" len="1 2"/>
+    <Snapshot id="2"/>
+    <SelectManifestation point="2 3 2 3 2 3"/>
+    <Snapshot id="3"/>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <Snapshot id="4"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 1 2 3 5"/>
+    <SelectManifestation point="2 3 2 3 2 3"/>
+    <EndBlock/>
+    <Snapshot id="5"/>
+    <JoinPoints/>
+    <Snapshot id="6"/>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <Snapshot id="7"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="2 3 2 3 2 3" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Snapshot id="8"/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <Snapshot id="0"/>
+  </EditHistory>
+  <notes xmlns:xml="http://www.w3.org/XML/1998/namespace">
+    <page snapshot="0" title="Welcome to vZome">
+      <ViewModel distance="87.2588882446289" far="174.51777648925784" near="0.21814722386221916" parallel="false" stereoAngle="0.0" width="39.26649971008301">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.1515211344078913" y="0.7495572335472646" z="-0.6443642599219185"/>
+        <LookDirection x="-0.6924040640412084" y="-0.5457155305805377" z="-0.4719864105908396"/>
+      </ViewModel>
+      <content xml:space="preserve">
+To introduce you to vZome, we are going to go through the steps to build a simple dodecahedron.  To do this, you won't be editing this document that you're reading.  Use the "New Model..." command from the "File" menu to create a new document where you will build your dodecahedron.  You will want to switch back and forth between reading the pages of this article, and performing the instructions in your dodecahedron model document.
+
+Now proceed to the next page of this article, by clicking on the 2nd thumbnail to the left.  (The thumbnail images will fill in only on the first visit, sorry.)
+</content>
+    </page>
+    <page snapshot="1" title="the starting ball">
+      <ViewModel distance="26.812803268432617" far="53.625606536865234" near="0.0670320091699363" parallel="false" stereoAngle="0.0" width="12.065761470794675">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">
+Every new vZome document starts with nothing but a single ball.  Your first step will be to make a yellow strut.  Start by setting the strut direction to yellow, by clicking on the yellow circle in the triangle on the right side of your other window.  If the yellow direction was already selected (with a black dot), you'll have to click twice, so the yellow dot has a circle around it.
+
+Next, click on the "y2" button in the "strut size" panel below the triangle.
+
+To actually build the strut, move the mouse cursor over the ball, and click and drag to begin creating a yellow medium strut in any direction.  As you drag the mouse around, the preview strut moves as if it were embedded in a transparent trackball.  You will find the motion easiest to manage if you keep the strut pointing more or less out of the screen toward you.
+
+When you let go of the mouse drag, the transparent preview strut will become a "real" virtual strut.
+</content>
+    </page>
+    <page snapshot="2" title="yellow scaffolding">
+      <ViewModel distance="62.1082878112793" far="124.21657562255857" near="0.15527072184191223" parallel="false" stereoAngle="0.0" width="27.948729515075673">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">
+The strut you just built is "scaffolding", a temporary structure to support what we really want to build.  We'll remove it before we're done.
+
+Now, click once on the new ball at the end of the yellow strut.  This will select the ball, and it will be highlighted.
+</content>
+    </page>
+    <page snapshot="3" title="icosahedral symmetry">
+      <ViewModel distance="62.1082878112793" far="124.21657562255857" near="0.15527072184191223" parallel="false" stereoAngle="0.0" width="27.948729515075673">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">
+Most vZome model manipulation commands require a selection of some sort.
+
+With this ball selected, use the "icosahedral around origin" symmetry tool, the first button in the third section of the toolbar at the top of the editor window.
+</content>
+    </page>
+    <page snapshot="4" title="twenty balls">
+      <ViewModel distance="92.6546859741211" far="185.30937194824224" near="0.2316367183869588" parallel="false" stereoAngle="0.0" width="41.69460868835449">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">
+Since you had a ball selected that lay on a threefold symmetry axis, you now see twenty balls.  You can see that these form the vertices of a dodecahedron.
+
+To create an edge of the dodecahedron, you need to select only two balls.  First, deselect everything by clicking on the background.
+
+Then, click on two balls that would form the endpoints of an edge.
+</content>
+    </page>
+    <page snapshot="5" title="edge endpoints">
+      <ViewModel distance="92.6546859741211" far="185.30937194824224" near="0.2316367183869588" parallel="false" stereoAngle="0.0" width="41.69460868835449">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">
+With two balls thus selected, you can apply either of the "Connect balls..." tools, the first two in second section of the toolbar.
+</content>
+    </page>
+    <page snapshot="6" title="edge strut">
+      <ViewModel distance="92.6546859741211" far="185.30937194824224" near="0.2316367183869588" parallel="false" stereoAngle="0.0" width="41.69460868835449">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">
+The newly created edge strut remains selected after you applied the tool, so you are immediately ready to apply icosahedral symmetry again.
+</content>
+    </page>
+    <page snapshot="7" title="thirty edges">
+      <ViewModel distance="92.6546859741211" far="185.30937194824224" near="0.2316367183869588" parallel="false" stereoAngle="0.0" width="41.69460868835449">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">
+Having created all the dodecahedron's edges, you can guess that the next action is to deselect everything by clicking again on the background.
+</content>
+    </page>
+    <page snapshot="8" title="removing the scaffolding">
+      <ViewModel distance="92.6546859741211" far="185.30937194824222" near="0.2316367183869588" parallel="false" stereoAngle="0.0" width="41.69460868835452">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.004257997545221056" y="0.998629627520439" z="-0.05216067959004096"/>
+        <LookDirection x="-0.10442228630754223" y="-0.052320013393880385" z="-0.9931558801722769"/>
+      </ViewModel>
+      <content xml:space="preserve">
+Now select the original ball and the yellow scaffolding strut, and apply the "delete" tool, the very first button in the toolbar.
+</content>
+    </page>
+    <page snapshot="0" title="enjoy your dodecahedron">
+      <ViewModel distance="98.38412475585938" far="196.7682495117188" near="0.24596031555474274" parallel="false" stereoAngle="0.0" width="44.27285614013676">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.04513475672300564" y="0.9954029911401846" z="-0.08447330326636202"/>
+        <LookDirection x="-0.49606426227747497" y="-0.05106502209409383" z="-0.8667829089279719"/>
+      </ViewModel>
+      <content xml:space="preserve">
+</content>
+    </page>
+  </notes>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="80.55010986328125" far="161.10021972656253" near="0.20137527765892863" parallel="false" stereoAngle="0.0" width="36.24754943847659">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.04513475672300564" y="0.9954029911401846" z="-0.08447330326636202"/>
+      <LookDirection x="-0.49606426227747497" y="-0.05106502209409383" z="-0.8667829089279719"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="0,160,228" name="blue"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="154,117,74" name="sand"/>
+    <Direction color="116,195,0" name="apple"/>
+    <Direction color="136,37,0" name="cinnamon"/>
+    <Direction color="18,73,48" name="spruce"/>
+    <Direction color="107,53,26" name="brown"/>
+  </SymmetrySystem>
+</vzome:vZome>

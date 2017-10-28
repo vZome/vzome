@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="golden" version="3.0 beta 3 + DEV" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
+  <Viewing>
+    <ViewModel near="1.4013202113109853" far="1121.0561523437495" width="252.2376342773438" distance="560.528076171875"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.5487662928742453" y="-0.14125510917812328" z="0.82395542958107"/>
+      <LookDirection x="-0.4830223278508224" y="-0.7508702883522729" z="-0.45042562190370206"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction name="blue" available="true" snap="true" render="true" color="0,118,149">
+      <LengthModel/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" render="true" color="175,0,0">
+      <LengthModel/>
+    </Direction>
+    <Direction name="yellow" available="true" render="true" color="240,160,0">
+      <LengthModel/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel/>
+    </Direction>
+    <Direction name="orange" available="true" snap="true" render="true" color="220,76,0">
+      <LengthModel/>
+    </Direction>
+    <Direction name="purple" available="true" snap="true" render="true" color="108,0,198">
+      <LengthModel/>
+    </Direction>
+    <Direction name="black" render="true" color="30,30,30">
+      <LengthModel/>
+    </Direction>
+    <Direction name="lavender" render="true" color="175,135,255">
+      <LengthModel/>
+    </Direction>
+    <Direction name="olive" render="true" color="100,113,0">
+      <LengthModel/>
+    </Direction>
+    <Direction name="maroon" available="true" render="true" color="117,0,50">
+      <LengthModel/>
+    </Direction>
+    <Direction name="rose" render="true" color="255,51,143">
+      <LengthModel/>
+    </Direction>
+    <Direction name="navy" render="true" color="0,0,153">
+      <LengthModel/>
+    </Direction>
+    <Direction name="turquoise" render="true" color="18,205,148">
+      <LengthModel/>
+    </Direction>
+    <Direction name="coral" render="true" color="255,126,106">
+      <LengthModel/>
+    </Direction>
+    <Direction name="sulfur" render="true" color="230,245,62">
+      <LengthModel/>
+    </Direction>
+    <Direction name="sand" render="true" color="154,117,74">
+      <LengthModel/>
+    </Direction>
+    <Direction name="apple" render="true" color="116,195,0">
+      <LengthModel/>
+    </Direction>
+    <Direction name="cinnamon" render="true" color="136,37,0">
+      <LengthModel/>
+    </Direction>
+    <Direction name="spruce" render="true" color="18,73,48">
+      <LengthModel/>
+    </Direction>
+    <Direction prototype="-19 11 17 -10 -28 17" name="7" render="true" color="183,151,255">
+      <LengthModel/>
+    </Direction>
+    <Direction prototype="-5 3 -1 1 3 -1" name="8" available="true" render="true" color="199,223,255">
+      <LengthModel/>
+    </Direction>
+    <Direction prototype="4 -2 5 -3 0 -1" name="9" available="true" build="true" render="true" color="143,135,135">
+      <LengthModel/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="209">
+    <BeginBlock/>
+    <SelectAll grouping="2.1.1"/>
+    <EndBlock/>
+    <BuildAnchoredSegment grouping="2.1.1" dir="red" index="2" len="3 5"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <BuildAnchoredSegment grouping="2.1.1" dir="yellow" index="9" len="2 3"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 3 5 3 5"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <EndBlock/>
+    <Symmetry grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <EndBlock/>
+    <BuildAnchoredSegment grouping="2.1.1" dir="rose" index="18" len="3 5"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="5 8 0 0 2 3"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 -3 -5 3 5"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="5 8 0 0 2 3"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+      <polygonVertex at="0 0 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation grouping="2.1.1" startSegment="3 5 0 0 5 8" endSegment="6 10 -4 -6 0 0"/>
+    <EndBlock/>
+    <LinePlaneIntersect grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <SelectManifestation grouping="2.1.1" point="5 8 0 0 2 3"/>
+    <SelectManifestation grouping="2.1.1" point="22/5 36/5 -8/5 -14/5 14/5 22/5"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="5 8 0 0 2 3"/>
+    <EndBlock/>
+    <BuildAnchoredSegment grouping="2.1.1" dir="maroon" index="33" len="3 5"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="22/5 36/5 -8/5 -14/5 14/5 22/5"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="22/5 36/5 -8/5 -14/5 14/5 22/5"/>
+      <polygonVertex at="3 5 0 0 5 8"/>
+      <polygonVertex at="0 0 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation grouping="2.1.1" startSegment="5 8 0 0 2 3" endSegment="3 5 -4 -7 4 6"/>
+    <EndBlock/>
+    <LinePlaneIntersect grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="4 7 -1 -3 3 4"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <BuildAnchoredSegment grouping="2.1.1" dir="green" index="30" len="6 10"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -5 -8 3 5"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -2 -3 5 8"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -5 -8 -3 -5"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="0 0 -5 -8 3 5"/>
+      <polygonVertex at="0 0 -2 -3 5 8"/>
+      <polygonVertex at="0 0 -5 -8 -3 -5"/>
+    </SelectManifestation>
+    <SelectManifestation grouping="2.1.1" startSegment="3 5 -3 -5 3 5" endSegment="-5 -8 -6 -10 2 3"/>
+    <EndBlock/>
+    <LinePlaneIntersect grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -4 -7 3 4"/>
+    <EndBlock/>
+    <Symmetry grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -5 -8 3 5"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -4 -7 3 4"/>
+    <EndBlock/>
+    <TauDivision grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -5 -7 2 5"/>
+    <EndBlock/>
+    <Symmetry grouping="2.1.1"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="5 7 -2 -5 0 0"/>
+    <SelectManifestation grouping="2.1.1" point="4 7 -1 -3 3 4"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1"/>
+    <BeginBlock/>
+    <SelectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <SelectManifestation point="5 7 -2 -5 0 0"/>
+    <SelectManifestation point="4 7 -1 -3 3 4"/>
+    <SelectManifestation point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectAll/>
+    <SelectManifestation point="5 7 -2 -5 0 0"/>
+    <SelectManifestation point="4 7 -1 -3 3 4"/>
+    <SelectManifestation point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <Symmetry/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="5 7 -2 -5 0 0"/>
+    <SelectManifestation point="4 7 -1 -3 3 4"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="4 7 -1 -3 3 4"/>
+    <SelectManifestation point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="3 5 -3 -5 3 5"/>
+    <SelectManifestation point="5 7 -2 -5 0 0"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <DeselectAll/>
+    <StrutCreation anchor="5 7 -2 -5 0 0" dir="8" index="0" len="0 1"/>
+    <StrutCreation anchor="8 5 -1 -5 -1 2" dir="maroon" index="37" len="1 0"/>
+    <StrutCreation anchor="4 7 -1 -3 3 4" dir="maroon" index="37" len="1 0"/>
+    <StrutCreation anchor="3 5 -3 -5 3 5" dir="maroon" index="58" len="1 0"/>
+    <StrutCreation anchor="4 7 -1 -3 3 4" dir="8" index="58" len="0 1"/>
+    <StrutCreation anchor="3 5 -3 -5 3 5" dir="9" index="0" len="0 1"/>
+    <SelectManifestation>
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <Symmetry/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation point="1 9 -2 -3 4 2"/>
+    <SelectManifestation point="3 7 1 -5 5 3"/>
+    <SelectManifestation point="4 7 -1 -3 3 4"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1 7 -6 -3 2 4"/>
+    <SelectManifestation point="4 5 -5 -3 1 6"/>
+    <SelectManifestation point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="7 5 1 -7 1 1"/>
+    <SelectManifestation point="5 7 -2 -5 0 0"/>
+    <SelectManifestation point="8 5 -1 -5 -1 2"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation point="8 5 -1 -5 -1 2"/>
+    <SelectManifestation point="7 5 1 -7 1 1"/>
+    <SelectManifestation point="1 7 -6 -3 2 4"/>
+    <SelectManifestation point="4 5 -5 -3 1 6"/>
+    <SelectManifestation point="3 7 1 -5 5 3"/>
+    <SelectManifestation point="1 9 -2 -3 4 2"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="1 7 -6 -3 2 4"/>
+      <polygonVertex at="4 5 -5 -3 1 6"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="1 9 -2 -3 4 2"/>
+      <polygonVertex at="3 7 1 -5 5 3"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="7 5 1 -7 1 1"/>
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="8 5 -1 -5 -1 2"/>
+    </SelectManifestation>
+    <InvertSelection/>
+    <EndBlock/>
+    <Hide/>
+    <SelectManifestation>
+      <polygonVertex at="8 5 -1 -5 -1 2"/>
+      <polygonVertex at="7 5 1 -7 1 1"/>
+      <polygonVertex at="1 7 -6 -3 2 4"/>
+      <polygonVertex at="4 5 -5 -3 1 6"/>
+      <polygonVertex at="3 7 1 -5 5 3"/>
+      <polygonVertex at="1 9 -2 -3 4 2"/>
+    </SelectManifestation>
+    <Symmetry/>
+    <setItemColor red="255" green="255" blue="255"/>
+    <SelectManifestation>
+      <polygonVertex at="7 5 1 -7 1 1"/>
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="8 5 -1 -5 -1 2"/>
+    </SelectManifestation>
+    <Symmetry/>
+    <setItemColor red="204" green="0" blue="0"/>
+    <SelectManifestation>
+      <polygonVertex at="7 5 1 -7 1 1"/>
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="8 5 -1 -5 -1 2"/>
+    </SelectManifestation>
+    <CentralSymmetry/>
+    <Symmetry/>
+    <setItemColor red="204" green="0" blue="0"/>
+    <SelectManifestation>
+      <polygonVertex at="8 5 -1 -5 -1 2"/>
+      <polygonVertex at="7 5 1 -7 1 1"/>
+      <polygonVertex at="1 7 -6 -3 2 4"/>
+      <polygonVertex at="4 5 -5 -3 1 6"/>
+      <polygonVertex at="3 7 1 -5 5 3"/>
+      <polygonVertex at="1 9 -2 -3 4 2"/>
+    </SelectManifestation>
+    <CentralSymmetry/>
+    <Symmetry/>
+    <setItemColor red="102" green="102" blue="102"/>
+    <SelectManifestation>
+      <polygonVertex at="1 9 -2 -3 4 2"/>
+      <polygonVertex at="3 7 1 -5 5 3"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+    </SelectManifestation>
+    <CentralSymmetry/>
+    <SelectManifestation>
+      <polygonVertex at="1 9 -2 -3 4 2"/>
+      <polygonVertex at="3 7 1 -5 5 3"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+    </SelectManifestation>
+    <Symmetry/>
+    <setItemColor red="0" green="153" blue="204"/>
+    <SelectManifestation>
+      <polygonVertex at="1 7 -6 -3 2 4"/>
+      <polygonVertex at="4 5 -5 -3 1 6"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <CentralSymmetry/>
+    <SelectManifestation>
+      <polygonVertex at="1 7 -6 -3 2 4"/>
+      <polygonVertex at="4 5 -5 -3 1 6"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <Symmetry/>
+    <setItemColor red="255" green="204" blue="0"/>
+  </EditHistory>
+  <notes>
+    <page title="How to save notes">
+      <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.5381530344613756" y="-0.7167836904881801" z="0.44341002757059533"/>
+        <LookDirection x="-0.841406160175055" y="-0.4876295358231485" z="0.23292296883813873"/>
+      </ViewModel>
+      <content xml:space="preserve">You can create as many pages as you like, using the '+' buttons in either direction.
+
+For now, only the text and the view of the model are different from one page to the next.  In the next update, each page will allow a different model entirely.
+
+Eventually there will be a 'vZome Player' application that will display the pages.
+</content>
+    </page>
+  </notes>
+</vzome:vZome>

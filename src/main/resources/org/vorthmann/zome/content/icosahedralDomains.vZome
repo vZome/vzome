@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" edition="vZome" field="golden" revision="9999" version="5.0, build 0">
+  <EditHistory editNumber="276" lastStickyEdit="202">
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="7" len="3 5"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="32" len="5 8"/>
+    <BeginBlock/>
+    <SelectManifestation point="-5 -8 0 0 8 13"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectNeighbors/>
+    <SelectManifestation point="-5 -8 0 0 8 13"/>
+    <SelectManifestation point="0 0 3 5 8 13"/>
+    <SelectManifestation point="0 0 3 5 8 13"/>
+    <SelectAll/>
+    <SelectManifestation point="0 0 3 5 8 13"/>
+    <SelectManifestation point="-5 -8 0 0 8 13"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="-5 -8 0 0 8 13"/>
+    <SelectManifestation point="0 0 3 5 8 13"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="0 0 3 5 8 13" dir="maroon" index="25" len="2 3"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 8 14"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 3 5 8 13"/>
+    <SelectManifestation point="-5 -8 0 0 8 13"/>
+    <SelectManifestation point="0 0 0 0 8 14"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="153" green="153" red="153"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 3 5 8 13"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+      <polygonVertex at="0 0 0 0 8 14"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="icosahedral.builtin/icosahedral around origin"/>
+    <ApplyTool name="point reflection.builtin/reflection through origin"/>
+    <setItemColor blue="255" green="255" red="255"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 3 5 8 13"/>
+    <SelectManifestation endSegment="0 0 0 0 8 14" startSegment="0 0 3 5 8 13"/>
+    <SelectManifestation point="0 0 0 0 8 14"/>
+    <SelectManifestation point="-5 -8 0 0 8 13"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="8 13 0 0 -3 -5"/>
+      <polygonVertex at="8 13 5 8 0 0"/>
+      <polygonVertex at="8 14 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="8 13 0 0 3 5"/>
+      <polygonVertex at="8 13 -5 -8 0 0"/>
+      <polygonVertex at="8 14 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-8 -13 0 0 3 5"/>
+      <polygonVertex at="-8 -13 5 8 0 0"/>
+      <polygonVertex at="-8 -14 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-8 -13 0 0 -3 -5"/>
+      <polygonVertex at="-8 -13 -5 -8 0 0"/>
+      <polygonVertex at="-8 -14 0 0 0 0"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="5 8 -5 -8 -5 -8"/>
+      <polygonVertex at="5 8 0 0 -8 -13"/>
+      <polygonVertex at="3 4 -4 -7 -7 -11"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin"/>
+    <setItemColor blue="255" green="255" red="255"/>
+    <SelectManifestation>
+      <polygonVertex at="8 13 0 0 3 5"/>
+      <polygonVertex at="8 13 -5 -8 0 0"/>
+      <polygonVertex at="8 14 0 0 0 0"/>
+    </SelectManifestation>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="102" green="102" red="102"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 3 5 8 13"/>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="0 0 0 0 8 14"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 -3 -5 8 13"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+      <polygonVertex at="0 0 0 0 8 14"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 3 5 -8 -13"/>
+      <polygonVertex at="-5 -8 0 0 -8 -13"/>
+      <polygonVertex at="0 0 0 0 -8 -14"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 -3 -5 -8 -13"/>
+      <polygonVertex at="5 8 0 0 -8 -13"/>
+      <polygonVertex at="0 0 0 0 -8 -14"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 -3 -5 -8 -13"/>
+      <polygonVertex at="5 8 0 0 -8 -13"/>
+      <polygonVertex at="0 0 0 0 -8 -14"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="tetrahedral.builtin/tetrahedral around origin" selectInputs="true"/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <ShowPoint point="0 0 0 0 0 0"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="17" len="3 5"/>
+    <StrutCreation anchor="0 0 3 5 -8 -13" dir="yellow" index="17" len="0 1"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 3 5 -8 -13"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation point="0 0 3 6 -9 -15"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="8" len="3 5"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="8 13 0 0 3 5" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="0 0 3 6 -9 -15" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <ScalingTool name="scaling.4/scaling.4" symmetry="icosahedral"/>
+    <SelectNeighbors/>
+    <Delete/>
+    <SelectAll/>
+    <ApplyTool deselectOutputs="true" hideInputs="true" name="scaling.4/scaling.4"/>
+    <SelectManifestation>
+      <polygonVertex at="-9 -15 0 0 -3 -6"/>
+      <polygonVertex at="-6 -9 0 0 -9 -15"/>
+      <polygonVertex at="-9 -12 -6 -3 -3 -9"/>
+    </SelectManifestation>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="102" green="102" red="102"/>
+    <SelectManifestation>
+      <polygonVertex at="-9 -15 0 0 -3 -6"/>
+      <polygonVertex at="-9 -15 -6 -9 0 0"/>
+      <polygonVertex at="-9 -12 -6 -3 -3 -9"/>
+    </SelectManifestation>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="255" green="255" red="255"/>
+    <BeginBlock/>
+    <SelectAll/>
+    <SelectManifestation>
+      <polygonVertex at="9 15 0 0 3 6"/>
+      <polygonVertex at="9 15 6 9 0 0"/>
+      <polygonVertex at="6 18 0 0 0 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="9 15 0 0 3 6"/>
+      <polygonVertex at="9 15 6 9 0 0"/>
+      <polygonVertex at="6 18 0 0 0 0"/>
+    </SelectManifestation>
+    <ShowVertices/>
+    <DeselectAll/>
+    <StrutCreation anchor="9 15 0 0 3 6" dir="yellow" index="8" len="0 1"/>
+    <SelectManifestation point="10 17 0 0 3 7"/>
+    <StrutCreation anchor="9 15 6 9 0 0" dir="red" index="30" len="1 1"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="9 15 0 0 3 6"/>
+      <polygonVertex at="9 15 6 9 0 0"/>
+      <polygonVertex at="6 18 0 0 0 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="8 13 5 8 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="8 13 5 8 0 0"/>
+    <SelectManifestation point="8 13 5 8 0 0"/>
+    <SelectManifestation point="8 13 5 8 0 0"/>
+    <SelectManifestation point="6 18 0 0 0 0"/>
+    <SelectManifestation point="10 17 0 0 3 7"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <StrutCreation anchor="6 18 0 0 0 0" index="0" len="0 2"/>
+    <SelectManifestation>
+      <polygonVertex at="8 13 5 8 0 0"/>
+      <polygonVertex at="6 18 0 0 0 0"/>
+      <polygonVertex at="10 17 0 0 3 7"/>
+    </SelectManifestation>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="8 13 5 8 0 0"/>
+      <polygonVertex at="6 18 0 0 0 0"/>
+      <polygonVertex at="10 17 0 0 3 7"/>
+    </SelectManifestation>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="8 13 5 8 0 0"/>
+    <SelectManifestation point="6 20 0 0 0 0"/>
+    <SelectManifestation point="10 17 0 0 3 7"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="255" green="255" red="255"/>
+    <SelectManifestation>
+      <polygonVertex at="8 13 5 8 0 0"/>
+      <polygonVertex at="6 20 0 0 0 0"/>
+      <polygonVertex at="10 17 0 0 3 7"/>
+    </SelectManifestation>
+    <ApplyTool name="point reflection.builtin/reflection through origin"/>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="102" green="102" red="102"/>
+    <BeginBlock/>
+    <SelectManifestation point="9 15 6 9 0 0"/>
+    <SelectManifestation point="6 20 0 0 0 0"/>
+    <SelectManifestation point="10 17 0 0 3 7"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 8 13 -5 -8"/>
+      <polygonVertex at="-7 -3 3 10 -10 -13"/>
+      <polygonVertex at="-7 -10 7 10 -7 -10"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="236" green="204" red="173"/>
+    <ShowPoint point="0 0 0 0 0 0"/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="26" len="2 4"/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="47" len="2 3"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="2 3 -1 -1 -1 -2" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="0 0 0 0 -2 -3" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <ScalingTool name="scaling.5/scaling.5" symmetry="icosahedral"/>
+    <SelectNeighbors/>
+    <Delete/>
+    <SelectAll/>
+    <ApplyTool deselectOutputs="true" hideInputs="true" name="scaling.5/scaling.5"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 -13/2 -21/2 4 13/2"/>
+      <polygonVertex at="-5 -13/2 -13/2 -23/2 3/2 5"/>
+      <polygonVertex at="-7/2 -5 -17/2 -27/2 0 0"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="230" green="200" red="169"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 -13/2 -21/2 4 13/2"/>
+      <polygonVertex at="-3/2 -5 -5 -13/2 13/2 23/2"/>
+      <polygonVertex at="0 0 -7/2 -5 17/2 27/2"/>
+    </SelectManifestation>
+    <Branch>
+      <ShowVertices/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation>
+        <polygonVertex at="0 0 -13/2 -21/2 4 13/2"/>
+        <polygonVertex at="-3/2 -5 -5 -13/2 13/2 23/2"/>
+        <polygonVertex at="0 0 -7/2 -5 17/2 27/2"/>
+      </SelectManifestation>
+      <EndBlock/>
+      <Delete/>
+      <ShowPoint point="0 0 0 0 0 0"/>
+      <BeginBlock/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <SelectManifestation point="0 0 -7/2 -5 17/2 27/2"/>
+      <DeselectAll/>
+      <SelectManifestation>
+        <polygonVertex at="0 0 -13/2 -21/2 4 13/2"/>
+        <polygonVertex at="3/2 5 -5 -13/2 13/2 23/2"/>
+        <polygonVertex at="5 17/2 -5 -17/2 5 17/2"/>
+      </SelectManifestation>
+      <EndBlock/>
+      <ShowVertices/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <SelectManifestation point="5 17/2 -5 -17/2 5 17/2"/>
+      <DeselectAll/>
+      <EndBlock/>
+      <StrutCreation anchor="0 0 -7/2 -5 17/2 27/2" dir="yellow" index="2" len="0 1"/>
+      <BeginBlock/>
+      <SelectManifestation endSegment="0 0 -7/2 -6 19/2 31/2" startSegment="0 0 -7/2 -5 17/2 27/2"/>
+      <SelectManifestation point="0 0 -7/2 -5 17/2 27/2"/>
+      <EndBlock/>
+      <Delete/>
+      <BeginBlock/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <SelectManifestation point="0 0 -7/2 -6 19/2 31/2"/>
+      <EndBlock/>
+      <JoinPoints closedLoop="false"/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <DeselectAll/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <SelectManifestation point="5 17/2 -5 -17/2 5 17/2"/>
+      <EndBlock/>
+      <JoinPoints/>
+      <BeginBlock/>
+      <SelectManifestation endSegment="0 0 -7/2 -6 19/2 31/2" startSegment="0 0 0 0 0 0"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <ScalingTool name="scaling.6/scaling.6" symmetry="icosahedral"/>
+    </Branch>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectAll/>
+    <EndBlock/>
+    <ApplyTool deselectOutputs="true" hideInputs="true" name="scaling.6/scaling.6"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 -281/38 -455/38 87/19 281/38"/>
+      <polygonVertex at="137/38 86/19 -86/19 -309/38 309/38 481/38"/>
+      <polygonVertex at="0 0 -7/2 -6 19/2 31/2"/>
+    </SelectManifestation>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="244" green="203" red="161"/>
+    <SelectManifestation>
+      <polygonVertex at="87/19 281/38 0 0 281/38 455/38"/>
+      <polygonVertex at="309/38 481/38 -137/38 -86/19 86/19 309/38"/>
+      <polygonVertex at="19/2 31/2 0 0 7/2 6"/>
+    </SelectManifestation>
+    <Hide/>
+    <ShowPoint point="0 0 0 0 0 0"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="11" len="2 4"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="14" len="2 4"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="5" len="2 4"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="2" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="2 3 1 1 3 4" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <SymmetryTool name="tetrahedral.7/tetrahedral.7" symmetry="icosahedral"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="2 3 1 1 3 4" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="1 2 0 1 3 5" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <SymmetryTool name="tetrahedral.8/tetrahedral.8" symmetry="icosahedral"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="1 2 0 1 3 5" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="1 2 0 -1 3 5" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <SymmetryTool name="tetrahedral.9/tetrahedral.9" symmetry="icosahedral"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="1 2 0 -1 3 5" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="2 3 -1 -1 3 4" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <SymmetryTool name="tetrahedral.10/tetrahedral.10" symmetry="icosahedral"/>
+    <BeginBlock/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Delete/>
+    <ShowHidden/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="10 13 7 3 3 10"/>
+      <polygonVertex at="10 17 0 0 3 7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="87/19 281/38 0 0 281/38 455/38"/>
+      <polygonVertex at="309/38 481/38 137/38 86/19 86/19 309/38"/>
+      <polygonVertex at="19/2 31/2 0 0 7/2 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="8 13 0 0 3 5"/>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="7 11 3 4 4 7"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 8 5 8 5 8"/>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="7 11 3 4 4 7"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="87/19 281/38 0 0 281/38 455/38"/>
+      <polygonVertex at="309/38 481/38 137/38 86/19 86/19 309/38"/>
+      <polygonVertex at="6 19/2 6 19/2 6 19/2"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="87/19 281/38 0 0 281/38 455/38"/>
+      <polygonVertex at="309/38 481/38 137/38 86/19 86/19 309/38"/>
+      <polygonVertex at="19/2 31/2 0 0 7/2 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="8 13 0 0 3 5"/>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="7 11 3 4 4 7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Hide/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="4 13/2 0 0 13/2 21/2"/>
+      <polygonVertex at="13/2 23/2 3/2 5 5 13/2"/>
+      <polygonVertex at="17/2 27/2 0 0 7/2 5"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="4 13/2 0 0 13/2 21/2"/>
+      <polygonVertex at="13/2 23/2 3/2 5 5 13/2"/>
+      <polygonVertex at="17/2 27/2 0 0 7/2 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="4 13/2 0 0 13/2 21/2"/>
+      <polygonVertex at="13/2 23/2 3/2 5 5 13/2"/>
+      <polygonVertex at="5 17/2 5 17/2 5 17/2"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 8 5 8 5 8"/>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="7 11 3 4 4 7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool justSelect="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="-5 -8 5 8 5 8"/>
+      <polygonVertex at="-8 -13 5 8 0 0"/>
+      <polygonVertex at="-4 -7 7 11 3 4"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="8 13 5 8 0 0"/>
+      <polygonVertex at="10 13 7 3 3 10"/>
+      <polygonVertex at="7 10 7 10 7 10"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="8 13 5 8 0 0"/>
+      <polygonVertex at="10 13 7 3 3 10"/>
+      <polygonVertex at="10 17 0 0 3 7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool justSelect="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <Delete/>
+    <ShowHidden/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="10 13 7 3 3 10"/>
+      <polygonVertex at="10 17 0 0 3 7"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="87/19 281/38 0 0 281/38 455/38"/>
+      <polygonVertex at="309/38 481/38 137/38 86/19 86/19 309/38"/>
+      <polygonVertex at="19/2 31/2 0 0 7/2 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="10 13 7 3 3 10"/>
+      <polygonVertex at="10 17 0 0 3 7"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="10 13 7 3 3 10"/>
+      <polygonVertex at="10 17 0 0 3 7"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="8 13 0 0 3 5"/>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="7 11 3 4 4 7"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5 8 0 0 8 13"/>
+      <polygonVertex at="10 13 7 3 3 10"/>
+      <polygonVertex at="10 17 0 0 3 7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <ShowHidden/>
+    <ShowHidden/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 281/38 455/38 87/19 281/38"/>
+      <polygonVertex at="0 0 172/19 309/19 0 0"/>
+      <polygonVertex at="-7/2 -6 19/2 31/2 0 0"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.builtin/tetrahedral around origin" selectInputs="true"/>
+    <setItemColor blue="102" green="102" red="255"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 281/38 455/38 87/19 281/38"/>
+      <polygonVertex at="-86/19 -309/38 309/38 481/38 137/38 86/19"/>
+      <polygonVertex at="-6 -19/2 6 19/2 6 19/2"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.9/tetrahedral.9" selectInputs="true"/>
+    <setItemColor blue="148" green="237" red="255"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 281/38 455/38 87/19 281/38"/>
+      <polygonVertex at="-137/38 -86/19 86/19 309/38 309/38 481/38"/>
+      <polygonVertex at="0 0 7/2 6 19/2 31/2"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.8/tetrahedral.8" selectInputs="true"/>
+    <setItemColor blue="255" green="204" red="153"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 281/38 455/38 87/19 281/38"/>
+      <polygonVertex at="0 0 172/19 309/19 0 0"/>
+      <polygonVertex at="-7/2 -6 19/2 31/2 0 0"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.builtin/tetrahedral around origin" selectInputs="true"/>
+    <setItemColor blue="153" green="153" red="255"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 281/38 455/38 87/19 281/38"/>
+      <polygonVertex at="137/38 86/19 86/19 309/38 309/38 481/38"/>
+      <polygonVertex at="6 19/2 6 19/2 6 19/2"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.10/tetrahedral.10" selectInputs="true"/>
+    <setItemColor blue="182" green="242" red="182"/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 281/38 455/38 87/19 281/38"/>
+      <polygonVertex at="86/19 309/38 309/38 481/38 137/38 86/19"/>
+      <polygonVertex at="7/2 6 19/2 31/2 0 0"/>
+    </SelectManifestation>
+    <ApplyTool justSelect="true" name="tetrahedral.7/tetrahedral.7" selectInputs="true"/>
+    <setItemColor blue="153" green="153" red="153"/>
+  </EditHistory>
+  <notes xmlns:xml="http://www.w3.org/XML/1998/namespace"/>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="206.20677185058594" far="412.4135437011735" near="0.5155169373082666" parallel="true" stereoAngle="0.0" width="92.79304733276405">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.005020002800884039" y="-0.7771411181311868" z="-0.6293063499454308"/>
+      <LookDirection x="-0.4866974561832165" y="-0.5516470765819296" z="0.6773559544606861"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="154,117,74" name="sand"/>
+    <Direction color="116,195,0" name="apple"/>
+    <Direction color="136,37,0" name="cinnamon"/>
+    <Direction color="18,73,48" name="spruce"/>
+    <Direction color="107,53,26" name="brown"/>
+    <Direction color="255,255,255" name="0" prototype="-11 6 972 -601 -37 23"/>
+    <Direction color="255,255,255" name="1" prototype="-11 6 1208 -747 -47 29"/>
+  </SymmetrySystem>
+</vzome:vZome>

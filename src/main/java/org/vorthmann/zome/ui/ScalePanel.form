@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Form style="Swing" ide="eclipse" builder="jigloo" version="1.0.0">
+	<Component class="javax.swing.JPanel" name="ScalePanel">
+		<Constraints>
+			<LayoutConstraint/>
+		</Constraints>
+		<Layout class="Flow">
+			<Property name="vgap" type="int" value="5"/>
+			<Property name="alignment" type="int" value="1"/>
+			<Property name="hgap" type="int" value="5"/>
+		</Layout>
+		<Events>
+		</Events>
+		<Properties>
+			<Property name="preferredSize" type="Dimension">
+				<Dimension value="[141, 45]"/>
+			</Property>
+			<Property name="border" class="javax.swing.border.TitledBorder">
+				<Property name="border"/>
+				<Property name="title" type="String" value="Scale"/>
+				<Property name="titleJustification" type="int" value="4"/>
+				<Property name="titlePosition" type="int" value="2"/>
+				<Property name="titleFont" type="Font">
+				<Font name="Dialog" size="12" style="1"/>
+			</Property>
+				<Property name="titleColor" type="Color">
+				<Color red="0" green="0" blue="0"/>
+			</Property>
+			</Property>
+			<Property name="bounds" type="Rectangle">
+				<Rectangle value="[0, 0, 141, 45]"/>
+			</Property>
+		</Properties>
+		<SubComponents>
+			<Component class="javax.swing.JSpinner" name="scaleSpinner">
+				<Constraints>
+					<Constraint direction="Center"/>
+					<LayoutConstraint/>
+				</Constraints>
+				<Events>
+				</Events>
+				<Properties>
+					<Property name="value" type="int" value="4"/>
+					<Property name="visible" type="boolean" value="true"/>
+					<Property name="preferredSize" type="Dimension">
+						<Dimension value="[60, 24]"/>
+					</Property>
+					<Property name="bounds" type="Rectangle">
+						<Rectangle value="[40, 5, 60, 24]"/>
+					</Property>
+				</Properties>
+			</Component>
+		</SubComponents>
+	</Component>
+</Form>

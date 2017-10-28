@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Form style="Swing" ide="eclipse" builder="jigloo" version="1.0.0">
+	<Component class="javax.swing.JPanel" name="EditPanel">
+		<Constraints>
+			<LayoutConstraint/>
+		</Constraints>
+		<Layout class="Border">
+			<Property name="vgap" type="int" value="0"/>
+			<Property name="hgap" type="int" value="0"/>
+		</Layout>
+		<Events>
+		</Events>
+		<Properties>
+			<Property name="preferredSize" type="Dimension">
+				<Dimension value="[697, 222]"/>
+			</Property>
+		</Properties>
+		<SubComponents>
+			<Component class="javax.swing.JPanel" name="buttons">
+				<Constraints>
+					<Constraint direction="North"/>
+					<LayoutConstraint>
+						<Property name="direction" type="String" value="North"/>
+					</LayoutConstraint>
+				</Constraints>
+				<Layout class="Box">
+					<Property name="axis" type="String" value="0"/>
+				</Layout>
+				<Events>
+				</Events>
+				<Properties>
+					<Property name="visible" type="boolean" value="true"/>
+				</Properties>
+				<SubComponents>
+					<Component class="javax.swing.JPanel" name="justButtons">
+						<Constraints>
+							<Constraint direction="Center"/>
+							<LayoutConstraint/>
+						</Constraints>
+						<Layout class="Flow">
+							<Property name="vgap" type="int" value="5"/>
+							<Property name="alignment" type="int" value="1"/>
+							<Property name="hgap" type="int" value="5"/>
+						</Layout>
+						<Events>
+						</Events>
+						<Properties>
+							<Property name="visible" type="boolean" value="true"/>
+						</Properties>
+						<SubComponents>
+							<Component class="javax.swing.JButton" name="undoButton">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Layout class="Overlay">
+								</Layout>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="undoButtonActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Undo"/>
+									<Property name="label" type="String" value="Undo"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+							<Component class="javax.swing.JButton" name="redoButton">
+								<Constraints>
+									<LayoutConstraint/>
+								</Constraints>
+								<Layout class="Overlay">
+								</Layout>
+								<Events>
+									<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" handler="redoButtonActionPerformed"/>
+								</Events>
+								<Properties>
+									<Property name="text" type="String" value="Redo"/>
+									<Property name="label" type="String" value="Redo"/>
+									<Property name="visible" type="boolean" value="true"/>
+								</Properties>
+							</Component>
+						</SubComponents>
+					</Component>
+					<Component class="javax.swing.JCheckBox" name="followMode">
+						<Constraints>
+							<Constraint direction="Center"/>
+							<LayoutConstraint/>
+						</Constraints>
+						<Layout class="Overlay">
+						</Layout>
+						<Events>
+							<EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" handler="followModeStateChanged"/>
+						</Events>
+						<Properties>
+							<Property name="text" type="String" value="single selection"/>
+							<Property name="label" type="String" value="single selection"/>
+							<Property name="visible" type="boolean" value="true"/>
+						</Properties>
+					</Component>
+				</SubComponents>
+			</Component>
+			<Component class="javax.swing.JTabbedPane" name="editors">
+				<Constraints>
+					<Constraint direction="Center"/>
+					<LayoutConstraint>
+						<Property name="direction" type="String" value="Center"/>
+					</LayoutConstraint>
+				</Constraints>
+				<Layout class="MetalTabbedPaneUI$TabbedPane">
+				</Layout>
+				<Events>
+				</Events>
+				<Properties>
+					<Property name="visible" type="boolean" value="true"/>
+				</Properties>
+			</Component>
+		</SubComponents>
+	</Component>
+</Form>
