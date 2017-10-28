@@ -5,6 +5,8 @@
 .settings/
 bin/
 build/
+gen/
+generated/
 gradle/
 jre/
 nbproject/
@@ -23,4 +25,5 @@ local.properties
 logging.properties
 run-vzome.bat
 run-vzome.sh
+testOut.xml
 Thumbs.db
