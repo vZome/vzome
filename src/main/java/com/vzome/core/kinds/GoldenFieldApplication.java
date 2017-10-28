@@ -62,8 +62,6 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 		AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();
 		
-		symm .createZoneOrbit( "red", 0, Symmetry .NO_ROTATION, new int[] { 1, 1, 1, 2, 1, 2, 0, 1, 0, 1, 0, 1 }, true );
-		symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 } );
 		symm .createZoneOrbit( "yellow", 0, 4, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 }, true, false, getField()
 				.createPower( - 1 ) );
 
