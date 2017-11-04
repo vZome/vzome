@@ -156,7 +156,7 @@ public class DocumentController extends DefaultController implements Controller3
         this .properties = props;
         this .documentModel = document;
         
-        setNextController( app );
+        app .addSubController( "someDoc", this ); // TODO fix this
    
         if ( this .documentModel .isMigrated() )
             this .changeCount = -1; // this will force isEdited() to return true
@@ -180,13 +180,6 @@ public class DocumentController extends DefaultController implements Controller3
         this .addPropertyListener( toolsController );
         
 		toolsController .addTool( document .getToolsModel() .get( "bookmark.builtin/ball at origin" ) );
-        
-        for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
-        {
-            String name = symper .getName();
-            SymmetryController symmController = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
-            this .symmetries .put( name, symmController );
-        }
 
         this .addSubController( "bookmark", new ToolFactoryController( this .documentModel .getBookmarkFactory() ) );
         
@@ -259,7 +252,7 @@ public class DocumentController extends DefaultController implements Controller3
                 switch ( change .getPropertyName() ) {
 
                 case "current.edit.xml":
-                    properties() .firePropertyChange( change ); // forward to the UI for display
+                    firePropertyChange( change ); // forward to the UI for display
                     break;
 
                 default:
@@ -282,6 +275,14 @@ public class DocumentController extends DefaultController implements Controller3
                 .withGraphicalViews( app .propertyIsTrue( "useGraphicalViews" ) )
                 .withShowStrutScales( app .propertyIsTrue( "showStrutScales" ) );
         this .addSubController( "strutBuilder", strutBuilder );
+        
+        for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
+        {
+            String name = symper .getName();
+            SymmetryController symmController = new SymmetryController( strutBuilder, this .documentModel .getSymmetrySystem( name ) );
+            strutBuilder .addSubController( "symmetry." + name, symmController );
+            this .symmetries .put( name, symmController );
+        }
 
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
@@ -463,7 +464,7 @@ public class DocumentController extends DefaultController implements Controller3
         RenderedModel model = this .mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
         cameraController .setSymmetry( model, symmetryController .getSnapper() );
 
-        properties().firePropertyChange( "symmetry", null, name ); // notify UI, so cardpanel can flip, or whatever
+        firePropertyChange( "symmetry", null, name ); // notify UI, so cardpanel can flip, or whatever
         setRenderingStyle();
     }
 
@@ -538,7 +539,7 @@ public class DocumentController extends DefaultController implements Controller3
                 this .lessonController .doAction( "restoreSnapshot", e );
 
                 this .editingModel = false;
-                properties() .firePropertyChange( "editor.mode", "model", "article" );
+                firePropertyChange( "editor.mode", "model", "article" );
             }
             else if ( action .equals( "switchToModel" ) )
             {
@@ -558,7 +559,7 @@ public class DocumentController extends DefaultController implements Controller3
                 this .strutBuilder .attach( this .modelCanvas );
 
                 this .editingModel = true;
-                properties() .firePropertyChange( "editor.mode", "article", "model" );
+                firePropertyChange( "editor.mode", "article", "model" );
             }
             else if ( action .equals( "takeSnapshot" ) )
             {
@@ -594,19 +595,19 @@ public class DocumentController extends DefaultController implements Controller3
             else if ( action.equals( "toggleFrameLabels" ) )
             {
                 showFrameLabels = ! showFrameLabels;
-                properties() .firePropertyChange( "showFrameLabels", !showFrameLabels, showFrameLabels );
+                firePropertyChange( "showFrameLabels", !showFrameLabels, showFrameLabels );
             }
 
             else if ( action.equals( "toggleNormals" ) )
             {
                 drawNormals = ! drawNormals;
-                properties() .firePropertyChange( "drawNormals", !drawNormals, drawNormals );
+                firePropertyChange( "drawNormals", !drawNormals, drawNormals );
             }
 
             else if ( action.equals( "toggleOutlines" ) )
             {
                 drawOutlines = ! drawOutlines;
-                properties() .firePropertyChange( "drawOutlines", !drawOutlines, drawOutlines );
+                firePropertyChange( "drawOutlines", !drawOutlines, drawOutlines );
             }
 
             else if ( action.startsWith( "setSymmetry." ) ) {
@@ -1248,7 +1249,7 @@ public class DocumentController extends DefaultController implements Controller3
             if ( java2dController == null ) {
                 java2dController = new Java2dSnapshotController( this .documentModel, cameraController.getView(), this.sceneLighting,
                 						this.currentSnapshot, this.drawOutlines );
-                java2dController .setNextController( this );
+                this .addSubController( name, java2dController );
             }
             return java2dController;
         }
@@ -1262,19 +1263,19 @@ public class DocumentController extends DefaultController implements Controller3
     }
 
     @Override
-    public void setProperty( String cmd, Object value )
+    public void setModelProperty( String cmd, Object value )
     {
         if ( "visible".equals( cmd ) ) {
             // Window is listening, will bring itself to the front, or close itself
             // App controller will set topDocument, or remove the document.
-            properties() .firePropertyChange( "visible", null, value );
+            firePropertyChange( "visible", null, value );
         } else if ( "name".equals( cmd ) ) {
             // App controller is listening, will change its map
-            properties() .firePropertyChange( "name", null, value );
+            firePropertyChange( "name", null, value );
         } else if ( "backgroundColor".equals( cmd ) ) {
             sceneLighting .setProperty( cmd, value );
         } else if ( "terminating".equals( cmd ) ) {
-            properties().firePropertyChange( cmd, null, value );
+            firePropertyChange( cmd, null, value );
         }
         else if ( "clipboard" .equals( cmd ) ) {
             if( systemClipboard != null ) {
@@ -1289,21 +1290,46 @@ public class DocumentController extends DefaultController implements Controller3
         {
             boolean old = showFrameLabels;
             showFrameLabels = "true" .equals( value );
-            properties() .firePropertyChange( "showFrameLabels", old, showFrameLabels );
+            firePropertyChange( "showFrameLabels", old, showFrameLabels );
         }
 
-        super.setProperty( cmd, value );
+        super .setModelProperty( cmd, value );
     }
 
 
     @Override
     public String[] getCommandList( String listName )
     {
-        if ( "symmetryPerspectives" .equals( listName ) )
-        {
+        switch ( listName ) {
+
+        case "symmetryPerspectives":
             return this .symmetries .keySet() .toArray( new String[]{} );
+
+        case "field.irrationals":
+        {
+            AlgebraicField field = this .documentModel .getField();
+            int len = field .getNumIrrationals();
+            String[] result = new String[ len ];
+            for ( int i = 0; i < result.length; i++ ) {
+                result[ i ] = field .getIrrational( i+1 );
+            }
+            return result;
         }
-        return super.getCommandList( listName );
+
+        case "field.multipliers":
+        {
+            AlgebraicField field = this .documentModel .getField();
+            int len = field. getNumMultipliers();
+            String[] result = new String[ len ];
+            for ( int i = 0; i < result.length; i++ ) {
+                result[ i ] = field .getIrrational( i+1 );
+            }
+            return result;
+        }
+
+        default:
+            return super.getCommandList( listName );
+        }
     }
     
 

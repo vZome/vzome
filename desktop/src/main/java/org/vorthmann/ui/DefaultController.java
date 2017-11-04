@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.vorthmann.j3d.MouseTool;
 
@@ -23,25 +25,45 @@ public class DefaultController implements Controller
     
     protected ErrorChannel mErrors;
     
-    protected Controller mNextController;
+    protected DefaultController mNextController;
     
     private final Map<String,Controller> subcontrollers = new HashMap<String, Controller>();
+
+    private String name = "";
+
+    static final Logger logger = Logger.getLogger( "org.vorthmann.zome.controller" );
     
-    protected PropertyChangeSupport properties()
+    protected PropertyChangeSupport properggties()
     {
         return this.pcs;
     }
 
     @Override
-    public void actionPerformed( ActionEvent e )
+    public void actionPerformed( Object source, String action )
+    {
+        this .actionPerformed( new ActionEvent( source, ActionEvent.ACTION_PERFORMED, action ) );
+    }
+
+    @Override
+    public final void actionPerformed( ActionEvent e )
     {
         try {
+            if ( logger .isLoggable( Level .FINE ) )
+                logger.fine( "ACTION: " + getPath() + "||" + e.getActionCommand() );
             doAction( e .getActionCommand(), e );
         } catch ( Exception ex )
         {
             ex .printStackTrace();
             mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ ex } );
         }
+    }
+
+    private String getPath()
+    {
+        if ( mNextController == null )
+            return this .name;
+        else
+            return this .mNextController .getPath() + "::" + this .name;
     }
 
     @Override
@@ -56,8 +78,7 @@ public class DefaultController implements Controller
         pcs .removePropertyChangeListener( listener );
     }
 
-    @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    protected void doAction( String action, ActionEvent e ) throws Exception
     {
         if ( mNextController != null )
             mNextController .doAction( action, e );
@@ -124,8 +145,9 @@ public class DefaultController implements Controller
     @Override
     public void addSubController( String name, Controller sub )
     {
+        ((DefaultController) sub) .name = name;
         this .subcontrollers .put( name, sub );
-        sub .setNextController( this );
+        ((DefaultController) sub) .setNextController( this, name );
     }
 
     @Override
@@ -153,27 +175,48 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public void setProperty( String cmd, Object value )
+    public final void setProperty( String name, Object value )
     {
-        if ( mNextController != null )
-            mNextController .setProperty( cmd, value );
+        if ( logger .isLoggable( Level .FINE ) )
+            logger.fine( "SETPROP: " + getPath() + "||" + name + "=" + value );
+        this .setModelProperty( name, value );
     }
 
-    @Override
-    final public void setNextController( Controller controller )
+    public void setModelProperty( String name, Object value )
     {
-        mNextController = controller;
+        if ( mNextController != null )
+            mNextController .setProperty( name, value );
+    }
+
+    final private void setNextController( Controller controller, String name )
+    {
+        this .name = name;
+        mNextController = (DefaultController) controller;
         mNextController .addPropertyListener(new PropertyChangeListener()
         {
             // multicast prop changes down the tree of controllers... watch out for loops!
             @Override
             public void propertyChange( PropertyChangeEvent event )
             {
-                properties() .firePropertyChange( event );
+                pcs .firePropertyChange( event );
             }
         } );
         if ( mNextController instanceof DefaultController )
             mErrors = ((DefaultController) mNextController) .mErrors;
+    }
+    
+    protected void firePropertyChange( PropertyChangeEvent event )
+    {
+        if ( logger .isLoggable( Level .FINE ) )
+            logger.fine( "CHGEVENT: " + getPath() + "||" + event.getPropertyName() + "=" + event.getNewValue() );
+        this .pcs .firePropertyChange( event );
+    }
+    
+    protected void firePropertyChange( String propName, Object oldValue, Object newValue )
+    {
+        if ( logger .isLoggable( Level .FINE ) )
+            logger.fine( "CHGEVENT: " + getPath() + "||" + propName + "=" + newValue );
+        this .pcs .firePropertyChange( propName, oldValue, newValue );
     }
 
     @Override
@@ -192,36 +235,36 @@ public class DefaultController implements Controller
 
     protected void openApplication( File file )
     {
-    	String script = this .getProperty( "export.script" );
-    	if ( script != null )
-    	{
-    		try {
-    			Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
-    					null, file .getParentFile() );
-    		} catch ( IOException e ) {
-    			System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
-    			e .printStackTrace();
-    		}        }
-    	else
-    		try {
-    			if ( Desktop .isDesktopSupported() ) {
-    				// DH - The test for file.exists() shouldn't be needed if this method is invoked in the proper sequence
-    				// so I think it should be omitted eventually so the exceptions will be thrown
-    				// but I'm leaving it here for now as a debugging aid.
-    				if( ! file .exists() ) {
-    					System .err .println( file .getAbsolutePath() + " does not exist." );
-    					//                    return;
-    				}
-    				Desktop desktop = Desktop .getDesktop();
-    				System .err .println( "Opening app for  " + file .getAbsolutePath() + " in thread: " + Thread.currentThread() );
-    				desktop .open( file );
-    			}
-    		} catch ( IOException | IllegalArgumentException e ) {
-    			System .err .println( "Desktop.open() failed on " + file .getAbsolutePath() );
-    			if ( ! file .exists() ) {
-    				System .err .println( "File does not exist." );
-    			}
-    			e.printStackTrace();
-    		}
+        String script = this .getProperty( "export.script" );
+        if ( script != null )
+        {
+            try {
+                Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
+                        null, file .getParentFile() );
+            } catch ( IOException e ) {
+                System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+                e .printStackTrace();
+            }        }
+        else
+            try {
+                if ( Desktop .isDesktopSupported() ) {
+                    // DH - The test for file.exists() shouldn't be needed if this method is invoked in the proper sequence
+                    // so I think it should be omitted eventually so the exceptions will be thrown
+                    // but I'm leaving it here for now as a debugging aid.
+                    if( ! file .exists() ) {
+                        System .err .println( file .getAbsolutePath() + " does not exist." );
+                        //                    return;
+                    }
+                    Desktop desktop = Desktop .getDesktop();
+                    System .err .println( "Opening app for  " + file .getAbsolutePath() + " in thread: " + Thread.currentThread() );
+                    desktop .open( file );
+                }
+            } catch ( IOException | IllegalArgumentException e ) {
+                System .err .println( "Desktop.open() failed on " + file .getAbsolutePath() );
+                if ( ! file .exists() ) {
+                    System .err .println( "File does not exist." );
+                }
+                e.printStackTrace();
+            }
     }
 }

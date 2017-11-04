@@ -92,10 +92,8 @@ public class Java2dSnapshotController extends DefaultController
     }
 
     @Override
-    public void actionPerformed( ActionEvent e )
+    public void doAction( String action, ActionEvent e ) throws Exception
     {
-        String action = e .getActionCommand();
-
         if ( action .equals( "refresh" ) )
         {
             current = false;
@@ -145,7 +143,7 @@ public class Java2dSnapshotController extends DefaultController
             current = false;
         }
         else
-            super.actionPerformed( e );
+            super .doAction( action, e );
     }
     
     @Override

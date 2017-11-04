@@ -1,50 +1,23 @@
 package org.vorthmann.zome.app.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.util.StringTokenizer;
 
 import org.junit.Test;
 import org.vorthmann.ui.Controller;
 
+import com.vzome.controller.ControllerTesting;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
 
 public class LengthControllerTest
-{
-	private void assertStateAfter( Controller controller, String[] actions, String[] propertyValues )
-	{
-		if ( actions != null )
-			try {
-				for ( String actionOrChange : actions ) {
-					if ( actionOrChange .contains( "=" ) ) {
-						StringTokenizer tokens = new StringTokenizer( actionOrChange, "=" );
-						String name = tokens .nextToken();
-						String value = tokens .nextToken();
-						controller .setProperty( name, value );
-					}
-					else
-						controller .doAction( actionOrChange, null );
-				}
-			} catch (Exception e) {
-				fail( e .getMessage() );
-			}
-		String[] properties = new String[]{ "half", "scale", "unitText", "unitIsCustom", "lengthText" };
-		for ( int i = 0; i < properties.length; i++ ) {
-			String actual = controller .getProperty( properties[ i ] );
-			String expected = propertyValues[ i ];
-			assertEquals( expected, actual );
-		}
-	}
-	
-	private void assertStateAfter( LengthController controller, String[] actions, String[] propertyValues, AlgebraicNumber expectedValue )
-	{
-		assertStateAfter( controller, actions, propertyValues );
-		AlgebraicNumber result = controller .getValue();
-		assertEquals( expectedValue, result );
-	}
+{    
+    private static void assertStateAfter( LengthController controller, String[] actions, String[] propertyValues, AlgebraicNumber expectedValue )
+    {
+        ControllerTesting .assertStateAfter( controller, actions, propertyValues );
+        AlgebraicNumber result = controller .getValue();
+        assertEquals( expectedValue, result );
+    }
 	
 	@Test
 	public void testInitialState() 

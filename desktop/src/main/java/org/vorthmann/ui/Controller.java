@@ -50,9 +50,7 @@ public interface Controller extends ActionListener
     String UNKNOWN_PROPERTY = "unknown.property";
 
     void setErrorChannel( ErrorChannel errors );
-    
-    void setNextController( Controller controller );
-    
+        
     String[] getCommandList( String listName );
 
     boolean[] enableContextualCommands( String[] menu, MouseEvent e );
@@ -60,7 +58,7 @@ public interface Controller extends ActionListener
     @Override
     void actionPerformed( ActionEvent e );
 
-    void doAction( String action, ActionEvent e ) throws Exception;
+    void actionPerformed( Object source, String action );
 
     boolean[] getCommandListDefaultStates( String string );
 

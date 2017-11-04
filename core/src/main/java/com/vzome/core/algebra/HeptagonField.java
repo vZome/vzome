@@ -68,8 +68,9 @@ public class HeptagonField extends AlgebraicField
      * @return 
      */
     @Override
-    public AlgebraicNumber getAffineScalar() {
-        return getUnitTerm( 2 );
+    public AlgebraicNumber getAffineScalar()
+    {
+        return getUnitTerm( C );
     }
 
     @Override

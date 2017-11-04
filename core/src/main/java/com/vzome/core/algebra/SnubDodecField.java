@@ -181,6 +181,12 @@ public class SnubDodecField extends AlgebraicField
     }
     
     @Override
+    public int getNumMultipliers()
+    {
+        return 2; // only two primitive elements, phi and xi
+    }
+
+    @Override
     public void defineMultiplier( StringBuffer buf, int i )
     {
         switch (i) {
@@ -203,7 +209,8 @@ public class SnubDodecField extends AlgebraicField
      * @return 
      */
     @Override
-    public AlgebraicNumber getAffineScalar() {
+    public AlgebraicNumber getAffineScalar()
+    {
         return getUnitTerm( 1 );
     }
 

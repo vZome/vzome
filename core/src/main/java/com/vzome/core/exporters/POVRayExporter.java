@@ -137,7 +137,7 @@ public class POVRayExporter extends Exporter3d
 		StringBuffer instances = new StringBuffer();
 
         AlgebraicField field = mModel .getField();
-        for ( int o = 1; o < field .getOrder(); o++ )
+        for ( int o = 1; o <= field .getNumMultipliers(); o++ )
         {
             instances .append( "#declare " );
             field .defineMultiplier( instances, o );

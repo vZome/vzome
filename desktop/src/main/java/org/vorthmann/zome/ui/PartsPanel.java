@@ -3,10 +3,6 @@
 
 package org.vorthmann.zome.ui;
 
-import com.vzome.core.model.Connector;
-import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.Panel;
-import com.vzome.core.model.Strut;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -33,6 +29,11 @@ import javax.swing.table.TableColumn;
 
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.PartsController.PartInfo;
+
+import com.vzome.core.model.Connector;
+import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
+import com.vzome.core.model.Strut;
 
 public class PartsPanel extends JPanel
 {
@@ -96,16 +97,11 @@ public class PartsPanel extends JPanel
         return menuItem;
     }
 
-    private void handleContextMenuEvent(ActionEvent e) {
-        String action = e.getActionCommand();
+    private void handleContextMenuEvent( ActionEvent e )
+    {
         int rowAtPoint = bomTable.rowAtPoint(popupTriggerLocation);
         PartsTableRow row = partsTableModel.getRow(rowAtPoint);
-        try {
-            controller.doAction(action, new PartsPanelActionEvent(e, row));
-        } catch (Exception ex) {
-            // should never actually be thrown even though the method signature claims it could.
-            ex.printStackTrace();
-        }
+        controller .actionPerformed( new PartsPanelActionEvent(e, row) );
     }
 
     /**

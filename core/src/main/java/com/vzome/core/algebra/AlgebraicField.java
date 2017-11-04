@@ -44,14 +44,16 @@ public abstract class AlgebraicField
     protected final AlgebraicNumber zero;
 
     /**
-     * Positive powers of the first irrational.
+     * Positive powers of the irrationals.
      */
-    private final ArrayList<AlgebraicNumber> positivePowers = new ArrayList<>( 8 );
+    private final ArrayList<AlgebraicNumber>[] positivePowers;
+
+    // TODO: expand these to handle all primitive elements (multipliers)
 
     /**
-     * Negative powers of the first irrational.
+     * Negative powers of the irrationals.
      */
-    private final ArrayList<AlgebraicNumber> negativePowers = new ArrayList<>( 8 );
+    private final ArrayList<AlgebraicNumber>[] negativePowers;
 
     public AlgebraicField( String name, int order )
     {
@@ -66,6 +68,8 @@ public abstract class AlgebraicField
         // although createRational() can safely be called at this point.
         zero = this .createRational( BigRational.ZERO );
         one = this .createRational( BigRational.ONE );
+        positivePowers = new ArrayList[ order-1 ];
+        negativePowers = new ArrayList[ order-1 ];
     }
 
     public String getName()
@@ -168,46 +172,56 @@ public abstract class AlgebraicField
 
     public final AlgebraicNumber createPower( int power )
     {
-        if ( power == 0 )
+        return this .createPower( power, 1 );
+    }
+
+    public final AlgebraicNumber createPower( int power, int irr )
+    {
+        if ( power == 0 || irr == 0 )
             return this .one;
+        irr -= 1;  // no powers recorded for 0
         if ( power > 0 )
         {
+            if ( positivePowers[irr] == null )
+                positivePowers[irr] = new ArrayList<>( 8 );
             // fill in any missing powers at the end of the list
-            if(power >= positivePowers .size()) {
-                if (positivePowers.isEmpty()) {
-                    positivePowers.add(one);
-                    positivePowers.add(createAlgebraicNumber(0, 1));
+            if(power >= positivePowers[irr] .size()) {
+                if (positivePowers[irr].isEmpty()) {
+                    positivePowers[irr].add(one);
+                    positivePowers[irr].add( getUnitTerm( irr+1 ) );
                 }
-                int size = positivePowers .size();
-                AlgebraicNumber irrat = this .positivePowers .get( 1 );
-                AlgebraicNumber last = this .positivePowers .get( size - 1 );
+                int size = positivePowers[irr] .size();
+                AlgebraicNumber irrat = this .positivePowers[irr] .get( 1 );
+                AlgebraicNumber last = this .positivePowers[irr] .get( size - 1 );
                 for (int i = size; i <= power; i++) {
                     AlgebraicNumber next = last .times( irrat );
-                    this .positivePowers .add( next );
+                    this .positivePowers[irr] .add( next );
                     last = next;
                 }
             }
-            return positivePowers .get( power );
+            return positivePowers[irr] .get( power );
         }
         else
         {
             power = - power; // power is now a positive number and can be used as an offset into negativePowers
             // fill in any missing powers at the end of the list
-            if(power >= negativePowers .size()) {
-                if (negativePowers.isEmpty()) {
-                    negativePowers.add(one);
-                    negativePowers.add(createAlgebraicNumber(0, 1).reciprocal());
+            if ( negativePowers[irr] == null )
+                negativePowers[irr] = new ArrayList<>( 8 );
+            if(power >= negativePowers[irr] .size()) {
+                if (negativePowers[irr].isEmpty()) {
+                    negativePowers[irr].add(one);
+                    negativePowers[irr].add( getUnitTerm( irr+1 ) .reciprocal() );
                 }
-                int size = negativePowers .size();
-                AlgebraicNumber irrat = this .negativePowers .get( 1 );
-                AlgebraicNumber last = this .negativePowers .get( size - 1 );
+                int size = negativePowers[irr] .size();
+                AlgebraicNumber irrat = this .negativePowers[irr] .get( 1 );
+                AlgebraicNumber last = this .negativePowers[irr] .get( size - 1 );
                 for (int i = size; i <= power; i++) {
                     AlgebraicNumber next = last .times( irrat );
-                    this .negativePowers .add( next );
+                    this .negativePowers[irr] .add( next );
                     last = next;
                 }
             }
-            return negativePowers .get( power );
+            return negativePowers[irr] .get( power );
         }
     }
 
@@ -589,5 +603,18 @@ public abstract class AlgebraicField
             columns[ i ] = this .basisVector( dims, i );
         }
         return new AlgebraicMatrix( columns );
+    }
+
+    /**
+     * @return the number of independent multipliers in this field.
+     * These are the primitive elements of the field.
+     * The value should be less than or equal to getNumIrrationals.
+     * It will be less whenever the irrationals are dependent.
+     * For example, in the field for sqrt(phi), there is only one
+     * multiplier, since the other irrational is just the square of that one.
+     */
+    public int getNumMultipliers()
+    {
+        return this .getNumIrrationals(); // the right value for any order-2 field, and for some higher order fields, also
     }
 }

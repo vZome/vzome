@@ -24,10 +24,10 @@ public class ToolController extends DefaultController
 	}
 
 	@Override
-	public void actionPerformed( ActionEvent e )
+	public void doAction( String action, ActionEvent e ) throws Exception
 	{
         EnumSet<InputBehaviors> inputBehaviors = this .tool .getInputBehaviors();
-		switch ( e .getActionCommand() ) {
+		switch ( action ) {
 
 		case "apply":
 			// TODO use the checkbox modes, override with key modifiers
@@ -68,9 +68,9 @@ public class ToolController extends DefaultController
             }
             this .tool .setInputBehaviors( inputBehaviors );
 			if ( deleteInputs ) {
-                this .properties() .firePropertyChange( "selectInputs", null, "false" );
+                this .firePropertyChange( "selectInputs", null, "false" );
 			}
-			this .properties() .firePropertyChange( "deleteInputs", null, Boolean .toString( deleteInputs ) );
+			this .firePropertyChange( "deleteInputs", null, Boolean .toString( deleteInputs ) );
 			break;
 
 		case "selectOutputs":
@@ -81,13 +81,13 @@ public class ToolController extends DefaultController
 			this .justSelect = ! this .justSelect;
 			if ( this .justSelect ) {
 				this .selectOutputs = true;
-				this .properties() .firePropertyChange( "selectOutputs", null, "true" );
+				this .firePropertyChange( "selectOutputs", null, "true" );
 			}
-			this .properties() .firePropertyChange( "createOutputs", null, Boolean .toString( ! this .justSelect ) );
+			this .firePropertyChange( "createOutputs", null, Boolean .toString( ! this .justSelect ) );
 			break;
 
 		default:
-			super .actionPerformed( e );
+			super .doAction( action, e );
 		}
 	}
 
@@ -126,17 +126,17 @@ public class ToolController extends DefaultController
 	}
 
 	@Override
-	public void setProperty( String name, Object value )
+	public void setModelProperty( String name, Object value )
 	{
 		switch ( name ) {
 
 		case "label":
 			this .tool .setLabel( (String) value );
-			this .properties() .firePropertyChange( "label", null, (String) value );
+			this .firePropertyChange( "label", null, (String) value );
 			return;
 
 		default:
-			super .setProperty( name, value );
+			super .setModelProperty( name, value );
 		}
 	}
 

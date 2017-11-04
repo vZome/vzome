@@ -5,7 +5,6 @@ package org.vorthmann.zome.app.impl;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,8 +51,6 @@ public class PreviewStrut implements PropertyChangeListener
 
     private double[] workingPlaneDual = new double[4]; // a GA homogeneous vector for the dual of the working plane
 
-    private PropertyChangeSupport properties;
-
     private static Logger logger = Logger .getLogger( "org.vorthmann.zome.app.impl.PreviewStrut" );
 
     public PreviewStrut( AlgebraicField field, RenderingChanges mainScene, CameraController cameraController )
@@ -79,11 +76,6 @@ public class PreviewStrut implements PropertyChangeListener
                 length .addPropertyListener( PreviewStrut .this );
             }
         };
-    }
-
-    public void setPropertyChangeSupport( PropertyChangeSupport properties )
-    {
-        this .properties = properties;
     }
 
     public void startRendering( SymmetryController symmetryController, Point point, AlgebraicVector workingPlaneNormal )
@@ -154,8 +146,6 @@ public class PreviewStrut implements PropertyChangeListener
         if ( length == null )
             return;
         length .removePropertyListener( this );
-        if ( this .properties != null )
-            this .properties .firePropertyChange( "command.status", "", "" );
         strut .undo();
         strut = null;
         if ( logger .isLoggable( Level.FINE ) )
@@ -177,8 +167,6 @@ public class PreviewStrut implements PropertyChangeListener
             strut .undo();
         if ( length == null )
             return;
-        if ( this .properties != null )
-            this .properties .firePropertyChange( "command.status", "", this .zone .toString() );
         if ( logger .isLoggable( Level.FINER ) )
             logger .finer( "preview now " + zone );
         strut = new StrutCreation( point, zone, length .getValue(), model );

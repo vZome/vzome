@@ -129,7 +129,7 @@ public class MeasureController extends DefaultController implements SelectionSum
         		}
             }
         }
-		this .properties() .firePropertyChange( "measures", false, true );
+		this .firePropertyChange( "measures", false, true );
 	}
 
 	private void reportAngles( double radians )
