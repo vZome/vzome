@@ -1,0 +1,71 @@
+
+
+group = 'com.vzome'
+version = '6.0'
+
+task wrapper(type: Wrapper) {
+   gradleVersion = '4.1' //version required
+}
+
+// Specify common settings for all subprojects
+subprojects {
+
+  apply plugin: 'java'
+  apply plugin: 'maven'
+
+  compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+  }
+
+  repositories {
+    mavenLocal()
+    mavenCentral()
+    
+    // this one is for javax.media.jai
+    maven { url 'http://repository.springsource.com/maven/bundles/external' }
+
+    ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for java3d/*
+      url "http://jogamp.org/deployment"
+      layout "pattern", {
+        artifact "[organization]/[revision]/[artifact].[ext]"
+      }
+    }
+  }
+
+  // see platform/mac/build.gradle, search for "error -5341"
+  //    buildDir    = rootProject.buildDir
+  group       = rootProject.group
+  version     = rootProject.version
+  description = rootProject.name + '-' + project.name
+}
+
+project(':desktop') {
+    dependencies {
+        compile project(':core')
+    }
+}
+
+
+// These options apply to all java projects
+// More info at http://www.javaworld.com/article/2073587/javac-s--xlint-options.html
+gradle.projectsEvaluated {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs \
+		<< "-Xdiags:verbose" \
+		<< "-Xlint:all" \
+		<< "-Xlint:cast" \
+		<< "-Xlint:deprecation" \
+		<< "-Xlint:divzero" \
+		<< "-Xlint:empty" \
+		<< "-Xlint:fallthrough" \
+		<< "-Xlint:finally" \
+		<< "-Xlint:overrides" \
+		<< "-Xlint:path" \
+		<< "-Xlint:rawtypes" \
+		<< "-Xlint:unchecked" \
+		<< "-Xlint:-serial" 
+		// TODO: Enable the serial warning and look into fixing ~33 issues. 
+		// Most of them are classes which extend a generic Collection or Exception.
+	}
+}

@@ -1,17 +1,7 @@
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'eclipse'
-//apply plugin: 'antlr4'
-
-group = 'com.vzome.core'
-version = '0.16.0'
 
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 
 description = "vzome-core"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 ext.antlr4 = [
     antlrSource:    "src/main/antlr",
@@ -20,17 +10,6 @@ ext.antlr4 = [
     destinationDir: "src/main/java/com/vzome/core/antlr/generated",
     grammarpackage:               "com.vzome.core.antlr.generated"
 ]
-
-repositories {
-    mavenCentral()
-
-    ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for java3d/vecmath
-        url "http://jogamp.org/deployment"
-        layout "pattern", {
-            artifact "[organization]/[revision]/[artifact].[ext]"
-        }
-    }
-}
 
 configurations {
     antlr4 {
@@ -43,10 +22,6 @@ sourceSets {
     regression {
         java.srcDir file('src/regression/java')
     }
-}
-
-task wrapper(type: Wrapper) {
-   gradleVersion = '4.1' //version required
 }
 
 task recordBuildProperties {
@@ -71,7 +46,7 @@ dependencies {
     runtime     group: 'org.python',        name: 'jython',            version:'2.7-b4'
     runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre12'
 
-	testCompile group: 'antlr',             name: 'antlr',             version:'2.7.7'
+    testCompile group: 'antlr',             name: 'antlr',             version:'2.7.7'
     testCompile group: 'junit',             name: 'junit',             version:'4.12'
     testCompile group: 'xom',               name: 'xom',               version:'1.2.5'
 
@@ -83,30 +58,6 @@ dependencies {
     regressionRuntime configurations.testRuntime
 }
 
-// These options apply to all java projects
-// More info at http://www.javaworld.com/article/2073587/javac-s--xlint-options.html
-// I'm turning on most of the warnings 
-// ...except that the test project ignores deprecation 
-// and they all ignore serial for now.
-gradle.projectsEvaluated {
-	tasks.withType(JavaCompile) {
-		options.compilerArgs \
-		<< "-Xdiags:verbose" \
-		<< "-Xlint:all" \
-		<< "-Xlint:cast" \
-		<< "-Xlint:divzero" \
-		<< "-Xlint:empty" \
-		<< "-Xlint:fallthrough" \
-		<< "-Xlint:finally" \
-		<< "-Xlint:overrides" \
-		<< "-Xlint:path" \
-		<< "-Xlint:rawtypes" \
-		<< "-Xlint:unchecked" \
-		<< "-Xlint:-serial" 
-		// TODO: Enable the serial warning and look into fixing the ~11 issues. 
-		// Most of them are classes which extend a generic Collection or Exception.
-	}
-}
 // It seems that the settings below are the starting point
 // and that the ones above override them, so only put 
 // settings above if they are identical in all projects.

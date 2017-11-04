@@ -13,6 +13,7 @@ nbproject/
 repos/
 target/
 temp/
+eclipse-workspace/
 
 # files (in alphabetical order)
 *.iml
