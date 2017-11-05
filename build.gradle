@@ -46,6 +46,12 @@ project(':desktop') {
     }
 }
 
+project(':server') {
+    dependencies {
+        compile project(':desktop')
+    }
+}
+
 
 // These options apply to all java projects
 // More info at http://www.javaworld.com/article/2073587/javac-s--xlint-options.html

@@ -63,7 +63,7 @@ public class ApplicationController extends DefaultController
 
 	private Map<String, RenderedModel> symmetryModels = new HashMap<String, RenderedModel>();
     
-	public ApplicationController( ActionListener ui, Properties commandLineArgs )
+	public ApplicationController( ActionListener ui, Properties commandLineArgs, RenderingViewer.Factory rvFactory )
     {
 		super();
 		
@@ -135,20 +135,24 @@ public class ApplicationController extends DefaultController
         
         Colors colors = modelApp .getColors();
         
+        if ( rvFactory != null ) {
+        		this .rvFactory = rvFactory;
+        }
+        else
         {
-        	boolean useEmissiveColor = ! propertyIsTrue( "no.glowing.selection" );
-            // need this set up before we do any loadModel
-            String factoryName = getProperty( "RenderingViewer.Factory.class" );
-            if ( factoryName == null )
-                factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
-            try {
-                Class<?> factoryClass = Class.forName( factoryName );
-                Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Colors.class, Boolean.class } );
-                rvFactory = (RenderingViewer.Factory) constructor.newInstance( new Object[] { colors, useEmissiveColor } );
-            } catch ( Exception e ) {
-                mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
-                System.exit( 0 );
-            }
+	        	boolean useEmissiveColor = ! propertyIsTrue( "no.glowing.selection" );
+	        	// need this set up before we do any loadModel
+	        	String factoryName = getProperty( "RenderingViewer.Factory.class" );
+	        	if ( factoryName == null )
+	        		factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
+	        	try {
+	        		Class<?> factoryClass = Class.forName( factoryName );
+	        		Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Colors.class, Boolean.class } );
+	        		this .rvFactory = (RenderingViewer.Factory) constructor.newInstance( new Object[] { colors, useEmissiveColor } );
+	        	} catch ( Exception e ) {
+	        		mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
+	        		System.exit( 0 );
+	        	}
         }
 
         long endtime = System.currentTimeMillis();

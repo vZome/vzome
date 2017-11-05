@@ -301,7 +301,8 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         RenderingViewer.Factory rvFactory = app .getJ3dFactory();
         mainScene = rvFactory .createRenderingChanges( sceneLighting, true, this );
-        this .addPropertyListener( (PropertyChangeListener) mainScene );
+        if ( mainScene instanceof PropertyChangeListener )
+            this .addPropertyListener( (PropertyChangeListener) mainScene );
 
         modelCanvas = rvFactory .createJ3dComponent( "" ); // name not relevant there
         imageCaptureViewer = rvFactory.createRenderingViewer( mainScene, modelCanvas );

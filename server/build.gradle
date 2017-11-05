@@ -1,4 +1,5 @@
 apply plugin: 'application'
+apply plugin: 'eclipse'
 
 dependencies {
     compile     group: 'javax.servlet',     name: 'servlet-api',       version:'2.5'

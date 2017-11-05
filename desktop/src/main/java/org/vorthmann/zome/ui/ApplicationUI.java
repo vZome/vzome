@@ -230,7 +230,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
 	        configuration .putAll( loadBuildProperties() );
 
-	        ui .mController = new ApplicationController( ui, configuration );
+	        ui .mController = new ApplicationController( ui, configuration, null );
 
 	        configuration .setProperty( "coreVersion", ui .mController .getProperty( "coreVersion" ) );
 			logConfig( configuration );
