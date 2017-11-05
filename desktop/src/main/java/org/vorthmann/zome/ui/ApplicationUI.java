@@ -358,9 +358,11 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 				"os.name",
 				"os.arch",
                 "sun.java.command",
+				"file.encoding",
 			}); 
 		appendPropertiesList(sb, loggingProperties(), new String[] 
         {
+            "default.charset",
             "logfile.name",
             "logging.properties.filename",
             "logging.properties.file.exists",
@@ -384,7 +386,6 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 	}
     
     private static Properties loggingProperties() {
-        Properties props = new Properties();
         File f = new File(".", "logging.properties");
         // Use same logic to locate the file as LogManager.getLogManager().readConfiguration() uses...
         String fname = System.getProperty("java.util.logging.config.file");
@@ -401,6 +402,8 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        Properties props = new Properties();
+        props.put("default.charset", java.nio.charset.Charset.defaultCharset().name());
         props.put("logfile.name", getLogFileName());        
         props.put("logging.properties.filename", fname);        
         props.put("logging.properties.file.exists", Boolean.toString(f.exists()));        
