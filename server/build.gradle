@@ -1,0 +1,8 @@
+apply plugin: 'application'
+
+dependencies {
+    compile     group: 'javax.servlet',     name: 'servlet-api',       version:'2.5'
+    compile     group: 'org.eclipse.jetty', name: 'jetty-servlet',     version:'7.6.0.v20120127'
+}
+
+mainClassName = "com.vzome.server.ControllerServer"
