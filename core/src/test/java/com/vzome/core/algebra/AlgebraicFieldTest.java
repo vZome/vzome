@@ -44,4 +44,16 @@ public class AlgebraicFieldTest {
         assertEquals(fields.size(), pass);
 	}    
 
+    	@Test
+    	public void testReciprocal()
+    	{
+    		for( AlgebraicField field : fields ) {
+    			try {
+    				field .zero() .reciprocal() .evaluate();
+    				fail( "Zero divide should throw an exception" );
+    			} catch ( RuntimeException re ) {
+    				assertEquals( "Denominator is zero", re .getMessage() );
+    			}
+    		}
+    	}
 }

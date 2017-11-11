@@ -280,9 +280,13 @@ public abstract class AlgebraicField
     {
         int order = fieldElement .length;
         BigRational[][] representation = new BigRational[ order ][ order ];
+        boolean isZero = true;
         for ( int i = 0; i < order; i++ ) {
+        		isZero = isZero && fieldElement[ i ] .isZero();
             representation[ 0 ][ i ] = fieldElement[ i ];
         }
+        if ( isZero )
+        		throw new RuntimeException( "Denominator is zero" );
         for ( int j = 1; j < order; j++ ) {
             BigRational[] column = this .scaleBy( fieldElement, j );
             for ( int i = 0; i < order; i++ ) {
