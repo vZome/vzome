@@ -4,8 +4,11 @@
 package com.vzome.core.editor;
 
 
+import java.util.EnumSet;
+
 import org.w3c.dom.Element;
 
+import com.vzome.api.Tool.InputBehaviors;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -115,7 +118,10 @@ public class RotationTool extends SymmetryTool
     @Override
     public String getCategory()
     {
-        return ID;
+		if ( this .fullRotation )
+	        return "axial symmetry";
+		else
+	        return ID;
     }
 
     public RotationTool( String id, Symmetry symmetry, ToolsModel editor )
@@ -130,6 +136,15 @@ public class RotationTool extends SymmetryTool
         this .fullRotation = full;
         this .corrected = true;
     }
+
+	@Override
+	public EnumSet<InputBehaviors> defaultInputBehaviors()
+	{
+		if ( this .fullRotation )
+			return EnumSet.of( InputBehaviors.SELECT );
+		else
+			return EnumSet.of( InputBehaviors.DELETE );
+	}
 
     @Override
     protected String checkSelection( boolean prepareTool )
