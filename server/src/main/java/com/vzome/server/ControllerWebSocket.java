@@ -60,15 +60,21 @@ public class ControllerWebSocket implements WebSocketListener
 	        return;
 		}
 
-        APP .doAction( "openURL-" + urlStr, null );
         docController = APP .getSubController( urlStr );
-		try {
-			docController .doAction( "finish.load", null );
-	        this.outbound .getRemote() .sendString( "Document load SUCCESS", null );
-		} catch ( Exception e ) {
-			e.printStackTrace();
-	        this.outbound .getRemote() .sendString( "Document load FAILURE", null );
-		}
+        if ( docController != null ) {
+	        this.outbound .getRemote() .sendString( "Document already in use: " + urlStr, null );
+	        docController = null; // prevent action on the document
+        } else {
+            APP .doAction( "openURL-" + urlStr, null );
+            docController = APP .getSubController( urlStr );
+	    		try {
+	    			docController .doAction( "finish.load", null );
+	    	        this.outbound .getRemote() .sendString( "Document load SUCCESS", null );
+	    		} catch ( Exception e ) {
+	    			e.printStackTrace();
+	    	        this.outbound .getRemote() .sendString( "Document load FAILURE", null );
+	    		}
+        }
     }
 
     public void onWebSocketError( Throwable cause )
