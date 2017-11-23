@@ -21,7 +21,8 @@ function getKeyCode(ev) {
 
 var wstool = {
     connect : function() {
-        var location = document.location.toString().replace('http://', 'ws://') + "echo";
+        var location = document.location.toString().replace('http://', 'ws://') + "echo?" 
+          + encodeURIComponent( "http://vzome.com/models/2007/07-Jul/affine120-bop/purpleBlueOrange-affine120cell.vZome" );
 
         wstool.info("Document URI: " + document.location);
         wstool.info("WS URI: " + location);

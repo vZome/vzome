@@ -4,7 +4,9 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Properties;
@@ -48,8 +50,17 @@ public class ControllerWebSocket implements WebSocketListener
         LOG.info( "WebSocket Connect: {}", session );
         this.outbound .getRemote() .sendString( "You are now connected to " + this.getClass().getName(), null );
         
-		String urlStr = "http://vzome.com/models/2007/07-Jul/affine120-bop/purpleBlueOrange-affine120cell.vZome";
-		APP .doAction( "openURL-" + urlStr, null );
+		String urlStr = session .getUpgradeRequest() .getQueryString();
+		try {
+			urlStr = URLDecoder.decode( urlStr, "UTF-8");
+	        this.outbound .getRemote() .sendString( "Opening " + urlStr, null );
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+	        this.outbound .getRemote() .sendString( e1 .getMessage(), null );
+	        return;
+		}
+
+        APP .doAction( "openURL-" + urlStr, null );
         docController = APP .getSubController( urlStr );
 		try {
 			docController .doAction( "finish.load", null );
