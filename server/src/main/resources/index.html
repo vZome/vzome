@@ -8,12 +8,14 @@
     Jetty WebSocket Echo Examples #console
     <div id="console"></div>
     <div id="buttons">
-      <input id="connect" class="button" type="submit" name="connect" value="connect"/>
+      <input id="connect1" class="button" type="submit" name="connect1" value="connect1"/>
+      <input id="connect2" class="button" type="submit" name="connect2" value="connect2"/>
       <input id="close" class="button" type="submit" name="close" value="close" disabled="disabled"/>
       <input id="hello" class="button" type="submit" name="hello" value="send hello" disabled="disabled"/>
     </div>
     <script type="text/javascript">
-    $("connect").onclick = function(event) { wstool.connect(); return false; }
+    $("connect1").onclick = function(event) { wstool.connect( "http://vzome.com/models/2007/07-Jul/affine120-bop/purpleBlueOrange-affine120cell.vZome" ); return false; }
+    $("connect2").onclick = function(event) { wstool.connect( "http://vzome.com/models/2011/12-Dec/02-BayZome2/F4-F-triality.vZome" ); return false; }
     $("close").onclick = function(event) { wstool.close(); return false; }
     $("hello").onclick = function(event) { wstool.write("Hello There"); return false; }
     </script>

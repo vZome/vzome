@@ -20,9 +20,8 @@ function getKeyCode(ev) {
 }
 
 var wstool = {
-    connect : function() {
-        var location = document.location.toString().replace('http://', 'ws://') + "echo?" 
-          + encodeURIComponent( "http://vzome.com/models/2007/07-Jul/affine120-bop/purpleBlueOrange-affine120cell.vZome" );
+    connect : function( url ) {
+        var location = document.location.toString().replace('http://', 'ws://') + "echo?" + encodeURIComponent( url );
 
         wstool.info("Document URI: " + document.location);
         wstool.info("WS URI: " + location);
@@ -55,7 +54,8 @@ var wstool = {
     },
 
     setState : function(enabled) {
-        $('connect').disabled = enabled;
+        $('connect1').disabled = enabled;
+        $('connect2').disabled = enabled;
         $('close').disabled = !enabled;
         $('hello').disabled = !enabled;
     },
