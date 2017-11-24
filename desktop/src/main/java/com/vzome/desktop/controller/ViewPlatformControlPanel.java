@@ -126,13 +126,13 @@ public class ViewPlatformControlPanel extends JPanel {
         snapperCheckbox .setSelected( "true" .equals( controller .getProperty( "snap" ) ) );
         checkboxesPanel .add( snapperCheckbox );
 
-        final JCheckBox stereoCheckbox = new JCheckBox( "stereo" );
-        //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
-        stereoCheckbox .addActionListener( controller );
-        stereoCheckbox .setActionCommand( "toggleStereo" );
-        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
-//        stereoCheckbox .setEnabled( false );
-        checkboxesPanel .add( stereoCheckbox );
+//        final JCheckBox stereoCheckbox = new JCheckBox( "stereo" );
+//        //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
+//        stereoCheckbox .addActionListener( controller );
+//        stereoCheckbox .setActionCommand( "toggleStereo" );
+//        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
+////        stereoCheckbox .setEnabled( false );
+//        checkboxesPanel .add( stereoCheckbox );
         
         this .addMouseWheelListener( new MouseWheelListener()
         {
@@ -149,7 +149,7 @@ public class ViewPlatformControlPanel extends JPanel {
         // TODO this is silly, to have both getProperty and addPropertyListener
         perspectiveCheckbox .setSelected( "true" .equals( controller .getProperty( "perspective" ) ) );
         snapperCheckbox .setSelected( "true" .equals( controller .getProperty( "snap" ) ) );
-        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
+//        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
 
         controller .addPropertyListener( new PropertyChangeListener()
             {
@@ -168,10 +168,10 @@ public class ViewPlatformControlPanel extends JPanel {
                         boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
                         snapperCheckbox .setSelected( enabling );
                     }
-                    else if ( "stereo" .equals( e .getPropertyName() ) ) {
-                        boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
-                        stereoCheckbox .setSelected( enabling );
-                    }
+//                    else if ( "stereo" .equals( e .getPropertyName() ) ) {
+//                        boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
+//                        stereoCheckbox .setSelected( enabling );
+//                    }
                     else if ( "editor.mode" .equals( e .getPropertyName() ) )
                     {
                         if ( isEditor )

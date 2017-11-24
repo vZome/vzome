@@ -57,7 +57,7 @@ import org.vorthmann.zome.app.impl.ApplicationController;
  */
 public final class ApplicationUI implements ActionListener, PropertyChangeListener
 {
-    private Controller mController;
+    private ApplicationController mController;
     
     private Controller.ErrorChannel errors;
     
@@ -165,14 +165,9 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
         SplashScreen splash = null;
         String splashImage = "org/vorthmann/zome/ui/vZome-6-splash.png";
-        if ( splashImage != null ) {
-            splash = new SplashScreen( splashImage );
-            splash .splash();
-            logger .info( "splash screen displayed" );
-        } 
-        else {
-            logger .severe( "splash screen not found at " + splashImage );
-        }
+        splash = new SplashScreen( splashImage );
+        splash .splash();
+        logger .info( "splash screen displayed" );
 
         theUI = new ApplicationUI();
 
@@ -280,7 +275,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
 		case "newDocument":
 			Controller controller = (Controller) evt. getNewValue();
-			DocumentFrame window = new DocumentFrame( controller );
+			DocumentFrame window = new DocumentFrame( controller, this .mController .getJ3dFactory() );
 	        window .setVisible( true );
 	        window .setAppUI( new PropertyChangeListener() {
 				

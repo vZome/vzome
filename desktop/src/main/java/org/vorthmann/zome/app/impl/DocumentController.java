@@ -34,7 +34,6 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
 
-import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.MouseToolFilter;
@@ -82,17 +81,18 @@ import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.desktop.controller.CameraController;
+import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
 
 /**
  * @author Scott Vorthmann 2003
  */
-public class DocumentController extends DefaultController implements J3dComponentFactory
+public class DocumentController extends DefaultController implements Controller3d
 {
     private DocumentModel documentModel;
     
-    private final PreviewStrut previewStrut;
+    private PreviewStrut previewStrut;
 
     private final RenderedModel mRenderedModel;
 
@@ -106,10 +106,10 @@ public class DocumentController extends DefaultController implements J3dComponen
     
     private ThumbnailRenderer thumbnails;
 
-    private RenderedModel mControlBallModel;
-
     private RenderingChanges mainScene;
-    private final RenderingChanges mControlBallScene;
+
+    private RenderingChanges mControlBallScene;  // TODO split off in another controller
+    private RenderedModel mControlBallModel;
 
     private final ApplicationController mApp;
 
@@ -150,8 +150,9 @@ public class DocumentController extends DefaultController implements J3dComponen
     private Camera currentView;
 
     private MouseTool lessonPageClick, articleModeMainTrackball, modelModeMainTrackball;
+    private final Controller trackballProperties;
 
-    private final Component modelCanvas, leftEyeCanvas, rightEyeCanvas;
+    private Component modelCanvas;
 
     private MouseTool selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
 
@@ -159,7 +160,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private int changeCount = 0;
 
-    private final PickingController monoController, leftController, rightController;
+    private PickingController monoController;
         
    /*
      * See the javadoc to control the logging:
@@ -299,30 +300,8 @@ public class DocumentController extends DefaultController implements J3dComponen
         showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
-        RenderingViewer.Factory rvFactory = app .getJ3dFactory();
-        mainScene = rvFactory .createRenderingChanges( sceneLighting, true, this );
-        if ( mainScene instanceof PropertyChangeListener )
-            this .addPropertyListener( (PropertyChangeListener) mainScene );
-
-        modelCanvas = rvFactory .createJ3dComponent( "" ); // name not relevant there
-        imageCaptureViewer = rvFactory.createRenderingViewer( mainScene, modelCanvas );
-        mViewPlatform .addViewer( imageCaptureViewer );
-        monoController = new PickingController( imageCaptureViewer, this );
-        
-        leftEyeCanvas = rvFactory .createJ3dComponent( "" );
-        RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
-        mViewPlatform .addViewer( viewer );
-        viewer .setEye( RenderingViewer .LEFT_EYE );
-        leftController = new PickingController( viewer, this );
-
-        rightEyeCanvas = rvFactory .createJ3dComponent( "" );
-        viewer = rvFactory .createRenderingViewer( mainScene, rightEyeCanvas );
-        mViewPlatform .addViewer( viewer );
-        viewer .setEye( RenderingViewer .RIGHT_EYE );
-        rightController = new PickingController( viewer, this );
-
             // TODO define a standalone controller class for contextual menus, etc.
-        Controller controlBallProps = new DefaultController()
+        this .trackballProperties = new DefaultController()
         {
             @Override
             public String getProperty( String name )
@@ -344,16 +323,11 @@ public class DocumentController extends DefaultController implements J3dComponen
                 }
             }
         };
-        controlBallProps .setNextController( this );
-        mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, controlBallProps );
+        this .trackballProperties .setNextController( this );
 
-        thumbnails = new ThumbnailRendererImpl( rvFactory, sceneLighting );
+        thumbnails = new ThumbnailRendererImpl( app .getJ3dFactory() );
 
         mApp = app;
-
-        AlgebraicField field = this .documentModel .getField();
-        previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
-        previewStrut .setPropertyChangeSupport( this .properties() );
         
         lessonController = new LessonController( this .documentModel .getLesson(), mViewPlatform );
         lessonController .setNextController( this );
@@ -373,20 +347,36 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         copyThisView(); // initialize the "copied" view at startup.
     }
-
-    @Override
-    public Component createJ3dComponent( String name )
+    
+    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas, String name )
     {
         if ( name.startsWith( "mainViewer" ) )
         {
-            Component canvas = null;
-            if ( name .endsWith( "monocular" ) )
-                canvas = modelCanvas;
-            else if ( name .endsWith( "leftEye" ) )
-                canvas = leftEyeCanvas;
-            else
-                canvas = rightEyeCanvas;
-            
+        		this .modelCanvas = canvas;
+        		this .mainScene = scene;
+        		this .imageCaptureViewer = viewer;
+
+        		if ( this .mainScene instanceof PropertyChangeListener )
+        			this .addPropertyListener( (PropertyChangeListener) this .mainScene );
+
+        		this .mViewPlatform .addViewer( this .imageCaptureViewer );
+        		this .monoController = new PickingController( this .imageCaptureViewer, this );
+
+        		AlgebraicField field = this .documentModel .getField();
+        		this .previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
+        		this .previewStrut .setPropertyChangeSupport( this .properties() );
+
+//                leftEyeCanvas = rvFactory .createJ3dComponent( "" );
+//                RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
+//                mViewPlatform .addViewer( viewer );
+//                viewer .setEye( RenderingViewer .LEFT_EYE );
+//                leftController = new PickingController( viewer, this );
+        //
+//                rightEyeCanvas = rvFactory .createJ3dComponent( "" );
+//                viewer = rvFactory .createRenderingViewer( mainScene, rightEyeCanvas );
+//                mViewPlatform .addViewer( viewer );
+//                viewer .setEye( RenderingViewer .RIGHT_EYE );
+//                rightController = new PickingController( viewer, this );
             /*
              * Mouse tools here follow some general principles:
              * 
@@ -414,8 +404,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                     e .consume();
                 }
             };
-            if ( canvas == modelCanvas )
-                lessonPageClick = mouseTool; // will not be attached, initially; gets attached on switchToArticle
+            lessonPageClick = mouseTool; // will not be attached, initially; gets attached on switchToArticle
 
             mouseTool = new MouseToolFilter( mViewPlatform .getZoomScroller() )
             {
@@ -437,7 +426,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                     }
                 }
             };
-            mouseTool .attach( canvas );
+            mouseTool .attach( modelCanvas );
 
             mouseTool = mViewPlatform .getTrackball();
             if ( propertyIsTrue( "presenter.mode" ) )
@@ -449,8 +438,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 //                canvas .addMouseListener( mouseTool );
 //                canvas .addMouseMotionListener( mouseTool );
 //            }
-            if ( canvas == modelCanvas )
-                articleModeMainTrackball = mouseTool; // will not be attached, initially; gets attached on switchToArticle
+            articleModeMainTrackball = mouseTool; // will not be attached, initially; gets attached on switchToArticle
 
             // this wrapper for mainCanvasTrackball is disabled when the press is initiated over a ball
             mouseTool = new LeftMouseDragAdapter( new MouseToolFilter( articleModeMainTrackball )
@@ -482,12 +470,11 @@ public class DocumentController extends DefaultController implements J3dComponen
                     super .mouseReleased( e );
                 }
             } );
-            if ( canvas == modelCanvas )
-                modelModeMainTrackball = mouseTool;
+            modelModeMainTrackball = mouseTool;
             if ( editingModel )
-                modelModeMainTrackball .attach( canvas );
+                modelModeMainTrackball .attach( modelCanvas );
             else
-                articleModeMainTrackball .attach( canvas );
+                articleModeMainTrackball .attach( modelCanvas );
             
             // clicks become select or deselect all
             mouseTool = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
@@ -510,9 +497,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 }
             } );
             if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                selectionClick = mouseTool;
+                mouseTool .attach( modelCanvas );
+            selectionClick = mouseTool;
 
             // drag events to render or realize the preview strut;
             //   only works when drag starts over a ball
@@ -539,9 +525,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 }
             } );
             if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                previewStrutStart = mouseTool;
+                mouseTool .attach( modelCanvas );
+            previewStrutStart = mouseTool;
 
             // trackball to adjust the preview strut (when it is rendered)
             mouseTool = new LeftMouseDragAdapter( new Trackball()
@@ -553,9 +538,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 }
             } );
             if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                previewStrutRoll = mouseTool;
+                mouseTool .attach( modelCanvas );
+            previewStrutRoll = mouseTool;
             
             // working plane drag events to adjust the preview strut (when it is rendered)
             mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
@@ -570,49 +554,39 @@ public class DocumentController extends DefaultController implements J3dComponen
                 }
             } );
             if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                previewStrutPlanarDrag = mouseTool;
+                mouseTool .attach( modelCanvas );
+            previewStrutPlanarDrag = mouseTool;
             
             // mRenderedModel .setFactory( mViewer .getSceneGraphFactory() );
             // mRenderedModel .setTopGroup( mViewer .getSceneGraphRoot() );
 
             mViewPlatform .updateViewers();
 //            currentDesign .render( true, null );   // I think this is not necessary now
-            return canvas;
         }
         else if ( name.equals( "controlViewer" ) )
         {
-            MouseTool trackball = mViewPlatform .getTrackball();
-            RenderingViewer.Factory rvFactory = mApp .getJ3dFactory();
-            Component canvas = rvFactory .createJ3dComponent( name ); // name not relevant there
+            MouseTool trackball = this .mViewPlatform .getTrackball();
    
             // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
             //  and ViewPlatformControlPanel will attach a better one to the parent component 
             canvas .addMouseListener( trackball );
             canvas .addMouseMotionListener( trackball );
 
-            RenderingViewer viewer = rvFactory .createRenderingViewer( mControlBallScene, canvas );
-            mViewPlatform .addViewer( new TrackballRenderingViewer( viewer ) );
+            this .mViewPlatform .addViewer( new TrackballRenderingViewer( viewer ) );
 
             // mControlBallScene .reset();
-            for ( RenderedManifestation rm : mControlBallModel )
-                mControlBallScene.manifestationAdded( rm );
+            this .mControlBallScene = scene;
+            for ( RenderedManifestation rm : this .mControlBallModel )
+                this .mControlBallScene .manifestationAdded( rm );
 
-            mViewPlatform .updateViewers();
-            return canvas;
+            this .mViewPlatform .updateViewers();
         }
         else
         {
-            RenderingViewer.Factory rvFactory = mApp .getJ3dFactory();
-            Component canvas = rvFactory .createJ3dComponent( name ); // name not relevant there
-
-            drawOutlines = true;
-            RenderingChanges scene = rvFactory.createRenderingChanges( sceneLighting, true, this );
-            mRenderedModel.addListener( scene );
-            RenderingViewer viewer = rvFactory.createRenderingViewer( mainScene, canvas );
-            this.addPropertyListener( (PropertyChangeListener) viewer );
-            return canvas;
+            this .drawOutlines = true;
+            this .mRenderedModel .addListener( scene );
+            if ( viewer instanceof PropertyChangeListener )
+        			this .addPropertyListener( (PropertyChangeListener) viewer );
         }
     }
 
@@ -1430,14 +1404,11 @@ public class DocumentController extends DefaultController implements J3dComponen
         case "monocularPicking":
             return monoController;
 
-        case "leftEyePicking":
-            return leftController;
-
-        case "rightEyePicking":
-            return rightController;
-
         case "viewPlatform":
             return mViewPlatform;
+
+        case "trackball":  // TODO combine this with viewPlatform controller
+            return this .trackballProperties;
 
         case "symmetry":
             return symmetryController;

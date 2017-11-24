@@ -42,12 +42,14 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
 
-import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
+import com.vzome.core.render.RenderingChanges;
+import com.vzome.desktop.controller.Controller3d;
+import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ViewPlatformControlPanel;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
@@ -118,14 +120,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     	this .appUI = appUI;
     }
         
-    public DocumentFrame( final Controller controller )
+    public DocumentFrame( final Controller controller, final RenderingViewer.Factory factory3d )
     {
         mController = controller;
         mController .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
         
         int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
-
         // Keep the tool tip showing
         ToolTipManager.sharedInstance().setDismissDelay( 20000 );
 
@@ -463,7 +464,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     leftCenterPanel .add(  modeAndStatusPanel, BorderLayout.PAGE_START );
                 }
 
-                modelPanel = new ModelPanel( mController, this, this .isEditor, fullPower );
+                modelPanel = new ModelPanel( (Controller3d) mController, factory3d, (ControlActions) this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );
@@ -477,7 +478,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
             JPanel rightPanel = new JPanel( new BorderLayout() );
             {
-                Component trackballCanvas = ( (J3dComponentFactory) mController ) .createJ3dComponent( "controlViewer" );
+                Component trackballCanvas = factory3d .createJ3dComponent( "controlViewer" );
+                RenderingChanges scene = factory3d .createRenderingChanges( true, controller .getSubController( "trackball" ) );
+                RenderingViewer viewer = factory3d .createRenderingViewer( scene, trackballCanvas );
+                ((Controller3d) controller) .attachViewer( viewer, scene, trackballCanvas, "controlViewer" );
                 viewControl = new ViewPlatformControlPanel( trackballCanvas, viewPlatform );
                 // this is probably moot for reader mode
                 rightPanel .add( viewControl, BorderLayout.PAGE_START );

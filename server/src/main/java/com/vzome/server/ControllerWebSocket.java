@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -29,14 +31,96 @@ import org.vorthmann.zome.app.impl.ApplicationController;
 
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
-import com.vzome.core.viewing.Lights;
+import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 
 public class ControllerWebSocket implements WebSocketListener
 {
+	private static class Viewer implements RenderingChanges, RenderingViewer, PropertyChangeListener
+	{
+		private final Session session;
+
+		public Viewer( Session session )
+		{
+			this .session = session;
+		}
+
+		@Override
+		public void setEye( int eye ) {}
+
+		@Override
+		public void setViewTransformation( Matrix4d trans, int eye ) {}
+
+		@Override
+		public void setPerspective( double fov, double aspectRatio, double near, double far ) {}
+
+		@Override
+		public void setOrthographic( double halfEdge, double near, double far ) {}
+
+		@Override
+		public RenderedManifestation pickManifestation( MouseEvent e )
+		{
+			return null;
+		}
+
+		@Override
+		public Collection<RenderedManifestation> pickCube()
+		{
+			return null;
+		}
+
+		@Override
+		public void pickPoint(MouseEvent e, Point3d imagePt, Point3d eyePt) {}
+
+		@Override
+		public RenderingChanges getRenderingChanges()
+		{
+			return this;
+		}
+
+		@Override
+		public void captureImage(int maxSize, ImageCapture capture) {}
+
+		@Override
+		public void reset() {}
+
+		@Override
+		public void manifestationAdded( RenderedManifestation manifestation )
+		{
+			this .session .getRemote() .sendString( "add manifestation: " + manifestation .toString(), null );
+		}
+
+		@Override
+		public void manifestationRemoved(RenderedManifestation manifestation) {}
+
+		@Override
+		public void manifestationSwitched(RenderedManifestation from, RenderedManifestation to) {}
+
+		@Override
+		public void glowChanged(RenderedManifestation manifestation) {}
+
+		@Override
+		public void colorChanged(RenderedManifestation manifestation) {}
+
+		@Override
+		public void locationChanged(RenderedManifestation manifestation) {}
+
+		@Override
+		public void orientationChanged(RenderedManifestation manifestation) {}
+
+		@Override
+		public void shapeChanged(RenderedManifestation manifestation) {}
+
+		@Override
+		public void propertyChange( PropertyChangeEvent evt )
+		{
+			this .session .getRemote() .sendString( "property " + evt .getPropertyName() + " now: " + evt .getNewValue(), null );
+		}
+	}
+	
     private static final Logger LOG = Log.getLogger( ControllerWebSocket.class );
     private Session outbound;
-    private Controller docController;
+    private Controller3d docController;
 
     public void onWebSocketClose( int statusCode, String reason )
     {
@@ -60,13 +144,15 @@ public class ControllerWebSocket implements WebSocketListener
 	        return;
 		}
 
-        docController = APP .getSubController( urlStr );
+        docController = (Controller3d) APP .getSubController( urlStr );
         if ( docController != null ) {
 	        this.outbound .getRemote() .sendString( "Document already in use: " + urlStr, null );
 	        docController = null; // prevent action on the document
         } else {
             APP .doAction( "openURL-" + urlStr, null );
-            docController = APP .getSubController( urlStr );
+            docController = (Controller3d) APP .getSubController( urlStr );
+            Viewer viewerScene = new Viewer( session );
+            docController .attachViewer( viewerScene, viewerScene, null, "custom" );
 	    		try {
 	    			docController .doAction( "finish.load", null );
 	    	        this.outbound .getRemote() .sendString( "Document load SUCCESS", null );
@@ -196,7 +282,7 @@ public class ControllerWebSocket implements WebSocketListener
 			}
 			
 			@Override
-			public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, Controller controller )
+			public RenderingChanges createRenderingChanges( boolean isSticky, Controller controller )
 			{
 				return new RenderingChanges() {
 					
@@ -227,13 +313,13 @@ public class ControllerWebSocket implements WebSocketListener
 					@Override
 					public void manifestationRemoved( RenderedManifestation manifestation )
 					{
-    						System .out .println( "manifestationRemoved: " + manifestation .getManifestation() .toString() );
+    						// System .out .println( "manifestationRemoved: " + manifestation .getManifestation() .toString() );
 					}
 					
 					@Override
 					public void manifestationAdded( RenderedManifestation manifestation )
 					{
-	    					System .out .println( "manifestationAdded: " + manifestation .getManifestation() .toString() );
+	    					// System .out .println( "manifestationAdded: " + manifestation .getManifestation() .toString() );
 					}
 					
 					@Override

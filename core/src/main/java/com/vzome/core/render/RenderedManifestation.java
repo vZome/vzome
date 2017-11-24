@@ -18,7 +18,7 @@ import com.vzome.core.model.Strut;
  */
 public class RenderedManifestation
 {
-    private final Manifestation mManifestation;
+	private final Manifestation mManifestation;
     
     private Polyhedron mShape;
     
@@ -60,6 +60,12 @@ public class RenderedManifestation
         mOrientation = null; // factory .identity();
     }
     
+    @Override
+	public String toString()
+    {
+		return this .mManifestation .toString();
+	}
+
 	public void setModel( RenderedModel model )
 	{
 		this .model = model;

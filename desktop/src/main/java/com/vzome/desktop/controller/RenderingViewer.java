@@ -12,7 +12,6 @@ import org.vorthmann.ui.Controller;
 
 import com.vzome.core.render.ManifestationPicker;
 import com.vzome.core.render.RenderingChanges;
-import com.vzome.core.viewing.Lights;
 
 public interface RenderingViewer extends CameraController.Viewer, ManifestationPicker
 {
@@ -33,7 +32,7 @@ public interface RenderingViewer extends CameraController.Viewer, ManifestationP
     {
         RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas );
         
-        RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, Controller controller );
+        RenderingChanges createRenderingChanges( boolean isSticky, Controller controller );
     }
 
 //    Group getSceneGraphRoot();

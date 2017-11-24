@@ -134,6 +134,7 @@ public class ApplicationController extends DefaultController
         modelApp = new com.vzome.core.editor.Application( true, failures, properties );
         
         Colors colors = modelApp .getColors();
+        Lights lights = modelApp .getLights();
         
         if ( rvFactory != null ) {
         		this .rvFactory = rvFactory;
@@ -147,8 +148,8 @@ public class ApplicationController extends DefaultController
 	        		factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
 	        	try {
 	        		Class<?> factoryClass = Class.forName( factoryName );
-	        		Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Colors.class, Boolean.class } );
-	        		this .rvFactory = (RenderingViewer.Factory) constructor.newInstance( new Object[] { colors, useEmissiveColor } );
+	        		Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Lights.class, Colors.class, Boolean.class } );
+	        		this .rvFactory = (RenderingViewer.Factory) constructor.newInstance( new Object[] { lights, colors, useEmissiveColor } );
 	        	} catch ( Exception e ) {
 	        		mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
 	        		System.exit( 0 );
@@ -341,7 +342,7 @@ public class ApplicationController extends DefaultController
 		newDocumentController( name, document, properties );
 	}
 
-    RenderingViewer.Factory getJ3dFactory()
+    public RenderingViewer.Factory getJ3dFactory()
     {
         return rvFactory;
     }

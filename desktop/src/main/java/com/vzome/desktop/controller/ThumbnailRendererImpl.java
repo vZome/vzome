@@ -9,9 +9,8 @@ import java.util.logging.Logger;
 
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
-import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.ThumbnailRenderer;
 
 
 public class ThumbnailRendererImpl implements ThumbnailRenderer
@@ -22,10 +21,10 @@ public class ThumbnailRendererImpl implements ThumbnailRenderer
     
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
 
-    public ThumbnailRendererImpl( RenderingViewer.Factory rvFactory, Lights sceneLighting )
+    public ThumbnailRendererImpl( RenderingViewer.Factory rvFactory )
     {
         vpm = new CameraController( new Camera() );
-        scene = rvFactory .createRenderingChanges( sceneLighting, false, vpm );
+        scene = rvFactory .createRenderingChanges( false, vpm );
         viewer = rvFactory .createRenderingViewer( scene, null );
         vpm .addViewer( viewer );
     }

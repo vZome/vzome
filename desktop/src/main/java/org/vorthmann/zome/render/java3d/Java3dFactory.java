@@ -4,11 +4,14 @@ package org.vorthmann.zome.render.java3d;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.ColoringAttributes;
@@ -21,7 +24,6 @@ import javax.media.j3d.PolygonAttributes;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
-import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.Controller;
 
 import com.sun.j3d.utils.geometry.GeometryInfo;
@@ -40,11 +42,7 @@ import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
 
-import java.awt.GraphicsDevice;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFactory
+public class Java3dFactory implements RenderingViewer.Factory
 {
     private static class GraphicsConfigurationFactory {
         private static final Logger logger = Logger.getLogger(new Throwable().getStackTrace()[0].getClassName());
@@ -93,9 +91,12 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
 
     private static Logger logger = Logger .getLogger( "org.vorthmann.zome.render.java3d.Java3dFactory" );
 
-    public Java3dFactory( Colors colors, Boolean useEmissiveColor )
+	private final Lights lights;
+
+    public Java3dFactory( Lights lights, Colors colors, Boolean useEmissiveColor )
     {
-        mHasEmissiveColor = useEmissiveColor .booleanValue();
+        this .lights = lights;
+		mHasEmissiveColor = useEmissiveColor .booleanValue();
         mAppearances = new Appearances( colors, mHasEmissiveColor );
         outlines = new Appearance();
         PolygonAttributes wirePa = new PolygonAttributes( PolygonAttributes.POLYGON_LINE, PolygonAttributes.CULL_BACK, -10f );
@@ -116,9 +117,9 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     }
 
     @Override
-	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, Controller controller )
+	public RenderingChanges createRenderingChanges( boolean isSticky, Controller controller )
 	{
-		return new Java3dSceneGraph( this, lights, isSticky, controller );
+		return new Java3dSceneGraph( this, this .lights, isSticky, controller );
 	}
 
     Colors getColors()

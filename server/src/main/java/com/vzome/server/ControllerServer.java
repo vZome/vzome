@@ -24,7 +24,6 @@ import org.vorthmann.zome.app.impl.ApplicationController;
 
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
-import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
 
 public class ControllerServer extends AbstractHandler
@@ -167,7 +166,7 @@ public class ControllerServer extends AbstractHandler
 				}
 				
 				@Override
-				public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, Controller controller )
+				public RenderingChanges createRenderingChanges( boolean isSticky, Controller controller )
 				{
 					return new RenderingChanges() {
 						
