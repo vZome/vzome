@@ -3,18 +3,11 @@ package com.vzome.server;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Properties;
-
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Point3d;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
@@ -29,96 +22,13 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
-import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 
 public class ControllerWebSocket implements WebSocketListener
 {
-	private static class Viewer implements RenderingChanges, RenderingViewer, PropertyChangeListener
-	{
-		private final Session session;
-
-		public Viewer( Session session )
-		{
-			this .session = session;
-		}
-
-		@Override
-		public void setEye( int eye ) {}
-
-		@Override
-		public void setViewTransformation( Matrix4d trans, int eye ) {}
-
-		@Override
-		public void setPerspective( double fov, double aspectRatio, double near, double far ) {}
-
-		@Override
-		public void setOrthographic( double halfEdge, double near, double far ) {}
-
-		@Override
-		public RenderedManifestation pickManifestation( MouseEvent e )
-		{
-			return null;
-		}
-
-		@Override
-		public Collection<RenderedManifestation> pickCube()
-		{
-			return null;
-		}
-
-		@Override
-		public void pickPoint(MouseEvent e, Point3d imagePt, Point3d eyePt) {}
-
-		@Override
-		public RenderingChanges getRenderingChanges()
-		{
-			return this;
-		}
-
-		@Override
-		public void captureImage(int maxSize, ImageCapture capture) {}
-
-		@Override
-		public void reset() {}
-
-		@Override
-		public void manifestationAdded( RenderedManifestation manifestation )
-		{
-			this .session .getRemote() .sendString( "add manifestation: " + manifestation .toString(), null );
-		}
-
-		@Override
-		public void manifestationRemoved(RenderedManifestation manifestation) {}
-
-		@Override
-		public void manifestationSwitched(RenderedManifestation from, RenderedManifestation to) {}
-
-		@Override
-		public void glowChanged(RenderedManifestation manifestation) {}
-
-		@Override
-		public void colorChanged(RenderedManifestation manifestation) {}
-
-		@Override
-		public void locationChanged(RenderedManifestation manifestation) {}
-
-		@Override
-		public void orientationChanged(RenderedManifestation manifestation) {}
-
-		@Override
-		public void shapeChanged(RenderedManifestation manifestation) {}
-
-		@Override
-		public void propertyChange( PropertyChangeEvent evt )
-		{
-			this .session .getRemote() .sendString( "property " + evt .getPropertyName() + " now: " + evt .getNewValue(), null );
-		}
-	}
-	
-    private static final Logger LOG = Log.getLogger( ControllerWebSocket.class );
+	private static final Logger LOG = Log.getLogger( ControllerWebSocket.class );
     private Session outbound;
     private Controller3d docController;
 
@@ -151,8 +61,8 @@ public class ControllerWebSocket implements WebSocketListener
         } else {
             APP .doAction( "openURL-" + urlStr, null );
             docController = (Controller3d) APP .getSubController( urlStr );
-            Viewer viewerScene = new Viewer( session );
-            docController .attachViewer( viewerScene, viewerScene, null, "custom" );
+            RemoteClientRendering clientRendering = new RemoteClientRendering( session );
+            docController .attachViewer( clientRendering, clientRendering, null, "custom" );
 	    		try {
 	    			docController .doAction( "finish.load", null );
 	    	        this.outbound .getRemote() .sendString( "Document load SUCCESS", null );
@@ -210,136 +120,24 @@ public class ControllerWebSocket implements WebSocketListener
 			}
 		}, props, new RenderingViewer.Factory() {
 			
+			// These will never be called.  We need this just to avoid the default Java3dFactory construction.
+			
 			@Override
 			public Component createJ3dComponent( String name )
 			{
-				// TODO Auto-generated method stub
 				return null;
 			}
 			
 			@Override
 			public RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas )
 			{
-				return new RenderingViewer() {
-
-					@Override
-					public void setEye(int eye)
-					{
-						// TODO Auto-generated method stub
-					}
-
-					@Override
-					public void setViewTransformation( Matrix4d trans, int eye )
-					{
-						// TODO Auto-generated method stub
-					}
-
-					@Override
-					public void setPerspective( double fov, double aspectRatio, double near, double far )
-					{
-						// TODO Auto-generated method stub
-					}
-
-					@Override
-					public void setOrthographic( double halfEdge, double near, double far )
-					{
-						// TODO Auto-generated method stub
-					}
-
-					@Override
-					public RenderedManifestation pickManifestation( MouseEvent e )
-					{
-						// TODO Auto-generated method stub
-						return null;
-					}
-
-					@Override
-					public Collection<RenderedManifestation> pickCube()
-					{
-						// TODO Auto-generated method stub
-						return null;
-					}
-
-					@Override
-					public void pickPoint( MouseEvent e, Point3d imagePt, Point3d eyePt )
-					{
-						// TODO Auto-generated method stub
-					}
-
-					@Override
-					public RenderingChanges getRenderingChanges()
-					{
-						// TODO Auto-generated method stub
-						return null;
-					}
-
-					@Override
-					public void captureImage( int maxSize, ImageCapture capture )
-					{
-						// TODO Auto-generated method stub
-					}
-				};
+				return null;
 			}
 			
 			@Override
 			public RenderingChanges createRenderingChanges( boolean isSticky, Controller controller )
 			{
-				return new RenderingChanges() {
-					
-					@Override
-					public void shapeChanged( RenderedManifestation manifestation )
-					{
-						// TODO Auto-generated method stub
-					}
-					
-					@Override
-					public void reset()
-					{
-						// TODO Auto-generated method stub
-					}
-					
-					@Override
-					public void orientationChanged( RenderedManifestation manifestation )
-					{
-						// TODO Auto-generated method stub
-					}
-					
-					@Override
-					public void manifestationSwitched( RenderedManifestation from, RenderedManifestation to )
-					{
-						// TODO Auto-generated method stub
-					}
-					
-					@Override
-					public void manifestationRemoved( RenderedManifestation manifestation )
-					{
-    						// System .out .println( "manifestationRemoved: " + manifestation .getManifestation() .toString() );
-					}
-					
-					@Override
-					public void manifestationAdded( RenderedManifestation manifestation )
-					{
-	    					// System .out .println( "manifestationAdded: " + manifestation .getManifestation() .toString() );
-					}
-					
-					@Override
-					public void locationChanged( RenderedManifestation manifestation )
-					{
-						// TODO Auto-generated method stub
-					}
-					
-					@Override
-					public void glowChanged( RenderedManifestation manifestation )
-					{
-						// TODO Auto-generated method stub
-					}
-					
-					@Override
-					public void colorChanged( RenderedManifestation manifestation )
-					{
-						// TODO Auto-generated method stub
-					}
-				};
+				return null;
 			}
 		} );
 		APP .setErrorChannel( new Controller.ErrorChannel() {
@@ -351,10 +149,7 @@ public class ControllerWebSocket implements WebSocketListener
 			}
 			
 			@Override
-			public void clearError()
-			{
-				// TODO Auto-generated method stub
-			}
+			public void clearError() {}
 		});
 
         Server server = new Server( 8532 );
