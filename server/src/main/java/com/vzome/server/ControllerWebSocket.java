@@ -35,6 +35,7 @@ public class ControllerWebSocket implements WebSocketListener
     public void onWebSocketClose( int statusCode, String reason )
     {
         this.outbound = null;
+        this .docController .setProperty( "visible", false );
         LOG.info( "WebSocket Close: {} - {}", statusCode, reason );
     }
 
@@ -111,6 +112,7 @@ public class ControllerWebSocket implements WebSocketListener
     {    		
 		Properties props = new Properties();
 		props .setProperty( "entitlement.model.edit", "true" );
+		props .setProperty( "keep.alive", "true" );
 
 		APP = new ApplicationController( new ActionListener()
 		{	

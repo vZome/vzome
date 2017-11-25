@@ -477,7 +477,7 @@ public class ApplicationController extends DefaultController
 				case "visible":
 					if ( Boolean.FALSE .equals( evt .getNewValue() ) ) {
 						docControllers .remove( name );
-						if ( docControllers .isEmpty() )
+						if ( ! propertyIsTrue( "keep.alive" ) && docControllers .isEmpty() )
 							// closed the last window, so we're exiting
 							System .exit( 0 );
 					}
