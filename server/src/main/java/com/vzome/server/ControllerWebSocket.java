@@ -76,6 +76,7 @@ public class ControllerWebSocket implements WebSocketListener
     public void onWebSocketError( Throwable cause )
     {
         LOG.warn( "WebSocket Error", cause );
+        cause .printStackTrace();
     }
 
     public void onWebSocketText( String message )
@@ -159,8 +160,8 @@ public class ControllerWebSocket implements WebSocketListener
         server.setHandler(context);
 
         // Add websocket servlet
-        ServletHolder wsHolder = new ServletHolder( "echo", new Servlet() );
-        context.addServlet(wsHolder,"/echo");
+        ServletHolder wsHolder = new ServletHolder( "vZome", new Servlet() );
+        context.addServlet(wsHolder,"/vZome");
 
         // Add default servlet (to serve the html/css/js)
         // Figure out where the static files are stored.
