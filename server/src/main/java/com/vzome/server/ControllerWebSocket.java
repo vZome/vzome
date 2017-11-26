@@ -43,12 +43,12 @@ public class ControllerWebSocket implements WebSocketListener
     {
         this.outbound = session;
         LOG.info( "WebSocket Connect: {}", session );
-        this.outbound .getRemote() .sendString( "You are now connected to " + this.getClass().getName(), null );
+        this.outbound .getRemote() .sendString( "{ \"info\": \"You are now connected to " + this.getClass().getName() + "\" }", null );
         
 		String urlStr = session .getUpgradeRequest() .getQueryString();
 		try {
 			urlStr = URLDecoder.decode( urlStr, "UTF-8");
-	        this.outbound .getRemote() .sendString( "Opening " + urlStr, null );
+	        this.outbound .getRemote() .sendString( "{ \"info\": \"Opening " + urlStr + "\" }", null );
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 	        this.outbound .getRemote() .sendString( e1 .getMessage(), null );
@@ -57,7 +57,7 @@ public class ControllerWebSocket implements WebSocketListener
 
         docController = (Controller3d) APP .getSubController( urlStr );
         if ( docController != null ) {
-	        this.outbound .getRemote() .sendString( "Document already in use: " + urlStr, null );
+	        this.outbound .getRemote() .sendString( "{ \"error\": \"Document already in use: " + urlStr + "\" }", null );
 	        docController = null; // prevent action on the document
         } else {
             APP .doAction( "openURL-" + urlStr, null );
@@ -66,10 +66,10 @@ public class ControllerWebSocket implements WebSocketListener
             docController .attachViewer( clientRendering, clientRendering, null, "custom" );
 	    		try {
 	    			docController .doAction( "finish.load", null );
-	    	        this.outbound .getRemote() .sendString( "Document load SUCCESS", null );
+	    	        this.outbound .getRemote() .sendString( "{ \"info\": \"Document load SUCCESS\" }", null );
 	    		} catch ( Exception e ) {
 	    			e.printStackTrace();
-	    	        this.outbound .getRemote() .sendString( "Document load FAILURE", null );
+	    	        this.outbound .getRemote() .sendString( "{ \"error\": \"Document load FAILURE\" }", null );
 	    		}
         }
     }
@@ -85,7 +85,7 @@ public class ControllerWebSocket implements WebSocketListener
         if ((outbound != null) && (outbound.isOpen()))
         {
             LOG.info( "Echoing back text message [{}]", message );
-            outbound .getRemote() .sendString( message, null );
+            outbound .getRemote() .sendString( "{ \"info\": \"received message:" + message + "\" }", null );
         }
     }
 

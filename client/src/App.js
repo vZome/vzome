@@ -6,78 +6,105 @@ import Websocket from './websocket.js';
 import logo from './logo.svg';
 import './App.css';
 
-class VZomeViewer extends React.Component {
+class ServerConnection  extends React.Component {
+  
+  constructor(props) {
+    super(props);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleData = this.handleData.bind(this);
+  }
+  
+  handleOpen() {
+    this.props.onOpen();
+  }
+
+  handleData(data) {
+    this.props.onMessage( data );
+  }
+
+  handleClose() {
+    this.props.onClose();
+  }
+
+  render() {
+  
+    const socketUrl = "ws://192.168.1.100:8532/vZome?" + encodeURIComponent( this.props.url )
+    return (
+      <div>
+        <Websocket url={socketUrl} onMessage={this.handleData}
+          onOpen={this.handleOpen} onClose={this.handleClose}
+          reconnect={true} debug={true}
+          ref={Websocket => {
+            this.refWebSocket = Websocket;
+          }}/>
+        <button onClick={() => this.handleClose()} >Close</button>
+      </div>
+    )
+  }
+}
+
+class ModelCanvas extends React.Component {
+
+  componentDidMount() {
+    console.log( "ModelCanvas mounted" );
+    const ctx = this.refs.canvas.getContext("2d");
+    ctx.strokeStyle = 'red';
+    ctx.strokeRect(0, 0, this.props.width, this.props.height);
+  }
+  
+  renderSegment(segment, style) {
+    console.log( "segment: " + JSON.stringify(segment) );
+    const ctx = this.refs.canvas.getContext("2d");
+    const center = { x: this.props.width/2, y: this.props.height/2 };
+    ctx.strokeStyle = style;
+    ctx.beginPath();
+    ctx.moveTo( this.props.scale*segment.start.x + center.x, this.props.scale*segment.start.y + center.y );
+    ctx.lineTo( this.props.scale*segment.end.x + center.x, this.props.scale*segment.end.y + center.y );
+    ctx.stroke();
+  }
+  
+  render() {
+    return(
+      <canvas ref="canvas" width={this.props.width} height={this.props.height} />
+    )
+  }
+}
+
+class ModelUrlControl extends React.Component {
   
   constructor(props) {
     super(props);
     this.state = {
-      fileUrl: "",
-      socketUrl: ""
+      urlText: this.props.url
     };
     
-    this.openWebSocket = this.openWebSocket.bind(this);
-    this.closeWebSocket = this.closeWebSocket.bind(this);
     this.handleUrlTextChange = this.handleUrlTextChange.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
   }
   
   handleUrlTextChange(e) {
     this.setState({
-      fileUrl: e.target.value,
-      socketUrl: ""
+      urlText: e.target.value
     });
   }
 
-  openWebSocket(url) {
-    this.setState({
-      socketUrl: "ws://192.168.1.100:8532/vZome?" + encodeURIComponent( url )
-    });
-  }
-  
-  closeWebSocket() {
-    this.setState({
-      fileUrl: "",
-      socketUrl: ""
-    })
-  }
-  
-  handleData(data) {
-    console.log( data );
+  handleOpen() {
+    this.props.onOpen(this.state.urlText);
   }
 
-  handleOpen()  {
-    alert("connected:)");
-  }
-  
-  handleClose() {
-    alert("disconnected:(");
-  }
-  
   render() {
-    
-    const view = this.state.socketUrl ?
-      <Websocket url={this.state.socketUrl} onMessage={this.handleData}
-        onOpen={this.handleOpen} onClose={this.handleClose}
-        reconnect={true} debug={true}
-        ref={Websocket => {
-          this.refWebSocket = Websocket;
-        }}/>:
-      <div/>
-    const openEnabled = this.state.fileUrl && !this.state.socketUrl;
-
     return (
-      <div className="vZome-viewer">
+      <div>
         <form>
           <input
-            type="text"
-            placeholder="vZome URL..."
-            value={this.state.fileUrl}
-            disabled={this.state.socketUrl}
+            type="text" width="300" placeholder="vZome model URL..."
+            value={this.state.urlText}
+            disabled={!this.props.enabled}
             onChange={this.handleUrlTextChange}
           />
+          <button onClick={() => this.handleOpen()} disabled={!this.props.enabled} >Open</button>
         </form>
-        <button onClick={() => this.openWebSocket(this.state.fileUrl)} disabled={!openEnabled} >Open</button>
-        <button onClick={() => this.closeWebSocket()} disabled={!this.state.socketUrl} >Close</button>
-        {view}
       </div>
     )
   }
@@ -85,10 +112,61 @@ class VZomeViewer extends React.Component {
 
 class App extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      modelUrl: "",
+      connectionLive: false
+    };
+    this.handleOpen = this.handleOpen.bind(this);
+    this.dispatchMessage = this.dispatchMessage.bind(this);
+    this.connectionClosed = this.connectionClosed.bind(this);
+    this.connectionOpened = this.connectionOpened.bind(this);
+  }
+  
+  handleOpen(url) {
+    console.log( "opening " + url );
+    this.setState({
+      modelUrl: url
+    })
+  }
+  
+  dispatchMessage(message) {
+    const parsed = JSON.parse(message);
+    if ( parsed.render ) {
+      this.refs.display.renderSegment( parsed,'green');
+    } else {
+      console.log( "server info: " + parsed.info );
+    }
+  }
+  
+  connectionOpened() {
+    console.log( "connection opened." );
+    this.setState({
+      connectionLive: true
+    })
+  }
+  
+  connectionClosed() {
+    console.log( "connection closed." );
+    this.setState({
+      modelUrl: "",
+      connectionLive: false
+    })
+  }
+
   render() {
   
-//     var vZomeURL = "http://vzome.com/models/2007/07-Jul/affine120-bop/purpleBlueOrange-affine120cell.vZome";
-//     var URL = "ws://192.168.1.100:8532/vZome?" + encodeURIComponent( vZomeURL );
+    const connection = this.state.modelUrl ?
+      <ServerConnection url={this.state.modelUrl}
+        onOpen={this.connectionOpened}
+        onClose={this.connectionClosed}
+        onMessage={this.dispatchMessage}/>:
+      <div/>
+    
+    const display = this.state.connectionLive ?
+      <ModelCanvas ref="display" scale={8} width={this.props.width} height={this.props.height}/> :
+      <div/>
 
     return (
       <div className="App">
@@ -96,7 +174,9 @@ class App extends React.Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to vZome-React</h1>
         </header>
-        <VZomeViewer/>
+        <ModelUrlControl onOpen={this.handleOpen} url={this.state.modelUrl} enabled={!this.state.modelUrl}/>
+        {connection}
+        {display}
       </div>
     );
   }
