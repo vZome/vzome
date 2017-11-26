@@ -350,6 +350,8 @@ public class DocumentController extends DefaultController implements Controller3
     
     public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas, String name )
     {
+    		// This is called on a UI thread!
+    	
         if ( name.startsWith( "mainViewer" ) )
         {
         		this .modelCanvas = canvas;
@@ -363,6 +365,7 @@ public class DocumentController extends DefaultController implements Controller3
         		this .monoController = new PickingController( this .imageCaptureViewer, this );
 
         		AlgebraicField field = this .documentModel .getField();
+        		// The preview strut rendering is the main reason we distinguish the mainScene as a listener
         		this .previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
         		this .previewStrut .setPropertyChangeSupport( this .properties() );
 
@@ -561,7 +564,6 @@ public class DocumentController extends DefaultController implements Controller3
             // mRenderedModel .setTopGroup( mViewer .getSceneGraphRoot() );
 
             mViewPlatform .updateViewers();
-//            currentDesign .render( true, null );   // I think this is not necessary now
         }
         else if ( name.equals( "controlViewer" ) )
         {
@@ -583,8 +585,12 @@ public class DocumentController extends DefaultController implements Controller3
         }
         else
         {
+        		// This is a headless case, e.g. for client-server
             this .drawOutlines = true;
-            this .mRenderedModel .addListener( scene );
+            
+            // We don't attach mainScene to the rendered model yet.
+            //   This means we have to call finishLoading later.
+            this .mainScene = scene;
             if ( viewer instanceof PropertyChangeListener )
         			this .addPropertyListener( (PropertyChangeListener) viewer );
         }
@@ -638,7 +644,30 @@ public class DocumentController extends DefaultController implements Controller3
             this .documentModel .finishLoading( openUndone, asTemplate );
                         
             // mainScene is not listening to mRenderedModel yet, so batch the rendering changes to it
-            this .syncRendering();
+            if ( mainScene != null )
+            {
+                if ( editingModel )
+                {
+                    RenderedModel .renderChange( new RenderedModel( null, null ), mRenderedModel, mainScene );
+                    mRenderedModel .addListener( mainScene );
+                    // get the thumbnails updating in the background
+                    if ( lessonController != null )
+                        lessonController .renderThumbnails( documentModel, thumbnails );
+                }
+                else
+                    try {
+                        currentSnapshot = new RenderedModel( null, null ); // force render of first snapshot, see "renderSnapshot." below
+                        lessonController .doAction( "restoreSnapshot", new ActionEvent( this, 0, "restoreSnapshot" ) );
+                        // order these to avoid issues with the thumbnails (unexplained)
+                        lessonController .renderThumbnails( documentModel, thumbnails );
+                    } catch ( Exception e1 ) {
+                        Throwable cause = e1.getCause();
+                        if ( cause instanceof Command.Failure )
+                            mErrors.reportError( USER_ERROR_CODE, new Object[] { cause } );
+                        else
+                            mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { e1 } );
+                    }
+            }
             return;
         }
         
@@ -933,34 +962,6 @@ public class DocumentController extends DefaultController implements Controller3
     private void copyThisView()
     {
         mViewPlatform.copyView(mViewPlatform.getView());
-    }
-
-    public void syncRendering()
-    {
-        if ( mainScene != null )
-        {
-            if ( editingModel )
-            {
-                RenderedModel .renderChange( new RenderedModel( null, null ), mRenderedModel, mainScene );
-                mRenderedModel .addListener( mainScene );
-                // get the thumbnails updating in the background
-                if ( lessonController != null )
-                    lessonController .renderThumbnails( documentModel, thumbnails );
-            }
-            else
-                try {
-                    currentSnapshot = new RenderedModel( null, null ); // force render of first snapshot, see "renderSnapshot." below
-                    lessonController .doAction( "restoreSnapshot", new ActionEvent( this, 0, "restoreSnapshot" ) );
-                    // order these to avoid issues with the thumbnails (unexplained)
-                    lessonController .renderThumbnails( documentModel, thumbnails );
-                } catch ( Exception e1 ) {
-                    Throwable cause = e1.getCause();
-                    if ( cause instanceof Command.Failure )
-                        mErrors.reportError( USER_ERROR_CODE, new Object[] { cause } );
-                    else
-                        mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { e1 } );
-                }
-        }
     }
 
     @Override

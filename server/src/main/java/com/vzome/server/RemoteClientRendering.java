@@ -79,7 +79,9 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 			try {
 				String startJson = this .objectMapper .writeValueAsString( start );
 				String endJson = this .objectMapper .writeValueAsString( end );
-				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": " + startJson + ", \"end\": " + endJson + " }", null );
+				String color = rm .getColor() .toWebString();
+				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": "
+						+ startJson + ", \"end\": " + endJson  + ", \"color\": \"" + color + "\" }", null );
 			} catch ( JsonProcessingException e ) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
