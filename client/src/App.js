@@ -3,7 +3,7 @@
 
 import React from 'react';
 import ServerConnection from './component/serverconnection.js';
-import ModelCanvas from './component/modelcanvas.js';
+import ModelCanvas from './component/modelcanvas-svg.js';
 import ModelUrlControl from './component/modelurlcontrol.js';
 import logo from './logo.svg';
 import './App.css';
@@ -64,7 +64,7 @@ class App extends React.Component {
       <div/>
     
     const display = this.state.connectionLive ?
-      <ModelCanvas ref="display" scale={8} width={this.props.width} height={this.props.height}/> :
+      <ModelCanvas ref="display" scale={4} width={this.props.width} height={this.props.height}/> :
       <div/>
 
     return (
