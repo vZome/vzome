@@ -2,113 +2,12 @@
 //   then added in https://github.com/mehmetkose/react-websocket/example
 
 import React from 'react';
-import Websocket from './websocket.js';
+import ServerConnection from './component/serverconnection.js';
+import ModelCanvas from './component/modelcanvas.js';
+import ModelUrlControl from './component/modelurlcontrol.js';
 import logo from './logo.svg';
 import './App.css';
 
-class ServerConnection  extends React.Component {
-  
-  constructor(props) {
-    super(props);
-    this.handleClose = this.handleClose.bind(this);
-    this.handleOpen = this.handleOpen.bind(this);
-    this.handleData = this.handleData.bind(this);
-  }
-  
-  handleOpen() {
-    this.props.onOpen();
-  }
-
-  handleData(data) {
-    this.props.onMessage( data );
-  }
-
-  handleClose() {
-    this.props.onClose();
-  }
-
-  render() {
-  
-    const socketUrl = "ws://192.168.1.100:8532/vZome?" + encodeURIComponent( this.props.url )
-    return (
-      <div>
-        <Websocket url={socketUrl} onMessage={this.handleData}
-          onOpen={this.handleOpen} onClose={this.handleClose}
-          reconnect={true} debug={true}
-          ref={Websocket => {
-            this.refWebSocket = Websocket;
-          }}/>
-        <button onClick={() => this.handleClose()} >Close</button>
-      </div>
-    )
-  }
-}
-
-class ModelCanvas extends React.Component {
-
-  componentDidMount() {
-    console.log( "ModelCanvas mounted" );
-    const ctx = this.refs.canvas.getContext("2d");
-    ctx.strokeStyle = 'red';
-    ctx.strokeRect(0, 0, this.props.width, this.props.height);
-  }
-  
-  renderSegment(segment) {
-    console.log( "segment: " + JSON.stringify(segment) );
-    const ctx = this.refs.canvas.getContext("2d");
-    const center = { x: this.props.width/2, y: this.props.height/2 };
-    ctx.strokeStyle = segment.color;
-    ctx.beginPath();
-    ctx.moveTo( this.props.scale*segment.start.x + center.x, this.props.scale*segment.start.y + center.y );
-    ctx.lineTo( this.props.scale*segment.end.x + center.x, this.props.scale*segment.end.y + center.y );
-    ctx.stroke();
-  }
-  
-  render() {
-    return(
-      <canvas ref="canvas" width={this.props.width} height={this.props.height} />
-    )
-  }
-}
-
-class ModelUrlControl extends React.Component {
-  
-  constructor(props) {
-    super(props);
-    this.state = {
-      urlText: this.props.url
-    };
-    
-    this.handleUrlTextChange = this.handleUrlTextChange.bind(this);
-    this.handleOpen = this.handleOpen.bind(this);
-  }
-  
-  handleUrlTextChange(e) {
-    this.setState({
-      urlText: e.target.value
-    });
-  }
-
-  handleOpen() {
-    this.props.onOpen(this.state.urlText);
-  }
-
-  render() {
-    return (
-      <div>
-        <form>
-          <input
-            type="text" width="300" placeholder="vZome model URL..."
-            value={this.state.urlText}
-            disabled={!this.props.enabled}
-            onChange={this.handleUrlTextChange}
-          />
-          <button onClick={() => this.handleOpen()} disabled={!this.props.enabled} >Open</button>
-        </form>
-      </div>
-    )
-  }
-}
 
 class App extends React.Component {
 
