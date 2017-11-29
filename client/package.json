@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.1.1",
-    "react-dom": "^16.1.1",
-    "react-scripts": "1.0.17"
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-scripts": "1.0.17",
+    "react-three-renderer": "^3.2.3",
+    "prop-types": "^15.5.10",
+    "three": "^0.86.0"
   },
   "scripts": {
     "start": "react-scripts start",

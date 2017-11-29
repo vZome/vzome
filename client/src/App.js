@@ -3,7 +3,7 @@
 
 import React from 'react';
 import ServerConnection from './component/serverconnection.js';
-import ModelCanvas from './component/modelcanvas-svg.js';
+import ModelCanvas from './component/modelcanvas-three.js';
 import ModelUrlControl from './component/modelurlcontrol.js';
 import logo from './logo.svg';
 import './App.css';
