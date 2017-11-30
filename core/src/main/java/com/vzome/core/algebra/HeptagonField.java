@@ -100,9 +100,9 @@ public class HeptagonField extends AlgebraicField
     double evaluateNumber( BigRational[] factors )
     {
         double result = 0d;
-        result += factors[ A ] .getReal();
-        result += RHO_VALUE * factors[ B ] .getReal();
-        result += SIGMA_VALUE * factors[ C ] .getReal();
+        result += factors[ A ] .evaluate();
+        result += RHO_VALUE * factors[ B ] .evaluate();
+        result += SIGMA_VALUE * factors[ C ] .evaluate();
         return result;
     }
 

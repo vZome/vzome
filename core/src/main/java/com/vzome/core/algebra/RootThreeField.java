@@ -53,7 +53,7 @@ public class RootThreeField extends AlgebraicField
     @Override
     double evaluateNumber( BigRational[] factors )
     {
-        return factors[ ONES_PLACE ] .getReal() + ROOT_3 * factors[ SQRT3_PLACE ] .getReal();
+        return factors[ ONES_PLACE ] .evaluate() + ROOT_3 * factors[ SQRT3_PLACE ] .evaluate();
     }
 
     @Override

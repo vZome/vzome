@@ -28,7 +28,7 @@ package com.vzome.core.algebra;
 
 import java.math.BigInteger;
 
-public class BigRational implements Comparable<BigRational>, Fields.Element {
+public class BigRational implements Comparable<BigRational>, Fields.BigRationalElement<BigInteger, BigRational> {
 
     public final static BigRational ZERO = new BigRational(0);
     public final static BigRational ONE = new BigRational(1);
@@ -65,7 +65,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
             else if (tokens.length == 1)
                 init( Long.parseLong( tokens[0] ), 1l );
             else
-                throw new RuntimeException("Parse error in BigRational");
+                throw new IllegalArgumentException("Parsing error: '" + s + "'");
         }
         catch ( NumberFormatException e )
         {
@@ -74,11 +74,16 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
             else if (tokens.length == 1)
                 init(new BigInteger(tokens[0]), BigInteger.ONE);
             else
-                throw new RuntimeException("Parse error in BigRational");
+            	throw new IllegalArgumentException("Parsing error: '" + s + "'");
         }
     }
 
     // create and initialize a new BigRational object
+    public BigRational( BigInteger numerator )
+    {
+        this( numerator, BigInteger.ONE );
+    }
+
     public BigRational( BigInteger numerator, BigInteger denominator )
     {
         init( numerator, denominator );
@@ -88,7 +93,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
 
         // deal with x / 0
         if ( denominator == 0l ) {
-           throw new RuntimeException("Denominator is zero");
+           throw new IllegalArgumentException("Denominator is zero");
         }
 
         // reduce fraction
@@ -107,7 +112,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     {
         // deal with x / 0
         if (denominator.equals(BigInteger.ZERO)) {
-           throw new RuntimeException("Denominator is zero");
+           throw new IllegalArgumentException("Denominator is zero");
         }
 
         // reduce fraction
@@ -203,7 +208,11 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
 
     @Override
     public boolean isOne() { return this.equals(ONE); }
-
+    @Override
+    public boolean isBig()      { return bigNum != null; }
+    @Override
+    public boolean notBig()     { return bigNum == null; }
+    
     // is this Rational object equal to y?
     @Override
     public boolean equals( Object y )
@@ -222,7 +231,8 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
         return this .toString() .hashCode();
     }
 
-    public double getReal()
+    @Override
+    public double evaluate()
     {
         if ( this.bigNum == null )
             return ((double) this .num) / ((double) this .den);
@@ -231,6 +241,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
 
     // return a * b
+    @Override
     public BigRational times( BigRational b )
     {
         if ( b .equals( ZERO ) )
@@ -255,6 +266,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
 
     // return a + b
+    @Override
     public BigRational plus( BigRational b )
     {
         if ( b .equals( ZERO ) )
@@ -278,6 +290,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
         }
     }
 
+    @Override
     public BigInteger getNumerator()
     {
         if ( this.bigNum == null )
@@ -286,6 +299,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
             return this .bigNum;
     }
     
+    @Override
     public BigInteger getDenominator()
     {
         if ( this.bigNum == null )
@@ -311,6 +325,7 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
 
     // return a - b
+    @Override
     public BigRational minus( BigRational b )
     {
         if ( b .equals( ZERO ) )
@@ -336,7 +351,8 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
     }
 
     // return a / b
-    public BigRational divides( BigRational b )
+    @Override
+    public BigRational dividedBy( BigRational b )
     {
         if ( b .equals( ONE ) )
             return this;
@@ -344,75 +360,4 @@ public class BigRational implements Comparable<BigRational>, Fields.Element {
         return a .times( b .reciprocal() );
     }
 
-    // test client
-    public static void main( String[] args )
-    {
-        BigRational x, y, z;
-        
-        // 1/2 + 1/3 = 5/6
-        x = new BigRational(1, 2);
-        y = new BigRational(1, 3);
-        z = x.plus(y);
-        System.out.println(z);
-
-        // 8/9 + 1/9 = 1
-        x = new BigRational(8, 9);
-        y = new BigRational(1, 9);
-        z = x.plus(y);
-        System.out.println(z);
-
-        // 1/200000000 + 1/300000000 = 1/120000000
-        x = new BigRational(1, 200000000);
-        y = new BigRational(1, 300000000);
-        z = x.plus(y);
-        System.out.println(z);
-
-        // 1073741789/20 + 1073741789/30 = 1073741789/12
-        x = new BigRational(1073741789, 20);
-        y = new BigRational(1073741789, 30);
-        z = x.plus(y);
-        System.out.println(z);
-
-        //  4/17 * 17/4 = 1
-        x = new BigRational(4, 17);
-        y = new BigRational(17, 4);
-        z = x.times(y);
-        System.out.println(z);
-
-        // 3037141/3247033 * 3037547/3246599 = 841/961 
-        x = new BigRational(3037141, 3247033);
-        y = new BigRational(3037547, 3246599);
-        z = x.times(y);
-        System.out.println(z);
-
-        // 1/6 - -4/-8 = -1/3
-        x = new BigRational( 1,  6);
-        y = new BigRational(-4, -8);
-        z = x.minus(y);
-        System.out.println(z);
-
-        // 0
-        x = new BigRational(0,  5);
-        System.out.println(x);
-        System.out.println(x.plus(x).compareTo(x) == 0);
-        /// System.out.println(x.reciprocal());   // divide-by-zero
-
-        // -1/200000000 + 1/300000000 = -1/600000000
-        x = new BigRational(-1, 200000000);
-        y = new BigRational(1, 300000000);
-        z = x.plus(y);
-        System.out.println(z);
-    }
-
-    @Override
-    public Fields.Element times( Fields.Element that )
-    {
-        return this .times( (BigRational) that );
-    }
-
-    @Override
-    public Fields.Element plus( Fields.Element that )
-    {
-        return this .plus( (BigRational) that );
-    }
 }

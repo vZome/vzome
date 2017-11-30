@@ -6,7 +6,7 @@ package com.vzome.core.algebra;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumber>
+public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Comparable<AlgebraicNumber>
 {
     private final AlgebraicField field;
     private final BigRational[] factors;
@@ -103,6 +103,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         return this .field;
     }
 
+    @Override
     public AlgebraicNumber plus( AlgebraicNumber that )
     {
         if ( this .isZero() )
@@ -128,6 +129,7 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         return new AlgebraicNumber( this .field, this .field .multiply( this .factors, that .factors ) );
     }
 
+    @Override
     public AlgebraicNumber minus( AlgebraicNumber that )
     {
         // Subtraction is not commutative so don't be tempted to optimize for the case when this.isZero()
@@ -205,15 +207,4 @@ public class AlgebraicNumber implements Fields.Element, Comparable<AlgebraicNumb
         return this .toString( AlgebraicField .DEFAULT_FORMAT );
     }
 
-    @Override
-    public Fields.Element times( Fields.Element that )
-    {
-        return this .times( (AlgebraicNumber) that );
-    }
-
-    @Override
-    public Fields.Element plus( Fields.Element that )
-    {
-        return this .plus( (AlgebraicNumber) that );
-    }
 }
