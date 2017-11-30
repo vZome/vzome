@@ -95,7 +95,7 @@ public class BigRationalTest {
         assertFalse(r.isBig());
         // big
         r = new BigRational(Long.MIN_VALUE + "");
-//        assertTrue(r.isBig());
+        assertTrue(r.isBig());
         r = new BigRational(Long.MAX_VALUE + "0");
         assertTrue(r.isBig());
         r = new BigRational(Long.MIN_VALUE + "0");
@@ -111,7 +111,7 @@ public class BigRationalTest {
         assertTrue(r.notBig());
         // big
         r = new BigRational(Long.MIN_VALUE + "");
-//        assertFalse(r.notBig());
+        assertFalse(r.notBig());
         r = new BigRational(Long.MAX_VALUE + "0");
         assertFalse(r.notBig());
         r = new BigRational(Long.MIN_VALUE + "0");
@@ -141,7 +141,7 @@ public class BigRationalTest {
         assertTrue(BigRational.ZERO.equals(new BigRational(0)));
         assertTrue(BigRational.ONE.equals(new BigRational(1)));
         assertFalse(BigRational.ONE.equals(new BigRational(-1)));
-//        assertFalse(new BigRational(Long.MIN_VALUE,19).equals(new BigRational(Long.MIN_VALUE, -19)));	 // BigRational initially failed
+        assertFalse(new BigRational(Long.MIN_VALUE,19).equals(new BigRational(Long.MIN_VALUE, -19)));	 // BigRational initially failed
     }
 
     @Test
@@ -183,14 +183,14 @@ public class BigRationalTest {
             BigRational neg = new BigRational(-1L);
             BigRational min = new BigRational(Long.MIN_VALUE);
             assertFalse(neg.isBig());
-//            assertTrue(min.isBig());	 		// BigRational initially failed
+            assertTrue(min.isBig());	 		// BigRational initially failed
             assertTrue(neg.isNegative());
             assertTrue(min.isNegative());
             BigRational result = min.times(neg);
-//            assertTrue(result.isBig());	 		// BigRational initially failed
-//            assertTrue(result.isPositive());	// BigRational initially failed
+            assertTrue(result.isBig());	 		// BigRational initially failed
+            assertTrue(result.isPositive());	// BigRational initially failed
             result = result.times(neg);
-//            assertTrue(result.isBig());			 // BigRational initially failed
+            assertTrue(result.isBig());			// BigRational initially failed
             assertTrue(result.isNegative());
         }
         assertEquals("11/5", new BigRational("7/5").times(new BigRational("11/7")).toString()); // 7's cancel
@@ -203,7 +203,7 @@ public class BigRationalTest {
             BigRational neg = new BigRational(-1L);
             assertFalse(neg.isBig());
             BigRational min = new BigRational(Long.MIN_VALUE);
-//            assertTrue(min.isBig());				 // BigRational initially failed
+            assertTrue(min.isBig());				 // BigRational initially failed
             min = new BigRational(Long.MIN_VALUE+1);
             assertTrue(min.notBig());
             BigRational result = min.times(neg);
@@ -243,6 +243,15 @@ public class BigRationalTest {
     }
 
     @Test
+    public void testPlus() {
+    	// test various code optimization paths
+        assertEquals("0", BigRational.ZERO.plus(BigRational.ZERO).toString());
+        assertEquals("1", BigRational.ZERO.plus(BigRational.ONE).toString());
+        assertEquals("1", BigRational.ONE.plus(BigRational.ZERO).toString());
+        assertEquals("2", BigRational.ONE.plus(BigRational.ONE).toString());
+    }
+    
+    @Test
     public void testNegate() {
         assertEquals(BigRational.ZERO.negate(), BigRational.ZERO);
         for(long n = 1; n <=10; n++) {
@@ -275,7 +284,7 @@ public class BigRationalTest {
         assertTrue(br.notBig());
         assertTrue(br.isNegative());
         br = br.minus(BigRational.ONE);
-//        assertTrue(br.isBig());		 // BigRational initially failed
+        assertTrue(br.isBig());		 // BigRational initially failed
         assertTrue(br.isNegative());
 
         // big
@@ -331,8 +340,8 @@ public class BigRationalTest {
         BigRational reciprocal = rational.reciprocal();
         assertTrue(rational.isNegative());
         assertTrue(reciprocal.isNegative());
-//        assertTrue(rational.isBig());	 // BigRational initially failed
-//        assertTrue(reciprocal.isBig());	 // BigRational initially failed
+        assertTrue(rational.isBig());	 // BigRational initially failed
+        assertTrue(reciprocal.isBig());	 // BigRational initially failed
         assertFalse(rational.equals(reciprocal));
         assertTrue(rational.times(reciprocal).isOne());
     }
@@ -357,7 +366,7 @@ public class BigRationalTest {
         // big
         r = r.minus(BigRational.ONE);
         assertTrue(r.isNegative());
-//        assertTrue(r.isBig());	 // BigRational initially failed
+		 assertTrue(r.isBig()); // BigRational initially failed
     }
 
     // This is an example of an alternate annotation to be used for verifying that exceptions are thrown
@@ -508,10 +517,10 @@ public class BigRationalTest {
         assertFalse(r.isBig());
 
         r = new BigRational(LMAX + "/" + LMIN);
-//        assertEquals(r.getNumerator().longValueExact(), Math.negateExact(Long.MAX_VALUE) );	 // BigRational initially failed
-//        assertEquals(r.getDenominator(), new BigInteger(LMIN.replace("-", "")));	 // BigRational initially failed
-//        assertTrue(r.isNegative());	 // BigRational initially failed
-//        assertTrue(r.isBig());	 // BigRational initially failed
+        assertEquals(r.getNumerator().longValueExact(), Math.negateExact(Long.MAX_VALUE) );	 // BigRational initially failed
+        assertEquals(r.getDenominator(), new BigInteger(LMIN.replace("-", "")));	 // BigRational initially failed
+        assertTrue(r.isNegative());	 // BigRational initially failed
+        assertTrue(r.isBig());	 // BigRational initially failed
 
         r = new BigRational(LMIN + "/" + IMIN);
         assertEquals(r.getNumerator().longValueExact(), Long.MIN_VALUE / Integer.MIN_VALUE);
@@ -537,8 +546,8 @@ public class BigRationalTest {
         assertFalse(r.isBig());
         // big
         r = r.minus(new BigRational(2));
-//        assertTrue(r.isNegative());    // BigRational initially failed
-//        assertTrue(r.isBig());         // BigRational initially failed
+        assertTrue(r.isNegative());    // BigRational initially failed
+        assertTrue(r.isBig());         // BigRational initially failed
     }
 
     @Test
@@ -549,10 +558,32 @@ public class BigRationalTest {
         assertFalse(r.isBig());
         // big
         r = r.plus(BigRational.ONE);
-//        assertTrue(r.isPositive());    // BigRational initially failed
-//        assertTrue(r.isBig());         // BigRational initially failed
+        assertTrue(r.isPositive());    // BigRational initially failed
+        assertTrue(r.isBig());         // BigRational initially failed
     }
 
+    @Test
+    public void testMultiplicationOverflowToBig() {
+        BigRational b2 = new BigRational(2);
+        // not big
+        BigRational r = new BigRational(Long.MAX_VALUE);
+        assertTrue(r.isPositive());
+        assertFalse(r.isBig());
+        // big
+        r = r.times(b2);
+        assertTrue(r.isPositive());
+        assertTrue(r.isBig());
+
+        // not big
+        r = new BigRational(Long.MAX_VALUE * -1);
+        assertTrue(r.isNegative());
+        assertFalse(r.isBig());
+        // big
+        r = r.times(b2);
+        assertTrue(r.isNegative());
+        assertTrue(r.isBig());
+    }
+    
     @Test
     public void testOverflowWithDenominatorOne() {
         // not big
@@ -561,8 +592,8 @@ public class BigRationalTest {
         assertFalse(r.isBig());
         // big
         r = r.plus(new BigRational(2));
-//        assertTrue(r.isPositive());    // BigRational initially failed
-//        assertTrue(r.isBig());         // BigRational initially failed
+        assertTrue(r.isPositive());    // BigRational initially failed
+        assertTrue(r.isBig());         // BigRational initially failed
     }
 
     @Test
@@ -575,20 +606,19 @@ public class BigRationalTest {
         assertEquals("9223372036854775807/3", total.toString());
 
         total = total.plus(r);
-//        assertTrue(total.isPositive());	 // BigRational initially failed
-//        assertTrue(total.isBig());	 // BigRational initially failed
-//        assertEquals("18446744073709551614/3", total.toString());	 // BigRational initially failed
+        assertTrue(total.isPositive());	 // BigRational initially failed
+        assertTrue(total.isBig());	 // BigRational initially failed
+        assertEquals("18446744073709551614/3", total.toString());	 // BigRational initially failed
 
         total = total.plus(new BigRational(2));
         assertTrue(total.isPositive());
-//        assertTrue(total.isBig());	 // BigRational initially failed
-//        assertEquals("18446744073709551620/3", total.toString());	 // BigRational initially failed
+        assertTrue(total.isBig());	 // BigRational initially failed
+        assertEquals("18446744073709551620/3", total.toString());	 // BigRational initially failed
 
         total = total.plus(r);
-//        assertTrue(total.isPositive());	 // BigRational initially failed
-//        assertTrue(total.isBig());	 // BigRational initially failed
-//        assertEquals("9223372036854775809", total.toString());	 // BigRational initially failed
-
+        assertTrue(total.isPositive());	 // BigRational initially failed
+        assertTrue(total.isBig());	 // BigRational initially failed
+        assertEquals("9223372036854775809", total.toString());	 // BigRational initially failed
     }
 
     @Test
@@ -600,9 +630,8 @@ public class BigRationalTest {
         BigRational br1 = new BigRational(n1, den);
         BigRational br2 = new BigRational(n2, den);
         
-//        BigRational br12 = br1.plus(br2);	 // BigRational initially failed with an exception
-
-//        assertFalse(br12.isBig());	 // BigRational initially failed
+        BigRational br12 = br1.plus(br2);	// BigRational initially failed with an exception
+        assertFalse(br12.isBig());	 		// BigRational initially failed
     }
 
     // BigRational initially had this test as a local method 
