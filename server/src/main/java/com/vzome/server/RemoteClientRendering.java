@@ -13,12 +13,9 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
 
-import org.eclipse.jetty.websocket.api.Session;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.core.algebra.AlgebraicMatrix;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
@@ -31,14 +28,14 @@ import com.vzome.desktop.controller.RenderingViewer;
 
 class RemoteClientRendering implements RenderingChanges, RenderingViewer, PropertyChangeListener
 {
-	private final Session session;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final Set<String> shapeIds = new HashSet<>();
 	private Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
+	private final ThrottledQueue queue;
 
-	public RemoteClientRendering( Session session )
+	public RemoteClientRendering( ThrottledQueue queue )
 	{
-		this .session = session;
+		this .queue = queue;
 	}
 
 	@Override
@@ -92,7 +89,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 			{
 				this .shapeIds .add( shapeId );
 				String shapeJson = this .objectMapper .writeValueAsString( shape );
-				this .session .getRemote() .sendString( "{ \"render\": \"shape\", \"shape\": " + shapeJson +" }", null );
+				this .queue .add( "{ \"render\": \"shape\", \"shape\": " + shapeJson +" }" );
 			}
 			if ( man instanceof Strut )
 			{
@@ -101,11 +98,11 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 				String startJson = this .objectMapper .writeValueAsString( start );
 				String quatJson = this .objectMapper .writeValueAsString( quaternion );
 				String color = rm .getColor() .toWebString();
-				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": " + startJson
+				this .queue .add( "{ \"render\": \"segment\", \"start\": " + startJson
 						+ ", \"id\": \"" + rm .getGuid()
 						+ "\", \"shape\": \"" + shapeId
 						+ "\", \"rotation\": " + quatJson
-						+ ", \"color\": \"" + color + "\" }", null );
+						+ ", \"color\": \"" + color + "\" }" );
 			}
 			else if ( man instanceof Connector )
 			{
@@ -116,10 +113,10 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 				if ( color == null )
 					color = Color.WHITE;
 				String colorStr = color .toWebString();
-				this .session .getRemote() .sendString( "{ \"render\": \"ball\", \"center\": " + centerJson
+				this .queue .add( "{ \"render\": \"ball\", \"center\": " + centerJson
 						+ ", \"id\": \"" + rm .getGuid()
 						+ "\", \"shape\": \"" + shapeId
-						+ "\", \"color\": \"" + colorStr + "\" }", null );
+						+ "\", \"color\": \"" + colorStr + "\" }" );
 			}
 		} catch ( JsonProcessingException e ) {
 			// TODO Auto-generated catch block
@@ -149,7 +146,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	public void manifestationRemoved( RenderedManifestation rm )
 	{
 		Manifestation man = rm .getManifestation();
-		this .session .getRemote() .sendString( "{ \"render\": \"delete\", \"id\": \"" + rm .getGuid() + "\" }", null );
+		this .queue .add( "{ \"render\": \"delete\", \"id\": \"" + rm .getGuid() + "\" }" );
 	}
 
 	@Override
@@ -171,8 +168,5 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	public void shapeChanged(RenderedManifestation manifestation) {}
 
 	@Override
-	public void propertyChange( PropertyChangeEvent evt )
-	{
-		//this .session .getRemote() .sendString( "property " + evt .getPropertyName() + " now: " + evt .getNewValue(), null );
-	}
+	public void propertyChange( PropertyChangeEvent chg ) {}
 }

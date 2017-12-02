@@ -167,7 +167,14 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		this .originPoint = new FreePoint( origin );
 		this .failures = failures;
 		this .mXML = xml;
-		this .sceneLighting = app .getLights();
+		this .sceneLighting = new Lights( app .getLights() );
+		if ( xml != null ) {
+	        Element lightsXml = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "sceneModel" ) .item( 0 );
+	        if ( lightsXml != null ) {
+		        	String colorString = lightsXml .getAttribute( "background" );
+		        	this .sceneLighting .setBackgroundColor( Color .parseColor( colorString ) );
+	        }
+		}
 		
 		this .coreVersion = app .getCoreVersion();
 

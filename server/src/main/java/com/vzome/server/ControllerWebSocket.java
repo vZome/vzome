@@ -22,10 +22,9 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
@@ -34,6 +33,7 @@ public class ControllerWebSocket implements WebSocketListener
 {
 	private static final Logger LOG = Log.getLogger( ControllerWebSocket.class );
     private Session outbound;
+	private final ThrottledQueue queue = new ThrottledQueue( 30, 1000 ); // 40 gets/second
     private Controller3d docController;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -43,40 +43,62 @@ public class ControllerWebSocket implements WebSocketListener
         this .docController .setProperty( "visible", false );
         LOG.info( "WebSocket Close: {} - {}", statusCode, reason );
     }
+    
+    private void publish( String message )
+    {
+        this .queue .add( message );
+    }
 
     public void onWebSocketConnect( Session session )
     {
         this.outbound = session;
+
+		Thread consumer = new Thread( new Runnable() {
+			@Override
+			public void run() {
+				while (true)
+					if ( ! queue .isEmpty()) {
+						session .getRemote() .sendString( (String) queue .get(), null );
+					}
+			}
+		} );
         LOG.info( "WebSocket Connect: {}", session );
-        this.outbound .getRemote() .sendString( "{ \"info\": \"You are now connected to " + this.getClass().getName() + "\" }", null );
+        publish( "{ \"info\": \"You are now connected to " + this.getClass().getName() + "\" }" );
         
 		String urlStr = session .getUpgradeRequest() .getQueryString();
 		try {
 			urlStr = URLDecoder.decode( urlStr, "UTF-8");
-	        this.outbound .getRemote() .sendString( "{ \"info\": \"Opening " + urlStr + "\" }", null );
+			publish( "{ \"info\": \"Opening " + urlStr + "\" }" );
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
-	        this.outbound .getRemote() .sendString( e1 .getMessage(), null );
+			publish( e1 .getMessage() );
 	        return;
 		}
 
         docController = (Controller3d) APP .getSubController( urlStr );
         if ( docController != null ) {
-	        this .outbound .getRemote() .sendString( "{ \"error\": \"Document already in use: " + urlStr + "\" }", null );
+        	publish( "{ \"error\": \"Document already in use: " + urlStr + "\" }" );
 	        this .docController = null; // prevent action on the document
         } else {
             APP .doAction( "openURL-" + urlStr, null );
             this .docController = (Controller3d) APP .getSubController( urlStr );
-            RemoteClientRendering clientRendering = new RemoteClientRendering( session );
+        	String bkgdColor = docController .getProperty( "backgroundColor" );
+    		if ( bkgdColor != null ) {
+    			int rgb =  Integer .parseInt( bkgdColor, 16 );
+    			String color = new Color( rgb ) .toWebString();
+    			publish( "{ \"render\": \"background\", \"color\": \"" + color + "\" }" );
+    		}
+            consumer.start();
+            RemoteClientRendering clientRendering = new RemoteClientRendering( queue );
             this .docController .attachViewer( clientRendering, clientRendering, null, "custom" );
-	    		try {
-	    			this .docController .doAction( "finish.load", null );
-	    			this .outbound .getRemote() .sendString( "{ \"render\": \"flush\" }", null );
-	    	        this .outbound .getRemote() .sendString( "{ \"info\": \"Document load SUCCESS\" }", null );
-	    		} catch ( Exception e ) {
-	    			e.printStackTrace();
-	    	        this.outbound .getRemote() .sendString( "{ \"error\": \"Document load FAILURE\" }", null );
-	    		}
+    		try {
+    			this .docController .doAction( "finish.load", null );
+    			publish( "{ \"render\": \"flush\" }" );
+    			publish( "{ \"info\": \"Document load SUCCESS\" }" );
+    		} catch ( Exception e ) {
+    			e.printStackTrace();
+    			publish( "{ \"error\": \"Document load FAILURE\" }" );
+    		}
         }
     }
 
