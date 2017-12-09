@@ -15,7 +15,9 @@ class App extends React.Component {
     super(props);
     this.state = {
       modelUrl: "",
-      connectionLive: false
+      connectionLive: false,
+      renders: 0,
+      segments: {}
     };
     this.handleOpen = this.handleOpen.bind(this);
     this.dispatchMessage = this.dispatchMessage.bind(this);
@@ -29,11 +31,30 @@ class App extends React.Component {
       modelUrl: url
     })
   }
-  
+    
   dispatchMessage(message) {
     const parsed = JSON.parse(message);
     if ( parsed.render ) {
-      this.refs.display.renderSegment( parsed );
+      switch ( parsed.render ) {
+
+        case 'segment':
+          this.setState({ 
+            segments: [ ...this.state.segments, parsed ],
+            renders: ( this.state.renders + 1 ) % 25
+          })
+          break;
+          
+        case 'flush':
+          console.log( "flush" );
+          this.setState({ 
+            renders: 0
+          })
+          break;
+
+        default:
+          console.log( "Unknown render command: " + parsed.render );
+          break;
+      }
     } else {
       console.log( "server info: " + parsed.info );
     }
@@ -50,7 +71,9 @@ class App extends React.Component {
     console.log( "connection closed." );
     this.setState({
       modelUrl: "",
-      connectionLive: false
+      connectionLive: false,
+      renders: 0,
+      segments: {}
     })
   }
 
@@ -64,7 +87,8 @@ class App extends React.Component {
       <div/>
     
     const display = this.state.connectionLive ?
-      <ModelCanvas ref="display" scale={4} width={this.props.width} height={this.props.height}/> :
+      <ModelCanvas ref="display" scale={4} width={this.props.width} height={this.props.height}
+        render={this.state.renders===0} segments={this.state.segments} /> :
       <div/>
 
     return (

@@ -57,7 +57,7 @@ var wstool = {
         $('connect1').disabled = enabled;
         $('connect2').disabled = enabled;
         $('close').disabled = !enabled;
-        $('hello').disabled = !enabled;
+        $('undo').disabled = !enabled;
     },
     
     info : function(message) {

@@ -80,8 +80,9 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 				String startJson = this .objectMapper .writeValueAsString( start );
 				String endJson = this .objectMapper .writeValueAsString( end );
 				String color = rm .getColor() .toWebString();
-				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": "
-						+ startJson + ", \"end\": " + endJson  + ", \"color\": \"" + color + "\" }", null );
+				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": " + startJson + ", \"end\": " + endJson
+						+ ", \"id\": \"" + rm .getGuid()
+						+ "\", \"color\": \"" + color + "\" }", null );
 			} catch ( JsonProcessingException e ) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -90,7 +91,13 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	}
 
 	@Override
-	public void manifestationRemoved(RenderedManifestation manifestation) {}
+	public void manifestationRemoved( RenderedManifestation rm )
+	{
+		Manifestation man = rm .getManifestation();
+		if ( man instanceof Strut ) {
+			this .session .getRemote() .sendString( "{ \"render\": \"delete\", \"id\": \"" + rm .getGuid() + "\" }", null );
+		}
+	}
 
 	@Override
 	public void manifestationSwitched(RenderedManifestation from, RenderedManifestation to) {}

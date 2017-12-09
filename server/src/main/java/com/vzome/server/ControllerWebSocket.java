@@ -57,16 +57,17 @@ public class ControllerWebSocket implements WebSocketListener
 
         docController = (Controller3d) APP .getSubController( urlStr );
         if ( docController != null ) {
-	        this.outbound .getRemote() .sendString( "{ \"error\": \"Document already in use: " + urlStr + "\" }", null );
-	        docController = null; // prevent action on the document
+	        this .outbound .getRemote() .sendString( "{ \"error\": \"Document already in use: " + urlStr + "\" }", null );
+	        this .docController = null; // prevent action on the document
         } else {
             APP .doAction( "openURL-" + urlStr, null );
-            docController = (Controller3d) APP .getSubController( urlStr );
+            this .docController = (Controller3d) APP .getSubController( urlStr );
             RemoteClientRendering clientRendering = new RemoteClientRendering( session );
-            docController .attachViewer( clientRendering, clientRendering, null, "custom" );
+            this .docController .attachViewer( clientRendering, clientRendering, null, "custom" );
 	    		try {
-	    			docController .doAction( "finish.load", null );
-	    	        this.outbound .getRemote() .sendString( "{ \"info\": \"Document load SUCCESS\" }", null );
+	    			this .docController .doAction( "finish.load", null );
+	    			this .outbound .getRemote() .sendString( "{ \"render\": \"flush\" }", null );
+	    	        this .outbound .getRemote() .sendString( "{ \"info\": \"Document load SUCCESS\" }", null );
 	    		} catch ( Exception e ) {
 	    			e.printStackTrace();
 	    	        this.outbound .getRemote() .sendString( "{ \"error\": \"Document load FAILURE\" }", null );
@@ -84,8 +85,13 @@ public class ControllerWebSocket implements WebSocketListener
     {
         if ((outbound != null) && (outbound.isOpen()))
         {
-            LOG.info( "Echoing back text message [{}]", message );
-            outbound .getRemote() .sendString( "{ \"info\": \"received message:" + message + "\" }", null );
+            LOG.info( "Action from client: [{}]", message );
+			try {
+				this .docController .doAction( message, null );
+			} catch (Exception e) {
+	            LOG.warn( "doAction error: [{}]", e .getMessage() );
+				e.printStackTrace();
+			}
         }
     }
 

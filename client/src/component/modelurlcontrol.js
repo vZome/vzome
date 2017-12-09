@@ -1,6 +1,17 @@
 
 import React from 'react';
 
+const ModelUrlForm = ({ value, enabled, onTextChange, onOpen }) =>
+  <div>
+    <form>
+      <input
+        type="text" width="400" placeholder="vZome model URL..."
+        value={value} disabled={!enabled} onChange={onTextChange}
+      />
+      <button onClick={onOpen} disabled={!enabled} >Open</button>
+    </form>
+  </div>
+
 export default class ModelUrlControl extends React.Component {
   
   constructor(props) {
@@ -25,17 +36,8 @@ export default class ModelUrlControl extends React.Component {
 
   render() {
     return (
-      <div>
-        <form>
-          <input
-            type="text" width="300" placeholder="vZome model URL..."
-            value={this.state.urlText}
-            disabled={!this.props.enabled}
-            onChange={this.handleUrlTextChange}
-          />
-          <button onClick={() => this.handleOpen()} disabled={!this.props.enabled} >Open</button>
-        </form>
-      </div>
+      <ModelUrlForm value={this.state.urlText} enabled={this.props.enabled}
+        onTextChange={this.handleUrlTextChange} onOpen={this.handleOpen} />
     )
   }
 }

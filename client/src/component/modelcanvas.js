@@ -10,7 +10,7 @@ export default class ModelCanvas extends React.Component {
     ctx.strokeRect(0, 0, this.props.width, this.props.height);
   }
   
-  renderSegment(segment) {
+  renderEvent(segment) {
     console.log( "segment: " + JSON.stringify(segment) );
     const ctx = this.refs.canvas.getContext("2d");
     const center = { x: this.props.width/2, y: this.props.height/2 };
