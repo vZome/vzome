@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { openUrl, closeView } from '../actions'
+import { openUrl, closeView, connectSocket, disconnectSocket } from '../actions'
 
 let ModelUrlControl = ({ enabled, dispatch }) => {
   let input
@@ -13,7 +13,8 @@ let ModelUrlControl = ({ enabled, dispatch }) => {
         if (!input.value.trim()) {
           return
         }
-        dispatch( openUrl(input.value) )
+        dispatch( openUrl( input.value ) )
+        dispatch( connectSocket( input.value ) )
       }}>
         <input ref={node => {
           input = node
@@ -21,7 +22,10 @@ let ModelUrlControl = ({ enabled, dispatch }) => {
         <button type="submit" disabled={!enabled} >
           Open
         </button>
-        <button disabled={enabled} onClick={() => dispatch( closeView() )} >
+        <button disabled={enabled} onClick={() => {
+          dispatch( disconnectSocket() )
+          dispatch( closeView() )
+        }}>
           Close
         </button>
       </form>
