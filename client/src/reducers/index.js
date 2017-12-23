@@ -51,12 +51,21 @@ const reducer = (state = {
 		case ActionTypes.RECEIVED_WEBSOCKET_DATA:
       const parsed = action.payload;
       if ( parsed.render ) {
-				if ( parsed.render == 'segment' ) {
+				if ( parsed.render === 'segment' ) {
 					return {
 						...state,
 						segments: [
 							...state.segments,
 							parsed
+						]
+					}
+				} else if ( parsed.render === 'delete' ) {
+				  const index = state.segments.findIndex( item => ( item.id === parsed.id ) )
+					return {
+						...state,
+						segments: [
+							...state.segments.slice(0,index),
+							...state.segments.slice(index+1)
 						]
 					}
 				} else {

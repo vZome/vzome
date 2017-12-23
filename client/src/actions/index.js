@@ -32,3 +32,7 @@ export const removeStrut = (id) => ({
 export const closeView = () => ({
   type: CLOSE_VIEW
 })
+
+export const undo = () => ({
+  type: CLOSE_VIEW
+})

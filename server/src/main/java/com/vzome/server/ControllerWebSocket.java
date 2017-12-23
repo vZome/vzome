@@ -22,6 +22,10 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
@@ -31,6 +35,7 @@ public class ControllerWebSocket implements WebSocketListener
 	private static final Logger LOG = Log.getLogger( ControllerWebSocket.class );
     private Session outbound;
     private Controller3d docController;
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void onWebSocketClose( int statusCode, String reason )
     {
@@ -87,8 +92,10 @@ public class ControllerWebSocket implements WebSocketListener
         {
             LOG.info( "Action from client: [{}]", message );
 			try {
-				this .docController .doAction( message, null );
-			} catch (Exception e) {
+				JsonNode json = this .objectMapper .readValue( message, JsonNode.class);
+				String action = json .get( "action" ) .asText();
+				this .docController .doAction( action, null );
+			} catch (Throwable e) {
 	            LOG.warn( "doAction error: [{}]", e .getMessage() );
 				e.printStackTrace();
 			}
