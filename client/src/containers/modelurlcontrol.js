@@ -1,7 +1,14 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { openUrl, closeView, connectSocket, disconnectSocket } from '../actions'
+import { openUrl, closeView } from '../actions'
+import { connectWebSocketAction, closeWebSocketAction } from "redux-simple-websocket"
+
+const SERVER_URL = 'ws://' + window.location.hostname + ':8532/vZome?'
+
+const encodeUrl = url => {
+	 return SERVER_URL + encodeURIComponent( url ) 
+}
 
 let ModelUrlControl = ({ enabled, dispatch }) => {
   let input
@@ -13,8 +20,8 @@ let ModelUrlControl = ({ enabled, dispatch }) => {
         if (!input.value.trim()) {
           return
         }
-        dispatch( openUrl( input.value ) )
-        dispatch( connectSocket( input.value ) )
+        dispatch( openUrl( encodeUrl( input.value ) ) )
+        dispatch( connectWebSocketAction( encodeUrl( input.value ) ) )
       }}>
         <input ref={node => {
           input = node
@@ -23,7 +30,7 @@ let ModelUrlControl = ({ enabled, dispatch }) => {
           Open
         </button>
         <button disabled={enabled} onClick={() => {
-          dispatch( disconnectSocket() )
+          dispatch( closeWebSocketAction( encodeUrl( input.value ) ) )
           dispatch( closeView() )
         }}>
           Close

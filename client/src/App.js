@@ -11,7 +11,7 @@ const App = () => (
       <h1 className="App-title">Welcome to vZome-React</h1>
     </header>
     <ModelUrlControl/>
-    <ModelCanvas width={650} height={400} scale={1}/>
+    <ModelCanvas width={650} height={400} scale={5}/>
   </div>
 )
 

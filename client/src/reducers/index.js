@@ -1,12 +1,12 @@
 
-import { WEBSOCKET_OPEN, WEBSOCKET_CLOSED, WEBSOCKET_MESSAGE } from 'redux-websocket'
-
+import { ActionTypes } from "redux-simple-websocket"
 import { OPEN_URL, CLOSE_VIEW } from '../actions'
 
 const reducer = (state = {
   modelUrl: "",
   connectionLive: false,
-  segments: []
+  segments: [],
+  lastError: null
 }, action) => {
   switch (action.type) {
 
@@ -19,36 +19,51 @@ const reducer = (state = {
     case CLOSE_VIEW:
       return {
         ...state,
+				modelUrl: "",
         connectionLive: false,
         segments: []
       }
 
-    case WEBSOCKET_OPEN:
+    case ActionTypes.WEBSOCKET_CONNECTED:
       return {
         ...state,
-        connectionLive: true
+        connectionLive: true,
       }
 
-    case WEBSOCKET_MESSAGE:
-      const parsed = JSON.parse( action.payload.data );
+		case ActionTypes.WEBSOCKET_ERROR:
+			return {
+				...state,
+				lastError: action.error
+			}
+
+		case ActionTypes.WEBSOCKET_DISCONNECTED:
+			return {
+				...state,
+        connectionLive: false,
+        segments: []
+			}
+
+		case ActionTypes.SEND_DATA_TO_WEBSOCKET:
+			return {
+				...state
+			}
+
+		case ActionTypes.RECEIVED_WEBSOCKET_DATA:
+      const parsed = action.payload;
       if ( parsed.render ) {
-        return {
-          ...state,
-          segments: [
-            ...state.segments,
-            parsed
-          ]
-        }
+				if ( parsed.render == 'segment' ) {
+					return {
+						...state,
+						segments: [
+							...state.segments,
+							parsed
+						]
+					}
+				} else {
+					return state
+				}
       } else {
-        console.log( "server info: " + parsed.info );
-        return state
-      }
-
-    case WEBSOCKET_CLOSED:
-      return {
-        ...state,
-        connectionLive: false,
-        segments: []
+				return state
       }
 
     default:
