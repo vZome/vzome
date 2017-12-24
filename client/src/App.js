@@ -1,6 +1,6 @@
 import React from 'react'
 import ModelUrlControl from './containers/modelurlcontrol.js';
-import ModelCanvas from './containers/modelcanvas-svg.js';
+import ModelCanvas from './containers/modelcanvas-three.js';
 import EditButtons from './containers/editbuttons.js';
 import logo from './logo.svg';
 import './App.css';
