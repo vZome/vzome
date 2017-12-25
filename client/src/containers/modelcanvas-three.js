@@ -30,6 +30,35 @@ class Strut extends React.Component {
   }
 }
 
+// class Ball extends React.Component {
+// 
+//   constructor(props, context) {
+//     super(props, context);
+// 
+//     this.center = new THREE.Vector3( this.props.center.x, this.props.center.y, this.props.center.z );
+// 
+//     // construct these vectors here, because if we use 'new' within render,
+//     // React will think that things have changed when they have not.
+//   }
+// 
+//   shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate;
+//   
+//   render() {
+//     return (<group
+//       position={this.center}
+//     >
+//       <mesh ref={this._ref} >
+//         <geometryResource
+//           resourceId="boxGeometry"
+//         />
+//         <meshLambertMaterial
+//           color={this.props.color}
+//         />
+//       </mesh>
+//     </group>);
+//   }
+// }
+
 class ModelCanvasThree extends React.Component {
   
   constructor(props, context) {
@@ -41,22 +70,14 @@ class ModelCanvasThree extends React.Component {
     };
   }
 
-  componentDidUpdate() {
+  componentDidMount() {
     const {
       camera,
     } = this.refs;
     
-    if ( ! this.props.enabled ) {
-    	return;
-    }
-
-    if ( this.controls ) {
-    	return;
-    }
-
     const controls = new TrackballControls(camera);
 
-    controls.rotateSpeed = 1.0;
+    controls.rotateSpeed = 7.0;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 0.8;
     controls.noZoom = false;
@@ -85,10 +106,6 @@ class ModelCanvasThree extends React.Component {
       camera,
     } = this.refs;
 
-    if ( ! this.props.enabled ) {
-    	return;
-    }
-
     if (this.state.camera !== camera) {
       this.setState({
         camera,
@@ -113,40 +130,42 @@ class ModelCanvasThree extends React.Component {
     } = this.state;
 
 		return (
-			this.props.enabled?
-				<React3
-					mainCamera="mainCamera" // this points to the perspectiveCamera below
-					antialias
-					onAnimate={this._onAnimate}
-					width={this.props.width}
-					height={this.props.height} >
-					<scene>
-						<perspectiveCamera
-							name="mainCamera"
-							ref="camera"
-							fov={75}
-							aspect={this.props.width / this.props.height}
-							near={0.1}
-							far={1000}
-							position={cameraPosition}
-							rotation={cameraRotation}
-						/>
-						{
-							this.props.segments.map( segment =>
-								<Strut key={segment.id} start={segment.start} end={segment.end} color={segment.color} />
-							)
-						}
-					</scene>
-				</React3>
-			:
-				<div/>
+			<React3
+				mainCamera="mainCamera" // this points to the perspectiveCamera below
+				antialias
+				onAnimate={this._onAnimate}
+				width={this.props.width}
+				height={this.props.height} >
+				<scene>
+					<perspectiveCamera
+						name="mainCamera"
+						ref="camera"
+						fov={45}
+						aspect={this.props.width / this.props.height}
+						near={0.1}
+						far={1000}
+						position={cameraPosition}
+						rotation={cameraRotation}
+					/>
+					{
+						this.props.segments.map( segment =>
+							<Strut key={segment.id} start={segment.start} end={segment.end} color={segment.color} />
+						)
+					}
+				</scene>
+			</React3>
 		)
   }
 }
+// 						{
+// 							this.props.balls.map( ball =>
+// 								<Ball key={ball.id} center={ball.center} color={ball.color} />
+// 							)
+// 						}
 
 const mapStateToProps = (state) => ({
-  enabled: state.connectionLive,
-  segments: state.segments
+  segments: state.segments,
+  balls: state.balls
 })
 
 const ModelCanvas = connect(mapStateToProps)(ModelCanvasThree)

@@ -6,6 +6,13 @@ const reducer = (state = {
   modelUrl: "",
   connectionLive: false,
   segments: [],
+  balls: [
+  	{
+  		id: "12345",
+  		center: { x: 0, y: 0, z: 0 },
+  		color: "#FFFFFF"
+  	}
+  ],
   lastError: null
 }, action) => {
   switch (action.type) {
