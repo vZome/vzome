@@ -22,7 +22,8 @@ const reducer = (state = {
         ...state,
 				modelUrl: "",
         connectionLive: false,
-        segments: []
+        segments: [],
+        balls: []
       }
 
     case ActionTypes.WEBSOCKET_CONNECTED:
@@ -41,7 +42,8 @@ const reducer = (state = {
 			return {
 				...state,
         connectionLive: false,
-        segments: []
+        segments: [],
+        balls: []
 			}
 
 		case ActionTypes.SEND_DATA_TO_WEBSOCKET:

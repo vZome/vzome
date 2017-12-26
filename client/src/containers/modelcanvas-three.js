@@ -71,6 +71,20 @@ class ModelCanvasThree extends React.Component {
 
     this.lightPosition = new THREE.Vector3(0, 500, 2000);
     this.lightTarget = new THREE.Vector3(0, 0, 0);
+    
+    this.vertices = [];
+		this.vertices.push(
+			new THREE.Vector3( 1, 1, 1 ),
+			new THREE.Vector3( -1, 1, -1 ),
+			new THREE.Vector3( -1, -1, 1 ),
+			new THREE.Vector3( 1, -1, -1 )
+		);
+
+		this.faces = [];
+		this.faces.push( new THREE.Face3( 0, 1, 2 ) );
+		this.faces.push( new THREE.Face3( 1, 0, 3 ) );
+		this.faces.push( new THREE.Face3( 0, 2, 3 ) );
+		this.faces.push( new THREE.Face3( 3, 2, 1 ) );
   }
 
   componentDidMount() {
@@ -140,11 +154,10 @@ class ModelCanvasThree extends React.Component {
 				width={this.props.width}
 				height={this.props.height} >
         <resources>
-          <boxGeometry
+          <geometry
             resourceId="boxGeometry"
-            width={2}
-            height={2}
-            depth={2}
+            vertices={this.vertices}
+            faces={this.faces}
           />
         </resources>
 				<scene>
