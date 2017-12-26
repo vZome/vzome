@@ -24,7 +24,7 @@ public class RealVector {
         FORMAT .setMinimumFractionDigits( 1 );
 	}
 	
-	public final  double x, y, z;
+	public final double x, y, z;
 
 	/**
 		 * Construct a new vector from its coordinate values.

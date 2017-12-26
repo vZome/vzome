@@ -4,6 +4,8 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
@@ -12,6 +14,7 @@ import org.eclipse.jetty.websocket.api.Session;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -25,6 +28,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 {
 	private final Session session;
 	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final Set<String> shapeIds = new HashSet<>();
 
 	public RemoteClientRendering( Session session )
 	{
@@ -74,25 +78,31 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	public void manifestationAdded( RenderedManifestation rm )
 	{
 		Manifestation man = rm .getManifestation();
-		if ( man instanceof Strut ) {
-			Strut strut = (Strut) man;
-			RealVector start = strut .getLocation() .toRealVector();
-			RealVector end = strut .getEnd() .toRealVector();
-			try {
+		Polyhedron shape = rm .getShape();
+		String shapeId = shape .getGuid() .toString();
+		try {
+			if ( ! this .shapeIds .contains( shapeId ) )
+			{
+				this .shapeIds .add( shapeId );
+				String shapeJson = this .objectMapper .writeValueAsString( shape );
+				this .session .getRemote() .sendString( "{ \"render\": \"shape\", \"shape\": " + shapeJson +" }", null );
+			}
+			if ( man instanceof Strut )
+			{
+				Strut strut = (Strut) man;
+				RealVector start = strut .getLocation() .toRealVector();
+				RealVector end = strut .getEnd() .toRealVector();
 				String startJson = this .objectMapper .writeValueAsString( start );
 				String endJson = this .objectMapper .writeValueAsString( end );
 				String color = rm .getColor() .toWebString();
 				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": " + startJson + ", \"end\": " + endJson
 						+ ", \"id\": \"" + rm .getGuid()
 						+ "\", \"color\": \"" + color + "\" }", null );
-			} catch ( JsonProcessingException e ) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-		} else if ( man instanceof Connector ) {
-			Connector ball = (Connector) man;
-			RealVector center = ball .getLocation() .toRealVector();
-			try {
+			else if ( man instanceof Connector )
+			{
+				Connector ball = (Connector) man;
+				RealVector center = ball .getLocation() .toRealVector();
 				String centerJson = this .objectMapper .writeValueAsString( center );
 				Color color = rm .getColor();
 				if ( color == null )
@@ -100,11 +110,12 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 				String colorStr = color .toWebString();
 				this .session .getRemote() .sendString( "{ \"render\": \"ball\", \"center\": " + centerJson
 						+ ", \"id\": \"" + rm .getGuid()
+						+ "\", \"shape\": \"" + shapeId
 						+ "\", \"color\": \"" + colorStr + "\" }", null );
-			} catch ( JsonProcessingException e ) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+		} catch ( JsonProcessingException e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

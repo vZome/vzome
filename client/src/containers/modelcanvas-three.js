@@ -18,16 +18,18 @@ class Geometry extends React.Component {
 		this.props.vertices.map( vertex => ( this.vertices.push( new THREE.Vector3( vertex.x, vertex.y, vertex.z ) ) ) );
 
 		this.faces = [];
-		this.props.faces.map( face => ( this.faces.push( new THREE.Face3( face.v0, face.v1, face.v2 ) ) ) );
+		this.props.faces.map( face => {
+			let normal = new THREE.Vector3( face.normal.x, face.normal.y, face.normal.z );
+			this.faces.push( new THREE.Face3( face.vertices[0], face.vertices[1], face.vertices[2], normal ) );
+			return null;
+		} );
 
 		this.id = this.props.id;
-  	console.log( 'id is ' + this.id );
   }
 
   shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate;
   
   render() {
-  	console.log( 'id is ' + this.id );
     return (
 			<geometry
 				resourceId={this.id}
@@ -81,7 +83,7 @@ class Ball extends React.Component {
     >
       <mesh ref={this._ref} >
         <geometryResource
-          resourceId="qwertyuiop"
+          resourceId={this.props.shape}
         />
         <meshLambertMaterial
           color={this.props.color}
@@ -205,7 +207,7 @@ class ModelCanvasThree extends React.Component {
 					}
 					{
 						this.props.balls.map( ball =>
-							<Ball key={ball.id} center={ball.center} color={ball.color} />
+							<Ball key={ball.id} center={ball.center} color={ball.color} shape={ball.shape} />
 						)
 					}
 				</scene>

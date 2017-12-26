@@ -43,6 +43,10 @@ dependencies {
     compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre12'
     compile     group: 'org.python',        name: 'jython',            version:'2.7-b4'
 
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
+
     runtime     group: 'org.python',        name: 'jython',            version:'2.7-b4'
     runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-pre12'
     runtime     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'

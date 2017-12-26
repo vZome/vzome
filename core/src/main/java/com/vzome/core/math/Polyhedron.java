@@ -7,8 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -20,21 +24,32 @@ public class Polyhedron implements Cloneable
 {
 	private static Logger logger = Logger .getLogger( "com.vzome.core.math.Polyhedron" );
     
+    @JsonIgnore
 	protected int numVertices = 0;
 
+    @JsonIgnore
 	protected final Map<AlgebraicVector, Integer> m_vertices = new HashMap<>();
     
+    @JsonIgnore
 	protected List<AlgebraicVector> m_vertexList = new ArrayList<>();
 
+    @JsonIgnore
 	protected Set<Face> m_faces = new HashSet<>();
     
+    @JsonIgnore
     private final AlgebraicField field;
     
+    @JsonIgnore
     private Polyhedron evilTwin; // for struts in symmetries with truly chiral orbits
     
+    @JsonIgnore
     private boolean isEvil = false;
     
+    @JsonIgnore
     private boolean isPanel = false;
+
+    @JsonIgnore
+	private final UUID guid = UUID .randomUUID();
 
 	public Polyhedron( AlgebraicField field )
     {
@@ -49,6 +64,7 @@ public class Polyhedron implements Cloneable
 	 * outward.
 	 * @return
 	 */
+    @JsonIgnore
 	public Polyhedron getEvilTwin( AlgebraicMatrix reflection )
 	{
 		if ( this .evilTwin == null )
@@ -77,6 +93,7 @@ public class Polyhedron implements Cloneable
 		return this .evilTwin;
 	}
 	
+    @JsonIgnore
     public AlgebraicField getField()
     {
         return field;
@@ -88,11 +105,13 @@ public class Polyhedron implements Cloneable
 
     private AlgebraicNumber length;
     
+    @JsonIgnore
     public void setName( String name )
     {
         this.name = name;
     }
     
+    @JsonIgnore
     public String getName()
     {
         return name;
@@ -135,14 +154,15 @@ public class Polyhedron implements Cloneable
 		}
 	}
 	
+    @JsonIgnore
 	public List<AlgebraicVector> getVertexList(){
 		return m_vertexList;
 	}
 
+    @JsonIgnore
 	public Set<Face> getFaceSet(){
 		return m_faces;
 	}
-
 
     public Face newFace()
     {
@@ -212,12 +232,37 @@ public class Polyhedron implements Cloneable
 		return true;
 	}
 
+	@JsonProperty( "id" )
+	public UUID getGuid()
+	{
+		return this .guid;
+	}
+
+	@JsonProperty( "vertices" )
+	public List<Object> getRealVertices()
+	{
+		return m_vertexList .stream()
+		        .map( vertex -> vertex .toRealVector() )
+		        .collect( Collectors.toList() ); 
+	}
+
+	@JsonProperty( "faces" )
+	public List<Face.Triangle> getTriangleFaces()
+	{
+		ArrayList<Face.Triangle> result = new ArrayList<>();
+		for ( Face face : m_faces ) {
+			result .addAll( face .getTriangles() );
+		}
+		return result;
+	}
+
 	public class Face extends ArrayList<Integer> implements Cloneable
     {
         private AlgebraicVector mNormal;
                 
         private Face(){}
 		
+        @JsonIgnore
 		public int getVertex( int index )
         {
             if ( index >= size() )
@@ -228,6 +273,45 @@ public class Polyhedron implements Cloneable
             }
 			return get( index );
 		}
+        
+        public class Triangle
+        {
+        	public int[] vertices = new int[3];
+        	public RealVector normal;
+        	
+        	public Triangle( int v0, int v1, int v2, RealVector normal )
+        	{
+        		this .vertices[ 0 ] = v0;
+        		this .vertices[ 1 ] = v1;
+        		this .vertices[ 2 ] = v2;
+        		this .normal = normal;
+        	}
+        }
+        
+        public List<Triangle> getTriangles()
+        {
+        	int arity = this .size();
+        	ArrayList<Triangle> result = new ArrayList<>();
+            int v0 = -1, v1 = -1;
+        	for ( int j = 0; j < arity; j++ ){
+        		Integer index = this .get( j );
+                if ( v0 == -1 )
+                {
+                    v0 = index;
+                }
+                else if ( v1 == -1 )
+                {
+                    v1 = index;
+                }
+                else
+                {
+                	Triangle triangle = new Triangle( v0, v1, index, this .mNormal .toRealVector() );
+                	result .add( triangle );
+                    v1 = index;
+                }
+        	}
+        	return result;
+        }
         
         void computeNormal( List<AlgebraicVector> vertices )
         {
@@ -285,37 +369,44 @@ public class Polyhedron implements Cloneable
 			return true;
 		}
         
+        @JsonIgnore
         public AlgebraicVector getNormal()
         {
             return mNormal;
         }
 	}
 	
+    @JsonIgnore
     public void setOrbit( Direction orbit )
     {
         this .orbit = orbit;
     }
 
+    @JsonIgnore
     public void setLength( AlgebraicNumber length )
     {
         this .length = length;
     }
 
+    @JsonIgnore
     public Direction getOrbit()
     {
         return this .orbit;
     }
 
+    @JsonIgnore
     public AlgebraicNumber getLength()
     {
         return this .length;
     }
 
+    @JsonIgnore
 	public boolean isPanel()
 	{
 		return isPanel;
 	}
 
+    @JsonIgnore
 	public void setPanel( boolean isPanel )
 	{
 		this.isPanel = isPanel;
