@@ -7,6 +7,23 @@ const reducer = (state = {
   connectionLive: false,
   segments: [],
   balls: [],
+  shapes: [
+  	{
+  		id: 'qwertyuiop',
+			vertices : [
+				{ x:  1, y:  1, z:  1 },
+				{ x: -1, y:  1, z: -1 },
+				{ x: -1, y: -1, z:  1 },
+				{ x:  1, y: -1, z: -1 },
+			],
+			faces : [
+				{ v0: 0, v1: 1, v2: 2 },
+				{ v0: 1, v1: 0, v2: 3 },
+				{ v0: 0, v1: 2, v2: 3 },
+				{ v0: 3, v1: 2, v2: 1 },
+			]
+		}
+	],
   lastError: null
 }, action) => {
   switch (action.type) {

@@ -6,6 +6,38 @@ import React3 from 'react-three-renderer';
 import * as THREE from 'three';
 import TrackballControls from './trackball';
 
+class Geometry extends React.Component {
+
+  constructor(props, context) {
+    super(props, context);
+
+    // construct these THREE objects here, because if we use 'new' within render,
+    // React will think that things have changed when they have not.
+
+    this.vertices = [];
+		this.props.vertices.map( vertex => ( this.vertices.push( new THREE.Vector3( vertex.x, vertex.y, vertex.z ) ) ) );
+
+		this.faces = [];
+		this.props.faces.map( face => ( this.faces.push( new THREE.Face3( face.v0, face.v1, face.v2 ) ) ) );
+
+		this.id = this.props.id;
+  	console.log( 'id is ' + this.id );
+  }
+
+  shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate;
+  
+  render() {
+  	console.log( 'id is ' + this.id );
+    return (
+			<geometry
+				resourceId={this.id}
+				vertices={this.vertices}
+				faces={this.faces}
+			/>
+    )
+  }
+}
+
 class Strut extends React.Component {
 
   constructor(props, context) {
@@ -49,7 +81,7 @@ class Ball extends React.Component {
     >
       <mesh ref={this._ref} >
         <geometryResource
-          resourceId="boxGeometry"
+          resourceId="qwertyuiop"
         />
         <meshLambertMaterial
           color={this.props.color}
@@ -71,20 +103,6 @@ class ModelCanvasThree extends React.Component {
 
     this.lightPosition = new THREE.Vector3(0, 500, 2000);
     this.lightTarget = new THREE.Vector3(0, 0, 0);
-    
-    this.vertices = [];
-		this.vertices.push(
-			new THREE.Vector3( 1, 1, 1 ),
-			new THREE.Vector3( -1, 1, -1 ),
-			new THREE.Vector3( -1, -1, 1 ),
-			new THREE.Vector3( 1, -1, -1 )
-		);
-
-		this.faces = [];
-		this.faces.push( new THREE.Face3( 0, 1, 2 ) );
-		this.faces.push( new THREE.Face3( 1, 0, 3 ) );
-		this.faces.push( new THREE.Face3( 0, 2, 3 ) );
-		this.faces.push( new THREE.Face3( 3, 2, 1 ) );
   }
 
   componentDidMount() {
@@ -154,11 +172,11 @@ class ModelCanvasThree extends React.Component {
 				width={this.props.width}
 				height={this.props.height} >
         <resources>
-          <geometry
-            resourceId="boxGeometry"
-            vertices={this.vertices}
-            faces={this.faces}
-          />
+					{
+						this.props.shapes.map( shape =>
+							<Geometry key={shape.id} id={shape.id} vertices={shape.vertices} faces={shape.faces} />
+						)
+					}
         </resources>
 				<scene>
 					<perspectiveCamera
@@ -197,6 +215,7 @@ class ModelCanvasThree extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
+  shapes: state.shapes,
   segments: state.segments,
   balls: state.balls
 })
