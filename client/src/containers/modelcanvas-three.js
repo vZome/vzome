@@ -30,34 +30,34 @@ class Strut extends React.Component {
   }
 }
 
-// class Ball extends React.Component {
-// 
-//   constructor(props, context) {
-//     super(props, context);
-// 
-//     this.center = new THREE.Vector3( this.props.center.x, this.props.center.y, this.props.center.z );
-// 
-//     // construct these vectors here, because if we use 'new' within render,
-//     // React will think that things have changed when they have not.
-//   }
-// 
-//   shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate;
-//   
-//   render() {
-//     return (<group
-//       position={this.center}
-//     >
-//       <mesh ref={this._ref} >
-//         <geometryResource
-//           resourceId="boxGeometry"
-//         />
-//         <meshLambertMaterial
-//           color={this.props.color}
-//         />
-//       </mesh>
-//     </group>);
-//   }
-// }
+class Ball extends React.Component {
+
+  constructor(props, context) {
+    super(props, context);
+
+    this.center = new THREE.Vector3( this.props.center.x, this.props.center.y, this.props.center.z );
+
+    // construct these vectors here, because if we use 'new' within render,
+    // React will think that things have changed when they have not.
+  }
+
+  shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate;
+  
+  render() {
+    return (<group
+      position={this.center}
+    >
+      <mesh ref={this._ref} >
+        <geometryResource
+          resourceId="boxGeometry"
+        />
+        <meshLambertMaterial
+          color={this.props.color}
+        />
+      </mesh>
+    </group>);
+  }
+}
 
 class ModelCanvasThree extends React.Component {
   
@@ -68,6 +68,9 @@ class ModelCanvasThree extends React.Component {
       cameraPosition: new THREE.Vector3(0, 0, 65),
       cameraRotation: new THREE.Euler()
     };
+
+    this.lightPosition = new THREE.Vector3(0, 500, 2000);
+    this.lightTarget = new THREE.Vector3(0, 0, 0);
   }
 
   componentDidMount() {
@@ -136,6 +139,14 @@ class ModelCanvasThree extends React.Component {
 				onAnimate={this._onAnimate}
 				width={this.props.width}
 				height={this.props.height} >
+        <resources>
+          <boxGeometry
+            resourceId="boxGeometry"
+            width={2}
+            height={2}
+            depth={2}
+          />
+        </resources>
 				<scene>
 					<perspectiveCamera
 						name="mainCamera"
@@ -147,9 +158,23 @@ class ModelCanvasThree extends React.Component {
 						position={cameraPosition}
 						rotation={cameraRotation}
 					/>
+          <ambientLight
+            color={0x808080}
+          />
+          <spotLight
+            color={0xffffff}
+            intensity={1.5}
+            position={this.lightPosition}
+            lookAt={this.lightTarget}
+          />
 					{
 						this.props.segments.map( segment =>
 							<Strut key={segment.id} start={segment.start} end={segment.end} color={segment.color} />
+						)
+					}
+					{
+						this.props.balls.map( ball =>
+							<Ball key={ball.id} center={ball.center} color={ball.color} />
 						)
 					}
 				</scene>
@@ -157,11 +182,6 @@ class ModelCanvasThree extends React.Component {
 		)
   }
 }
-// 						{
-// 							this.props.balls.map( ball =>
-// 								<Ball key={ball.id} center={ball.center} color={ball.color} />
-// 							)
-// 						}
 
 const mapStateToProps = (state) => ({
   segments: state.segments,

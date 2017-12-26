@@ -13,8 +13,10 @@ import org.eclipse.jetty.websocket.api.Session;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.desktop.controller.RenderingViewer;
@@ -83,6 +85,22 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": " + startJson + ", \"end\": " + endJson
 						+ ", \"id\": \"" + rm .getGuid()
 						+ "\", \"color\": \"" + color + "\" }", null );
+			} catch ( JsonProcessingException e ) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if ( man instanceof Connector ) {
+			Connector ball = (Connector) man;
+			RealVector center = ball .getLocation() .toRealVector();
+			try {
+				String centerJson = this .objectMapper .writeValueAsString( center );
+				Color color = rm .getColor();
+				if ( color == null )
+					color = Color.WHITE;
+				String colorStr = color .toWebString();
+				this .session .getRemote() .sendString( "{ \"render\": \"ball\", \"center\": " + centerJson
+						+ ", \"id\": \"" + rm .getGuid()
+						+ "\", \"color\": \"" + colorStr + "\" }", null );
 			} catch ( JsonProcessingException e ) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

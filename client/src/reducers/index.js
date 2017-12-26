@@ -6,13 +6,7 @@ const reducer = (state = {
   modelUrl: "",
   connectionLive: false,
   segments: [],
-  balls: [
-  	{
-  		id: "12345",
-  		center: { x: 0, y: 0, z: 0 },
-  		color: "#FFFFFF"
-  	}
-  ],
+  balls: [],
   lastError: null
 }, action) => {
   switch (action.type) {
@@ -66,15 +60,36 @@ const reducer = (state = {
 							parsed
 						]
 					}
-				} else if ( parsed.render === 'delete' ) {
-				  const index = state.segments.findIndex( item => ( item.id === parsed.id ) )
+				} else if ( parsed.render === 'ball' ) {
 					return {
 						...state,
-						segments: [
-							...state.segments.slice(0,index),
-							...state.segments.slice(index+1)
+						balls: [
+							...state.balls,
+							parsed
 						]
 					}
+				} else if ( parsed.render === 'delete' ) {
+				  let index = state.segments.findIndex( item => ( item.id === parsed.id ) )
+				  if ( index >= 0 ) {
+						return {
+							...state,
+							segments: [
+								...state.segments.slice(0,index),
+								...state.segments.slice(index+1)
+							]
+						}
+					}
+				  index = state.balls.findIndex( item => ( item.id === parsed.id ) )
+				  if ( index >= 0 ) {
+						return {
+							...state,
+							balls: [
+								...state.balls.slice(0,index),
+								...state.balls.slice(index+1)
+							]
+						}
+					}
+					return state
 				} else {
 					return state
 				}
