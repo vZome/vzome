@@ -55,12 +55,18 @@ class Strut extends React.Component {
   shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate;
   
   render() {
-    return (
-      <line>
-        <geometry vertices={ [ this.start, this.end ] } />
-        <lineBasicMaterial linewidth={6} color={this.props.color} />
-      </line>
-    )
+    return (<group
+      position={this.start}
+    >
+      <mesh ref={this._ref} >
+        <geometryResource
+          resourceId={this.props.shape}
+        />
+        <meshLambertMaterial
+          color={this.props.color}
+        />
+      </mesh>
+    </group>);
   }
 }
 
@@ -202,7 +208,7 @@ class ModelCanvasThree extends React.Component {
           />
 					{
 						this.props.segments.map( segment =>
-							<Strut key={segment.id} start={segment.start} end={segment.end} color={segment.color} />
+							<Strut key={segment.id} start={segment.start} end={segment.end} color={segment.color} shape={segment.shape} />
 						)
 					}
 					{

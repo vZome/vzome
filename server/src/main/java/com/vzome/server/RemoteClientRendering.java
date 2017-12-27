@@ -97,6 +97,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 				String color = rm .getColor() .toWebString();
 				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": " + startJson + ", \"end\": " + endJson
 						+ ", \"id\": \"" + rm .getGuid()
+						+ "\", \"shape\": \"" + shapeId
 						+ "\", \"color\": \"" + color + "\" }", null );
 			}
 			else if ( man instanceof Connector )

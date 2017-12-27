@@ -23,6 +23,7 @@ const reducer = (state = {
         ...state,
 				modelUrl: "",
         connectionLive: false,
+        shapes: [],
         segments: [],
         balls: []
       }
@@ -43,6 +44,7 @@ const reducer = (state = {
 			return {
 				...state,
         connectionLive: false,
+        shapes: [],
         segments: [],
         balls: []
 			}
