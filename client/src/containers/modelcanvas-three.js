@@ -200,10 +200,10 @@ class ModelCanvasThree extends React.Component {
           <ambientLight
             color={0x808080}
           />
-          <spotLight
+          <directionalLight
             color={0xffffff}
-            intensity={1.5}
-            position={this.lightPosition}
+            intensity={0.5}
+            position={cameraPosition}
             lookAt={this.lightTarget}
           />
 					{
