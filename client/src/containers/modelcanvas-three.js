@@ -57,6 +57,7 @@ class Strut extends React.Component {
   render() {
     return (<group
       position={this.start}
+      quaternion={this.props.rotation}
     >
       <mesh ref={this._ref} >
         <geometryResource
@@ -208,7 +209,7 @@ class ModelCanvasThree extends React.Component {
           />
 					{
 						this.props.segments.map( segment =>
-							<Strut key={segment.id} start={segment.start} end={segment.end} color={segment.color} shape={segment.shape} />
+							<Strut key={segment.id} start={segment.start} end={segment.end} color={segment.color} rotation={segment.rotation} shape={segment.shape} />
 						)
 					}
 					{

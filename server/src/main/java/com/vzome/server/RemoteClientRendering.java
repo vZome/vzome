@@ -4,16 +4,21 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
+import javax.vecmath.Quat4d;
 
 import org.eclipse.jetty.websocket.api.Session;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
@@ -29,6 +34,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	private final Session session;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final Set<String> shapeIds = new HashSet<>();
+	private Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
 
 	public RemoteClientRendering( Session session )
 	{
@@ -79,6 +85,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	{
 		Manifestation man = rm .getManifestation();
 		Polyhedron shape = rm .getShape();
+		Quat4d quaternion = getQuaternion( rm .getOrientation() );
 		String shapeId = shape .getGuid() .toString();
 		try {
 			if ( ! this .shapeIds .contains( shapeId ) )
@@ -94,11 +101,13 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 				RealVector end = strut .getEnd() .toRealVector();
 				String startJson = this .objectMapper .writeValueAsString( start );
 				String endJson = this .objectMapper .writeValueAsString( end );
+				String quatJson = this .objectMapper .writeValueAsString( quaternion );
 				String color = rm .getColor() .toWebString();
 				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": " + startJson + ", \"end\": " + endJson
 						+ ", \"id\": \"" + rm .getGuid()
 						+ "\", \"shape\": \"" + shapeId
-						+ "\", \"color\": \"" + color + "\" }", null );
+						+ "\", \"rotation\": " + quatJson
+						+ ", \"color\": \"" + color + "\" }", null );
 			}
 			else if ( man instanceof Connector )
 			{
@@ -118,6 +127,24 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private Quat4d getQuaternion( AlgebraicMatrix orientation )
+	{
+		Quat4d result = this .rotations .get( orientation );
+		if ( result == null ) {
+			Matrix4d matrix = new Matrix4d();
+			for ( int i = 0; i < 3; i++) {
+				for ( int j = 0; j < 3; j++) {
+					double value = orientation .getElement( i, j ) .evaluate();
+					matrix .setElement( i, j, value );
+				}
+			}
+			result = new Quat4d();
+			matrix .get( result );
+			this .rotations .put( orientation, result );
+		}
+		return result;
 	}
 
 	@Override
