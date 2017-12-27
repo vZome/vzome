@@ -97,13 +97,11 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 			if ( man instanceof Strut )
 			{
 				Strut strut = (Strut) man;
-				RealVector start = strut .getLocation() .toRealVector();
-				RealVector end = strut .getEnd() .toRealVector();
+				RealVector start = rm .getLocation();
 				String startJson = this .objectMapper .writeValueAsString( start );
-				String endJson = this .objectMapper .writeValueAsString( end );
 				String quatJson = this .objectMapper .writeValueAsString( quaternion );
 				String color = rm .getColor() .toWebString();
-				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": " + startJson + ", \"end\": " + endJson
+				this .session .getRemote() .sendString( "{ \"render\": \"segment\", \"start\": " + startJson
 						+ ", \"id\": \"" + rm .getGuid()
 						+ "\", \"shape\": \"" + shapeId
 						+ "\", \"rotation\": " + quatJson

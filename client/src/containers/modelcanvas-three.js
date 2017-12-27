@@ -45,8 +45,7 @@ class Strut extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    this.start = new THREE.Vector3( this.props.start.x, this.props.start.y, this.props.start.z );
-    this.end = new THREE.Vector3( this.props.end.x, this.props.end.y, this.props.end.z );
+    this.position = new THREE.Vector3( this.props.position.x, this.props.position.y, this.props.position.z );
 
     // construct these vectors here, because if we use 'new' within render,
     // React will think that things have changed when they have not.
@@ -56,7 +55,7 @@ class Strut extends React.Component {
   
   render() {
     return (<group
-      position={this.start}
+      position={this.position}
       quaternion={this.props.rotation}
     >
       <mesh ref={this._ref} >
@@ -209,7 +208,7 @@ class ModelCanvasThree extends React.Component {
           />
 					{
 						this.props.segments.map( segment =>
-							<Strut key={segment.id} start={segment.start} end={segment.end} color={segment.color} rotation={segment.rotation} shape={segment.shape} />
+							<Strut key={segment.id} position={segment.start} color={segment.color} rotation={segment.rotation} shape={segment.shape} />
 						)
 					}
 					{
