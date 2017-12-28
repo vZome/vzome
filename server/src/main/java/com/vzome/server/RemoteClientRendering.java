@@ -149,9 +149,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	public void manifestationRemoved( RenderedManifestation rm )
 	{
 		Manifestation man = rm .getManifestation();
-		if ( man instanceof Strut ) {
-			this .session .getRemote() .sendString( "{ \"render\": \"delete\", \"id\": \"" + rm .getGuid() + "\" }", null );
-		}
+		this .session .getRemote() .sendString( "{ \"render\": \"delete\", \"id\": \"" + rm .getGuid() + "\" }", null );
 	}
 
 	@Override

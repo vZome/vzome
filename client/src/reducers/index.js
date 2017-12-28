@@ -84,6 +84,7 @@ const reducer = (state = {
 				} else if ( parsed.render === 'delete' ) {
 				  let index = state.segments.findIndex( item => ( item.id === parsed.id ) )
 				  if ( index >= 0 ) {
+				  	console.log( 'deleting segment' );
 						return {
 							...state,
 							segments: [
@@ -94,6 +95,7 @@ const reducer = (state = {
 					}
 				  index = state.balls.findIndex( item => ( item.id === parsed.id ) )
 				  if ( index >= 0 ) {
+				  	console.log( 'deleting ball' );
 						return {
 							...state,
 							balls: [
