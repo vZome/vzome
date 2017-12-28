@@ -16,19 +16,6 @@ export const setBackground = (color) => ({
   color
 })
 
-export const addStrut = (id, start, end, color) => ({
-  type: ADD_STRUT,
-  id,
-  start,
-  end,
-  color
-})
-
-export const removeStrut = (id) => ({
-  type: REMOVE_STRUT,
-  id
-})
-
 export const closeView = () => ({
   type: CLOSE_VIEW
 })

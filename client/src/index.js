@@ -8,7 +8,8 @@ import './index.css';
 import App from './App';
 import reducer from './reducers'
 
-const store = createStore(reducer, applyMiddleware(createSimpleWebSocketMiddleware(),logger))
+const store = createStore( reducer,
+								applyMiddleware( createSimpleWebSocketMiddleware(), logger ) );
 
 render(
   <Provider store={store}>
