@@ -109,7 +109,7 @@ public abstract class ExclusiveAction implements ActionListener
     		return;
     	}
     	
-        final SwingWorker worker = new SwingWorker()
+        final SwingWorker worker = new SwingWorker("vZome-ExclusiveAction")
         {            
             @Override
             public Object construct()
