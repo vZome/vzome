@@ -2,4 +2,13 @@ plugins {
   id "com.moowork.node" version "1.2.0"
 }
 
+task packageClient( type: NpmTask ) {
+  args = [ 'run', 'build' ]
+}
+
+task run( type: NpmTask ) {
+  args = [ 'start' ]
+}
+
+build.dependsOn npmInstall, packageClient
 

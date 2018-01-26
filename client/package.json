@@ -13,9 +13,11 @@
     "redux": "^3.5.2",
     "redux-logger": "^3.0.6",
     "redux-simple-websocket": "^1.0.3",
+    "serve": "^6.4.8",
     "three": "^0.86.0"
   },
   "scripts": {
+    "buildDev": "react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

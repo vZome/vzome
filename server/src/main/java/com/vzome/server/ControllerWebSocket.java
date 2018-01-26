@@ -190,7 +190,9 @@ public class ControllerWebSocket implements WebSocketListener
 			public void clearError() {}
 		});
 
-        Server server = new Server( 8532 );
+		String portStr = System.getenv( "PORT" );
+		int port = ( portStr == null )? 8532 : Integer .parseInt( portStr );
+        Server server = new Server( port );
 
         ServletContextHandler context = new ServletContextHandler( ServletContextHandler.SESSIONS );
         context.setContextPath("/");
@@ -200,13 +202,22 @@ public class ControllerWebSocket implements WebSocketListener
         ServletHolder wsHolder = new ServletHolder( "vZome", new Servlet() );
         context.addServlet(wsHolder,"/vZome");
 
+        String pwdPath = System.getProperty("user.dir");
+        System.out.println( "Working directory is " + pwdPath );
+        
         // Add default servlet (to serve the html/css/js)
-        // Figure out where the static files are stored.
-        URL urlStatics = Thread.currentThread().getContextClassLoader().getResource( "index.html" );
-        Objects.requireNonNull( urlStatics, "Unable to find index.html in classpath" );
-        String urlBase = urlStatics .toExternalForm( ).replaceFirst( "/[^/]*$","/" );
-        ServletHolder defHolder = new ServletHolder("default",new DefaultServlet());
-        defHolder.setInitParameter("resourceBase",urlBase);
+        
+		String resourceBase = System.getenv( "CLIENT_BUILD" );
+		if ( resourceBase == null || resourceBase .isEmpty() ) {
+	        System.out.println( "No value provided for CLIENT_BUILD" );
+	        // Figure out where the static files are stored.
+	        URL urlStatics = Thread.currentThread().getContextClassLoader().getResource( "index.html" );
+	        Objects.requireNonNull( urlStatics, "Unable to find index.html in classpath" );
+	        resourceBase = urlStatics .toExternalForm( ).replaceFirst( "/[^/]*$","/" );
+		}
+
+		ServletHolder defHolder = new ServletHolder("default",new DefaultServlet());
+        defHolder.setInitParameter( "resourceBase",resourceBase );
         defHolder.setInitParameter("dirAllowed","true");
         context.addServlet(defHolder,"/");
 

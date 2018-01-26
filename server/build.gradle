@@ -9,14 +9,14 @@ dependencies {
     compile     group: 'org.eclipse.jetty.websocket', name: 'javax-websocket-server-impl',     version:'9.4.7.v20170914'
 }
 
-mainClassName = "com.vzome.server.ControllerServer"
+mainClassName = "com.vzome.server.ControllerWebSocket"
 
 sourceSets {
     main {
         resources {
-            // The convention-based default built-in srcDir is 'src/main/resources' 
+            // The convention-based default built-in srcDir is 'src/main/resources'
             // Append any additional SrcDir entries here...
-            
+
             // listed alphabetically
             include '**/*.css'
             include '**/*.properties'

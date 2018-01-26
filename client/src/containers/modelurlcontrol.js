@@ -4,10 +4,11 @@ import { connect } from 'react-redux'
 import { openUrl, closeView } from '../actions'
 import { connectWebSocketAction, closeWebSocketAction } from "redux-simple-websocket"
 
-const SERVER_URL = 'ws://' + window.location.hostname + ':8532/vZome?'
+const ws_port = 8532  // TODO: allow override for dev case
+const SERVER_URL = 'ws://' + window.location.hostname + ':' + ws_port + '/vZome?'
 
 const encodeUrl = url => {
-	 return SERVER_URL + encodeURIComponent( url ) 
+	 return SERVER_URL + encodeURIComponent( url )
 }
 
 let ModelUrlControl = ({ enabled, dispatch }) => {
