@@ -1,13 +1,20 @@
 package com.vzome.core.algebra;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
+import static com.vzome.core.generic.Utilities.compareDoubles;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Test;
 
 /**
@@ -33,7 +40,81 @@ public class BigRationalTest {
     }
 
     @Test
-    public void testCompareTo() {
+    public void testAbs() {
+        BigRational r = new BigRational("-2/3");
+        assertEquals(-1, r.signum());
+        assertNotEquals(r.signum(), r.abs().signum());
+        assertEquals(1, r.abs().signum());
+        r = BigRational.ZERO;
+        assertEquals(r, r.abs());
+        assertEquals(r.signum(), r.abs().signum());
+    }
+
+    @Test
+    public void testMinMax() {
+        BigRational j = new BigRational("2/3");
+        assertEquals(j, BigRational.min(j, j.reciprocal()));
+        assertEquals(j.reciprocal(), BigRational.max(j, j.reciprocal()));
+
+        BigRational k = new BigRational("3/4");
+        
+        assertEquals(j, BigRational.min(j, k));
+        assertEquals(k, BigRational.max(j, k));
+
+        // both are commutative
+        assertEquals(BigRational.min(j, k), BigRational.min(k, j));
+        assertEquals(BigRational.max(j, k), BigRational.max(k, j));
+
+        // test min and max of more than 2 items
+        BigRational n = new BigRational(-42);
+        
+        assertEquals(n, BigRational.min(j, k, n));
+        assertEquals(k, BigRational.max(j, k, n));
+        
+        // test duplicates
+        assertEquals(n, BigRational.min(j, k, n, n, n, j, j, k, k));
+        assertEquals(k, BigRational.max(j, k, n, n, n, j, j, k, k));
+        
+        List<BigRational> list = new ArrayList<>();
+        // empty list returnd null
+        assertNull(BigRational.min(list));
+        assertNull(BigRational.max(list));
+        // single element in list is returned
+        list.add(j);
+        assertEquals(j, BigRational.min(list));
+        assertEquals(j, BigRational.max(list));
+        // duplicates are OK
+        list.add(j);
+        assertEquals(j, BigRational.min(list));
+        assertEquals(j, BigRational.max(list));
+        // more...
+        list.add(k);
+        assertEquals(j, BigRational.min(list));
+        assertEquals(k, BigRational.max(list));
+        // more...
+        list.add(n);
+        assertEquals(n, BigRational.min(list));
+        assertEquals(k, BigRational.max(list));
+}
+
+    @Test
+    public void testCompareToBig() {
+        BigInteger num = new BigInteger(Long.MAX_VALUE + "2");
+        BigInteger den = new BigInteger(Long.MAX_VALUE + "3");
+        assertNotEquals(num, den);
+
+        BigRational r1 = new BigRational(num.negate(), den);
+        BigRational r2 = new BigRational(num, den.negate());
+        assertEquals(0, r1.compareTo(r2));
+
+        r1 = new BigRational(num, den);
+        r2 = new BigRational(num.negate(), den);
+        assertEquals(1, r1.compareTo(r2));
+        assertEquals(-1, r2.compareTo(r1));
+    }
+
+    @Test
+    public void testCompareToLong() {
         Long num = 2L;
         Long den = 3L;
         assertNotEquals(num, den);
@@ -46,6 +127,29 @@ public class BigRationalTest {
         r2 = new BigRational(-num, den);
         assertEquals(1, r1.compareTo(r2));
         assertEquals(-1, r2.compareTo(r1));
+    }
+    
+    @Test
+    public void testCompareToMixed() {
+        Long j = 2L;
+        BigInteger k = new BigInteger(Long.MAX_VALUE + "3");
+        assertNotEquals(j, k);
+
+        BigRational r1 = new BigRational(-j, k);
+        BigRational r2 = new BigRational(j, k.negate());
+        assertEquals(0, r1.compareTo(r2));
+
+        r1 = new BigRational(j, k);
+        r2 = new BigRational(-j, k);
+        assertEquals(1, r1.compareTo(r2));
+        assertEquals(-1, r2.compareTo(r1));
+
+        // swap order to test other c'tor
+        r1 = new BigRational(k, j);
+        r2 = new BigRational(k.negate(), j);
+        assertEquals(1, r1.compareTo(r2));
+        assertEquals(-1, r2.compareTo(r1));
+
     }
 
     @Test
@@ -89,10 +193,31 @@ public class BigRationalTest {
     }
 
     @Test
+    public void testIsWhole() {
+        assertTrue(BigRational.ONE.isWhole());
+        assertTrue(BigRational.ZERO.isWhole());
+        assertTrue(new BigRational(-37).isWhole());
+        assertTrue(new BigRational(242, 1).isWhole());
+        assertFalse(new BigRational(1, 17).isWhole());
+        BigRational r = new BigRational(2, 3);
+        assertFalse(r.isWhole());
+        assertFalse(r.reciprocal().isWhole());
+        r = new BigRational(Long.MIN_VALUE);
+        assertTrue(r.isWhole());
+        r = new BigRational(Long.MAX_VALUE);
+        assertTrue(r.isWhole());
+    }
+
+    @Test
     public void testIsBig() {
         // not big
         BigRational r = new BigRational(Long.MAX_VALUE + "");
         assertFalse(r.isBig());
+        r = new BigRational(Long.MIN_VALUE + "/2");
+        assertFalse(r.isBig());
+        r = new BigRational(Long.MIN_VALUE + "/" + Long.MIN_VALUE);
+        assertFalse(r.isBig());
+        assertTrue(r.isOne());
         // big
         r = new BigRational(Long.MIN_VALUE + "");
         assertTrue(r.isBig());
@@ -105,17 +230,48 @@ public class BigRationalTest {
     @Test
     public void testNotBig() {
         // not big
-        BigRational r = new BigRational(Long.MAX_VALUE + "");
+        BigRational r = new BigRational(Long.MAX_VALUE);
         assertTrue(r.notBig());
-        r = new BigRational(Long.MIN_VALUE-1 + "");
+        assertTrue(r.fitsInLong());
+        
+        r = new BigRational(Long.MIN_VALUE-1);
         assertTrue(r.notBig());
+        assertTrue(r.fitsInLong());
+        
+        // reciprocals
+        r = new BigRational(1, Long.MAX_VALUE);
+        assertTrue(r.notBig());
+        assertFalse(r.fitsInLong());
+        
+        r = new BigRational(1, Long.MIN_VALUE-1);
+        assertTrue(r.notBig());
+        assertFalse(r.fitsInLong());
+        
         // big
-        r = new BigRational(Long.MIN_VALUE + "");
+        r = new BigRational(Long.MIN_VALUE);
         assertFalse(r.notBig());
+        assertFalse(r.fitsInLong());
+                
         r = new BigRational(Long.MAX_VALUE + "0");
         assertFalse(r.notBig());
+        assertFalse(r.fitsInLong());
+        
         r = new BigRational(Long.MIN_VALUE + "0");
         assertFalse(r.notBig());
+        assertFalse(r.fitsInLong());
+        
+        // reciprocals
+        r = new BigRational(1, Long.MIN_VALUE);
+        assertFalse(r.notBig());
+        assertFalse(r.fitsInLong());
+        
+        r = new BigRational("1/" + Long.MAX_VALUE + "0");
+        assertFalse(r.notBig());
+        assertFalse(r.fitsInLong());
+        
+        r = new BigRational("1/" + Long.MIN_VALUE + "0");
+        assertFalse(r.notBig());
+        assertFalse(r.fitsInLong());
     }
 
     @Test
@@ -130,13 +286,17 @@ public class BigRationalTest {
         assertTrue(r.isOne());
     }
 
-    @Test
+    @SuppressWarnings("unlikely-arg-type")
+	@Test
     public void testEquals() {
         // test various code paths
         assertFalse(BigRational.ZERO.equals(null));
-        assertFalse(BigRational.ZERO.equals(0));
-        assertFalse(BigRational.ZERO.equals("0"));
-        assertFalse(BigRational.ZERO.equals(BigInteger.ZERO));
+        // new implementation can test equality with a String or a Number
+        assertTrue(BigRational.ZERO.equals(0));
+        assertTrue(BigRational.ZERO.equals("0"));
+        assertFalse(BigRational.ZERO.equals("Zero"));
+        assertFalse(BigRational.ZERO.equals(this)); // could be any invalid type
+        assertTrue(BigRational.ZERO.equals(BigInteger.ZERO));
         assertTrue(BigRational.ZERO.equals(BigRational.ZERO));
         assertTrue(BigRational.ZERO.equals(new BigRational(0)));
         assertTrue(BigRational.ONE.equals(new BigRational(1)));
@@ -147,15 +307,17 @@ public class BigRationalTest {
     @Test
     public void testHashCode() {
         // Hash codes are used by HashSets
-        Set<BigRational> set = new HashSet<>();
+        Set<BigRational> set1 = new HashSet<>();  
+        Set<BigRational> set2 = new HashSet<>(); // set 2 is just here to exercice the cashed hashcode
         int qty = 0;
         for(int n = -50; n <= 50; n++) {
             if(n != 0) {
                 BigRational b = new BigRational(n);
-                set.add(b);
+                set1.add(b); // hashcode is calculated on demand and cached
+                set2.add(b); // cached hashcode is used subsequently
                 qty++;
 
-                set.add(b.reciprocal());
+                set1.add(b.reciprocal());
                 if(n != 1 && n != -1) {
                     // 1 and -1 are their own reciprocals
                     // so they should not be added to the list the second time
@@ -165,7 +327,7 @@ public class BigRationalTest {
                 }
             }
         }
-        assertEquals(qty, set.size());
+        assertEquals(qty, set1.size());
         assertEquals(200 - 2, qty);
     }
 
@@ -175,8 +337,38 @@ public class BigRationalTest {
         assertEquals(17d, new BigRational(17L).evaluate()); // not big
         assertEquals(0.25d, new BigRational("-9/-36").evaluate()); // not big
         assertEquals(0.001d, new BigRational(Long.MIN_VALUE + "/" + Long.MIN_VALUE+"000").evaluate()); // big
-    }
+        
+        // last digit of n is chosen so it can't be reduced (e.g. to 2/3)
+        String n = "222222222222222222222222222222222222222222222222220"; 
+        String d = "333333333333333333333333333333333333333333333333333";
+        String f = n + "/" + d;
+        BigRational r = new BigRational(f);
+        assertEquals(f, r.toString());
 
+        BigDecimal bigDecimal = BigRational.toBigDecimal(r);
+        double expected = bigDecimal.doubleValue();
+
+        // Some alternative methods for calculating the double value of this fraction
+        // may have greater rounding error than bigDecimal
+        // even if r is not big, (e.g. 2/3) 
+        // and especially when the decimal part is greater than 1/2,
+        // then r.evaluate() may introduce 
+        // minimal rounding error in the last digit.
+        double delta = 0.0000000000001;
+        
+        double value = r.evaluate();
+        compareDoubles(r.evaluate(), value, 0d); // subsequent calls to evaluate() will return the cached value which will be unchanged.       
+        compareDoubles(expected, value, delta);
+                
+        value = Double.parseDouble(n)/Double.parseDouble(d);
+        compareDoubles(expected, value, delta);
+        
+        value = r.getNumerator().doubleValue() / r.getDenominator().doubleValue();
+        compareDoubles(expected, value, delta);
+        
+        assertTrue(r.isBig());
+    }
+    
     @Test
     public void testTimes() {
         {
@@ -387,7 +579,7 @@ public class BigRationalTest {
         int catches = 0;
         try {
         	tries++;
-            BigRational r = new BigRational(1L, 0L);  // Long c'tor
+            new BigRational(1L, 0L);  // Long c'tor
             fail(failMsg);
         } catch (IllegalArgumentException ex) {
             assertEquals(expected, ex.getMessage());
@@ -395,7 +587,7 @@ public class BigRationalTest {
         }
         try {
         	tries++;
-            BigRational r = new BigRational(BigInteger.ONE, BigInteger.ZERO); // BigInteger c'tor
+            new BigRational(BigInteger.ONE, BigInteger.ZERO); // BigInteger c'tor
             fail(failMsg);
         } catch (IllegalArgumentException ex) {
             assertEquals(expected, ex.getMessage());
@@ -403,7 +595,7 @@ public class BigRationalTest {
         }
         try {
         	tries++;
-            BigRational r = new BigRational("1/0"); // String c'tor
+            new BigRational("1/0"); // String c'tor
             fail(failMsg);
         } catch (IllegalArgumentException ex) {
             assertEquals(expected, ex.getMessage());
@@ -411,7 +603,7 @@ public class BigRationalTest {
         }
         try {
         	tries++;
-            BigRational r = BigRational.ZERO.reciprocal();
+            BigRational.ZERO.reciprocal();
             fail(failMsg);
         } catch (IllegalArgumentException ex) {
             assertEquals(expected, ex.getMessage());
@@ -453,14 +645,14 @@ public class BigRationalTest {
         int catches = 0;
         try {
         	tries++;
-            BigRational r = new BigRational("");
+            new BigRational("");
             fail(failMsg);
         } catch (NumberFormatException ex) {
             catches++;
         }
         try {
         	tries++;
-            BigRational r = new BigRational("1/2/3");
+            new BigRational("1/2/3");
             fail(failMsg);
         } catch (IllegalArgumentException ex) {
             assertTrue(ex.getMessage().startsWith(prefix));
@@ -468,7 +660,7 @@ public class BigRationalTest {
         }
         try {
         	tries++;
-            BigRational r = new BigRational("n/d");
+            new BigRational("n/d");
             fail(failMsg);
         } catch (NumberFormatException ex) {
             catches++;
@@ -479,7 +671,24 @@ public class BigRationalTest {
 
     @Test
     public void testValidStringConstructors() {
-        BigRational r = new BigRational("365");
+    	// 20 characters should initially be parsed as BigIntegers but then reduced to notBig representation
+        BigRational r = new BigRational("00000000000000000000");  
+        assertFalse(r.isBig());
+        assertTrue(r.isZero());
+        r = new BigRational("00000000000000000000/1");  
+        assertFalse(r.isBig());
+        assertTrue(r.isZero());
+        r = new BigRational("00000000000000000000/000000000000000000001");  
+        assertFalse(r.isBig());
+        assertTrue(r.isZero());
+        r = new BigRational("0/1");  
+        assertFalse(r.isBig());
+        assertTrue(r.isZero());
+        r = new BigRational("-0"); // negative sign should be ignored for value of zero  
+        assertFalse(r.isBig());
+        assertTrue(r.isZero());
+
+        r = new BigRational("365");
         assertEquals(r.getNumerator().longValueExact(), 365 );
         assertEquals(r.getDenominator().longValueExact(), 1 );
         assertFalse(r.isBig());
@@ -493,6 +702,19 @@ public class BigRationalTest {
         assertEquals(r.getNumerator().longValueExact(), 3 );
         assertEquals(r.getDenominator().longValueExact(), 2 );
         assertFalse(r.isBig());
+
+        // optional + sign is numerator or denominator is OK
+        r = new BigRational("+81/+54");
+        assertEquals(r.getNumerator().longValueExact(), 3 );
+        assertEquals(r.getDenominator().longValueExact(), 2 );
+        assertFalse(r.isBig());
+
+        // both numerator and denominator being negative will result in positive
+        r = new BigRational("-81/-54");
+        assertEquals(r.getNumerator().longValueExact(), 3 );
+        assertEquals(r.getDenominator().longValueExact(), 2 );
+        assertFalse(r.isBig());
+        assertTrue(r.isPositive());
 
         final String IMAX = Long.toString(Integer.MAX_VALUE);
         final String IMIN = Long.toString(Integer.MIN_VALUE);
@@ -563,6 +785,28 @@ public class BigRationalTest {
     }
 
     @Test
+    public void testMultiplyExact() {
+    	boolean[] overflow = new boolean[] { false };
+
+    	overflow[0] = false;
+    	BigRational.multiplyAndCheck(4611686018427387904L, -4, overflow);
+    	assertTrue(overflow[0]);
+
+    	overflow[0] = false;
+    	BigRational.multiplyAndCheck(Long.MIN_VALUE, -2, overflow);
+    	assertTrue(overflow[0]);
+
+    	overflow[0] = false;
+    	BigRational.multiplyAndCheck(Long.MIN_VALUE, -1, overflow);
+    	assertTrue(overflow[0]);
+
+    	overflow[0] = false;
+    	BigRational.multiplyAndCheck(Long.MIN_VALUE, 0, overflow);
+    	assertFalse(overflow[0]);
+
+    }
+    
+    @Test
     public void testMultiplicationOverflowToBig() {
         BigRational b2 = new BigRational(2);
         // not big
@@ -619,6 +863,14 @@ public class BigRationalTest {
         assertTrue(total.isPositive());	 // BigRational initially failed
         assertTrue(total.isBig());	 // BigRational initially failed
         assertEquals("9223372036854775809", total.toString());	 // BigRational initially failed
+    }
+
+    @Test
+    public void testReduceBig() {
+        // big denom with 0 num
+        BigRational r = new BigRational("0/1" + Long.MAX_VALUE);
+        assertTrue(r.isZero());
+        assertFalse(r.isBig());
     }
 
     @Test
@@ -684,11 +936,11 @@ public class BigRationalTest {
 
         // divide-by-zero
         x = new BigRational(0, 5);
-        System.out.println(x);
+//        System.out.println(x);
         assertEquals(0, x.plus(x).compareTo(x));
         try {
         	z = x.reciprocal();
-        	fail("Expected ");
+        	fail("Exception should have been thrown");
         }
         catch(IllegalArgumentException ex) {
         	
@@ -699,6 +951,5 @@ public class BigRationalTest {
         y = new BigRational(1, 300000000);
         z = x.plus(y);
         assertEquals("-1/600000000", z.toString());
-    }
-
+    }	
 }

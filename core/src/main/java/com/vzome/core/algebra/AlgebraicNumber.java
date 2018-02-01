@@ -6,10 +6,23 @@ package com.vzome.core.algebra;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+/**
+ * 
+ * Immutable representation of an Algebraic Number
+ *
+ */
 public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Comparable<AlgebraicNumber>
 {
     private final AlgebraicField field;
     private final BigRational[] factors;
+
+    private final boolean isOne;
+    private final boolean isZero;
+    
+    private Double doubleValue;	// initialized on first use
+    private final String[] toString = new String[AlgebraicField .VEF_FORMAT + 1]; // cache various String representations
+    
+    private Integer hashCode;	// initialized on first use
 
     AlgebraicNumber( AlgebraicField field, BigRational... factors )
     {
@@ -25,6 +38,8 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         for ( int i = factors.length; i < this.factors.length; i++ ) {
             this .factors[ i ] = BigRational.ZERO;
         }
+    	isZero = isZero(this);
+    	isOne = isOne(this);
     }
 
     /**
@@ -36,25 +51,27 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     {
         BigInteger lcm = BigInteger.ONE;
         for (BigRational factor : this.factors) {
-            BigInteger aDivisor = factor.getDenominator();
-            lcm = lcm .multiply( aDivisor ) .abs() .divide( lcm .gcd( aDivisor ) );
+        	if(! factor.isWhole() ) {
+        		BigInteger aDivisor = factor.getDenominator();
+        		lcm = lcm .multiply( aDivisor ) .abs() .divide( lcm .gcd( aDivisor ) );
+        	}
         }
         return lcm;
     }
 
     public BigRational[] getFactors()
     {
-        return this .factors;
+        return this .factors.clone(); // return a copy to ensure that this instance remains immutable
     }
 
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result 
-                + Arrays.hashCode( factors );
-        return result;
+    	if(hashCode == null) {
+            hashCode = 31 // prime
+        		+ Arrays.hashCode( factors );
+    	}
+        return hashCode;
     }
 
     @Override
@@ -89,12 +106,17 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
             // or an IllegalStateException if fields are different
             return 0;
         }
-        int comparison = Integer.compare(factors.length, other.factors.length);
-        if (comparison != 0) {
-            return comparison;
-        }
+        // Since we know both fields are the same, 
+        // both AlgebraicNumbers must have the same number of factors
+        // so there's no point in comparing factors.length
+        // assert(this.factors.length == other.factors.length);
         Double d1 = this.evaluate();
         Double d2 = other.evaluate();
+        // Because of the rounding errors when converting to a double,
+        // It's possible that the two double values are equal 
+        // yet the two AlgebraicaNumbers are not.
+        // TODO: Develop a test case to show this scenario
+        // TODO: Consider if it's worth the overhead of using BigDecimal.compareTo() in this case
         return d1.compareTo(d2);
     }
     
@@ -118,7 +140,8 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return new AlgebraicNumber( this .field, sum );
     }
 
-    public AlgebraicNumber times( AlgebraicNumber that )
+    @Override
+	public AlgebraicNumber times( AlgebraicNumber that )
     {
         if ( this.isZero() || that .isZero() )
             return this .field .zero();
@@ -148,57 +171,72 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
 
     public double evaluate()
     {
-        return this .field .evaluateNumber( factors );
+    	if(doubleValue == null) {
+        	doubleValue = field .evaluateNumber( factors );
+    	}
+        return doubleValue;
     }
 
-    @Override
-    public boolean isZero()
+    private static boolean isZero(AlgebraicNumber that)
     {
-        for ( BigRational factor : this .factors ) {
+        for ( BigRational factor : that .factors ) {
             if ( ! factor .isZero() )
                 return false;
         }
         return true;
     }
 
-    @Override
-    public boolean isOne()
+    private static boolean isOne(AlgebraicNumber that)
     {
-        if ( ! this .factors[ 0 ] .isOne() )
+        if ( ! that .factors[ 0 ] .isOne() )
             return false;
-        for ( int i = 1; i < this .factors.length; i++ ) {
-            if ( ! this .factors[ i ] .isZero() )
+        for ( int i = 1; i < that .factors.length; i++ ) {
+            if ( ! that .factors[ i ] .isZero() )
                 return false;
         }
         return true;
     }
 
     @Override
+    public boolean isZero()     { return isZero; }
+    @Override
+    public boolean isOne()      { return isOne; }
+
+    @Override
     public AlgebraicNumber negate()
     {
-        BigRational[] result = new BigRational[ this .factors .length ];
+        BigRational[] result = new BigRational[ factors .length ];
         for ( int i = 0; i < result.length; i++ ) {
-            result[ i ] = this .factors[ i ] .negate();
+            result[ i ] = factors[ i ] .negate();
         }
-        return new AlgebraicNumber( this .field, result );
+        return new AlgebraicNumber( field, result );
     }
 
     @Override
     public AlgebraicNumber reciprocal()
     {
-        return new AlgebraicNumber( this .field, this .field .reciprocal( this .factors ) );
+        return new AlgebraicNumber( field, field .reciprocal( factors ) );
     }
 
     public void getNumberExpression( StringBuffer buf, int format )
     {
-        this .field .getNumberExpression( buf, this .factors, format );
+    	if(toString[format] == null) {
+    		int originalLength = buf.length(); // may not be empty
+    		field .getNumberExpression( buf, factors, format ); // calculate it
+    		toString[format] = buf.toString().substring(originalLength); // cache it 
+    	} else {
+    		buf.append(toString[format]);
+    	}
     }
 
     public String toString( int format )
     {
-        StringBuffer buf = new StringBuffer();
-        this .getNumberExpression( buf, format );
-        return buf .toString();
+    	if(toString[format] == null) {
+	        StringBuffer buf = new StringBuffer();
+	        getNumberExpression( buf, format );
+//	        toString[format] = buf .toString(); // getNumberExpression() will have cached it so no need to do it again here 
+    	}
+    	return toString[format];
     }
 
     @Override

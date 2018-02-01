@@ -42,12 +42,12 @@ public class Fields
     }
 
     
-    public static final int rows( Element[][] matrix )
+    public static final int rows( Element<?>[][] matrix )
     {
     	return matrix.length;
     }
     
-    public static final int columns( Element[][] matrix )
+    public static final int columns( Element<?>[][] matrix )
     {
     	return matrix[ 0 ] .length;
     }
