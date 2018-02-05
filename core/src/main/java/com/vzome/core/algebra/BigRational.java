@@ -39,7 +39,9 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     
     private final boolean isOne;
     private final boolean isZero;
-    private final boolean isWhole;    
+    private final boolean isWhole;
+    private final boolean canAddInteger;
+    private final boolean canMultiplyInteger;
     private final int signum;
     
     private final String toString; 
@@ -85,8 +87,10 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
         }
     	isZero = isZero(this);
     	isOne = isOne(this);
-    	isWhole = isWhole(this); 
+    	isWhole = isWhole(this);
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
 
@@ -108,6 +112,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	isOne = isOne(this);
     	isWhole = isWhole(this); 
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
     
@@ -129,6 +135,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	isOne = isOne(this);
     	isWhole = isWhole(this);
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
     
@@ -150,6 +158,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	isOne = isOne(this);
     	isWhole = isWhole(this);
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
 
@@ -181,6 +191,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	isOne = isOne(this);
     	isWhole = isWhole(this);
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
 
@@ -226,6 +238,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
             	isOne = isOne(this);
             	isWhole = isWhole(this);
             	signum = signum(this);
+            	canAddInteger = canAddInteger(this);
+            	canMultiplyInteger = canMultiplyInteger(this);
             	toString = toString(this);
                 return;
                 
@@ -267,6 +281,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
             	isOne = temp.isOne;
             	isWhole = temp.isWhole;
             	signum = temp.signum;
+            	canAddInteger = temp.canAddInteger;
+            	canMultiplyInteger = temp.canMultiplyInteger;
             	toString = temp.toString;
                 return;
             }
@@ -334,6 +350,29 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	return true;
     }
 
+    /**
+     * 
+     * @param n BigRational to be evaluated 
+     * @return true if any Integer can be added to n without BigInteger representation
+     */
+    static boolean canAddInteger(BigRational n) {
+    	return( n.den == 1 
+    			&& n.num < Long.MAX_VALUE - Integer.MAX_VALUE
+    			&& n.num > Long.MIN_VALUE - Integer.MIN_VALUE );
+    }
+    
+    
+    /**
+     * 
+     * @param n BigRational to be evaluated 
+     * @return true if any Integer can be multipliedd to n without BigInteger representation 
+     */
+    static boolean canMultiplyInteger(BigRational n) {
+    	return( n.den == 1 
+    			&& n.num < Integer.MAX_VALUE
+    			&& n.num > Integer.MIN_VALUE );
+    }
+    
     /**
      * 
      * @return isWhole() && fitsInLong( getNumerator() );
@@ -775,6 +814,18 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     }
 	
     /**
+     * 
+     * @param n int value to be multiplied
+     * @return this * n
+     */
+    public BigRational times( int n )
+    {
+    	return n == 1 ? this : n == 0 ? ZERO : canMultiplyInteger
+			? new BigRational( num * n )
+			: this.times( new BigRational( n ) );
+    }
+
+    /**
      * @param that
      * @return this * that
      */
@@ -808,6 +859,20 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
         BigInteger n = this.getNumerator().multiply(that.getNumerator());
         BigInteger d = this.getDenominator().multiply(that.getDenominator());
         return new BigRational( n, d );
+    }
+
+    /**
+     * 
+     * @param n int value to be added
+     * @return this + n
+     */
+    public BigRational plus( int n )
+    {
+    	return n == 0 
+			? this 
+			: canAddInteger
+				? new BigRational( num + n )
+				: this.plus( new BigRational( n ) );
     }
 
     /**
@@ -899,6 +964,20 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     }
 
     /**
+     * 
+     * @param n int value to be subtracted
+     * @return this - n
+     */
+    public BigRational minus( int n )
+    {
+    	return n == 0 
+			? this 
+			: canAddInteger
+				? new BigRational( num - n )
+				: this.plus( new BigRational( -n ) );
+    }
+
+    /**
      * @return this - that
      */
     @Override
@@ -920,6 +999,21 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
         		: new BigRational( den, num );
     }
 
+    /**
+     * 
+     * @param n long value by which this is to be divided
+     * @return this / n
+     * Note that {@code d} is a long, not an int as in {@code plus(int n)}, {@code minus(int n)} and {@code times(int n)}.
+     */
+    public BigRational dividedBy( long d )
+    {
+    	// no need to check here if d == 0 
+    	// since the constructor will throw the exception
+    	return d == 1 
+			? this 
+			: this.times( new BigRational( 1, d ) );
+    }
+    
     /**
      * @return this / that
      */

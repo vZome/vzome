@@ -370,6 +370,121 @@ public class BigRationalTest {
     }
     
     @Test
+    public void testPlusInteger() {
+    	BigRational n = new BigRational(Long.MIN_VALUE);
+    	n = n.plus(2);
+        assertTrue(n.isWhole());
+    	assertEquals(Long.toString(Long.MIN_VALUE + 2), n.toString());
+    	
+        n = BigRational.ZERO.plus(3);
+        assertEquals("3", n.toString());
+
+        n = n.plus(-13);
+        assertEquals("-10", n.toString());
+
+        n = new BigRational(Integer.MAX_VALUE);
+    	n = n.plus(Integer.MAX_VALUE);
+        assertFalse(n.isBig());
+    	assertEquals(Long.toString(Integer.MAX_VALUE * 2L), n.toString());
+    	
+        n = BigRational.ZERO.plus(7);
+        assertEquals("7", n.toString());
+
+        n = n.plus(0);
+        assertEquals("7", n.toString());
+
+        n = n.plus(-17);
+        assertEquals("-10", n.toString());
+    }
+    
+    @Test
+    public void testMinusInteger() {
+    	BigRational n = new BigRational(Long.MAX_VALUE);
+    	n = n.minus(2);
+        assertTrue(n.isWhole());
+    	assertEquals(Long.toString(Long.MAX_VALUE - 2), n.toString());
+    	
+        n = BigRational.ZERO.minus(3);
+        assertEquals("-3", n.toString());
+
+        n = n.minus(-13);
+        assertEquals("10", n.toString());
+
+        n = BigRational.ZERO.minus(5);
+        assertEquals("-5", n.toString());
+
+        n = n.minus(0);
+        assertEquals("-5", n.toString());
+
+        n = n.minus(-15);
+        assertEquals("10", n.toString());
+    }
+    
+    @Test
+    public void testTimesInteger() {
+    	BigRational n = new BigRational(Long.MAX_VALUE);
+    	n = n.times(2);
+        assertTrue(n.isBig());
+    	assertEquals(BigInteger.valueOf(Long.MAX_VALUE).multiply(BigInteger.valueOf(2)).toString(), n.toString());
+    	
+    	n = new BigRational(Integer.MAX_VALUE);
+    	n = n.times(2);
+    	assertEquals(Long.toString(Integer.MAX_VALUE * 2L), n.toString());
+    	
+    	n = new BigRational(37);
+    	n = n.times(1);
+    	assertEquals("37", n.toString());
+    	
+    	n = n.times(0);
+    	assertEquals("0", n.toString());
+    	
+    	n = new BigRational(43);
+    	n = n.times(7);
+    	assertEquals(Long.toString(43*7), n.toString());
+    	
+        n = BigRational.ZERO.times(6);
+        assertEquals("0", n.toString());
+
+        n = new BigRational(Integer.MAX_VALUE);
+    	n = n.times(Integer.MAX_VALUE);
+        assertFalse(n.isBig());
+    	assertEquals(Long.toString((long)Integer.MAX_VALUE * (long)Integer.MAX_VALUE), n.toString());
+
+    	n = new BigRational(Integer.MIN_VALUE);
+    	n = n.times(Integer.MIN_VALUE);
+        assertFalse(n.isBig());
+    	assertEquals(n.toString(), Long.toString((long)Integer.MIN_VALUE * (long)Integer.MIN_VALUE));
+    }
+
+    @Test
+    public void testDividedByLong() {
+    	BigRational n = new BigRational(Long.MIN_VALUE);
+    	n = n.dividedBy(2);
+        assertTrue(n.isWhole());
+    	assertEquals(Long.toString(Long.MIN_VALUE / 2L), n.toString());
+    	
+    	n = n.dividedBy(3);
+        assertFalse(n.isWhole());
+    	assertEquals(Long.toString(Long.MIN_VALUE / 2L) + "/3", n.toString());
+    	
+        n = BigRational.ONE.dividedBy(1);
+        assertEquals("1", n.toString());
+
+        n = BigRational.ONE.dividedBy(-2);
+        assertEquals("-1/2", n.toString());
+
+        n = BigRational.ZERO.dividedBy(3);
+        assertEquals("0", n.toString());
+
+        n = BigRational.ONE.dividedBy(4);
+        assertEquals("1/4", n.toString());
+
+        n = new BigRational(Integer.MAX_VALUE);
+    	n = n.dividedBy(Integer.MAX_VALUE);
+    	assertEquals("1", n.toString());
+    }    
+
+    @Test
     public void testTimes() {
         {
             BigRational neg = new BigRational(-1L);
@@ -609,7 +724,39 @@ public class BigRationalTest {
             assertEquals(expected, ex.getMessage());
             catches++;
         }
-        assertEquals(4, tries);
+        try {
+        	tries++;
+            BigRational.ONE.dividedBy(0);
+            fail(failMsg);
+        } catch (IllegalArgumentException ex) {
+            assertEquals(expected, ex.getMessage());
+            catches++;
+        }
+        try {
+        	tries++;
+            BigRational.ONE.dividedBy(BigRational.ZERO);
+            fail(failMsg);
+        } catch (IllegalArgumentException ex) {
+            assertEquals(expected, ex.getMessage());
+            catches++;
+        }
+        try {
+        	tries++;
+            BigRational.ZERO.dividedBy(0);
+            fail(failMsg);
+        } catch (IllegalArgumentException ex) {
+            assertEquals(expected, ex.getMessage());
+            catches++;
+        }
+        try {
+        	tries++;
+            BigRational.ZERO.dividedBy(BigRational.ZERO);
+            fail(failMsg);
+        } catch (IllegalArgumentException ex) {
+            assertEquals(expected, ex.getMessage());
+            catches++;
+        }
+        assertEquals(8, tries);
         assertEquals(catches, tries);
     }
 
