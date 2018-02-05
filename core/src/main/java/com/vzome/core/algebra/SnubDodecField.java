@@ -3,24 +3,24 @@
 
 package com.vzome.core.algebra;
 
-
 public class SnubDodecField extends AlgebraicField
 {    
     public SnubDodecField( AlgebraicField pentField )
     {
-        super( "snubDodec", pentField );
+        super( "snubDodec", 6, pentField );
 
-        defaultStrutScaling = createAlgebraicNumber( new int[]{ 1, 0, 0, 0, 0, 0 } );
+        defaultStrutScaling = one;
     };
     
-    public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
+    public static final double PHI_VALUE = PentagonField.PHI_VALUE; // ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
 
-    private static final double XI_VALUE = 1.7155615d;
+    // specified to more precision than a double can retain so that value is as exact as possible: within one ulp().
+    public static final double XI_VALUE = 1.71556149969736783d; // root of x^3 -2x -PHI_VALUE 
     
     private static final int A = 0, B = 1, C = 2, D = 3, E = 4, F = 5;
 
     /*
-     * Implemented by applying regex changes to Corrado's Mathematica notebook,
+     * Implemented by applying regex changes to Corrado Falcolini's Mathematica notebook,
      * so it should be bulletproof.
      */
     @Override
@@ -176,20 +176,16 @@ public class SnubDodecField extends AlgebraicField
             buf .append( "" );
         }
     }
-    
-    @Override
-    public int getOrder()
-    {
-        return 6;
-    }
-
-    @Override
-    public int getNumIrrationals()
-    {
-        return 3;
-    }
 
     private final AlgebraicNumber defaultStrutScaling;
+    
+    /**
+     * scalar for an affine pentagon
+     */
+    @Override
+    public AlgebraicNumber getAffineScalar() {
+        return getUnitTerm( 1 );
+    }
 
     @Override
     public AlgebraicNumber getDefaultStrutScaling()
@@ -289,6 +285,9 @@ public class SnubDodecField extends AlgebraicField
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
         switch ( whichIrrational ) {
+        case A:
+        	return factors;
+        	
         case B:
             return new BigRational[]{ factors[ B ],
                                     factors[ A ] .plus( factors[ B ] ),

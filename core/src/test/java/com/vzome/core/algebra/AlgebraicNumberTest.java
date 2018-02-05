@@ -6,14 +6,19 @@ import static com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.VEF_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.ZOMIC_FORMAT;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class AlgebraicNumberTest extends TestCase
+public class AlgebraicNumberTest
 {
+    @Test
     public void testZeroAndOne()
     {
         AlgebraicField field = new PentagonField();
@@ -34,6 +39,7 @@ public class AlgebraicNumberTest extends TestCase
         }
     }
 
+    @Test
     public void testZeroPower()
     {
         AlgebraicField pentagonField = new PentagonField();
@@ -51,6 +57,7 @@ public class AlgebraicNumberTest extends TestCase
         }
     }
 
+    @Test
     public void testAlternativeConstructions() {
         AlgebraicField field = new PentagonField();
         int ones = -7, irrat = 3, denom = 5;
@@ -80,6 +87,7 @@ public class AlgebraicNumberTest extends TestCase
         assertEquals("(3/5,-7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
     }
 
+    @Test
     public void testFactorsNotNull()
     {
         final AlgebraicField field = new PentagonField();
@@ -123,27 +131,29 @@ public class AlgebraicNumberTest extends TestCase
         }
     }
 
+    @Test
     public void testPentagonField()
     {
         AlgebraicField field = new PentagonField();
 
         AlgebraicNumber one = field .one();
-        AlgebraicNumber tau = field .createAlgebraicNumber( new int[]{ 0, 1 } );
-        AlgebraicNumber tau_5 = field .createAlgebraicNumber( new int[]{ 3, 5 } );
-        AlgebraicNumber tau_9 = field .createAlgebraicNumber( new int[]{ 21, 34 } );
-        AlgebraicNumber tau_minus5 = field .createAlgebraicNumber( new int[]{ -8, 5 } );
+        AlgebraicNumber phi = field .createAlgebraicNumber( new int[]{ 0, 1 } );
+        AlgebraicNumber phi_5 = field .createAlgebraicNumber( new int[]{ 3, 5 } );
+        AlgebraicNumber phi_9 = field .createAlgebraicNumber( new int[]{ 21, 34 } );
+        AlgebraicNumber phi_minus5 = field .createAlgebraicNumber( new int[]{ -8, 5 } );
 
-        AlgebraicNumber result = tau .times( tau );
-        assertTrue( result .equals( tau .plus( one ) ) );
-        result = result .dividedBy( tau );
-        assertTrue( result .equals( tau ) );
-        assertTrue( tau_5 .equals( tau .times( tau .times( tau .times( tau .times( tau ) ) ) ) ) );
-        assertTrue( tau_9 .equals( tau_5 .times( tau .times( tau .times( tau .times( tau ) ) ) ) ) );
-        assertTrue( tau_5 .equals( field.createPower( 5 ) ) );
-        assertTrue( tau_9 .equals( field.createPower( 9 ) ) );
-        assertTrue( tau_minus5 .equals( field.createPower( -5 ) ) );
+        AlgebraicNumber result = phi .times( phi );
+        assertTrue( result .equals( phi .plus( one ) ) );
+        result = result .dividedBy( phi );
+        assertTrue( result .equals( phi ) );
+        assertTrue( phi_5 .equals( phi .times( phi .times( phi .times( phi .times( phi ) ) ) ) ) );
+        assertTrue( phi_9 .equals( phi_5 .times( phi .times( phi .times( phi .times( phi ) ) ) ) ) );
+        assertTrue( phi_5 .equals( field.createPower( 5 ) ) );
+        assertTrue( phi_9 .equals( field.createPower( 9 ) ) );
+        assertTrue( phi_minus5 .equals( field.createPower( -5 ) ) );
     }
 
+    @Test
     public void testToString()
     {
         AlgebraicField field = new PentagonField();
@@ -201,8 +211,9 @@ public class AlgebraicNumberTest extends TestCase
         
         assertEquals( "\u03C6 +\u03C6\u03BE\u00B2", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "phi +phi*xi^2", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
-}
+    }
 
+    @Test
     public void testRootTwoField()
     {
         AlgebraicField field = new RootTwoField();
@@ -217,6 +228,7 @@ public class AlgebraicNumberTest extends TestCase
         assertTrue( powerNeg5 .equals( field.createPower( -5 ) ) );
     }
 
+    @Test
     public void testRootThreeField()
     {
         AlgebraicField field = new RootThreeField();
@@ -234,6 +246,7 @@ public class AlgebraicNumberTest extends TestCase
         assertTrue( powerNeg3 .equals( field.createPower( - 3 ) ) );
     }
 
+    @Test
     public void testHeptagonField()
     {
         AlgebraicField field = new HeptagonField();
@@ -248,6 +261,7 @@ public class AlgebraicNumberTest extends TestCase
         assertEquals( sigma .times( sigma ) .times( sigma ) .times( sigma ) .times( sigma ), sigma_5 );
     }
 
+    @Test
     public void testSnubDodecField()
     {
         AlgebraicField field = new SnubDodecField( new PentagonField() );
@@ -281,11 +295,8 @@ public class AlgebraicNumberTest extends TestCase
         assertEquals( result, phi_xi2_inv );
     }
 
-    private void writeNumber( String string, AlgebraicNumber phi_xi2_inv,
-            AlgebraicField field )
+    private void writeNumber( String string, AlgebraicNumber phi_xi2_inv, AlgebraicField field )
     {
-        // TODO Auto-generated method stub
-        
     }
 
     // public void testBasisMatrix()
@@ -315,23 +326,25 @@ public class AlgebraicNumberTest extends TestCase
     // assertTrue( Arrays.equals( xt, e2 ) );
     // }
 
+    @Test
     public void testDotProduct()
     {
         AlgebraicField field = new PentagonField();
 
-        AlgebraicVector v1 = field .createVector( new int[]
+        AlgebraicVector v1 = field .createVector( new int[][]
             {
-                1, 1, 0, 1, 0, 1, 1, 1
+                {1,1, 0,1}, {0,1, 1,1}
             } );
-        AlgebraicVector v2 = field .createVector( new int[]
+        AlgebraicVector v2 = field .createVector( new int[][]
             {
-                0, 1, -5, 1, 5, 1, 0, 1
+                {0,1, -5,1}, {5,1, 0,1}
             } );
 
         AlgebraicNumber dot = v1 .dot( v2 );
         assertTrue( dot .isZero() );
     }
-    
+
+    @Test
     public void testChangeOfBasis()
     {
         AlgebraicField field = new PentagonField();
@@ -353,6 +366,7 @@ public class AlgebraicNumberTest extends TestCase
         assertEquals( r .timesColumn( c2 ), b2 );
     }
 
+    @Test
     public void testMatrixInverse()
     {
         AlgebraicField field = new PentagonField();
@@ -368,6 +382,7 @@ public class AlgebraicNumberTest extends TestCase
         assertEquals( m .transpose() .timesRow( in ), out );
     }
     
+    @Test
     @SuppressWarnings("unlikely-arg-type")
 	public void testEquals()
     {
@@ -375,8 +390,9 @@ public class AlgebraicNumberTest extends TestCase
         
         assertFalse(field.zero().equals(null));
         assertFalse(field.zero().equals(this));
-     }
+    }
 
+    @Test
     public void testDivisor()
     {
         AlgebraicField field = new HeptagonField();
@@ -397,6 +413,7 @@ public class AlgebraicNumberTest extends TestCase
         assertEquals( BigInteger.ONE, n.getDivisor() );
     }
 
+    @Test
     public void testConstructorException()
     {
         AlgebraicField pentagonField = new PentagonField();
@@ -426,6 +443,7 @@ public class AlgebraicNumberTest extends TestCase
         assertEquals(fields.length, tests);
     }
 
+    @Test
     public void testCompareTo()
     {
         AlgebraicField field = new PentagonField();
@@ -443,6 +461,5 @@ public class AlgebraicNumberTest extends TestCase
         // TODO: Develop a test case to show this scenario
         // TODO: Consider if it's worth the overhead of using BigDecimal.compareTo() in this case
     }
-
 
 }

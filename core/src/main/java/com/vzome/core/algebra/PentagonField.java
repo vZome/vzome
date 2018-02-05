@@ -6,8 +6,7 @@ public final class PentagonField extends AlgebraicField
 {
     public PentagonField()
     {
-        super( "golden" );
-
+        super( "golden", 2 );
         defaultStrutScaling = createAlgebraicNumber( -1, 1, 2, 0 );
     };
 
@@ -23,12 +22,6 @@ public final class PentagonField extends AlgebraicField
     double evaluateNumber( BigRational[] factors )
     {
         return factors[ ONES_PLACE ] .evaluate() + PHI_VALUE * factors[ PHIS_PLACE ] .evaluate();
-    }
-
-    @Override
-    public int getOrder()
-    {
-        return 2;
     }
 
     private final AlgebraicNumber defaultStrutScaling;
@@ -58,6 +51,14 @@ public final class PentagonField extends AlgebraicField
     {
         buf.append( "phi = ( 1 + sqrt(5) ) / 2" );
     }
+    
+    /**
+     * scalar for an affine pentagon
+     */
+    @Override
+    public AlgebraicNumber getAffineScalar() {
+        return getUnitTerm( 1 );
+    }
 
     @Override
     public AlgebraicNumber getDefaultStrutScaling()
@@ -76,8 +77,10 @@ public final class PentagonField extends AlgebraicField
     {
         if ( whichIrrational == 0 )
             return factors;
-        else
+        else if ( whichIrrational == 1 )
             return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 1 ] ) };
+        else 
+        	throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
     }
 
     @Override

@@ -245,7 +245,8 @@ public class XmlSaveFormat
             String denoms = val .getAttribute( "denoms" );
             StringTokenizer tokens = new StringTokenizer( nums );
             
-            int[] result = new int[]{ 0,1, 0,1, 0,1, 0,1, 0,1, 0,1 };
+            // TODO: This should be generalized for any order field. It's currently hard coded for a 3d vector in an order 2 field.
+            int[] result = new int[]{ 0,1, 0,1,   0,1, 0,1,   0,1, 0,1 };
             for ( int i = 0; i < mField .getOrder(); i++ )
             {
                 String token = tokens .nextToken();
@@ -264,7 +265,16 @@ public class XmlSaveFormat
                     result[ i * 2 + 1 ] = Integer .parseInt( token );
                 }
             }
-            value = mField .createVector( result );
+            // split the result array into 3 equal length arrays, one for each dimension
+            final int oneThirdLen = result.length/3;
+            final int twoThirdLen = oneThirdLen * 2;
+            int[][] result3d = new int[3][oneThirdLen];
+            for(int i=0; i < oneThirdLen; i++) {
+                result3d[0][i] = result[i];
+                result3d[1][i] = result[i+oneThirdLen];
+                result3d[2][i] = result[i+twoThirdLen];
+            }
+            value = mField .createVector( result3d );
         }
         else if ( valName .equals( "GoldenVector" ) )
             value = parseAlgebraicVector( val );

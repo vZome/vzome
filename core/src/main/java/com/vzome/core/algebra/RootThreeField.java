@@ -3,8 +3,6 @@
 
 package com.vzome.core.algebra;
 
-
-
 public class RootThreeField extends AlgebraicField
 {
     public static final double ROOT_3 = Math.sqrt( 3d );
@@ -15,9 +13,7 @@ public class RootThreeField extends AlgebraicField
     
     public RootThreeField()
     {
-        super( "rootThree" );
-        
-        // we start with 1/2 just because we did in the golden field
+        super( "rootThree", 2 );
         defaultStrutScaling = createAlgebraicNumber( 1, 0, 2, -3 );
     };
     
@@ -36,12 +32,14 @@ public class RootThreeField extends AlgebraicField
         return new BigRational[]{ ones, sqrt3s };
     }
 
+    /**
+     * scalar for an affine hexagon
+     */
     @Override
-    public int getOrder()
-    {
-        return 2;
+    public AlgebraicNumber getAffineScalar() {
+        return createRational( 2 );
     }
-    
+
     @Override
     public AlgebraicNumber getDefaultStrutScaling()
     {
@@ -61,8 +59,10 @@ public class RootThreeField extends AlgebraicField
     {
         if ( whichIrrational == 0 )
             return factors;
-        else
+        else if ( whichIrrational == 1 )
             return new BigRational[]{ factors[ 1 ] .times( THREE ), factors[ 0 ] };
+        else 
+        	throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
     }
 
     @Override

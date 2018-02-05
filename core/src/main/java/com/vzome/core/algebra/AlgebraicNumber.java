@@ -38,6 +38,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         for ( int i = factors.length; i < this.factors.length; i++ ) {
             this .factors[ i ] = BigRational.ZERO;
         }
+        field.normalize(factors);
     	isZero = isZero(this);
     	isOne = isOne(this);
     }
@@ -188,10 +189,18 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
 
     private static boolean isOne(AlgebraicNumber that)
     {
-        if ( ! that .factors[ 0 ] .isOne() )
-            return false;
-        for ( int i = 1; i < that .factors.length; i++ ) {
-            if ( ! that .factors[ i ] .isZero() )
+        return that.factors[ 0 ] .isOne()
+                ? that.isRational()
+                : false;
+    }
+
+    // isRational() is not currently used enough 
+    // to warrant caching it in a private field like isZero and isOne
+    // so just calculate it
+    public boolean isRational()
+    {
+        for( int i = 1; i < factors.length; i++ ) {
+            if ( ! factors[ i ] .isZero() )
                 return false;
         }
         return true;
@@ -201,7 +210,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     public boolean isZero()     { return isZero; }
     @Override
     public boolean isOne()      { return isOne; }
-
+    
     @Override
     public AlgebraicNumber negate()
     {
@@ -218,6 +227,17 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return new AlgebraicNumber( field, field .reciprocal( factors ) );
     }
 
+    /**
+     * 
+     * @param buf
+     * @param format must be one of the following values.
+     * The result is formatted as follows:
+     * <br/>
+     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br/>
+	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br/>
+	 * {@code ZOMIC_FORMAT      // 4 3}<br/>
+	 * {@code VEF_FORMAT        // (3,4)}<br/>
+     */
     public void getNumberExpression( StringBuffer buf, int format )
     {
     	if(toString[format] == null) {
@@ -229,6 +249,16 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     	}
     }
 
+    /**
+     * 
+     * @param format must be one of the following values.
+     * The result is formatted as follows:
+     * <br/>
+     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br/>
+	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br/>
+	 * {@code ZOMIC_FORMAT      // 4 3}<br/>
+	 * {@code VEF_FORMAT        // (3,4)}
+     */
     public String toString( int format )
     {
     	if(toString[format] == null) {

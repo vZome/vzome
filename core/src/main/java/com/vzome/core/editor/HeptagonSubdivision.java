@@ -31,7 +31,7 @@ public class HeptagonSubdivision extends ChangeManifestations
                 else {
                     Segment segment = new SegmentJoiningPoints( p1, nextPoint );
                     HeptagonField field = (HeptagonField) segment .getField();
-                    AlgebraicNumber scaleFactor = field .sigmaReciprocal();
+                    AlgebraicNumber scaleFactor = field .getAffineScalar() .reciprocal();
                     AlgebraicVector offset = segment .getOffset();
                     AlgebraicVector off2 = offset .scale( scaleFactor );
                     AlgebraicVector off1 = off2 .scale( scaleFactor );

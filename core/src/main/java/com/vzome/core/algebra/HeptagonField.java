@@ -3,35 +3,18 @@
 
 package com.vzome.core.algebra;
 
-
-
-
 public class HeptagonField extends AlgebraicField
 {    
-	public HeptagonField()
+    public HeptagonField()
     {
-        super( "heptagon" );
-
-        SIGMA_INV = fromIntArray( new int[]{ 0,1,0,1,1,1 } ) .reciprocal();
+        super( "heptagon", 3 );
     };
     
-    public static final double RHO_VALUE = 1.8019377d, SIGMA_VALUE = 2.2469796d;
-    
-    public static final double ALTITUDE = Math.sqrt( SIGMA_VALUE * SIGMA_VALUE - 0.25d );
+    // specified to more precision than a double can retain so that values are as exact as possible: within one ulp().
+    private static final double RHO_VALUE   = 1.80193773580483825d;  // root of x^3 - x^2 -2x +1
+    private static final double SIGMA_VALUE = 2.24697960371746706d;  // root of x^3 -2x^2 - x +1
 
     private static final int A = 0, B = 1, C = 2;
-    
-    private final AlgebraicNumber SIGMA_INV;
-
-    private AlgebraicNumber fromIntArray( int[] ints )
-    {
-        return new AlgebraicNumber( this, new BigRational( ints[0], ints[1] ), new BigRational( ints[2], ints[3] ), new BigRational( ints[4], ints[5] ) );
-    }
-    
-    public AlgebraicNumber sigmaReciprocal()
-    {
-        return SIGMA_INV;
-    }
     
     @Override
     public final BigRational[] multiply( BigRational[] first, BigRational[] second )
@@ -63,22 +46,18 @@ public class HeptagonField extends AlgebraicField
         }
     }
     
+    /**
+     * scalar for an affine heptagon
+     */
     @Override
-    public int getOrder()
-    {
-        return 3;
+    public AlgebraicNumber getAffineScalar() {
+        return getUnitTerm( 2 );
     }
 
     @Override
     public AlgebraicNumber getDefaultStrutScaling()
     {
         return this .one();
-    }
-
-    @Override
-    public int getNumIrrationals()
-    {
-        return 2;
     }
 
     @Override
@@ -113,7 +92,9 @@ public class HeptagonField extends AlgebraicField
             return factors;
         else if ( whichIrrational == B )
             return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 2 ] ), factors[ 1 ] .plus( factors[ 2 ] ) };
-        else
+        else if ( whichIrrational == C )
             return new BigRational[]{ factors[ 2 ], factors[ 1 ] .plus( factors[ 2 ] ), factors[ 0 ] .plus( factors[ 1 ] ) .plus( factors[ 2 ] ) };
+        else 
+        	throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
     }
 }

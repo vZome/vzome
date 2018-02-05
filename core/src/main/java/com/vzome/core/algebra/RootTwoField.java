@@ -3,14 +3,11 @@
 
 package com.vzome.core.algebra;
 
-
 public class RootTwoField extends AlgebraicField
 {
     public RootTwoField()
     {
-        super( "rootTwo" );
-        
-        // we start with 1/2 just because we did in the golden field
+        super( "rootTwo", 2 );
         defaultStrutScaling = createAlgebraicNumber( 1, 0, 2, -3 );
     };
 
@@ -18,12 +15,6 @@ public class RootTwoField extends AlgebraicField
     public void defineMultiplier( StringBuffer buf, int which )
     {
         buf .append( "" );
-    }
-    
-    @Override
-    public int getOrder()
-    {
-        return 2;
     }
     
     public static final double ROOT_2 = Math.sqrt( 2d );
@@ -69,8 +60,10 @@ public class RootTwoField extends AlgebraicField
     {
         if ( whichIrrational == 0 )
             return factors;
-        else
+        else if ( whichIrrational == 1 )
             return new BigRational[]{ factors[ 1 ] .plus( factors[ 1 ] ), factors[ 0 ] };
+        else 
+        	throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
     }
     
     @Override
