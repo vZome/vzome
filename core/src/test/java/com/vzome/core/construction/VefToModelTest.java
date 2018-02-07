@@ -40,13 +40,12 @@ public class VefToModelTest
                 + "4 5 6 7 "
                 ;
         
-        final AlgebraicField pentagonField = new PentagonField();
         final AlgebraicField[] fields = { 
-            pentagonField, 
+        	new PentagonField(), 
             new RootTwoField(), 
             new RootThreeField(), 
             new HeptagonField(), 
-            new SnubDodecField( pentagonField ),
+            new SnubDodecField(),
         };
 
         int testsPassed = 0;
@@ -189,13 +188,12 @@ public class VefToModelTest
         final AlgebraicVector quaternion = null;
         final NewConstructions effects = new NewConstructions();
         final AlgebraicVector offset = null;
-        final AlgebraicField pentagonField = new PentagonField();
         final AlgebraicField[] fields = {
-            pentagonField,
+        	new PentagonField(),
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField( pentagonField ),
+            new SnubDodecField(),
        };
 
         int testsPassed = 0;
@@ -255,13 +253,12 @@ public class VefToModelTest
         final AlgebraicVector quaternion = null;
         final NewConstructions effects = new NewConstructions();
         final AlgebraicVector offset = null;
-        final AlgebraicField pentagonField = new PentagonField();
         final AlgebraicField[] fields = {
-            pentagonField,                          // order 2
+            new PentagonField(),                    // order 2
             new RootTwoField(),                     // order 2
             new RootThreeField(),                   // order 2
             new HeptagonField(),                    // order 3
-            new SnubDodecField( pentagonField ),    // order 6
+            new SnubDodecField(),                   // order 6
        };
 
         int testsPassed = 0;
@@ -402,6 +399,47 @@ public class VefToModelTest
 //        System.out.println("v1=" + v1.toString());
     }
 
+    @Test
+    public void testParseSubField() {
+        final AlgebraicVector quaternion = null;
+        final NewConstructions effects = new NewConstructions();
+        final AlgebraicVector offset = null;
+        final String vefData = "vZome VEF 7 field golden " +
+                "actual scale 1 " +
+                "1 " +
+                "(0,0) (2,1) (4,3) (6,5) " ;
+        
+        final AlgebraicField[] fields = { 
+        	new PentagonField(), 
+            new SnubDodecField(),
+        };
+
+        int[] terms = new int[] {2, 3};
+        double r = new RootTwoField(). createAlgebraicNumber( terms ).evaluate();
+        double p = new PentagonField(). createAlgebraicNumber( terms ).evaluate();
+        double d = new SnubDodecField().createAlgebraicNumber( terms ).evaluate();
+        assertEquals(p, d);
+        assertFalse(p == r);
+
+        int testsPassed = 0;
+        final int[][] factors = new int[][] { {1,1, 2,1}, {3,1, 4,1}, {5,1, 6,1} };
+        for(AlgebraicField field : fields ) {
+            effects.clear();
+            AlgebraicNumber scale = field.createPower(0);
+            assertTrue(scale.isOne());
+            VefToModel parser = new VefToModel(quaternion, effects, scale, offset);
+            parser.parseVEF(vefData, field);
+            assertEquals(1, effects.size());
+            AlgebraicVector v = field.createVector(factors);
+            AlgebraicVector v0 = ((FreePoint) effects.get(0)).getLocation();
+            assertEquals(v, v0);
+            assertEquals(field, v.getField());
+            assertEquals(field, v0.getField());
+            testsPassed++;
+        }
+        assertEquals(fields.length, testsPassed);
+    }
+    
     private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
     {
         @Override

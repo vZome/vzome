@@ -1,10 +1,13 @@
 package com.vzome.core.algebra;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
+
 import java.util.HashSet;
 import java.util.Set;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.*;
-import static junit.framework.TestCase.assertTrue;
+
 import org.junit.Test;
 
 /**
@@ -14,12 +17,11 @@ public class AlgebraicFieldTest {
     private final static Set<AlgebraicField> fields = new HashSet<>();
     
     static {
-        AlgebraicField pentagonField = new PentagonField();
-        fields.add (pentagonField);
+        fields.add (new PentagonField());
         fields.add (new RootTwoField());
         fields.add (new RootThreeField());
         fields.add (new HeptagonField());
-        fields.add (new SnubDodecField(pentagonField));
+        fields.add (new SnubDodecField());
     }
     
     public void testNotEqual() {

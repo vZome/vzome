@@ -5,9 +5,21 @@ package com.vzome.core.algebra;
 
 public class RootTwoField extends AlgebraicField
 {
+    public static final String FIELD_NAME = "rootTwo";
+    
+    /**
+     * 
+     * @return the coefficients of this AlgebraicField class. 
+     * This can be used to determine when two fields have compatible coefficients 
+     * without having to generate an instance of the class. 
+     */
+    public static double[] getCoefficients() {
+        return new double[] { 1.0d, ROOT_2 };
+    }
+    
     public RootTwoField()
     {
-        super( "rootTwo", 2 );
+        super( FIELD_NAME, 2 );
         defaultStrutScaling = createAlgebraicNumber( 1, 0, 2, -3 );
     };
 

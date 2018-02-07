@@ -1,12 +1,25 @@
+
 //(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
 
 package com.vzome.core.algebra;
 
 public final class PentagonField extends AlgebraicField
 {
+    public static final String FIELD_NAME = "golden";
+    
+    /**
+     * 
+     * @return the coefficients of this AlgebraicField class. 
+     * This can be used to determine when two fields have compatible coefficients 
+     * without having to generate an instance of the class. 
+     */
+    public static double[] getCoefficients() {
+        return new double[] { 1.0d, PHI_VALUE };
+    }
+    
     public PentagonField()
     {
-        super( "golden", 2 );
+        super( FIELD_NAME, 2 );
         defaultStrutScaling = createAlgebraicNumber( -1, 1, 2, 0 );
     };
 

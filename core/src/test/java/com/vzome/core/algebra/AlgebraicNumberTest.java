@@ -42,13 +42,12 @@ public class AlgebraicNumberTest
     @Test
     public void testZeroPower()
     {
-        AlgebraicField pentagonField = new PentagonField();
         final AlgebraicField[] fields = {
-            pentagonField,
+        	new PentagonField(),
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField(pentagonField)
+            new SnubDodecField()
         };
         for(AlgebraicField field : fields ) {
             AlgebraicNumber one = field.createPower(0); // anything to the zero power...
@@ -189,7 +188,7 @@ public class AlgebraicNumberTest
         assertEquals( "6 11 14", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(14,11,6)", number.toString( AlgebraicField.VEF_FORMAT ) );
         
-        field = new SnubDodecField( new PentagonField() );
+        field = new SnubDodecField();
         number = field .createAlgebraicNumber( new int[]{ -12, 8, 2, -1, 6, -4 } );
         
         assertEquals( "-12 +8\u03C6 +2\u03BE -\u03C6\u03BE +6\u03BE\u00B2 -4\u03C6\u03BE\u00B2", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
@@ -264,7 +263,7 @@ public class AlgebraicNumberTest
     @Test
     public void testSnubDodecField()
     {
-        AlgebraicField field = new SnubDodecField( new PentagonField() );
+        AlgebraicField field = new SnubDodecField();
 
         AlgebraicNumber phi_xi2_inv = field .createAlgebraicNumber( new int[]{ -12, 8, 2, -1, 6, -4 } );
 
@@ -416,13 +415,12 @@ public class AlgebraicNumberTest
     @Test
     public void testConstructorException()
     {
-        AlgebraicField pentagonField = new PentagonField();
         final AlgebraicField[] fields = {
-            pentagonField,
+        	new PentagonField(),
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField(pentagonField)
+            new SnubDodecField()
         };
         int tests = 0;
         for(AlgebraicField field : fields ) {
@@ -462,4 +460,20 @@ public class AlgebraicNumberTest
         // TODO: Consider if it's worth the overhead of using BigDecimal.compareTo() in this case
     }
 
+    @Test
+    public void testHaveSameInitialCoefficients() {
+    	AlgebraicField pent = new PentagonField();
+    	AlgebraicField snub = new SnubDodecField();
+    	AlgebraicField root = new RootTwoField();
+    	
+	    assertEquals(
+	    	pent.createAlgebraicNumber( 2, 3 ).evaluate(),
+	    	snub.createAlgebraicNumber( 2, 3 ).evaluate()
+	    );
+	    
+	    assertTrue(  AlgebraicFields.haveSameInitialCoefficients(pent, PentagonField.FIELD_NAME) );	    
+	    assertTrue(  AlgebraicFields.haveSameInitialCoefficients(snub, PentagonField.FIELD_NAME) );	    
+	    assertFalse( AlgebraicFields.haveSameInitialCoefficients(pent, SnubDodecField.FIELD_NAME) );
+	    assertFalse( AlgebraicFields.haveSameInitialCoefficients(pent, RootTwoField.FIELD_NAME) );
+    }
 }

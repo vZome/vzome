@@ -41,8 +41,6 @@ public abstract class AlgebraicField
 
     protected final AlgebraicNumber zero;
 
-    private final AlgebraicField subfield;
-
     /**
      * Positive powers of the first irrational.
      */
@@ -55,23 +53,17 @@ public abstract class AlgebraicField
 
     public AlgebraicField( String name, int order )
     {
-        this( name, order, null );
-    }
-
-    public AlgebraicField( String name, int order, AlgebraicField subfield )
-    {
         this.name = name;
         this.order = order;
-        this .subfield  = subfield;
         // Since derived class constructors are not fully initialized,
         // it's possible that they may not be able to perform some operations including multiply.
         // Specifically, reciprocal() depends on scaleBy()
         // which, in the case of ParameterizedField classes,
         // depends on the constructor being fully executed beforehand.
         // Also, normalize() may not work for some AlgebraicNumbers with non-zero irrational factors
-        // although createRational() can safely be created at this point.
-        zero = this .createRational( 0 );
-        one = this .createRational( 1 );
+        // although createRational() can safely be called at this point.
+        zero = this .createRational( BigRational.ZERO );
+        one = this .createRational( BigRational.ONE );
     }
 
     public String getName()
@@ -101,11 +93,6 @@ public abstract class AlgebraicField
             return false;
         }
         return getClass().equals(obj.getClass());
-    }
-
-    public AlgebraicField getSubfield()
-    {
-        return subfield;
     }
 
     public AlgebraicNumber createAlgebraicNumber( BigRational[] factors )
@@ -187,7 +174,7 @@ public abstract class AlgebraicField
      * @param wholeNumber becomes the numerator with 1 as the denominator
      * @return AlgebraicNumber
      */
-    public final AlgebraicNumber createRational( int wholeNumber )
+    public final AlgebraicNumber createRational( long wholeNumber )
     {
         return createRational( wholeNumber, 1 );
     }
@@ -197,9 +184,18 @@ public abstract class AlgebraicField
      * @param denominator
      * @return AlgebraicNumber
      */
-    public final AlgebraicNumber createRational( int numerator, int denominator )
+    public final AlgebraicNumber createRational( long numerator, long denominator )
     {
-        return createAlgebraicNumber( numerator, 0, denominator, 0 );
+        return createRational( new BigRational( numerator, denominator) );
+    }
+    
+    /**
+     * @param rationalNumber
+     * @return AlgebraicNumber
+     */
+    public final AlgebraicNumber createRational( BigRational rationalNumber )
+    {
+        return new AlgebraicNumber( this, rationalNumber );
     }
     
     /**

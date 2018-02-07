@@ -10,7 +10,6 @@ import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
@@ -50,7 +49,7 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  */
 public class SnubDodecFieldApplication implements FieldApplication
 {
-	private final AlgebraicField field = new SnubDodecField( new PentagonField() );
+	private final AlgebraicField field = new SnubDodecField();
 
 	@Override
 	public String getName()

@@ -4,10 +4,22 @@
 package com.vzome.core.algebra;
 
 public class HeptagonField extends AlgebraicField
-{    
+{
+    public static final String FIELD_NAME = "heptagon";
+    
+    /**
+     * 
+     * @return the coefficients of this AlgebraicField class. 
+     * This can be used to determine when two fields have compatible coefficients 
+     * without having to generate an instance of the class. 
+     */
+    public static double[] getCoefficients() {
+        return new double[] { 1.0d, RHO_VALUE, SIGMA_VALUE };
+    }
+    
     public HeptagonField()
     {
-        super( "heptagon", 3 );
+        super( FIELD_NAME, 3 );
     };
     
     // specified to more precision than a double can retain so that values are as exact as possible: within one ulp().

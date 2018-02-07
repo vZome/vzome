@@ -4,11 +4,29 @@
 package com.vzome.core.algebra;
 
 public class SnubDodecField extends AlgebraicField
-{    
-    public SnubDodecField( AlgebraicField pentField )
-    {
-        super( "snubDodec", 6, pentField );
+{
+    public static final String FIELD_NAME = "snubDodec";
+    
+    /**
+     * 
+     * @return the coefficients of this AlgebraicField class. 
+     * This can be used to determine when two fields have compatible coefficients 
+     * without having to generate an instance of the class. 
+     */
+    public static double[] getCoefficients() {
+        return new double[] { 
+            1.0d, 
+            PHI_VALUE,
+                        XI_VALUE,
+            PHI_VALUE * XI_VALUE,
+                        XI_VALUE * XI_VALUE,
+            PHI_VALUE * XI_VALUE * XI_VALUE
+        };
+    }
 
+    public SnubDodecField( )
+    {
+        super( FIELD_NAME, 6 );
         defaultStrutScaling = one;
     };
     
@@ -18,7 +36,7 @@ public class SnubDodecField extends AlgebraicField
     public static final double XI_VALUE = 1.71556149969736783d; // root of x^3 -2x -PHI_VALUE 
     
     private static final int A = 0, B = 1, C = 2, D = 3, E = 4, F = 5;
-
+    
     /*
      * Implemented by applying regex changes to Corrado Falcolini's Mathematica notebook,
      * so it should be bulletproof.
