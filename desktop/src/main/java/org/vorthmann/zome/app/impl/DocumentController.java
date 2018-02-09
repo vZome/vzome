@@ -1029,17 +1029,27 @@ public class DocumentController extends DefaultController implements J3dComponen
                 //   context of the save.
                 this .changeCount  = this .documentModel .getChangeCount();
                 
+    			// Sample prefs file entry: save.exports=export.dae capture.png capture.jpg export.vef
             	String exports = this .getProperty( "save.exports" );
             	if ( exports != null ) {
             		for ( String captureOrExport : exports .split( " " ) ) {
             			// captureOrExport should be "capture.png" or "export.dae" or similar
             			String extension = "";
-            			if ( captureOrExport .startsWith( "capture." ) )
-            				extension = captureOrExport .substring( "capture." .length() );
-            			else
-            				extension = captureOrExport .substring( "export." .length() );
-                		File exportFile = new File( dir, file .getName() + "." + extension );
-                		doFileAction( captureOrExport, exportFile );
+            			String[] cmd = captureOrExport .split("\\.");
+            			if(cmd.length == 2 ) {
+            				switch (cmd[0]) {
+        					case "capture":
+        					case "export":
+        						extension = cmd[1];
+        						break;
+            				}
+            			}
+            			if(extension == "") {
+            				mErrors.reportError( UNKNOWN_PROPERTY + " save.exports=" + captureOrExport, null );
+            			} else {
+            				File exportFile = new File( dir, file .getName() + "." + extension );
+            				doFileAction( captureOrExport, exportFile );
+            			}
                     }
             	}
                 
@@ -1486,7 +1496,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             properties() .firePropertyChange( "visible", null, value );
         } else if ( "name".equals( cmd ) ) {
             // App controller is listening, will change its map
-            properties() .firePropertyChange( "name", null, (String) value );
+            properties() .firePropertyChange( "name", null, value );
         } else if ( "backgroundColor".equals( cmd ) ) {
             sceneLighting .setProperty( cmd, value );
         } else if ( "terminating".equals( cmd ) ) {
