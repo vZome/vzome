@@ -15,8 +15,8 @@ task recordBuildProperties {
     ext.outputDir = propsFile .getParentFile()
     doFirst {
         writeProjectProperties( [ 'version', 'edition', 'buildNumber', 'gitCommit' ], propsFile )
+        println ' recorded desktop build properties'
     }
-    println 'recorded build properties'
 }
 processResources { 
     dependsOn recordBuildProperties
@@ -118,4 +118,27 @@ def writeProjectProperties( keys, propsFile )
     } finally {
         writer.close()
     }
+}
+
+// These options apply to all java projects
+// More info at http://www.javaworld.com/article/2073587/javac-s--xlint-options.html
+gradle.projectsEvaluated {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs \
+		<< "-Xdiags:verbose" \
+		<< "-Xlint:all" \
+		<< "-Xlint:cast" \
+		<< "-Xlint:deprecation" \
+		<< "-Xlint:divzero" \
+		<< "-Xlint:empty" \
+		<< "-Xlint:fallthrough" \
+		<< "-Xlint:finally" \
+		<< "-Xlint:overrides" \
+		<< "-Xlint:path" \
+		<< "-Xlint:rawtypes" \
+		<< "-Xlint:unchecked" \
+		<< "-Xlint:-serial" 
+		// TODO: Enable the serial warning and look into fixing ~33 issues. 
+		// Most of them are classes which extend a generic Collection or Exception.
+	}
 }
