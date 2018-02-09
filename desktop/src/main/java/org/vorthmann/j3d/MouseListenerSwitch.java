@@ -62,7 +62,7 @@ public class MouseListenerSwitch extends MouseAdapter implements MouseTool {
 
     protected static boolean isSecondButton( MouseEvent e )
     {
-        return ( e .getModifiers() & ( MouseEvent.BUTTON2_MASK | MouseEvent.BUTTON3_MASK ) ) != 0;
+        return ( e .getModifiersEx() & ( MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK ) ) != 0;
     }
     
     @Override

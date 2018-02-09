@@ -27,13 +27,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 {
 	private static final int COMMAND = Platform.getKeyModifierMask();
 	
-	private static final int COMMAND_OPTION = COMMAND | InputEvent.ALT_MASK;
+	private static final int COMMAND_OPTION = COMMAND | InputEvent.ALT_DOWN_MASK;
 
-	private static final int COMMAND_SHIFT = COMMAND | InputEvent.SHIFT_MASK;
+	private static final int COMMAND_SHIFT = COMMAND | InputEvent.SHIFT_DOWN_MASK;
 
-	private static final int CONTROL = InputEvent.CTRL_MASK;
+	private static final int CONTROL = InputEvent.CTRL_DOWN_MASK;
 	
-	private static final int CONTROL_OPTION = InputEvent.CTRL_MASK | InputEvent.ALT_MASK;
+	private static final int CONTROL_OPTION = InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK;
 
     private static final long serialVersionUID = 1L;
 	

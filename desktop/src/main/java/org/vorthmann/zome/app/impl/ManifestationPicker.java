@@ -32,7 +32,7 @@ public class ManifestationPicker extends MouseToolDefault
         super.mousePressed( e );
 
         Manifestation target = pick( e );
-        dragStarted( target, ( e .getModifiers() & MouseEvent.SHIFT_MASK ) != 0 );
+        dragStarted( target, ( e .getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK ) != 0 );
     }
 
     protected void dragStarted( Manifestation target, boolean b )
@@ -51,7 +51,7 @@ public class ManifestationPicker extends MouseToolDefault
     public void mouseReleased( MouseEvent e )
     {
         Manifestation target = pick( e );
-        dragFinished( target, ( e .getModifiers() & MouseEvent.SHIFT_MASK ) != 0 );
+        dragFinished( target, ( e .getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK ) != 0 );
     }
 
     protected void dragFinished( Manifestation target, boolean b )
@@ -61,7 +61,7 @@ public class ManifestationPicker extends MouseToolDefault
     public void mouseClicked( MouseEvent e )
     {
         Manifestation target = pick( e );
-        manifestationPicked( target, ( e .getModifiers() & MouseEvent.SHIFT_MASK ) != 0 );
+        manifestationPicked( target, ( e .getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK ) != 0 );
     }
 
     protected void manifestationPicked( Manifestation target, boolean b )
