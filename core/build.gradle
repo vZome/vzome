@@ -10,6 +10,22 @@ ext.antlr4 = [
     destinationDir: "src/main/java/com/vzome/core/antlr/generated",
     grammarpackage:               "com.vzome.core.antlr.generated"
 ]
+  
+/*
+    Building the top level vzome project displays the following warning:
+
+        :core:compileTestJava
+        POM relocation to an other version number is not fully supported in Gradle : xml-apis:xml-apis:2.0.2 relocated to xml-apis:xml-apis:1.0.b2.
+        Please update your dependency to directly use the correct version 'xml-apis:xml-apis:1.0.b2'.
+        Resolution will only pick dependencies of the relocated element.  Artifacts and other metadata will be ignored.
+
+    By adding the configurations.all section below, the warning message is avoided.
+*/
+configurations.all {
+    resolutionStrategy {
+        force 'xml-apis:xml-apis:1.4.01'
+    }
+}
 
 configurations {
     antlr4 {
@@ -29,8 +45,8 @@ task recordBuildProperties {
     ext.outputDir = propsFile .getParentFile()
     doFirst {
         writeProjectProperties( [ 'version', 'gitCommit' ], propsFile )
+        println ' recorded core build properties'
     }
-    println 'recorded build properties'
 }
 processResources {
     dependsOn recordBuildProperties
@@ -61,6 +77,28 @@ dependencies {
     regressionCompile configurations.testCompile
     regressionCompile sourceSets.test.output
     regressionRuntime configurations.testRuntime
+}
+
+// These options apply to all java projects
+// More info at http://www.javaworld.com/article/2073587/javac-s--xlint-options.html
+gradle.projectsEvaluated {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs \
+		<< "-Xdiags:verbose" \
+		<< "-Xlint:all" \
+		<< "-Xlint:cast" \
+		<< "-Xlint:divzero" \
+		<< "-Xlint:empty" \
+		<< "-Xlint:fallthrough" \
+		<< "-Xlint:finally" \
+		<< "-Xlint:overrides" \
+		<< "-Xlint:path" \
+		<< "-Xlint:rawtypes" \
+		<< "-Xlint:unchecked" \
+		<< "-Xlint:-serial" 
+		// TODO: Enable the serial warning and look into fixing ~33 issues. 
+		// Most of them are classes which extend a generic Collection or Exception.
+	}
 }
 
 // It seems that the settings below are the starting point
@@ -260,7 +298,7 @@ task regression(type: JavaExec, dependsOn: check) {
     main = 'com.vzome.core.regression.TestVZomeFiles'
     args( testHome, testFile, testOut )
     jvmArgs( '-Xmx3048M' )
-    jvmArgs( '-Djava.util.logging.config.file=regression-logging.properties' )
+    jvmArgs( '-Djava.util.logging.config.file=core/regression-logging.properties' )
 }
 regression.dependsOn makeRegressionOutputDir
 

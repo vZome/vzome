@@ -224,7 +224,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		this .kind .registerToolFactories( this .toolFactories, this .tools );
 		
         this .bookmarkFactory = new BookmarkTool.Factory( tools );
-		this .mEditorModel .addSelectionSummaryListener( (SelectionSummary.Listener) this .bookmarkFactory );
+		this .mEditorModel .addSelectionSummaryListener( this .bookmarkFactory );
 
 		this .bookmarkFactory .createPredefinedTool( "ball at origin" );
         
@@ -766,7 +766,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     	if ( "ball" .equals( paramName ) )
     		edit = mEditorModel .setSymmetryCenter( singleConstruction );
     	else if ( "strut" .equals( paramName ) )
-    		edit = mEditorModel .setSymmetryAxis( (Segment) singleConstruction );
+    		edit = mEditorModel .setSymmetryAxis( singleConstruction );
     	if ( edit != null )
     		this .performAndRecord( edit );
 	}
@@ -840,147 +840,158 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     
     public void finishLoading( boolean openUndone, boolean asTemplate ) throws Command.Failure
     {
-    	if ( mXML == null )
-    		return;
-
-        // TODO: record the edition, version, and revision on the format, so we can report a nice
-        //   error if we fail to understand some command in the history.  If the revision is
-        //   greater than Version .SVN_REVISION:
-        //    "This document was created using $file.edition $file.version, and contains commands that
-        //      $Version.edition does not understand.  You may need a newer version of
-        //      $Version.edition, or a copy of $file.edition $file.version."
-        //   (Adjust that if $Version.edition == $file.edition, to avoid confusion.)
-
-        String tns = mXML .getNamespaceURI();
-        XmlSaveFormat format = XmlSaveFormat.getFormat( tns );
-        if ( format == null )
-            return; // already checked and reported version compatibility,
-        // up in the constructor
-
-        int scale = 0;
-        String scaleStr = mXML .getAttribute( "scale" );
-        if ( ! scaleStr .isEmpty() )
-            scale = Integer.parseInt( scaleStr );
-        OrbitSet.Field orbitSetField = new OrbitSet.Field()
-        {
-            @Override
-            public OrbitSet getGroup( String name )
-            {
-                SymmetrySystem system = symmetrySystems .get( name );
-            	return system .getOrbits();
-            }
-
-            @Override
-            public QuaternionicSymmetry getQuaternionSet( String name )
-            {
-                return kind .getQuaternionSymmetry( name);
-            }
-        };
-        
-        String writerVersion = mXML .getAttribute( "version" );
-        String buildNum = mXML .getAttribute( "buildNumber" );
-        if ( buildNum != null )
-        	writerVersion += " build " + buildNum;
-        format .initialize( field, orbitSetField, scale, writerVersion, new Properties() );
-
-        Element hist = (Element) mXML .getElementsByTagName( "EditHistory" ) .item( 0 );
-        if ( hist == null )
-            hist = (Element) mXML .getElementsByTagName( "editHistory" ) .item( 0 );
-        int editNum = Integer.parseInt( hist .getAttribute( "editNumber" ) );
-        
-        List<Integer> implicitSnapshots = new ArrayList<>();
-
-        // if we're opening a template document, we don't want to inherit its lesson or saved views
-        if ( !asTemplate )
-        {
-        	Map<String, Camera> viewPages = new HashMap<>();
-            Element views = (Element) mXML .getElementsByTagName( "Viewing" ) .item( 0 );
-            if ( views != null ) {
-                // make a notes page for each saved view
-                //  ("edited" property change will be fired, to trigger migration semantics)
-            	// migrate saved views to notes pages
-                NodeList nodes = views .getChildNodes();
-                for ( int i = 0; i < nodes .getLength(); i++ ) {
-                    Node node = nodes .item( i );
-            		if ( node instanceof Element ) {
-            			Element viewElem = (Element) node;
-            			String name = viewElem .getAttribute( "name" );
-            			if ( name != null && ! name .isEmpty() && ! "default" .equals( name ) )
-            			{
-                			Camera view = new Camera( viewElem );
-            				viewPages .put( name, view ); // named view to migrate to a lesson page
-            			}
-            		}
-            	}
-            }
-
-            Element notesXml = (Element) mXML .getElementsByTagName( "notes" ) .item( 0 );
-            if ( notesXml != null ) 
-            	lesson .setXml( notesXml, editNum, this .defaultView );
-            
-            // add migrated views to the end of the lesson
-            for (Entry<String, Camera> namedView : viewPages .entrySet()) {
-                lesson .addPage( namedView .getKey(), "This page was a saved view created by an older version of vZome.", namedView .getValue(), -editNum );
-            }
-            for (PageModel page : lesson) {
-                int snapshot = page .getSnapshot();
-                if ( ( snapshot < 0 ) && ( ! implicitSnapshots .contains(-snapshot) ) )
-                    implicitSnapshots .add(-snapshot);
-            }
-
-            Collections .sort( implicitSnapshots );
-            
-            for (PageModel page : lesson) {
-                int snapshot = page .getSnapshot();
-                if ( snapshot < 0 )
-                    page .setSnapshot( implicitSnapshots .indexOf(-snapshot) );
-            }
-        }
-
-        UndoableEdit[] explicitSnapshots = null;
-        if ( ! implicitSnapshots .isEmpty() )
-        {
-            Integer highest = implicitSnapshots .get( implicitSnapshots .size() - 1 );
-            explicitSnapshots = new UndoableEdit[ highest + 1 ];
-            for (int i = 0; i < implicitSnapshots .size(); i++)
-            {
-                Integer editNumInt = implicitSnapshots .get( i );
-                explicitSnapshots[ editNumInt ] = new Snapshot( i, this );
-            }
-        }
-        
-        try {
-            int lastDoneEdit = openUndone? 0 : Integer.parseInt( hist .getAttribute( "editNumber" ) );
-            String lseStr = hist .getAttribute( "lastStickyEdit" );
-            int lastStickyEdit = ( ( lseStr == null ) || lseStr .isEmpty() )? -1 : Integer .parseInt( lseStr );
-            NodeList nodes = hist .getChildNodes();
-            for ( int i = 0; i < nodes .getLength(); i++ ) {
-                Node kid = nodes .item( i );
-                if ( kid instanceof Element ) {
-                    Element editElem = (Element) kid;
-                    mHistory .loadEdit( format, editElem, this );
-                }
-            }
-            mHistory .synchronize( lastDoneEdit, lastStickyEdit, explicitSnapshots );
-        } catch ( Throwable t )
-        {
-        	String fileVersion = mXML .getAttribute( "coreVersion" );
-        	if ( this .fileIsTooNew( fileVersion ) ) {
-        		String message = "This file was authored with a newer version, " + format .getToolVersion( mXML );
-            	throw new Command.Failure( message, t );
-        	} else {
-        		String message = "There was a problem opening this file.  Please send the file to bugs@vzome.com.";
-            	throw new Command.Failure( message, t );
-        	}
-        }
-
-        // This has to wait until all the tools are defined, in mHistory .synchronize() above
-        Element toolsXml = (Element) mXML .getElementsByTagName( "Tools" ) .item( 0 );
-        if ( toolsXml != null )
-        	this .tools .loadFromXml( toolsXml );
-
-        this .migrated = openUndone || format.isMigration() || ! implicitSnapshots .isEmpty();
+    	try {
+	    	if ( mXML == null )
+	    		return;
+	
+	        // TODO: record the edition, version, and revision on the format, so we can report a nice
+	        //   error if we fail to understand some command in the history.  If the revision is
+	        //   greater than Version .SVN_REVISION:
+	        //    "This document was created using $file.edition $file.version, and contains commands that
+	        //      $Version.edition does not understand.  You may need a newer version of
+	        //      $Version.edition, or a copy of $file.edition $file.version."
+	        //   (Adjust that if $Version.edition == $file.edition, to avoid confusion.)
+	
+	        String tns = mXML .getNamespaceURI();
+	        XmlSaveFormat format = XmlSaveFormat.getFormat( tns );
+	        if ( format == null )
+	            return; // already checked and reported version compatibility,
+	        // up in the constructor
+	
+	        int scale = 0;
+	        String scaleStr = mXML .getAttribute( "scale" );
+	        if ( ! scaleStr .isEmpty() )
+	            scale = Integer.parseInt( scaleStr );
+	        OrbitSet.Field orbitSetField = new OrbitSet.Field()
+	        {
+	            @Override
+	            public OrbitSet getGroup( String name )
+	            {
+	                SymmetrySystem system = symmetrySystems .get( name );
+	            	return system .getOrbits();
+	            }
+	
+	            @Override
+	            public QuaternionicSymmetry getQuaternionSet( String name )
+	            {
+	                return kind .getQuaternionSymmetry( name);
+	            }
+	        };
+	        
+	        String writerVersion = mXML .getAttribute( "version" );
+	        String buildNum = mXML .getAttribute( "buildNumber" );
+	        if ( buildNum != null )
+	        	writerVersion += " build " + buildNum;
+	        format .initialize( field, orbitSetField, scale, writerVersion, new Properties() );
+	
+	        Element hist = (Element) mXML .getElementsByTagName( "EditHistory" ) .item( 0 );
+	        if ( hist == null )
+	            hist = (Element) mXML .getElementsByTagName( "editHistory" ) .item( 0 );
+	        int editNum = Integer.parseInt( hist .getAttribute( "editNumber" ) );
+	        
+	        List<Integer> implicitSnapshots = new ArrayList<>();
+	
+	        // if we're opening a template document, we don't want to inherit its lesson or saved views
+	        if ( !asTemplate )
+	        {
+	        	Map<String, Camera> viewPages = new HashMap<>();
+	            Element views = (Element) mXML .getElementsByTagName( "Viewing" ) .item( 0 );
+	            if ( views != null ) {
+	                // make a notes page for each saved view
+	                //  ("edited" property change will be fired, to trigger migration semantics)
+	            	// migrate saved views to notes pages
+	                NodeList nodes = views .getChildNodes();
+	                for ( int i = 0; i < nodes .getLength(); i++ ) {
+	                    Node node = nodes .item( i );
+	            		if ( node instanceof Element ) {
+	            			Element viewElem = (Element) node;
+	            			String name = viewElem .getAttribute( "name" );
+	            			if ( name != null && ! name .isEmpty() && ! "default" .equals( name ) )
+	            			{
+	                			Camera view = new Camera( viewElem );
+	            				viewPages .put( name, view ); // named view to migrate to a lesson page
+	            			}
+	            		}
+	            	}
+	            }
+	
+	            Element notesXml = (Element) mXML .getElementsByTagName( "notes" ) .item( 0 );
+	            if ( notesXml != null ) 
+	            	lesson .setXml( notesXml, editNum, this .defaultView );
+	            
+	            // add migrated views to the end of the lesson
+	            for (Entry<String, Camera> namedView : viewPages .entrySet()) {
+	                lesson .addPage( namedView .getKey(), "This page was a saved view created by an older version of vZome.", namedView .getValue(), -editNum );
+	            }
+	            for (PageModel page : lesson) {
+	                int snapshot = page .getSnapshot();
+	                if ( ( snapshot < 0 ) && ( ! implicitSnapshots .contains(-snapshot) ) )
+	                    implicitSnapshots .add(-snapshot);
+	            }
+	
+	            Collections .sort( implicitSnapshots );
+	            
+	            for (PageModel page : lesson) {
+	                int snapshot = page .getSnapshot();
+	                if ( snapshot < 0 )
+	                    page .setSnapshot( implicitSnapshots .indexOf(-snapshot) );
+	            }
+	        }
+	
+	        UndoableEdit[] explicitSnapshots = null;
+	        if ( ! implicitSnapshots .isEmpty() )
+	        {
+	            Integer highest = implicitSnapshots .get( implicitSnapshots .size() - 1 );
+	            explicitSnapshots = new UndoableEdit[ highest + 1 ];
+	            for (int i = 0; i < implicitSnapshots .size(); i++)
+	            {
+	                Integer editNumInt = implicitSnapshots .get( i );
+	                explicitSnapshots[ editNumInt ] = new Snapshot( i, this );
+	            }
+	        }
+	        
+	        try {
+	            int lastDoneEdit = openUndone? 0 : Integer.parseInt( hist .getAttribute( "editNumber" ) );
+	            String lseStr = hist .getAttribute( "lastStickyEdit" );
+	            int lastStickyEdit = ( ( lseStr == null ) || lseStr .isEmpty() )? -1 : Integer .parseInt( lseStr );
+	            NodeList nodes = hist .getChildNodes();
+	            for ( int i = 0; i < nodes .getLength(); i++ ) {
+	                Node kid = nodes .item( i );
+	                if ( kid instanceof Element ) {
+	                    Element editElem = (Element) kid;
+	                    mHistory .loadEdit( format, editElem, this );
+	                }
+	            }
+	            mHistory .synchronize( lastDoneEdit, lastStickyEdit, explicitSnapshots );
+	        } catch ( Throwable t )
+	        {
+	        	String fileVersion = mXML .getAttribute( "coreVersion" );
+	        	if ( this .fileIsTooNew( fileVersion ) ) {
+	        		String message = "This file was authored with a newer version, " + format .getToolVersion( mXML );
+	            	throw new Command.Failure( message, t );
+	        	} else {
+	        		String message = "There was a problem opening this file.  Please send the file to bugs@vzome.com.";
+	            	throw new Command.Failure( message, t );
+	        	}
+	        }
+	
+	        // This has to wait until all the tools are defined, in mHistory .synchronize() above
+	        Element toolsXml = (Element) mXML .getElementsByTagName( "Tools" ) .item( 0 );
+	        if ( toolsXml != null )
+	        	this .tools .loadFromXml( toolsXml );
+	
+	        this .migrated = openUndone || format.isMigration() || ! implicitSnapshots .isEmpty();
+    	} 
+		finally {
+			if(logger.isLoggable(Level.INFO)) {
+				double duration = (System.nanoTime() - startTime) / 1000000000D;
+				logger.info( "Document @ " + System.identityHashCode(this) + 
+					" loaded in " + duration + " seconds" 
+					+ (mXML == null ? " (new)" : " from XML") );
+			}
+		}
     }
+    private final long startTime = System.nanoTime();
     
     boolean fileIsTooNew( String fileVersion )
     {
