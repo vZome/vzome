@@ -254,12 +254,12 @@ public class SnubDodecField extends AlgebraicField
     double evaluateNumber( BigRational[] factors )
     {
         double result = 0d;
-        result += factors[ A ] .getReal();
-        result += PHI_VALUE * factors[ B ] .getReal();
-        result += XI_VALUE * factors[ C ] .getReal();
-        result += PHI_VALUE * XI_VALUE * factors[ D ] .getReal();
-        result += XI_VALUE * XI_VALUE * factors[ E ] .getReal();
-        result += XI_VALUE * XI_VALUE * PHI_VALUE * factors[ F ] .getReal();
+        result += factors[ A ] .evaluate();
+        result += PHI_VALUE * factors[ B ] .evaluate();
+        result += XI_VALUE * factors[ C ] .evaluate();
+        result += PHI_VALUE * XI_VALUE * factors[ D ] .evaluate();
+        result += XI_VALUE * XI_VALUE * factors[ E ] .evaluate();
+        result += XI_VALUE * XI_VALUE * PHI_VALUE * factors[ F ] .evaluate();
         return result;
     }
 

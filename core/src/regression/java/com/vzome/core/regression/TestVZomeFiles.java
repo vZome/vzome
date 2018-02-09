@@ -239,7 +239,11 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
             } catch ( Exception e ) {
                 Element error = new Element( "error" );
                 error .addAttribute( new Attribute( "type", "finish.load.exception" ) );
-                error .addAttribute( new Attribute( "message", e .getMessage() ) );
+                String msg = e .getMessage();
+                if(msg == null) {
+                	msg = "(null)";
+                }
+                error .addAttribute( new Attribute( "message", msg ) );
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 e .printStackTrace( new PrintStream( out ) );
                 error .appendChild( new Text( new String( out .toByteArray() ) ) );

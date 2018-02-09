@@ -22,7 +22,7 @@ public final class PentagonField extends AlgebraicField
     @Override
     double evaluateNumber( BigRational[] factors )
     {
-        return factors[ ONES_PLACE ] .getReal() + PHI_VALUE * factors[ PHIS_PLACE ] .getReal();
+        return factors[ ONES_PLACE ] .evaluate() + PHI_VALUE * factors[ PHIS_PLACE ] .evaluate();
     }
 
     @Override
@@ -47,8 +47,8 @@ public final class PentagonField extends AlgebraicField
     {
         BigRational denominator = v2[0].times(v2[0]) .plus( v2[0].times(v2[1]) ) .minus( v2[1].times(v2[1]) );
         
-        BigRational ones = v2[1] .plus( v2[0] ) .divides( denominator );
-        BigRational phis = v2[1] .negate() .divides( denominator );
+        BigRational ones = v2[1] .plus( v2[0] ) .dividedBy( denominator );
+        BigRational phis = v2[1] .negate() .dividedBy( denominator );
         
         return new BigRational[]{ ones, phis };
     }

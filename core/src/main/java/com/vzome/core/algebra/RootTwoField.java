@@ -61,7 +61,7 @@ public class RootTwoField extends AlgebraicField
     @Override
     double evaluateNumber( BigRational[] factors )
     {
-        return factors[ ONES_PLACE ] .getReal() + ROOT_2 * factors[ SQRT2_PLACE ] .getReal();
+        return factors[ ONES_PLACE ] .evaluate() + ROOT_2 * factors[ SQRT2_PLACE ] .evaluate();
     }
 
     @Override

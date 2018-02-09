@@ -6,8 +6,11 @@ import static com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.VEF_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.ZOMIC_FORMAT;
-import junit.framework.TestCase;
 import static org.junit.Assert.assertNotEquals;
+
+import java.math.BigInteger;
+
+import junit.framework.TestCase;
 
 public class AlgebraicNumberTest extends TestCase
 {
@@ -364,4 +367,82 @@ public class AlgebraicNumberTest extends TestCase
         assertEquals( m .timesColumn( in ), out );
         assertEquals( m .transpose() .timesRow( in ), out );
     }
+    
+    @SuppressWarnings("unlikely-arg-type")
+	public void testEquals()
+    {
+        AlgebraicField field = new PentagonField();
+        
+        assertFalse(field.zero().equals(null));
+        assertFalse(field.zero().equals(this));
+     }
+
+    public void testDivisor()
+    {
+        AlgebraicField field = new HeptagonField();
+        
+        BigRational r01 = new BigRational(0, 1); 
+        BigRational r23 = new BigRational(2, 3); 
+        BigRational r45 = new BigRational(4, 5); 
+        BigRational r67 = new BigRational(6, 7); 
+        BigRational r89 = new BigRational(8, 9); 
+        BigRational r1011 = new BigRational(10,11); 
+        AlgebraicNumber n = field.createAlgebraicNumber( new BigRational[] { r01, r23, r45} ); 
+        assertEquals( BigInteger.valueOf(3 * 5), n.getDivisor() );
+        
+        n = field.createAlgebraicNumber( new BigRational[] { r1011, r89, r67} );
+        assertEquals( BigInteger.valueOf(11 * 9 * 7), n.getDivisor() );
+
+        n = field .createRational( 42 );
+        assertEquals( BigInteger.ONE, n.getDivisor() );
+    }
+
+    public void testConstructorException()
+    {
+        AlgebraicField pentagonField = new PentagonField();
+        final AlgebraicField[] fields = {
+            pentagonField,
+            new RootTwoField(),
+            new RootThreeField(),
+            new HeptagonField(),
+            new SnubDodecField(pentagonField)
+        };
+        int tests = 0;
+        for(AlgebraicField field : fields ) {
+        	int order = field.getOrder();
+        	int[] factors = new int[order];
+        	AlgebraicNumber n = field.createAlgebraicNumber(factors);
+            assertTrue(n.isZero());
+            
+            factors = new int[order + 1];
+            try {
+            	field.createAlgebraicNumber(factors);
+            	fail("Expected an IllegalStateException since there are too many factors.");
+            }
+            catch(IllegalStateException ex) {
+            	tests ++;
+            }
+        }
+        assertEquals(fields.length, tests);
+    }
+
+    public void testCompareTo()
+    {
+        AlgebraicField field = new PentagonField();
+        BigRational r01 = new BigRational(0, 1); 
+        BigRational r23 = new BigRational(2, 3); 
+        BigRational r45 = new BigRational(4, 5); 
+        BigRational r67 = new BigRational(6, 7); 
+        AlgebraicNumber j = field.createAlgebraicNumber( new BigRational[] { r01, r23 } ); 
+        AlgebraicNumber k = field.createAlgebraicNumber( new BigRational[] { r45, r67} );
+        assertNotEquals( 0, j.compareTo(k) );
+        assertNotEquals( j.compareTo(k), k.compareTo(j) );
+        // Because of the rounding errors when converting to a double,
+        // It's possible that the two double values are equal 
+        // yet the two AlgebraicaNumbers are not.
+        // TODO: Develop a test case to show this scenario
+        // TODO: Consider if it's worth the overhead of using BigDecimal.compareTo() in this case
+    }
+
+
 }
