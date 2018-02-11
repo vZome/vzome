@@ -605,6 +605,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                         String actionName = key.toString();
                         String menuText = customMenuItems.getProperty(actionName).trim();
                         if(!menuText.isEmpty()) {
+                            Logger.getLogger( getClass().getName() ) .log( Level.INFO, "custom menu item: " + menuText );
+                            Logger.getLogger( getClass().getName() ) .log( Level.INFO, "          action:   " + actionName );
                             // also note that we're swapping keys for elements
                             // as we move from the Properties collection to the sortedMenuCommands
                             sortedMenuCommands.put(menuText, actionName);
