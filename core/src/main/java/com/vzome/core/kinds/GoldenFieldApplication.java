@@ -329,12 +329,12 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 	
     public static void main( String[] args )
     {
-    	final float EPSILON = 5E-10f;
+    	final double EPSILON = 5E-10f;
 
         Symmetry icosa = new IcosahedralSymmetry( new PentagonField(), "solid connectors" );
         Direction blue = icosa .getDirection( "blue" );
         
-        Map<Float, Axis[]> blueAngles = new HashMap<>();
+        Map<Double, Axis[]> blueAngles = new HashMap<>();
         RealVector baseRv = null;
         Axis baseZone = null;
         for (Axis zone : blue) {
@@ -346,16 +346,16 @@ public class GoldenFieldApplication extends DefaultFieldApplication
             }
             else
             {
-                float cos = Math .abs( (float) rv .dot( baseRv ) );
+                double cos = Math .abs( rv .dot( baseRv ) );
                 // don't want zero angle (zones are the same)
                 if ( cos > EPSILON && cos != 1f )
                 {
                     double angle = 180f *  Math .acos( cos ) / Math .PI;
-                    blueAngles .put( new Float( angle ), new Axis[]{ baseZone, zone } );
+                    blueAngles .put( angle, new Axis[]{ baseZone, zone } );
                 }
             }
         }
-        for (Float angle : blueAngles .keySet()) {
+        for (Double angle : blueAngles .keySet()) {
             System .out. print( angle + "  " );
             Axis[] zones = blueAngles .get( angle );
             System .out .print( zones[0] .getOrientation() + " " );

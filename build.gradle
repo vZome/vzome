@@ -4,7 +4,7 @@ group = 'com.vzome'
 version = '6.0'
 
 task wrapper(type: Wrapper) {
-   gradleVersion = '4.1' //version required
+   gradleVersion = '4.5.1' //version required
 }
 
 // Specify common settings for all subprojects
@@ -14,6 +14,8 @@ subprojects {
   apply plugin: 'maven'
 
   compileJava {
+	// set these to 9 for Java 9
+	// set them to 1.8 for Java 8
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
   }

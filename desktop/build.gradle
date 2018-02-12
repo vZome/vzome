@@ -41,7 +41,7 @@ ext.vzomeArgs = [  // a list, not a map
 mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'
 // used by the 'application' Gradle plugin
 run.args( vzomeArgs )
-applicationDefaultJvmArgs = [ '-Xmx3048M', "-Djava.ext.dirs=${System.env.'JAVA_HOME'}/jre/lib" ]
+applicationDefaultJvmArgs = [ '-Xmx3048M' ]
 jvmArgs.each { entry ->
     applicationDefaultJvmArgs << "-D$entry.key=$entry.value"
 }
