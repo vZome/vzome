@@ -382,6 +382,23 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         system = cmd .substring( "setSymmetry.".length() );
                         mController .actionPerformed( e ); // TODO getExclusiveAction
                     }
+                    else if ( cmd .startsWith( "execCommandLine/" ) )
+                    {
+                        if ( mFile == null ) {
+                            JOptionPane .showMessageDialog( DocumentFrame.this, "You must save your model before you can run a shell command.",
+                                    "Command Failure", JOptionPane .ERROR_MESSAGE );
+                            return;
+                        }
+                        String cmdLine = cmd .substring( "execCommandLine/" .length() );
+                        cmdLine = cmdLine .replace( "{}", mFile .getName() );
+                        logger.log( Level.INFO, "executing command line: " + cmdLine );
+                        try {
+                            Runtime .getRuntime() .exec( cmdLine, null, mFile .getParentFile() );
+                        } catch ( IOException ioe ) {
+                            System .err .println( "Runtime.exec() failed on " + cmdLine );
+                            ioe .printStackTrace();
+                        }
+                    }
                     else if ( cmd .startsWith( "showProperties-" ) )
                     {
             			String key = cmd .substring( "showProperties-" .length() );
@@ -777,6 +794,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         			actionListener = controller;
         		}
         		else if ( command .startsWith( "setSymmetry." ) ) {
+        			actionListener = this .localActions;
+        		}
+        		else if ( command .startsWith( "execCommandLine/" ) ) {
         			actionListener = this .localActions;
         		}
         		else if ( command .startsWith( "showProperties-" ) ) {

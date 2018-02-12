@@ -199,7 +199,7 @@ public class CommandEdit extends ChangeManifestations
             cmdName = "CommandSymmetry";
         try {
             Class<?> clazz = Class .forName( "com.vzome.core.commands." + cmdName );
-            mCommand = (AbstractCommand) clazz .newInstance();
+            mCommand = (AbstractCommand) clazz.getConstructor().newInstance();
         } catch ( Exception e ) {
             loadAndPerformLgger .log( Level.SEVERE, "error creating command: " + xml .getLocalName(), e );
             throw new Failure( UNKNOWN_COMMAND );
