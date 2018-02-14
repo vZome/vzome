@@ -13,10 +13,15 @@ public class HeptagonField extends AlgebraicField
      * This can be used to determine when two fields have compatible coefficients 
      * without having to generate an instance of the class. 
      */
-    public static double[] getCoefficients() {
+    public static double[] getFieldCoefficients() {
         return new double[] { 1.0d, RHO_VALUE, SIGMA_VALUE };
     }
     
+    @Override
+    public double[] getCoefficients() {
+        return getFieldCoefficients();
+    }
+
     public HeptagonField()
     {
         super( FIELD_NAME, 3 );
@@ -60,6 +65,7 @@ public class HeptagonField extends AlgebraicField
     
     /**
      * scalar for an affine heptagon
+     * @return 
      */
     @Override
     public AlgebraicNumber getAffineScalar() {
@@ -100,13 +106,15 @@ public class HeptagonField extends AlgebraicField
     @Override
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
-        if ( whichIrrational == A )
-            return factors;
-        else if ( whichIrrational == B )
-            return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 2 ] ), factors[ 1 ] .plus( factors[ 2 ] ) };
-        else if ( whichIrrational == C )
-            return new BigRational[]{ factors[ 2 ], factors[ 1 ] .plus( factors[ 2 ] ), factors[ 0 ] .plus( factors[ 1 ] ) .plus( factors[ 2 ] ) };
-        else 
-        	throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
+        switch (whichIrrational) {
+            case A:
+                return factors;
+            case B:
+                return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 2 ] ), factors[ 1 ] .plus( factors[ 2 ] ) };
+            case C:
+                return new BigRational[]{ factors[ 2 ], factors[ 1 ] .plus( factors[ 2 ] ), factors[ 0 ] .plus( factors[ 1 ] ) .plus( factors[ 2 ] ) };
+            default:
+                throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
+        }
     }
 }

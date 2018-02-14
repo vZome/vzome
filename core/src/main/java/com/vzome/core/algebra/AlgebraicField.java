@@ -32,10 +32,14 @@ public abstract class AlgebraicField
     {
         return this .getIrrational( which, DEFAULT_FORMAT );
     }
+    
+    public abstract double[] getCoefficients();
 
     protected final String name;
 
     private final int order;
+    
+    private Integer hashCode; // initialized on first use
 
     protected final AlgebraicNumber one;
 
@@ -78,12 +82,30 @@ public abstract class AlgebraicField
 
     @Override
     public int hashCode() {
-        int prime = 43;
-        int result = 7;
-        result = prime * result + name.hashCode();
-        return result;
+        if(hashCode == null) {
+            final int prime = 43;
+            hashCode = 7;
+            double[] coefficients = getCoefficients();
+            for(int i = 0; i < coefficients.length; i++) {
+                Double coefficient = coefficients[i];
+                hashCode = prime * hashCode + coefficient.hashCode();
+            }
+        }
+        return hashCode;
     }
 
+    /**
+     * With the use of parameterized fields, it's possible for two fields 
+     * of different classes to be equal 
+     * or for two fields of the same class to not be equal.
+     * For example RootTwoField equals SqrtField(2)
+     * but SqrtField(2) does not equal SqrtField(3).
+     * Similarly, PolygonField(4) does equal SqrtField(2)
+     * but PolygonField(6) does not equal SqrtField(3) though they share 
+     * the same irrational coefficient, but they are of different order.
+     * @param obj
+     * @return 
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -92,10 +114,26 @@ public abstract class AlgebraicField
         if (obj == null) {
             return false;
         }
-        return getClass().equals(obj.getClass());
+        if(!AlgebraicField.class.isAssignableFrom(obj.getClass())) {
+            return false;
+        }
+        AlgebraicField that = (AlgebraicField) obj;
+        if(getOrder() != that.getOrder()) {
+            return false;
+        }
+        double[] thisCoefficients = this.getCoefficients();
+        double[] thatCoefficients = that.getCoefficients();
+        for(int i = 0; i < thisCoefficients.length; i++) {
+            // subtract and compare the difference to zero 
+            // instead of comparing floating point numbers directly
+            if(thisCoefficients[i] - thatCoefficients[i] != 0d) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    public AlgebraicNumber createAlgebraicNumber( BigRational[] factors )
+    public final AlgebraicNumber createAlgebraicNumber( BigRational[] factors )
     {
         return new AlgebraicNumber( this, factors );
     }
@@ -109,7 +147,7 @@ public abstract class AlgebraicField
         return new AlgebraicNumber( this, brs );
     }
 
-    public AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
+    public final AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
     {
         BigRational[] factors = new BigRational[ this .getOrder() ];
         factors[ 0 ] = new BigRational( ones, denominator );
@@ -190,7 +228,7 @@ public abstract class AlgebraicField
     }
     
     /**
-     * @param rationalNumber
+     * @param rationalNumber is the value in the units term 
      * @return AlgebraicNumber
      */
     public final AlgebraicNumber createRational( BigRational rationalNumber )
@@ -216,7 +254,7 @@ public abstract class AlgebraicField
      * When {@code n >= getOrder()}, an IndexOutOfBoundsException will be thrown.
      * @return an AlgebraicNumber with the factor specified by {@code n} set to one.
      */
-    public AlgebraicNumber getUnitTerm(int n) {
+    public final AlgebraicNumber getUnitTerm(int n) {
         if(n < 0) {
             return zero();
         }
@@ -304,28 +342,25 @@ public abstract class AlgebraicField
     // number operations
     // ======================================================================================
 
-
     protected BigRational[] reciprocal( BigRational[] fieldElement )
     {
-        int order = fieldElement .length;
-        BigRational[][] representation = new BigRational[ order ][ order ];
+        int length = fieldElement .length;
+        BigRational[][] representation = new BigRational[ length ][ length ];
         boolean isZero = true;
-        for ( int i = 0; i < order; i++ ) {
+        for ( int i = 0; i < length; i++ ) {
         		isZero = isZero && fieldElement[ i ] .isZero();
             representation[ 0 ][ i ] = fieldElement[ i ];
         }
         if ( isZero )
         		throw new RuntimeException( "Denominator is zero" );
-        for ( int j = 1; j < order; j++ ) {
+        for ( int j = 1; j < length; j++ ) {
             BigRational[] column = this .scaleBy( fieldElement, j );
-            for ( int i = 0; i < order; i++ ) {
-                representation[ j ][ i ] = column[ i ];
-            }
+            System.arraycopy(column, 0, representation[ j ], 0, length);
         }
-        BigRational[][] reciprocal = new BigRational[ order ][ order ];
+        BigRational[][] reciprocal = new BigRational[ length ][ length ];
         // create an identity matrix
-        for ( int j = 0; j < order; j++ ) {
-            for ( int i = 0; i < order; i++ ) {
+        for ( int j = 0; j < length; j++ ) {
+            for ( int i = 0; i < length; i++ ) {
                 if ( i == j )
                     reciprocal[ j ][ i ] = new BigRational( 1 );
                 else
@@ -333,10 +368,8 @@ public abstract class AlgebraicField
             }
         }
         Fields .gaussJordanReduction( representation, reciprocal );
-        BigRational[] reciprocalFactors = new BigRational[ order ];
-        for ( int i = 0; i < order; i++ ) {
-            reciprocalFactors[ i ] = reciprocal[ 0 ][ i ];
-        }
+        BigRational[] reciprocalFactors = new BigRational[ length ];
+        System.arraycopy(reciprocal[ 0 ], 0, reciprocalFactors, 0, length);
         return reciprocalFactors;
     }
 
@@ -373,6 +406,12 @@ public abstract class AlgebraicField
      * This new overload has the advantage that the internal arrays representing the individual dimensions are more clearly delineated and controlled.
      * As shown in the third example, the internal arrays need not be all the same length. Trailing zero terms can be omitted as shown.
      * Inner arrays require an even number of elements since they represent a sequence of numerator/denominator pairs.
+     * 
+     * createVector is currently limited to int valued vectors, not long, and definitely not BigInteger
+     * In most cases, this is adequate, but in the case where it's called by XmlSaveFormat.parseAlgebraicObject(), 
+     * it seems possible that a value larger than Integer.MAX_VALUE could be saved to the XML which could not subsequently be parsed.
+     * TODO: Consider refactoring createVector to use long[][] instead of int[][] if this becomes an issue. 
+     * 
      * @return an AlgebraicVector
      */
     public AlgebraicVector createVector( int[][] nums )
@@ -385,10 +424,9 @@ public abstract class AlgebraicField
                 throw new IllegalStateException( "Vector dimension " + c + " has " + coordLength + " components. An even number is required." );
             }
             int nFactors = coordLength / 2;
-            int order = getOrder();
-            if ( nFactors > order ) {
+            if ( nFactors > getOrder() ) {
                 throw new IllegalStateException( "Vector dimension " + c + " has " + (coordLength /2) + " terms." 
-                        + " Each dimension of the " + this.getName() + " field is limited to " + order + " terms."
+                        + " Each dimension of the " + this.getName() + " field is limited to " + getOrder() + " terms."
                         + " Each term consists of a numerator and a denominator." );
             }
             BigRational[] factors = new BigRational[nFactors];
@@ -408,10 +446,10 @@ public abstract class AlgebraicField
      * @param factors
      * @param format must be one of the following values.
      * The result is formatted as follows:
-     * <br/>
-     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br/>
-	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br/>
-	 * {@code ZOMIC_FORMAT      // 4 3}<br/>
+     * <br>
+     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br>
+	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
+	 * {@code ZOMIC_FORMAT      // 4 3}<br>
 	 * {@code VEF_FORMAT        // (3,4)}
      */
     void getNumberExpression( StringBuffer buf, BigRational[] factors, int format )
@@ -493,14 +531,14 @@ public abstract class AlgebraicField
 
     /**
      * Consumes this.getOrder() tokens from the tokenizer
-     * @param tokens
+     * @param tokenizer
      * @return
      */
-    private AlgebraicNumber parseNumber( StringTokenizer tokens )
+    private AlgebraicNumber parseNumber( StringTokenizer tokenizer )
     {
         BigRational[] rats = new BigRational[ this .getOrder() ];
         for ( int i = 0; i < rats.length; i++ ) {
-            rats[ i ] = new BigRational( tokens .nextToken() );
+            rats[ i ] = new BigRational( tokenizer .nextToken() );
         }
         return new AlgebraicNumber( this, rats );
     }
@@ -509,11 +547,10 @@ public abstract class AlgebraicField
     {
         StringTokenizer tokens = new StringTokenizer( nums, " " );
         int numToks = tokens .countTokens();
-        int order = this .getOrder();
-        if ( numToks % order != 0 )
-            throw new IllegalStateException( "Field order (" + order + ") does not divide token count: " + numToks + ", for '" + nums + "'" );
+        if ( numToks % getOrder() != 0 )
+            throw new IllegalStateException( "Field order (" + getOrder() + ") does not divide token count: " + numToks + ", for '" + nums + "'" );
 
-        int dims = numToks / order;
+        int dims = numToks / getOrder();
         AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
         for ( int i = 0; i < dims; i++ ) {
             coords[ i ] = this .parseNumber( tokens );

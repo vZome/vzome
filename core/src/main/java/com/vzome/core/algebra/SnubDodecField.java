@@ -13,7 +13,7 @@ public class SnubDodecField extends AlgebraicField
      * This can be used to determine when two fields have compatible coefficients 
      * without having to generate an instance of the class. 
      */
-    public static double[] getCoefficients() {
+    public static double[] getFieldCoefficients() {
         return new double[] { 
             1.0d, 
             PHI_VALUE,
@@ -22,6 +22,11 @@ public class SnubDodecField extends AlgebraicField
                         XI_VALUE * XI_VALUE,
             PHI_VALUE * XI_VALUE * XI_VALUE
         };
+    }
+
+    @Override
+    public double[] getCoefficients() {
+        return getFieldCoefficients();
     }
 
     public SnubDodecField( )
@@ -179,32 +184,32 @@ public class SnubDodecField extends AlgebraicField
     @Override
     public void defineMultiplier( StringBuffer buf, int i )
     {
-        if ( i == B )
-        {
-            buf .append( "phi = " );
-            buf .append( PHI_VALUE );
-        }
-        else if ( i == C )
-        {
-            buf .append( "xi = " );
-            buf .append( XI_VALUE );
-        }
-        else
-        {
-            buf .append( "" );
+        switch (i) {
+            case B:
+                buf .append( "phi = " );
+                buf .append( PHI_VALUE );
+                break;
+            case C:
+                buf .append( "xi = " );
+                buf .append( XI_VALUE );
+                break;
+            default:
+                buf .append( "" );
+                break;
         }
     }
 
-    private final AlgebraicNumber defaultStrutScaling;
-    
     /**
      * scalar for an affine pentagon
+     * @return 
      */
     @Override
     public AlgebraicNumber getAffineScalar() {
         return getUnitTerm( 1 );
     }
 
+    private final AlgebraicNumber defaultStrutScaling;
+    
     @Override
     public AlgebraicNumber getDefaultStrutScaling()
     {

@@ -10,6 +10,8 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
@@ -102,7 +104,7 @@ public class AlgebraicNumberTest
             // although we only provided a single element array as inputFactor,
             // the c'tor should zero-fill the array so it never contains nulls
             for(int i = 0; i < factors.length; i++) {
-                assertFalse( factors[i] == null );
+                assertNotNull( factors[i] );
             }
         }
         // a similar but not identical test...
@@ -111,8 +113,8 @@ public class AlgebraicNumberTest
             assertEquals( inputFactors.length, 2 );
 
             inputFactors[0] = BigRational.ONE;
-            assertTrue( inputFactors[0] != null );
-            assertTrue( inputFactors[1] == null );
+            assertNotNull( inputFactors[0]);
+            assertNull( inputFactors[1]);
 
             AlgebraicNumber value = new AlgebraicNumber(field, inputFactors);
 
@@ -122,7 +124,7 @@ public class AlgebraicNumberTest
             assertEquals( factors.length, 2 );
             assertEquals( factors.length, field.getOrder() );
             for(int i = 0; i < factors.length; i++) {
-                assertFalse( factors[i] == null );
+                assertNotNull( factors[i] );
             }
             // check for the specific values we expect
             assertEquals( factors[0], inputFactors[0] );

@@ -274,6 +274,7 @@ public class XmlSaveFormat
                 result3d[1][i] = result[i+oneThirdLen];
                 result3d[2][i] = result[i+twoThirdLen];
             }
+            // parseAlgebraicObject is currently limited to parsing Integer valued vectors, not Longs, and definitely not BigIntegers
             value = mField .createVector( result3d );
         }
         else if ( valName .equals( "GoldenVector" ) )

@@ -13,8 +13,13 @@ public final class PentagonField extends AlgebraicField
      * This can be used to determine when two fields have compatible coefficients 
      * without having to generate an instance of the class. 
      */
-    public static double[] getCoefficients() {
+    public static double[] getFieldCoefficients() {
         return new double[] { 1.0d, PHI_VALUE };
+    }
+    
+    @Override
+    public double[] getCoefficients() {
+        return getFieldCoefficients();
     }
     
     public PentagonField()
@@ -67,6 +72,7 @@ public final class PentagonField extends AlgebraicField
     
     /**
      * scalar for an affine pentagon
+     * @return 
      */
     @Override
     public AlgebraicNumber getAffineScalar() {
@@ -88,12 +94,14 @@ public final class PentagonField extends AlgebraicField
     @Override
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
-        if ( whichIrrational == 0 )
-            return factors;
-        else if ( whichIrrational == 1 )
-            return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 1 ] ) };
-        else 
-        	throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
+        switch (whichIrrational) {
+            case 0:
+                return factors;
+            case 1:
+                return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 1 ] ) };
+            default:
+                throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
+        }
     }
 
     @Override
@@ -110,7 +118,7 @@ public final class PentagonField extends AlgebraicField
     {
         int div = 1;
         if ( string .startsWith( "(" ) ) {
-            int closeParen = string .indexOf( ")" );
+            int closeParen = string .indexOf( ')' );
             div = Integer .parseInt( string .substring( closeParen+2 ) );
             string = string .substring( 1, closeParen );
         }

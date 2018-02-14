@@ -26,9 +26,7 @@ public class AlgebraicMatrix
 		if (getClass() != obj.getClass())
 			return false;
 		AlgebraicMatrix other = (AlgebraicMatrix) obj;
-		if (!Arrays.deepEquals(matrix, other.matrix))
-			return false;
-		return true;
+		return Arrays.deepEquals(matrix, other.matrix);
 	}
 
 	final AlgebraicNumber[][] matrix;

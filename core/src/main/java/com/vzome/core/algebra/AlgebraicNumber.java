@@ -24,28 +24,46 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     
     private Integer hashCode;	// initialized on first use
 
-    AlgebraicNumber( AlgebraicField field, BigRational... factors )
+    /**
+     * This non-varargs constructor does not call normalize(), 
+     * so it can safely be called from within the base AlgebraicField constructor
+     * before initializeNormalizer is called by derived ParameterizedField constructors
+     * @param field
+     * @param units
+     */
+    AlgebraicNumber( AlgebraicField field, BigRational units )
     {
-        if ( factors.length > field .getOrder() )
-            throw new IllegalStateException( factors.length + " is too many coordinates for field \"" + field.getName() + "\"" );
+        this.field = field;
+        factors = new BigRational[ field .getOrder() ];
+        factors[ 0 ] = units;
+        for ( int i = 1; i < factors.length; i++ ) {
+            factors[ i ] = BigRational.ZERO;
+        }
+        isZero = isZero(this.factors);
+        isOne = isOne(this.factors);
+    }
+
+    AlgebraicNumber( AlgebraicField field, BigRational... newFactors )
+    {
+        if ( newFactors.length > field .getOrder() )
+            throw new IllegalStateException( newFactors.length + " is too many factors for field \"" + field.getName() + "\"" );
         this .field = field;
         this .factors = new BigRational[ field .getOrder() ];
-        for ( int i = 0; i < factors.length; i++ ) {
-            this .factors[ i ] = factors[ i ] == null 
+        for ( int i = 0; i < newFactors.length; i++ ) {
+            this .factors[ i ] = newFactors[ i ] == null 
                     ? BigRational.ZERO
-                    : factors[ i ];
+                    : newFactors[ i ];
         }
-        for ( int i = factors.length; i < this.factors.length; i++ ) {
+        for ( int i = newFactors.length; i < this.factors.length; i++ ) {
             this .factors[ i ] = BigRational.ZERO;
         }
-        field.normalize(factors);
-    	isZero = isZero(this);
-    	isOne = isOne(this);
+        field.normalize(this.factors);
+    	isZero = isZero(this.factors);
+    	isOne = isOne(this.factors);
     }
 
     /**
      * Extract the least common multiple of the divisors.
-     * @param value
      * @return
      */
     public final BigInteger getDivisor()
@@ -178,20 +196,25 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return doubleValue;
     }
 
-    private static boolean isZero(AlgebraicNumber that)
+    private static boolean isZero(BigRational[] factors)
     {
-        for ( BigRational factor : that .factors ) {
+        for ( BigRational factor : factors ) {
             if ( ! factor .isZero() )
                 return false;
         }
         return true;
     }
 
-    private static boolean isOne(AlgebraicNumber that)
+    private static boolean isOne(BigRational[] factors)
     {
-        return that.factors[ 0 ] .isOne()
-                ? that.isRational()
-                : false;
+        if( ! factors[ 0 ] .isOne() ) {
+            return false;
+        }
+        for( int i = 1; i < factors.length; i++ ) {
+            if ( ! factors[ i ] .isZero() )
+                return false;
+        }
+        return true;
     }
 
     // isRational() is not currently used enough 
@@ -232,11 +255,11 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * @param buf
      * @param format must be one of the following values.
      * The result is formatted as follows:
-     * <br/>
-     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br/>
-	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br/>
-	 * {@code ZOMIC_FORMAT      // 4 3}<br/>
-	 * {@code VEF_FORMAT        // (3,4)}<br/>
+     * <br>
+     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br>
+	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
+	 * {@code ZOMIC_FORMAT      // 4 3}<br>
+	 * {@code VEF_FORMAT        // (3,4)}<br>
      */
     public void getNumberExpression( StringBuffer buf, int format )
     {
@@ -253,11 +276,12 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * 
      * @param format must be one of the following values.
      * The result is formatted as follows:
-     * <br/>
-     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br/>
-	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br/>
-	 * {@code ZOMIC_FORMAT      // 4 3}<br/>
+     * <br>
+     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br>
+	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
+	 * {@code ZOMIC_FORMAT      // 4 3}<br>
 	 * {@code VEF_FORMAT        // (3,4)}
+     * @return 
      */
     public String toString( int format )
     {
