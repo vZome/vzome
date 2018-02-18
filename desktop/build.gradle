@@ -36,10 +36,16 @@ ext.vzomeArgs = [  // a list, not a map
 mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'
 // used by the 'application' Gradle plugin
 run.args( vzomeArgs )
-applicationDefaultJvmArgs = [ '-Xmx3048M' ]
+applicationDefaultJvmArgs = [ '-Xmx3048M' ]   // this variable is for 'application' plugin
 jvmArgs.each { entry ->
     applicationDefaultJvmArgs << "-D$entry.key=$entry.value"
 }
+
+// for application distZip task
+distZip.archiveName = "${rootProject.appName}-Linux-${rootProject.version}.zip"
+
+// for application startScripts task
+startScripts.applicationName="${rootProject.appName}-${rootProject.version}"
 
 // Not sure why the 'test' sourceSet has to be specifically declared here 
 // before it will show up in the NetBeans 'Projects' window.
