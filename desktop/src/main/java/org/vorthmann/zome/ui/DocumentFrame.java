@@ -672,6 +672,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 JOptionPane .showMessageDialog( DocumentFrame.this,
                         e .getLocalizedMessage(),
                         "Error Loading Document", JOptionPane.ERROR_MESSAGE );
+                // setting "visible" to FALSE will remove this document from the application controller's 
+                // document collection so its document count is correct and it cleans up correctly 
+                mController .setProperty( "visible", Boolean.FALSE );
                 DocumentFrame.this .dispose();
             }
             
