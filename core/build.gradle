@@ -55,11 +55,11 @@ processResources {
 
 
 dependencies {
-    compile     group: 'org.python',        name: 'jython',            version:'2.7-b4'
     compile     group: 'org.antlr',         name: 'antlr4',            version:'4.7.1'
     compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
+    compile     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
 
-    runtime     group: 'org.python',        name: 'jython',            version:'2.7-b4'
+    runtime     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
     runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
 
     testCompile group: 'antlr',             name: 'antlr',             version:'2.7.7'
