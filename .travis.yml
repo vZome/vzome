@@ -3,3 +3,7 @@ jdk:
 - oraclejdk8
 script:
 - "./gradlew :desktop:build"
+branches:
+  only:
+    - master
+    - server

@@ -15,7 +15,7 @@ plugins {
 }
 
 dependencies {
-    compile project( ':' )
+    compile project( ':desktop' )
 }
 
 // TODO: By default, this subproject creates windows-5.0.jar based on the name of the subproject. 
@@ -76,14 +76,14 @@ launch4j {
 
 	opt = '-Xmx3048M'
 	// Most of the rootProject.jvmArgs have apple in the name. Exclude those...
-	rootProject.jvmArgs.each { entry ->
+	rootProject.project('desktop').jvmArgs.each { entry ->
 		if(!entry.key.contains("apple.")) {
 			opt = opt + " -D${entry.key}=${entry.value}"
 		}
 	}
 	cmdLine = ''
 	def sp = ''
-	rootProject.vzomeArgs.each { entry ->
+	rootProject.project('desktop').vzomeArgs.each { entry ->
 		cmdLine = cmdLine + "${sp}${entry}"
 		sp = ' '
 	}
