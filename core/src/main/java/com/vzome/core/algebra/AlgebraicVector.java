@@ -1,6 +1,9 @@
 package com.vzome.core.algebra;
 
 import java.util.Arrays;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.vzome.core.math.RealVector;
 
 /**
@@ -125,6 +128,12 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
         return this .coordinates[ i ];
     }
 
+    @JsonValue
+    public AlgebraicNumber[] getComponents()
+    {
+        return this .coordinates;
+    }
+
     public AlgebraicVector setComponent( int component, AlgebraicNumber coord )
     {
         this .coordinates[ component ] = coord;
@@ -149,6 +158,7 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
         return new AlgebraicVector( result );
     }
 
+    @JsonIgnore
     public boolean isOrigin()
     {
         for (AlgebraicNumber coordinate : this .coordinates) {
@@ -266,6 +276,7 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
         throw new IllegalStateException( "vector is the origin!" );
     }
     
+    @JsonIgnore
     public AlgebraicField getField()
     {
         return this .field;

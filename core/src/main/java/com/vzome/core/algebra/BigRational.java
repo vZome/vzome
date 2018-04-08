@@ -23,6 +23,8 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public class BigRational implements Comparable<BigRational>, Fields.BigRationalElement<BigInteger, BigRational> {
 
     // indices into arrays used by reduce() and various c'tors 
@@ -68,7 +70,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 			? Long.signum(that.num) 
 			: that.bigNum.signum(); 
     }
-    
+        
     public BigRational( long numerator )
     {
     	// no need to reduce since demoninator == 1
@@ -538,10 +540,19 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 	    }
 	}
 
+    @JsonValue
+    public Object toJson()
+    {
+    		if ( this.isWhole && this.notBig() )
+    			return new Long( this .num );
+    		else
+    			return toString;    
+    }
+    
     @Override
     public String toString()
     {
-    	return toString;    
+    	    return toString;    
     }
     
     private static String toString(BigRational that)

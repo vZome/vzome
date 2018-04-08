@@ -6,6 +6,9 @@ package com.vzome.core.algebra;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * 
  * Immutable representation of an Algebraic Number
@@ -23,7 +26,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     private final String[] toString = new String[AlgebraicField .VEF_FORMAT + 1]; // cache various String representations
     
     private Integer hashCode;	// initialized on first use
-
+    
     AlgebraicNumber( AlgebraicField field, BigRational... factors )
     {
         if ( factors.length > field .getOrder() )
@@ -38,8 +41,8 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         for ( int i = factors.length; i < this.factors.length; i++ ) {
             this .factors[ i ] = BigRational.ZERO;
         }
-    	isZero = isZero(this);
-    	isOne = isOne(this);
+        isZero = isZero(this);
+        isOne = isOne(this);
     }
 
     /**
@@ -47,6 +50,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * @param value
      * @return
      */
+    @JsonIgnore
     public final BigInteger getDivisor()
     {
         BigInteger lcm = BigInteger.ONE;
@@ -59,6 +63,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return lcm;
     }
 
+    @JsonValue
     public BigRational[] getFactors()
     {
         return this .factors.clone(); // return a copy to ensure that this instance remains immutable
@@ -120,6 +125,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return d1.compareTo(d2);
     }
     
+    @JsonIgnore
     public AlgebraicField getField()
     {
         return this .field;

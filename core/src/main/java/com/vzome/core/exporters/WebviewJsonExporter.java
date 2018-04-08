@@ -23,8 +23,13 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 
-
-public class JsonExporter extends Exporter3d
+/**
+ * An exporter to support https://github.com/vorth/vzome-webview/.
+ * 
+ * @author vorth
+ *
+ */
+public class WebviewJsonExporter extends Exporter3d
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 		
@@ -33,7 +38,7 @@ public class JsonExporter extends Exporter3d
 	private transient Color background;
 	
 	
-	public JsonExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
+	public WebviewJsonExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    super( scene, colors, lights, model );
 	}
