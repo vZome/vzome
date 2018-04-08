@@ -82,10 +82,10 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		norm = new AlgebraicVector( x, y, z );
 		symm .createZoneOrbit( "cream", 0, Symmetry .NO_ROTATION, norm, true, false, unitLength );
 
-//		AbstractShapes defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symm );
-//		defaultShapes = new ExportedVEFShapes( null, "sqrtPhiOcta", "octahedra", null, symm, defaultShapes );
-//		octahedralPerspective .setDefaultGeometry( defaultShapes );
-//		octahedralPerspective .addShapes( defaultShapes );
+		AbstractShapes defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symm );
+		defaultShapes = new ExportedVEFShapes( null, "sqrtPhiOcta", "octahedra", null, symm, defaultShapes );
+		octahedralPerspective .setDefaultGeometry( defaultShapes );
+		octahedralPerspective .addShapes( defaultShapes );
 	}
 
     private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()

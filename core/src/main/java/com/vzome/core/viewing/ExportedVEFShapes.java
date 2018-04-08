@@ -175,10 +175,10 @@ public class ExportedVEFShapes extends AbstractShapes
      * polyhedron.  Then, when a new length polyhedron is required, the scaled prototype vector is added
      * to those ball vectors again, for the final polyhedron.
      * 
-     * As of August 2015, this now supports parsing two successfile VEF files, if startParsingMidpoint()
-     * is called between the two.  In the second phase, it records midpointVertexIndices for balls, and ignores
-     * faces and vertices.  This is so that we can use this mechanism to model classic Zometool red and
-     * yellow struts, and any others that use a central structure.
+     * As of August 2015, this now supports another extension; after the "tip" vertex, an arbitrary number
+     * of "middle" vertices may be specified.  Whereas the tip vertex specifies the strut tip relative to
+     * strut end vertices, the middle vertices will track the midpoint of the strut.  This is so that we can
+	 * use this mechanism to model classic Zometool red and yellow struts, and any others that use a central structure.
      */
     
     private class VefToShape extends VefParser
