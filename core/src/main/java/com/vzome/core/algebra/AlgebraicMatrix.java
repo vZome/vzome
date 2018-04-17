@@ -5,6 +5,8 @@ package com.vzome.core.algebra;
 
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public class AlgebraicMatrix
 {
     @Override
@@ -32,6 +34,12 @@ public class AlgebraicMatrix
 	}
 
 	final AlgebraicNumber[][] matrix;
+
+    @JsonValue
+    public AlgebraicNumber[][] getMatrix()
+    {
+        return this .matrix;
+    }
 
     /**
      * Create a new nXn identity matrix.

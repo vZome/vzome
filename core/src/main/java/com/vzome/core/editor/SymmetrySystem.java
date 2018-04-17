@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -277,6 +278,7 @@ public class SymmetrySystem implements OrbitSource
 	    this .noKnownDirections = true;
 	}
 
+    @JsonIgnore
     public Shapes getRenderingStyle()
     {
         return this .shapes;
@@ -318,17 +320,20 @@ public class SymmetrySystem implements OrbitSource
         }
     }
 
+    @JsonIgnore
     public String[] getStyleNames()
     {
     	return this .symmetryPerspective .getGeometries() .stream() .map( e -> e .getName() ) .toArray( String[]::new );
     }
 
+    @JsonIgnore
     public Shapes getStyle()
     {
         return this .shapes;
     }
 
 	@Override
+    @JsonIgnore
 	public Shapes getShapes()
 	{
 		return this .shapes;
@@ -376,6 +381,7 @@ public class SymmetrySystem implements OrbitSource
 		return false;
 	}
 
+    @JsonIgnore
 	public String getModelResourcePath()
 	{
 		return this .symmetryPerspective .getModelResourcePath();

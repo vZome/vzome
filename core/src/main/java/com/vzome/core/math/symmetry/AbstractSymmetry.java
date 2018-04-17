@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -110,18 +112,21 @@ public abstract class AbstractSymmetry implements Symmetry
     protected abstract void createInitialPermutations();
     
     @Override
+    @JsonIgnore
     public String getDefaultStyle()
     {
         return this .defaultStyle;
     }
 
     @Override
+    @JsonIgnore
     public AlgebraicField getField()
     {
         return mField;
     }
     
     @Override
+    @JsonIgnore
 	public Axis getPreferredAxis()
 	{
 		return null;
@@ -196,6 +201,7 @@ public abstract class AbstractSymmetry implements Symmetry
     // =================== public stuff =========================================
 
     @Override
+    @JsonIgnore
     public OrbitSet getOrbitSet()
     {
         return this.orbitSet;
@@ -279,6 +285,7 @@ public abstract class AbstractSymmetry implements Symmetry
     */
     @Deprecated
     @Override
+    @JsonIgnore
     public Iterator<Direction> getDirections()
     {
         return this .iterator();
@@ -384,12 +391,21 @@ public abstract class AbstractSymmetry implements Symmetry
         return mOrientations[ i ];
     }
 
+    public Permutation[] getPermutations()
+    {
+    	return this .mOrientations;
+    }
 
     @Override
-	public AlgebraicMatrix getMatrix(int i)
+	public AlgebraicMatrix getMatrix( int i )
 	{
 		return mMatrices[ i ];
 	}
+    
+    public AlgebraicMatrix[] getMatrices()
+    {
+    	return mMatrices;
+    }
 
     @Override
 	public int inverse( int orientation )
@@ -406,6 +422,7 @@ public abstract class AbstractSymmetry implements Symmetry
 	}
     
     @Override
+    @JsonIgnore
     public String[] getDirectionNames()
     {
         ArrayList<String> list = new ArrayList<>();
@@ -481,6 +498,7 @@ public abstract class AbstractSymmetry implements Symmetry
 	}
     
     @Override
+    @JsonIgnore
     public boolean isTrivial()
     {
     	return true; // a trivial embedding, implemented by toRealVector()

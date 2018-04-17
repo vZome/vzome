@@ -33,9 +33,9 @@ public class VsonExporter extends Exporter3d
     @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
-    	    SortedSet<AlgebraicVector> vertices = new TreeSet<>();
-    	    ArrayList<Integer> ballIndices = new ArrayList<>();
-    	    ArrayList<JsonNode> struts = new ArrayList<>();
+    	SortedSet<AlgebraicVector> vertices = new TreeSet<>();
+    	ArrayList<Integer> ballIndices = new ArrayList<>();
+    	ArrayList<JsonNode> struts = new ArrayList<>();
 
     	    // phase one: find and index all vertices
         for (RenderedManifestation rm : mModel) {
