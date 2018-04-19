@@ -181,7 +181,7 @@ public class AxialStretchTool extends TransformationTool
 		@Override
 		public Tool createToolInternal( String id )
 		{
-			String category = id .substring( 0, id .indexOf( "." ) );
+			String category = getCategory( red, stretch, first );
 			return new AxialStretchTool( id, (IcosahedralSymmetry) getSymmetry(), getToolsModel(), stretch, red, first, category );
 		}
 
