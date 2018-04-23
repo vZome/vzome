@@ -3,6 +3,7 @@
 
 package com.vzome.core.math.symmetry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -16,6 +17,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 {
     private final int[][] INCIDENCES = new int[60][3];
     
+    @JsonIgnore
 	public final Permutation IDENTITY = new Permutation( this, null );
 
 	private Axis preferredAxis;

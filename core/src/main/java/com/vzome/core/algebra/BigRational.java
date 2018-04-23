@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Immutable Abstract Data Type for arbitrarily large rational numbers. 
  * 
@@ -579,10 +581,19 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 	    }
 	}
 
+    @JsonValue
+    public Object toJson()
+    {
+    		if ( this.isWhole && this.notBig() )
+    			return new Long( this .num );
+    		else
+    			return toString;    
+    }
+    
     @Override
     public String toString()
     {
-    	return toString;    
+    	    return toString;    
     }
     
     private static String toString(BigRational that)

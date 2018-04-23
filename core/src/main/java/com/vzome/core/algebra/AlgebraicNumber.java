@@ -6,6 +6,9 @@ package com.vzome.core.algebra;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * 
  * Immutable representation of an Algebraic Number
@@ -58,14 +61,15 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
             this .factors[ i ] = BigRational.ZERO;
         }
         field.normalize(this.factors);
-    	isZero = isZero(this.factors);
-    	isOne = isOne(this.factors);
+    	  isZero = isZero(this.factors);
+    	  isOne = isOne(this.factors);
     }
 
     /**
      * Extract the least common multiple of the divisors.
      * @return
      */
+    @JsonIgnore
     public final BigInteger getDivisor()
     {
         BigInteger lcm = BigInteger.ONE;
@@ -78,6 +82,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return lcm;
     }
 
+    @JsonValue
     public BigRational[] getFactors()
     {
         return this .factors.clone(); // return a copy to ensure that this instance remains immutable
@@ -139,6 +144,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return d1.compareTo(d2);
     }
     
+    @JsonIgnore
     public AlgebraicField getField()
     {
         return this .field;

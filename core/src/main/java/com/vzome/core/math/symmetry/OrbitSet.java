@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.math.RealVector;
 
 public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
@@ -24,7 +25,8 @@ public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
     {
         this.symmetry = symmetry;
     }
-    
+	
+	@JsonIgnore
     public Symmetry getSymmetry()
     {
         return symmetry;
