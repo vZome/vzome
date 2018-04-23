@@ -113,7 +113,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
 //            // (x,y,z,w) form
 //            // p has order 3: w = -1/2 = cos(120)
 //            GoldenVector p = new GoldenNumberVector( ONE, ONE.neg(), ONE, ONE.neg(), HALF );
-//            // q has order 10: w = tau/2 = cos(36)
+//            // q has order 10: w = phi/2 = cos(36)
 //            GoldenVector q = new GoldenNumberVector( ZERO, ONE, ONE.minus(TAU), TAU, HALF );
 //            
 //            GoldenVector c1 = Quaternion .multiply( p, c0, q );

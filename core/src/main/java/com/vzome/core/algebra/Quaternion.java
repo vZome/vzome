@@ -99,7 +99,9 @@ public class Quaternion
     }
     
     /**
-     * Compute the product this*q.
+     * Compute the product this * q.
+     * @param q
+     * @return 
      */
     public AlgebraicVector rightMultiply( AlgebraicVector q )
     {

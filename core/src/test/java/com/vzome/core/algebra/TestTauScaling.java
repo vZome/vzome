@@ -16,7 +16,7 @@ public class TestTauScaling
      *   
      *   if ever a<0 and b<0, you have a negative number, flip the signs and start over
      *   
-     *   if resulting pair has a==0, you have a power of tau
+     *   if resulting pair has a==0, you have a power of phi
      *   
      * @param args
      */

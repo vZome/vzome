@@ -14,14 +14,14 @@ import com.vzome.core.math.symmetry.Symmetry;
 
 public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 {
-    private static final double SIGMA_X_2 = HeptagonField.SIGMA_VALUE * 2.0d;
-    private static final double SKEW_FACTOR = Math .sin( (3.0d/7.0d) * Math.PI );
-	private Axis preferredAxis;
-	private boolean correctedOrbits;
+    private final double sigmaX2;
+    private final double skewFactor;
+	private final boolean correctedOrbits;
+    private Axis preferredAxis;
 
-	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
+    public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
 	{
-		this( field, frameColor, defaultStyle, false );
+		this( field, frameColor, defaultStyle, false);
 	}
 
 	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle, boolean correctedOrbits )
@@ -34,6 +34,8 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 									field .basisVector( 3, AlgebraicVector.Z ) .negate() )
 						: null // reflection through origin yields negative zones
 				); // calls createInitialPermutations, createFrameOrbit, createOtherOrbits
+        sigmaX2 = field.getAffineScalar().times( field.createRational (2) ).evaluate();
+        skewFactor = Math .sin( (3.0d/7.0d) * Math.PI ); // TODO: generalize this so that the 3 and 7 are calculated from PolygonField
 		this.correctedOrbits = correctedOrbits;
 	}
 
@@ -63,8 +65,8 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
         HeptagonField hf = (HeptagonField) this .mField;
 
         AlgebraicNumber one = hf .one();
-        AlgebraicNumber s = hf .sigmaReciprocal(); // 1 / sigma
-        AlgebraicNumber R = hf .createPower( 1 ) .times( hf .sigmaReciprocal() ); // rho / sigma
+        AlgebraicNumber s = hf .getAffineScalar().reciprocal(); // reciprocal of sigma
+        AlgebraicNumber R = hf .createPower( 1 ) .times( s ); // rho / sigma
 
         //                                   (-s,1)         Y
         //                        +---+------ [2] ---------+-----------+--------+---+
@@ -159,8 +161,8 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	public RealVector embedInR3( AlgebraicVector v )
 	{
 		RealVector rv = super.embedInR3( v );
-        Double x = rv.x + ( rv.y / SIGMA_X_2 );
-        Double y = rv.y * SKEW_FACTOR;
+        Double x = rv.x + ( rv.y / sigmaX2 );
+        Double y = rv.y * skewFactor;
 		return new RealVector( x, y, rv.z );
 	}
     

@@ -1,5 +1,6 @@
 package com.vzome.core.algebra;
 
+import static com.vzome.core.algebra.BigRational.Gcd.LOOKUP_SIZE;
 import static com.vzome.core.generic.Utilities.thisSourceCodeLine;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -13,20 +14,20 @@ public class GcdBenchmarks {
 
 	@Test
 	public void testGcdLookupSize() {
-		int lSize = BigRational.Gcd.lookupSize;
+		int lSize = BigRational.Gcd.LOOKUP_SIZE;
 		assertEquals("BigRational.Gcd.lookupSize must be a power of two.", lSize & -lSize, lSize);
 		assertTrue("BigRational.Gcd.lookupSize must greater than 1", lSize > 1);
 		assertTrue("BigRational.Gcd.lookupSize not be greater than than 256", lSize <= 256);
 		assertEquals("Be sure that the highest cached values are returned as positive numbers.", 
-			BigRational.Gcd.lookupSize, BigRational.Gcd.gcd(0, BigRational.Gcd.lookupSize));
+			BigRational.Gcd.LOOKUP_SIZE, BigRational.Gcd.gcd(0, BigRational.Gcd.LOOKUP_SIZE));
 		
 	}
 
 	@Test
 	public void verifyUncachedImplementations() {
-		for(int j = 0; j < BigRational.Gcd.lookupSize; j++) {
+		for(int j = 0; j < BigRational.Gcd.LOOKUP_SIZE; j++) {
 			BigInteger jj = BigInteger.valueOf(j);
-			for(int k = 0; k < BigRational.Gcd.lookupSize; k++) {
+			for(int k = 0; k < BigRational.Gcd.LOOKUP_SIZE; k++) {
 				String msg = j + " " + k + ": ";
 				BigInteger kk = BigInteger.valueOf(k);
 				long expected = jj.gcd(kk).longValueExact();
@@ -53,9 +54,9 @@ public class GcdBenchmarks {
 	@Test
 	public void verifyCachedImplementations() {
 		int span = 4; // test this many values above and below the cache size
-		for(int j = BigRational.Gcd.lookupSize-span; j < BigRational.Gcd.lookupSize+span; j++) {
+		for(int j = BigRational.Gcd.LOOKUP_SIZE-span; j < BigRational.Gcd.LOOKUP_SIZE+span; j++) {
 			BigInteger jj = BigInteger.valueOf(j);
-			for(int k = BigRational.Gcd.lookupSize-span; k < BigRational.Gcd.lookupSize+span; k++) {
+			for(int k = BigRational.Gcd.LOOKUP_SIZE-span; k < BigRational.Gcd.LOOKUP_SIZE+span; k++) {
 				String msg = j + " " + k + ": ";
 				BigInteger kk = BigInteger.valueOf(k);
 				long expected = jj.gcd(kk).longValueExact();
@@ -82,9 +83,9 @@ public class GcdBenchmarks {
 //	@Test
 	public void testGcdBenchmarks() { 
 		int reps = 250000000;
-		int range = BigRational.Gcd.lookupSize;
+		int range = BigRational.Gcd.LOOKUP_SIZE;
 
-		showBenchmarkSettings(BigRational.Gcd.lookupSize, range, reps);
+		showBenchmarkSettings(BigRational.Gcd.LOOKUP_SIZE, range, reps);
 		benchmark( "Direct cache lookup", thisSourceCodeLine(), GcdBenchmarks::cachedGcd, range, reps);
 		benchmark( "BigRational gcd", thisSourceCodeLine(), BigRational.Gcd::gcd, range, reps);
 		benchmark( "No-op (test overhead)", thisSourceCodeLine(), GcdBenchmarks::noop, range, reps);
@@ -97,7 +98,7 @@ public class GcdBenchmarks {
 		benchmark( "Google Commons gcd", thisSourceCodeLine(), GcdBenchmarks::googleGcd, range, reps);
 		benchmark( "No-op (test overhead)", thisSourceCodeLine(), GcdBenchmarks::noop, range, reps);
 		
-		showBenchmarkSettings(BigRational.Gcd.lookupSize, range, reps);
+		showBenchmarkSettings(BigRational.Gcd.LOOKUP_SIZE, range, reps);
 		benchmark( "Cached Swing gcd (recursive)", thisSourceCodeLine(), GcdBenchmarks::swingGcdCached , range, reps);
 		benchmark( "Cached Original vZome gcd (iterative)", thisSourceCodeLine(), GcdBenchmarks::vZomeOriginalGcdCached , range, reps);
 		benchmark( "Cached Apache Commons gcd", thisSourceCodeLine(), GcdBenchmarks::apacheGcdCached , range, reps);
@@ -330,6 +331,7 @@ public class GcdBenchmarks {
       return a << Math.min(aTwos, bTwos);
     }
     
+    static final byte[][] LOOKUP_TABLE = BigRational.Gcd.calculateLookupTable(LOOKUP_SIZE);
     /**
      * 
      * @param j
@@ -338,14 +340,14 @@ public class GcdBenchmarks {
      */
     public final static long cachedGcd(long j, long k)
     {
-    	return (long) 0x00FF & BigRational.Gcd.lookupTable[(int)j] [(int)k];
+    	return (long) 0x00FF & LOOKUP_TABLE[(int)j] [(int)k];
     }
 
     public final static long cachedGcd(long j, long k, BinaryOperator<Long> gcd)
     {
     	// since this is intended to be a relative performance test of the algorithms,
     	// there's no overhead added by checking to ensure that neither j nor k are negative
-    	return(((j|k) & BigRational.Gcd.lookupMask) == 0L)
+    	return(((j|k) & BigRational.Gcd.LOOKUP_MASK) == 0L)
     			? cachedGcd(j, k)
     			: gcd.apply(j, k);
     }

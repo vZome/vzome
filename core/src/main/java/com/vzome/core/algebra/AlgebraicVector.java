@@ -22,9 +22,7 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
     public AlgebraicVector( AlgebraicNumber... n )
     {
         coordinates = new AlgebraicNumber[ n.length ];
-        for ( int i = 0; i < n.length; i++ ) {
-            coordinates[ i ] = n[ i ];
-        }
+        System.arraycopy(n, 0, coordinates, 0, n.length);
         this .field = n[ 0 ] .getField();
     }
 
