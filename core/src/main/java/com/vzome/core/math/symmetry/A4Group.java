@@ -50,7 +50,7 @@ vertex-regular A4 polytope sitting in the zero-sum subspace of R^5.
 
 If you take each a_i to be either 0 or 1, you will get the standard (uniform) A4
 polytopes. If we start working on chiral models, we may try the a_i's as
-(1,tau^2,tau^3,?) or (1,tau^3,tau^2,?) and then add some "alternation."
+(1,phi^2,phi^3,?) or (1,phi^3,phi^2,?) and then add some "alternation."
 
 ---
 

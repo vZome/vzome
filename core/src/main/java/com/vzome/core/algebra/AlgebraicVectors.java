@@ -7,6 +7,7 @@ import java.util.TreeSet;
  * A collection of static helper methods for the AlgebraicVector class
  */
 public class AlgebraicVectors {
+    private AlgebraicVectors() {}
 
     public static AlgebraicVector getNormal(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
         return v1.minus(v0).cross(v2.minus(v0));

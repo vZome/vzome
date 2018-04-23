@@ -127,7 +127,7 @@ public abstract class AbstractSymmetry implements Symmetry
 		return null;
 	}
 	
-    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[][] norm )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, false );
@@ -138,7 +138,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, false );
     }
 
-    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[][] norm, boolean standard )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, false );
@@ -149,7 +149,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, standard, false );
     }
 
-    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard, boolean halfSizes )
+    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[][] norm, boolean standard, boolean halfSizes )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, false, null );
@@ -160,7 +160,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, standard, false, mField .one() );
     }
 
-    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[][] norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, halfSizes, unitLength );
@@ -486,7 +486,8 @@ public abstract class AbstractSymmetry implements Symmetry
     	return true; // a trivial embedding, implemented by toRealVector()
     }
     
-    public AlgebraicMatrix getPrincipalReflection()
+    @Override
+	public AlgebraicMatrix getPrincipalReflection()
     {
     	return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
     }

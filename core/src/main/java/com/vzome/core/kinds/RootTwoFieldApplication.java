@@ -50,9 +50,9 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
 		
 		AbstractSymmetry symmetry = (AbstractSymmetry) octahedralPerspective .getSymmetry();
 		
-		symmetry .createZoneOrbit( "yellow", 0, 4, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1 }, true );
-		symmetry .createZoneOrbit( "green", 1, 8, new int[] { 0, 1, 1, 2, 0, 1, 1, 2, 0, 1, 0, 1 }, true );
-		symmetry .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1 }, true );
+		symmetry .createZoneOrbit( "yellow", 0, 4, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {1,1, 0,1} }, true );
+		symmetry .createZoneOrbit( "green",  1, 8, new int[][] { {0,1, 1,2}, {0,1, 1,2}, {0,1, 0,1} }, true );
+		symmetry .createZoneOrbit( "brown",  0, Symmetry .NO_ROTATION, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {2,1, 0,1} }, true );
 
 		AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", "small connectors", symmetry );
 		octahedralPerspective .setDefaultGeometry( defaultShapes );

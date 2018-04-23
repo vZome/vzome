@@ -122,7 +122,7 @@ public class ComparableAlgebraicNumberTest extends ComparableTest<AlgebraicNumbe
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField( new PentagonField() ),
+            new SnubDodecField(),
         };
 
         int passed = 0;

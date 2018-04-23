@@ -37,10 +37,10 @@ public class Polytope4dTest
 		cmd .perform();
 		assertEquals( 10, realized .size() );
 		// look for ball at (2/5 -4/5φ, 8/5 -6/5φ, -2 +2φ)
-		AlgebraicVector target = field .createVector( new int[]{ 2, 5, -4, 5, 8, 5, -6, 5, -2, 1, 2, 1 } );
+		AlgebraicVector target = field .createVector( new int[][]{ {2,5, -4,5}, {8,5, -6,5}, {-2,1, 2,1} } );
 		assertNotNull( realized .findConstruction( new FreePoint( target ) ) );
 		// look for ball at (12/5 -4/5φ, -12/5 +4/5φ, 0)
-		target = field .createVector( new int[]{ 12, 5, -4, 5, -12, 5, 4, 5, 0, 1, 0, 1 } );
+		target = field .createVector( new int[][]{ {12, 5, -4, 5}, {-12,5, 4,5}, {0,1, 0,1} } );
 		assertNotNull( realized .findConstruction( new FreePoint( target ) ) );
 	}
 }

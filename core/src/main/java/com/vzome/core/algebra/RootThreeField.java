@@ -3,10 +3,25 @@
 
 package com.vzome.core.algebra;
 
-
-
 public class RootThreeField extends AlgebraicField
 {
+    public static final String FIELD_NAME = "rootThree";
+    
+    /**
+     * 
+     * @return the coefficients of this AlgebraicField class. 
+     * This can be used to determine when two fields have compatible coefficients 
+     * without having to generate an instance of the class. 
+     */
+    public static double[] getFieldCoefficients() {
+        return new double[] { 1.0d, ROOT_3 };
+    }
+    
+    @Override
+    public double[] getCoefficients() {
+        return getFieldCoefficients();
+    }
+
     public static final double ROOT_3 = Math.sqrt( 3d );
     
     private static final BigRational THREE = new BigRational( 3 );
@@ -15,9 +30,7 @@ public class RootThreeField extends AlgebraicField
     
     public RootThreeField()
     {
-        super( "rootThree" );
-        
-        // we start with 1/2 just because we did in the golden field
+        super( FIELD_NAME, 2 );
         defaultStrutScaling = createAlgebraicNumber( 1, 0, 2, -3 );
     };
     
@@ -36,12 +49,15 @@ public class RootThreeField extends AlgebraicField
         return new BigRational[]{ ones, sqrt3s };
     }
 
+    /**
+     * scalar for an affine hexagon
+     * @return 
+     */
     @Override
-    public int getOrder()
-    {
-        return 2;
+    public AlgebraicNumber getAffineScalar() {
+        return createRational( 2 );
     }
-    
+
     @Override
     public AlgebraicNumber getDefaultStrutScaling()
     {
@@ -59,10 +75,14 @@ public class RootThreeField extends AlgebraicField
     @Override
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
-        if ( whichIrrational == 0 )
-            return factors;
-        else
-            return new BigRational[]{ factors[ 1 ] .times( THREE ), factors[ 0 ] };
+        switch (whichIrrational) {
+            case 0:
+                return factors;
+            case 1:
+                return new BigRational[]{ factors[ 1 ] .times( THREE ), factors[ 0 ] };
+            default:
+                throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
+        }
     }
 
     @Override

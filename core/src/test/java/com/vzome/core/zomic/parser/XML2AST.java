@@ -31,7 +31,7 @@ public class XML2AST extends DefaultHandler
 {
 	protected final Stack<ZomicStatement> m_stmts = new Stack<>();
     
-    private transient int ones, taus, denominator, scale;
+    private transient int ones, phis, denominator, scale;
     
     private final IcosahedralSymmetry symm;
     
@@ -108,13 +108,13 @@ public class XML2AST extends DefaultHandler
             else {
                 if ( "blue" .equals( localName ) || "green" .equals( localName ) ) {
                     ones = ones * 2;
-                    taus = taus * 2;
+                    phis = phis * 2;
                 }
                 else if ( denominator == 2 )
                     throw new SAXException( "half struts only allowed for blue and green lines" );
                 if ( "yellow" .equals( localName ) || "purple" .equals( localName ) )
                     --scale;
-                len = symm .getField() .createAlgebraicNumber( ones, taus, denominator, scale );
+                len = symm .getField() .createAlgebraicNumber( ones, phis, denominator, scale );
             }
             newStmt = new Move( axis, len );
 			// fall through to the push
@@ -133,7 +133,7 @@ public class XML2AST extends DefaultHandler
                     size = atts .getValue( "lengthOnes" );
                     ones = size == null? 1 : parseInt( size );
                     size = atts .getValue( "lengthPhis" );
-                    taus = size == null? 0 : parseInt( size );
+                    phis = size == null? 0 : parseInt( size );
                 }
 				return;  // no newStmt to push, will happen on next startElement... see above
 			}

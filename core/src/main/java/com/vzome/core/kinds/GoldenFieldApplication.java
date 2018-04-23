@@ -62,29 +62,29 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 		AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();
 		
-		symm .createZoneOrbit( "yellow", 0, 4, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1 }, true, false, getField()
+		symm .createZoneOrbit( "yellow", 0, 4, new int[][] { {0,1, 1,1}, {0,1, 1,1}, {0,1, 1,1} }, true, false, getField()
 				.createPower( - 1 ) );
 
-		symm .createZoneOrbit( "green", 1, 8, new int[] { 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 }, true, true, getField()
+		symm .createZoneOrbit( "green", 1, 8, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {0,1, 0,1} }, true, true, getField()
 				.createRational( 2 ) );
 
-		symm .createZoneOrbit( "lavender", 0, Symmetry .NO_ROTATION, new int[] { 2, 1, - 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
+		symm .createZoneOrbit( "lavender", 0, Symmetry .NO_ROTATION, new int[][] { {2,1, - 1,1}, {0,1, 1,1}, {2,1, -1,1} } );
 
-		symm .createZoneOrbit( "olive", 0, Symmetry .NO_ROTATION, new int[] { 0, 1, 1, 1, 0, 1, 1, 1, 2, 1, - 1, 1 } );
+		symm .createZoneOrbit( "olive", 0, Symmetry .NO_ROTATION, new int[][] { {0,1, 1,1}, {0,1, 1,1}, {2,1, -1,1} } );
 
-		symm .createZoneOrbit( "maroon", 0, Symmetry .NO_ROTATION, new int[] { - 1, 1, 1, 1, 3, 1, - 1, 1, 1, 1, - 1, 1 } );
+		symm .createZoneOrbit( "maroon", 0, Symmetry .NO_ROTATION, new int[][] { {-1,1, 1,1}, {3,1, -1,1}, {1,1, -1,1} } );
 
-		symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[] { - 1, 1, 1, 1, - 1, 1, 1, 1, - 2, 1, 2, 1 } );
+		symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[][] { {-1,1, 1,1}, {-1,1, 1,1}, {-2,1, 2,1} } );
 
-		symm .createZoneOrbit( "red", 0, Symmetry .NO_ROTATION, new int[] { 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 } );
+		symm .createZoneOrbit( "red", 0, Symmetry .NO_ROTATION, new int[][] { {0,1, 1,1}, {1,1, 0,1}, {0,1, 0,1} } );
 
-		symm .createZoneOrbit( "purple", 0, Symmetry .NO_ROTATION, new int[] { 1, 1, 1, 1, 0, 1, 0, 1, - 1, 1, 0, 1 }, false, false, getField()
+		symm .createZoneOrbit( "purple", 0, Symmetry .NO_ROTATION, new int[][] { {1,1, 1,1}, {0,1, 0,1}, {-1,1, 0,1} }, false, false, getField()
 				.createPower( - 1 ) );
 
-		symm .createZoneOrbit( "black", 0, Symmetry .NO_ROTATION, new int[] { 1, 2, 0, 1, 0, 1, 1, 2, - 1, 2, 1, 2 }, false, false, getField()
+		symm .createZoneOrbit( "black", 0, Symmetry .NO_ROTATION, new int[][] { {1,2, 0,1}, {0,1, 1,2}, {-1,2, 1,2} }, false, false, getField()
 				.createRational( 2 ) );
 
-		symm .createZoneOrbit( "turquoise", 0, Symmetry .NO_ROTATION, new int[] { 1, 1, 2, 1, 3, 1, 4, 1, 3, 1, 4, 1 } );
+		symm .createZoneOrbit( "turquoise", 0, Symmetry .NO_ROTATION, new int[][] { {1,1, 2,1}, {3,1, 4,1}, {3,1, 4,1} } );
 
 		AbstractShapes defaultShapes = new ExportedVEFShapes( null, "octahedral", "trapezoids", symm, null );
 		octahedralPerspective .addShapes( defaultShapes );

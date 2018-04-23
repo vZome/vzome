@@ -345,7 +345,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         return this .getAxis( sense, index );
     }
 
-    public void createAxis( int orientation, int rotation, int[] norm )
+    public void createAxis( int orientation, int rotation, int[][] norm )
     {
         AlgebraicVector aNorm = this .mSymmetryGroup .getField() .createVector( norm );
         this .createAxis( orientation, rotation, aNorm );

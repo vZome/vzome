@@ -276,7 +276,7 @@ public class POVRayExporter extends Exporter3d
     
     
     /*
-     * writes out a AlgebraicVector as (<1/2,1/2,0>*tau+<-3/2,0/2,0>)
+     * writes out an AlgebraicVector as (<1/2,1/2,0>*phi+<-3/2,0/2,0>)
      */
 	protected void appendVector( AlgebraicVector loc, StringBuffer buf )
 	{
@@ -345,7 +345,7 @@ public class POVRayExporter extends Exporter3d
     public void doExport( File directory, Writer writer, int height, int width )
             throws Exception
     {
-        throw new IllegalStateException( "POV exporter only supports 4-argument doExport()" );
+        throw new IllegalStateException( "POV exporter only supports 5-argument doExport()" );
     }
 }
 

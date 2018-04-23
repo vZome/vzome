@@ -3,14 +3,28 @@
 
 package com.vzome.core.algebra;
 
-
 public class RootTwoField extends AlgebraicField
 {
+    public static final String FIELD_NAME = "rootTwo";
+    
+    /**
+     * 
+     * @return the coefficients of this AlgebraicField class. 
+     * This can be used to determine when two fields have compatible coefficients 
+     * without having to generate an instance of the class. 
+     */
+    public static double[] getFieldCoefficients() {
+        return new double[] { 1.0d, ROOT_2 };
+    }
+
+    @Override
+    public double[] getCoefficients() {
+        return getFieldCoefficients();
+    }
+    
     public RootTwoField()
     {
-        super( "rootTwo" );
-        
-        // we start with 1/2 just because we did in the golden field
+        super( FIELD_NAME, 2 );
         defaultStrutScaling = createAlgebraicNumber( 1, 0, 2, -3 );
     };
 
@@ -18,12 +32,6 @@ public class RootTwoField extends AlgebraicField
     public void defineMultiplier( StringBuffer buf, int which )
     {
         buf .append( "" );
-    }
-    
-    @Override
-    public int getOrder()
-    {
-        return 2;
     }
     
     public static final double ROOT_2 = Math.sqrt( 2d );
@@ -67,10 +75,14 @@ public class RootTwoField extends AlgebraicField
     @Override
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
-        if ( whichIrrational == 0 )
-            return factors;
-        else
-            return new BigRational[]{ factors[ 1 ] .plus( factors[ 1 ] ), factors[ 0 ] };
+        switch (whichIrrational) {
+            case 0:
+                return factors;
+            case 1:
+                return new BigRational[]{ factors[ 1 ] .plus( factors[ 1 ] ), factors[ 0 ] };
+            default:
+                throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
+        }
     }
     
     @Override
@@ -92,7 +104,7 @@ public class RootTwoField extends AlgebraicField
             string = string .substring( phiIndex+5 );
         }
         if ( hasDiv ) {
-            int closeParen = string .indexOf( ")" );
+            int closeParen = string .indexOf( ')' );
             String part = string .substring( closeParen+2 );
             string = string .substring( 0, closeParen );
             div = Integer .parseInt( part );

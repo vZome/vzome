@@ -5,6 +5,7 @@ package com.vzome.core.editor;
 
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicFields;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
@@ -46,14 +47,12 @@ public class AffinePentagon extends ChangeManifestations
         }
         
         AlgebraicField field = strut1.getLocation().getField();
-        if (!(field instanceof PentagonField)) {
-            // TODO: check if this works with snubDodec field
-            AlgebraicField subField = field.getSubfield();
-            if (subField != null && subField instanceof PentagonField) {
-                field = subField;
-            } else {
-                fail("Affine pentagon command requires a Pentagon field or subField.");
-            }
+        // Although this now works with a SnubDodecField, 
+        // I'm not going to enable it in the menu yet.
+        // TODO: I plan to replace this command with a more generalized AffinePolygon command 
+        // and I'll add the new command to the menu at that time 
+        if (! AlgebraicFields.haveSameInitialCoefficients(field, PentagonField.FIELD_NAME) ) {
+            fail("Affine pentagon command requires a Pentagon field or subField.");
         }
 
         // Before we start, be sure the balls at the ends of each strut have not been deleted or hidden.
