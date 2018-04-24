@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 public abstract class AlgebraicField
 {
-    public abstract AlgebraicNumber getDefaultStrutScaling();
+        public abstract AlgebraicNumber getDefaultStrutScaling();
 
     abstract BigRational[] multiply( BigRational[] v1, BigRational[] v2 );
 
@@ -103,6 +103,11 @@ public abstract class AlgebraicField
      * Similarly, PolygonField(4) does equal SqrtField(2)
      * but PolygonField(6) does not equal SqrtField(3) though they share 
      * the same irrational coefficient, but they are of different order.
+     * 
+     * For now, I an not including defaultStrutScaling in the equality test
+     * or the hashCode, but I am using test cases to be sure that equal fields
+     * have equal defaultStrutScaling for backward compatibility
+     *  
      * @param obj
      * @return 
      */
@@ -118,6 +123,10 @@ public abstract class AlgebraicField
             return false;
         }
         AlgebraicField that = (AlgebraicField) obj;
+        if(this.getName().equals(that.getName())) {
+            // assume that all parameterized fields include the parameter in their name
+            return true;
+        }
         if(getOrder() != that.getOrder()) {
             return false;
         }

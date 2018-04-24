@@ -21,6 +21,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.SqrtPhiField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.exporters.DaeExporter;
@@ -43,6 +44,7 @@ import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.exporters.VefExporter;
 import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.exporters.WebviewJsonExporter;
+import com.vzome.core.kinds.DefaultFieldApplication;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
@@ -119,6 +121,14 @@ public class Application
         );
         this.fieldAppSuppliers.put("heptagon", HeptagonFieldApplication::new);
         this.fieldAppSuppliers.put("snubDodec", SnubDodecFieldApplication::new);
+        this.fieldAppSuppliers.put( "sqrtPhi", new Supplier<FieldApplication>()
+        {
+			@Override
+			public FieldApplication get()
+			{
+				return new DefaultFieldApplication( new SqrtPhiField() );
+			}
+		} );
     }
 
     public DocumentModel loadDocument( InputStream bytes ) throws Exception
