@@ -21,6 +21,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.SqrtPhiField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
@@ -44,12 +45,12 @@ import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.exporters.VefExporter;
 import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.exporters.WebviewJsonExporter;
-import com.vzome.core.kinds.DefaultFieldApplication;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
+import com.vzome.core.kinds.SqrtPhiFieldApplication;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
@@ -114,10 +115,17 @@ public class Application
         this .exporters .put( "history", new HistoryExporter( null, this .mColors, this .mLights, null ) );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        this.fieldAppSuppliers.put("golden", GoldenFieldApplication::new);
+        this.fieldAppSuppliers.put("golden", new Supplier<FieldApplication>()
+        {
+			@Override
+			public FieldApplication get()
+			{
+				return new GoldenFieldApplication( new PentagonField() );
+			}
+		} );
         this.fieldAppSuppliers.put("rootTwo", RootTwoFieldApplication::new);
         this.fieldAppSuppliers.put("dodecagon",  // for legacy documents
-        this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new)
+        		this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new)
         );
         this.fieldAppSuppliers.put("heptagon", HeptagonFieldApplication::new);
         this.fieldAppSuppliers.put("snubDodec", SnubDodecFieldApplication::new);
@@ -126,7 +134,7 @@ public class Application
 			@Override
 			public FieldApplication get()
 			{
-				return new DefaultFieldApplication( new SqrtPhiField() );
+				return new SqrtPhiFieldApplication( new SqrtPhiField() );
 			}
 		} );
     }

@@ -107,4 +107,35 @@ public class SqrtPhiField  extends ParameterizedField<Integer> {
         irrationalLabels[2] = new String[]{"\u03C6", "phi"};
         irrationalLabels[3] = new String[]{"\u03C6\u221A\u03C6", "phi*sqrt(phi)"};
     }
+    
+    /**
+     * A modified version of the base class that maps [ a, b ] to [ a, 0, b, 0 ] for each coordinate.
+     */
+    @Override
+    public AlgebraicVector createVector( int[][] nums )
+    {
+        int dims = nums.length;
+        AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
+        for(int c = 0; c < coords.length; c++) {
+            int coordLength = nums[c].length;
+            if ( coordLength % 2 != 0 ) {
+                throw new IllegalStateException( "Vector dimension " + c + " has " + coordLength + " components. An even number is required." );
+            }
+            int nFactors = coordLength / 2;
+            if ( nFactors > getOrder() ) {
+                throw new IllegalStateException( "Vector dimension " + c + " has " + (coordLength /2) + " terms." 
+                        + " Each dimension of the " + this.getName() + " field is limited to " + getOrder() + " terms."
+                        + " Each term consists of a numerator and a denominator." );
+            }
+            BigRational[] factors = new BigRational[nFactors*2];
+            for (int f = 0; f < nFactors; f++) {
+                int numerator   = nums[c][(f*2)  ];
+                int denominator = nums[c][(f*2)+1];
+                factors[f*2] = new BigRational(numerator, denominator);
+                factors[f*2+1] = new BigRational(0,1);
+            }
+            coords[c] = new AlgebraicNumber(this, factors);
+        }
+        return new AlgebraicVector( coords );
+    }
 }

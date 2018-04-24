@@ -3,6 +3,7 @@ package com.vzome.core.kinds;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.render.Shapes;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
+import com.vzome.core.viewing.OctahedralShapes;
 
 /**
  * Everything here is stateless, or at worst, a cache (like Shapes).
@@ -49,69 +51,30 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  * @author vorth
  *
  */
-public class GoldenFieldApplication extends DefaultFieldApplication
+public class SqrtPhiFieldApplication extends DefaultFieldApplication
 {
-	public GoldenFieldApplication( AlgebraicField field )
+	public SqrtPhiFieldApplication( AlgebraicField field )
 	{
 		super( field );
 
 		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 		AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();
 		
-		symm .createZoneOrbit( "yellow", 0, 4, new int[][] { {0,1, 1,1}, {0,1, 1,1}, {0,1, 1,1} }, true, false, getField()
-				.createPower( - 1 ) );
-
-		symm .createZoneOrbit( "green", 1, 8, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {0,1, 0,1} }, true, true, getField()
-				.createRational( 2 ) );
-
-		symm .createZoneOrbit( "lavender", 0, Symmetry .NO_ROTATION, new int[][] { {2,1, - 1,1}, {0,1, 1,1}, {2,1, -1,1} } );
-
-		symm .createZoneOrbit( "olive", 0, Symmetry .NO_ROTATION, new int[][] { {0,1, 1,1}, {0,1, 1,1}, {2,1, -1,1} } );
-
-		symm .createZoneOrbit( "maroon", 0, Symmetry .NO_ROTATION, new int[][] { {-1,1, 1,1}, {3,1, -1,1}, {1,1, -1,1} } );
-
-		symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[][] { {-1,1, 1,1}, {-1,1, 1,1}, {-2,1, 2,1} } );
-
-		symm .createZoneOrbit( "red", 0, Symmetry .NO_ROTATION, new int[][] { {0,1, 1,1}, {1,1, 0,1}, {0,1, 0,1} } );
-
-		symm .createZoneOrbit( "purple", 0, Symmetry .NO_ROTATION, new int[][] { {1,1, 1,1}, {0,1, 0,1}, {-1,1, 0,1} }, false, false, getField()
-				.createPower( - 1 ) );
-
-		symm .createZoneOrbit( "black", 0, Symmetry .NO_ROTATION, new int[][] { {1,2, 0,1}, {0,1, 1,2}, {-1,2, 1,2} }, false, false, getField()
-				.createRational( 2 ) );
-
-		symm .createZoneOrbit( "turquoise", 0, Symmetry .NO_ROTATION, new int[][] { {1,1, 2,1}, {3,1, 4,1}, {3,1, 4,1} } );
-
-		AbstractShapes defaultShapes = new ExportedVEFShapes( null, "octahedral", "trapezoids", symm, null );
-		octahedralPerspective .addShapes( defaultShapes );
-		octahedralPerspective .setDefaultGeometry( defaultShapes );
-		octahedralPerspective .addShapes( new ExportedVEFShapes( null, "octahedralFast", "small octahedra", symm, null ) );
-		octahedralPerspective .addShapes( new ExportedVEFShapes( null, "octahedralRealistic", "vZome logo", symm, defaultShapes ) );
+//		symm .createZoneOrbit( "yellow", 0, 4, new int[][] { {0,1, 1,1}, {0,1, 1,1}, {0,1, 1,1} }, true, false, getField()
+//				.createPower( - 1 ) );
 	}
 
     private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()
     {
-        private final IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( getField(), "solid connectors" );
+        private final IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( getField(), "small octahedra" );
         
-        private final AbstractShapes icosadefaultShapes = new ExportedVEFShapes( null, "default", "solid connectors", icosaSymm );
-        private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", icosaSymm, icosadefaultShapes );
-        private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", icosaSymm );
-        private final AbstractShapes tinyDodecs = new ExportedVEFShapes( null, "dodecs", "small dodecahedra", "tiny dodecahedra", icosaSymm, tinyShapes );
-        private final AbstractShapes bigZome = new ExportedVEFShapes( null, "bigzome", "Big Zome", icosaSymm, tinyShapes );
-        private final AbstractShapes noTwist = new ExportedVEFShapes( null, "noTwist", "no-twist 121 zone", icosaSymm );
-        private final AbstractShapes vienne2 = new ExportedVEFShapes( null, "vienne2", "Vienne", icosaSymm, icosadefaultShapes );
-        private final AbstractShapes vienne3 = new ExportedVEFShapes( null, "vienne3", "Vienne lifelike", icosaSymm, vienne2 );
-        private final AbstractShapes vienne = new ExportedVEFShapes( null, "vienne", "Vienne 121 zone", icosaSymm );
-
         private final Command icosasymm = new CommandSymmetry( icosaSymm );
         private final Command tetrasymm = new CommandTetrahedralSymmetry( icosaSymm );
         private final Command axialsymm = new CommandAxialSymmetry( icosaSymm );
         private final Command h4symmetry = new CommandQuaternionSymmetry( H4, H4 );
-        private final Command h4rotations = new CommandQuaternionSymmetry( H4_ROT, H4_ROT );
-        private final Command IxTsymmetry = new CommandQuaternionSymmetry( H4, T2 );
-        private final Command TxTsymmetry = new CommandQuaternionSymmetry( T2, T2 );
-        private final Command vanOss600cell = new CommandVanOss600Cell();
         private final Command octasymm = new CommandSymmetry( icosaSymm );
+        
+        private final Shapes defaultShapes = new OctahedralShapes( "octahedral", "octahedra", this .icosaSymm );
 
 		@Override
 		public Symmetry getSymmetry()
@@ -128,13 +91,13 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 		@Override
 		public List<Shapes> getGeometries()
 		{
-			return Arrays.asList( icosadefaultShapes, lifelikeShapes, tinyShapes, tinyDodecs, bigZome, noTwist, vienne2, vienne3, vienne );
+			return Collections .singletonList( this .defaultShapes );
 		}
-		
+
 		@Override
 		public Shapes getDefaultGeometry()
 		{
-			return this .icosadefaultShapes;
+			return this .defaultShapes;
 		}
 
 		@Override
@@ -208,10 +171,6 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 			case "tetrasymm"    : return tetrasymm;
 			case "axialsymm"    : return axialsymm;
 			case "h4symmetry"   : return h4symmetry;
-			case "h4rotations"  : return h4rotations;
-			case "IxTsymmetry"  : return IxTsymmetry;
-			case "TxTsymmetry"  : return TxTsymmetry;
-			case "vanOss600cell": return vanOss600cell;
 			case "octasymm"     : return octasymm;
 			default:
 				return null;
@@ -231,8 +190,6 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 	};
 		
     private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", getField() );
-    private final QuaternionicSymmetry H4_ROT = new QuaternionicSymmetry( "H4_ROT", "com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef", getField() );
-    private final QuaternionicSymmetry T2 = new QuaternionicSymmetry( "2T", "com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef", getField() );
 
 	@Override
 	public Collection<SymmetryPerspective> getSymmetryPerspectives()
@@ -266,12 +223,6 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 
 		case "H_4":
 			return this .H4;
-
-		case "H4_ROT":
-			return this .H4_ROT;
-
-		case "2T":
-			return this .T2;
 
 		default:
 			return null;

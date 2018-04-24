@@ -6,6 +6,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -76,13 +78,15 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         
         boolean isHeptagon = "heptagon" .equals( fieldName );
 
-        boolean isSnubDodec = "snubDodec" .equals( fieldName );
-
         boolean isRootTwo = "rootTwo" .equals( fieldName );
 
         boolean isRootThree = "rootThree" .equals( fieldName );
         
         boolean oldTools = controller .propertyIsTrue( "original.tools" );
+        
+        List<String> symmetries = Arrays .asList( controller .getCommandList( "symmetryPerspectives" ) );
+        
+        boolean hasIcosahedral = symmetries .contains( "icosahedral" );
 
         // ----------------------------------------- File menu
 
@@ -354,7 +358,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         Controller symmetryController = controller .getSubController( "symmetry" );
         // TODO: replace legacy commands with default tools
-        if ( isGolden || isSnubDodec ) {
+        if ( hasIcosahedral ) {
             menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm", symmetryController, KeyEvent.VK_I, COMMAND ) ) );
         }
         if ( developerExtras && isRootThree ) {
@@ -386,7 +390,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu = new JMenu( "System" );
         ButtonGroup group = new ButtonGroup();
         JMenuItem rbMenuItem;
-        if ( isGolden || isSnubDodec ) {
+        if ( hasIcosahedral ) {
             rbMenuItem = actions .setMenuAction( "setSymmetry.icosahedral", controller, new JRadioButtonMenuItem( "Icosahedral System" ) );
             rbMenuItem .setSelected( "icosahedral".equals( initSystem ) );
             rbMenuItem .setEnabled( fullPower );
