@@ -8,8 +8,8 @@ import java.util.Map;
 
 import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandQuaternionSymmetry;
@@ -51,9 +51,9 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  */
 public class GoldenFieldApplication extends DefaultFieldApplication
 {
-	public GoldenFieldApplication( AlgebraicField field )
+	public GoldenFieldApplication()
 	{
-		super( field );
+		super( new PentagonField() );
 
 		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 		AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();

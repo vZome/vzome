@@ -11,13 +11,14 @@ import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.SqrtPhiField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandQuaternionSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.commands.CommandTetrahedralSymmetry;
 import com.vzome.core.commands.CommandUniformH4Polytope;
-import com.vzome.core.commands.CommandVanOss600Cell;
 import com.vzome.core.editor.AxialStretchTool;
 import com.vzome.core.editor.AxialSymmetryToolFactory;
 import com.vzome.core.editor.BookmarkTool;
@@ -38,8 +39,6 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.render.Shapes;
-import com.vzome.core.viewing.AbstractShapes;
-import com.vzome.core.viewing.ExportedVEFShapes;
 import com.vzome.core.viewing.OctahedralShapes;
 
 /**
@@ -53,21 +52,38 @@ import com.vzome.core.viewing.OctahedralShapes;
  */
 public class SqrtPhiFieldApplication extends DefaultFieldApplication
 {
-	public SqrtPhiFieldApplication( AlgebraicField field )
+	public SqrtPhiFieldApplication()
 	{
-		super( field );
+		super( new SqrtPhiField() );
+		AlgebraicField field = this .getField();
 
 		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 		AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();
+
+		AlgebraicNumber x = field .createAlgebraicNumber( new int[]{ 0, -1, 0, 0 } );
+		AlgebraicNumber y = field .createAlgebraicNumber( new int[]{ -1, 0, 0, 0 } );
+		AlgebraicNumber z = field .zero();
+		AlgebraicNumber unitLength = field .createPower( 4 );
+		AlgebraicVector norm = new AlgebraicVector( x, y, z );
+		symm .createZoneOrbit( "slate", 0, Symmetry .NO_ROTATION, norm, true, false, unitLength );
+
+	    x = field .createAlgebraicNumber( new int[]{ 0, 1, 0, -1 } );
+		y = field .one();
+		z = field .one();
+		norm = new AlgebraicVector( x, y, z );
+		symm .createZoneOrbit( "mauve", 0, Symmetry .NO_ROTATION, norm, true, false, unitLength );
 		
-//		symm .createZoneOrbit( "yellow", 0, 4, new int[][] { {0,1, 1,1}, {0,1, 1,1}, {0,1, 1,1} }, true, false, getField()
-//				.createPower( - 1 ) );
+	    x = field .createAlgebraicNumber( new int[]{ 1, 0, -1, 0 } );
+		y = field .createAlgebraicNumber( new int[]{ 0, -1, 0, 0 } );
+		z = field .createAlgebraicNumber( new int[]{ 0, -1, 0, 1 } );
+		norm = new AlgebraicVector( x, y, z );
+		symm .createZoneOrbit( "cream", 0, Symmetry .NO_ROTATION, norm, true, false, unitLength );
 	}
 
     private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()
     {
         private final IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( getField(), "small octahedra" );
-        
+                
         private final Command icosasymm = new CommandSymmetry( icosaSymm );
         private final Command tetrasymm = new CommandTetrahedralSymmetry( icosaSymm );
         private final Command axialsymm = new CommandAxialSymmetry( icosaSymm );

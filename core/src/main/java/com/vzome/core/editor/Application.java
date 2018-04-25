@@ -115,28 +115,14 @@ public class Application
         this .exporters .put( "history", new HistoryExporter( null, this .mColors, this .mLights, null ) );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        this.fieldAppSuppliers.put("golden", new Supplier<FieldApplication>()
-        {
-			@Override
-			public FieldApplication get()
-			{
-				return new GoldenFieldApplication( new PentagonField() );
-			}
-		} );
-        this.fieldAppSuppliers.put("rootTwo", RootTwoFieldApplication::new);
-        this.fieldAppSuppliers.put("dodecagon",  // for legacy documents
-        		this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new)
+        this.fieldAppSuppliers .put( "golden", GoldenFieldApplication::new );
+        this.fieldAppSuppliers .put( "rootTwo", RootTwoFieldApplication::new );
+        this.fieldAppSuppliers .put( "dodecagon",  // for legacy documents
+        	    this.fieldAppSuppliers .put( "rootThree", RootThreeFieldApplication::new )
         );
-        this.fieldAppSuppliers.put("heptagon", HeptagonFieldApplication::new);
-        this.fieldAppSuppliers.put("snubDodec", SnubDodecFieldApplication::new);
-        this.fieldAppSuppliers.put( "sqrtPhi", new Supplier<FieldApplication>()
-        {
-			@Override
-			public FieldApplication get()
-			{
-				return new SqrtPhiFieldApplication( new SqrtPhiField() );
-			}
-		} );
+        this.fieldAppSuppliers .put( "heptagon", HeptagonFieldApplication::new );
+        this.fieldAppSuppliers .put( "snubDodec", SnubDodecFieldApplication::new );
+        this.fieldAppSuppliers .put( "sqrtPhi", SqrtPhiFieldApplication::new );
     }
 
     public DocumentModel loadDocument( InputStream bytes ) throws Exception
