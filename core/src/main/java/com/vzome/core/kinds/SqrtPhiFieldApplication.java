@@ -3,7 +3,6 @@ package com.vzome.core.kinds;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,8 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.render.Shapes;
-import com.vzome.core.viewing.OctahedralShapes;
+import com.vzome.core.viewing.AbstractShapes;
+import com.vzome.core.viewing.ExportedVEFShapes;
 
 /**
  * Everything here is stateless, or at worst, a cache (like Shapes).
@@ -90,7 +90,9 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
         private final Command h4symmetry = new CommandQuaternionSymmetry( H4, H4 );
         private final Command octasymm = new CommandSymmetry( icosaSymm );
         
-        private final Shapes defaultShapes = new OctahedralShapes( "octahedral", "octahedra", this .icosaSymm );
+//        private final AbstractShapes octahedralShapes = new OctahedralShapes( "octahedral", "octahedra", this .icosaSymm );
+        private final AbstractShapes tinyIcosaShapes = new ExportedVEFShapes( null, "sqtrPhiTinyIcosa", "tiny icosahedra", icosaSymm);
+        private final AbstractShapes icosahedralShapes = new ExportedVEFShapes( null, "sqrtPhi", "solid connectors", icosaSymm, tinyIcosaShapes);
 
 		@Override
 		public Symmetry getSymmetry()
@@ -107,13 +109,14 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		@Override
 		public List<Shapes> getGeometries()
 		{
-			return Collections .singletonList( this .defaultShapes );
+		    // this is the order they will be shown on the dialog
+			return Arrays.asList( icosahedralShapes, tinyIcosaShapes);
 		}
 
 		@Override
 		public Shapes getDefaultGeometry()
 		{
-			return this .defaultShapes;
+			return icosahedralShapes;
 		}
 
 		@Override
