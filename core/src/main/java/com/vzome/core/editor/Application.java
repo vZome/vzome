@@ -22,7 +22,6 @@ import org.xml.sax.SAXException;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.algebra.SqrtPhiField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.exporters.DaeExporter;
@@ -50,10 +49,11 @@ import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
-import com.vzome.core.kinds.SqrtPhiFieldApplication;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
+import com.vzome.fields.sqrtphi.SqrtPhiField;
+import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 
 public class Application
 {

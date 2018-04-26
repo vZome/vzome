@@ -1,4 +1,4 @@
-package com.vzome.core.kinds;
+package com.vzome.fields.sqrtphi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,6 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.SqrtPhiField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandQuaternionSymmetry;
@@ -33,12 +32,16 @@ import com.vzome.core.editor.ScalingTool;
 import com.vzome.core.editor.TetrahedralToolFactory;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.TranslationTool;
+import com.vzome.core.kinds.DefaultFieldApplication;
+import com.vzome.core.kinds.OctahedralSymmetryPerspective;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.render.Shapes;
+import com.vzome.core.viewing.AbstractShapes;
+import com.vzome.core.viewing.ExportedVEFShapes;
 import com.vzome.core.viewing.OctahedralShapes;
 
 /**
@@ -78,6 +81,11 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		z = field .createAlgebraicNumber( new int[]{ 0, -1, 0, 1 } );
 		norm = new AlgebraicVector( x, y, z );
 		symm .createZoneOrbit( "cream", 0, Symmetry .NO_ROTATION, norm, true, false, unitLength );
+
+//		AbstractShapes defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symm );
+//		defaultShapes = new ExportedVEFShapes( null, "sqrtPhiOcta", "octahedra", null, symm, defaultShapes );
+//		octahedralPerspective .setDefaultGeometry( defaultShapes );
+//		octahedralPerspective .addShapes( defaultShapes );
 	}
 
     private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()

@@ -1,4 +1,10 @@
-package com.vzome.core.algebra;
+package com.vzome.fields.sqrtphi;
+
+import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.BigRational;
+import com.vzome.core.algebra.ParameterizedField;
+import com.vzome.core.algebra.PentagonField;
 
 /**
  * @author David Hall
@@ -134,7 +140,7 @@ public class SqrtPhiField  extends ParameterizedField<Integer> {
                 factors[f*2] = new BigRational(numerator, denominator);
                 factors[f*2+1] = new BigRational(0,1);
             }
-            coords[c] = new AlgebraicNumber(this, factors);
+            coords[c] = this .createAlgebraicNumber( factors );
         }
         return new AlgebraicVector( coords );
     }
