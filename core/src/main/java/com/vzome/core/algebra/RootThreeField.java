@@ -26,12 +26,9 @@ public class RootThreeField extends AlgebraicField
     
     private static final BigRational THREE = new BigRational( 3 );
     
-    private final AlgebraicNumber defaultStrutScaling;
-    
     public RootThreeField()
     {
         super( FIELD_NAME, 2 );
-        defaultStrutScaling = createAlgebraicNumber( 1, 0, 2, -3 );
     };
     
     @Override
@@ -56,12 +53,6 @@ public class RootThreeField extends AlgebraicField
     @Override
     public AlgebraicNumber getAffineScalar() {
         return createRational( 2 );
-    }
-
-    @Override
-    public AlgebraicNumber getDefaultStrutScaling()
-    {
-        return defaultStrutScaling;
     }
 
     private static final int ONES_PLACE = 0, SQRT3_PLACE = 1;

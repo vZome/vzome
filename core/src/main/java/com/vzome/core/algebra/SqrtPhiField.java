@@ -42,11 +42,6 @@ public class SqrtPhiField  extends ParameterizedField<Integer> {
     protected void validate() {}
 
     @Override
-    public AlgebraicNumber getDefaultStrutScaling() {
-        return this.one();
-    }
-
-    @Override
     protected void initializeCoefficients() {
         double[] temp = getCoefficients();
         int i = 0;
