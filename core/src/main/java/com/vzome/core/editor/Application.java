@@ -21,7 +21,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.exporters.DaeExporter;
@@ -52,7 +51,6 @@ import com.vzome.core.kinds.SnubDodecFieldApplication;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
-import com.vzome.fields.sqrtphi.SqrtPhiField;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 
 public class Application
@@ -115,14 +113,14 @@ public class Application
         this .exporters .put( "history", new HistoryExporter( null, this .mColors, this .mLights, null ) );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        this.fieldAppSuppliers .put( "golden", GoldenFieldApplication::new );
-        this.fieldAppSuppliers .put( "rootTwo", RootTwoFieldApplication::new );
-        this.fieldAppSuppliers .put( "dodecagon",  // for legacy documents
-        	    this.fieldAppSuppliers .put( "rootThree", RootThreeFieldApplication::new )
+        this.fieldAppSuppliers.put("golden", GoldenFieldApplication::new);
+        this.fieldAppSuppliers.put("rootTwo", RootTwoFieldApplication::new);
+        this.fieldAppSuppliers.put("dodecagon",  // for legacy documents
+        		this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new)
         );
-        this.fieldAppSuppliers .put( "heptagon", HeptagonFieldApplication::new );
-        this.fieldAppSuppliers .put( "snubDodec", SnubDodecFieldApplication::new );
-        this.fieldAppSuppliers .put( "sqrtPhi", SqrtPhiFieldApplication::new );
+        this.fieldAppSuppliers.put("heptagon", HeptagonFieldApplication::new);
+        this.fieldAppSuppliers.put("snubDodec", SnubDodecFieldApplication::new);
+        this.fieldAppSuppliers.put( "sqrtPhi", SqrtPhiFieldApplication::new);
     }
 
     public DocumentModel loadDocument( InputStream bytes ) throws Exception

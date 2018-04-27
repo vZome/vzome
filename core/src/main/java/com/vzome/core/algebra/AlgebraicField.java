@@ -7,8 +7,6 @@ import java.util.StringTokenizer;
 
 public abstract class AlgebraicField
 {
-        public abstract AlgebraicNumber getDefaultStrutScaling();
-
     abstract BigRational[] multiply( BigRational[] v1, BigRational[] v2 );
 
     abstract double evaluateNumber( BigRational[] factors );

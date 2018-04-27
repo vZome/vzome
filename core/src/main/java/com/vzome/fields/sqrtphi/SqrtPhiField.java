@@ -1,8 +1,6 @@
 package com.vzome.fields.sqrtphi;
 
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.BigRational;
 import com.vzome.core.algebra.ParameterizedField;
 import com.vzome.core.algebra.PentagonField;
 
@@ -21,15 +19,10 @@ public class SqrtPhiField  extends ParameterizedField<Integer> {
      * Note that this method provides no validation of the parameter.
      */
     public static double[] getFieldCoefficients() {
-        // Note that these coefficients are not in increasing order
-        // but rather, the first two are in the same position as the golden subfield
-        // then the remaining coefficients are in increasing order.
-        // This is not necessary mathematically, but it means that AlgebraicFields.haveSameInitialCoefficients("golden") will return true. 
-        // In addition, since createPower works on the first irrational, we want that to be phi whenever applicable.
         final double PHI_VALUE = PentagonField.PHI_VALUE; // ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
         return new double[] {
                 1.0d,
-                            Math.sqrt(PHI_VALUE),
+                Math.sqrt(PHI_VALUE),
                 PHI_VALUE,
                 PHI_VALUE * Math.sqrt(PHI_VALUE)
         };
@@ -46,11 +39,6 @@ public class SqrtPhiField  extends ParameterizedField<Integer> {
 
     @Override
     protected void validate() {}
-
-    @Override
-    public AlgebraicNumber getDefaultStrutScaling() {
-        return this.one();
-    }
 
     @Override
     protected void initializeCoefficients() {
@@ -92,11 +80,11 @@ public class SqrtPhiField  extends ParameterizedField<Integer> {
               { 0, 0, 1, 0, },
             },
             { // p = phi
-                { 0, 0, 1, 0, },
-                { 0, 1, 0, 1, },
-                { 1, 0, 1, 0, },
-                { 0, 1, 0, 2, },
-              },
+              { 0, 0, 1, 0, },
+              { 0, 1, 0, 1, },
+              { 1, 0, 1, 0, },
+              { 0, 1, 0, 2, },
+            },
             { // t = phi*sqrt(phi)
               { 0, 0, 0, 1, },
               { 0, 0, 1, 0, },
@@ -115,33 +103,30 @@ public class SqrtPhiField  extends ParameterizedField<Integer> {
     }
     
     /**
-     * A modified version of the base class that maps [ a, b ] to [ a, 0, b, 0 ] for each coordinate.
+     * If all elements of {@code nums} are sized exactly right for the golden field,
+     * then remap [ units, phis ] to [ units, 0, phis, 0 ] for each coordinate.
+     * Otherwise let the base class create the vector normally.
      */
     @Override
     public AlgebraicVector createVector( int[][] nums )
     {
         int dims = nums.length;
-        AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
-        for(int c = 0; c < coords.length; c++) {
-            int coordLength = nums[c].length;
-            if ( coordLength % 2 != 0 ) {
-                throw new IllegalStateException( "Vector dimension " + c + " has " + coordLength + " components. An even number is required." );
+        int[][] remapped = new int[dims][];
+        for(int dim = 0; dim < dims; dim++) {
+            if ( nums[dim].length != 4 ) {  // nums[dim] is not correctly sized for the golden field 
+                remapped = nums;            // so just use nums as given, without remapping anything
+                break;
             }
-            int nFactors = coordLength / 2;
-            if ( nFactors > getOrder() ) {
-                throw new IllegalStateException( "Vector dimension " + c + " has " + (coordLength /2) + " terms." 
-                        + " Each dimension of the " + this.getName() + " field is limited to " + getOrder() + " terms."
-                        + " Each term consists of a numerator and a denominator." );
-            }
-            BigRational[] factors = new BigRational[nFactors*2];
-            for (int f = 0; f < nFactors; f++) {
-                int numerator   = nums[c][(f*2)  ];
-                int denominator = nums[c][(f*2)+1];
-                factors[f*2] = new BigRational(numerator, denominator);
-                factors[f*2+1] = new BigRational(0,1);
-            }
-            coords[c] = this .createAlgebraicNumber( factors );
+            remapped[dim] = new int[8];
+            remapped[dim][0] = nums[dim][0];    // units numerator
+            remapped[dim][1] = nums[dim][1];    // units denominator
+            remapped[dim][2] = 0;
+            remapped[dim][3] = 1;
+            remapped[dim][4] = nums[dim][2];    // phis  numerator
+            remapped[dim][5] = nums[dim][3];    // phis  denominator
+            remapped[dim][6] = 0;
+            remapped[dim][7] = 1;
         }
-        return new AlgebraicVector( coords );
-    }
+        return super.createVector(remapped);
+    }        
 }

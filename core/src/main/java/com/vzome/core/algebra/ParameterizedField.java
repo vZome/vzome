@@ -147,10 +147,4 @@ public abstract class ParameterizedField<T extends Object> extends AlgebraicFiel
     public double getCoefficient(int i) {
         return coefficients[i];
     }
-
-    @Override
-    public AlgebraicNumber getDefaultStrutScaling() {
-        return this.one();
-    }
-
 }

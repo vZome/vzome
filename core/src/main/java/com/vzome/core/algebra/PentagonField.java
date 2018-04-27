@@ -25,7 +25,6 @@ public final class PentagonField extends AlgebraicField
     public PentagonField()
     {
         super( FIELD_NAME, 2 );
-        defaultStrutScaling = createAlgebraicNumber( -1, 1, 2, 0 );
     };
 
     public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
@@ -42,8 +41,6 @@ public final class PentagonField extends AlgebraicField
         return factors[ ONES_PLACE ] .evaluate() + PHI_VALUE * factors[ PHIS_PLACE ] .evaluate();
     }
 
-    private final AlgebraicNumber defaultStrutScaling;
-    
     @Override
     public final BigRational[] multiply( BigRational[] v1, BigRational[] v2 )
     {
@@ -77,12 +74,6 @@ public final class PentagonField extends AlgebraicField
     @Override
     public AlgebraicNumber getAffineScalar() {
         return getUnitTerm( 1 );
-    }
-
-    @Override
-    public AlgebraicNumber getDefaultStrutScaling()
-    {
-        return defaultStrutScaling;
     }
 
     @Override
