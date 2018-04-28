@@ -1566,8 +1566,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
                 break;
 
-            case "lookAtBall":
-                RealVector loc = documentModel .getLocation( singleConstruction );
+            case "lookAtThis":
+                RealVector loc = documentModel .getCentroid( singleConstruction );
                 mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
                 

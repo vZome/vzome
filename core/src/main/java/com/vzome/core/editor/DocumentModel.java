@@ -40,6 +40,7 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
@@ -764,17 +765,34 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     		this .performAndRecord( edit );
 	}
 	
-	public RealVector getLocation( Construction target )
-	{
-		if ( target instanceof Point)
-			return this .renderedModel .renderVector( ( (Point) target ).getLocation() );
-		else if ( target instanceof Segment )
-			return this .renderedModel .renderVector( ( (Segment) target ).getStart() );
-		else if ( target instanceof Polygon )
-			return this .renderedModel .renderVector( ( (Polygon) target ).getVertices()[ 0 ] );
-		else
-			return new RealVector( 0, 0, 0 );
-	}
+    public RealVector getLocation( Construction target )
+    {
+        if ( target instanceof Point)
+            return this .renderedModel .renderVector( ( (Point) target ).getLocation() );
+        else if ( target instanceof Segment )
+            return this .renderedModel .renderVector( ( (Segment) target ).getStart() );
+        else if ( target instanceof Polygon )
+            return this .renderedModel .renderVector( ( (Polygon) target ).getVertices()[ 0 ] );
+        else
+            return new RealVector( 0, 0, 0 );
+    }
+
+    public RealVector getCentroid( Construction target )
+    {
+        AlgebraicVector v;
+        if ( target instanceof Point)
+            v = ( (Point) target ).getLocation();
+        else if ( target instanceof Segment ) {
+            Segment segment = (Segment) target;
+            v = AlgebraicVectors.getCentroid(new AlgebraicVector[] { segment.getStart(), segment.getEnd() });
+        }
+        else if ( target instanceof Polygon )
+            v = AlgebraicVectors.getCentroid( ( (Polygon) target ).getVertices() );
+        else
+            v = this.getField().origin(3);
+        
+        return this .renderedModel .renderVector( v );
+    }
 
 	public RealVector getParamLocation( String string )
 	{
