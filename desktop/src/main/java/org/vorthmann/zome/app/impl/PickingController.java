@@ -98,6 +98,12 @@ public class PickingController extends DefaultController implements Controller
             	result[ i ] = pickedManifestation instanceof Panel;
 				break;
 
+            case "showProperties-monocular":
+            case "showProperties-leftEye":
+            case "showProperties-rightEye":
+			    result[ i ] = true;
+                break;
+                
 			default:
 				if ( menuItem .startsWith( "showProperties-" ) )
 					result[i] = pickedManifestation != null;
