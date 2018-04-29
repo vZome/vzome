@@ -1748,6 +1748,9 @@ public class DocumentController extends DefaultController implements J3dComponen
             } else {
                 buf.append( "field: " );
                 buf.append( this.getProperty("field.label" ));
+
+                buf.append( "\n\nsymmetry: " );
+                buf.append( mViewPlatform.getProperty( "symmetry" ) );
                 if( propertyIsTrue("show.camera.properties") ) {
                     buf.append( "\n\nlook at point: " );
                     buf.append( mViewPlatform.getProperty( "lookAtPoint" ) );
