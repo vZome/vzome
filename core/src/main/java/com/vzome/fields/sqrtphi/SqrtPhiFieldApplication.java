@@ -2,7 +2,6 @@ package com.vzome.fields.sqrtphi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +32,8 @@ import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.TranslationTool;
 import com.vzome.core.kinds.DefaultFieldApplication;
 import com.vzome.core.kinds.OctahedralSymmetryPerspective;
-import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
@@ -60,7 +59,12 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		AlgebraicField field = this .getField();
 
 		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
-		AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();
+		OctahedralSymmetry symm = (OctahedralSymmetry) octahedralPerspective .getSymmetry();
+		
+		AlgebraicNumber scale = field .createPower( 6 );
+		symm .getDirection( "blue" ) .setUnitLength( scale );
+		symm .getDirection( "green" ) .setUnitLength( scale );
+		symm .getDirection( "yellow" ) .setUnitLength( scale );
 
 		AlgebraicNumber x = field .createAlgebraicNumber( new int[]{ 0, -1, 0, 0 } );
 		AlgebraicNumber y = field .createAlgebraicNumber( new int[]{ -1, 0, 0, 0 } );
@@ -79,7 +83,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		y = field .createAlgebraicNumber( new int[]{ 0, -1, 0, 0 } );
 		z = field .createAlgebraicNumber( new int[]{ 0, -1, 0, 1 } );
 		norm = new AlgebraicVector( x, y, z );
-		symm .createZoneOrbit( "cream", 0, Symmetry .NO_ROTATION, norm, true, false, unitLength );
+		symm .createZoneOrbit( "ivory", 0, Symmetry .NO_ROTATION, norm, true, false, unitLength );
 
 		AbstractShapes defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symm );
 		defaultShapes = new ExportedVEFShapes( null, "sqrtPhiOcta", "octahedra", null, symm, defaultShapes );
@@ -217,17 +221,17 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		
     private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", getField() );
 
-	@Override
-	public Collection<SymmetryPerspective> getSymmetryPerspectives()
-	{
-		return Arrays.asList( this .icosahedralPerspective, super .getDefaultSymmetryPerspective() );
-	}
-
-	@Override
-	public SymmetryPerspective getDefaultSymmetryPerspective()
-	{
-		return this .icosahedralPerspective;
-	}
+//	@Override
+//	public Collection<SymmetryPerspective> getSymmetryPerspectives()
+//	{
+//		return Arrays.asList( this .icosahedralPerspective, super .getDefaultSymmetryPerspective() );
+//	}
+//
+//	@Override
+//	public SymmetryPerspective getDefaultSymmetryPerspective()
+//	{
+//		return this .icosahedralPerspective;
+//	}
 
 	@Override
 	public SymmetryPerspective getSymmetryPerspective( String symmName )

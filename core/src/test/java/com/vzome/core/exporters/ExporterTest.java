@@ -359,7 +359,7 @@ public class ExporterTest {
         testImportMatchesVEFExport(fieldName, vefData, expected);
     }
 
-    @Test
+    //@Test
     public void testSortedPartGeometryExport() {
         // Just for fun, the input is a 4D permutohedron
         // It is not a realistic shape to use as a part geometry, but it still exercises the code correctly
