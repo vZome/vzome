@@ -1566,8 +1566,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
                 break;
 
-            case "lookAtBall":
-                RealVector loc = documentModel .getLocation( singleConstruction );
+            case "lookAtThis":
+                RealVector loc = documentModel .getCentroid( singleConstruction );
                 mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
                 
@@ -1615,12 +1615,12 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     public String getManifestationProperty( Manifestation pickedManifestation, String propName )
     {
+        boolean devExtras = userHasEntitlement( "developer.extras" );
         switch ( propName ) {
 
         case "objectProperties":
+            StringBuffer buf = new StringBuffer();
             if ( pickedManifestation != null ) {
-                boolean devExtras = userHasEntitlement( "developer.extras" );
-                StringBuffer buf = new StringBuffer();
                 final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
                 OrbitSource symmetry  = symmetryController .getOrbitSource();
                 Manifestation man = pickedManifestation;
@@ -1634,6 +1634,18 @@ public class DocumentController extends DefaultController implements J3dComponen
                     }
                     buf.append("location: ");
                     loc.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    
+                    if( devExtras && ! loc.isOrigin()) {
+                        AlgebraicNumber normSquared = loc.dot(loc);
+                        double norm2d = normSquared.evaluate();
+                        buf.append("\n\nquadrance: ");
+                        normSquared.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                        buf.append(" = ");
+                        buf.append(FORMAT.format(norm2d));
+
+                        buf.append("\n\nradius: ");
+                        buf.append(FORMAT.format(Math.sqrt(norm2d)));
+                    }
                 } else if (man instanceof Strut) {
                     buf.append("start: ");
                     Strut strut = Strut.class.cast(man);
@@ -1726,16 +1738,37 @@ public class DocumentController extends DefaultController implements J3dComponen
                         buf.append( "\n\norientation: " + zone .getOrientation() );
                         buf.append( "\n\nsense: " + zone .getSense() );
                         buf.append( "\n\nprototype: " + zone.getDirection().getPrototype() );
-                        // Future TODO: if and when centroid property is eventually added to manifestation
-                        // buf.append( "\n\centroid: " + man .getCentroid() );
+                        buf.append( "\n\ncentroid: " + man .getCentroid() );
                     }
                     System .out .println(buf.toString().replace("\n\n", "\n"));
                     System .out .println();
                 }
                 pickedManifestation = null;
                 return buf.toString();
+            } else {
+                buf.append( "field: " );
+                buf.append( this.getProperty("field.label" ));
+
+                buf.append( "\n\nsymmetry: " );
+                buf.append( mViewPlatform.getProperty( "symmetry" ) );
+                if( propertyIsTrue("show.camera.properties") ) {
+                    buf.append( "\n\nlook at point: " );
+                    buf.append( mViewPlatform.getProperty( "lookAtPoint" ) );
+
+                    buf.append( "\n\nlook direction: " );
+                    buf.append( mViewPlatform.getProperty( "lookDir" ) );
+                    buf.append( "\n  up direction: " );
+                    buf.append( mViewPlatform.getProperty( "upDir" ) );
+                    
+                    buf.append( "\n\nview distance: " );
+                    buf.append( mViewPlatform.getProperty( "viewDistance" ) );
+                    
+                    buf.append( "\n\nmagnification: " );
+                    buf.append( mViewPlatform.getProperty( "magnification" ) );
+                }
+               
+                return buf.toString();
             }
-            return null;
 
         case "objectColor":
             if ( pickedManifestation != null ) {
@@ -1744,6 +1777,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 pickedManifestation = null;
                 return colorStr;
             }
+            // TODO: We could return the background color here
             return null;
 
         default:
