@@ -342,7 +342,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 		return button;
 	}
 	
-	public JButton makeIconButton( String tooltip, String imgLocation )
+	@Override
+    public JButton makeIconButton( String tooltip, String imgLocation )
 	{
         // Create and initialize the button.
 		JButton button = new JButton();
@@ -433,7 +434,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 
 			this .addSeparator();
 
-			this .add( setMenuAction( "lookAtBall", new JMenuItem( "Look At This" ) ) );
+            this .add( setMenuAction( "lookAtThis", new JMenuItem( "Look At This" ) ) );
 			this .add( setMenuAction( "lookAtOrigin", new JMenuItem( "Look At Origin" ) ) );
 
 			if ( oldTools ) {
