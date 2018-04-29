@@ -393,14 +393,19 @@ public class ApplicationController extends DefaultController
 	            case "rootThree":
 					return "\u221A3";
 
-	            case "heptagon":
-					return "Heptagon";
+                case "snubDodec":
+                    return "Snub Dodec";
 
-	            case "snubDodec":
-					return "Snub Dodec";
+                case "sqrtPhi":
+                    return "\u221A\u03C6";
 
 				default:
-					return fieldName;
+				    if( fieldName.startsWith("sqrt") ) {
+				        return fieldName.replace("sqrt","\u221A");
+				    } else {
+				        // capitalize first letter
+				        return Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+				    }
 				}
 			}
 			if ( propName .startsWith( "enable." ) && propName .endsWith( ".field" ) )
