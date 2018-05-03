@@ -994,9 +994,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	        this .migrated = openUndone || format.isMigration() || ! implicitSnapshots .isEmpty();
     	} 
 		finally {
-			if(logger.isLoggable(Level.INFO)) {
+			if(logger.isLoggable(Level.FINE)) {
 				double duration = (System.nanoTime() - startTime) / 1000000000D;
-				logger.info( "Document @ " + System.identityHashCode(this) + 
+				logger.fine( "Document @ " + System.identityHashCode(this) + 
 					" loaded in " + duration + " seconds" 
 					+ (mXML == null ? " (new)" : " from XML") );
 			}

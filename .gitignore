@@ -1,4 +1,5 @@
 # folders (in alphabetical order)
+node_modules
 .gradle/
 .idea/
 .nb-gradle/

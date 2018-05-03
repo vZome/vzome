@@ -60,7 +60,7 @@ public final class OctahedralSymmetryPerspective implements SymmetryPerspective
 		return "octahedral";
 	}
 	
-	void addShapes( Shapes shapes )
+	public void addShapes( Shapes shapes )
 	{
 		this .geometries .add( shapes );
 	}

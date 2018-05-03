@@ -73,12 +73,6 @@ public class HeptagonField extends AlgebraicField
     }
 
     @Override
-    public AlgebraicNumber getDefaultStrutScaling()
-    {
-        return this .one();
-    }
-
-    @Override
     public String getIrrational( int which, int format )
     {
         if ( format == DEFAULT_FORMAT )

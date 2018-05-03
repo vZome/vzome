@@ -32,7 +32,6 @@ public class SnubDodecField extends AlgebraicField
     public SnubDodecField( )
     {
         super( FIELD_NAME, 6 );
-        defaultStrutScaling = one;
     };
     
     public static final double PHI_VALUE = PentagonField.PHI_VALUE; // ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
@@ -206,14 +205,6 @@ public class SnubDodecField extends AlgebraicField
     @Override
     public AlgebraicNumber getAffineScalar() {
         return getUnitTerm( 1 );
-    }
-
-    private final AlgebraicNumber defaultStrutScaling;
-    
-    @Override
-    public AlgebraicNumber getDefaultStrutScaling()
-    {
-        return defaultStrutScaling;
     }
 
     @Override

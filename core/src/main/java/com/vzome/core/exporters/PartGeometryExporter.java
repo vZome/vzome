@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.Selection;
 import com.vzome.core.generic.ArrayComparator;
@@ -42,7 +43,9 @@ public class PartGeometryExporter extends VefExporter
     public void doExport( File directory, Writer writer, int height, int width ) throws IOException
     {
         AlgebraicField field = mModel .getField();
-        VefModelExporter exporter = new VefModelExporter( writer, field );
+        
+        AlgebraicNumber scale = field .createPower( -5 );
+        VefModelExporter exporter = new VefModelExporter( writer, field, scale );
         
         for (RenderedManifestation rm : mModel) {
             exporter .exportManifestation( rm .getManifestation() );
