@@ -115,9 +115,8 @@ public class Application
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         this.fieldAppSuppliers.put("golden", GoldenFieldApplication::new);
         this.fieldAppSuppliers.put("rootTwo", RootTwoFieldApplication::new);
-        this.fieldAppSuppliers.put("dodecagon",  // for legacy documents
-        		this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new)
-        );
+		this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new);
+        this.fieldAppSuppliers.put("dodecagon", RootThreeFieldApplication::new);
         this.fieldAppSuppliers.put("heptagon", HeptagonFieldApplication::new);
         this.fieldAppSuppliers.put("snubDodec", SnubDodecFieldApplication::new);
         this.fieldAppSuppliers.put( "sqrtPhi", SqrtPhiFieldApplication::new);
