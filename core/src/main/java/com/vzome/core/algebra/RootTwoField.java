@@ -25,7 +25,6 @@ public class RootTwoField extends AlgebraicField
     public RootTwoField()
     {
         super( FIELD_NAME, 2 );
-        defaultStrutScaling = createAlgebraicNumber( 1, 0, 2, -3 );
     };
 
     @Override
@@ -38,8 +37,6 @@ public class RootTwoField extends AlgebraicField
     
     private static final BigRational TWO = new BigRational( 2 );
     
-    private final AlgebraicNumber defaultStrutScaling;
-
     private static final int ONES_PLACE = 0, SQRT2_PLACE = 1;
 
     @Override
@@ -49,12 +46,6 @@ public class RootTwoField extends AlgebraicField
         BigRational ones = first[ ONES_PLACE ].times( second[ ONES_PLACE ] ) .plus( first[ SQRT2_PLACE ].times( second[ SQRT2_PLACE ] ) .times( TWO ) );
         
         return new BigRational[]{ ones, sqrt2s };
-    }
-
-    @Override
-    public AlgebraicNumber getDefaultStrutScaling()
-    {
-        return defaultStrutScaling;
     }
 
     @Override

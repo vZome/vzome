@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -149,7 +148,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, false );
     }
 
-    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard )
     {
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, standard, false );
     }
@@ -171,7 +170,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, halfSizes, unitLength );
     }
 
-    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
     {
         Direction existingDir = this .mDirectionMap .get( name );
         if ( existingDir != null ) {

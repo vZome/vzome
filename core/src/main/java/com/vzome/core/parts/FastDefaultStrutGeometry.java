@@ -32,9 +32,9 @@ public class FastDefaultStrutGeometry implements StrutGeometry
             canonical = chiral .getAxis( mAxis .normal() .toRealVector() );
         int orientation = canonical .getOrientation();
         int sense = canonical .getSense();
-        b2_vector = symm .getSpecialOrbit( SpecialOrbit.BLUE ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -2 ) );
-        AlgebraicVector v2 = symm .getSpecialOrbit( SpecialOrbit.RED ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -3 ) );
-        AlgebraicVector v3 = symm .getSpecialOrbit( SpecialOrbit.YELLOW ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -4 ) );
+        b2_vector = symm .getSpecialOrbit( SpecialOrbit.BLUE ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -1 ) );
+        AlgebraicVector v2 = symm .getSpecialOrbit( SpecialOrbit.RED ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -2 ) );
+        AlgebraicVector v3 = symm .getSpecialOrbit( SpecialOrbit.YELLOW ) .getAxis( sense, orientation ) .normal() .scale( symm .getField() .createPower( -3 ) );
         
         // just swapping any two of our three vertices will invert everything
         if ( sense == Symmetry.PLUS ) {

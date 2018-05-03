@@ -31,10 +31,18 @@ public class VefModelExporter implements Exporter
     private final SortedSet<AlgebraicVector> ballLocations = new TreeSet<>();
     private final SortedSet<AlgebraicVector[]> strutEnds;
     private final SortedSet<AlgebraicVector[]> panelVertices;
+
+	private final AlgebraicNumber scale;
     
     public VefModelExporter( Writer writer, AlgebraicField field )
     {
-        this .output = new PrintWriter( writer );
+    		this( writer, field, null );
+    }
+
+    public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale )
+    {
+        this .scale = scale;
+		this .output = new PrintWriter( writer );
         this .field = field;
 
         FORMAT .setMaximumFractionDigits( 16 );
@@ -42,17 +50,6 @@ public class VefModelExporter implements Exporter
         ArrayComparator<AlgebraicVector> arrayComparator = new ArrayComparator<>();
         strutEnds = new TreeSet<>( arrayComparator.getContentFirstArrayComparator() );
         panelVertices = new TreeSet<>( arrayComparator.getLengthFirstArrayComparator() );
-    }
-
-    /**
-     * @deprecated On 8/10/2016
-     * Use {@link #VefModelExporter( Writer writer, AlgebraicField field )}
-     * since the scale parameter is no longer used.
-     */
-    @Deprecated
-    public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale )
-    {
-        this(writer, field); // scale is no longer used
     }
 
     /**
@@ -121,14 +118,14 @@ public class VefModelExporter implements Exporter
 			output .flush();
 		}
 		else if ( man instanceof Connector )
-        {
-        	if ( strTip != null ) {
-        		output .print( strTip );
-        		strTip = null; // indicates that it's already been written
-        	}
-            AlgebraicVector loc = man .getLocation();
-            output .println( " " + sortedVertexList.indexOf(loc));
-        }
+		{
+			if ( strTip != null ) {
+				output .print( strTip );
+				strTip = null; // indicates that it's already been written
+			}
+			AlgebraicVector loc = man .getLocation();
+			output .println( " " + sortedVertexList.indexOf(loc));
+		}
         else if ( man instanceof Panel ) {
         	if ( strMiddle != null ) {
         		output .println( strMiddle );
@@ -152,7 +149,7 @@ public class VefModelExporter implements Exporter
      * 3D : 0 X Y Z
      * 4D : W X Y Z
      */
-    public static void appendVector( StringBuffer buffer, AlgebraicVector vector )
+    public static void appendVector( StringBuffer buffer, AlgebraicVector vector, AlgebraicNumber scale )
     {
         String zeroString = vector.getField().zero().toString(AlgebraicField.VEF_FORMAT);
         int dims = vector .dimension();
@@ -161,6 +158,10 @@ public class VefModelExporter implements Exporter
             buffer.append(zeroString);
             buffer.append(" ");
         }
+
+        if ( scale != null )
+            vector = vector .scale( scale );            
+
         // now append the vector (all of its dimensions) from the parameter
         // it will contain at least X and usually Y and Z
         vector .getVectorExpression( buffer, AlgebraicField.VEF_FORMAT );
@@ -172,16 +173,18 @@ public class VefModelExporter implements Exporter
         }
     }
 
+
     /**
      * @deprecated As of 8/12/2016 Use {@link #appendVector( StringBuffer buffer, AlgebraicVector vector )} instead.
      */
     @Deprecated
-    public static void appendVector( StringBuffer buffer, int order, AlgebraicVector vector )
+    public static void appendVector( StringBuffer buffer, AlgebraicVector vector )
     {
-        appendVector( buffer, vector );
+        appendVector( buffer, vector, null );
     }
+
         
-	@Override
+    @Override
     public void finish()
     {
         // Up to this point, the vertices TreeSet has collected and sorted every unique vertex of every manifestation.
@@ -200,7 +203,7 @@ public class VefModelExporter implements Exporter
         output .println( "\n" + sortedVertexList .size() );
         StringBuffer buf = new StringBuffer();
         for(AlgebraicVector vector : sortedVertexList) {
-            appendVector(buf, vector);
+            appendVector( buf, vector, this .scale );
             buf.append("\n");
         }
         output .println( buf.toString() + "\n" );
