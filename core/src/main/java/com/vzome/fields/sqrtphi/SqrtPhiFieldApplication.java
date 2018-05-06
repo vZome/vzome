@@ -2,6 +2,7 @@ package com.vzome.fields.sqrtphi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -221,17 +222,17 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		
     private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", getField() );
 
-//	@Override
-//	public Collection<SymmetryPerspective> getSymmetryPerspectives()
-//	{
-//		return Arrays.asList( this .icosahedralPerspective, super .getDefaultSymmetryPerspective() );
-//	}
-//
-//	@Override
-//	public SymmetryPerspective getDefaultSymmetryPerspective()
-//	{
-//		return this .icosahedralPerspective;
-//	}
+	@Override
+	public Collection<SymmetryPerspective> getSymmetryPerspectives()
+	{
+		return Arrays.asList( this .icosahedralPerspective, super .getDefaultSymmetryPerspective() );
+	}
+
+	@Override
+	public SymmetryPerspective getDefaultSymmetryPerspective()
+	{
+		return this .icosahedralPerspective;
+	}
 
 	@Override
 	public SymmetryPerspective getSymmetryPerspective( String symmName )
