@@ -39,6 +39,18 @@ public class AlgebraicVectors {
     }
 
     /**
+     * @param vector
+     * @return the greater of {@code vector} and its inverse. 
+     * The comparison is based on a canonical (not mathematical) comparison as implemented in {@code AlgebraicVector.compareTo()}. 
+     * There is no reasonable mathematical sense of ordering vectors, 
+     * but this provides a way to map a vector and its inverse to a common vector for such purposes as sorting and color mapping.    
+     */
+    public static AlgebraicVector getCanonicalOrientation( AlgebraicVector vector ) {
+        AlgebraicVector negate = vector.negate();
+        return vector.compareTo(negate) > 0 ? vector : negate;
+    }
+
+    /**
      * getMostDistantFromOrigin() is is used by a few ColorMapper classes, but I think it can eventually be useful elsewhere as well, for example, a zoom-to-fit command or in deriving a convex hull. I've made it a static method of the AlgebraicVector class to encourage such reuse.
      *
      * @param vectors A collection of vectors to be evaluated.

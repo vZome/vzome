@@ -1,5 +1,15 @@
 package com.vzome.core.editor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.w3c.dom.Element;
+
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
@@ -16,14 +26,6 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import org.w3c.dom.Element;
 
 /**
  * @author David Hall
@@ -436,21 +438,27 @@ public class ManifestationColorMappers {
         }
     }
 
+    /**
+     * Polarity info is intentionally removed by this mapping 
+     * so that parallel struts and the panels normal to them will be the same color.
+     */
     public static class RadialStandardBasisColorMap extends ManifestationSubclassColorMapper {
 
         @Override
         protected Color applyTo(Connector ball, int alpha) {
             return applyTo(ball.getLocation(), alpha);
         }
-
+        
         @Override
         protected Color applyTo(Strut strut, int alpha) {
-            return applyTo(strut.getOffset(), alpha);
+            // map to the same color for either direction
+            return applyTo( AlgebraicVectors.getCanonicalOrientation( strut.getOffset() ), alpha);
         }
 
         @Override
         protected Color applyTo(Panel panel, int alpha) {
-            return applyTo(panel.getNormal(), alpha);
+            // map to the same color for either direction
+            return applyTo( AlgebraicVectors.getCanonicalOrientation( panel.getNormal() ), alpha);
         }
 
         protected Color applyTo(AlgebraicVector vector, int alpha) {
