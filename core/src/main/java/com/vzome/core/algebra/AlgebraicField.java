@@ -102,10 +102,6 @@ public abstract class AlgebraicField
      * but PolygonField(6) does not equal SqrtField(3) though they share 
      * the same irrational coefficient, but they are of different order.
      * 
-     * For now, I an not including defaultStrutScaling in the equality test
-     * or the hashCode, but I am using test cases to be sure that equal fields
-     * have equal defaultStrutScaling for backward compatibility
-     *  
      * @param obj
      * @return 
      */
