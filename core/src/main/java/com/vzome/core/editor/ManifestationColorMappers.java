@@ -1,5 +1,15 @@
 package com.vzome.core.editor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.w3c.dom.Element;
+
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
@@ -16,14 +26,6 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import org.w3c.dom.Element;
 
 /**
  * @author David Hall
@@ -39,6 +41,8 @@ public class ManifestationColorMappers {
         // or new instance generated on demand in getColorMapper()
         RegisterMapper( new RadialCentroidColorMap() );
         RegisterMapper( new RadialStandardBasisColorMap() );
+        RegisterMapper( new CanonicalOrientationColorMap() );
+        RegisterMapper( new NormalPolarityColorMap() );
         RegisterMapper( new CentroidByOctantAndDirectionColorMap() );
         RegisterMapper( new CoordinatePlaneColorMap() );
         RegisterMapper( new Identity() );
@@ -264,6 +268,15 @@ public class ManifestationColorMappers {
         }
     }
 
+    protected static Color mapPolarity(AlgebraicVector vector, int alpha) {
+        final int polarity = vector.compareTo(vector.negate());
+        int mid = 128;
+        int diff = 64;
+        int shade = polarity < 0 ? mid - diff :
+                    polarity > 0 ? mid + diff : mid;
+        return new Color(shade, shade, shade, alpha); 
+    }
+
     /**
      * @param vector could be midpoint, start, end, normal, or any basis for mapping to a color
      * @param alpha the transparency component of the resulting color.
@@ -436,13 +449,17 @@ public class ManifestationColorMappers {
         }
     }
 
+    /**
+     * Polarity info is retained by this mapping 
+     * so that inverted struts and panels will be mapped to inverted colors.
+     */
     public static class RadialStandardBasisColorMap extends ManifestationSubclassColorMapper {
 
         @Override
         protected Color applyTo(Connector ball, int alpha) {
             return applyTo(ball.getLocation(), alpha);
         }
-
+        
         @Override
         protected Color applyTo(Strut strut, int alpha) {
             return applyTo(strut.getOffset(), alpha);
@@ -455,6 +472,33 @@ public class ManifestationColorMappers {
 
         protected Color applyTo(AlgebraicVector vector, int alpha) {
             return mapRadially(vector, alpha);
+        }
+    }
+
+    /**
+     * Polarity info is intentionally removed by this mapping for struts and panels, but not balls
+     * so that parallel struts and the panels normal to them will be the same color.
+     */
+    public static class CanonicalOrientationColorMap extends RadialStandardBasisColorMap {
+
+        @Override
+        protected Color applyTo(Connector ball, int alpha) {
+            return super.applyTo(ball, alpha);
+        }
+        
+        @Override
+        protected Color applyTo(AlgebraicVector vector, int alpha) {
+            return super.applyTo(AlgebraicVectors.getCanonicalOrientation(vector), alpha);
+        }
+    }
+    
+    /**
+     * Polarity info is the ONLY basis for this mapping 
+     */
+    public static class NormalPolarityColorMap extends RadialStandardBasisColorMap {
+        @Override
+        protected Color applyTo(AlgebraicVector vector, int alpha) {
+            return mapPolarity(vector, alpha);
         }
     }
 

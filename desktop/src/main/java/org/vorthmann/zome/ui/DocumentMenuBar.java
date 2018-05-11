@@ -273,8 +273,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             }
             {
                 JMenu submenu2 = new JMenu("Map Colors...");
-                submenu2 .add( enableIf( isEditor, createMenuItem( "Radial by Centroid", mapToColor + "RadialCentroidColorMap" ) ) );
-                submenu2 .add( enableIf( isEditor, createMenuItem( "Radial by Standard Basis", mapToColor + "RadialStandardBasisColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "To Centroid", mapToColor + "RadialCentroidColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "To Direction", mapToColor + "RadialStandardBasisColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "To Canonical Orientation", mapToColor + "CanonicalOrientationColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "To Normal Polarity", mapToColor + "NormalPolarityColorMap" ) ) );
                 submenu2 .add( enableIf( isEditor, createMenuItem( "To Octant", mapToColor + "CentroidByOctantAndDirectionColorMap" ) ) );
                 submenu2 .add( enableIf( isEditor, createMenuItem( "To Coordinate Plane", mapToColor + "CoordinatePlaneColorMap" ) ) );
                 submenu2 .add( enableIf( isEditor, createMenuItem( "System Colors", mapToColor + "SystemColorMap" ) ) );
