@@ -276,8 +276,10 @@ public class ApplicationController extends DefaultController
                 Properties docProps = new Properties();
                 docProps .setProperty( "as.template", "true" );
                 String path = action .substring( "openURL-" .length() );
+                final String vzomeExt = ".vzome";
+                path = removeProxyFileExtension( path, vzomeExt);
                 docProps .setProperty( "window.title", path );
-                if ( path .toLowerCase() .endsWith( ".vzome" ) ) {
+                if ( path .toLowerCase() .endsWith( vzomeExt ) ) {
                     URI uri = new URI( path );
                     URL url = uri .toURL();
                     InputStream bytes = url .openStream();
@@ -292,6 +294,37 @@ public class ApplicationController extends DefaultController
         	this .mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
 		}
 	}
+	
+	/**
+	 * 
+	 * @param path is the file name of the original file specified to be opened
+	 * @param desiredExt expected file extension (e.g. ".vzome")
+	 * @return If {@code desiredExt} is found in the path, but with an additional extension appended
+	 * then the extra extension will be removed, leaving the correct extension. 
+	 * Otherwise, {@code path} will be returned unchanged.
+	 * 
+	 * A typical use case is when the user selects a file named "foo.vzome.png" as a "proxy" for the file foo.vzome.
+	 * In this case, assumong that ".vzome" is specified as the {@code desiredExt},
+	 * then "foo.vzome" would be returned by this method. This allows the user to select an image file 
+	 * which they can preview, as a "proxy" which will actually attempt to open the corresponding vzome file.
+	 * 
+	 * This method specifically does NOT replace a file's extension with a diffferent one, 
+	 * but simply removes any additional extension from the end of the path 
+	 * to reveal the emedded {@code desiredExt} if it exists.
+	 * 
+	 * Note that such a "proxy" image file with a ".vome.png" extension is generated automatically 
+	 * upon saving a vZome file by adding "save.exports=capture.png" to .vZome.prefs.
+	 */
+	private String removeProxyFileExtension(String path, String desiredExt) {
+	    if(!desiredExt.startsWith(".")) {
+	        desiredExt = "." + desiredExt;
+	    }
+	    int pos = path.toLowerCase().lastIndexOf(desiredExt.toLowerCase() + ".");
+	    if(pos > 0) {
+	        return path.substring(0, pos += desiredExt.length() );
+        }
+	    return path;
+	}
 
 	@Override
     public void doFileAction( String command, File file )
@@ -299,6 +332,7 @@ public class ApplicationController extends DefaultController
         if ( file != null )
         {
     		Properties docProps = new Properties();
+            file = new File(removeProxyFileExtension( file.getAbsolutePath(), ".vzome"));
             String path = file .getAbsolutePath();
 			docProps .setProperty( "window.title", path );
         	switch ( command ) {
