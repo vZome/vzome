@@ -1021,6 +1021,39 @@ public class BigRationalTest {
     }
 
     @Test
+    public void testHarmonicMeans() {
+        // The harmonic means of a set of numbers is the reciprocal of the sum of their reciprocals.
+        // This test calculates the harmonic mean of all integers from 1 to the specified limit. 
+        double last = 2.0;
+        boolean big = false;
+        BigRational sum = BigRational.ZERO;
+        // I have run this test with a limit as high as 10,000 but it took 40 seconds to run
+        // A limit of 1000 runs in well under a second 
+        // and is adequate to test for the problem that initiated this test case
+        final long limit = 1000;
+        long i;
+        for(i = 1; i <= limit; i++) {
+            BigRational recip = new BigRational(1, i);
+            sum = sum.plus(recip);
+            BigRational harmonicMean = sum.reciprocal();
+            double curr = harmonicMean.evaluate();
+            if((!big) && harmonicMean.isBig()) {
+                big = true;
+                System.out.println("first big harmonic means is:\n#" + i + ":\t" + curr + "\t= " + harmonicMean);
+            }
+            if(i == limit)
+                System.out.println("test limit:\n#" + i + ":\t" + curr + "\t= " + harmonicMean);
+            // Prior to the bug fix associated with this test case, these tests would fail as indicated 
+            assertTrue("positive", curr > 0.0d);            // i = 719 incorrectly reduced to 0.
+            assertTrue("diminishing", last > curr);         // i = 720 remained at 0.
+            assertTrue("finite", Double.isFinite(curr));    // i = 727 incorrectly reduced to NaN.
+            last = curr;
+        }
+        assertTrue("big", big);
+        assertTrue("big enough", i > 727);  // be sure we tested the original problem
+    }
+
+    @Test
     public void testBugFix1() {
         Long den = 4294967296L;
         Long n1 = 19401945L;
