@@ -20,9 +20,9 @@ public class LengthDialog extends EscapeDialog
 {
 	private final NumberPanel numberPanel;
 	
-    public LengthDialog( Frame frame, final Controller controller )
+    public LengthDialog( Frame frame, final Controller controller, String title, final ActionListener actions )
     {
-        super( frame, "Custom Unit Strut Length", true );
+        super( frame, title, true );
         Container content = getContentPane();
         content .setLayout( new BorderLayout() );
 
@@ -33,8 +33,8 @@ public class LengthDialog extends EscapeDialog
         bottomPanel .setComponentOrientation( ComponentOrientation.RIGHT_TO_LEFT );
         {
             JButton cancelButton = new JButton( "Cancel" );
-            cancelButton .addActionListener( new ActionListener(){
-
+            cancelButton .addActionListener( new ActionListener()
+            {
                 @Override
                 public void actionPerformed( ActionEvent e )
                 {
@@ -46,15 +46,15 @@ public class LengthDialog extends EscapeDialog
         {
             final JButton setButton = new JButton( "Set" );
             getRootPane() .setDefaultButton( setButton );
-            setButton .addActionListener( new ActionListener(){
-
+            setButton .addActionListener( new ActionListener()
+            {
                 @Override
                 public void actionPerformed( ActionEvent e )
                 {
-                	numberPanel .syncToModel();
-                	// tell the LengthController to pull the value from the NumberController
-                	controller .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "getCustomUnit" ));
+                    numberPanel .syncToModel();
                     LengthDialog .this .setVisible( false );
+                    // tell the LengthController to pull the value from the NumberController
+                    actions .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "getCustomUnit" ));
                 }
             } );
             bottomPanel .add( setButton );

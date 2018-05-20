@@ -89,8 +89,8 @@ public class Permutation extends Object {
 
     public int mapIndex( int i )
     {
-    	if ( ( i < 0 ) || ( i >= m_map.length ) )
-    		return Symmetry .NO_ROTATION;
+    	    if ( ( i < 0 ) || ( i >= m_map.length ) )
+    		    return Symmetry .NO_ROTATION;
         return m_map[ i ];
     }
 

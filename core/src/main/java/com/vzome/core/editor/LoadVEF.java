@@ -44,9 +44,9 @@ public class LoadVEF extends ChangeManifestations
     protected void getXmlAttributes( Element element )
     {
         if ( quaternion != null )
-        	DomUtils .addAttribute( element, "quaternion", quaternion .toString() );
+            DomUtils .addAttribute( element, "quaternion", quaternion .toString() );
         if ( scale != null )
-        	DomUtils .addAttribute( element, "scale", scale .toString( AlgebraicField.ZOMIC_FORMAT ) );
+            DomUtils .addAttribute( element, "scale", scale .toString( AlgebraicField.ZOMIC_FORMAT ) );
         Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( vefData ) );
         element .appendChild( textNode );
     }

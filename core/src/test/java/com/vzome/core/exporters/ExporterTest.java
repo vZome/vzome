@@ -53,7 +53,7 @@ public class ExporterTest {
         }
     
         public void importVefData(String vefData) {
-            doc.doScriptAction("import.vef", vefData);
+            doc.importVEF( doc .getField() .one(), vefData );
         }
 
         public void select( Manifestation man ) {

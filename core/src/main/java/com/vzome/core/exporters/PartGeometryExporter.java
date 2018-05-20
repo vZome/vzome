@@ -6,9 +6,13 @@ package com.vzome.core.exporters;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.Selection;
 import com.vzome.core.generic.ArrayComparator;
@@ -19,13 +23,8 @@ import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import com.vzome.core.viewing.Lights;
 
 public class PartGeometryExporter extends VefExporter
 {
@@ -44,8 +43,7 @@ public class PartGeometryExporter extends VefExporter
     {
         AlgebraicField field = mModel .getField();
         
-        AlgebraicNumber scale = field .createPower( -5 );
-        VefModelExporter exporter = new VefModelExporter( writer, field, scale );
+        VefModelExporter exporter = new VefModelExporter( writer, field, null );
         
         for (RenderedManifestation rm : mModel) {
             exporter .exportManifestation( rm .getManifestation() );

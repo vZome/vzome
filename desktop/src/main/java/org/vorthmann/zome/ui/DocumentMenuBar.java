@@ -78,6 +78,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         
         boolean isHeptagon = "heptagon" .equals( fieldName );
 
+        boolean isSqrtPhi = "sqrtPhi" .equals( fieldName );
+
         boolean isRootTwo = "rootTwo" .equals( fieldName );
 
         boolean isRootThree = "rootThree" .equals( fieldName );
@@ -123,7 +125,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu.addSeparator();
 
-        importVEFItem = createMenuItem( "Import vZome VEF...", "import.vef" );
+        importVEFItem = createMenuItem( "Import vZome VEF...", "importVefWithScale" );
         menu .add( importVEFItem );
 
         JMenu submenu = new JMenu( "Export 3D Rendering..." );
@@ -369,9 +371,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( enableIf( isEditor, createMenuItem( "Cubic / Octahedral Symmetry", "octasymm", symmetryController, KeyEvent.VK_C, COMMAND_OPTION ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", symmetryController, KeyEvent.VK_T, COMMAND_OPTION ) ) );
         if ( oldTools ) {
-        	menu.add( enableIf( isEditor, createMenuItem( "Axial Symmetry", "axialsymm", symmetryController, KeyEvent.VK_R, COMMAND ) ) );
-        	menu.add( enableIf( isEditor, createMenuItem( "Mirror Reflection", "mirrorsymm" , symmetryController, KeyEvent.VK_M, COMMAND ) ) );
-        	menu.add( enableIf( isEditor, createMenuItem( "Translate", "translate", symmetryController, KeyEvent.VK_T, COMMAND ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Axial Symmetry", "axialsymm", symmetryController, KeyEvent.VK_R, COMMAND ) ) );
+        	    menu.add( enableIf( isEditor, createMenuItem( "Mirror Reflection", "mirrorsymm" , symmetryController, KeyEvent.VK_M, COMMAND ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Translate", "translate", symmetryController, KeyEvent.VK_T, COMMAND ) ) );
         }
         menu.add( enableIf( isEditor, createMenuItem( "Point Reflection", "pointsymm" ) ) );
         
@@ -392,6 +394,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu = new JMenu( "System" );
         ButtonGroup group = new ButtonGroup();
         JMenuItem rbMenuItem;
+        if ( isSqrtPhi ) {
+            rbMenuItem = actions .setMenuAction( "setSymmetry.pentagonal antiprism", controller, new JRadioButtonMenuItem( "Pentagonal Antiprism System" ) );
+            rbMenuItem .setSelected( "pentagonal antiprism".equals( initSystem ) );
+            rbMenuItem .setEnabled( fullPower );
+            group.add( rbMenuItem );
+            menu.add( rbMenuItem );
+        }
         if ( hasIcosahedral ) {
             rbMenuItem = actions .setMenuAction( "setSymmetry.icosahedral", controller, new JRadioButtonMenuItem( "Icosahedral System" ) );
             rbMenuItem .setSelected( "icosahedral".equals( initSystem ) );

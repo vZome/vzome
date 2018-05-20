@@ -444,6 +444,24 @@ public abstract class AlgebraicField
     }
 
     /**
+     * Create a matrix from integer data.
+     * Sample input data for an order-4 field:
+     *   {{{7,5,0,1,-4,5,0,1},{-2,5,0,1,4,5,0,1},{0,1,-8,5,0,1,6,5}},
+     *    {{-2,5,0,1,4,5,0,1},{7,5,0,1,-4,5,0,1},{0,1,8,5,0,1,-6,5}},
+     *    {{0,1,-8,5,0,1,6,5},{0,1,8,5,0,1,-6,5},{-9,5,0,1,8,5,0,1}}}
+     * @param field
+     * @param data integer coordinates, in row-major order, complete with denominators.
+     * @return
+     */
+    public AlgebraicMatrix createMatrix( int[][][] data )
+    {
+		AlgebraicVector col1 = createVector( new int[][]{ data[0][0], data[1][0], data[2][0] } );
+		AlgebraicVector col2 = createVector( new int[][]{ data[0][1], data[1][1], data[2][1] } );
+		AlgebraicVector col3 = createVector( new int[][]{ data[0][2], data[1][2], data[2][2] } );
+    		return new AlgebraicMatrix( col1, col2, col3 );
+    }
+
+    /**
      * 
      * @param buf
      * @param factors

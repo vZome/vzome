@@ -215,12 +215,12 @@ public class LengthController extends DefaultController
         
     public LengthController( Direction orbit )
     {
-    	this( orbit .getSymmetry() .getField(), orbit .getUnitLength() );
+        this( orbit .getSymmetry() .getField(), orbit .getUnitLength() );
     }
 
     public LengthController( AlgebraicField field )
     {
-    	this( field, field .one() );
+        this( field, field .one() );
     }
 
     public LengthController( AlgebraicField field, AlgebraicNumber factor )
@@ -282,17 +282,17 @@ public class LengthController extends DefaultController
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
-    	switch ( action ) {
+        switch ( action ) {
 
-    	case "setCustomUnit":
-			// push the value to the NumberController
-    		this .unitController .setValue( this .unitFactor );
+        case "setCustomUnit":
+            // push the value to the NumberController
+            this .unitController .setValue( this .unitFactor );
             return;
 
-    	case "getCustomUnit":
-			// get the value from the NumberController
-    		this .unitFactor = this .unitController .getValue();
-    		// now reset everything according to that unitFactor
+        case "getCustomUnit":
+            // get the value from the NumberController
+            this .unitFactor = this .unitController .getValue();
+            // now reset everything according to that unitFactor
             currentScale .setScale( 0 );
             fireLengthChange();
             return;
