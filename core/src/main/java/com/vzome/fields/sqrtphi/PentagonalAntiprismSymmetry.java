@@ -120,7 +120,7 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
     @Override
     public String getName()
     {
-    	    return "pentagonal antiprism";
+    	    return "pentagonal";
     }
 
 	@Override

@@ -244,7 +244,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		@Override
 		public String getName()
 		{
-			return "pentagonal antiprism";
+			return "pentagonal";
 		}
 
 		@Override
@@ -354,7 +354,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 	{
 		switch ( symmName ) {
 
-		case "pentagonal antiprism":
+		case "pentagonal":
 			return this .pentagonalPerspective;
 
 		case "icosahedral":

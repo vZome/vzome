@@ -395,8 +395,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         ButtonGroup group = new ButtonGroup();
         JMenuItem rbMenuItem;
         if ( isSqrtPhi ) {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.pentagonal antiprism", controller, new JRadioButtonMenuItem( "Pentagonal Antiprism System" ) );
-            rbMenuItem .setSelected( "pentagonal antiprism".equals( initSystem ) );
+            rbMenuItem = actions .setMenuAction( "setSymmetry.pentagonal", controller, new JRadioButtonMenuItem( "Pentagonal System" ) );
+            rbMenuItem .setSelected( "pentagonal".equals( initSystem ) );
             rbMenuItem .setEnabled( fullPower );
             group.add( rbMenuItem );
             menu.add( rbMenuItem );
