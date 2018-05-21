@@ -1048,7 +1048,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     {
     	if(doubleValue == null) {
     		doubleValue = this.isBig()
-	            ? bigNum.doubleValue() / bigDen.doubleValue()
+    		    ? toBigDecimal(this).doubleValue()
 	            : num / (double) den; // casting of num to double is unnecessary
     	}
     	return doubleValue;
