@@ -32,6 +32,7 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -593,10 +594,9 @@ public class XmlSaveFormat
         else if ( aname .equals( "spring" ) )
         	aname = "apple";
         String iname = xml .getAttribute( indexAttr );
-        sname = xml .getAttribute( senseAttr );
         int index = Integer .parseInt( iname );
         int sense = Symmetry .PLUS;
-        if ( "minus" .equals( sname )) { // NOTE: used to say "index < 0"
+        if ( "minus" .equals( xml .getAttribute( senseAttr ) )) { // NOTE: used to say "index < 0"
             sense = Symmetry .MINUS;
 //            index *= -1;
         }
@@ -604,7 +604,13 @@ public class XmlSaveFormat
         String outs = xml .getAttribute( "outbound" );
         if ( outs != null && outs .equals( "false" ) )
         	outbound = false;
-        return group .getDirection( aname ) .getAxis( sense, index, outbound );
+        Direction dir = group .getDirection( aname );
+        if(dir == null) {
+            String msg = "Unsupported direction '" + aname + "' in " + sname + " symmetry";
+            logger .severe( msg );
+            throw new IllegalStateException( msg );
+        }
+        return dir .getAxis( sense, index, outbound );
     }
 
     public AlgebraicNumber parseNumber( Element xml, String attrName )
