@@ -32,13 +32,13 @@ public class NumberController extends DefaultController
         switch ( listName ) {
 
         case "labels":
-        	// first label should always be "1", last should always be "/"
-        	String[] result = new String[ order + 1 ];
-        	result[ 0 ] = "1";
-        	result[ order ] = "/";
-        	for( int i = 1; i < order; i++ )
-        		result[ i ] = this .field .getIrrational( i );
-        	return result;
+            // first label should always be "1", last should always be "/"
+            String[] result = new String[ order + 1 ];
+            result[ 0 ] = "1";
+            result[ order ] = "/";
+            for( int i = 1; i < order; i++ )
+                result[ i ] = this .field .getIrrational( i );
+            return result;
 
         case "values":
             BigInteger divisor = value .getDivisor();
@@ -57,9 +57,9 @@ public class NumberController extends DefaultController
     @Override
     public void setProperty( String property, Object value )
     {
-    	switch ( property ) {
-    	
-    	case "values":
+        switch ( property ) {
+
+        case "values":
             StringTokenizer values = new StringTokenizer( (String) value );
             int[] inputs = new int[ field .getOrder() ]; // divisor will be the last int
             int divisor = 1;
@@ -83,6 +83,6 @@ public class NumberController extends DefaultController
 
     public void setValue( AlgebraicNumber value )
     {
-    	this .value = value;
+        this .value = value;
     }
 }

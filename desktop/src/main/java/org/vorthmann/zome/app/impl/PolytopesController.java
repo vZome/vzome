@@ -70,13 +70,13 @@ public class PolytopesController extends DefaultController
     		 */
     		Segment strut = model .getSelectedSegment();
     		if ( strut != null ) {
-    			AlgebraicVector vector = strut .getOffset();
-    			SymmetrySystem symm = model .getSymmetrySystem();
-    			Axis zone = symm .getAxis( vector );
-                AlgebraicNumber len = zone .getLength( vector );
-                len = zone .getOrbit() .getLengthInUnits( len );
-    			vector = zone .normal() .scale( len );
-        		rotationQuaternion .setVector( vector .inflateTo4d() );
+    		    AlgebraicVector vector = strut .getOffset();
+    		    SymmetrySystem symm = model .getSymmetrySystem();
+    		    Axis zone = symm .getAxis( vector );
+    		    AlgebraicNumber len = zone .getLength( vector );
+    		    len = zone .getOrbit() .getLengthInUnits( len );
+    		    vector = zone .normal() .scale( len );
+    		    rotationQuaternion .setVector( vector .inflateTo4d() );
     		} else {
     			AlgebraicVector vector = this .field .basisVector( 4, AlgebraicVector.W4 );
     			rotationQuaternion .setVector( vector );

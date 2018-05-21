@@ -1048,17 +1048,17 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
      */
     public void serialize( OutputStream out ) throws Exception
     {
-    	Properties props = new Properties();
-    	props .setProperty( "edition", "vZome" );
-    	props .setProperty( "version", "5.0" );
-    	this .serialize( out, props );
+        Properties props = new Properties();
+        props .setProperty( "edition", "vZome" );
+        props .setProperty( "version", "5.0" );
+        this .serialize( out, props );
     }
 
     public void serialize( OutputStream out, Properties editorProps ) throws Exception
     {
-    	DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
-    	factory .setNamespaceAware( true );
-    	DocumentBuilder builder = factory .newDocumentBuilder();
+        DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
+        factory .setNamespaceAware( true );
+        DocumentBuilder builder = factory .newDocumentBuilder();
         Document doc = builder .newDocument();
 
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
@@ -1112,30 +1112,31 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     
     public void doScriptAction( String command, String script )
     {
-    	UndoableEdit edit = null;
-    	if ( command.equals( "runZomicScript" ) || command.equals( "zomic" ) )
-    	{
-    		edit = new RunZomicScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint(),
-					(IcosahedralSymmetry) this .mEditorModel .getSymmetrySystem() .getSymmetry() );
-    		this .performAndRecord( edit );
-    	}
-    	else if ( command.equals( "runPythonScript" ) || command.equals( "py" ) )
-    	{
-    		edit = new RunPythonScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint() );
-    		this .performAndRecord( edit );
-    	}
-    	//    else if ( command.equals( "import.zomod" ) )
-    	//        edit = new RunZomodScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint(), mField .getSymmetry( "icosahedral" ) );
-    	else if ( command.equals( "import.vef" ) || command.equals( "vef" ) )
-    	{
-    		Segment symmAxis = mEditorModel .getSymmetrySegment();
-    		AlgebraicVector quat = ( symmAxis == null ) ? null : symmAxis.getOffset();
-    		if ( quat != null )
-    			quat = quat .scale( field .createPower( - 5 ) );
-    		AlgebraicNumber scale = field .createPower( 5 );
-    		edit = new LoadVEF( mSelection, mRealizedModel, script, quat, scale );
-    		this .performAndRecord( edit );
-    	}
+        UndoableEdit edit = null;
+        if ( command.equals( "runZomicScript" ) || command.equals( "zomic" ) )
+        {
+            edit = new RunZomicScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint(),
+                    (IcosahedralSymmetry) this .mEditorModel .getSymmetrySystem() .getSymmetry() );
+            this .performAndRecord( edit );
+        }
+        else if ( command.equals( "runPythonScript" ) || command.equals( "py" ) )
+        {
+            edit = new RunPythonScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint() );
+            this .performAndRecord( edit );
+        }
+        //    else if ( command.equals( "import.zomod" ) )
+        //        edit = new RunZomodScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint(), mField .getSymmetry( "icosahedral" ) );
+    }
+    
+    public void importVEF( AlgebraicNumber scale, String script )
+    {
+        UndoableEdit edit = null;
+        Segment symmAxis = mEditorModel .getSymmetrySegment();
+        AlgebraicVector quat = ( symmAxis == null ) ? null : symmAxis.getOffset();
+        if ( quat != null )
+            quat = quat .scale( scale .reciprocal() );
+        edit = new LoadVEF( mSelection, mRealizedModel, script, quat, scale );
+        this .performAndRecord( edit );
     }
 
     public AlgebraicField getField()
@@ -1330,7 +1331,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void createStrut( Point point, Axis zone, AlgebraicNumber length )
     {
-    	UndoableEdit edit = new StrutCreation( point, zone, length, this .mRealizedModel );
+        UndoableEdit edit = new StrutCreation( point, zone, length, this .mRealizedModel );
         this .performAndRecord( edit );
     }
 

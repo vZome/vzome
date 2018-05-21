@@ -156,6 +156,8 @@ public class DocumentController extends DefaultController implements J3dComponen
     private MouseTool selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
 
     private final Controller polytopesController;
+    
+    private final NumberController importScaleController;
 
     private int changeCount = 0;
 
@@ -206,13 +208,16 @@ public class DocumentController extends DefaultController implements J3dComponen
         
         for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
         {
-        	String name = symper .getName();
-        	SymmetryController symmController = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
+            String name = symper .getName();
+            SymmetryController symmController = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
             this .symmetries .put( name, symmController );
         }
 
         polytopesController = new PolytopesController( this .documentModel );
         polytopesController .setNextController( this );
+        
+        importScaleController = new NumberController( this .documentModel .getField() );
+        importScaleController .setNextController( this );
         
         mRenderedModel = new RenderedModel( this .documentModel .getField(), true );
         currentSnapshot = mRenderedModel;
@@ -1127,7 +1132,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                     // || command.equals( "import.zomod" )
                     ) {
                 String vefData = readFile( file );
-                documentModel .doScriptAction( command, vefData );
+                documentModel .importVEF( this .importScaleController .getValue(), vefData );
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {
@@ -1465,6 +1470,9 @@ public class DocumentController extends DefaultController implements J3dComponen
         case "polytopes":
             return polytopesController; 
         
+        case "importScale":
+            return importScaleController; 
+        
         case "lesson":
             return lessonController;
         
@@ -1535,7 +1543,7 @@ public class DocumentController extends DefaultController implements J3dComponen
     {
         if ( "symmetryPerspectives" .equals( listName ) )
         {
-        	return this .symmetries .keySet() .toArray( new String[]{} );
+            return this .symmetries .keySet() .toArray( new String[]{} );
         }
         return super.getCommandList( listName );
     }

@@ -307,23 +307,23 @@ public class SymmetrySystem implements OrbitSource
 
     public void setStyle( String styleName )
     {
-    	Optional<Shapes> found = this .symmetryPerspective .getGeometries() .stream()
-        		.filter( e -> styleName .equals( e .getName() )
-        				   || styleName .equals( e .getAlias() )
-        				   || styleName .equals( e .getPackage() ) )
-        		.findFirst();
-    	if ( found .isPresent() )
-    		this .shapes = found .get();
-    	else {
-        	logger .warning( "UNKNOWN STYLE NAME: " + styleName );
-        	this .shapes = this .symmetryPerspective .getDefaultGeometry();
+        Optional<Shapes> found = this .symmetryPerspective .getGeometries() .stream()
+                .filter( e -> styleName .equals( e .getName() )
+                        || styleName .equals( e .getAlias() )
+                        || styleName .equals( e .getPackage() ) )
+                .findFirst();
+        if ( found .isPresent() )
+            this .shapes = found .get();
+        else {
+            logger .warning( "UNKNOWN STYLE NAME: " + styleName );
+            this .shapes = this .symmetryPerspective .getDefaultGeometry();
         }
     }
 
     @JsonIgnore
     public String[] getStyleNames()
     {
-    	return this .symmetryPerspective .getGeometries() .stream() .map( e -> e .getName() ) .toArray( String[]::new );
+        return this .symmetryPerspective .getGeometries() .stream() .map( e -> e .getName() ) .toArray( String[]::new );
     }
 
     @JsonIgnore

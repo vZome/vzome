@@ -2,6 +2,7 @@ package com.vzome.fields.sqrtphi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -24,9 +25,11 @@ import com.vzome.core.editor.InversionTool;
 import com.vzome.core.editor.LinearMapTool;
 import com.vzome.core.editor.MirrorTool;
 import com.vzome.core.editor.ModuleTool;
+import com.vzome.core.editor.OctahedralToolFactory;
 import com.vzome.core.editor.PlaneSelectionTool;
 import com.vzome.core.editor.RotationTool;
 import com.vzome.core.editor.ScalingTool;
+import com.vzome.core.editor.SymmetryTool;
 import com.vzome.core.editor.TetrahedralToolFactory;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.TranslationTool;
@@ -86,7 +89,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		symm .createZoneOrbit( "ivory", 0, Symmetry .NO_ROTATION, norm, true, false, unitLength );
 
 		AbstractShapes defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symm );
-		defaultShapes = new ExportedVEFShapes( null, "sqrtPhiOcta", "octahedra", null, symm, defaultShapes );
+		defaultShapes = new ExportedVEFShapes( null, "sqrtPhi/octahedra", "octahedra", null, symm, defaultShapes );
 		octahedralPerspective .setDefaultGeometry( defaultShapes );
 		octahedralPerspective .addShapes( defaultShapes );
 	}
@@ -102,8 +105,8 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
         private final Command octasymm = new CommandSymmetry( icosaSymm );
         
 //        private final AbstractShapes octahedralShapes = new OctahedralShapes( "octahedral", "octahedra", this .icosaSymm );
-        private final AbstractShapes tinyIcosaShapes = new ExportedVEFShapes( null, "sqtrPhiTinyIcosa", "tiny icosahedra", icosaSymm);
-        private final AbstractShapes icosahedralShapes = new ExportedVEFShapes( null, "sqrtPhi", "solid connectors", icosaSymm, tinyIcosaShapes);
+        private final AbstractShapes tinyIcosaShapes = new ExportedVEFShapes( null, "sqrtPhi/tinyIcosahedra", "tiny icosahedra", icosaSymm);
+        private final AbstractShapes icosahedralShapes = new ExportedVEFShapes( null, "sqrtPhi/zome", "solid Zome", icosaSymm, tinyIcosaShapes);
 
 		@Override
 		public Symmetry getSymmetry()
@@ -219,24 +222,140 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		}
 	};
 		
+
+    private final SymmetryPerspective pentagonalPerspective = new SymmetryPerspective()
+    {
+        private final PentagonalAntiprismSymmetry pentaSymm = new PentagonalAntiprismSymmetry( getField(), "small octahedra", null )
+        		.createStandardOrbits( "blue" );
+
+        private final Command antiprismSymm = new CommandSymmetry( pentaSymm );
+        private final Command axialsymm = new CommandAxialSymmetry( pentaSymm );
+        private final Command octasymm = new CommandSymmetry( pentaSymm );
+        
+        private final AbstractShapes octahedralShapes = new ExportedVEFShapes( null, "sqrtPhi/octahedra", "octahedra", pentaSymm );
+        private final AbstractShapes kostickShapes = new ExportedVEFShapes( null, "sqrtPhi/fivefold", "Kostick", pentaSymm, octahedralShapes );
+		
+        @Override
+		public Symmetry getSymmetry()
+		{
+			return this .pentaSymm;
+		}
+		
+		@Override
+		public String getName()
+		{
+			return "pentagonal";
+		}
+
+		@Override
+		public List<Shapes> getGeometries()
+		{
+		    // this is the order they will be shown on the dialog
+			return Arrays.asList( kostickShapes, octahedralShapes );
+		}
+
+		@Override
+		public Shapes getDefaultGeometry()
+		{
+			return kostickShapes;
+		}
+
+		@Override
+		public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
+		{
+			List<Tool.Factory> result = new ArrayList<>();
+			switch ( kind ) {
+
+			case SYMMETRY:
+				result .add( new SymmetryTool.Factory( tools, this .pentaSymm ) );
+				result .add( new MirrorTool.Factory( tools ) );
+				result .add( new AxialSymmetryToolFactory( tools, this .pentaSymm ) );
+				break;
+
+			case TRANSFORM:
+				result .add( new ScalingTool.Factory( tools, this .pentaSymm ) );
+				result .add( new RotationTool.Factory( tools, this .pentaSymm ) );
+				result .add( new TranslationTool.Factory( tools ) );
+				break;
+
+			case LINEAR_MAP:
+				result .add( new LinearMapTool.Factory( tools, this .pentaSymm, false ) );
+				break;
+
+			default:
+				break;
+			}
+			return result;
+		}
+
+		@Override
+		public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
+		{
+			List<Tool> result = new ArrayList<>();
+			switch ( kind ) {
+
+			case SYMMETRY:
+				result .add( new SymmetryTool.Factory( tools, this .pentaSymm ) .createPredefinedTool( "pentagonal antiprism around origin" ) );
+				result .add( new AxialSymmetryToolFactory( tools, this .pentaSymm ) .createPredefinedTool( "symmetry around red through origin" ) );
+				result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through red plane" ) );
+				break;
+
+			case TRANSFORM:
+				result .add( new ScalingTool.Factory( tools, this .pentaSymm ) .createPredefinedTool( "scale down" ) );
+				result .add( new ScalingTool.Factory( tools, this .pentaSymm ) .createPredefinedTool( "scale up" ) );
+				result .add( new RotationTool.Factory( tools, this .pentaSymm ) .createPredefinedTool( "rotate around red through origin" ) );
+				break;
+
+			default:
+				break;
+			}
+			return result;
+		}
+
+		@Override
+		public Command getLegacyCommand( String action )
+		{
+			switch ( action ) {
+			case "axialsymm"    : return axialsymm;
+			case "octasymm"     : return octasymm;
+			default:
+				return null;
+			}
+		}
+
+		@Override
+		public String getModelResourcePath()
+		{
+			return "org/vorthmann/zome/app/icosahedral-vef.vZome";
+
+//        if ( propertyIsTrue( "rzome.trackball" ) )
+//            return "org/vorthmann/zome/app/rZomeTrackball-vef.vZome";
+//        else if ( userHasEntitlement( "developer.extras" ) )
+//        	  return "org/vorthmann/zome/app/icosahedral-developer.vZome";
+		}
+	};
+		
     private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", getField() );
 
-//	@Override
-//	public Collection<SymmetryPerspective> getSymmetryPerspectives()
-//	{
-//		return Arrays.asList( this .icosahedralPerspective, super .getDefaultSymmetryPerspective() );
-//	}
-//
-//	@Override
-//	public SymmetryPerspective getDefaultSymmetryPerspective()
-//	{
-//		return this .icosahedralPerspective;
-//	}
+	@Override
+	public Collection<SymmetryPerspective> getSymmetryPerspectives()
+	{
+		return Arrays.asList( this .pentagonalPerspective, super .getDefaultSymmetryPerspective(), this .icosahedralPerspective );
+	}
+
+	@Override
+	public SymmetryPerspective getDefaultSymmetryPerspective()
+	{
+		return this .pentagonalPerspective;
+	}
 
 	@Override
 	public SymmetryPerspective getSymmetryPerspective( String symmName )
 	{
 		switch ( symmName ) {
+
+		case "pentagonal":
+			return this .pentagonalPerspective;
 
 		case "icosahedral":
 			return this .icosahedralPerspective;
@@ -262,14 +381,10 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
     @Override
     public void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools )
     {
-        IcosahedralSymmetry symm = (IcosahedralSymmetry) icosahedralPerspective .getSymmetry();
-        // symm matters for this one, since it is final in the tool
-        toolFactories .put( "AxialStretchTool", new AxialStretchTool.Factory( tools, symm, false, false, false ) );
-        
         // We might as well use symm in the rest, though it will be overwritten by SymmetryTool.setXmlAttributes()
-        toolFactories .put( "SymmetryTool", new IcosahedralToolFactory( tools, symm ) );
-        toolFactories .put( "RotationTool", new RotationTool.Factory( tools, symm ) );
-        toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, symm ) );
+        toolFactories .put( "SymmetryTool", new OctahedralToolFactory( tools, null ) );
+        toolFactories .put( "RotationTool", new RotationTool.Factory( tools, null ) );
+        toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, null ) );
         toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
         toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
         toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );

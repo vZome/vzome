@@ -38,8 +38,6 @@ public abstract class VefParser
     
     private boolean isRational = false;
 
-    private boolean useActualScale = false;
-
     private transient AlgebraicField field;
 
     protected abstract void startVertices( int numVertices );
@@ -81,9 +79,19 @@ public abstract class VefParser
         return isRational;
     }
 
+    /**
+     * True if this VEF file should be interpreted without additional
+     *  scaling in VefToModel.
+     * This is somewhat misplaced and confusing.  It does not govern the interpretation
+     * of vertex data within the parser.  It only governs additional scaling within
+     * addVertex in subclasses, and in fact only within one subclass, VefToModel.
+     * 
+     * This is no longer relevant, since VEF import now gives the user control over any scale factor.
+     * @return
+     */
     public boolean usesActualScale()
     {
-        return useActualScale;
+        return false;
     }
 
     protected boolean wFirst()
@@ -103,7 +111,6 @@ public abstract class VefParser
         }
         mVersion = 0;
         isRational = false;
-        useActualScale = false;
 
         if ( token .equals( "vZome" ) ) {
             // format 4, with version number
@@ -146,10 +153,10 @@ public abstract class VefParser
             token = tokens .nextToken();
         }
 
-        // format >= 7 allows disabling subsequent scaling with keyword "actual"
+        // format >= 7 allowed disabling subsequent scaling with keyword "actual",
+        //  but this is now disabled to allow the user to have control.
         if ( token .equals( "actual" ) ) {
             try {
-                useActualScale = true;
                 token = tokens .nextToken();
             } catch ( NoSuchElementException e1 ) {
                 throw new IllegalStateException( "VEF format error: no tokens after \"actual\"" );
