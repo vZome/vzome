@@ -1048,17 +1048,17 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
      */
     public void serialize( OutputStream out ) throws Exception
     {
-    	Properties props = new Properties();
-    	props .setProperty( "edition", "vZome" );
-    	props .setProperty( "version", "5.0" );
-    	this .serialize( out, props );
+        Properties props = new Properties();
+        props .setProperty( "edition", "vZome" );
+        props .setProperty( "version", "5.0" );
+        this .serialize( out, props );
     }
 
     public void serialize( OutputStream out, Properties editorProps ) throws Exception
     {
-    	DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
-    	factory .setNamespaceAware( true );
-    	DocumentBuilder builder = factory .newDocumentBuilder();
+        DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
+        factory .setNamespaceAware( true );
+        DocumentBuilder builder = factory .newDocumentBuilder();
         Document doc = builder .newDocument();
 
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
@@ -1331,7 +1331,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void createStrut( Point point, Axis zone, AlgebraicNumber length )
     {
-    	UndoableEdit edit = new StrutCreation( point, zone, length, this .mRealizedModel );
+        UndoableEdit edit = new StrutCreation( point, zone, length, this .mRealizedModel );
         this .performAndRecord( edit );
     }
 

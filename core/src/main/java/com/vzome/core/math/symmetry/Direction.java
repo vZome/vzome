@@ -164,20 +164,6 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     {
         return mSymmetryGroup .getName() + " " + this .mName;
     }
-
-    /**
-     * Create a new automatic direction.
-     * @param name
-     * @param group
-     * @param orientation
-     * @param rotation
-     * @param vector
-     */
-    public Direction( String name, Symmetry group, int orientation, int rotation, AlgebraicVector vector )
-    {
-        this( name, group, orientation, rotation, vector, false );
-        this .setAutomatic( true );
-    }
     
     public AlgebraicVector getPrototype()
     {

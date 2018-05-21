@@ -1,6 +1,7 @@
 package com.vzome.fields.sqrtphi;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.Axis;
@@ -89,14 +90,16 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
 
 	public PentagonalAntiprismSymmetry createStandardOrbits( String frameColor )
 	{
-		Direction redOrbit = createZoneOrbit( "red", 0, 1, this .mField .createVector( FIVEFOLD_AXIS ), true );
+	    AlgebraicNumber unitLength = this .mField .createPower( -6 );
+		Direction redOrbit = createZoneOrbit( "red", 0, 1, this .mField .createVector( FIVEFOLD_AXIS ), true, false, unitLength );
         redOrbit .setDotLocation( 1d, 0d );
         this .preferredAxis = redOrbit .getAxis( Symmetry.PLUS, 0 );
 
-        Direction greenOrbit = createZoneOrbit( "green", 0, 5, this .mField .createVector( TWOFOLD_AXIS ), true );
+        Direction greenOrbit = createZoneOrbit( "green", 0, 5, this .mField .createVector( TWOFOLD_AXIS ), true, false, unitLength );
         greenOrbit .setDotLocation( 0d, 1d );
         
-		Direction blueOrbit = createZoneOrbit( "blue", 0, -1, this .mField .basisVector( 3, AlgebraicVector.X ), true );
+        unitLength = this .mField .createPower( 6 );
+		Direction blueOrbit = createZoneOrbit( "blue", 0, -1, this .mField .basisVector( 3, AlgebraicVector.X ), true, false, unitLength );
 		blueOrbit .setDotLocation( 1d, 1d );
 
         return this;

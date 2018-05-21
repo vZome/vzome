@@ -174,10 +174,10 @@ public abstract class AbstractSymmetry implements Symmetry
     {
         Direction existingDir = this .mDirectionMap .get( name );
         if ( existingDir != null ) {
-        	// Probably overriding the default octahedral yellow or green.  See GoldenFieldApplication.
-        	this .mDirectionMap .remove( name );
-        	this .orbitSet .remove( existingDir );
-        	this .mDirectionList .remove( existingDir );
+            // Probably overriding the default octahedral yellow or green.  See GoldenFieldApplication.
+            this .mDirectionMap .remove( name );
+            this .orbitSet .remove( existingDir );
+            this .mDirectionList .remove( existingDir );
         }
         Direction dir = new Direction( name, this, prototype, rotatedPrototype, norm, standard );
         if ( halfSizes )
