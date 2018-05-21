@@ -218,14 +218,28 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 	                String propName = args[i++] .substring( 1 );
 	                String propValue = args[i];
 	                configuration .setProperty( propName, propValue );
-	            }
-	            else
+	            } else {
+                    String arg = args[i];
+                    URL url = null;
 		            try {
-		                URL url = new URL( codebase, args[i] );
-		                defaultAction = "openURL-" + url .toExternalForm();
+		                // This works on the MAC, but not on Windows
+                        url = new URL( codebase, arg );
 		            } catch ( MalformedURLException e ) {
-		            	logger .severe( "Unable to construct URL from codebase: " + codebase + ", url argument" + args[i] );
+		                try {
+		                    // This allows vZome file association to work in Windows
+		                    // TODO: See if we can use the same File.toURI() logic 
+		                    // for both Windows and MAC instead of using nested try blocks
+	                        url = (new File(arg)).toURI().toURL();
+	                    } catch ( MalformedURLException ex ) {
+	                        url = null; 
+	                    }
 	  	            }
+		            if(url == null) {
+                        logger .severe( "Unable to construct URL from codebase or as a file URI using codebase: " + codebase + " and argument: " + arg );
+		            } else {
+		                defaultAction = "openURL-" + url .toExternalForm();
+		            }
+	            }
 	        }
 
 	        configuration .putAll( loadBuildProperties() );
