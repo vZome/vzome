@@ -73,52 +73,45 @@ public class VefToModelTest
         final AlgebraicVector offset = null;
         final AlgebraicField field = new RootTwoField();
 
-        AlgebraicNumber scale = field.createPower(6); // rootTwo^6 = 2^3 = 8
-        assertEquals(scale, field.createRational(8));
-
-        VefToModel parser = new VefToModel(quaternion, effects, scale, offset);
+        // first we test with a unit scale factor
+        VefToModel parser = new VefToModel(quaternion, effects, field .one(), offset);
 
         String vefData = "vZome VEF 7 field rootTwo "
-                + "actual scale 1 "
+                + "scale 1 "
                 + "3 "
                 + "0 0 0 0 "
                 + "0 1 2 3 "
                 + "4 5 6 7 "
                 ;
 
-        // The scale parameter passed to parser should be ignored for now
-        // because of the keyword "actual" in vefData
         AlgebraicVector expected = field.createVector(new int[][] {
             {1,1, 0,1},  
             {2,1, 0,1},  
             {3,1, 0,1}
         });
         parser.parseVEF(vefData, field);
-        assertTrue(parser.usesActualScale());
         Point p0 = (Point) effects.get(1);
         AlgebraicVector v0 = p0.getLocation();
         assertEquals(expected, v0);
 
-        // The scale parameter passed to parser is still being ignored
-        // because of the keyword "actual" in vefData
-        // but the scale in vefData is changed to 3, so we multiply our expected value by 3 as well.
+        // The scale in vefData is changed to 3, so we multiply our expected value by 3 as well.
         vefData = vefData.replace("scale 1 ", "scale 3 ");
         expected = expected.scale(field.createRational(3));
         effects.clear();
         parser.parseVEF(vefData, field);
-        assertTrue(parser.usesActualScale());
         p0 = (Point) effects.get(1);
         v0 = p0.getLocation();
         assertEquals(expected, v0);
 
-        // Now we'll allow the parser to apply its scale parameter
-        // by removing the keyword "actual" from vefData
+        AlgebraicNumber scale = field.createPower(6); // rootTwo^6 = 2^3 = 8
+        assertEquals(scale, field.createRational(8));
+        parser = new VefToModel(quaternion, effects, scale, offset);
+        
+        // Now we'll create a parser with a scale factor,
         // so we must also multiply our expected value by scale, which is 8.
-        vefData = vefData.replace("actual ", "");
         expected = expected.scale(scale);
         effects.clear();
         parser.parseVEF(vefData, field);
-        assertFalse(parser.usesActualScale());
         p0 = (Point) effects.get(1);
         v0 = p0.getLocation();
         assertEquals(expected, v0);
@@ -143,22 +136,19 @@ public class VefToModelTest
         VefToModel parser = new VefToModel(quaternion, effects, scale, offset);
 
         String vefData = "vZome VEF 8 field rootThree "
-                + "actual scale 1 "
+                + "scale 1 "
                 + "3 "
                 + "0 0 0 0 "
                 + "0 1 2 3 "
                 + "4 5 6 7 "
                 ;
 
-        // The scale parameter passed to parser should be ignored for now
-        // because of the keyword "actual" in vefData
         AlgebraicVector expected = field.createVector(new int[][] {
             {5,1, 0,1},
             {6,1, 0,1},
             {7,1, 0,1}
         });
         parser.parseVEF(vefData, field);
-        assertTrue(parser.usesActualScale());
         Point p0 = (Point) effects.get(2);
         AlgebraicVector v0 = p0.getLocation();
         assertEquals(expected, v0);
@@ -166,7 +156,7 @@ public class VefToModelTest
         // The scale parameter passed to parser is still being ignored
         // because of the keyword "actual" in vefData
         // but the scale in vefData is changed to scaleVector, so we multiply each component of our expected value as necessary.
-        vefData = vefData.replace("actual scale 1 ", "actual scale vector 0 1/2 (0,1/4) 4/10 ");
+        vefData = vefData.replace("scale 1 ", "scale vector 0 1/2 (0,1/4) 4/10 ");
         expected = field.createVector(new int[][] {
         	{ 5,2, 0,1},     // 5 * 1/2 = 5/2
         	{ 3,2, 0,1},     // 6 * 1/4 = 3/2
@@ -175,7 +165,6 @@ public class VefToModelTest
 
         effects.clear();
         parser.parseVEF(vefData, field);
-        assertTrue(parser.usesActualScale());
         p0 = (Point) effects.get(2);
         v0 = p0.getLocation();
         assertEquals(expected, v0);

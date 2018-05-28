@@ -8,7 +8,6 @@ import java.util.EnumSet;
 
 import org.w3c.dom.Element;
 
-import com.vzome.api.Tool.InputBehaviors;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -89,27 +88,27 @@ public class RotationTool extends SymmetryTool
 		@Override
 		protected boolean bindParameters( Selection selection )
 		{
-			Symmetry symmetry = getSymmetry();
-        	for ( Manifestation man : selection )
-        		if ( man instanceof Strut )
-        		{
-        			Strut axisStrut = (Strut) man;
-        	        AlgebraicVector vector = axisStrut .getOffset();
-        	        vector = symmetry .getField() .projectTo3d( vector, true ); // TODO: still necessary?
-        	        Axis axis = symmetry .getAxis( vector );
-        	        if ( axis == null )
-        	        	return false;
-        			Permutation perm = axis .getRotationPermutation();
-        	        if ( perm == null )
-        	        	return false;
-        		}
-        		else if ( this .noStrut )
-        		{
-        			Axis axis = symmetry .getPreferredAxis();
-        	        if ( axis == null )
-        	        	return false;
-        		}
-			return true;
+		    Symmetry symmetry = getSymmetry();
+            for ( Manifestation man : selection )
+		        if ( man instanceof Strut )
+		        {
+		            Strut axisStrut = (Strut) man;
+		            AlgebraicVector vector = axisStrut .getOffset();
+		            vector = symmetry .getField() .projectTo3d( vector, true ); // TODO: still necessary?
+		            Axis axis = symmetry .getAxis( vector );
+		            if ( axis == null )
+		                return false;
+		            Permutation perm = axis .getRotationPermutation();
+		            if ( perm == null )
+		                return false;
+		        }
+		        else if ( this .noStrut )
+		        {
+		            Axis axis = symmetry .getPreferredAxis();
+		            if ( axis == null )
+		                return false;
+		        }
+		    return true;
 		}
 	}
 
@@ -126,8 +125,8 @@ public class RotationTool extends SymmetryTool
 
     public RotationTool( String id, Symmetry symmetry, ToolsModel editor )
     {
-    	this( id, symmetry, editor, false );
-    	this .corrected = false; // for backward compatibility... may get overwritten in setXmlAttributes
+        this( id, symmetry, editor, false );
+        this .corrected = false; // for backward compatibility... may get overwritten in setXmlAttributes
     }
 
     public RotationTool( String id, Symmetry symmetry, ToolsModel tools, boolean full )
@@ -180,30 +179,30 @@ public class RotationTool extends SymmetryTool
         	Axis preferredAxis = this .symmetry .getPreferredAxis();
         	if ( preferredAxis != null )
         	{
-                AlgebraicField field = symmetry .getField();
-                center = originPoint;
-                axisStrut = new AnchoredSegment( preferredAxis, field .one(), center );
+        	    AlgebraicField field = symmetry .getField();
+        	    center = originPoint;
+        	    axisStrut = new AnchoredSegment( preferredAxis, field .one(), center );
         	}
         	else if ( this .isPredefined() )
         	{
-                center = originPoint;
-        		this .addParameter( center );
-            	Direction redOrbit = symmetry .getSpecialOrbit( SpecialOrbit.RED );
-                AlgebraicField field = symmetry .getField();
-    	    	AlgebraicNumber redScale = redOrbit .getUnitLength() .times( field .createPower( Direction.USER_SCALE ) );
-                axisStrut = new AnchoredSegment( redOrbit .getAxis( Symmetry.PLUS, 1 ), redScale, center );
-        		this .addParameter( axisStrut );
-            }
-            else if ( isAutomatic() )
-            {
-                center = originPoint;
-                AlgebraicField field = symmetry .getField();
-                AlgebraicVector zAxis = field .basisVector( 3, AlgebraicVector .Z );
-                AlgebraicNumber len = field .createPower( 2 );  // does not matter
-                axisStrut = new AnchoredSegment( symmetry .getAxis( zAxis ), len, center );
-            }
-            else
-                correct = false;
+        	    center = originPoint;
+        	    this .addParameter( center );
+        	    Direction redOrbit = symmetry .getSpecialOrbit( SpecialOrbit.RED );
+        	    AlgebraicField field = symmetry .getField();
+        	    AlgebraicNumber redScale = redOrbit .getUnitLength() .times( field .createPower( Direction.USER_SCALE ) );
+        	    axisStrut = new AnchoredSegment( redOrbit .getAxis( Symmetry.PLUS, 1 ), redScale, center );
+        	    this .addParameter( axisStrut );
+        	}
+        	else if ( isAutomatic() )
+        	{
+        	    center = originPoint;
+        	    AlgebraicField field = symmetry .getField();
+        	    AlgebraicVector zAxis = field .basisVector( 3, AlgebraicVector .Z );
+        	    AlgebraicNumber len = field .createPower( 2 );  // does not matter
+        	    axisStrut = new AnchoredSegment( symmetry .getAxis( zAxis ), len, center );
+        	}
+        	else
+        	    correct = false;
         }
         else if ( center == null )
             center = new SegmentEndPoint( axisStrut );

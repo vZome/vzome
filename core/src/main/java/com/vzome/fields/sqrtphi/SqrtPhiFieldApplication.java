@@ -296,14 +296,14 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 
 			case SYMMETRY:
 				result .add( new SymmetryTool.Factory( tools, this .pentaSymm ) .createPredefinedTool( "pentagonal antiprism around origin" ) );
-				result .add( new AxialSymmetryToolFactory( tools, this .pentaSymm ) .createPredefinedTool( "symmetry around red through origin" ) );
+				result .add( new AxialSymmetryToolFactory( tools, this .pentaSymm ) .createPredefinedTool( "fivefold symmetry through origin" ) );
 				result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through red plane" ) );
 				break;
 
 			case TRANSFORM:
 				result .add( new ScalingTool.Factory( tools, this .pentaSymm ) .createPredefinedTool( "scale down" ) );
 				result .add( new ScalingTool.Factory( tools, this .pentaSymm ) .createPredefinedTool( "scale up" ) );
-				result .add( new RotationTool.Factory( tools, this .pentaSymm ) .createPredefinedTool( "rotate around red through origin" ) );
+				result .add( new RotationTool.Factory( tools, this .pentaSymm ) .createPredefinedTool( "fivefold rotation through origin" ) );
 				break;
 
 			default:
