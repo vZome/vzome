@@ -6,20 +6,17 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.List;
 import java.util.Locale;
 
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 // This exporter has been tuned to produce a format identical to that produced by Meshlab,
 //   to guarantee a seamless upload to Shapeways.com
@@ -46,54 +43,14 @@ public class StlExporter extends Exporter3d
         
         for (RenderedManifestation rm : mModel) {
             Manifestation man = rm .getManifestation();
-            if (man instanceof Strut) {
-                Polyhedron shape = rm .getShape();
-                RealVector loc = rm .getLocation();
-                shape .getFaceSet();
-                List<AlgebraicVector> faceVertices = shape .getVertexList();
-                for (Polyhedron.Face face : shape .getFaceSet()) {
-                    int arity = face .size();
-                    int index = face .get( 0 );
-                    RealVector vert0 = mModel .renderVector( faceVertices .get( index ) );
-                    index = face .get( 1 );
-                    RealVector vert1 = mModel .renderVector( faceVertices .get( index ) );
-                    index = face .get( 2 );
-                    RealVector vert2 = mModel .renderVector( faceVertices .get( index ) );
-                    RealVector edge1 = vert1 .minus( vert0 );
-                    RealVector edge2 = vert2 .minus( vert1 );
-                    RealVector norm = edge1 .cross( edge2 ) .normalize();
-                    RealVector v0 = null, v1 = null;
-                    for ( int j = 0; j < arity; j++ ){
-                        index = face .get( j );
-                        RealVector vertex = loc .plus( mModel .renderVector( faceVertices .get( index ) ) );
-                        vertex = vertex .scale( RZOME_INCH_SCALING );
-
-                        if ( v0 == null )
-                            v0 = vertex;
-                        else if ( v1 == null )
-                            v1 = vertex;
-                        else
-                        {
-                            output .print( "  facet normal " );
-                            output .println( FORMAT .format( norm.x ) + " " + FORMAT .format( norm.y ) + " " + FORMAT .format( norm.z ) );
-                            output .println( "    outer loop" );
-                            output .println( "      vertex " + FORMAT .format( v0.x ) + " " + FORMAT .format( v0.y ) + " " + FORMAT .format( v0.z ) );
-                            output .println( "      vertex " + FORMAT .format( v1.x ) + " " + FORMAT .format( v1.y ) + " " + FORMAT .format( v1.z ) );
-                            output .println( "      vertex " + FORMAT .format( vertex.x ) + " " + FORMAT .format( vertex.y ) + " " + FORMAT .format( vertex.z ) );
-                            output .println( "    endloop" );
-                            output .println( "  endfacet" );
-                            v1 = vertex;
-                        }
-                    }
-                }
-            } else if ( man instanceof Panel )
+            if ( man instanceof Panel )
             {
                 Panel panel = (Panel) man;
                 RealVector norm = mModel .renderVector( panel .getNormal() ) .normalize();
                 RealVector v0 = null, v1 = null;
                 for (AlgebraicVector vert : panel) {
                     RealVector vertex = mModel .renderVector( vert );
-                    vertex = vertex .scale( VZOME_STRUT_MODEL_INCH_SCALING );
+                    vertex = vertex .scale( RZOME_INCH_SCALING );
                     if ( v0 == null )
                         v0 = vertex;
                     else if ( v1 == null )
