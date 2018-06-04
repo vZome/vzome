@@ -228,7 +228,6 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
         private final PentagonalAntiprismSymmetry pentaSymm = new PentagonalAntiprismSymmetry( getField(), "small octahedra", null )
         		.createStandardOrbits( "blue" );
 
-        private final Command antiprismSymm = new CommandSymmetry( pentaSymm );
         private final Command axialsymm = new CommandAxialSymmetry( pentaSymm );
         private final Command octasymm = new CommandSymmetry( pentaSymm );
         
@@ -326,7 +325,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		@Override
 		public String getModelResourcePath()
 		{
-			return "org/vorthmann/zome/app/icosahedral-vef.vZome";
+			return "org/vorthmann/zome/app/pentagonal.vZome";
 
 //        if ( propertyIsTrue( "rzome.trackball" ) )
 //            return "org/vorthmann/zome/app/rZomeTrackball-vef.vZome";

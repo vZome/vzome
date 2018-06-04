@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="32" coreVersion="6.0" edition="vZome" field="sqrtPhi" version="6.0">
+  <EditHistory editNumber="140" lastStickyEdit="-1">
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0 0 0 0" dir="green" index="2" len="1 0 0 0" symm="pentagonal"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="2 0 3 0 0 0 0 0 0 3 0 5" startSegment="0 0 0 0 0 0 0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <EndBlock/>
+    <ApplyTool name="axial symmetry.builtin/fivefold symmetry through origin" selectInputs="true"/>
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0 0 0 0" dir="red" index="0" len="0 -1 0 1" symm="pentagonal"/>
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0 0 0 0" dir="red" index="5" len="0 -1 0 1" symm="pentagonal"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <SelectManifestation point="-2 0 -3 0 -3 0 -5 0 0 2 0 3"/>
+    <EndBlock/>
+    <Centroid/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <SelectManifestation point="0 -2 0 -3 0 2 0 3 1 0 2 0"/>
+    <SelectManifestation point="0 0 0 0 -3/2 0 -5/2 0 0 5/2 0 4"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 -2 0 -3 0 2 0 3 1 0 2 0"/>
+    <SelectManifestation point="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false" joinMode="ALL_TO_LAST"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="0 -2 0 -3 0 2 0 3 1 0 2 0" startSegment="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <EndBlock/>
+    <Delete/>
+    <StrutCreation anchor="0 -2 0 -3 0 2 0 3 1 0 2 0" dir="12" index="0" len="0 0 0 1" outbound="false" symm="pentagonal"/>
+    <StrutCreation anchor="2 0 3 0 0 0 0 0 0 3 0 5" dir="12" index="0" len="0 0 0 1" symm="pentagonal"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="2 -1 2 0 0 0 1 0 -1 2 -1 6" startSegment="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <SelectManifestation endSegment="0 -1 1 -3 0 2 -1 3 2 1 3 -1" startSegment="0 -2 0 -3 0 2 0 3 1 0 2 0"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 -3/2 0 -5/2 0 0 5/2 0 4"/>
+    <DeselectAll/>
+    <SelectManifestation point="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <SelectManifestation point="0 0 0 0 -3/2 0 -5/2 0 0 5/2 0 4"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="0 0 0 0 -3/2 0 -5/2 0 0 5/2 0 4" startSegment="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <EndBlock/>
+    <Delete/>
+    <StrutCreation anchor="2 0 3 0 0 0 0 0 0 3 0 5" dir="13" index="0" len="0 0 1 0" symm="pentagonal"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="2 0 3 -1 0 -1/2 0 -1/2 0 3 -1/2 5" startSegment="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="2 0 3 -1 0 -1/2 0 -1/2 0 3 -1/2 5" startSegment="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <EndBlock/>
+    <Delete/>
+    <StrutCreation anchor="2 0 3 0 0 0 0 0 0 3 0 5" dir="13" index="9" len="0 0 1 0" symm="pentagonal"/>
+    <SelectManifestation endSegment="2 1/2 3 0 0 1/2 0 1/2 -1/2 3 -1 5" startSegment="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <Delete/>
+    <SelectManifestation point="0 -1 1 -3 0 2 -1 3 2 1 3 -1"/>
+    <ApplyTool name="symmetry.builtin/pentagonal antiprism around origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 1/2 3 0 0 1/2 0 1/2 -1/2 3 -1 5"/>
+    <SelectManifestation point="2 -1 2 0 0 0 1 0 -1 2 -1 6"/>
+    <SelectManifestation point="2 0 3 -1 0 -1/2 0 -1/2 0 3 -1/2 5"/>
+    <EndBlock/>
+    <ApplyTool name="symmetry.builtin/pentagonal antiprism around origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 -1 1 -3 0 2 -1 3 2 1 3 -1"/>
+    <SelectManifestation point="0 -3 1 -3 0 2 -1 2 1 1 3 -1"/>
+    <EndBlock/>
+    <Centroid/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 -2 0 -3 0 2 0 3 1 0 2 0"/>
+    <SelectManifestation point="0 -3 1 -3 0 2 -1 2 1 1 3 -1"/>
+    <SelectManifestation point="0 -1 1 -3 0 2 -1 3 2 1 3 -1"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool name="symmetry.builtin/pentagonal antiprism around origin" selectInputs="true"/>
+    <setItemColor blue="51" green="0" red="204"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 -1 2 0 0 0 1 0 -1 2 -1 6"/>
+    <SelectManifestation point="2 0 3 -1 0 -1/2 0 -1/2 0 3 -1/2 5"/>
+    <SelectManifestation point="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation point="2 -1 2 0 0 0 1 0 -1 2 -1 6"/>
+    <SelectManifestation point="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    <SelectManifestation point="2 1/2 3 0 0 1/2 0 1/2 -1/2 3 -1 5"/>
+    <EndBlock/>
+    <Polygon/>
+    <SelectManifestation>
+      <polygonVertex at="2 -1 2 0 0 0 1 0 -1 2 -1 6"/>
+      <polygonVertex at="2 0 3 -1 0 -1/2 0 -1/2 0 3 -1/2 5"/>
+      <polygonVertex at="2 0 3 0 0 0 0 0 0 3 0 5"/>
+    </SelectManifestation>
+    <ApplyTool name="symmetry.builtin/pentagonal antiprism around origin" selectInputs="true"/>
+    <setItemColor blue="0" green="153" red="0"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 0 3 -1 0 -1/2 0 -1/2 0 3 -1/2 5"/>
+    <SelectManifestation point="2 -1 2 0 0 0 1 0 -1 2 -1 6"/>
+    <SelectManifestation point="0 -1 1 -3 0 2 -1 3 2 1 3 -1"/>
+    <SelectManifestation point="0 -2 1 -3 0 2 -1 5/2 3/2 1 3 -1"/>
+    <SelectManifestation point="0 0 0 0 -3/2 0 -5/2 0 0 5/2 0 4"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool name="symmetry.builtin/pentagonal antiprism around origin" selectInputs="true"/>
+    <setItemColor blue="102" green="102" red="102"/>
+    <BeginBlock/>
+    <SelectManifestation point="-2 1 -4 0 -3 0 -4 1 0 1 -1 4"/>
+    <SelectManifestation point="-2 0 -3 1 -3 1/2 -5 1/2 0 2 1/2 3"/>
+    <SelectManifestation point="0 0 0 0 -3/2 0 -5/2 0 0 5/2 0 4"/>
+    <SelectManifestation point="0 -2 1 -3 0 2 -1 5/2 3/2 1 3 -1"/>
+    <SelectManifestation point="0 -3 1 -3 0 2 -1 2 1 1 3 -1"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool name="symmetry.builtin/pentagonal antiprism around origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <AdjustSelectionByClass balls="SELECT" panels="IGNORE" struts="IGNORE"/>
+    <AdjustSelectionByClass balls="IGNORE" panels="IGNORE" struts="SELECT"/>
+    <EndBlock/>
+    <Delete/>
+    <SelectAll/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="-3 0 -5 0 3 0 5 0 0 1 0 2"/>
+      <polygonVertex at="-2 0 -4 1 4 0 6 -1 -1 1 0 2"/>
+      <polygonVertex at="-3 0 -5 1 3 0 6 -1 -1 0 0 1"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="symmetry.builtin/pentagonal antiprism around origin" selectInputs="true"/>
+    <setItemColor blue="51" green="0" red="255"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 -1 0 2 -1 4 -4 1 -8 1"/>
+      <polygonVertex at="1/2 0 1 0 0 2 1/2 3 -5 1/2 -8 1"/>
+      <polygonVertex at="0 0 0 0 0 2 0 3 -5 0 -8 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 -1 0 2 -1 4 -4 1 -8 1"/>
+      <polygonVertex at="0 0 0 0 0 2 0 3 -5 0 -8 0"/>
+      <polygonVertex at="-1/2 0 -1 0 -1 2 -1 3 -5 0 -8 1/2"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="symmetry.builtin/pentagonal antiprism around origin" selectInputs="true"/>
+    <setItemColor blue="0" green="153" red="0"/>
+    <SelectManifestation>
+      <polygonVertex at="1/2 0 1 0 0 2 1/2 3 -5 1/2 -8 1"/>
+      <polygonVertex at="0 0 0 -1 0 2 -1 4 -4 1 -8 1"/>
+      <polygonVertex at="-3 0 -5 1 3 0 6 -1 -1 0 0 1"/>
+      <polygonVertex at="-5/2 0 -9/2 1 7/2 0 6 -1 -1 1/2 0 3/2"/>
+      <polygonVertex at="0 3/2 0 5/2 0 5/2 0 4 -5/2 0 -4 0"/>
+    </SelectManifestation>
+    <ApplyTool name="symmetry.builtin/pentagonal antiprism around origin" selectInputs="true"/>
+    <setItemColor blue="102" green="102" red="102"/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="162.20799255371094" far="324.41598510742193" near="0.4055199874269959" parallel="false" stereoAngle="0.0" width="72.99359664916992">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.37133453619656465" y="-0.18387979212137062" z="0.9101092705148566"/>
+      <LookDirection x="0.5262470259020177" y="-0.8492370530611211" z="0.043133460762671924"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="pentagonal" renderingStyle="Kostick">
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="255,255,255" name="11" prototype="0 0 -1/2 0 0 2 1/2 -3/2 -1/2 -1/2 1 1/2"/>
+    <Direction color="255,255,255" name="12" prototype="1 1 -1 -1 0 -1 0 1 2 -1 -1 0"/>
+    <Direction color="255,255,255" name="13" prototype="0 -1 0 0 0 0 0 -1/2 -1/2 0 0 0"/>
+  </SymmetrySystem>
+  <Tools/>
+</vzome:vZome>
