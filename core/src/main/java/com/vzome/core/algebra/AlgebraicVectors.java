@@ -16,6 +16,19 @@ public class AlgebraicVectors {
     public static boolean areCollinear(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
         return getNormal(v0, v1, v2).isOrigin();
     }
+    
+    public static AlgebraicVector getLinePlaneIntersection( AlgebraicVector lineStart, AlgebraicVector lineDirection,
+                                                            AlgebraicVector planeCenter, AlgebraicVector planeNormal )
+    {
+        AlgebraicNumber denom = planeNormal .dot( lineDirection );
+        if ( denom .isZero() )
+            return null;
+
+        AlgebraicVector p1p3 = planeCenter .minus( lineStart );
+        AlgebraicNumber numerator = planeNormal .dot( p1p3 );
+        AlgebraicNumber u = numerator .dividedBy( denom );
+        return lineStart .plus( lineDirection .scale( u ) );
+    }
 
     public static AlgebraicVector calculateCentroid(Collection<AlgebraicVector> vectors) {
         return getCentroid(vectors.toArray(new AlgebraicVector[vectors.size()]));
