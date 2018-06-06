@@ -6,6 +6,7 @@ package com.vzome.core.parts;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -26,7 +27,7 @@ import com.vzome.core.math.symmetry.Symmetry;
  */
 public class FastDefaultStrutGeometry implements StrutGeometry
 {
-    private AlgebraicVector g2_vector, b2_vector, y2_vector;
+    private AlgebraicVector g2_vector, b2_vector, y2_vector, g2n_vector, y2n_vector;
     
     private final Axis mAxis;
     
@@ -120,6 +121,20 @@ public class FastDefaultStrutGeometry implements StrutGeometry
             y2_vector = g2_vector;
             g2_vector = swap;            
         }
+        
+        AlgebraicVector centroid = AlgebraicVectors .getCentroid( new AlgebraicVector[]{ b2_vector, g2_vector, y2_vector } );
+        
+        AlgebraicVector b2g2 = g2_vector .minus( b2_vector );
+        AlgebraicVector y2g2 = g2_vector .minus( y2_vector );
+        AlgebraicVector normal = b2g2 .cross( y2g2 );
+        AlgebraicVector intersection = AlgebraicVectors .getLinePlaneIntersection( field .origin( 3 ), v, g2_vector, normal );
+        
+        AlgebraicVector g2_offset = g2_vector .minus( centroid );
+        AlgebraicVector y2_offset = y2_vector .minus( centroid );
+        g2_vector = intersection .plus( g2_offset );
+        y2_vector = intersection .plus( y2_offset );
+        g2n_vector = intersection .minus( g2_offset );
+        y2n_vector = intersection .minus( y2_offset );
     }
     
     /* (non-Javadoc)
@@ -131,73 +146,81 @@ public class FastDefaultStrutGeometry implements StrutGeometry
         AlgebraicField field = mAxis .getDirection() .getSymmetry() .getField();
         Polyhedron poly = new Polyhedron( field );
         //
-        //   Strut antiprism, seen from one end (b1,g1,y1), the far side of the nearer ball.
+        //   Strut prism, seen from one end (y1n,g1n,y1,g1), the far side of the nearer ball.
         //   This is the even parity orientation.
         //
-        //           b1 
-        //            |\ 
-        //            | \
-        //         y2-|--\-g2
-        //           \|   \|
-        //            |    \
-        //            |\   |\
-        //           g1------y1
-        //               \ |
-        //                \|
-        //                 b2
+        //          y1n-----------g1n
+        //            |\    A    /|
+        //            | \       / |
+        //            |  y2---g2  |
+        //            |D |     | B|
+        //            |  |     |  |
+        //            | g2n---y2n |
+        //            | /       \ |
+        //            |/    C    \|
+        //           g1-----------y1
         //
         AlgebraicVector strutVector = mAxis .normal() .scale( length );
         AlgebraicVector g1_vector = g2_vector .negate() .plus( strutVector );
-        AlgebraicVector r1_vector = b2_vector .negate() .plus( strutVector );
         AlgebraicVector y1_vector = y2_vector .negate() .plus( strutVector );
+        AlgebraicVector g1n_vector = g2n_vector .negate() .plus( strutVector );
+        AlgebraicVector y1n_vector = y2n_vector .negate() .plus( strutVector );
 
-        poly .addVertex( r1_vector ); Integer b1 = 0;
-        poly .addVertex( y1_vector ); Integer y1 = 1;
-        poly .addVertex( g1_vector ); Integer g1 = 2;
-        poly .addVertex( b2_vector ); Integer b2 = 3;
-        poly .addVertex( y2_vector ); Integer y2 = 4;
-        poly .addVertex( g2_vector ); Integer g2 = 5;
+        poly .addVertex( y1_vector );  Integer y1  = 0;
+        poly .addVertex( g1_vector );  Integer g1  = 1;
+        poly .addVertex( y2_vector );  Integer y2  = 2;
+        poly .addVertex( g2_vector );  Integer g2  = 3;
+        poly .addVertex( y1n_vector ); Integer y1n = 4;
+        poly .addVertex( g1n_vector ); Integer g1n = 5;
+        poly .addVertex( y2n_vector ); Integer y2n = 6;
+        poly .addVertex( g2n_vector ); Integer g2n = 7;
 
+        // A
         Polyhedron.Face face = poly .newFace();
-        face .add(b1);
-        face .add(y1);
         face .add(g2);
+        face .add(y2);
+        face .add(y1n);
+        face .add(g1n);
+        poly .addFace( face );
+
+        // B
+        face = poly .newFace();
+        face .add(g2);
+        face .add(g1n);
+        face .add(y1);
+        face .add(y2n);
+        poly .addFace( face );
+        
+        // C
+        face = poly .newFace();
+        face .add(g2n);
+        face .add(y2n);
+        face .add(y1);
+        face .add(g1);
+        poly .addFace( face );
+        
+        // D
+        face = poly .newFace();
+        face .add(g2n);
+        face .add(g1);
+        face .add(y1n);
+        face .add(y2);
+        poly .addFace( face );
+        
+        // far cap
+        face = poly .newFace();
+        face .add(y2);
+        face .add(g2);
+        face .add(y2n);
+        face .add(g2n);
+        
+        // near cap
         poly .addFace( face );
         face = poly .newFace();
         face .add(g1);
-        face .add(b1);
-        face .add(y2);
-        poly .addFace( face );
-        face = poly .newFace();
         face .add(y1);
-        face .add(g1);
-        face .add(b2);
-        poly .addFace( face );
-        face = poly .newFace();
-        face .add(b2);
-        face .add(g2);
-        face .add(y1);
-        poly .addFace( face );
-        face = poly .newFace();
-        face .add(g2);
-        face .add(y2);
-        face .add(b1);
-        poly .addFace( face );
-        face = poly .newFace();
-        face .add(y2);
-        face .add(b2);
-        face .add(g1);
-        poly .addFace( face );
-        // end caps
-        face = poly .newFace();
-        face .add(b1);
-        face .add(g1);
-        face .add(y1);
-        poly .addFace( face );
-        face = poly .newFace();
-        face .add(b2);
-        face .add(y2);
-        face .add(g2);
+        face .add(g1n);
+        face .add(y1n);
         poly .addFace( face );
         
         return poly;
