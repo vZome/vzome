@@ -457,9 +457,15 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case RealizeMetaParts.NAME:
 			edit = new RealizeMetaParts( mSelection, mRealizedModel );
 			break;
-		case ShowVertices.NAME:
-			edit = new ShowVertices( mSelection, mRealizedModel );
-			break;
+        case ShowVertices.NAME:
+            edit = new ShowVertices( mSelection, mRealizedModel );
+            break;
+        case ShowNormals.NAME:
+            edit = new ShowNormals( mSelection, mRealizedModel );
+            break;
+        case "Validate2Manifold":
+            edit = new Validate2Manifold( mSelection, mRealizedModel );
+            break;
 		case "Symmetry4d":
 			QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
 			edit = new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
@@ -616,6 +622,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case "ungroup":
 			edit = mEditorModel.ungroupSelection();
 			break;
+		case "validate-2-manifold":
+			edit = mEditorModel .validate2Manifold();
+			break;
 		case "assertSelection":
 			edit = new ValidateSelection( mSelection );
 			break;
@@ -712,12 +721,15 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 				String symmetrySystemName = mEditorModel .getSymmetrySystem().getName();
 				edit = getColorMapper(mapperName, symmetrySystemName);
 	        } 
-			else if ( ShowVertices.NAME .toLowerCase() .equals( action .toLowerCase() ) ) {
-	    		edit = new ShowVertices( mSelection, mRealizedModel );
-	    	} 
+            else if ( ShowVertices.NAME .toLowerCase() .equals( action .toLowerCase() ) ) {
+                edit = new ShowVertices( mSelection, mRealizedModel );
+            } 
+            else if ( ShowNormals.NAME .toLowerCase() .equals( action .toLowerCase() ) ) {
+                edit = new ShowNormals( mSelection, mRealizedModel );
+            } 
 			else if ( action .toLowerCase() .equals( "chainballs" ) ) {
-	    		edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CHAIN_BALLS );
-	    	}
+			    edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CHAIN_BALLS );
+			}
 		}
 
         if ( edit == null )
@@ -731,11 +743,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     @Override
 	public void performAndRecord( UndoableEdit edit )
-	{
+    {
         if ( edit == null )
             return;
         if ( edit instanceof NoOp )
-        	return;
+            return;
 
         try {
             synchronized ( this .mHistory ) {
@@ -749,15 +761,15 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         {
             Throwable cause = re.getCause();
             if ( cause instanceof Command.Failure )
-            	this .failures .reportFailure( (Command.Failure) cause );
+                this .failures .reportFailure( (Command.Failure) cause );
             else if ( cause != null )
-            	this .failures .reportFailure( new Command.Failure( cause ) );
+                this .failures .reportFailure( new Command.Failure( cause ) );
             else
-            	this .failures .reportFailure( new Command.Failure( re ) );
+                this .failures .reportFailure( new Command.Failure( re ) );
         }
         catch ( Command.Failure failure )
         {
-        	this .failures .reportFailure( failure );
+            this .failures .reportFailure( failure );
         }
         this .changes++;
     }

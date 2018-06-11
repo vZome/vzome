@@ -166,6 +166,11 @@ public class EditorModel
         // always a change, by definition
     }
     
+    public UndoableEdit validate2Manifold()
+    {
+        return new Validate2Manifold( mSelection, mRealized );
+    }
+    
     private final RealizedModel mRealized;
 
     protected Selection mSelection;

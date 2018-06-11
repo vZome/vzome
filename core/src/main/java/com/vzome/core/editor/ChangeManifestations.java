@@ -137,6 +137,42 @@ public abstract class ChangeManifestations extends ChangeSelection
         plan( new RenderManifestation( m, false ) );
     }
 
+    protected void hideConnectors()
+    {
+        for ( Connector connector : Manifestations .getVisibleConnectors( this .mManifestations ) )
+            hideManifestation( connector );
+    }
+
+    protected void showConnectors()
+    {
+        for ( Connector connector : Manifestations .getHiddenConnectors( this .mManifestations ) )
+            showManifestation( connector );
+    }
+
+    protected void hideStruts()
+    {
+        for ( Strut strut : Manifestations .getVisibleStruts( this .mManifestations ) )
+            hideManifestation( strut );
+    }
+
+    protected void showStruts()
+    {
+        for ( Strut strut : Manifestations .getHiddenStruts( this .mManifestations ) )
+            showManifestation( strut );
+    }
+
+    protected void hidePanels()
+    {
+        for ( Panel panel : Manifestations .getVisiblePanels( this .mManifestations ) )
+            hideManifestation( panel );
+    }
+
+    protected void showPanels()
+    {
+        for ( Panel panel : Manifestations .getHiddenPanels( this .mManifestations ) )
+            showManifestation( panel );
+    }
+    
 	public boolean showsManifestation( Manifestation man )
 	{
 		for (Iterator<SideEffect> iterator = this .getEffects(); iterator.hasNext();) {
