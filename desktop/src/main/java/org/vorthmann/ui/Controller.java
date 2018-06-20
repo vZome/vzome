@@ -85,4 +85,6 @@ public interface Controller extends ActionListener
     Controller getSubController( String string );
     
     MouseTool getMouseTool();
+
+    void addSubController( String name, Controller sub );
 }
