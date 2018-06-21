@@ -154,8 +154,6 @@ public class DocumentController extends DefaultController implements J3dComponen
     private final Component modelCanvas, leftEyeCanvas, rightEyeCanvas;
 
     private MouseTool selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
-
-    private final Controller polytopesController;
     
     private final NumberController importScaleController;
 
@@ -213,11 +211,12 @@ public class DocumentController extends DefaultController implements J3dComponen
             this .symmetries .put( name, symmController );
         }
 
-        polytopesController = new PolytopesController( this .documentModel );
-        polytopesController .setNextController( this );
+        this .addSubController( "polytopes", new PolytopesController( this .documentModel ) );
         
+        this .addSubController( "undoRedo", new UndoRedoController( this .documentModel .getHistoryModel() ) );
+                
         importScaleController = new NumberController( this .documentModel .getField() );
-        importScaleController .setNextController( this );
+        this .addSubController( "importScale", importScaleController );
         
         mRenderedModel = new RenderedModel( this .documentModel .getField(), true );
         currentSnapshot = mRenderedModel;
@@ -679,40 +678,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         
         mErrors .clearError();
         try {
-            if ( action.equals( "undo" ) )
-                this .documentModel .undo( ! this .userHasEntitlement( "developer.extras" ) );
-            else if ( action.equals( "redo" ) )
-                this .documentModel .redo( ! this .userHasEntitlement( "developer.extras" ) );
-            else if ( action.equals( "undoToBreakpoint" ) ) {
-                this .documentModel .undoToBreakpoint();
-            } else if ( action.equals( "redoToBreakpoint" ) ) {
-                this .documentModel .redoToBreakpoint();
-            } 
-            else if ( action.equals( "setBreakpoint" ) )
-                this .documentModel .setBreakpoint();
-            else if ( action.equals( "undoAll" ) ) {
-                this .documentModel .undoAll();
-            } else if ( action.equals( "redoAll" ) ) {
-                this .documentModel .redoAll( - 1 );
-            } else if ( action.startsWith( "redoUntilEdit." ) ) {
-                String editNum = action .substring( "redoUntilEdit.".length() ).trim();
-                // editNum will be "null" if user canceled the numeric input dialog
-                // We'll also treat an empty string the same as canceling
-                if(! (editNum.equals("null") || editNum.equals("") ) ) {
-                    int eNum = -1;
-                    try {
-                        eNum = Integer.parseInt( editNum );
-                    } catch (Exception ex) {
-                        mErrors.reportError( "'" + editNum + "' is not a valid integer. Edit number must be a positive integer.", new Object[] {} );
-                    }
-                    if(eNum <= 0) {
-                        mErrors.reportError( "Edit number must be a positive integer.", new Object[] {} );
-                    } else {
-                        this.documentModel.redoAll(eNum);
-                    }
-                }
-            }
-            else if ( action .equals( "switchToArticle" ) )
+            if ( action .equals( "switchToArticle" ) )
             {
                 currentView = mViewPlatform .getView();
                 
@@ -1467,12 +1433,6 @@ public class DocumentController extends DefaultController implements J3dComponen
         case "parts":
             return partsController; 
         
-        case "polytopes":
-            return polytopesController; 
-        
-        case "importScale":
-            return importScaleController; 
-        
         case "lesson":
             return lessonController;
         
@@ -1492,7 +1452,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             if ( name.startsWith( "symmetry." ) )
                 return this.symmetries.get( name.substring( "symmetry.".length() ) );
             else
-                return null;
+                return super .getSubController( name );
         }
     }
 

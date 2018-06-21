@@ -486,9 +486,9 @@ public class ApplicationController extends DefaultController
     private void newDocumentController( final String name, final DocumentModel document, final Properties props )
     {
         DocumentController newest = new DocumentController( document, this, props );
-    	this .registerDocumentController( name, newest );
+        this .registerDocumentController( name, newest );
         // trigger window creation in the UI
-		this .properties() .firePropertyChange( "newDocument", null, newest );
+        this .properties() .firePropertyChange( "newDocument", null, newest );
     }
 
     private void registerDocumentController( final String name, final DocumentController newest )
