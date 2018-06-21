@@ -23,7 +23,13 @@ public class AdjustSelectionByClass extends ChangeSelection
     private ActionEnum strutAction = ActionEnum.IGNORE;
     private ActionEnum panelAction = ActionEnum.IGNORE;
 
-    public AdjustSelectionByClass(Selection selection, RealizedModel model, ActionEnum balls, ActionEnum struts, ActionEnum panels) {
+    public AdjustSelectionByClass( Selection selection, RealizedModel model )
+    {
+        this( selection, model, ActionEnum.IGNORE, ActionEnum.IGNORE, ActionEnum.IGNORE );
+    }
+
+    public AdjustSelectionByClass( Selection selection, RealizedModel model, ActionEnum balls, ActionEnum struts, ActionEnum panels )
+    {
         super(selection, false);
         this.model  = model;
         this.ballAction = balls;

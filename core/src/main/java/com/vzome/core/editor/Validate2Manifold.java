@@ -4,11 +4,9 @@
 package com.vzome.core.editor;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.vzome.core.algebra.AlgebraicVector;
@@ -17,7 +15,6 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
@@ -25,7 +22,7 @@ import com.vzome.core.model.Strut;
 
 public class Validate2Manifold extends ChangeManifestations
 {
-	Validate2Manifold( Selection selection, RealizedModel model )
+	public Validate2Manifold( Selection selection, RealizedModel model )
 	{
 		super( selection, model );
 	}

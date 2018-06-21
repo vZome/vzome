@@ -34,6 +34,11 @@ public class LoadVEF extends ChangeManifestations
         this .scale = scale;
     }
 
+    public LoadVEF( Selection selection, RealizedModel realized )
+    {
+        this( selection, realized, null, null, null );
+    }
+
     @Override
     protected String getXmlElementName()
     {

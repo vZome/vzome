@@ -74,7 +74,7 @@ public class SymmetryToolbarsPanel extends JPanel
         secondScroller .setBorder( null );
         this .add( secondScroller );
 
-        button = makeEditButton( enabler, "delete", "Delete selected objects" );
+        button = makeEditButton( enabler, "Delete", "Delete selected objects" );
         secondToolbar .add( button );
         button = makeEditButton( enabler, "hideball", "Hide selected objects" );
         secondToolbar .add( button );
@@ -83,7 +83,7 @@ public class SymmetryToolbarsPanel extends JPanel
 
         button = makeEditButton( enabler, "joinballs", "Connect balls in a loop" );
         secondToolbar .add( button );
-        button = makeEditButton( enabler, "chainballs", "Connect balls in a chain" );
+        button = makeEditButton( enabler, "chainBalls", "Connect balls in a chain" );
         secondToolbar .add( button );
         button = makeEditButton( enabler, "joinBallsAllToLast", "Connect all balls to last selected" );
         secondToolbar .add( button );
@@ -91,7 +91,7 @@ public class SymmetryToolbarsPanel extends JPanel
         secondToolbar .add( button );
         button = makeEditButton( enabler, "panel", "Make a panel polygon" );
         secondToolbar .add( button );
-        button = makeEditButton( enabler, "centroid", "Construct centroid of points" );
+        button = makeEditButton( enabler, "NewCentroid", "Construct centroid of points" );
         secondToolbar .add( button );
         
         secondToolbar .addSeparator();

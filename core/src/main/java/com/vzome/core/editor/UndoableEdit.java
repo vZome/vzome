@@ -12,33 +12,33 @@ import com.vzome.core.commands.XmlSaveFormat;
 public interface UndoableEdit
 {
     public void perform() throws Command.Failure;
-    
+
     public void undo();
-    
+
     public void redo() throws Command.Failure;
-    
+
     public boolean isVisible();
 
     public Element getXml( Document doc );
-    
+
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Command.Failure;
-    
-//    public interface History
-//    {
-//        void performAndRecord( UndoableEdit edit );
-//    }
-//    
+
+    //    public interface History
+    //    {
+    //        void performAndRecord( UndoableEdit edit );
+    //    }
+    //    
     public interface Context
     {
-    	UndoableEdit createEdit( Element xml, boolean groupInSelection );
-    	
-    	void performAndRecord( UndoableEdit edit );
+        UndoableEdit createEdit( Element xml, boolean groupInSelection );
+
+        void performAndRecord( UndoableEdit edit );
     }
 
-	/**
-	 * True when this edit must cause a persistent history branch.
-	 * @return
-	 */
+    /**
+     * True when this edit must cause a persistent history branch.
+     * @return
+     */
     public boolean isSticky();
 
     /**

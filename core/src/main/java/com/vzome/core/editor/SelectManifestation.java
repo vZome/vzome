@@ -26,6 +26,11 @@ public class SelectManifestation extends ChangeSelection
     
     private boolean mReplace;
 
+    public SelectManifestation( Selection selection, RealizedModel realized, boolean groupInSelection )
+    {
+        this( null, false, selection, realized, groupInSelection );
+    }
+    
     public SelectManifestation( Manifestation m, boolean replace, Selection selection, RealizedModel realized, boolean groupInSelection )
     {
         super( selection, groupInSelection );

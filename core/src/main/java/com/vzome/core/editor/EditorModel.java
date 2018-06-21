@@ -1,5 +1,11 @@
 package com.vzome.core.editor;
 
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.DESELECT;
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.IGNORE;
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,7 +13,6 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
-import static com.vzome.core.editor.ChangeSelection.ActionEnum.*;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -16,13 +21,13 @@ import com.vzome.core.model.Strut;
 public class EditorModel
 {
     public EditorModel( RealizedModel realized, Selection selection, boolean oldGroups, Point originPoint, SymmetrySystem symmetrySystem )
-	{
+    {
         mRealized = realized;
         mSelection = selection;
         this.oldGroups = oldGroups;
-		this.symmetrySystem = symmetrySystem;
-        
-		this .selectionSummary = new SelectionSummary( this .mSelection );
+        this.symmetrySystem = symmetrySystem;
+
+        this .selectionSummary = new SelectionSummary( this .mSelection );
 
         Manifestation m = realized .manifest( originPoint );
         m .addConstruction( originPoint );
@@ -30,39 +35,39 @@ public class EditorModel
         realized .show( m );
         mCenterPoint = originPoint;
     }
-    
+
     public void addSelectionSummaryListener( SelectionSummary.Listener listener )
     {
-    	this .selectionSummary .addListener( listener );
+        this .selectionSummary .addListener( listener );
     }
-    
+
     public RealizedModel getRealizedModel()
     {
         return mRealized;
     }
-	
-	public Point getCenterPoint()
-	{
-	    return mCenterPoint;
-	}
-    
+
+    public Point getCenterPoint()
+    {
+        return mCenterPoint;
+    }
+
     public void setCenterPoint( Construction point )
     {
         mCenterPoint = (Point) point;
     }
-    
+
     public Segment getSymmetrySegment()
     {
         return mSymmetryAxis;
     }
-    
+
     public void setSymmetrySegment( Segment segment )
     {
         mSymmetryAxis = segment;
     }
 
     public UndoableEdit selectManifestation( Manifestation m, boolean replace )
-	{
+    {
         ChangeSelection edit = new SelectManifestation( m, replace, mSelection, mRealized, false );
         if ( edit .selectionChanged() )
             return edit;
@@ -88,8 +93,8 @@ public class EditorModel
             return new NoOp();
     }
 
-	public UndoableEdit unselectConnectors()
-	{
+    public UndoableEdit unselectConnectors()
+    {
         return new AdjustSelectionByClass(mSelection, mRealized, DESELECT, IGNORE, IGNORE);
     }
 
@@ -102,38 +107,38 @@ public class EditorModel
      * @deprecated As of 8/23/2017: Use {@link #unselectStrutsAndPanels()} instead.
      */
     @Deprecated
-	public UndoableEdit unselectStruts()
-	{
+    public UndoableEdit unselectStruts()
+    {
         return unselectStrutsAndPanels();
     }
 
-	public UndoableEdit deselectConnectors()
-	{
+    public UndoableEdit deselectConnectors()
+    {
         return new AdjustSelectionByClass( mSelection, mRealized, DESELECT, IGNORE, IGNORE );
     }
 
-	public UndoableEdit deselectStruts()
-	{
+    public UndoableEdit deselectStruts()
+    {
         return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, DESELECT, IGNORE );
     }
 
-	public UndoableEdit deselectPanels()
-	{
+    public UndoableEdit deselectPanels()
+    {
         return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, IGNORE, DESELECT );
     }
 
-	public UndoableEdit selectConnectors()
-	{
+    public UndoableEdit selectConnectors()
+    {
         return new AdjustSelectionByClass( mSelection, mRealized, SELECT, IGNORE, IGNORE );
     }
 
-	public UndoableEdit selectStruts()
-	{
+    public UndoableEdit selectStruts()
+    {
         return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, SELECT, IGNORE );
     }
 
-	public UndoableEdit selectPanels()
-	{
+    public UndoableEdit selectPanels()
+    {
         return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, IGNORE, SELECT );
     }
 
@@ -151,14 +156,9 @@ public class EditorModel
         return new SelectAutomaticStruts( symmetrySystem, mSelection, mRealized );
     }
 
-    public UndoableEdit selectCollinear()
-    {
-        return new SelectCollinear(mSelection, mRealized );
+    public UndoableEdit selectParallelStruts() {
+        return new SelectParallelStruts( symmetrySystem, mSelection, mRealized );
     }
-
-	public UndoableEdit selectParallelStruts() {
-		return new SelectParallelStruts( symmetrySystem, mSelection, mRealized );
-	}
 
     public UndoableEdit invertSelection()
     {
@@ -166,22 +166,68 @@ public class EditorModel
         // always a change, by definition
     }
     
-    public UndoableEdit validate2Manifold()
+    public UndoableEdit createEdit( String name, boolean groupInSelection )
     {
-        return new Validate2Manifold( mSelection, mRealized );
+        switch ( name ) { // map command classes to support legacy documents
+
+        case "BnPolyope":
+            name = "B4Polytope";
+            break;
+
+        case "NewCentroid":  // "Centroid" is already used by a legacy CommandEdit
+            name = "Centroid";
+            break;
+
+        case "DeselectByClass":
+            name = "AdjustSelectionByClass";
+            break;
+
+        default:
+            break;
+        }
+        String className = this.getClass() .getPackage() .getName() + "." + name;
+        try {
+            Class<?> factoryClass = Class.forName( className );
+
+            Constructor<?>[] constructors = factoryClass .getConstructors();
+            Constructor<?> goodConstructor = null, betterConstructor = null;
+            for ( Constructor<?> constructor : constructors ) {
+                Class<?>[] parameterTypes = constructor .getParameterTypes();
+                if ( parameterTypes.length >= 1 && parameterTypes[0] .equals( Selection.class ) ) {
+                    if ( parameterTypes.length >= 2 && parameterTypes[1] .equals( RealizedModel.class ) ) {
+                        if ( parameterTypes.length == 3 && parameterTypes[2] .equals( boolean.class ) ) {
+                            betterConstructor = constructor;
+                            break;
+                        } else if ( parameterTypes.length == 2 ) {
+                            goodConstructor = constructor;
+                        }
+                    }
+                }
+            }
+            if ( betterConstructor != null ) {
+                return (UndoableEdit) betterConstructor .newInstance( new Object[] { this.mSelection, this.mRealized, groupInSelection } );
+            } else if ( goodConstructor != null ) {
+                return (UndoableEdit) goodConstructor .newInstance( new Object[] { this.mSelection, this.mRealized } );
+            } else {
+                return null;
+            }
+        } catch ( ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+            return null;
+            // TODO should be logging this, as "finer" at least
+        }
     }
-    
+
     private final RealizedModel mRealized;
 
     protected Selection mSelection;
 
-	private SelectionSummary selectionSummary;
+    private SelectionSummary selectionSummary;
 
     private Point mCenterPoint;
-    
+
     private Segment mSymmetryAxis;
 
-	private SymmetrySystem symmetrySystem;
+    private SymmetrySystem symmetrySystem;
 
     private final boolean oldGroups;
 
@@ -200,7 +246,7 @@ public class EditorModel
         return null;
     }
 
-    
+
     public UndoableEdit setSymmetryCenter( Construction target ) throws Command.Failure
     {
         Point newCenter = null;
@@ -217,7 +263,7 @@ public class EditorModel
             return null;
         return new SymmetryCenterChange( this, newCenter );
     }
-    
+
     public UndoableEdit setSymmetryAxis( Construction target ) throws Command.Failure
     {
         Segment newAxis = null;
@@ -231,9 +277,9 @@ public class EditorModel
                 throw new Command.Failure( "Selection is not a single strut." );
         }
         if ( ( mSymmetryAxis != null )
-           && newAxis .getStart() .equals( mSymmetryAxis .getStart() )
-           && newAxis .getEnd() .equals( mSymmetryAxis .getEnd() ) )
-                return null;
+                && newAxis .getStart() .equals( mSymmetryAxis .getStart() )
+                && newAxis .getEnd() .equals( mSymmetryAxis .getEnd() ) )
+            return null;
         return new SymmetryAxisChange( this, newAxis );
     }
 
@@ -252,7 +298,7 @@ public class EditorModel
         else
             return new NoOp();
     }
-    
+
     private final Set<Manifestation> failedConstructions = new HashSet<>();
 
     public void addFailedConstruction( Construction cons )
@@ -265,23 +311,23 @@ public class EditorModel
         return failedConstructions .contains( mRealized .manifest( cons ) );
     }
 
-	public Selection getSelection()
-	{
-		return this .mSelection;
-	}
+    public Selection getSelection()
+    {
+        return this .mSelection;
+    }
 
-	public void notifyListeners()
-	{
-		this .selectionSummary .notifyListeners();
-	}
+    public void notifyListeners()
+    {
+        this .selectionSummary .notifyListeners();
+    }
 
-	public SymmetrySystem getSymmetrySystem()
-	{
-		return this .symmetrySystem;
-	}
+    public SymmetrySystem getSymmetrySystem()
+    {
+        return this .symmetrySystem;
+    }
 
-	public void setSymmetrySystem( SymmetrySystem system )
-	{
-		this .symmetrySystem = system;
-	}
+    public void setSymmetrySystem( SymmetrySystem system )
+    {
+        this .symmetrySystem = system;
+    }
 }

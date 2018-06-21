@@ -312,22 +312,6 @@ public class EditHistory implements Iterable<UndoableEdit>
         DomUtils .addAttribute( result, "editNumber", Integer.toString( this .mEditNumber ) );
         return result;
         // edits are now serialized in calling EditorController
-
-        //        for ( Iterator<UndoableEdit> it = mEdits .iterator(); it .hasNext(); )
-        //        {
-        //            UndoableEdit undoable = it .next();
-        //            
-        //            Context newContext = undoable .getContext();
-        //            if ( context != undoable .getContext() )
-        //            {
-        //            	context = newContext;
-        //            	UndoableEdit switchContext = masterContext .createEdit( type, format );
-        //                Element switchContext = new Element( "switchContext" );
-        //                switchContext .addAttribute( new Attribute( "to", getContextId( context ) ) );
-        //            	result .appendChild( switchContext );
-        //            }
-        //            result .appendChild( undoable .getXml() );
-        //        }
     }
 
     public void mergeSelectionChanges()
@@ -530,10 +514,6 @@ public class EditHistory implements Iterable<UndoableEdit>
             UndoableEdit realized = null;
             String cmdName = xml.getLocalName();
 
-            //                if ( format.actionHistory() ) // never happens, yet
-            //                    realized = design .createActionEdit( cmdName, null, groupInSelection );
-            //                else
-            // opening a file from vZome 2.1 - 4.0 or ...?
             if ( cmdName .equals( "Breakpoint" ) )
             {
                 realized = new Breakpoint();
