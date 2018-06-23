@@ -1,5 +1,9 @@
 package com.vzome.core.editor;
 
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.DESELECT;
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.IGNORE;
+import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,7 +11,6 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
-import static com.vzome.core.editor.ChangeSelection.ActionEnum.*;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -164,6 +167,11 @@ public class EditorModel
     {
         return new InvertSelection( mSelection, mRealized, false );
         // always a change, by definition
+    }
+    
+    public UndoableEdit joinSkewLines()
+    {
+        return new JoinSkewLines( mSelection, mRealized );
     }
     
     public UndoableEdit validate2Manifold()

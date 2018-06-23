@@ -390,9 +390,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case "InvertSelection":
 			edit = new InvertSelection( this.mSelection, this.mRealizedModel, groupInSelection );
 			break;
-		case "JoinPoints":
-			edit = new JoinPoints( this.mSelection, this.mRealizedModel, groupInSelection );
-			break;
+        case "JoinPoints":
+            edit = new JoinPoints( this.mSelection, this.mRealizedModel, groupInSelection );
+            break;
+        case JoinSkewLines.NAME:
+            edit = mEditorModel.joinSkewLines();
+            break;
 		case "NewCentroid":
 			edit = new Centroid( this.mSelection, this.mRealizedModel, groupInSelection );
 			break;
@@ -652,6 +655,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case "joinBallsAllPossible":
 			edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_POSSIBLE );
 			break;
+        case JoinSkewLines.NAME:
+            edit = mEditorModel.joinSkewLines();
+            break;
 		case "ballAtOrigin":
 			edit = new ShowPoint( originPoint, mSelection, mRealizedModel, false );
 			break;
