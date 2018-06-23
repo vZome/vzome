@@ -25,6 +25,7 @@ subprojects {
 	// set them to 1.8 for Java 8
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+    options.encoding = 'UTF-8'
   }
 
   repositories {
