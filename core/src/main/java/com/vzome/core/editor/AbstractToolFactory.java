@@ -99,9 +99,10 @@ public abstract class AbstractToolFactory implements Factory, SelectionSummary.L
 		Tool tool = createToolInternal( NEW_PREFIX + index );
 		tool .setCategory( this .getId() );
 		tool .setLabel( this .getId() + " " + index );
-		this .tools .put( tool .getId(), tool );
 		if ( tool instanceof UndoableEdit )
 			this .tools .getContext() .performAndRecord( (UndoableEdit) tool );
+		else
+	        this .tools .put( tool .getId(), tool );
 		return tool;
 	}
 
@@ -124,7 +125,7 @@ public abstract class AbstractToolFactory implements Factory, SelectionSummary.L
 			this .tools .setMaxId( num );
 		} // else
 		   // legacy user tools don't consume NEW_PREFIX id space
-		tool .setLabel( tool .getId() ); // TODO do better
+		this .tools .setLabel( tool );
 
 		int nextDot = id .indexOf( "." );
 		if ( nextDot > 0 ) {
@@ -132,7 +133,6 @@ public abstract class AbstractToolFactory implements Factory, SelectionSummary.L
 		} else {
 			tool .setCategory( this .getId() );
 		}
-		this .tools .put( tool .getId(), tool );
 		return tool;
 	}
 

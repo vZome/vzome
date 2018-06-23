@@ -3,6 +3,8 @@ package com.vzome.core.editor;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.w3c.dom.Document;
@@ -22,6 +24,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
 	private final UndoableEdit.Context context;
 	private final Point originPoint;
+	private final Map<String, String> toolLabels = new HashMap<>();
     
 	public ToolsModel( UndoableEdit.Context context, Point originPoint )
 	{
@@ -39,8 +42,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 				Element toolElem = (Element) node;
 				String id = toolElem .getAttribute( "id" );
 				String label = toolElem .getAttribute( "label" );
-				Tool tool = this .get( id );
-				tool .setLabel( label );
+				this .toolLabels .put( id, label );
 			}
 		}
 	}
@@ -56,8 +58,8 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 	 */
 	public void setMaxId( int id )
 	{
-		if ( id > this .lastId )
-			this .lastId = id;
+		if ( id >= this .lastId )
+			this .lastId = id + 1;
 	}
 
 	@Override
@@ -149,5 +151,11 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         		result .appendChild( toolElem );
         	}
         return result;
+    }
+
+    public void setLabel( Tool tool )
+    {
+        // update the tool from the labels map, deserialized earlier
+        tool .setLabel( this .toolLabels .get( tool .getId() ) );
     }
 }
