@@ -134,15 +134,11 @@ public class RotationTool extends SymmetryTool
         super( id, symmetry, tools );
         this .fullRotation = full;
         this .corrected = true;
-    }
-
-    @Override
-    public EnumSet<InputBehaviors> defaultInputBehaviors()
-    {
-        if ( this .fullRotation )
-            return EnumSet.of( InputBehaviors.SELECT );
+        if ( full )
+            this .setInputBehaviors( EnumSet.of( InputBehaviors.SELECT ) );
         else
-            return EnumSet.of( InputBehaviors.DELETE );
+            this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+        ;
     }
 
     @Override

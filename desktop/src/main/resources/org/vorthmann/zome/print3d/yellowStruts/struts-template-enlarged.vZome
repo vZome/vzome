@@ -1777,7 +1777,7 @@
     <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
   </sceneModel>
   <Viewing>
-    <ViewModel distance="58.49138259887695" far="116.98276519775345" near="0.14622845867616588" parallel="false" stereoAngle="0.0" width="26.321122169494625">
+    <ViewModel distance="62.1082878112793" far="124.21657562255811" near="0.1552707218419119" parallel="false" stereoAngle="0.0" width="27.948729515075673">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
       <UpDirection x="-0.4071845722876434" y="-0.004780032391905802" z="0.9133333867659027"/>
       <LookDirection x="-0.21226616287542557" y="0.9731010374292733" z="-0.08954019796829789"/>
@@ -1820,8 +1820,8 @@
     <Direction color="255,255,255" name="15998" prototype="-1/2 -1/4 0 0 5/4 0"/>
   </SymmetrySystem>
   <Tools>
-    <Tool id="tool-0" label="shrink"/>
-    <Tool id="tool-1" label="enlarge"/>
+    <Tool deleteInputs="true" id="tool-0" label="shrink"/>
+    <Tool deleteInputs="true" id="tool-1" label="enlarge"/>
     <Tool id="tool-2" label="next strut offset"/>
     <Tool id="tool-3" label="opposite tip rotation"/>
   </Tools>

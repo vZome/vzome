@@ -125,7 +125,9 @@ public abstract class AbstractToolFactory implements Factory, SelectionSummary.L
 			this .tools .setMaxId( num );
 		} // else
 		   // legacy user tools don't consume NEW_PREFIX id space
-		this .tools .setLabel( tool );
+
+		// Reattach the label and input behaviors, already loaded separately by ToolsModel
+		this .tools .setConfiguration( tool );
 
 		int nextDot = id .indexOf( "." );
 		if ( nextDot > 0 ) {

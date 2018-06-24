@@ -27,7 +27,7 @@ public class ApplyTool extends ChangeManifestations
         //  selection.
         List<Manifestation> inputs = new ArrayList<>();
         for (Manifestation man : mSelection) {
-        	if ( deleteInputs && tool .needsInput() )
+            if ( deleteInputs && tool .needsInput() )
             {
                 super .unselect( man, true );
                 super .deleteManifestation( man );
@@ -42,17 +42,17 @@ public class ApplyTool extends ChangeManifestations
             if ( tool .needsInput() )
                 inputs .add( man );
         }
-        
-        redo();  // get the unselects out of the way, if anything needs to be re-selected
-        
-    	tool. prepare( this );
 
-    	// now, any manifested constructions are outputs
+        redo();  // get the unselects out of the way, if anything needs to be re-selected
+
+        tool. prepare( this );
+
+        // now, any manifested constructions are outputs
         if ( tool .needsInput() )
         {
             for (Manifestation man : inputs) {
                 Construction c = man .getConstructions() .next();
-                
+
                 tool .performEdit( c, this );
             }
         }
@@ -62,24 +62,24 @@ public class ApplyTool extends ChangeManifestations
                 tool .performSelect( man, this );
             }
         }
-    	tool. complete( this );
+        tool. complete( this );
 
-    	redo();
-                                
+        redo();
+
         super.perform();
     }
 
     private Tool tool;
-        
+
     private boolean selectInputs, deselectOutputs, justSelect, hideInputs, deleteInputs, redundantOutputs;
 
-	private final ToolsModel tools;
-    
+    private final ToolsModel tools;
+
     public ApplyTool( ToolsModel tools, Tool tool, EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction, boolean redundantOutputs )
     {
         super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel(), false );
-		this.tools = tools;
-        
+        this.tools = tools;
+
         this .tool = tool;
         selectInputs = inputAction .contains( InputBehaviors.SELECT );
         deleteInputs = inputAction .contains( InputBehaviors.DELETE );
@@ -92,12 +92,12 @@ public class ApplyTool extends ChangeManifestations
     @Override
     protected String getXmlElementName()
     {
-    	if ( this .redundantOutputs ) 
-    		return "ApplyTool"; 
-    	else
-    		return "ToolApplied";
+        if ( this .redundantOutputs ) 
+            return "ApplyTool"; 
+        else
+            return "ToolApplied";
     }
-    
+
     @Override
     protected void getXmlAttributes( Element element )
     {
@@ -125,17 +125,17 @@ public class ApplyTool extends ChangeManifestations
         this .hideInputs = isAttributeTrue( element, "hideInputs" );
         this .deleteInputs = isAttributeTrue( element, "deleteInputs" );
     }
-    
+
     private boolean isAttributeTrue( Element element, String name )
     {
         String value = element .getAttribute( name );
         return value != null && value .equals( "true" );
     }
-    
+
     @Override
     public Manifestation manifestConstruction( Construction c )
     {
-    	Manifestation m = getManifestation( c );
+        Manifestation m = getManifestation( c );
         boolean preExistsNotHidden = ( m != null && m .getRenderedObject() != null );
         if ( justSelect )
         {
@@ -153,36 +153,36 @@ public class ApplyTool extends ChangeManifestations
         }
         return m;
     }
-            
+
     /**
      * This will be called on any manifestation that should be (shown and) selected in the output.
      */
     @Override
     public void select( Manifestation m )
     {
-    	if ( this .tool .needsInput() )
-    		throw new UnsupportedOperationException( "select is not supported within Tool.performEdit" );
+        if ( this .tool .needsInput() )
+            throw new UnsupportedOperationException( "select is not supported within Tool.performEdit" );
 
         if ( m .getRenderedObject() == null )
-        	super .showManifestation( m );
+            super .showManifestation( m );
         super .select( m, true /* safe to ignore groups, they won't exist */ );
     }
-    
+
     @Override
     public void unselect( Manifestation man )
     {
-    	throw new UnsupportedOperationException( "unselect is not supported within Tool.performEdit" );
+        throw new UnsupportedOperationException( "unselect is not supported within Tool.performEdit" );
     }
 
     @Override
     protected void showManifestation( Manifestation m )
     {
-    	throw new UnsupportedOperationException( "showManifestation is not supported within Tool.performEdit" );
+        throw new UnsupportedOperationException( "showManifestation is not supported within Tool.performEdit" );
     }
-    
+
     @Override
     protected void hideManifestation( Manifestation m )
     {
-    	throw new UnsupportedOperationException( "hideManifestation is not supported within Tool.performEdit" );
+        throw new UnsupportedOperationException( "hideManifestation is not supported within Tool.performEdit" );
     }
 }

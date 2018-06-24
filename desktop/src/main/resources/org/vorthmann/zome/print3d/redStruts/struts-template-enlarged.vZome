@@ -2691,7 +2691,7 @@
     <StrutCreation anchor="0 0 0 0 0 0" dir="navy" index="12" len="0 1"/>
     <StrutCreation anchor="0 0 0 0 0 0" index="52" len="2 4"/>
   </EditHistory>
-  <notes/>
+  <notes xmlns:xml="http://www.w3.org/XML/1998/namespace"/>
   <sceneModel ambientLight="41,41,41" background="175,200,220">
     <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
     <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
@@ -2737,8 +2737,8 @@
     <Direction color="255,255,255" name="15898" prototype="-3/8 -1/8 3/4 -1/8 -1/4 -1/2"/>
   </SymmetrySystem>
   <Tools>
-    <Tool id="tool-0" label="shrink"/>
-    <Tool id="tool-1" label="enlarge"/>
+    <Tool deleteInputs="true" id="tool-0" label="shrink"/>
+    <Tool deleteInputs="true" id="tool-1" label="enlarge"/>
     <Tool id="tool-2" label="next strut offset"/>
     <Tool id="tool-3" label="opposite tip rotation"/>
   </Tools>

@@ -24,6 +24,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
 
     private boolean predefined;
     private String label;
+    private EnumSet<InputBehaviors> inputBehaviors;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
 
     public Tool( String id, ToolsModel tools )
@@ -31,6 +32,17 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
         super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel(), false );
         this .tools = tools;
         this .id = id;
+        this .inputBehaviors = EnumSet.of( InputBehaviors.SELECT );
+    }
+
+    public EnumSet<InputBehaviors> getInputBehaviors()
+    {
+        return this .inputBehaviors;
+    }
+
+    public void setInputBehaviors( EnumSet<InputBehaviors> inputBehaviors )
+    {
+        this .inputBehaviors = inputBehaviors;
     }
 
     public void addPropertyChangeListener( PropertyChangeListener listener )
@@ -153,11 +165,5 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
     public void setLabel( String label )
     {
         this .label = label;
-    }
-
-    @Override
-    public EnumSet<InputBehaviors> defaultInputBehaviors()
-    {
-        return EnumSet.of( InputBehaviors.SELECT );
     }
 }
