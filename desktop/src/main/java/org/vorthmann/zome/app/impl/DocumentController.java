@@ -1624,6 +1624,9 @@ public class DocumentController extends DefaultController implements J3dComponen
                     Strut strut = Strut.class.cast(man);
                     strut.getLocation().getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
                     
+                    buf.append("\n\nend: ");
+                    strut.getEnd().getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    
                     buf.append("\n\noffset: ");
                     AlgebraicVector offset = strut.getOffset();
                     if (offset.isOrigin()) {
