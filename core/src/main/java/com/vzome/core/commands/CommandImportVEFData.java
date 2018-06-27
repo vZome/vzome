@@ -153,7 +153,7 @@ public class CommandImportVEFData extends AbstractCommand
         @Override
         protected void addVertex( int index, AlgebraicVector location )
         {
-            if ( scale != null && ! usesActualScale() ) {
+            if ( scale != null ) {
                 location = location .scale( scale );
             }
             if ( mProjection != null )
