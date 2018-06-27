@@ -761,6 +761,7 @@ public class DocumentController extends DefaultController implements Controller3
         if ( command.equals( "runZomicScript" ) 
                 || command.equals( "runPythonScript" )
                 || command.equals( "import.vef" ) 
+                || command.equals( "import.vef.tetrahedral" ) 
                 //|| command.equals( "import.zomod" ) 
                 )
             documentModel .doScriptAction( command, script );
@@ -890,6 +891,11 @@ public class DocumentController extends DefaultController implements Controller3
                     ) {
                 String vefData = readFile( file );
                 documentModel .importVEF( this .importScaleController .getValue(), vefData );
+                return;
+            }
+            if ( command.equals( "import.vef.tetrahedral" ) ) {
+                String vefData = readFile( file );
+                documentModel .importVEFTetrahedralProjection( this .importScaleController .getValue(), vefData );
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {

@@ -276,11 +276,26 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
                 case "importVefWithScale":
+                {
+                    cmd = "import.vef";
                     Controller importScaleController = mController .getSubController( "importScale" );
-                    if ( importScaleDialog == null )
+                    if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
                         importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
-                            new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, "import.vef", "vef", controller ) );
+                            new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
+                    }
                     importScaleDialog .setVisible( true );
+                }
+                    break;
+
+                case "import.vef.tetrahedral":
+                {
+                    Controller importScaleController = mController .getSubController( "importScale" );
+                    if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
+                        importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
+                            new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
+                    }
+                    importScaleDialog .setVisible( true );
+                }
                     break;
 
                 case "showPolytopesDialog":
@@ -775,6 +790,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "configureDirections":
             case "addBookmark":
             case "importVefWithScale":
+            case "import.vef.tetrahedral":
                 actionListener = this .localActions;
                 break;
 

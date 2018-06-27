@@ -81,6 +81,10 @@ public class Quaternion
         transpose .setElement( 2, 1, factor );
     }
     
+    public AlgebraicVector getVector() {
+        return vector;
+    }
+    
     private AlgebraicVector conjugate( AlgebraicVector q )
     {
         AlgebraicVector result = this.field .origin( 4 );
