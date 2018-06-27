@@ -529,6 +529,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             JMenu submenu3d = new JMenu( "3D Printing Starters..." );
             submenu3d .add( createMenuItem( "Red-tip Struts", "newFromResource-org/vorthmann/zome/print3d/redStruts/struts-template-enlarged.vZome" ) );
             submenu3d .add( createMenuItem( "Yellow-tip Struts", "newFromResource-org/vorthmann/zome/print3d/yellowStruts/struts-template-enlarged.vZome" ) );
+            submenu3d .add( createMenuItem( "Blue-tip Struts", "newFromResource-org/vorthmann/zome/print3d/blueStruts/struts-template-enlarged.vZome" ) );
             menu.add( submenu3d );
         
         }
