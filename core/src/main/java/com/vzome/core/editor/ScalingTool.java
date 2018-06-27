@@ -8,7 +8,6 @@ import java.util.EnumSet;
 
 import org.w3c.dom.Element;
 
-import com.vzome.api.Tool.InputBehaviors;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -126,18 +125,13 @@ public class ScalingTool extends SymmetryTool
     {
         super( id, symmetry, tools );
         this .scaleFactor = null;
+        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
     }
     
     void setScaleFactor( AlgebraicNumber scaleFactor )
     {
 		this.scaleFactor = scaleFactor;
     }
-
-	@Override
-	public EnumSet<InputBehaviors> defaultInputBehaviors()
-	{
-		return EnumSet.of( InputBehaviors.DELETE );
-	}
 
     @Override
     protected String checkSelection( boolean prepareTool )

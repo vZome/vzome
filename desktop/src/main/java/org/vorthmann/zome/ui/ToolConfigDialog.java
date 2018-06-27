@@ -211,12 +211,15 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 		String label = controller .getProperty( "label" ) ;
 		toolName .setText( label );
 		toolLabel .setText(label );
-        namePanel .showCard( controller .propertyIsTrue( "predefined" )? "builtin" : "editable" );
+		boolean predefined = controller .propertyIsTrue( "predefined" );
+        namePanel .showCard( predefined? "builtin" : "editable" );
 		boolean selectInputs = controller .propertyIsTrue( "selectInputs" );
 		selectInputsCheckbox .setSelected( selectInputs );
+		selectInputsCheckbox .setEnabled( ! predefined );
 		boolean deleteInputs = controller .propertyIsTrue( "deleteInputs" );
 		deleteInputsCheckbox .setSelected( deleteInputs );
-		selectInputsCheckbox .setEnabled( ! deleteInputs );
+		selectInputsCheckbox .setEnabled( ! predefined && ! deleteInputs );
+		deleteInputsCheckbox .setEnabled( ! predefined );
 		boolean selectOutputs = controller .propertyIsTrue( "selectOutputs" );
 		selectOutputsCheckbox .setSelected( selectOutputs );
 		boolean createOutputs = controller .propertyIsTrue( "createOutputs" );

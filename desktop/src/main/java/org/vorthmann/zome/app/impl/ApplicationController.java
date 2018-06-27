@@ -271,6 +271,16 @@ public class ApplicationController extends DefaultController
                 InputStream bytes = cl .getResourceAsStream( path );
                 loadDocumentController( path, bytes, docProps );
             }
+            else if ( action .startsWith( "newFromResource-" ) )
+            {
+                Properties docProps = new Properties();
+                String title = "Untitled " + ++lastUntitled;
+                docProps .setProperty( "as.template", "true" ); // don't set window.file!
+                String path = action .substring( "newFromResource-" .length() );
+                ClassLoader cl = Thread .currentThread() .getContextClassLoader();
+                InputStream bytes = cl .getResourceAsStream( path );
+                loadDocumentController( path, bytes, docProps );
+            }
             else if ( action .startsWith( "openURL-" ) )
             {
                 Properties docProps = new Properties();
@@ -328,42 +338,42 @@ public class ApplicationController extends DefaultController
 
 	@Override
     public void doFileAction( String command, File file )
-    {
-        if ( file != null )
-        {
-    		Properties docProps = new Properties();
-            file = new File(removeProxyFileExtension( file.getAbsolutePath(), ".vzome"));
-            String path = file .getAbsolutePath();
-			docProps .setProperty( "window.title", path );
-        	switch ( command ) {
+	{
+	    if ( file != null )
+	    {
+	        Properties docProps = new Properties();
+	        file = new File(removeProxyFileExtension( file.getAbsolutePath(), ".vzome"));
+	        String path = file .getAbsolutePath();
+	        docProps .setProperty( "window.title", path );
+	        switch ( command ) {
 
-        	case "open":
-        		docProps .setProperty( "window.file", path );
-				break;
+	        case "open":
+	            docProps .setProperty( "window.file", path );
+	            break;
 
-        	case "newFromTemplate":
-        		String title = "Untitled " + ++lastUntitled;
-        		docProps .setProperty( "window.title", title ); // override the default above
-        		docProps .setProperty( "as.template", "true" ); // don't set window.file!
-				break;
+	        case "newFromTemplate":
+	            String title = "Untitled " + ++lastUntitled;
+	            docProps .setProperty( "window.title", title ); // override the default above
+	            docProps .setProperty( "as.template", "true" ); // don't set window.file!
+	            break;
 
-        	case "openDeferringRedo":
-        		docProps .setProperty( "open.undone", "true" );
-        		docProps .setProperty( "window.file", path );
-				break;
+	        case "openDeferringRedo":
+	            docProps .setProperty( "open.undone", "true" );
+	            docProps .setProperty( "window.file", path );
+	            break;
 
-			default:
-	        	this .mErrors .reportError( UNKNOWN_ACTION, new Object[]{ command } );
-				return;
-			}
-            try {
-                InputStream bytes = new FileInputStream( file );
-                loadDocumentController( path, bytes, docProps );
-			} catch ( Exception e ) {
-	        	this .mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
-			}
-        }
-    }
+	        default:
+	            this .mErrors .reportError( UNKNOWN_ACTION, new Object[]{ command } );
+	            return;
+	        }
+	        try {
+	            InputStream bytes = new FileInputStream( file );
+	            loadDocumentController( path, bytes, docProps );
+	        } catch ( Exception e ) {
+	            this .mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
+	        }
+	    }
+	}
 	
 	private void loadDocumentController( final String name, final InputStream bytes, final Properties properties ) throws Exception
 	{
