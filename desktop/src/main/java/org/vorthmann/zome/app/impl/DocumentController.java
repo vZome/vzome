@@ -850,7 +850,7 @@ public class DocumentController extends DefaultController implements Controller3
                 String vefContent = getProperty( "clipboard" );
                 documentModel .pasteVEF( vefContent );
             }
-            else if ( PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
+            else if ( e != null && PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
             {
                 // this is a select or deselect command from the PartsPanel context menu
                 PartsPanelActionEvent ppae = PartsPanelActionEvent.class.cast(e);

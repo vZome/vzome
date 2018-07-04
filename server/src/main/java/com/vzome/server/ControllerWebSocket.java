@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
@@ -116,7 +117,19 @@ public class ControllerWebSocket implements WebSocketListener
 			try {
 				JsonNode json = this .objectMapper .readValue( message, JsonNode.class);
 				String action = json .get( "action" ) .asText();
-				this .docController .doAction( action, null );
+				
+		        Controller controller = this .docController;
+		        
+		        StringTokenizer tokens = new StringTokenizer( action, "/" );
+		        int num = tokens .countTokens();
+		        for ( int i = 0; i < num-1; i++)
+		        {
+		            String subName = tokens .nextToken();
+		            controller = controller .getSubController( subName );
+		        }
+		        action = tokens .nextToken();
+
+		        controller .doAction( action, null );
 			} catch (Throwable e) {
 	            LOG.warn( "doAction error: [{}]", e .getMessage() );
 				e.printStackTrace();

@@ -9,12 +9,12 @@ let EditButtons = ({ enabled, endpoint, dispatch }) => {
     enabled?
       <div>
         <button disabled={!enabled} onClick={() => {
-          dispatch( sendDataToWebSocketAction( endpoint, { action: 'undo' } ) )
+          dispatch( sendDataToWebSocketAction( endpoint, { action: 'undoRedo/undo' } ) )
         }}>
           Undo
         </button>
         <button disabled={!enabled} onClick={() => {
-          dispatch( sendDataToWebSocketAction( endpoint, { action: 'redo' } ) )
+          dispatch( sendDataToWebSocketAction( endpoint, { action: 'undoRedo/redo' } ) )
         }}>
           Redo
         </button>
