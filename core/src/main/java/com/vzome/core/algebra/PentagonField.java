@@ -1,14 +1,30 @@
+
 //(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
 
 package com.vzome.core.algebra;
 
 public final class PentagonField extends AlgebraicField
 {
+    public static final String FIELD_NAME = "golden";
+    
+    /**
+     * 
+     * @return the coefficients of this AlgebraicField class. 
+     * This can be used to determine when two fields have compatible coefficients 
+     * without having to generate an instance of the class. 
+     */
+    public static double[] getFieldCoefficients() {
+        return new double[] { 1.0d, PHI_VALUE };
+    }
+    
+    @Override
+    public double[] getCoefficients() {
+        return getFieldCoefficients();
+    }
+    
     public PentagonField()
     {
-        super( "golden" );
-
-        defaultStrutScaling = createAlgebraicNumber( -1, 1, 2, 0 );
+        super( FIELD_NAME, 2 );
     };
 
     public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
@@ -25,14 +41,6 @@ public final class PentagonField extends AlgebraicField
         return factors[ ONES_PLACE ] .evaluate() + PHI_VALUE * factors[ PHIS_PLACE ] .evaluate();
     }
 
-    @Override
-    public int getOrder()
-    {
-        return 2;
-    }
-
-    private final AlgebraicNumber defaultStrutScaling;
-    
     @Override
     public final BigRational[] multiply( BigRational[] v1, BigRational[] v2 )
     {
@@ -58,11 +66,14 @@ public final class PentagonField extends AlgebraicField
     {
         buf.append( "phi = ( 1 + sqrt(5) ) / 2" );
     }
-
+    
+    /**
+     * scalar for an affine pentagon
+     * @return 
+     */
     @Override
-    public AlgebraicNumber getDefaultStrutScaling()
-    {
-        return defaultStrutScaling;
+    public AlgebraicNumber getAffineScalar() {
+        return getUnitTerm( 1 );
     }
 
     @Override
@@ -74,10 +85,14 @@ public final class PentagonField extends AlgebraicField
     @Override
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
-        if ( whichIrrational == 0 )
-            return factors;
-        else
-            return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 1 ] ) };
+        switch (whichIrrational) {
+            case 0:
+                return factors;
+            case 1:
+                return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 1 ] ) };
+            default:
+                throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
+        }
     }
 
     @Override
@@ -94,7 +109,7 @@ public final class PentagonField extends AlgebraicField
     {
         int div = 1;
         if ( string .startsWith( "(" ) ) {
-            int closeParen = string .indexOf( ")" );
+            int closeParen = string .indexOf( ')' );
             div = Integer .parseInt( string .substring( closeParen+2 ) );
             string = string .substring( 1, closeParen );
         }

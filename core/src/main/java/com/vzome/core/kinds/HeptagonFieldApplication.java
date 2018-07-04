@@ -54,9 +54,9 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
         															.createStandardOrbits( "blue" );
         
         private final AbstractShapes octahedralShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
-    	private final AbstractShapes antiprismShapes = new ExportedVEFShapes( null, "heptagon/antiprism", "heptagonal antiprism", symmetry, octahedralShapes );
+        private final AbstractShapes antiprismShapes = new ExportedVEFShapes( null, "heptagon/antiprism", "heptagonal antiprism", symmetry, octahedralShapes );
     	
-    	private final Command axialsymm = new CommandAxialSymmetry( symmetry );
+        private final Command axialsymm = new CommandAxialSymmetry( symmetry );
 
 		@Override
 		public Symmetry getSymmetry()
@@ -159,8 +159,8 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
 
         private final AbstractShapes defaultShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
         private final AbstractShapes antiprismShapes = new ExportedVEFShapes( null, "heptagon/antiprism", "heptagonal antiprism", symmetry, defaultShapes );
-    	
-    	private final Command axialsymm = new CommandAxialSymmetry( symmetry );
+    	    
+        private final Command axialsymm = new CommandAxialSymmetry( symmetry );
 
 		@Override
 		public Symmetry getSymmetry()

@@ -7,6 +7,7 @@ import java.util.TreeSet;
  * A collection of static helper methods for the AlgebraicVector class
  */
 public class AlgebraicVectors {
+    private AlgebraicVectors() {}
 
     public static AlgebraicVector getNormal(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
         return v1.minus(v0).cross(v2.minus(v0));
@@ -14,6 +15,19 @@ public class AlgebraicVectors {
 
     public static boolean areCollinear(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
         return getNormal(v0, v1, v2).isOrigin();
+    }
+    
+    public static AlgebraicVector getLinePlaneIntersection( AlgebraicVector lineStart, AlgebraicVector lineDirection,
+                                                            AlgebraicVector planeCenter, AlgebraicVector planeNormal )
+    {
+        AlgebraicNumber denom = planeNormal .dot( lineDirection );
+        if ( denom .isZero() )
+            return null;
+
+        AlgebraicVector p1p3 = planeCenter .minus( lineStart );
+        AlgebraicNumber numerator = planeNormal .dot( p1p3 );
+        AlgebraicNumber u = numerator .dividedBy( denom );
+        return lineStart .plus( lineDirection .scale( u ) );
     }
 
     public static AlgebraicVector calculateCentroid(Collection<AlgebraicVector> vectors) {
@@ -35,6 +49,18 @@ public class AlgebraicVectors {
 
     public static AlgebraicNumber getMagnitudeSquared(AlgebraicVector v) {
         return v.dot(v);
+    }
+
+    /**
+     * @param vector
+     * @return the greater of {@code vector} and its inverse. 
+     * The comparison is based on a canonical (not mathematical) comparison as implemented in {@code AlgebraicVector.compareTo()}. 
+     * There is no reasonable mathematical sense of ordering vectors, 
+     * but this provides a way to map a vector and its inverse to a common vector for such purposes as sorting and color mapping.    
+     */
+    public static AlgebraicVector getCanonicalOrientation( AlgebraicVector vector ) {
+        AlgebraicVector negate = vector.negate();
+        return vector.compareTo(negate) > 0 ? vector : negate;
     }
 
     /**

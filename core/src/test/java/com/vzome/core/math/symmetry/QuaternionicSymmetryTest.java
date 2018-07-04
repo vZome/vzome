@@ -3,12 +3,12 @@
 
 package com.vzome.core.math.symmetry;
 
-import junit.framework.TestCase;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.Quaternion;
+
+import junit.framework.TestCase;
 
 public class QuaternionicSymmetryTest extends TestCase
 {
@@ -21,23 +21,23 @@ public class QuaternionicSymmetryTest extends TestCase
         AlgebraicVector x = field .basisVector( 4, AlgebraicVector.Y4 );
         
         AlgebraicVector result = roots[ 101 ] .leftMultiply( x );
-        AlgebraicVector expected = field .createVector( new int[]{ -1, 2, 0, 1, 1, 2, 0, 1, -1, 2, 0, 1, 1, 2, 0, 1 } );
+        AlgebraicVector expected = field .createVector( new int[][]{ {-1,2, 0,1}, {1,2, 0,1}, {-1,2, 0,1}, {1,2, 0,1} } );
         assertEquals( expected, result );
         
         result = roots[ 65 ] .leftMultiply( x );
-        expected = field .createVector( new int[]{ -1, 2, 1, 2, 0, 1, 0, 1, 0, 1, -1, 2, -1, 2, 0, 1 } );
+        expected = field .createVector( new int[][]{ {-1,2, 1,2}, {0,1, 0,1}, {0,1, -1,2}, {-1,2, 0,1} } );
         assertEquals( expected, result );
         
         result = roots[ 23 ] .leftMultiply( x );
-        expected = field .createVector( new int[]{ -1, 2, 0, 1, 1, 2, -1, 2, 0, 1, 1, 2, 0, 1, 0, 1 } );
+        expected = field .createVector( new int[][]{ {-1,2, 0,1}, {1,2, -1,2}, {0,1, 1,2}, {0,1, 0,1} } );
         assertEquals( expected, result );
         
         result = roots[ 117 ] .rightMultiply( x );
-        expected = field .createVector( new int[]{ -1, 2, 0, 1, 1, 2, 0, 1, -1, 2, 0, 1, -1, 2, 0, 1 } );
+        expected = field .createVector( new int[][]{ {-1,2, 0,1}, {1,2, 0,1}, {-1,2, 0,1}, {-1,2, 0,1} } );
         assertEquals( expected, result );
         
         result = roots[ 81 ] .rightMultiply( x );
-        expected = field .createVector( new int[]{ 1, 2, -1, 2, 1, 2, 0, 1, 0, 1, 0, 1, 0, 1, -1, 2 } );
+        expected = field .createVector( new int[][]{ {1,2, -1,2}, {1,2, 0,1}, {0,1, 0,1}, {0,1, -1,2} } );
         assertEquals( expected, result );
     }
 }

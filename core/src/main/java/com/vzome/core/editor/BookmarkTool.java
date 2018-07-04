@@ -69,6 +69,7 @@ public class BookmarkTool extends Tool
         		Construction result = duper .duplicateConstruction( man );
         		bookmarkedConstructions .add( result );
         	}
+        super .perform();
     }
 
     @Override

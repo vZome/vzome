@@ -1,5 +1,15 @@
 package com.vzome.core.exporters;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Properties;
+
+import org.junit.Test;
+
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -18,13 +28,6 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedManifestation;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Properties;
-import org.junit.Test;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 
 /**
  * @author David Hall
@@ -50,7 +53,7 @@ public class ExporterTest {
         }
     
         public void importVefData(String vefData) {
-            doc.doScriptAction("import.vef", vefData);
+            doc.importVEF( doc .getField() .one(), vefData );
         }
 
         public void select( Manifestation man ) {
@@ -356,7 +359,7 @@ public class ExporterTest {
         testImportMatchesVEFExport(fieldName, vefData, expected);
     }
 
-    @Test
+    //@Test
     public void testSortedPartGeometryExport() {
         // Just for fun, the input is a 4D permutohedron
         // It is not a realistic shape to use as a part geometry, but it still exercises the code correctly
@@ -421,6 +424,7 @@ public class ExporterTest {
         String expected =
                 "vZome VEF 6 field golden\n"
                 + "\n"
+                + "scale 1\n"
                 + "25\n"
                 + "(0,0) (0,0) (0,0) (0,0)\n"
                 + "(0,0) (0,0) (0,10) (0,20)\n"
@@ -644,13 +648,12 @@ public class ExporterTest {
         System.out.println("appendVector");
         final int ones = 7, irrat = 3, denom = 5;
 
-        final AlgebraicField pentagonField = new PentagonField();
         final AlgebraicField[] fields = {
-            pentagonField,
+        	new PentagonField(),
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField(pentagonField),
+            new SnubDodecField(),
         };
         final String[] expectations = new String[]{
             "(0,0) (3/5,7/5) (0,0) (0,0)",      // 1D: 0 X 0 0

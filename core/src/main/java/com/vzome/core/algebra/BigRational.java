@@ -1,28 +1,26 @@
 package com.vzome.core.algebra;
 
 import java.math.BigDecimal;
-
-/*************************************************************************
- *
- *  Immutable Abstract Data Type for arbitrarily large rational numbers. 
- * 
- *  Invariants
- *  ----------
- *   -  gcd(num, den) = 1, i.e., rational number is in reduced form
- *   -  den >= 1, i.e., the denominator is always a positive integer
- *   -  0/1 is the unique representation of zero
- *   -  either numerator and denominator will both be long or they will both be big
- *   -  when numerator and denominator are big, then both long values will be 0.
- *   -  numerator and denominator will both be represented by a long whenever possible
- *      If either one equals Long.MIN_VALUE, they will both be big.
- *      A denominator of 0 will throw an IllegalArgumentException. 
- *
- *************************************************************************/
-
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
+/**
+ * Immutable Abstract Data Type for arbitrarily large rational numbers. 
+ * 
+ *  Invariants
+ *  ----------
+ *   -  gcd(numerator, denominator) = 1, i.e., rational number is in reduced form
+ *   -  denominator >= 1, i.e., the denominator is always a positive integer
+ *   -  0/1 is the unique representation of zero
+ *   -  Either numerator and denominator will both be long or they will both be big
+ *   -  When numerator and denominator are big, then both long values will be 0.
+ *   -  numerator and denominator will both be represented by a long whenever possible
+ *   -  unless either numerator or denominator equals Long.MIN_VALUE in which case they will both be big.
+ *   -  A denominator of 0 will throw an IllegalArgumentException. 
+ */
 public class BigRational implements Comparable<BigRational>, Fields.BigRationalElement<BigInteger, BigRational> {
 
     // indices into arrays used by reduce() and various c'tors 
@@ -39,7 +37,9 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     
     private final boolean isOne;
     private final boolean isZero;
-    private final boolean isWhole;    
+    private final boolean isWhole;
+    private final boolean canAddInteger;
+    private final boolean canMultiplyInteger;
     private final int signum;
     
     private final String toString; 
@@ -69,6 +69,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 			: that.bigNum.signum(); 
     }
     
+    @SuppressWarnings("LeakingThisInConstructor")
     public BigRational( long numerator )
     {
     	// no need to reduce since demoninator == 1
@@ -85,11 +86,14 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
         }
     	isZero = isZero(this);
     	isOne = isOne(this);
-    	isWhole = isWhole(this); 
+    	isWhole = isWhole(this);
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
 
+    @SuppressWarnings("LeakingThisInConstructor")
     public BigRational( long numerator, long denominator )
     {
     	long[] factors = new long[] {numerator, denominator};
@@ -108,9 +112,12 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	isOne = isOne(this);
     	isWhole = isWhole(this); 
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
     
+    @SuppressWarnings("LeakingThisInConstructor")
     public BigRational( BigInteger numerator )
     {
     	// no need to reduce since demoninator == 1
@@ -129,9 +136,12 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	isOne = isOne(this);
     	isWhole = isWhole(this);
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
     
+    @SuppressWarnings("LeakingThisInConstructor")
     public BigRational( BigInteger numerator, BigInteger denominator )
     {
     	BigInteger[] factors = new BigInteger[] {numerator, denominator};
@@ -150,6 +160,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	isOne = isOne(this);
     	isWhole = isWhole(this);
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
 
@@ -171,6 +183,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
      * @param bigDenominator
      * Used internally to construct a new BigInteger from values that are known to already be validated and reduced
      */
+    @SuppressWarnings("LeakingThisInConstructor")
     private BigRational( long numerator, long denominator, BigInteger bigNumerator, BigInteger bigDenominator )
     {
         num = numerator;
@@ -181,6 +194,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	isOne = isOne(this);
     	isWhole = isWhole(this);
     	signum = signum(this);
+    	canAddInteger = canAddInteger(this);
+    	canMultiplyInteger = canMultiplyInteger(this);
     	toString = toString(this);
     }
 
@@ -189,7 +204,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     		str = str.substring(1); // strip an optional leading + sign
     	}
     	str = str.replaceFirst("^-?0+(?!$)", ""); // skips over an optional leading - sign
-    	return str == "-0" ? "0" : str;
+    	return str.equals("-0") ? "0" : str;
     }
     
     // create and initialize from a numeric string formatted as an integer or a fraction, e.g. "-343/1273"
@@ -199,6 +214,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     // 19 or more characters will be parsed as a BigInteger and reduced if possible.
     // check the string length after removing leading 0's but leaving any optional - or + sign
     // Avoid the overhead of reducing whenever we know it's absolutely unnecessary.
+    @SuppressWarnings("LeakingThisInConstructor")
     public BigRational( String s )
     {
     	final int definteLong = 18;
@@ -226,6 +242,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
             	isOne = isOne(this);
             	isWhole = isWhole(this);
             	signum = signum(this);
+            	canAddInteger = canAddInteger(this);
+            	canMultiplyInteger = canMultiplyInteger(this);
             	toString = toString(this);
                 return;
                 
@@ -267,6 +285,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
             	isOne = temp.isOne;
             	isWhole = temp.isWhole;
             	signum = temp.signum;
+            	canAddInteger = temp.canAddInteger;
+            	canMultiplyInteger = temp.canMultiplyInteger;
             	toString = temp.toString;
                 return;
             }
@@ -334,6 +354,28 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     	return true;
     }
 
+    /**
+     * 
+     * @param n BigRational to be evaluated 
+     * @return true if any Integer can be added to n without BigInteger representation
+     */
+    static boolean canAddInteger(BigRational n) {
+    	return( n.den == 1 
+    			&& n.num < Long.MAX_VALUE - Integer.MAX_VALUE
+    			&& n.num > Long.MIN_VALUE - Integer.MIN_VALUE );
+    }
+    
+    /**
+     * 
+     * @param n BigRational to be evaluated 
+     * @return true if any Integer can be multiplied by n without BigInteger representation 
+     */
+    static boolean canMultiplyInteger(BigRational n) {
+    	return( n.den == 1 
+    			&& n.num < Integer.MAX_VALUE
+    			&& n.num > Integer.MIN_VALUE );
+    }
+    
     /**
      * 
      * @return isWhole() && fitsInLong( getNumerator() );
@@ -418,7 +460,8 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     }
 
 	public final static class Gcd {
-		// lookupSize must be a positive power of two between 1 and 256.
+        private Gcd() {}
+		// LOOKUP_SIZE must be a positive power of two between 1 and 256.
 		// If it's too small, then the overhead of checking if the parameters are 
 		// in the cached range negates any performance gained by the cache.
 		// 256 requires 64K of memory and is probably overkill for most models. 
@@ -427,16 +470,16 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 		// Even the bigest H4 polytope with all of its reflections enabled 
 		// doesn't have any terms greater than 75, 
 		// so a cache size of 128 would probably cover nearly all models. 
-		static final int lookupSize = 128; 
-		static final long lookupMask = ~(lookupSize-1);
-		static final byte[][] lookupTable = calculateLookupTable(lookupSize);
+		static final int LOOKUP_SIZE = 128; 
+		static final long LOOKUP_MASK = ~(LOOKUP_SIZE-1);
+		private static final byte[][] LOOKUP_TABLE = calculateLookupTable(LOOKUP_SIZE);
 		
 		/**
 		 * 
 		 * @param size must be a positive power of two between 1 and 256. 64 or 128 is typical. 
 		 * @return initialized byte[size][size]
 		 */
-		private static byte[][] calculateLookupTable(int size)
+		static byte[][] calculateLookupTable(int size)
 		{
 //			long start = System.nanoTime();
 			byte[][] result = new byte[size][size];
@@ -482,12 +525,12 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 
 	    	j = Math.abs(j);
 	    	k = Math.abs(k);
-	    	return(((j|k) & BigRational.Gcd.lookupMask) == 0L)
-    			// since lookupTable uses signed bytes for the sake of memory
+	    	return(((j|k) & BigRational.Gcd.LOOKUP_MASK) == 0L)
+    			// since LOOKUP_TABLE uses signed bytes for the sake of memory
     			// we have to mask it with 0x00FF before converting to a long
-	    		// to remove the sign bit. This is only needed when lookupSize == 256
+	    		// to remove the sign bit. This is only needed when LOOKUP_SIZE == 256
     			// since only the values from 128 to 255 would otherwise become negative. 
-    			? (long) 0x00FF & BigRational.Gcd.lookupTable[(int)j] [(int)k]
+    			? (long) 0x00FF & BigRational.Gcd.LOOKUP_TABLE[(int)j] [(int)k]
     			: calculateGcd(j, k);
 	    }
 	    
@@ -538,10 +581,19 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 	    }
 	}
 
+    @JsonValue
+    public Object toJson()
+    {
+    		if ( this.isWhole && this.notBig() )
+    			return new Long( this .num );
+    		else
+    			return toString;    
+    }
+    
     @Override
     public String toString()
     {
-    	return toString;    
+    	    return toString;    
     }
     
     private static String toString(BigRational that)
@@ -564,6 +616,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     }
     
     /**
+     * @param that
      * @return 
      * ( this < that ) ? -1 :
      * ( this == that ) ? 0 : 1; // this > that 
@@ -591,6 +644,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 
     /**
      * Supports equality test for BigRational, String and Number classes
+     * @param that
      */
     @Override
     public boolean equals( Object that )
@@ -714,7 +768,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 	 * @param y long value to be added
 	 * @param overflow boolean[1] in which an overflow indicator may be returned to the caller.
 	 * @return x + y
-	 * <br/>
+	 * <br>
 	 * If the operation results in an overflow or a sum of Long.MIN_VALUE then the returned value is undefined 
 	 * and overflow[0] will be set to true, otherwise, overflow is unchanged.
 	 * Specifically, overflow[0] is not cleared or modified at all unless an overflow occurs.
@@ -743,7 +797,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 	 * @param y long value to be multiplied
 	 * @param overflow boolean[1] in which an overflow indicator may be returned to the caller.
 	 * @return x * y
-	 * <br/>
+	 * <br>
 	 * If the operation results in an overflow then the returned value is undefined 
 	 * and overflow[0] will be set to true, otherwise, overflow is unchanged.
 	 * Specifically, overflow[0] is not cleared or modified at all unless an overflow occurs.
@@ -774,6 +828,18 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
         return r;
     }
 	
+    /**
+     * 
+     * @param n int value to be multiplied
+     * @return this * n
+     */
+    public BigRational times( int n )
+    {
+    	return n == 1 ? this : n == 0 ? ZERO : canMultiplyInteger
+			? new BigRational( num * n )
+			: this.times( new BigRational( n ) );
+    }
+
     /**
      * @param that
      * @return this * that
@@ -808,6 +874,20 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
         BigInteger n = this.getNumerator().multiply(that.getNumerator());
         BigInteger d = this.getDenominator().multiply(that.getDenominator());
         return new BigRational( n, d );
+    }
+
+    /**
+     * 
+     * @param n int value to be added
+     * @return this + n
+     */
+    public BigRational plus( int n )
+    {
+    	return n == 0 
+			? this 
+			: canAddInteger
+				? new BigRational( num + n )
+				: this.plus( new BigRational( n ) );
     }
 
     /**
@@ -899,6 +979,21 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     }
 
     /**
+     * 
+     * @param n int value to be subtracted
+     * @return this - n
+     */
+    public BigRational minus( int n )
+    {
+    	return n == 0 
+			? this 
+			: canAddInteger
+				? new BigRational( num - n )
+				: this.plus( new BigRational( -n ) );
+    }
+
+    /**
+     * @param that
      * @return this - that
      */
     @Override
@@ -921,6 +1016,22 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     }
 
     /**
+     * 
+     * @param d long value by which this is to be divided
+     * @return this / d
+     * Note that {@code d} is a long, not an int as in {@code plus(int n)}, {@code minus(int n)} and {@code times(int n)}.
+     */
+    public BigRational dividedBy( long d )
+    {
+    	// no need to check here if d == 0 
+    	// since the constructor will throw the exception
+    	return d == 1 
+			? this 
+			: this.times( new BigRational( 1, d ) );
+    }
+    
+    /**
+     * @param that
      * @return this / that
      */
     @Override
@@ -937,7 +1048,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     {
     	if(doubleValue == null) {
     		doubleValue = this.isBig()
-	            ? bigNum.doubleValue() / bigDen.doubleValue()
+    		    ? toBigDecimal(this).doubleValue()
 	            : num / (double) den; // casting of num to double is unnecessary
     	}
     	return doubleValue;

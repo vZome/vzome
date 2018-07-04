@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -29,7 +30,7 @@ import com.vzome.core.math.RealVector;
  * @author Scott Vorthmann
  */
 public class Direction implements Comparable<Direction>, Iterable<Axis>
-{
+{	
     @Override
 	public int hashCode() {
 		final int prime = 31;
@@ -97,6 +98,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     private final String[] scaleNames = new String[]{ "shorter", "short", "medium", "long" };
 
+    @JsonIgnore
     public final AlgebraicNumber[] scales = new AlgebraicNumber[ scaleNames.length ];
 
     private AlgebraicNumber unitLength, unitLengthReciprocal;
@@ -110,11 +112,13 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         mAutomatic = auto;
     }
     
+    @JsonIgnore
     public boolean isAutomatic()
     {
         return mAutomatic;
     }
     
+    @JsonIgnore
     public boolean isStandard()
     {
         return mStandard;
@@ -160,20 +164,6 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     {
         return mSymmetryGroup .getName() + " " + this .mName;
     }
-
-    /**
-     * Create a new automatic direction.
-     * @param name
-     * @param group
-     * @param orientation
-     * @param rotation
-     * @param vector
-     */
-    public Direction( String name, Symmetry group, int orientation, int rotation, AlgebraicVector vector )
-    {
-        this( name, group, orientation, rotation, vector, false );
-        this .setAutomatic( true );
-    }
     
     public AlgebraicVector getPrototype()
     {
@@ -190,17 +180,19 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
     */
     @Deprecated
+    @JsonIgnore
     public Iterator<Axis> getAxes()
     {
         return this .iterator();
     }
         
+    @JsonIgnore
     public Symmetry getSymmetry()
     {
         return mSymmetryGroup;
     }
     
-        public String getName()
+    public String getName()
     {
         return mName;
     }
@@ -345,7 +337,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         return this .getAxis( sense, index );
     }
 
-    public void createAxis( int orientation, int rotation, int[] norm )
+    public void createAxis( int orientation, int rotation, int[][] norm )
     {
         AlgebraicVector aNorm = this .mSymmetryGroup .getField() .createVector( norm );
         this .createAxis( orientation, rotation, aNorm );
@@ -519,11 +511,13 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         length .getNumberExpression( buf, AlgebraicField .EXPRESSION_FORMAT );
     }
 
+    @JsonIgnore
 	public double getDotX()
 	{
 		return this .dotX;
 	}
 
+    @JsonIgnore
 	public double getDotY()
 	{
 		return this .dotY;

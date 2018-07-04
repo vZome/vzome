@@ -14,6 +14,7 @@ import javax.vecmath.Matrix3d;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -132,24 +133,27 @@ public abstract class AbstractSymmetry implements Symmetry
     protected abstract void createInitialPermutations();
     
     @Override
+    @JsonIgnore
     public String getDefaultStyle()
     {
         return this .defaultStyle;
     }
 
     @Override
+    @JsonIgnore
     public AlgebraicField getField()
     {
         return mField;
     }
     
     @Override
+    @JsonIgnore
 	public Axis getPreferredAxis()
 	{
 		return null;
 	}
 	
-    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[][] norm )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, false );
@@ -160,18 +164,18 @@ public abstract class AbstractSymmetry implements Symmetry
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, false );
     }
 
-    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[][] norm, boolean standard )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, false );
     }
 
-    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard )
     {
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, standard, false );
     }
 
-    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard, boolean halfSizes )
+    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[][] norm, boolean standard, boolean halfSizes )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, false, null );
@@ -182,20 +186,20 @@ public abstract class AbstractSymmetry implements Symmetry
         return createZoneOrbit( name, prototype, rotatedPrototype, norm, standard, false, mField .one() );
     }
 
-    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[] norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[][] norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
         return createZoneOrbit( name, prototype, rotatedPrototype, aNorm, standard, halfSizes, unitLength );
     }
 
-    protected Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
+    public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm, boolean standard, boolean halfSizes, AlgebraicNumber unitLength )
     {
         Direction existingDir = this .mDirectionMap .get( name );
         if ( existingDir != null ) {
-        	// Probably overriding the default octahedral yellow or green.  See GoldenFieldApplication.
-        	this .mDirectionMap .remove( name );
-        	this .orbitSet .remove( existingDir );
-        	this .mDirectionList .remove( existingDir );
+            // Probably overriding the default octahedral yellow or green.  See GoldenFieldApplication.
+            this .mDirectionMap .remove( name );
+            this .orbitSet .remove( existingDir );
+            this .mDirectionList .remove( existingDir );
         }
         Direction dir = new Direction( name, this, prototype, rotatedPrototype, norm, standard );
         if ( halfSizes )
@@ -218,6 +222,7 @@ public abstract class AbstractSymmetry implements Symmetry
     // =================== public stuff =========================================
 
     @Override
+    @JsonIgnore
     public OrbitSet getOrbitSet()
     {
         return this.orbitSet;
@@ -301,6 +306,7 @@ public abstract class AbstractSymmetry implements Symmetry
     */
     @Deprecated
     @Override
+    @JsonIgnore
     public Iterator<Direction> getDirections()
     {
         return this .iterator();
@@ -406,12 +412,21 @@ public abstract class AbstractSymmetry implements Symmetry
         return mOrientations[ i ];
     }
 
+    public Permutation[] getPermutations()
+    {
+    	return this .mOrientations;
+    }
 
     @Override
-	public AlgebraicMatrix getMatrix(int i)
+	public AlgebraicMatrix getMatrix( int i )
 	{
 		return mMatrices[ i ];
 	}
+    
+    public AlgebraicMatrix[] getMatrices()
+    {
+    	return mMatrices;
+    }
 
     @Override
 	public int inverse( int orientation )
@@ -428,6 +443,7 @@ public abstract class AbstractSymmetry implements Symmetry
 	}
     
     @Override
+    @JsonIgnore
     public String[] getDirectionNames()
     {
         ArrayList<String> list = new ArrayList<>();
@@ -503,12 +519,14 @@ public abstract class AbstractSymmetry implements Symmetry
 	}
     
     @Override
+    @JsonIgnore
     public boolean isTrivial()
     {
     	return true; // a trivial embedding, implemented by toRealVector()
     }
     
-    public AlgebraicMatrix getPrincipalReflection()
+    @Override
+	public AlgebraicMatrix getPrincipalReflection()
     {
     	return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
     }

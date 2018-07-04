@@ -72,6 +72,12 @@ public class Manifestations {
     public static ConnectorIterator getVisibleConnectors(Iterable<Manifestation> manifestations, Predicate<Connector> postFilter) {
         return new ConnectorIterator(Filters::isVisible, manifestations, postFilter);
     }
+    public static ConnectorIterator getHiddenConnectors(Iterable<Manifestation> manifestations) {
+        return getHiddenConnectors(manifestations, null);
+    }
+    public static ConnectorIterator getHiddenConnectors(Iterable<Manifestation> manifestations, Predicate<Connector> postFilter) {
+        return new ConnectorIterator(Filters::isHidden, manifestations, postFilter);
+    }
     public static class ConnectorIterator extends SubClassIterator<Manifestation, Connector> {
         private ConnectorIterator(Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Connector> postFilter) {
             super(Connector.class, preFilter, manifestations, postFilter);
@@ -93,6 +99,12 @@ public class Manifestations {
     }
     public static StrutIterator getVisibleStruts(Iterable<Manifestation> manifestations, Predicate<Strut> postFilter) {
         return new StrutIterator(Filters::isVisible, manifestations, postFilter);
+    }
+    public static StrutIterator getHiddenStruts(Iterable<Manifestation> manifestations) {
+        return getHiddenStruts(manifestations, null);
+    }
+    public static StrutIterator getHiddenStruts(Iterable<Manifestation> manifestations, Predicate<Strut> postFilter) {
+        return new StrutIterator(Filters::isHidden, manifestations, postFilter);
     }
     public static class StrutIterator extends SubClassIterator<Manifestation, Strut> {
         private StrutIterator(Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Strut> postFilter) {
@@ -116,6 +128,12 @@ public class Manifestations {
     public static PanelIterator getVisiblePanels(Iterable<Manifestation> manifestations, Predicate<Panel> postFilter) {
         return new PanelIterator(Filters::isVisible, manifestations, postFilter);
     }
+    public static PanelIterator getHiddenPanels(Iterable<Manifestation> manifestations) {
+        return getHiddenPanels(manifestations, null);
+    }
+    public static PanelIterator getHiddenPanels(Iterable<Manifestation> manifestations, Predicate<Panel> postFilter) {
+        return new PanelIterator(Filters::isHidden, manifestations, postFilter);
+    }
     public static class PanelIterator extends SubClassIterator<Manifestation, Panel> {
         private PanelIterator(Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Panel> postFilter) {
             super(Panel.class, preFilter, manifestations, postFilter);
@@ -133,6 +151,9 @@ public class Manifestations {
             return !man.isHidden();
         }
 
+        public static boolean isHidden(Manifestation man) {
+            return man.isHidden();
+        }
 
     }
 }

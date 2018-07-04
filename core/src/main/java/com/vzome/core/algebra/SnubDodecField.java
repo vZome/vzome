@@ -3,24 +3,46 @@
 
 package com.vzome.core.algebra;
 
-
 public class SnubDodecField extends AlgebraicField
-{    
-    public SnubDodecField( AlgebraicField pentField )
-    {
-        super( "snubDodec", pentField );
+{
+    public static final String FIELD_NAME = "snubDodec";
+    
+    /**
+     * 
+     * @return the coefficients of this AlgebraicField class. 
+     * This can be used to determine when two fields have compatible coefficients 
+     * without having to generate an instance of the class. 
+     */
+    public static double[] getFieldCoefficients() {
+        return new double[] { 
+            1.0d, 
+            PHI_VALUE,
+                        XI_VALUE,
+            PHI_VALUE * XI_VALUE,
+                        XI_VALUE * XI_VALUE,
+            PHI_VALUE * XI_VALUE * XI_VALUE
+        };
+    }
 
-        defaultStrutScaling = createAlgebraicNumber( new int[]{ 1, 0, 0, 0, 0, 0 } );
+    @Override
+    public double[] getCoefficients() {
+        return getFieldCoefficients();
+    }
+
+    public SnubDodecField( )
+    {
+        super( FIELD_NAME, 6 );
     };
     
-    public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
+    public static final double PHI_VALUE = PentagonField.PHI_VALUE; // ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
 
-    private static final double XI_VALUE = 1.7155615d;
+    // specified to more precision than a double can retain so that value is as exact as possible: within one ulp().
+    public static final double XI_VALUE = 1.71556149969736783d; // root of x^3 -2x -PHI_VALUE 
     
     private static final int A = 0, B = 1, C = 2, D = 3, E = 4, F = 5;
-
+    
     /*
-     * Implemented by applying regex changes to Corrado's Mathematica notebook,
+     * Implemented by applying regex changes to Corrado Falcolini's Mathematica notebook,
      * so it should be bulletproof.
      */
     @Override
@@ -161,40 +183,28 @@ public class SnubDodecField extends AlgebraicField
     @Override
     public void defineMultiplier( StringBuffer buf, int i )
     {
-        if ( i == B )
-        {
-            buf .append( "phi = " );
-            buf .append( PHI_VALUE );
-        }
-        else if ( i == C )
-        {
-            buf .append( "xi = " );
-            buf .append( XI_VALUE );
-        }
-        else
-        {
-            buf .append( "" );
+        switch (i) {
+            case B:
+                buf .append( "phi = " );
+                buf .append( PHI_VALUE );
+                break;
+            case C:
+                buf .append( "xi = " );
+                buf .append( XI_VALUE );
+                break;
+            default:
+                buf .append( "" );
+                break;
         }
     }
-    
-    @Override
-    public int getOrder()
-    {
-        return 6;
-    }
 
+    /**
+     * scalar for an affine pentagon
+     * @return 
+     */
     @Override
-    public int getNumIrrationals()
-    {
-        return 3;
-    }
-
-    private final AlgebraicNumber defaultStrutScaling;
-
-    @Override
-    public AlgebraicNumber getDefaultStrutScaling()
-    {
-        return defaultStrutScaling;
+    public AlgebraicNumber getAffineScalar() {
+        return getUnitTerm( 1 );
     }
 
     @Override
@@ -289,6 +299,9 @@ public class SnubDodecField extends AlgebraicField
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
         switch ( whichIrrational ) {
+        case A:
+        	return factors;
+        	
         case B:
             return new BigRational[]{ factors[ B ],
                                     factors[ A ] .plus( factors[ B ] ),

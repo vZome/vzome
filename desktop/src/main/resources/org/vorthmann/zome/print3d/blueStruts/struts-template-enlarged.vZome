@@ -1,0 +1,1328 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="6.0" field="golden">
+  <EditHistory editNumber="384" lastStickyEdit="278">
+    <Branch>
+      <StrutCreation anchor="0 0 0 0 0 0" index="40" len="2 0"/>
+      <StrutCreation anchor="0 0 0 0 0 0" index="11" len="6 10"/>
+      <StrutCreation anchor="5 8 2 3 3 5" index="11" len="6 10"/>
+      <BeginBlock/>
+      <SelectManifestation point="5 8 2 3 3 5"/>
+      <SelectNeighbors/>
+      <EndBlock/>
+      <Delete/>
+      <BeginBlock/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <SelectManifestation point="10 16 4 6 6 10"/>
+      <EndBlock/>
+      <JoinPoints closedLoop="false" joinMode="ALL_TO_LAST"/>
+      <BeginBlock/>
+      <SelectManifestation endSegment="1 -1 -1 0 0 1" startSegment="0 0 0 0 0 0"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <ScalingTool name="tool-0" symmetry="icosahedral"/>
+      <BeginBlock/>
+      <DeselectAll/>
+      <SelectManifestation endSegment="1 -1 -1 0 0 1" startSegment="0 0 0 0 0 0"/>
+      <SelectManifestation endSegment="10 16 4 6 6 10" startSegment="0 0 0 0 0 0"/>
+      <SelectManifestation point="0 0 0 0 0 0"/>
+      <EndBlock/>
+      <ScalingTool name="tool-1" symmetry="icosahedral"/>
+    </Branch>
+    <LoadVEF scale="1 0">vZome VEF 6 field golden
+
+24
+(0,0) (-4,7) (-7/2,11/2) (11/2,-9)
+(0,0) (-4,7) (-7/2,11/2) (-11/2,9)
+(0,0) (-4,7) (7/2,-11/2) (11/2,-9)
+(0,0) (-4,7) (7/2,-11/2) (-11/2,9)
+(0,0) (-11/2,19/2) (11,-18) (9,-29/2)
+(0,0) (-11/2,19/2) (-23/2,37/2) (19/2,-31/2)
+(0,0) (-11/2,19/2) (23/2,-37/2) (-19/2,31/2)
+(0,0) (-11/2,19/2) (-11,18) (-9,29/2)
+(0,0) (1,-1) (1/2,-1) (-1,3/2)
+(0,0) (1,-1) (1/2,-1) (-4,13/2)
+(0,0) (1,-1) (1/2,-1) (1,-3/2)
+(0,0) (1,-1) (-5/2,4) (-1,3/2)
+(0,0) (1,-1) (5/2,-4) (1,-3/2)
+(0,0) (1,-1) (-1/2,1) (-1,3/2)
+(0,0) (1,-1) (-1/2,1) (4,-13/2)
+(0,0) (1,-1) (-1/2,1) (1,-3/2)
+(0,0) (0,1) (-1/2,1/2) (1/2,-1)
+(0,0) (0,1) (-1/2,1/2) (-1/2,1)
+(0,0) (0,1) (1/2,-1) (-1,3/2)
+(0,0) (0,1) (1/2,-1) (1,-3/2)
+(0,0) (0,1) (-1/2,1) (-1,3/2)
+(0,0) (0,1) (-1/2,1) (1,-3/2)
+(0,0) (0,1) (1/2,-1/2) (1/2,-1)
+(0,0) (0,1) (1/2,-1/2) (-1/2,1)
+
+
+
+0
+
+
+
+37
+3  0 4 1 
+3  0 8 9 
+3  0 9 4 
+3  1 4 10 
+3  1 10 12 
+3  1 12 6 
+3  2 7 13 
+3  2 11 5 
+3  2 13 11 
+3  3 7 2 
+3  3 14 7 
+3  3 15 14 
+3  5 0 2 
+3  5 8 0 
+3  6 3 1 
+3  6 15 3 
+3  9 8 18 
+3  9 10 4 
+3  9 18 19 
+3  10 9 19 
+3  10 19 12 
+3  11 8 5 
+3  11 18 8 
+3  11 20 18 
+3  12 15 6 
+3  12 19 21 
+3  12 21 15 
+3  13 14 20 
+3  13 20 11 
+3  14 13 7 
+3  14 15 21 
+3  14 21 20 
+4  3 2 0 1 
+4  18 16 17 19 
+4  19 17 23 21 
+4  20 22 16 18 
+4  21 23 22 20 
+
+
+
+0
+
+
+</LoadVEF>
+    <SelectAll/>
+    <ApplyTool deleteInputs="true" name="tool-1"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectAll/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="6 10 -1 -2 1 1"/>
+      <polygonVertex at="6 10 -2 -3 1 2"/>
+      <polygonVertex at="6 10 2 3 1 2"/>
+      <polygonVertex at="6 10 1 2 1 1"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="6 10 1 2 -1 -1"/>
+      <polygonVertex at="6 10 2 3 -1 -2"/>
+      <polygonVertex at="6 10 -2 -3 -1 -2"/>
+      <polygonVertex at="6 10 -1 -2 -1 -1"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ShowVertices/>
+    <BeginBlock/>
+    <SelectManifestation point="6 10 2 3 -1 -2"/>
+    <SelectManifestation point="6 10 2 3 1 2"/>
+    <SelectManifestation point="6 10 -2 -3 1 2"/>
+    <SelectManifestation point="6 10 -2 -3 -1 -2"/>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="2 6 2 1 -1 2"/>
+      <polygonVertex at="2 6 2 1 1 -2"/>
+      <polygonVertex at="2 6 -2 -1 1 -2"/>
+      <polygonVertex at="2 6 -2 -1 -1 2"/>
+    </SelectManifestation>
+    <ShowVertices/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="2 6 2 1 -1 2"/>
+      <polygonVertex at="2 6 2 1 1 -2"/>
+      <polygonVertex at="2 6 -2 -1 1 -2"/>
+      <polygonVertex at="2 6 -2 -1 -1 2"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <StrutCreation anchor="2 6 -2 -1 -1 2" dir="red" index="46" len="1 0"/>
+    <StrutCreation anchor="2 6 -2 -1 1 -2" dir="red" index="1" len="1 0"/>
+    <StrutCreation anchor="2 6 2 1 -1 2" dir="red" index="16" len="1 0"/>
+    <StrutCreation anchor="2 6 2 1 1 -2" dir="red" index="31" len="1 0"/>
+    <StrutCreation anchor="2 6 -2 0 2 -2" index="45" len="2 2"/>
+    <StrutCreation anchor="2 6 -2 0 -2 2" index="45" len="2 2"/>
+    <StrutCreation anchor="2 6 2 0 -2 2" index="45" len="2 2"/>
+    <StrutCreation anchor="2 6 2 0 2 -2" index="45" len="2 2"/>
+    <StrutCreation anchor="0 4 -2 0 -2 2" index="45" len="0 2"/>
+    <StrutCreation anchor="0 4 2 0 -2 2" index="45" len="0 2"/>
+    <StrutCreation anchor="6 10 -2 -3 1 2" index="47" len="4 6"/>
+    <BeginBlock/>
+    <SelectManifestation point="6 10 -2 -3 1 2"/>
+    <SelectManifestation point="6 10 -2 -3 -3 -4"/>
+    <EndBlock/>
+    <TranslationTool name="tool-2"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="6 10 -2 -3 -3 -4" startSegment="6 10 -2 -3 1 2"/>
+    <SelectManifestation point="6 10 -2 -3 -3 -4"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="0 4 -2 0 -2 2"/>
+    <SelectManifestation point="0 2 -2 0 -2 2"/>
+    <SelectManifestation point="0 2 2 0 -2 2"/>
+    <SelectManifestation point="0 4 2 0 -2 2"/>
+    <SelectManifestation point="0 4 2 0 2 -2"/>
+    <SelectManifestation point="0 4 -2 0 2 -2"/>
+    <EndBlock/>
+    <ApplyTool name="tool-2"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 6 -2 -1 1 -2"/>
+    <SelectManifestation point="2 6 -2 -1 -1 2"/>
+    <SelectManifestation point="2 6 -2 0 -2 2"/>
+    <SelectManifestation point="2 6 -2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="2 6 -2 0 -2 2"/>
+    <SelectManifestation point="2 6 -2 -1 -1 2"/>
+    <SelectManifestation point="2 6 2 1 -1 2"/>
+    <SelectManifestation point="2 6 2 0 -2 2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="2 6 2 0 -2 2"/>
+    <SelectManifestation point="2 6 2 1 -1 2"/>
+    <SelectManifestation point="2 6 2 1 1 -2"/>
+    <SelectManifestation point="2 6 2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="2 6 2 0 2 -2"/>
+    <SelectManifestation point="2 6 2 1 1 -2"/>
+    <SelectManifestation point="2 6 -2 -1 1 -2"/>
+    <SelectManifestation point="2 6 -2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 2 -2 0 -2 2"/>
+    <SelectManifestation point="2 6 -2 0 -2 2"/>
+    <SelectManifestation point="2 6 2 0 -2 2"/>
+    <SelectManifestation point="0 2 2 0 -2 2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="2 6 -2 0 2 -2"/>
+    <SelectManifestation point="2 6 -2 0 -2 2"/>
+    <SelectManifestation point="0 2 -2 0 -2 2"/>
+    <SelectManifestation point="0 4 -2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 4 -2 0 2 -2"/>
+    <SelectManifestation point="0 4 2 0 2 -2"/>
+    <SelectManifestation point="2 6 2 0 2 -2"/>
+    <SelectManifestation point="2 6 -2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 2 2 0 -2 2"/>
+    <SelectManifestation point="2 6 2 0 -2 2"/>
+    <SelectManifestation point="2 6 2 0 2 -2"/>
+    <SelectManifestation point="0 4 2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 4 -2 0 2 -2"/>
+    <SelectManifestation point="0 4 -2 0 -6 -4"/>
+    <SelectManifestation point="0 4 2 0 -6 -4"/>
+    <SelectManifestation point="0 4 2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 2 -2 0 -2 2"/>
+    <SelectManifestation point="0 2 2 0 -2 2"/>
+    <SelectManifestation point="0 2 2 0 -6 -4"/>
+    <SelectManifestation point="0 2 -2 0 -6 -4"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 2 2 0 -2 2"/>
+    <SelectManifestation point="0 4 2 0 2 -2"/>
+    <SelectManifestation point="0 4 2 0 -6 -4"/>
+    <SelectManifestation point="0 2 2 0 -6 -4"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 4 -2 0 -6 -4"/>
+    <SelectManifestation point="0 4 -2 0 2 -2"/>
+    <SelectManifestation point="0 2 -2 0 -2 2"/>
+    <SelectManifestation point="0 2 -2 0 -6 -4"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 2 -2 0 -2 2"/>
+      <polygonVertex at="2 6 -2 0 -2 2"/>
+      <polygonVertex at="2 6 2 0 -2 2"/>
+      <polygonVertex at="0 2 2 0 -2 2"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 2 -2 0 -2 2"/>
+      <polygonVertex at="2 6 -2 0 -2 2"/>
+      <polygonVertex at="2 6 2 0 -2 2"/>
+      <polygonVertex at="0 2 2 0 -2 2"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="2 6 -2 0 2 -2"/>
+      <polygonVertex at="2 6 -2 0 -2 2"/>
+      <polygonVertex at="0 2 -2 0 -2 2"/>
+      <polygonVertex at="0 4 -2 0 2 -2"/>
+    </SelectManifestation>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="2 6 -2 0 2 -2"/>
+    <SelectManifestation point="2 6 -2 0 -2 2"/>
+    <SelectManifestation point="0 4 -2 0 -2 2"/>
+    <SelectManifestation point="0 4 -2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 4 -2 0 2 -2"/>
+    <SelectManifestation point="0 4 -2 0 -2 2"/>
+    <SelectManifestation point="0 2 -2 0 -2 2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 2 -2 0 -2 2"/>
+    <SelectManifestation point="0 4 -2 0 -2 2"/>
+    <SelectManifestation point="0 4 2 0 -2 2"/>
+    <SelectManifestation point="0 2 2 0 -2 2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 4 -2 0 -2 2"/>
+    <SelectManifestation point="2 6 -2 0 -2 2"/>
+    <SelectManifestation point="2 6 2 0 -2 2"/>
+    <SelectManifestation point="0 4 2 0 -2 2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 2 2 0 -2 2"/>
+      <polygonVertex at="2 6 2 0 -2 2"/>
+      <polygonVertex at="2 6 2 0 2 -2"/>
+      <polygonVertex at="0 4 2 0 2 -2"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 2 2 0 -2 2"/>
+      <polygonVertex at="2 6 2 0 -2 2"/>
+      <polygonVertex at="2 6 2 0 2 -2"/>
+      <polygonVertex at="0 4 2 0 2 -2"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="0 2 2 0 -2 2"/>
+    <SelectManifestation point="0 4 2 0 -2 2"/>
+    <SelectManifestation point="0 4 2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation point="0 4 2 0 2 -2"/>
+    <SelectManifestation point="0 4 2 0 -2 2"/>
+    <SelectManifestation point="2 6 2 0 -2 2"/>
+    <SelectManifestation point="2 6 2 0 2 -2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <AdjustSelectionByClass balls="IGNORE" panels="SELECT" struts="IGNORE"/>
+    <SelectManifestation>
+      <polygonVertex at="0 2 -2 0 -2 2"/>
+      <polygonVertex at="0 4 -2 0 -2 2"/>
+      <polygonVertex at="0 4 2 0 -2 2"/>
+      <polygonVertex at="0 2 2 0 -2 2"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <GroupSelection/>
+    <ApplyTool name="tool-2"/>
+    <GroupSelection/>
+    <ApplyTool name="tool-2"/>
+    <GroupSelection/>
+    <ApplyTool name="tool-2"/>
+    <GroupSelection/>
+    <ApplyTool name="tool-2"/>
+    <GroupSelection/>
+    <ApplyTool name="tool-2"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 2 -2 0 -22 -28"/>
+      <polygonVertex at="0 2 2 0 -22 -28"/>
+      <polygonVertex at="0 2 2 0 -26 -34"/>
+      <polygonVertex at="0 2 -2 0 -26 -34"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 4 -2 0 -26 -34"/>
+      <polygonVertex at="0 4 -2 0 -18 -32"/>
+      <polygonVertex at="0 2 -2 0 -22 -28"/>
+      <polygonVertex at="0 2 -2 0 -26 -34"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 4 -2 0 -18 -32"/>
+      <polygonVertex at="0 4 -2 0 -26 -34"/>
+      <polygonVertex at="0 4 2 0 -26 -34"/>
+      <polygonVertex at="0 4 2 0 -18 -32"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 2 2 0 -22 -28"/>
+      <polygonVertex at="0 4 2 0 -18 -32"/>
+      <polygonVertex at="0 4 2 0 -26 -34"/>
+      <polygonVertex at="0 2 2 0 -26 -34"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <GroupSelection/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 4 -2 0 -18 -32"/>
+      <polygonVertex at="0 4 -2 0 -26 -34"/>
+      <polygonVertex at="0 4 2 0 -26 -34"/>
+      <polygonVertex at="0 4 2 0 -18 -32"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 2 -2 0 -22 -28"/>
+      <polygonVertex at="0 2 2 0 -22 -28"/>
+      <polygonVertex at="0 2 2 0 -26 -34"/>
+      <polygonVertex at="0 2 -2 0 -26 -34"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ShowVertices/>
+    <BeginBlock/>
+    <SelectManifestation point="0 4 2 0 -18 -32"/>
+    <SelectManifestation point="0 4 -2 0 -18 -32"/>
+    <SelectManifestation point="0 2 2 0 -22 -28"/>
+    <SelectManifestation point="0 2 -2 0 -22 -28"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 4 -2 0 -18 -32"/>
+      <polygonVertex at="0 4 -2 0 -26 -34"/>
+      <polygonVertex at="0 4 2 0 -26 -34"/>
+      <polygonVertex at="0 4 2 0 -18 -32"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 4 -2 0 -26 -34"/>
+      <polygonVertex at="0 4 -2 0 -18 -32"/>
+      <polygonVertex at="0 2 -2 0 -22 -28"/>
+      <polygonVertex at="0 2 -2 0 -26 -34"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 2 -2 0 -22 -28"/>
+      <polygonVertex at="0 2 2 0 -22 -28"/>
+      <polygonVertex at="0 2 2 0 -26 -34"/>
+      <polygonVertex at="0 2 -2 0 -26 -34"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 2 2 0 -22 -28"/>
+      <polygonVertex at="0 4 2 0 -18 -32"/>
+      <polygonVertex at="0 4 2 0 -26 -34"/>
+      <polygonVertex at="0 2 2 0 -26 -34"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="0 4 2 0 -18 -32"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 4 2 0 -18 -32"/>
+    <SelectManifestation point="0 4 -2 0 -18 -32"/>
+    <SelectManifestation point="0 2 -2 0 -22 -28"/>
+    <SelectManifestation point="0 2 2 0 -22 -28"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 4 -2 0 -18 -32"/>
+      <polygonVertex at="0 4 2 0 -18 -32"/>
+      <polygonVertex at="2 6 2 0 -18 -32"/>
+      <polygonVertex at="2 6 -2 0 -18 -32"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 4 2 0 -18 -32"/>
+      <polygonVertex at="0 4 -2 0 -18 -32"/>
+      <polygonVertex at="0 2 -2 0 -22 -28"/>
+      <polygonVertex at="0 2 2 0 -22 -28"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 4 -2 0 -18 -32"/>
+      <polygonVertex at="0 4 2 0 -18 -32"/>
+      <polygonVertex at="2 6 2 0 -18 -32"/>
+      <polygonVertex at="2 6 -2 0 -18 -32"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="4 6 -1 0 -17 -25"/>
+      <polygonVertex at="6 10 -1 -2 -17 -25"/>
+      <polygonVertex at="4 6 -1 -2 -17 -25"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="4 6 -1 0 -13 -19"/>
+      <polygonVertex at="6 10 -1 -2 -13 -19"/>
+      <polygonVertex at="4 6 -1 -2 -13 -19"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="4 6 -1 0 -9 -13"/>
+      <polygonVertex at="6 10 -1 -2 -9 -13"/>
+      <polygonVertex at="4 6 -1 -2 -9 -13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="4 6 -1 0 -5 -7"/>
+      <polygonVertex at="6 10 -1 -2 -5 -7"/>
+      <polygonVertex at="4 6 -1 -2 -5 -7"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="4 6 -1 0 -1 -1"/>
+      <polygonVertex at="6 10 -1 -2 -1 -1"/>
+      <polygonVertex at="4 6 -1 -2 -1 -1"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <GroupSelection/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="0" len="2 2"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="2 2 0 0 0 0" startSegment="0 0 0 0 0 0"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <ApplyTool deleteInputs="true" name="tool-1"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="32 52 0 0 0 0" startSegment="0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="32 52 0 0 0 0" startSegment="0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="47" len="2 2"/>
+    <SelectManifestation endSegment="0 0 0 0 -2 -2" startSegment="0 0 0 0 0 0"/>
+    <RotationTool corrected="true" name="tool-3" symmetry="icosahedral"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="4 6 1 2 -3 -7"/>
+      <polygonVertex at="6 10 1 2 -3 -5"/>
+      <polygonVertex at="6 10 1 2 -5 -7"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="tool-3"/>
+    <Delete/>
+    <SelectManifestation point="32 52 0 0 0 0"/>
+    <LoadVEF scale="1 0">vZome VEF 6 field golden
+
+204
+(0,0) (-10,-6) (-3,-2) (-32,-21)
+(0,0) (-10,-6) (-3,-2) (-28,-19)
+(0,0) (-10,-6) (-3,-2) (-26,-17)
+(0,0) (-10,-6) (-3,-2) (-22,-15)
+(0,0) (-10,-6) (-3,-2) (-20,-13)
+(0,0) (-10,-6) (-3,-2) (-16,-11)
+(0,0) (-10,-6) (-3,-2) (-14,-9)
+(0,0) (-10,-6) (-3,-2) (-10,-7)
+(0,0) (-10,-6) (-3,-2) (-8,-5)
+(0,0) (-10,-6) (-3,-2) (-4,-3)
+(0,0) (-10,-6) (-3,-2) (-2,-1)
+(0,0) (-10,-6) (-3,-2) (2,1)
+(0,0) (-10,-6) (-2,-1) (-31,-21)
+(0,0) (-10,-6) (-2,-1) (-29,-19)
+(0,0) (-10,-6) (-2,-1) (-25,-17)
+(0,0) (-10,-6) (-2,-1) (-23,-15)
+(0,0) (-10,-6) (-2,-1) (-19,-13)
+(0,0) (-10,-6) (-2,-1) (-17,-11)
+(0,0) (-10,-6) (-2,-1) (-13,-9)
+(0,0) (-10,-6) (-2,-1) (-11,-7)
+(0,0) (-10,-6) (-2,-1) (-7,-5)
+(0,0) (-10,-6) (-2,-1) (-5,-3)
+(0,0) (-10,-6) (-2,-1) (-1,-1)
+(0,0) (-10,-6) (-2,-1) (1,1)
+(0,0) (-10,-6) (2,1) (-31,-21)
+(0,0) (-10,-6) (2,1) (-29,-19)
+(0,0) (-10,-6) (2,1) (-25,-17)
+(0,0) (-10,-6) (2,1) (-23,-15)
+(0,0) (-10,-6) (2,1) (-19,-13)
+(0,0) (-10,-6) (2,1) (-17,-11)
+(0,0) (-10,-6) (2,1) (-13,-9)
+(0,0) (-10,-6) (2,1) (-11,-7)
+(0,0) (-10,-6) (2,1) (-7,-5)
+(0,0) (-10,-6) (2,1) (-5,-3)
+(0,0) (-10,-6) (2,1) (-1,-1)
+(0,0) (-10,-6) (2,1) (1,1)
+(0,0) (-10,-6) (3,2) (-32,-21)
+(0,0) (-10,-6) (3,2) (-28,-19)
+(0,0) (-10,-6) (3,2) (-26,-17)
+(0,0) (-10,-6) (3,2) (-22,-15)
+(0,0) (-10,-6) (3,2) (-20,-13)
+(0,0) (-10,-6) (3,2) (-16,-11)
+(0,0) (-10,-6) (3,2) (-14,-9)
+(0,0) (-10,-6) (3,2) (-10,-7)
+(0,0) (-10,-6) (3,2) (-8,-5)
+(0,0) (-10,-6) (3,2) (-4,-3)
+(0,0) (-10,-6) (3,2) (-2,-1)
+(0,0) (-10,-6) (3,2) (2,1)
+(0,0) (-6,-4) (-2,-1) (-31,-21)
+(0,0) (-6,-4) (-2,-1) (-31,-19)
+(0,0) (-6,-4) (-2,-1) (-29,-19)
+(0,0) (-6,-4) (-2,-1) (-25,-17)
+(0,0) (-6,-4) (-2,-1) (-25,-15)
+(0,0) (-6,-4) (-2,-1) (-23,-15)
+(0,0) (-6,-4) (-2,-1) (-19,-13)
+(0,0) (-6,-4) (-2,-1) (-19,-11)
+(0,0) (-6,-4) (-2,-1) (-17,-11)
+(0,0) (-6,-4) (-2,-1) (-13,-9)
+(0,0) (-6,-4) (-2,-1) (-13,-7)
+(0,0) (-6,-4) (-2,-1) (-11,-7)
+(0,0) (-6,-4) (-2,-1) (-7,-5)
+(0,0) (-6,-4) (-2,-1) (-7,-3)
+(0,0) (-6,-4) (-2,-1) (-5,-3)
+(0,0) (-6,-4) (-2,-1) (-1,-1)
+(0,0) (-6,-4) (-2,-1) (-1,1)
+(0,0) (-6,-4) (-2,-1) (1,1)
+(0,0) (-6,-4) (0,-1) (-29,-19)
+(0,0) (-6,-4) (0,-1) (-23,-15)
+(0,0) (-6,-4) (0,-1) (-17,-11)
+(0,0) (-6,-4) (0,-1) (-11,-7)
+(0,0) (-6,-4) (0,-1) (-5,-3)
+(0,0) (-6,-4) (0,-1) (1,1)
+(0,0) (-6,-4) (0,1) (-31,-21)
+(0,0) (-6,-4) (0,1) (-25,-17)
+(0,0) (-6,-4) (0,1) (-19,-13)
+(0,0) (-6,-4) (0,1) (-13,-9)
+(0,0) (-6,-4) (0,1) (-7,-5)
+(0,0) (-6,-4) (0,1) (-1,-1)
+(0,0) (-6,-4) (2,1) (-31,-21)
+(0,0) (-6,-4) (2,1) (-29,-21)
+(0,0) (-6,-4) (2,1) (-29,-19)
+(0,0) (-6,-4) (2,1) (-25,-17)
+(0,0) (-6,-4) (2,1) (-23,-17)
+(0,0) (-6,-4) (2,1) (-23,-15)
+(0,0) (-6,-4) (2,1) (-19,-13)
+(0,0) (-6,-4) (2,1) (-17,-13)
+(0,0) (-6,-4) (2,1) (-17,-11)
+(0,0) (-6,-4) (2,1) (-13,-9)
+(0,0) (-6,-4) (2,1) (-11,-9)
+(0,0) (-6,-4) (2,1) (-11,-7)
+(0,0) (-6,-4) (2,1) (-7,-5)
+(0,0) (-6,-4) (2,1) (-5,-5)
+(0,0) (-6,-4) (2,1) (-5,-3)
+(0,0) (-6,-4) (2,1) (-1,-1)
+(0,0) (-6,-4) (2,1) (1,-1)
+(0,0) (-6,-4) (2,1) (1,1)
+(0,0) (-7,-2) (-4,2) (-29,-23)
+(0,0) (-7,-2) (-4,2) (-23,-19)
+(0,0) (-7,-2) (-4,2) (-17,-15)
+(0,0) (-7,-2) (-4,2) (-11,-11)
+(0,0) (-7,-2) (-4,2) (-5,-7)
+(0,0) (-7,-2) (-4,2) (1,-3)
+(0,0) (-7,-2) (1,-4) (-27,-22)
+(0,0) (-7,-2) (1,-4) (-21,-18)
+(0,0) (-7,-2) (1,-4) (-15,-14)
+(0,0) (-7,-2) (1,-4) (-9,-10)
+(0,0) (-7,-2) (1,-4) (-3,-6)
+(0,0) (-7,-2) (1,-4) (3,-2)
+(0,0) (-7,-2) (-1,4) (-33,-18)
+(0,0) (-7,-2) (-1,4) (-27,-14)
+(0,0) (-7,-2) (-1,4) (-21,-10)
+(0,0) (-7,-2) (-1,4) (-15,-6)
+(0,0) (-7,-2) (-1,4) (-9,-2)
+(0,0) (-7,-2) (-1,4) (-3,2)
+(0,0) (-7,-2) (4,-2) (-31,-17)
+(0,0) (-7,-2) (4,-2) (-25,-13)
+(0,0) (-7,-2) (4,-2) (-19,-9)
+(0,0) (-7,-2) (4,-2) (-13,-5)
+(0,0) (-7,-2) (4,-2) (-7,-1)
+(0,0) (-7,-2) (4,-2) (-1,3)
+(0,0) (-6,-2) (-1,-2) (-32,-19)
+(0,0) (-6,-2) (-1,-2) (-28,-21)
+(0,0) (-6,-2) (-1,-2) (-26,-15)
+(0,0) (-6,-2) (-1,-2) (-22,-17)
+(0,0) (-6,-2) (-1,-2) (-20,-11)
+(0,0) (-6,-2) (-1,-2) (-16,-13)
+(0,0) (-6,-2) (-1,-2) (-14,-7)
+(0,0) (-6,-2) (-1,-2) (-10,-9)
+(0,0) (-6,-2) (-1,-2) (-8,-3)
+(0,0) (-6,-2) (-1,-2) (-4,-5)
+(0,0) (-6,-2) (-1,-2) (-2,1)
+(0,0) (-6,-2) (-1,-2) (2,-1)
+(0,0) (-6,-2) (0,-2) (-32,-18)
+(0,0) (-6,-2) (0,-2) (-28,-22)
+(0,0) (-6,-2) (0,-2) (-26,-14)
+(0,0) (-6,-2) (0,-2) (-22,-18)
+(0,0) (-6,-2) (0,-2) (-20,-10)
+(0,0) (-6,-2) (0,-2) (-16,-14)
+(0,0) (-6,-2) (0,-2) (-14,-6)
+(0,0) (-6,-2) (0,-2) (-10,-10)
+(0,0) (-6,-2) (0,-2) (-8,-2)
+(0,0) (-6,-2) (0,-2) (-4,-6)
+(0,0) (-6,-2) (0,-2) (-2,2)
+(0,0) (-6,-2) (0,-2) (2,-2)
+(0,0) (-6,-2) (0,2) (-32,-18)
+(0,0) (-6,-2) (0,2) (-28,-22)
+(0,0) (-6,-2) (0,2) (-26,-14)
+(0,0) (-6,-2) (0,2) (-22,-18)
+(0,0) (-6,-2) (0,2) (-20,-10)
+(0,0) (-6,-2) (0,2) (-16,-14)
+(0,0) (-6,-2) (0,2) (-14,-6)
+(0,0) (-6,-2) (0,2) (-10,-10)
+(0,0) (-6,-2) (0,2) (-8,-2)
+(0,0) (-6,-2) (0,2) (-4,-6)
+(0,0) (-6,-2) (0,2) (-2,2)
+(0,0) (-6,-2) (0,2) (2,-2)
+(0,0) (-6,-2) (1,2) (-32,-19)
+(0,0) (-6,-2) (1,2) (-28,-21)
+(0,0) (-6,-2) (1,2) (-26,-15)
+(0,0) (-6,-2) (1,2) (-22,-17)
+(0,0) (-6,-2) (1,2) (-20,-11)
+(0,0) (-6,-2) (1,2) (-16,-13)
+(0,0) (-6,-2) (1,2) (-14,-7)
+(0,0) (-6,-2) (1,2) (-10,-9)
+(0,0) (-6,-2) (1,2) (-8,-3)
+(0,0) (-6,-2) (1,2) (-4,-5)
+(0,0) (-6,-2) (1,2) (-2,1)
+(0,0) (-6,-2) (1,2) (2,-1)
+(0,0) (-4,0) (0,-2) (-32,-18)
+(0,0) (-4,0) (0,-2) (-28,-22)
+(0,0) (-4,0) (0,-2) (-26,-14)
+(0,0) (-4,0) (0,-2) (-22,-18)
+(0,0) (-4,0) (0,-2) (-20,-10)
+(0,0) (-4,0) (0,-2) (-16,-14)
+(0,0) (-4,0) (0,-2) (-14,-6)
+(0,0) (-4,0) (0,-2) (-10,-10)
+(0,0) (-4,0) (0,-2) (-8,-2)
+(0,0) (-4,0) (0,-2) (-4,-6)
+(0,0) (-4,0) (0,-2) (-2,2)
+(0,0) (-4,0) (0,-2) (2,-2)
+(0,0) (-4,0) (0,2) (-32,-18)
+(0,0) (-4,0) (0,2) (-28,-22)
+(0,0) (-4,0) (0,2) (-26,-14)
+(0,0) (-4,0) (0,2) (-22,-18)
+(0,0) (-4,0) (0,2) (-20,-10)
+(0,0) (-4,0) (0,2) (-16,-14)
+(0,0) (-4,0) (0,2) (-14,-6)
+(0,0) (-4,0) (0,2) (-10,-10)
+(0,0) (-4,0) (0,2) (-8,-2)
+(0,0) (-4,0) (0,2) (-4,-6)
+(0,0) (-4,0) (0,2) (-2,2)
+(0,0) (-4,0) (0,2) (2,-2)
+(0,0) (-2,0) (0,-2) (-28,-22)
+(0,0) (-2,0) (0,-2) (-22,-18)
+(0,0) (-2,0) (0,-2) (-16,-14)
+(0,0) (-2,0) (0,-2) (-10,-10)
+(0,0) (-2,0) (0,-2) (-4,-6)
+(0,0) (-2,0) (0,-2) (2,-2)
+(0,0) (-2,0) (0,2) (-28,-22)
+(0,0) (-2,0) (0,2) (-22,-18)
+(0,0) (-2,0) (0,2) (-16,-14)
+(0,0) (-2,0) (0,2) (-10,-10)
+(0,0) (-2,0) (0,2) (-4,-6)
+(0,0) (-2,0) (0,2) (2,-2)
+
+
+
+0
+
+
+
+297
+3  48 12 72 
+3  48 49 12 
+3  49 13 12 
+3  49 48 96 
+3  49 50 13 
+3  51 14 73 
+3  51 52 14 
+3  52 15 14 
+3  52 51 97 
+3  52 53 15 
+3  54 16 74 
+3  54 55 16 
+3  55 17 16 
+3  55 54 98 
+3  55 56 17 
+3  57 18 75 
+3  57 58 18 
+3  58 19 18 
+3  58 57 99 
+3  58 59 19 
+3  60 20 76 
+3  60 61 20 
+3  61 21 20 
+3  61 60 100 
+3  61 62 21 
+3  63 22 77 
+3  63 64 22 
+3  64 23 22 
+3  64 63 101 
+3  64 65 23 
+3  66 13 50 
+3  66 25 13 
+3  66 50 102 
+3  67 15 53 
+3  67 27 15 
+3  67 53 103 
+3  68 17 56 
+3  68 29 17 
+3  68 56 104 
+3  69 19 59 
+3  69 31 19 
+3  69 59 105 
+3  70 21 62 
+3  70 33 21 
+3  70 62 106 
+3  71 23 65 
+3  71 35 23 
+3  71 65 107 
+3  72 12 24 
+3  72 24 78 
+3  72 78 108 
+3  73 14 26 
+3  73 26 81 
+3  73 81 109 
+3  74 16 28 
+3  74 28 84 
+3  74 84 110 
+3  75 18 30 
+3  75 30 87 
+3  75 87 111 
+3  76 20 32 
+3  76 32 90 
+3  76 90 112 
+3  77 22 34 
+3  77 34 93 
+3  77 93 113 
+3  79 24 25 
+3  79 78 24 
+3  79 80 114 
+3  80 25 66 
+3  80 79 25 
+3  82 26 27 
+3  82 81 26 
+3  82 83 115 
+3  83 27 67 
+3  83 82 27 
+3  85 28 29 
+3  85 84 28 
+3  85 86 116 
+3  86 29 68 
+3  86 85 29 
+3  88 30 31 
+3  88 87 30 
+3  88 89 117 
+3  89 31 69 
+3  89 88 31 
+3  91 32 33 
+3  91 90 32 
+3  91 92 118 
+3  92 33 70 
+3  92 91 33 
+3  94 34 35 
+3  94 93 34 
+3  94 95 119 
+3  95 35 71 
+3  95 94 35 
+3  102 50 121 
+3  102 121 157 
+3  103 53 123 
+3  103 123 159 
+3  104 56 125 
+3  104 125 161 
+3  105 59 127 
+3  105 127 163 
+3  106 62 129 
+3  106 129 165 
+3  107 65 131 
+3  107 131 167 
+3  108 78 156 
+3  108 156 120 
+3  109 81 158 
+3  109 158 122 
+3  110 84 160 
+3  110 160 124 
+3  111 87 162 
+3  111 162 126 
+3  112 90 164 
+3  112 164 128 
+3  113 93 166 
+3  113 166 130 
+3  120 48 72 
+3  120 72 108 
+3  120 96 48 
+3  121 49 96 
+3  121 50 49 
+3  121 96 120 
+3  122 51 73 
+3  122 73 109 
+3  122 97 51 
+3  123 52 97 
+3  123 53 52 
+3  123 97 122 
+3  124 54 74 
+3  124 74 110 
+3  124 98 54 
+3  125 55 98 
+3  125 56 55 
+3  125 98 124 
+3  126 57 75 
+3  126 75 111 
+3  126 99 57 
+3  127 58 99 
+3  127 59 58 
+3  127 99 126 
+3  128 60 76 
+3  128 76 112 
+3  128 100 60 
+3  129 61 100 
+3  129 62 61 
+3  129 100 128 
+3  130 63 77 
+3  130 77 113 
+3  130 101 63 
+3  131 64 101 
+3  131 65 64 
+3  131 101 130 
+3  156 78 79 
+3  156 79 114 
+3  156 114 157 
+3  157 66 102 
+3  157 80 66 
+3  157 114 80 
+3  158 81 82 
+3  158 82 115 
+3  158 115 159 
+3  159 67 103 
+3  159 83 67 
+3  159 115 83 
+3  160 84 85 
+3  160 85 116 
+3  160 116 161 
+3  161 68 104 
+3  161 86 68 
+3  161 116 86 
+3  162 87 88 
+3  162 88 117 
+3  162 117 163 
+3  163 69 105 
+3  163 89 69 
+3  163 117 89 
+3  164 90 91 
+3  164 91 118 
+3  164 118 165 
+3  165 70 106 
+3  165 92 70 
+3  165 118 92 
+3  166 93 94 
+3  166 94 119 
+3  166 119 167 
+3  167 71 107 
+3  167 95 71 
+3  167 119 95 
+3  180 181 198 
+3  182 183 199 
+3  184 185 200 
+3  186 187 201 
+3  188 189 202 
+3  190 191 203 
+3  192 169 168 
+3  193 171 170 
+3  194 173 172 
+3  195 175 174 
+3  196 177 176 
+3  197 179 178 
+4  12 0 36 24 
+4  13 1 0 12 
+4  14 2 38 26 
+4  15 3 2 14 
+4  16 4 40 28 
+4  17 5 4 16 
+4  18 6 42 30 
+4  19 7 6 18 
+4  20 8 44 32 
+4  21 9 8 20 
+4  22 10 46 34 
+4  23 11 10 22 
+4  24 36 37 25 
+4  25 37 1 13 
+4  26 38 39 27 
+4  27 39 3 15 
+4  28 40 41 29 
+4  29 41 5 17 
+4  30 42 43 31 
+4  31 43 7 19 
+4  32 44 45 33 
+4  33 45 9 21 
+4  34 46 47 35 
+4  35 47 11 23 
+4  132 120 156 144 
+4  133 121 120 132 
+4  134 122 158 146 
+4  135 123 122 134 
+4  136 124 160 148 
+4  137 125 124 136 
+4  138 126 162 150 
+4  139 127 126 138 
+4  140 128 164 152 
+4  141 129 128 140 
+4  142 130 166 154 
+4  143 131 130 142 
+4  144 145 181 180 
+4  145 157 121 133 
+4  146 147 183 182 
+4  147 159 123 135 
+4  148 149 185 184 
+4  149 161 125 137 
+4  150 151 187 186 
+4  151 163 127 139 
+4  152 153 189 188 
+4  153 165 129 141 
+4  154 155 191 190 
+4  155 167 131 143 
+4  156 157 145 144 
+4  158 159 147 146 
+4  160 161 149 148 
+4  162 163 151 150 
+4  164 165 153 152 
+4  166 167 155 154 
+4  168 169 133 132 
+4  168 180 198 192 
+4  170 171 135 134 
+4  172 173 137 136 
+4  174 175 139 138 
+4  176 177 141 140 
+4  178 179 143 142 
+4  180 168 132 144 
+4  181 145 133 169 
+4  181 182 199 198 
+4  182 170 134 146 
+4  182 181 169 170 
+4  183 147 135 171 
+4  183 184 200 199 
+4  184 172 136 148 
+4  184 183 171 172 
+4  185 149 137 173 
+4  185 186 201 200 
+4  186 174 138 150 
+4  186 185 173 174 
+4  187 151 139 175 
+4  187 188 202 201 
+4  188 176 140 152 
+4  188 187 175 176 
+4  189 153 141 177 
+4  189 190 203 202 
+4  190 178 142 154 
+4  190 189 177 178 
+4  191 155 143 179 
+4  193 170 169 192 
+4  194 172 171 193 
+4  195 174 173 194 
+4  196 176 175 195 
+4  197 178 177 196 
+4  199 193 192 198 
+4  200 194 193 199 
+4  201 195 194 200 
+4  202 196 195 201 
+4  203 197 196 202 
+
+
+
+0
+
+
+</LoadVEF>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="32 50 2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -6 -4"/>
+      <polygonVertex at="32 50 2 0 -6 -4"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <AdjustSelectionByClass balls="IGNORE" panels="SELECT" struts="IGNORE"/>
+    <SelectManifestation>
+      <polygonVertex at="0 4 -2 0 -2 -8"/>
+      <polygonVertex at="0 4 -2 0 -10 -10"/>
+      <polygonVertex at="0 4 2 0 -10 -10"/>
+      <polygonVertex at="0 4 2 0 -2 -8"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <GroupSelection/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <AdjustSelectionByClass balls="IGNORE" panels="IGNORE" struts="SELECT"/>
+    <SelectManifestation endSegment="0 0 0 0 -2 -2" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <AdjustSelectionByClass balls="SELECT" panels="IGNORE" struts="IGNORE"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 -2 -2"/>
+    <SelectManifestation point="6 10 -2 -3 -1 -2"/>
+    <SelectManifestation point="6 10 2 3 -1 -2"/>
+    <SelectManifestation point="6 10 2 3 1 2"/>
+    <SelectManifestation point="6 10 -2 -3 1 2"/>
+    <SelectManifestation point="32 52 0 0 0 0"/>
+    <EndBlock/>
+    <Delete/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="0" len="2 2"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="rose" index="17" len="1 1"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="maroon" index="24" len="1 1"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="sulfur" index="0" len="1 1"/>
+    <BeginBlock/>
+    <SelectManifestation point="6 10 2 3 -1 -2"/>
+    <SelectManifestation point="6 10 -2 -3 -1 -2"/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="6 10 1 2 -3 -5"/>
+      <polygonVertex at="6 10 2 3 -3 -4"/>
+      <polygonVertex at="6 10 2 3 -5 -8"/>
+      <polygonVertex at="6 10 1 2 -5 -7"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="28 46 1 2 -3 -5"/>
+      <polygonVertex at="28 46 1 2 -5 -5"/>
+      <polygonVertex at="26 42 1 2 -3 -5"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="32 50 2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -6 -4"/>
+      <polygonVertex at="32 50 2 0 -6 -4"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <GroupSelection grouping="false"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="32 50 2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -6 -4"/>
+      <polygonVertex at="32 50 2 0 -6 -4"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="32 48 2 0 -2 2"/>
+      <polygonVertex at="30 46 2 0 -2 2"/>
+      <polygonVertex at="30 46 -2 0 -2 2"/>
+      <polygonVertex at="32 48 -2 0 -2 2"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <GroupSelection/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="32 48 2 0 -2 2"/>
+      <polygonVertex at="30 46 2 0 -2 2"/>
+      <polygonVertex at="30 46 -2 0 -2 2"/>
+      <polygonVertex at="32 48 -2 0 -2 2"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="32 50 2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -6 -4"/>
+      <polygonVertex at="32 50 2 0 -6 -4"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ShowVertices/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="32 50 2 0 -2 2"/>
+    <SelectManifestation point="32 48 2 0 -2 2"/>
+    <SelectManifestation point="32 48 -2 0 -2 2"/>
+    <SelectManifestation point="32 50 -2 0 -2 2"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="32 50 2 0 -2 2"/>
+    <SelectManifestation point="32 48 2 0 -2 2"/>
+    <SelectManifestation point="30 46 2 0 -2 2"/>
+    <SelectManifestation point="30 46 -2 0 -2 2"/>
+    <SelectManifestation point="32 48 -2 0 -2 2"/>
+    <SelectManifestation point="32 50 -2 0 -2 2"/>
+    <SelectManifestation point="32 50 -2 0 -6 -4"/>
+    <SelectManifestation point="32 50 2 0 -6 -4"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="32 50 2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -6 -4"/>
+      <polygonVertex at="32 50 2 0 -6 -4"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="32 50 2 0 -2 2"/>
+      <polygonVertex at="32 48 2 0 -2 2"/>
+      <polygonVertex at="32 48 -2 0 -2 2"/>
+      <polygonVertex at="32 50 -2 0 -2 2"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="32 48 2 0 -2 2"/>
+      <polygonVertex at="30 46 2 0 -2 2"/>
+      <polygonVertex at="30 46 -2 0 -2 2"/>
+      <polygonVertex at="32 48 -2 0 -2 2"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="32 48 2 0 2 -2"/>
+      <polygonVertex at="32 48 2 0 -2 2"/>
+      <polygonVertex at="32 50 2 0 -2 2"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <GroupSelection/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="32 48 2 0 -14 -16"/>
+      <polygonVertex at="32 48 2 0 -6 -14"/>
+      <polygonVertex at="32 50 2 0 -10 -10"/>
+      <polygonVertex at="32 50 2 0 -14 -16"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation point="32 52 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 -2 -2"/>
+    <SelectManifestation point="0 0 0 0 -2 -2"/>
+    <SelectManifestation>
+      <polygonVertex at="0 2 -2 0 -10 -10"/>
+      <polygonVertex at="0 2 2 0 -10 -10"/>
+      <polygonVertex at="0 2 2 0 -14 -16"/>
+      <polygonVertex at="0 2 -2 0 -14 -16"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation endSegment="0 0 0 0 -2 -2" startSegment="0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="4 6 1 0 -11 -17"/>
+      <polygonVertex at="6 10 1 2 -11 -17"/>
+      <polygonVertex at="4 6 1 2 -11 -17"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 2 2 0 -10 -10"/>
+      <polygonVertex at="0 4 2 0 -10 -10"/>
+      <polygonVertex at="0 4 2 0 -6 -14"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation endSegment="0 0 0 0 -2 -2" startSegment="0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="6 10 2 3 1 2"/>
+    <EndBlock/>
+    <DeselectAll/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="210.37245178222656" far="420.744903564451" near="0.5259311372925494" parallel="false" stereoAngle="0.0" width="94.66760330200185">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.0340222128491289" y="0.8601908697193026" z="-0.5088360803681272"/>
+      <LookDirection x="0.8343650709261748" y="-0.2558198240792666" z="-0.48825315772295713"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="154,117,74" name="sand"/>
+    <Direction color="116,195,0" name="apple"/>
+    <Direction color="136,37,0" name="cinnamon"/>
+    <Direction color="18,73,48" name="spruce"/>
+    <Direction color="107,53,26" name="brown"/>
+    <Direction color="255,255,255" name="15889" prototype="3/8 -3/4 1/2 1/8 3/8 3/8"/>
+    <Direction color="255,255,255" name="15890" prototype="-3/8 0 1 1/4 -3/4 3/8"/>
+    <Direction color="255,255,255" name="15891" prototype="-1/2 -1/4 -9/4 3/4 -15/4 5/2"/>
+    <Direction color="255,255,255" name="15892" prototype="-1/4 -1/4 9/4 -2 2 -1/4"/>
+    <Direction color="255,255,255" name="15893" prototype="1/2 1/4 5/4 -7/4 -1/4 1/2"/>
+    <Direction color="255,255,255" name="15894" prototype="5 -15/4 -19/4 13/4 -23/4 4"/>
+    <Direction color="255,255,255" name="15895" prototype="1/2 -1/2 -5/2 2 -3 5/2"/>
+    <Direction color="255,255,255" name="15896" prototype="-1/2 -1/2 -1/2 1 -2 3/2"/>
+    <Direction color="255,255,255" name="15897" prototype="-1/2 -1/4 -5/4 5/4 13/4 -3/2"/>
+    <Direction color="255,255,255" name="15898" prototype="-3/8 -1/8 3/4 -1/8 -1/4 -1/2"/>
+    <Direction color="255,255,255" name="15926" prototype="15/2 -5 1/2 -1 0 0"/>
+    <Direction color="255,255,255" name="15927" prototype="7/4 -1 -1/2 -3/4 3/4 -3/4"/>
+    <Direction color="255,255,255" name="15928" prototype="1/4 -1/2 1/2 -5/4 -3/4 3/4"/>
+    <Direction color="255,255,255" name="15929" prototype="9/4 -5/4 -1/4 0 -1 7/4"/>
+    <Direction color="255,255,255" name="15930" prototype="-3/4 1/4 -1/4 0 -1 -1/4"/>
+    <Direction color="255,255,255" name="15931" prototype="-208 128 0 0 -40 24"/>
+  </SymmetrySystem>
+  <Tools>
+    <Tool deleteInputs="true" id="tool-0" label="shrink"/>
+    <Tool deleteInputs="true" id="tool-1" label="enlarge"/>
+    <Tool id="tool-2" label="next strut offset"/>
+    <Tool id="tool-3" label="opposite tip rotation"/>
+  </Tools>
+</vzome:vZome>

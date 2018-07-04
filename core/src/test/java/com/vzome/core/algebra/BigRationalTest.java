@@ -370,6 +370,121 @@ public class BigRationalTest {
     }
     
     @Test
+    public void testPlusInteger() {
+    	BigRational n = new BigRational(Long.MIN_VALUE);
+    	n = n.plus(2);
+        assertTrue(n.isWhole());
+    	assertEquals(Long.toString(Long.MIN_VALUE + 2), n.toString());
+    	
+        n = BigRational.ZERO.plus(3);
+        assertEquals("3", n.toString());
+
+        n = n.plus(-13);
+        assertEquals("-10", n.toString());
+
+        n = new BigRational(Integer.MAX_VALUE);
+    	n = n.plus(Integer.MAX_VALUE);
+        assertFalse(n.isBig());
+    	assertEquals(Long.toString(Integer.MAX_VALUE * 2L), n.toString());
+    	
+        n = BigRational.ZERO.plus(7);
+        assertEquals("7", n.toString());
+
+        n = n.plus(0);
+        assertEquals("7", n.toString());
+
+        n = n.plus(-17);
+        assertEquals("-10", n.toString());
+    }
+    
+    @Test
+    public void testMinusInteger() {
+    	BigRational n = new BigRational(Long.MAX_VALUE);
+    	n = n.minus(2);
+        assertTrue(n.isWhole());
+    	assertEquals(Long.toString(Long.MAX_VALUE - 2), n.toString());
+    	
+        n = BigRational.ZERO.minus(3);
+        assertEquals("-3", n.toString());
+
+        n = n.minus(-13);
+        assertEquals("10", n.toString());
+
+        n = BigRational.ZERO.minus(5);
+        assertEquals("-5", n.toString());
+
+        n = n.minus(0);
+        assertEquals("-5", n.toString());
+
+        n = n.minus(-15);
+        assertEquals("10", n.toString());
+    }
+    
+    @Test
+    public void testTimesInteger() {
+    	BigRational n = new BigRational(Long.MAX_VALUE);
+    	n = n.times(2);
+        assertTrue(n.isBig());
+    	assertEquals(BigInteger.valueOf(Long.MAX_VALUE).multiply(BigInteger.valueOf(2)).toString(), n.toString());
+    	
+    	n = new BigRational(Integer.MAX_VALUE);
+    	n = n.times(2);
+    	assertEquals(Long.toString(Integer.MAX_VALUE * 2L), n.toString());
+    	
+    	n = new BigRational(37);
+    	n = n.times(1);
+    	assertEquals("37", n.toString());
+    	
+    	n = n.times(0);
+    	assertEquals("0", n.toString());
+    	
+    	n = new BigRational(43);
+    	n = n.times(7);
+    	assertEquals(Long.toString(43*7), n.toString());
+    	
+        n = BigRational.ZERO.times(6);
+        assertEquals("0", n.toString());
+
+        n = new BigRational(Integer.MAX_VALUE);
+    	n = n.times(Integer.MAX_VALUE);
+        assertFalse(n.isBig());
+    	assertEquals(Long.toString((long)Integer.MAX_VALUE * (long)Integer.MAX_VALUE), n.toString());
+
+    	n = new BigRational(Integer.MIN_VALUE);
+    	n = n.times(Integer.MIN_VALUE);
+        assertFalse(n.isBig());
+    	assertEquals(n.toString(), Long.toString((long)Integer.MIN_VALUE * (long)Integer.MIN_VALUE));
+    }
+
+    @Test
+    public void testDividedByLong() {
+    	BigRational n = new BigRational(Long.MIN_VALUE);
+    	n = n.dividedBy(2);
+        assertTrue(n.isWhole());
+    	assertEquals(Long.toString(Long.MIN_VALUE / 2L), n.toString());
+    	
+    	n = n.dividedBy(3);
+        assertFalse(n.isWhole());
+    	assertEquals(Long.toString(Long.MIN_VALUE / 2L) + "/3", n.toString());
+    	
+        n = BigRational.ONE.dividedBy(1);
+        assertEquals("1", n.toString());
+
+        n = BigRational.ONE.dividedBy(-2);
+        assertEquals("-1/2", n.toString());
+
+        n = BigRational.ZERO.dividedBy(3);
+        assertEquals("0", n.toString());
+
+        n = BigRational.ONE.dividedBy(4);
+        assertEquals("1/4", n.toString());
+
+        n = new BigRational(Integer.MAX_VALUE);
+    	n = n.dividedBy(Integer.MAX_VALUE);
+    	assertEquals("1", n.toString());
+    }    
+
+    @Test
     public void testTimes() {
         {
             BigRational neg = new BigRational(-1L);
@@ -609,7 +724,39 @@ public class BigRationalTest {
             assertEquals(expected, ex.getMessage());
             catches++;
         }
-        assertEquals(4, tries);
+        try {
+        	tries++;
+            BigRational.ONE.dividedBy(0);
+            fail(failMsg);
+        } catch (IllegalArgumentException ex) {
+            assertEquals(expected, ex.getMessage());
+            catches++;
+        }
+        try {
+        	tries++;
+            BigRational.ONE.dividedBy(BigRational.ZERO);
+            fail(failMsg);
+        } catch (IllegalArgumentException ex) {
+            assertEquals(expected, ex.getMessage());
+            catches++;
+        }
+        try {
+        	tries++;
+            BigRational.ZERO.dividedBy(0);
+            fail(failMsg);
+        } catch (IllegalArgumentException ex) {
+            assertEquals(expected, ex.getMessage());
+            catches++;
+        }
+        try {
+        	tries++;
+            BigRational.ZERO.dividedBy(BigRational.ZERO);
+            fail(failMsg);
+        } catch (IllegalArgumentException ex) {
+            assertEquals(expected, ex.getMessage());
+            catches++;
+        }
+        assertEquals(8, tries);
         assertEquals(catches, tries);
     }
 
@@ -871,6 +1018,39 @@ public class BigRationalTest {
         BigRational r = new BigRational("0/1" + Long.MAX_VALUE);
         assertTrue(r.isZero());
         assertFalse(r.isBig());
+    }
+
+    @Test
+    public void testHarmonicMeans() {
+        // The harmonic means of a set of numbers is the reciprocal of the sum of their reciprocals.
+        // This test calculates the harmonic mean of all integers from 1 to the specified limit. 
+        double last = 2.0;
+        boolean big = false;
+        BigRational sum = BigRational.ZERO;
+        // I have run this test with a limit as high as 10,000 but it took 40 seconds to run
+        // A limit of 1000 runs in well under a second 
+        // and is adequate to test for the problem that initiated this test case
+        final long limit = 1000;
+        long i;
+        for(i = 1; i <= limit; i++) {
+            BigRational recip = new BigRational(1, i);
+            sum = sum.plus(recip);
+            BigRational harmonicMean = sum.reciprocal();
+            double curr = harmonicMean.evaluate();
+            if((!big) && harmonicMean.isBig()) {
+                big = true;
+                System.out.println("first big harmonic means is:\n#" + i + ":\t" + curr + "\t= " + harmonicMean);
+            }
+            if(i == limit)
+                System.out.println("test limit:\n#" + i + ":\t" + curr + "\t= " + harmonicMean);
+            // Prior to the bug fix associated with this test case, these tests would fail as indicated 
+            assertTrue("positive", curr > 0.0d);            // i = 719 incorrectly reduced to 0.
+            assertTrue("diminishing", last > curr);         // i = 720 remained at 0.
+            assertTrue("finite", Double.isFinite(curr));    // i = 727 incorrectly reduced to NaN.
+            last = curr;
+        }
+        assertTrue("big", big);
+        assertTrue("big enough", i > 727);  // be sure we tested the original problem
     }
 
     @Test

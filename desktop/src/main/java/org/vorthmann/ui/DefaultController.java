@@ -12,6 +12,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.vorthmann.j3d.MouseTool;
 
@@ -22,6 +24,8 @@ public class DefaultController implements Controller
     protected ErrorChannel mErrors;
     
     protected Controller mNextController;
+    
+    private final Map<String,Controller> subcontrollers = new HashMap<String, Controller>();
     
     protected PropertyChangeSupport properties()
     {
@@ -116,12 +120,22 @@ public class DefaultController implements Controller
     {
         return "true" .equals( getProperty( propName ) );
     }
+    
+    @Override
+    public void addSubController( String name, Controller sub )
+    {
+        this .subcontrollers .put( name, sub );
+        sub .setNextController( this );
+    }
 
     @Override
-    public Controller getSubController( String string )
+    public Controller getSubController( String name )
     {
+        Controller subc = this .subcontrollers .get( name );
+        if ( subc != null )
+            return subc;
         if ( mNextController != null )
-            return mNextController .getSubController( string );
+            return mNextController .getSubController( name );
         return null;
     }
 

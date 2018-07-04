@@ -10,7 +10,6 @@ import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
@@ -50,7 +49,7 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  */
 public class SnubDodecFieldApplication implements FieldApplication
 {
-	private final AlgebraicField field = new SnubDodecField( new PentagonField() );
+	private final AlgebraicField field = new SnubDodecField();
 
 	@Override
 	public String getName()
@@ -76,19 +75,19 @@ public class SnubDodecFieldApplication implements FieldApplication
         		 * 
 
           PENTAGON
-          4 + tau*-4 + xi*0 + tau*xi*0 + xi^2*-2 + tau*xi^2*2, -4 + tau*0 + xi*0 + tau*xi*0 + xi^2*2 + tau*xi^2*0, 0 + tau*0 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*2
+          4 + phi*-4 + xi*0 + phi*xi*0 + xi^2*-2 + phi*xi^2*2, -4 + phi*0 + xi*0 + phi*xi*0 + xi^2*2 + phi*xi^2*0, 0 + phi*0 + xi*0 + phi*xi*0 + xi^2*0 + phi*xi^2*2
           4 -4 0 0 -2 2 -4 0 0 0 2 0 0 0 0 0 0 2
           (2,-2,0,0,-4,4) (0,2,0,0,0,-4) (2,0,0,0,0,0)
 
 
           TRIANGLE
-          0 + tau*-4 + xi*-2 + tau*xi*0 + xi^2*0 + tau*xi^2*2, -4 + tau*4 + xi*0 + tau*xi*-2 + xi^2*2 + tau*xi^2*-2, -4 + tau*0 + xi*-2 + tau*xi*-2 + xi^2*2 + tau*xi^2*0
+          0 + phi*-4 + xi*-2 + phi*xi*0 + xi^2*0 + phi*xi^2*2, -4 + phi*4 + xi*0 + phi*xi*-2 + xi^2*2 + phi*xi^2*-2, -4 + phi*0 + xi*-2 + phi*xi*-2 + xi^2*2 + phi*xi^2*0
           0 -4 -2 0 0 2 -4 4 0 -2 2 -2 -4 0 -2 -2 2 0
           (2,0,0,-2,-4,0) (-2,2,-2,0,4,-4) (0,2,-2,-2,0,-4)
 
 
           DIAGONAL
-          8 + tau*0 + xi*0 + tau*xi*4 + xi^2*-4 + tau*xi^2*0, 0 + tau*-4 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*0, 0 + tau*0 + xi*0 + tau*xi*0 + xi^2*0 + tau*xi^2*0
+          8 + phi*0 + xi*0 + phi*xi*4 + xi^2*-4 + phi*xi^2*0, 0 + phi*-4 + xi*0 + phi*xi*0 + xi^2*0 + phi*xi^2*0, 0 + phi*0 + xi*0 + phi*xi*0 + xi^2*0 + phi*xi^2*0
           8 0 0 4 -4 0 0 -4 0 0 0 0 0 0 0 0 0 0
           (0,-4,4,0,0,8) (0,0,0,0,-4,0) (0,0,0,0,0,0)
 

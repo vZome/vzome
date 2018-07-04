@@ -17,16 +17,16 @@ public class DodecagonalShapes extends AbstractShapes
     {
         super( pkgName, name, alias, symm );
         AlgebraicField field = symm .getField();
-        V0 = field .createVector( new int[]{ 1,1,0,1, 0,1,0,1, 0,1,0,1 } );
-        V1 = field .createVector( new int[]{ 1,2,0,1, 0,1,1,2, 0,1,0,1 } );
-        V2 = field .createVector( new int[]{ -1,2,0,1, 0,1,1,2, 0,1,0,1 } );
-        V3 = field .createVector( new int[]{ -1,1,0,1, 0,1,0,1, 0,1,0,1 } );
-        V4 = field .createVector( new int[]{ -1,2,0,1, 0,1,-1,2, 0,1,0,1 } );
-        V5 = field .createVector( new int[]{ 1,2,0,1, 0,1,-1,2, 0,1,0,1 } );
-        TWO = field .createVector( new int[]{ 2,1,0,1, 0,1,0,1, 0,1,0,1 } );
-        GREEN = field .createVector( new int[]{ 1,1, 1,2, 1,2, 0,1, 0,1, 0,1 } );
-        V6 = field .createVector( new int[]{ 1,1, 0,1, 0,1, 1,3, 0,1, 0,1 } );
-        V7 = field .createVector( new int[]{ 0,1, 2,3, 0,1, 0,1, 0,1, 0,1 } );
+        V0 =    field .createVector( new int[][]{ { 1,1, 0,1}, {0,1, 0,1}, {0,1, 0,1} } );
+        V1 =    field .createVector( new int[][]{ { 1,2, 0,1}, {0,1, 1,2}, {0,1, 0,1} } );
+        V2 =    field .createVector( new int[][]{ {-1,2, 0,1}, {0,1, 1,2}, {0,1, 0,1} } );
+        V3 =    field .createVector( new int[][]{ {-1,1, 0,1}, {0,1, 0,1}, {0,1, 0,1} } );
+        V4 =    field .createVector( new int[][]{ {-1,2, 0,1}, {0,1,-1,2}, {0,1, 0,1} } );
+        V5 =    field .createVector( new int[][]{ { 1,2, 0,1}, {0,1,-1,2}, {0,1, 0,1} } );
+        TWO =   field .createVector( new int[][]{ { 2,1, 0,1}, {0,1, 0,1}, {0,1, 0,1} } );
+        GREEN = field .createVector( new int[][]{ { 1,1, 1,2}, {1,2, 0,1}, {0,1, 0,1} } );
+        V6 =    field .createVector( new int[][]{ { 1,1, 0,1}, {0,1, 1,3}, {0,1, 0,1} } );
+        V7 =    field .createVector( new int[][]{ { 0,1, 2,3}, {0,1, 0,1}, {0,1, 0,1} } );
     }
 
     private final AlgebraicVector V0;

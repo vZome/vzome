@@ -8,7 +8,6 @@ import java.util.EnumSet;
 
 import org.w3c.dom.Element;
 
-import com.vzome.api.Tool.InputBehaviors;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -181,7 +180,7 @@ public class AxialStretchTool extends TransformationTool
 		@Override
 		public Tool createToolInternal( String id )
 		{
-			String category = id .substring( 0, id .indexOf( "." ) );
+			String category = getCategory( red, stretch, first );
 			return new AxialStretchTool( id, (IcosahedralSymmetry) getSymmetry(), getToolsModel(), stretch, red, first, category );
 		}
 
@@ -222,13 +221,8 @@ public class AxialStretchTool extends TransformationTool
 		this .red = red;
 		this .first = first;
 		this .category = category;
+        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
     }
-
-	@Override
-	public EnumSet<InputBehaviors> defaultInputBehaviors()
-	{
-		return EnumSet.of( InputBehaviors.DELETE );
-	}
 
     protected String checkSelection( boolean prepareTool )
     {

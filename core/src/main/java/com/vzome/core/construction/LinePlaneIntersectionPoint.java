@@ -2,8 +2,8 @@
 
 package com.vzome.core.construction;
 
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.algebra.Bivector3dHomogeneous;
 import com.vzome.core.algebra.Trivector3dHomogeneous;
 import com.vzome.core.algebra.Vector3dHomogeneous;
@@ -78,17 +78,11 @@ public class LinePlaneIntersectionPoint extends Point
         AlgebraicVector n = mPlane .getNormal();
         AlgebraicVector p3 = mPlane .getBase();
         
-        AlgebraicNumber denom = n .dot( p1p2 );
-        if ( denom .isZero() )
+        AlgebraicVector p = AlgebraicVectors .getLinePlaneIntersection( p1, p1p2, p3, n );
+        if ( p == null )
             return setStateVariable( null, true );
-
-        // TODO
-        AlgebraicVector p1p3 = p3 .minus( p1 );
-        AlgebraicNumber numerator = n .dot( p1p3 );
-        AlgebraicNumber u = numerator .dividedBy( denom );
-        AlgebraicVector p = p1 .plus( p1p2 .scale( u ) );
-        
-        return setStateVariable( p, false );
+        else
+            return setStateVariable( p, false );
     }
 
 }

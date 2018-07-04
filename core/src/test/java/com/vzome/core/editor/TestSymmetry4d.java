@@ -23,7 +23,7 @@ public class TestSymmetry4d {
 		AlgebraicField golden = new PentagonField();
 		RealizedModel realized = new RealizedModel( golden, new Projection.Default( golden  ) );
 		
-		AlgebraicVector location = golden .createVector( new int[]{ 0, 1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1, 0, 1, 0, 1 } );
+		AlgebraicVector location = golden .createVector( new int[][]{ {0,1, 0,1}, {2,1, 0,1}, {2,1, 0,1}, {0,1, 0,1} } );
 		Construction pt = new FreePoint( location );
 		Manifestation man = realized .findConstruction( pt );
 		realized .add( man );

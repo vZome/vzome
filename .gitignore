@@ -1,18 +1,20 @@
 # folders (in alphabetical order)
+node_modules
 .gradle/
 .idea/
 .nb-gradle/
 .settings/
 bin/
 build/
+eclipse-workspace*/
 gen/
 generated/
 jre/
 nbproject/
+node_modules/
 repos/
 target/
 temp/
-eclipse-workspace/
 
 # files (in alphabetical order)
 *.iml

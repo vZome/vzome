@@ -209,7 +209,8 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
                 
                 File goldenHistory = new File( classFolder, testName + ".history" );
                 if ( goldenHistory .getAbsoluteFile() .exists() ) {
-                    File testHistory = new File( classFolder, testName + ".history.test" );
+                    File testHistory = new File( System .getProperty( "user.dir" ), testName + ".history.test" );
+                    System .out .println( "History replay output: " + testHistory );
                     PrintWriter histOut = new PrintWriter( testHistory );
                     try {
                         historyExporter .doExport( doc, histOut, 1080, 1920 );
@@ -231,8 +232,9 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
                                             
                     // any error???
                     int exitVal = process.waitFor();
-                    if ( exitVal != 0 )
+                    if ( exitVal != 0 ) {
                         throw new Exception( "ExitValue: " + exitVal );
+                    }
                     else
                         testHistory .delete();
                 }

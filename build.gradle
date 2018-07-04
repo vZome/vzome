@@ -7,6 +7,12 @@ task wrapper(type: Wrapper) {
    gradleVersion = '4.5.1' //version required
 }
 
+// these environment variables are available during a Jenkins build
+ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'SNAPSHOT'
+ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
+ext.appName = 'vZome'
+ext.edition = appName
+
 // Specify common settings for all subprojects
 subprojects {
 
@@ -19,6 +25,7 @@ subprojects {
 	// set them to 1.8 for Java 8
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+    options.encoding = 'UTF-8'
   }
 
   repositories {

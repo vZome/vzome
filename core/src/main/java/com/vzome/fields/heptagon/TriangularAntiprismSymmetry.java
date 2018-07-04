@@ -16,13 +16,20 @@ public class TriangularAntiprismSymmetry extends OctahedralSymmetry
 	public TriangularAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
 	{
 		super( field, frameColor, defaultStyle );
+
+        HeptagonField hf = (HeptagonField) this .mField;
+        final double rho = hf.getUnitTerm(1).evaluate();
+        final double sigma = hf.getUnitTerm(2).evaluate();
         
-        double a_over_h = Math.sqrt( ( 1d + HeptagonField.RHO_VALUE + HeptagonField.SIGMA_VALUE ) /
-        							( 2d + 2*HeptagonField.SIGMA_VALUE - HeptagonField.RHO_VALUE ) );
+        double a_over_h = Math.sqrt( ( 1d + rho + sigma ) /
+        							( 2d + (2*sigma) - rho ) );
         double sqrt2 = Math.sqrt( 2d );
         double g = ( sqrt2 + 2*a_over_h ) / ( sqrt2 - a_over_h );
         double scale = 1d / 9d; // reducing the enlarging due to use of (1,1,g) basis, since g > 9.
-        SHEAR = new Matrix3d( g * scale, scale, scale, scale, g * scale, scale, scale, scale, g * scale );
+        SHEAR = new Matrix3d (
+                g * scale,     scale,     scale,
+                    scale, g * scale,     scale,
+                    scale,     scale, g * scale );
 	}
 
 	@Override

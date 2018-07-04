@@ -3,15 +3,16 @@
 
 package com.vzome.core.math;
 
+import java.math.BigInteger;
 import java.util.NoSuchElementException;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicFields;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.BigRational;
-import java.math.BigInteger;
-import java.util.Stack;
 
 public abstract class VefParser
 {
@@ -37,9 +38,7 @@ public abstract class VefParser
     
     private boolean isRational = false;
 
-    private boolean useActualScale = false;
-
-    private transient AlgebraicField field, subfield;
+    private transient AlgebraicField field;
 
     protected abstract void startVertices( int numVertices );
     
@@ -80,20 +79,14 @@ public abstract class VefParser
         return isRational;
     }
 
-    public boolean usesActualScale()
-    {
-        return useActualScale;
-    }
-
     protected boolean wFirst()
     {
         return mVersion >= VERSION_W_FIRST;
     }
 
-    public void parseVEF( String vefData, AlgebraicField field )
+    public void parseVEF( String vefData, final AlgebraicField field )
     {
         this.field = field;
-        this.subfield = field .getSubfield();
         StringTokenizer tokens = new StringTokenizer( vefData );
         String token = null;
         try {
@@ -103,7 +96,6 @@ public abstract class VefParser
         }
         mVersion = 0;
         isRational = false;
-        useActualScale = false;
 
         if ( token .equals( "vZome" ) ) {
             // format 4, with version number
@@ -138,24 +130,18 @@ public abstract class VefParser
                 isRational = true;
                 token = field .getName();
             }
-            if ( token .equals( field .getName() ) )
-                subfield = field;
-            else if ( subfield == null )
-                throw new IllegalStateException( "VEF field mismatch error: VEF field name (\"" + token + "\") does not match current model field name (\"" + field .getName() + "\")" );
-            else
-            {
-                if ( ! token .equals( subfield .getName() ) )
-                    throw new IllegalStateException( "VEF field mismatch error: VEF field name (\"" + token + "\") does not match current model field or subfield name (\"" + field .getName() + "\")" );
+            if(! token .equals(field .getName()) ) {
+                if (! AlgebraicFields.haveSameInitialCoefficients(field, token) ) {
+                    throw new IllegalStateException( "VEF field mismatch error: VEF field name (\"" + token + "\") does not match current model field name (\"" + field .getName() + "\")." );
+                }
             }
             token = tokens .nextToken();
         }
-        else
-            subfield = field;
 
-        // format >= 7 allows disabling subsequent scaling with keyword "actual"
+        // format >= 7 allowed disabling subsequent scaling with keyword "actual",
+        //  but this is now disabled to allow the user to have control.
         if ( token .equals( "actual" ) ) {
             try {
-                useActualScale = true;
                 token = tokens .nextToken();
             } catch ( NoSuchElementException e1 ) {
                 throw new IllegalStateException( "VEF format error: no tokens after \"actual\"" );

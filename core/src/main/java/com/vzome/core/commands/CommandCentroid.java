@@ -38,7 +38,7 @@ public class CommandCentroid extends AbstractCommand
     {
         ConstructionList result = new ConstructionList();
         if ( parameters == null || parameters .size() == 0 )
-            throw new Failure( "Select at least two balls to compute the centroid." );
+            throw new Failure( "Select two or more balls to compute their centroid." );
         final Construction[] params = parameters .getConstructions();
         
         List<Point> verticesList = new ArrayList<>();
@@ -47,9 +47,12 @@ public class CommandCentroid extends AbstractCommand
                 verticesList.add((Point) param);
             }
         }
-        // this test causes old files to fail to load
-//        if ( verticesList .size() < 2 )
-//            throw new Failure( "Select at least two balls to compute the centroid." );
+        // Checking if verticesList .size() < 2 causes old files to fail to load
+        // but failing to check if verticesList .isEmpty() throws ArrayIndexOutOfBoundsException.
+        // Allowing a single ball to be its own centroid will let older files load,
+        // but will generate an appropriate warning if any struts or panels are selected, but no balls.
+        if ( verticesList .isEmpty() )
+            throw new Failure( "Select two or more balls to compute their centroid." );
         Point[] points = new Point[0];
         CentroidPoint centroid = new CentroidPoint( verticesList .toArray( points ) );
         effects .constructionAdded( centroid );

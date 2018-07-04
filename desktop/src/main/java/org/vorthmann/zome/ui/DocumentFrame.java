@@ -86,7 +86,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private Controller lessonController;
     
-    private JDialog polytopesDialog;
+    private JDialog polytopesDialog, importScaleDialog;
 
 	private final boolean developerExtras;
 	
@@ -197,9 +197,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 String cmd = e.getActionCommand();
                 switch ( cmd ) {
                 
-            	case "close":
-            		closeWindow();
-            		break;
+                case "close":
+                    closeWindow();
+                    break;
 
 //            	case "openURL":
 //                    String url = JOptionPane .showInputDialog( DocumentFrame.this, "Enter the URL for an online .vZome file.", "Open URL",
@@ -214,7 +214,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 //                    }
 //                    break;
 //                    
-            	case "save":
+                case "save":
                     if ( mFile == null ) {
                         saveAsAction .actionPerformed( e );
                     }
@@ -223,7 +223,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     }
                     break;
 
-            	case "saveDefault":
+                case "saveDefault":
                     // this is basically "save a copy...", with a hard-coded file path.
                     String fieldName = mController.getProperty( "field.name" );
                     String fieldLabel = mController.getProperty( "field.label" );
@@ -261,7 +261,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     }
                     break;
                     
-            	case "snapshot.2d":
+                case "snapshot.2d":
                     if ( snapshot2dFrame == null ) {
                         snapshot2dFrame = new Snapshot2dFrame( mController.getSubController( "snapshot.2d" ), new FileDialog( DocumentFrame.this ) );
                     }
@@ -272,7 +272,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     snapshot2dFrame.setVisible( true );
                     break;
 
-            	case "redoUntilEdit":
+                case "redoUntilEdit":
                     String number = JOptionPane.showInputDialog( null, "Enter the edit number.", "Set Edit Number",
                             JOptionPane.PLAIN_MESSAGE );
                     try {
@@ -282,41 +282,49 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     }
                     break;
 
-            	case "showToolsPanel":
+                case "showToolsPanel":
                     tabbedPane .setSelectedIndex( 1 );  // should be "tools" tab
                     break;
 
-            	case "showPolytopesDialog":
-            		Controller polytopesController = mController .getSubController( "polytopes" );
-            		if ( polytopesDialog == null )
-            	        polytopesDialog = new PolytopesDialog( DocumentFrame.this, polytopesController );
+                case "importVefWithScale":
+                    Controller importScaleController = mController .getSubController( "importScale" );
+                    if ( importScaleDialog == null )
+                        importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
+                            new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, "import.vef", "vef", controller ) );
+                    importScaleDialog .setVisible( true );
+                    break;
+
+                case "showPolytopesDialog":
+                    Controller polytopesController = mController .getSubController( "polytopes" );
+                    if ( polytopesDialog == null )
+                        polytopesDialog = new PolytopesDialog( DocumentFrame.this, polytopesController );
                     try {
-                    	polytopesController .doAction( "setQuaternion", new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "setQuaternion" ) );
+                    	    polytopesController .doAction( "setQuaternion", new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "setQuaternion" ) );
                     } catch ( Exception e1 ) {
                         errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ e1 } );
                     }
                     polytopesDialog .setVisible( true );
-                	break;
+                    break;
                 
                 case "showPythonWindow":
-                	if ( pythonFrame == null ) {
-                		pythonFrame = new JFrame( "Python Scripting" );
-                		pythonFrame .setContentPane( new PythonConsolePanel( pythonFrame, mController ) );
-                	}
-                	pythonFrame .pack();
-                	pythonFrame .setVisible( true );
-                	break;
+                    if ( pythonFrame == null ) {
+                        pythonFrame = new JFrame( "Python Scripting" );
+                        pythonFrame .setContentPane( new PythonConsolePanel( pythonFrame, mController ) );
+                    }
+                    pythonFrame .pack();
+                    pythonFrame .setVisible( true );
+                    break;
                 
                 case "showZomicWindow":
-                	if ( zomicFrame == null ) {
-                    	zomicFrame = new JFrame( "Zomic Scripting" );
+                    if ( zomicFrame == null ) {
+                        zomicFrame = new JFrame( "Zomic Scripting" );
                         zomicFrame .setContentPane( new ZomicEditorPanel( zomicFrame, mController ) );
-                	}
+                    }
                     zomicFrame .pack();
                     zomicFrame .setVisible( true );
-                	break;
+                    break;
                 
-            	case "setItemColor":
+                case "setItemColor":
                     Color color = JColorChooser.showDialog( DocumentFrame.this, "Choose Object Color", null );
                     if ( color == null )
                         return;
@@ -330,18 +338,18 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     color = JColorChooser.showDialog( DocumentFrame.this, "Choose Background Color", null );
                     if ( color != null )
                     	mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
-                	break;
+                    break;
                 
                 case "usedOrbits":
-                	mController .actionPerformed( e ); // TO DO exclusive
-                	break;
+                    mController .actionPerformed( e ); // TO DO exclusive
+                    break;
                 
                 case "rZomeOrbits":
                 case "predefinedOrbits":
                 case "setAllDirections":
-                	delegate = mController .getSubController( "symmetry." + system );
-                	delegate .actionPerformed( e );
-                	break;
+                    delegate = mController .getSubController( "symmetry." + system );
+                    delegate .actionPerformed( e );
+                    break;
                 
                 case "configureShapes":
                     JDialog shapesDialog = shapesDialogs.get( system );
@@ -351,7 +359,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         shapesDialogs .put( system, shapesDialog );
                     }
                     shapesDialog .setVisible( true );
-                	break;
+                    break;
                 
                 case "configureDirections":
                     JDialog symmetryDialog = directionsDialogs.get( system );
@@ -366,13 +374,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 case "addBookmark":
                     String numStr = toolsController .getProperty( "next.tool.number" );
                     int bookmarkNum = Integer .parseInt( numStr );
-            		String bookmarkId = "bookmark." + bookmarkNum;
-                	String bookmarkName = (String) JOptionPane .showInputDialog( (Component) e .getSource(),
-                			"Name the new bookmark:", "New Selection Bookmark",
-                					JOptionPane.PLAIN_MESSAGE, null, null, bookmarkId );
-                	if ( ( bookmarkName == null ) || ( bookmarkName .length() == 0 ) ) {
-                		return;
-                	}
+                    String bookmarkId = "bookmark." + bookmarkNum;
+                    String bookmarkName = (String) JOptionPane .showInputDialog( (Component) e .getSource(),
+                            "Name the new bookmark:", "New Selection Bookmark",
+                            JOptionPane.PLAIN_MESSAGE, null, null, bookmarkId );
+                    if ( ( bookmarkName == null ) || ( bookmarkName .length() == 0 ) ) {
+                        return;
+                    }
                     mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "newTool/" + bookmarkId + "/" + bookmarkName ) );
                     break;
 
@@ -676,6 +684,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 JOptionPane .showMessageDialog( DocumentFrame.this,
                         e .getLocalizedMessage(),
                         "Error Loading Document", JOptionPane.ERROR_MESSAGE );
+                // setting "visible" to FALSE will remove this document from the application controller's 
+                // document collection so its document count is correct and it cleans up correctly 
+                mController .setProperty( "visible", Boolean.FALSE );
                 DocumentFrame.this .dispose();
             }
             
@@ -756,10 +767,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         		actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vZome", controller );
         		break;
                 
-        	case "import.vef":
-        		actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vef", controller );
-        		break;
-                
         	case "saveAs":
         		actionListener = saveAsAction;
         		break;
@@ -782,6 +789,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         	case "configureDirections":
         	case "redoUntilEdit":
         	case "addBookmark":
+        	case "importVefWithScale":
         		actionListener = this .localActions;
                 break;
                                                 

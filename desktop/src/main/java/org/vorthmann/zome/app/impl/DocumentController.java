@@ -155,8 +155,8 @@ public class DocumentController extends DefaultController implements Controller3
     private Component modelCanvas;
 
     private MouseTool selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
-
-    private final Controller polytopesController;
+    
+    private final NumberController importScaleController;
 
     private int changeCount = 0;
 
@@ -207,13 +207,17 @@ public class DocumentController extends DefaultController implements Controller3
         
         for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
         {
-        	String name = symper .getName();
-        	SymmetryController symmController = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
+            String name = symper .getName();
+            SymmetryController symmController = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
             this .symmetries .put( name, symmController );
         }
 
-        polytopesController = new PolytopesController( this .documentModel );
-        polytopesController .setNextController( this );
+        this .addSubController( "polytopes", new PolytopesController( this .documentModel ) );
+        
+        this .addSubController( "undoRedo", new UndoRedoController( this .documentModel .getHistoryModel() ) );
+                
+        importScaleController = new NumberController( this .documentModel .getField() );
+        this .addSubController( "importScale", importScaleController );
         
         mRenderedModel = new RenderedModel( this .documentModel .getField(), true );
         currentSnapshot = mRenderedModel;
@@ -606,6 +610,11 @@ public class DocumentController extends DefaultController implements Controller3
     {
         String name =  symmetrySystem .getName();
         symmetryController = getSymmetryController( name );
+        if(symmetryController == null) {
+            String msg = "Unsupported symmetry: " + name;
+            mErrors.reportError(msg, new Object[] {} );
+            throw new IllegalStateException( msg );
+        }
 
         String modelResourcePath = this .symmetryController .getProperty( "modelResourcePath" );
         mControlBallModel = this .mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
@@ -673,40 +682,7 @@ public class DocumentController extends DefaultController implements Controller3
         
         mErrors .clearError();
         try {
-            if ( action.equals( "undo" ) )
-                this .documentModel .undo( ! this .userHasEntitlement( "developer.extras" ) );
-            else if ( action.equals( "redo" ) )
-                this .documentModel .redo( ! this .userHasEntitlement( "developer.extras" ) );
-            else if ( action.equals( "undoToBreakpoint" ) ) {
-                this .documentModel .undoToBreakpoint();
-            } else if ( action.equals( "redoToBreakpoint" ) ) {
-                this .documentModel .redoToBreakpoint();
-            } 
-            else if ( action.equals( "setBreakpoint" ) )
-                this .documentModel .setBreakpoint();
-            else if ( action.equals( "undoAll" ) ) {
-                this .documentModel .undoAll();
-            } else if ( action.equals( "redoAll" ) ) {
-                this .documentModel .redoAll( - 1 );
-            } else if ( action.startsWith( "redoUntilEdit." ) ) {
-                String editNum = action .substring( "redoUntilEdit.".length() ).trim();
-                // editNum will be "null" if user canceled the numeric input dialog
-                // We'll also treat an empty string the same as canceling
-                if(! (editNum.equals("null") || editNum.equals("") ) ) {
-                    int eNum = -1;
-                    try {
-                        eNum = Integer.parseInt( editNum );
-                    } catch (Exception ex) {
-                        mErrors.reportError( "'" + editNum + "' is not a valid integer. Edit number must be a positive integer.", new Object[] {} );
-                    }
-                    if(eNum <= 0) {
-                        mErrors.reportError( "Edit number must be a positive integer.", new Object[] {} );
-                    } else {
-                        this.documentModel.redoAll(eNum);
-                    }
-                }
-            }
-            else if ( action .equals( "switchToArticle" ) )
+            if ( action .equals( "switchToArticle" ) )
             {
                 currentView = mViewPlatform .getView();
                 
@@ -1098,7 +1074,7 @@ public class DocumentController extends DefaultController implements Controller3
                     // || command.equals( "import.zomod" )
                     ) {
                 String vefData = readFile( file );
-                documentModel .doScriptAction( command, vefData );
+                documentModel .importVEF( this .importScaleController .getValue(), vefData );
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {
@@ -1430,9 +1406,6 @@ public class DocumentController extends DefaultController implements Controller3
         case "parts":
             return partsController; 
         
-        case "polytopes":
-            return polytopesController; 
-        
         case "lesson":
             return lessonController;
         
@@ -1452,7 +1425,7 @@ public class DocumentController extends DefaultController implements Controller3
             if ( name.startsWith( "symmetry." ) )
                 return this.symmetries.get( name.substring( "symmetry.".length() ) );
             else
-                return null;
+                return super .getSubController( name );
         }
     }
 
@@ -1503,7 +1476,7 @@ public class DocumentController extends DefaultController implements Controller3
     {
         if ( "symmetryPerspectives" .equals( listName ) )
         {
-        	return this .symmetries .keySet() .toArray( new String[]{} );
+            return this .symmetries .keySet() .toArray( new String[]{} );
         }
         return super.getCommandList( listName );
     }
@@ -1539,8 +1512,8 @@ public class DocumentController extends DefaultController implements Controller3
                 this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
                 break;
 
-            case "lookAtBall":
-                RealVector loc = documentModel .getLocation( singleConstruction );
+            case "lookAtThis":
+                RealVector loc = documentModel .getCentroid( singleConstruction );
                 mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
                 
@@ -1588,12 +1561,12 @@ public class DocumentController extends DefaultController implements Controller3
 
     public String getManifestationProperty( Manifestation pickedManifestation, String propName )
     {
+        boolean devExtras = userHasEntitlement( "developer.extras" );
         switch ( propName ) {
 
         case "objectProperties":
+            StringBuffer buf = new StringBuffer();
             if ( pickedManifestation != null ) {
-                boolean devExtras = userHasEntitlement( "developer.extras" );
-                StringBuffer buf = new StringBuffer();
                 final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
                 OrbitSource symmetry  = symmetryController .getOrbitSource();
                 Manifestation man = pickedManifestation;
@@ -1607,10 +1580,25 @@ public class DocumentController extends DefaultController implements Controller3
                     }
                     buf.append("location: ");
                     loc.getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    
+                    if( devExtras && ! loc.isOrigin()) {
+                        AlgebraicNumber normSquared = loc.dot(loc);
+                        double norm2d = normSquared.evaluate();
+                        buf.append("\n\nquadrance: ");
+                        normSquared.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                        buf.append(" = ");
+                        buf.append(FORMAT.format(norm2d));
+
+                        buf.append("\n\nradius: ");
+                        buf.append(FORMAT.format(Math.sqrt(norm2d)));
+                    }
                 } else if (man instanceof Strut) {
                     buf.append("start: ");
                     Strut strut = Strut.class.cast(man);
                     strut.getLocation().getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    
+                    buf.append("\n\nend: ");
+                    strut.getEnd().getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
                     
                     buf.append("\n\noffset: ");
                     AlgebraicVector offset = strut.getOffset();
@@ -1699,16 +1687,37 @@ public class DocumentController extends DefaultController implements Controller3
                         buf.append( "\n\norientation: " + zone .getOrientation() );
                         buf.append( "\n\nsense: " + zone .getSense() );
                         buf.append( "\n\nprototype: " + zone.getDirection().getPrototype() );
-                        // Future TODO: if and when centroid property is eventually added to manifestation
-                        // buf.append( "\n\centroid: " + man .getCentroid() );
+                        buf.append( "\n\ncentroid: " + man .getCentroid() );
                     }
                     System .out .println(buf.toString().replace("\n\n", "\n"));
                     System .out .println();
                 }
                 pickedManifestation = null;
                 return buf.toString();
+            } else {
+                buf.append( "field: " );
+                buf.append( this.getProperty("field.label" ));
+
+                buf.append( "\n\nsymmetry: " );
+                buf.append( mViewPlatform.getProperty( "symmetry" ) );
+                if( propertyIsTrue("show.camera.properties") ) {
+                    buf.append( "\n\nlook at point: " );
+                    buf.append( mViewPlatform.getProperty( "lookAtPoint" ) );
+
+                    buf.append( "\n\nlook direction: " );
+                    buf.append( mViewPlatform.getProperty( "lookDir" ) );
+                    buf.append( "\n  up direction: " );
+                    buf.append( mViewPlatform.getProperty( "upDir" ) );
+                    
+                    buf.append( "\n\nview distance: " );
+                    buf.append( mViewPlatform.getProperty( "viewDistance" ) );
+                    
+                    buf.append( "\n\nmagnification: " );
+                    buf.append( mViewPlatform.getProperty( "magnification" ) );
+                }
+               
+                return buf.toString();
             }
-            return null;
 
         case "objectColor":
             if ( pickedManifestation != null ) {
@@ -1717,6 +1726,7 @@ public class DocumentController extends DefaultController implements Controller3
                 pickedManifestation = null;
                 return colorStr;
             }
+            // TODO: We could return the background color here
             return null;
 
         default:

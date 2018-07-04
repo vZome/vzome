@@ -3,35 +3,35 @@
 
 package com.vzome.core.algebra;
 
-
-
-
 public class HeptagonField extends AlgebraicField
-{    
-	public HeptagonField()
-    {
-        super( "heptagon" );
+{
+    public static final String FIELD_NAME = "heptagon";
+    
+    /**
+     * 
+     * @return the coefficients of this AlgebraicField class. 
+     * This can be used to determine when two fields have compatible coefficients 
+     * without having to generate an instance of the class. 
+     */
+    public static double[] getFieldCoefficients() {
+        return new double[] { 1.0d, RHO_VALUE, SIGMA_VALUE };
+    }
+    
+    @Override
+    public double[] getCoefficients() {
+        return getFieldCoefficients();
+    }
 
-        SIGMA_INV = fromIntArray( new int[]{ 0,1,0,1,1,1 } ) .reciprocal();
+    public HeptagonField()
+    {
+        super( FIELD_NAME, 3 );
     };
     
-    public static final double RHO_VALUE = 1.8019377d, SIGMA_VALUE = 2.2469796d;
-    
-    public static final double ALTITUDE = Math.sqrt( SIGMA_VALUE * SIGMA_VALUE - 0.25d );
+    // specified to more precision than a double can retain so that values are as exact as possible: within one ulp().
+    private static final double RHO_VALUE   = 1.80193773580483825d;  // root of x^3 - x^2 -2x +1
+    private static final double SIGMA_VALUE = 2.24697960371746706d;  // root of x^3 -2x^2 - x +1
 
     private static final int A = 0, B = 1, C = 2;
-    
-    private final AlgebraicNumber SIGMA_INV;
-
-    private AlgebraicNumber fromIntArray( int[] ints )
-    {
-        return new AlgebraicNumber( this, new BigRational( ints[0], ints[1] ), new BigRational( ints[2], ints[3] ), new BigRational( ints[4], ints[5] ) );
-    }
-    
-    public AlgebraicNumber sigmaReciprocal()
-    {
-        return SIGMA_INV;
-    }
     
     @Override
     public final BigRational[] multiply( BigRational[] first, BigRational[] second )
@@ -63,22 +63,13 @@ public class HeptagonField extends AlgebraicField
         }
     }
     
+    /**
+     * scalar for an affine heptagon
+     * @return 
+     */
     @Override
-    public int getOrder()
-    {
-        return 3;
-    }
-
-    @Override
-    public AlgebraicNumber getDefaultStrutScaling()
-    {
-        return this .one();
-    }
-
-    @Override
-    public int getNumIrrationals()
-    {
-        return 2;
+    public AlgebraicNumber getAffineScalar() {
+        return getUnitTerm( 2 );
     }
 
     @Override
@@ -109,11 +100,15 @@ public class HeptagonField extends AlgebraicField
     @Override
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
-        if ( whichIrrational == A )
-            return factors;
-        else if ( whichIrrational == B )
-            return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 2 ] ), factors[ 1 ] .plus( factors[ 2 ] ) };
-        else
-            return new BigRational[]{ factors[ 2 ], factors[ 1 ] .plus( factors[ 2 ] ), factors[ 0 ] .plus( factors[ 1 ] ) .plus( factors[ 2 ] ) };
+        switch (whichIrrational) {
+            case A:
+                return factors;
+            case B:
+                return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 2 ] ), factors[ 1 ] .plus( factors[ 2 ] ) };
+            case C:
+                return new BigRational[]{ factors[ 2 ], factors[ 1 ] .plus( factors[ 2 ] ), factors[ 0 ] .plus( factors[ 1 ] ) .plus( factors[ 2 ] ) };
+            default:
+                throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
+        }
     }
 }

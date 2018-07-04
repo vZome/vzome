@@ -1,5 +1,8 @@
 package com.vzome.core.math.symmetry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 
 
 public class Permutation extends Object {
@@ -33,13 +36,20 @@ public class Permutation extends Object {
 		    }
 		}
 	}
-	
+
+	@JsonValue
+    public int[] getJsonValue()
+    {
+    	return this .m_map;
+    }
+
     @Override
 	public String toString()
 	{
 	    return "permutation #"  + mapIndex( 0 );
 	}
 
+    @JsonIgnore
     public int getOrder()
 	{
 		return m_order;
@@ -79,8 +89,8 @@ public class Permutation extends Object {
 
     public int mapIndex( int i )
     {
-    	if ( ( i < 0 ) || ( i >= m_map.length ) )
-    		return Symmetry .NO_ROTATION;
+    	    if ( ( i < 0 ) || ( i >= m_map.length ) )
+    		    return Symmetry .NO_ROTATION;
         return m_map[ i ];
     }
 

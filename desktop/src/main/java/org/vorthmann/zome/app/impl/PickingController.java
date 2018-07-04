@@ -46,7 +46,7 @@ public class PickingController extends DefaultController implements Controller
         case "setSymmetryAxis":
         case "setWorkingPlaneAxis":
         case "setWorkingPlane":
-        case "lookAtBall":
+        case "lookAtThis":
         case "setBuildOrbitAndLength":
         case "selectCollinear":
         case "selectParallelStruts":
@@ -75,10 +75,10 @@ public class PickingController extends DefaultController implements Controller
             switch ( menuItem ) {
 
 			case "undoToManifestation":
+            case "lookAtThis":
             	result[ i ] = pickedManifestation != null;
 				break;
 
-			case "lookAtBall":
 	        case "symmTool-icosahedral":
 	        case "setSymmetryCenter":
             	result[ i ] = pickedManifestation instanceof Connector;
@@ -98,6 +98,12 @@ public class PickingController extends DefaultController implements Controller
             	result[ i ] = pickedManifestation instanceof Panel;
 				break;
 
+            case "showProperties-monocular":
+            case "showProperties-leftEye":
+            case "showProperties-rightEye":
+			    result[ i ] = true;
+                break;
+                
 			default:
 				if ( menuItem .startsWith( "showProperties-" ) )
 					result[i] = pickedManifestation != null;

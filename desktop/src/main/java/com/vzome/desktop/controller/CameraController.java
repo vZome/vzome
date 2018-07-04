@@ -415,14 +415,43 @@ public class CameraController extends DefaultController
     @Override
     public String getProperty( String propName )
     {
-		if ( "magnification" .equals( propName ) )
-			return Float .toString(  model .getMagnification() );
-		if ( "perspective" .equals( propName ) )
+        switch( propName) {
+        case "magnification":
+            return Float .toString(  model .getMagnification() );
+
+        case "perspective":
 			return Boolean .toString( model .isPerspective() );
-		if ( "snap" .equals( propName ) )
+			
+        case "snap":
 			return Boolean .toString( isSnapping() );
-		if ( "stereo" .equals( propName ) )
+			
+        case "stereo":
 			return Boolean .toString( model .isStereo() );
+
+        case "viewDistance":
+            return Float .toString(  model .getViewDistance() );
+                
+        case "lookAtPoint":
+            Point3d lookAt = model .getLookAtPoint();
+            return lookAt.toString();
+
+        case "lookDir":
+        {
+            Vector3d lookDir = new Vector3d();
+            Vector3d upDir = new Vector3d();
+            model .getViewOrientation(lookDir, upDir);
+            return lookDir.toString();
+        }
+        
+        case "upDir":
+        {
+            Vector3d lookDir = new Vector3d();
+            Vector3d upDir = new Vector3d();
+            model .getViewOrientation(lookDir, upDir);
+            return upDir.toString();
+        }
+        }
+        
         return super .getProperty( propName );
     }
     

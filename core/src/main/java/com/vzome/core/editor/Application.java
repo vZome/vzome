@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 import javax.vecmath.Vector3f;
@@ -25,7 +27,6 @@ import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.HistoryExporter;
-import com.vzome.core.exporters.JsonExporter;
 import com.vzome.core.exporters.LiveGraphicsExporter;
 import com.vzome.core.exporters.OffExporter;
 import com.vzome.core.exporters.OpenGLExporter;
@@ -40,6 +41,8 @@ import com.vzome.core.exporters.SegExporter;
 import com.vzome.core.exporters.StlExporter;
 import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.exporters.VefExporter;
+import com.vzome.core.exporters.VsonExporter;
+import com.vzome.core.exporters.WebviewJsonExporter;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
@@ -48,8 +51,7 @@ import com.vzome.core.kinds.SnubDodecFieldApplication;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
-import java.util.Set;
-import java.util.function.Supplier;
+import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 
 public class Application
 {
@@ -90,11 +92,12 @@ public class Application
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+        this .exporters .put( "vson", new VsonExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "LiveGraphics", new LiveGraphicsExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "json", new JsonExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "json", new WebviewJsonExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "step", new STEPExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "vrml", new VRMLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "off", new OffExporter( null, this .mColors, this .mLights, null ) );
@@ -112,11 +115,11 @@ public class Application
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         this.fieldAppSuppliers.put("golden", GoldenFieldApplication::new);
         this.fieldAppSuppliers.put("rootTwo", RootTwoFieldApplication::new);
-        this.fieldAppSuppliers.put("dodecagon",  // for legacy documents
-        this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new)
-        );
+		this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new);
+        this.fieldAppSuppliers.put("dodecagon", RootThreeFieldApplication::new);
         this.fieldAppSuppliers.put("heptagon", HeptagonFieldApplication::new);
         this.fieldAppSuppliers.put("snubDodec", SnubDodecFieldApplication::new);
+        this.fieldAppSuppliers.put( "sqrtPhi", SqrtPhiFieldApplication::new);
     }
 
     public DocumentModel loadDocument( InputStream bytes ) throws Exception

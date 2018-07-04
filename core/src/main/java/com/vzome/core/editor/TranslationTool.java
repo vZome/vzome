@@ -6,7 +6,6 @@ package com.vzome.core.editor;
 
 import java.util.EnumSet;
 
-import com.vzome.api.Tool.InputBehaviors;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -22,6 +21,7 @@ public class TranslationTool extends TransformationTool
     public TranslationTool( String id, ToolsModel tools )
     {
         super( id, tools );
+        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
     }
     
 	private static final String ID = "translation";
@@ -62,12 +62,6 @@ public class TranslationTool extends TransformationTool
 		{
 			return true;
 		}
-	}
-
-	@Override
-	public EnumSet<InputBehaviors> defaultInputBehaviors()
-	{
-		return EnumSet.of( InputBehaviors.DELETE );
 	}
 
     @Override

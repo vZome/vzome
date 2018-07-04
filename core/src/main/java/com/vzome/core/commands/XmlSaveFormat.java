@@ -32,6 +32,7 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -245,7 +246,8 @@ public class XmlSaveFormat
             String denoms = val .getAttribute( "denoms" );
             StringTokenizer tokens = new StringTokenizer( nums );
             
-            int[] result = new int[]{ 0,1, 0,1, 0,1, 0,1, 0,1, 0,1 };
+            // TODO: This should be generalized for any order field. It's currently hard coded for a 3d vector in an order 2 field.
+            int[] result = new int[]{ 0,1, 0,1,   0,1, 0,1,   0,1, 0,1 };
             for ( int i = 0; i < mField .getOrder(); i++ )
             {
                 String token = tokens .nextToken();
@@ -264,7 +266,17 @@ public class XmlSaveFormat
                     result[ i * 2 + 1 ] = Integer .parseInt( token );
                 }
             }
-            value = mField .createVector( result );
+            // split the result array into 3 equal length arrays, one for each dimension
+            final int oneThirdLen = result.length/3;
+            final int twoThirdLen = oneThirdLen * 2;
+            int[][] result3d = new int[3][oneThirdLen];
+            for(int i=0; i < oneThirdLen; i++) {
+                result3d[0][i] = result[i];
+                result3d[1][i] = result[i+oneThirdLen];
+                result3d[2][i] = result[i+twoThirdLen];
+            }
+            // parseAlgebraicObject is currently limited to parsing Integer valued vectors, not Longs, and definitely not BigIntegers
+            value = mField .createVector( result3d );
         }
         else if ( valName .equals( "GoldenVector" ) )
             value = parseAlgebraicVector( val );
@@ -582,10 +594,9 @@ public class XmlSaveFormat
         else if ( aname .equals( "spring" ) )
         	aname = "apple";
         String iname = xml .getAttribute( indexAttr );
-        sname = xml .getAttribute( senseAttr );
         int index = Integer .parseInt( iname );
         int sense = Symmetry .PLUS;
-        if ( "minus" .equals( sname )) { // NOTE: used to say "index < 0"
+        if ( "minus" .equals( xml .getAttribute( senseAttr ) )) { // NOTE: used to say "index < 0"
             sense = Symmetry .MINUS;
 //            index *= -1;
         }
@@ -593,7 +604,13 @@ public class XmlSaveFormat
         String outs = xml .getAttribute( "outbound" );
         if ( outs != null && outs .equals( "false" ) )
         	outbound = false;
-        return group .getDirection( aname ) .getAxis( sense, index, outbound );
+        Direction dir = group .getDirection( aname );
+        if(dir == null) {
+            String msg = "Unsupported direction '" + aname + "' in " + sname + " symmetry";
+            logger .severe( msg );
+            throw new IllegalStateException( msg );
+        }
+        return dir .getAxis( sense, index, outbound );
     }
 
     public AlgebraicNumber parseNumber( Element xml, String attrName )

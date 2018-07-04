@@ -106,6 +106,7 @@ public class PlaneSelectionTool extends Tool
         Vector3d v2 = new Vector3d( p3 .minus( p1 ) );
         plane = v1 .outer( v2 );
         anchor = p1;
+        super .perform();
     }
 
     @Override
