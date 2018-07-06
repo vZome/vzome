@@ -25,7 +25,7 @@ import org.vorthmann.ui.Controller;
  * 
  * @author Scott Vorthmann 2003
  */
-public class ViewPlatformControlPanel extends JPanel {
+public class CameraControlPanel extends JPanel {
 
     protected JSlider zslider;
     
@@ -60,7 +60,7 @@ public class ViewPlatformControlPanel extends JPanel {
 //    }
     
     
-	public ViewPlatformControlPanel( Component modelPanel, final Controller controller )
+	public CameraControlPanel( Component modelPanel, final Controller controller )
 	{
         this .setBorder( BorderFactory .createTitledBorder( "viewing" ) );
         int nearTicks = magToTicks( MAX_MAG );

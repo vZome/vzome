@@ -6,5 +6,5 @@ import java.awt.Component;
 
 public interface J3dComponentFactory
 {
-    Component createJ3dComponent( String name );
+    Component createJ3dComponent();
 }

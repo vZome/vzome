@@ -311,7 +311,7 @@ public class Java3dFactory implements RenderingViewer.Factory
     }
 
     @Override
-    public Component createJ3dComponent( String name )
+    public Component createJ3dComponent()
     {
         return new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration() );
     }
