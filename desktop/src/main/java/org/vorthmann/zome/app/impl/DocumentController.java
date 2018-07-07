@@ -107,9 +107,6 @@ public class DocumentController extends DefaultController implements Controller3
 
     private RenderingChanges mainScene;
 
-    private RenderingChanges mControlBallScene;  // TODO split off in another controller
-    private RenderedModel mControlBallModel;
-
     private final ApplicationController mApp;
 
     private Java2dSnapshot mSnapshot = null;
@@ -324,11 +321,9 @@ public class DocumentController extends DefaultController implements Controller3
     }
     
     @Override
-    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas, String name )
+    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
     {
     		// This is called on a UI thread!
-    	
-        if ( name.startsWith( "model" ) )
         {
         		this .modelCanvas = canvas;
         		this .mainScene = scene;
@@ -535,40 +530,6 @@ public class DocumentController extends DefaultController implements Controller3
             if ( editingModel )
                 mouseTool .attach( modelCanvas );
             previewStrutPlanarDrag = mouseTool;
-            
-            // mRenderedModel .setFactory( mViewer .getSceneGraphFactory() );
-            // mRenderedModel .setTopGroup( mViewer .getSceneGraphRoot() );
-
-            cameraController .updateViewers();
-        }
-        else if ( name.equals( "trackball" ) )
-        {
-            MouseTool trackball = this .cameraController .getTrackball();
-   
-            // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
-            //  and ViewPlatformControlPanel will attach a better one to the parent component 
-            canvas .addMouseListener( trackball );
-            canvas .addMouseMotionListener( trackball );
-
-            this .cameraController .addViewer( new TrackballRenderingViewer( viewer ) );
-
-            // mControlBallScene .reset();
-            this .mControlBallScene = scene;
-            for ( RenderedManifestation rm : this .mControlBallModel )
-                this .mControlBallScene .manifestationAdded( rm );
-
-            this .cameraController .updateViewers();
-        }
-        else
-        {
-        		// This is a headless case, e.g. for client-server
-            this .drawOutlines = true;
-            
-            // We don't attach mainScene to the rendered model yet.
-            //   This means we have to call finishLoading later.
-            this .mainScene = scene;
-            if ( viewer instanceof PropertyChangeListener )
-        			this .addPropertyListener( (PropertyChangeListener) viewer );
         }
     }
 
@@ -589,13 +550,9 @@ public class DocumentController extends DefaultController implements Controller3
         }
 
         String modelResourcePath = this .symmetryController .getProperty( "modelResourcePath" );
-        mControlBallModel = this .mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
-        if ( mControlBallScene != null ) {
-            mControlBallScene.reset();
-            for ( RenderedManifestation rm : mControlBallModel )
-                mControlBallScene.manifestationAdded( rm );
-        }
-        cameraController .setSnapper( symmetryController.getSnapper() );
+        RenderedModel model = this .mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
+        cameraController .setSymmetry( model, symmetryController .getSnapper() );
+
         properties().firePropertyChange( "symmetry", null, name ); // notify UI, so cardpanel can flip, or whatever
         setRenderingStyle();
     }

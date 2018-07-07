@@ -26,7 +26,7 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
     public ThumbnailRendererImpl( J3dComponentFactory rvFactory )
     {
         super( new Camera() );
-        rvFactory .createRenderingComponent( true, true, this, "IGNORED" );
+        rvFactory .createRenderingComponent( true, true, this );
     }
 
     /* (non-Javadoc)
@@ -61,8 +61,7 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
     }
 
     @Override
-    public void attachViewer( RenderingViewer viewer, RenderingChanges scene,
-            Component canvas, String name )
+    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
     {
         // no picking, etc., so we don't care about the canvas
         this .scene = scene;

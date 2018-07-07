@@ -21,7 +21,10 @@ import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.Trackball;
 import org.vorthmann.ui.DefaultController;
+import org.vorthmann.zome.app.impl.TrackballRenderingViewer;
 
+import com.vzome.core.render.RenderedManifestation;
+import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Camera;
 
@@ -49,6 +52,9 @@ public class CameraController extends DefaultController implements Controller3d
     protected final List<CameraController.Viewer> mViewers = new ArrayList<>();
 
     private final Camera initialCamera;
+
+    private RenderingChanges scene;
+    private RenderedModel symmetryModel;
 
     public interface Snapper
     {
@@ -100,12 +106,6 @@ public class CameraController extends DefaultController implements Controller3d
     {
         model = init;
         initialCamera = new Camera( model );
-    }
-
-    public void updateViewers()
-    {
-        updateViewersTransformation();
-        updateViewersProjection();
     }
 
     // TODO get rid of this
@@ -262,23 +262,13 @@ public class CameraController extends DefaultController implements Controller3d
 
     private static final Vector3f Z = new Vector3f( 0f, 0f, -1f ), Y = new Vector3f( 0f, 1f, 0f );
 
-    private Snapper mSnapper = null;
+    private Snapper snapper = null;
 
-    private boolean mSnapping = false;
-
-    public void setSnapper( Snapper snapper )
-    {
-        mSnapper = snapper;
-        if ( mSnapping ) {
-            saveBaselineView(); // might have been zooming
-            snapView();
-            saveBaselineView();
-        }
-    }
+    private boolean snapping = false;
 
     public boolean isSnapping()
     {
-        return mSnapping;
+        return snapping;
     }
 
     public void snapView()
@@ -288,7 +278,7 @@ public class CameraController extends DefaultController implements Controller3d
         Y .set( 0f, 1f, 0f );
         mapViewToWorld( Y );
 
-        mSnapper .snapDirections( Z, Y );
+        snapper .snapDirections( Z, Y );
 
         setViewDirection( Z, Y );
     }
@@ -298,8 +288,8 @@ public class CameraController extends DefaultController implements Controller3d
     {
         if ( action .equals( "toggleSnap" ) )
         {
-            mSnapping = !mSnapping;
-            if ( mSnapping )
+            snapping = !snapping;
+            if ( snapping )
             {
                 saveBaselineView(); // might have been zooming
                 snapView();
@@ -375,7 +365,7 @@ public class CameraController extends DefaultController implements Controller3d
             @Override
             public void mouseReleased( MouseEvent e )
             {
-                if ( mSnapping )
+                if ( snapping )
                     snapView();
                 saveBaselineView();
             }
@@ -505,8 +495,38 @@ public class CameraController extends DefaultController implements Controller3d
     }
 
     @Override
-    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas, String name )
+    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
     {
-        ((Controller3d) this .mNextController) .attachViewer( viewer, scene, canvas, name );
+        MouseTool trackball = this .getTrackball();
+        
+        // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
+        //  and CameraControlPanel will attach a better one to the parent component 
+        canvas .addMouseListener( trackball );
+        canvas .addMouseMotionListener( trackball );
+
+        this .addViewer( new TrackballRenderingViewer( viewer ) );
+
+        this .scene = scene;
+        for ( RenderedManifestation rm : this .symmetryModel )
+            this .scene .manifestationAdded( rm );
+
+        updateViewersTransformation();
+        updateViewersProjection();
+    }
+    
+    public void setSymmetry( RenderedModel model, Snapper snapper )
+    {
+        this .symmetryModel = model;
+        if ( scene != null ) {
+            scene .reset();
+            for ( RenderedManifestation rm : symmetryModel )
+                scene .manifestationAdded( rm );
+        }
+        this .snapper = snapper;
+        if ( snapping ) {
+            saveBaselineView(); // might have been zooming
+            snapView();
+            saveBaselineView();
+        }
     }
 }

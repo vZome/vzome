@@ -99,7 +99,7 @@ public class CameraControlPanel extends JPanel {
             add( zslider, BorderLayout .EAST );
 
         trackpad = new JPanel( new BorderLayout() );
-        Component trackballCanvas = factory3d .createRenderingComponent( true, false, ((Controller3d) controller), "trackball" );
+        Component trackballCanvas = factory3d .createRenderingComponent( true, false, ((Controller3d) controller) );
         trackpad .add( trackballCanvas, BorderLayout.CENTER );
         trackpad .setAlignmentX( JLabel .CENTER_ALIGNMENT );
         trackpad .setBorder( BorderFactory .createTitledBorder( "rotation trackball" ) );

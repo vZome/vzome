@@ -295,12 +295,12 @@ public class Java3dFactory implements J3dComponentFactory
     }
 
     @Override
-    public Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller, String name )
+    public Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller )
     {
         CapturingCanvas3D canvas = new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration(), isOffScreen );
         Java3dSceneGraph scene = new Java3dSceneGraph( this, this .lights, isSticky, controller );
         RenderingViewer viewer = new Java3dRenderingViewer( scene, canvas );
-        controller .attachViewer( viewer, scene, canvas, name );
+        controller .attachViewer( viewer, scene, canvas );
         return canvas;
     }
 }

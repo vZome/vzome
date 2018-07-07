@@ -11,5 +11,5 @@ import com.vzome.core.render.RenderingChanges;
 
 public interface Controller3d extends Controller
 {
-    void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas, String name );
+    void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas );
 }

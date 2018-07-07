@@ -8,5 +8,5 @@ import com.vzome.desktop.controller.Controller3d;
 
 public interface J3dComponentFactory
 {
-    Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller, String name );
+    Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller );
 }

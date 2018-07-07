@@ -74,7 +74,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         mMonocularPanel = new JPanel( new BorderLayout() );
 
         mMonocularPanel .setPreferredSize( new Dimension( 2000, 2000 ) );
-        monocularCanvas = factory .createRenderingComponent( true, false, controller, "model" );
+        monocularCanvas = factory .createRenderingComponent( true, false, controller );
         // createRenderingComponent must precede this getSubController
         Controller monoController = controller .getSubController( "monocularPicking" );
         mMonocularPanel .add( monocularCanvas, BorderLayout.CENTER );
