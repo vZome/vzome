@@ -113,7 +113,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	
 	private RenderedModel renderedModel;
 	
-	private Camera defaultView;
+	private Camera defaultCamera;
 	
 	private final String coreVersion;
     
@@ -229,7 +229,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
 		this .bookmarkFactory .createPredefinedTool( "ball at origin" );
         
-		this .defaultView = new Camera();
+		this .defaultCamera = new Camera();
         Element views = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "Viewing" ) .item( 0 );
         if ( views != null ) {
             NodeList nodes = views .getChildNodes();
@@ -241,7 +241,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         			if ( ( name == null || name .isEmpty() )
         		    || ( "default" .equals( name ) ) )
         			{
-        				this .defaultView = new Camera( viewElem );
+        				this .defaultCamera = new Camera( viewElem );
         			}
         		}
             }
@@ -967,7 +967,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
                 Element notesXml = (Element) mXML .getElementsByTagName( "notes" ) .item( 0 );
                 if ( notesXml != null ) 
-                    lesson .setXml( notesXml, editNum, this .defaultView );
+                    lesson .setXml( notesXml, editNum, this .defaultCamera );
 
                 // add migrated views to the end of the lesson
                 for (Entry<String, Camera> namedView : viewPages .entrySet()) {
@@ -1128,7 +1128,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         vZomeRoot .appendChild( childElement );
 
         childElement = doc .createElement( "Viewing" );
-        Element viewXml = this .defaultView .getXML( doc );
+        Element viewXml = this .defaultCamera .getXML( doc );
         childElement .appendChild( viewXml );
         vZomeRoot .appendChild( childElement );
 
@@ -1313,13 +1313,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .performAndRecord( edit );
     }
 
-	public Exporter3d getNaiveExporter( String format, Camera view, Colors colors, Lights lights, RenderedModel currentSnapshot )
+	public Exporter3d getNaiveExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel currentSnapshot )
 	{
         Exporter3d exporter = null;
         if ( format.equals( "pov" ) )
-            exporter = new POVRayExporter( view, colors, lights, currentSnapshot );
+            exporter = new POVRayExporter( camera, colors, lights, currentSnapshot );
         else if ( format.equals( "opengl" ) )
-        	exporter = new OpenGLExporter( view, colors, lights, currentSnapshot );
+        	exporter = new OpenGLExporter( camera, colors, lights, currentSnapshot );
 
         boolean inArticleMode = (renderedModel != currentSnapshot);
         if(exporter != null && exporter.needsManifestations() && inArticleMode ) {
@@ -1352,10 +1352,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	
 	// TODO move all the parameters inside this object!
 	
-	public Exporter3d getStructuredExporter( String format, Camera view, Colors colors, Lights lights, RenderedModel mRenderedModel )
+	public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel mRenderedModel )
 	{
         if ( format.equals( "partgeom" ) )
-        	return new PartGeometryExporter( view, colors, lights, mRenderedModel, mSelection );
+        	return new PartGeometryExporter( camera, colors, lights, mRenderedModel, mSelection );
         else
         	return null;
 	}
@@ -1387,11 +1387,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         action .actOnSnapshot( snapshot );
 	}
 
-	public void addSnapshotPage( Camera view )
+	public void addSnapshotPage( Camera camera )
 	{
         int id = numSnapshots;
         this .performAndRecord( new Snapshot( id, this ) );
-        lesson .newSnapshotPage( id, view );
+        lesson .newSnapshotPage( id, camera );
 	}
 
 	public RenderedModel getRenderedModel()
@@ -1399,9 +1399,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		return this .renderedModel;
 	}
 	
-	public Camera getViewModel()
+	public Camera getCamera()
 	{
-	    return this .defaultView;
+	    return this .defaultCamera;
 	}
 
     public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, AlgebraicVector quaternion, AlgebraicNumber[] edgeScales )

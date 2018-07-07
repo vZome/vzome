@@ -3,6 +3,7 @@
  */
 package com.vzome.desktop.controller;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -21,91 +22,92 @@ import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.Trackball;
 import org.vorthmann.ui.DefaultController;
 
+import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Camera;
 
 /**
- * In this view model, the frustum shape is generally held constant
+ * In this camera model, the view frustum shape is generally held constant
  * as other parameters are varied.
  */
-public class CameraController extends DefaultController
+public class CameraController extends DefaultController implements Controller3d
 {
-	/**
-	 * The original frustum.
-	 */
-	public static final double ORIG_WIDTH = 18f, ORIG_DISTANCE = 40f;
-	    
+    /**
+     * The original frustum.
+     */
+    public static final double ORIG_WIDTH = 18f, ORIG_DISTANCE = 40f;
+
     public static final double DEFAULT_STEREO_ANGLE = Math .PI * 5d / 360d;
 
-	protected static final Vector3f ORIG_LOOK = new Vector3f(0,0,-1);
-	
-	protected static final Vector3f ORIG_UP = new Vector3f(0,1,0);
-	
-	private Camera model;
+    protected static final Vector3f ORIG_LOOK = new Vector3f(0,0,-1);
+
+    protected static final Vector3f ORIG_UP = new Vector3f(0,1,0);
+
+    private Camera model;
 
     private Camera copied = null;
-    
-	protected final List<CameraController.Viewer> mViewers = new ArrayList<>();
-	
-	private final Camera initialCamera;
+
+    protected final List<CameraController.Viewer> mViewers = new ArrayList<>();
+
+    private final Camera initialCamera;
 
     public interface Snapper
     {
         void snapDirections( Vector3f lookDir, Vector3f upDir );
     }
-    
-	public static interface Viewer 
-	{
-	    int MONOCULAR = 0; int LEFT_EYE = 1; int RIGHT_EYE = 2;
 
-	    void setEye( int eye );
-	    
-	    void setViewTransformation( Matrix4d trans, int eye );
+    public static interface Viewer 
+    {
+        int MONOCULAR = 0; int LEFT_EYE = 1; int RIGHT_EYE = 2;
 
-	    void setPerspective( double fov, double aspectRatio, double near, double far );
+        void setEye( int eye );
 
-	    void setOrthographic( double halfEdge, double near, double far );
-	}
-	
-	/**
-	 * The width of the frustum at the look-at point is held
-	 * constant, as well as the other dimensions of the frustum.
-	 * @param value
-	 */
-	public void setPerspective( boolean value )
-	{
-		model .setPerspective( value );
-		updateViewersTransformation();
-		updateViewersProjection();
-	}
-    		
-	public void getViewOrientation( Vector3d lookDir, Vector3d upDir )
-	{
-		model .getViewOrientation( lookDir, upDir );
-	}
-    
-    
+        void setViewTransformation( Matrix4d trans, int eye );
+
+        void setPerspective( double fov, double aspectRatio, double near, double far );
+
+        void setOrthographic( double halfEdge, double near, double far );
+    }
+
+    /**
+     * The width of the frustum at the look-at point is held
+     * constant, as well as the other dimensions of the frustum.
+     * @param value
+     */
+    public void setPerspective( boolean value )
+    {
+        model .setPerspective( value );
+        updateViewersTransformation();
+        updateViewersProjection();
+    }
+
+    public void getViewOrientation( Vector3d lookDir, Vector3d upDir )
+    {
+        model .getViewOrientation( lookDir, upDir );
+    }
+
+
     public void addViewer( CameraController.Viewer viewer )
     {
         mViewers .add( viewer );
     }
-    
+
     public void removeViewer( CameraController.Viewer viewer )
     {
         mViewers .remove( viewer );
     }
-    
+
     public CameraController( Camera init )
     {
-    	model = init;
+        model = init;
         initialCamera = new Camera( model );
     }
-    
+
     public void updateViewers()
     {
-		updateViewersTransformation();
-		updateViewersProjection();
-	}
-    
+        updateViewersTransformation();
+        updateViewersProjection();
+    }
+
     // TODO get rid of this
     public Camera getView()
     {
@@ -129,78 +131,78 @@ public class CameraController extends DefaultController
             properties() .firePropertyChange( "stereo", wasStereo, model .isStereo() );
         if ( oldMag != model .getMagnification() )
             properties() .firePropertyChange( "magnification", Float .toString( oldMag ), Float .toString( model .getMagnification() ) );
-        
+
         return model;
     }
 
-	private void updateViewersTransformation()
-	{
+    private void updateViewersTransformation()
+    {
         if ( mViewers .size() == 0 )
             return;
-		Matrix4d trans = new Matrix4d();
-		
-		model .getViewTransform( trans, 0d );
+        Matrix4d trans = new Matrix4d();
+
+        model .getViewTransform( trans, 0d );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
             mViewers .get( i ) .setViewTransformation( trans, Viewer .MONOCULAR );
-		
+
         model .getStereoViewTransform( trans, Viewer .LEFT_EYE );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
             mViewers .get( i ) .setViewTransformation( trans, Viewer .LEFT_EYE );
-        
+
         model .getStereoViewTransform( trans, Viewer .RIGHT_EYE );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
             mViewers .get( i ) .setViewTransformation( trans, Viewer .RIGHT_EYE );
-	}
-	
-	private void updateViewersProjection()
-	{
+    }
+
+    private void updateViewersProjection()
+    {
         if ( mViewers .size() == 0 )
             return;
         double near = model .getNearClipDistance();
         double far = model .getFarClipDistance();
-		if ( ! model .isPerspective() ) {
-			double edge = model .getWidth() / 2;
+        if ( ! model .isPerspective() ) {
+            double edge = model .getWidth() / 2;
             for ( int i = 0; i < mViewers .size(); i++ )
                 mViewers .get( i ) .setOrthographic( edge, near, far );
-		}
-		else {
-			double field = model .getFieldOfView();
+        }
+        else {
+            double field = model .getFieldOfView();
             for ( int i = 0; i < mViewers .size(); i++ )
                 mViewers .get( i ) .setPerspective( field, 1.0d, near, far );
-		}
+        }
 
         // TODO - make aspect ratio track the screen window shape
-	}
+    }
 
-	
-	public void getWorldRotation( Quat4d q )
-	{
-		Vector3d axis = new Vector3d( q.x, q.y, q.z );
 
-		Matrix4d viewTrans = new Matrix4d();
-		model .getViewTransform( viewTrans, 0d );
+    public void getWorldRotation( Quat4d q )
+    {
+        Vector3d axis = new Vector3d( q.x, q.y, q.z );
+
+        Matrix4d viewTrans = new Matrix4d();
+        model .getViewTransform( viewTrans, 0d );
         viewTrans .invert();
 
-		// now map the axis back to world coordinates
-		viewTrans .transform( axis );
-		q.x = axis.x; q.y = axis.y; q.z = axis.z;
-	}
-	
-	
-	public void mapViewToWorld( Vector3f vector )
-	{
-		Matrix4d viewTrans = new Matrix4d();
-		model .getViewTransform( viewTrans, 0d );
+        // now map the axis back to world coordinates
+        viewTrans .transform( axis );
+        q.x = axis.x; q.y = axis.y; q.z = axis.z;
+    }
+
+
+    public void mapViewToWorld( Vector3f vector )
+    {
+        Matrix4d viewTrans = new Matrix4d();
+        model .getViewTransform( viewTrans, 0d );
         viewTrans .invert();
-		viewTrans .transform( vector );
-	}
-	
+        viewTrans .transform( vector );
+    }
+
     public void setViewDirection( Vector3f lookDir )
     {
-    	model .setViewDirection( lookDir );
+        model .setViewDirection( lookDir );
         updateViewersTransformation();
     }
 
@@ -209,43 +211,43 @@ public class CameraController extends DefaultController
         model .setViewDirection( lookDir, upDir );
         updateViewersTransformation();
     }
-	
-	public void setLookAtPoint( Point3d lookAt )
-	{
-		model .setLookAtPoint( lookAt );
+
+    public void setLookAtPoint( Point3d lookAt )
+    {
+        model .setLookAtPoint( lookAt );
         updateViewersTransformation();
-	}
+    }
 
-	public void addViewpointRotation( Quat4d rotation )
-	{
-		model .addViewpointRotation( rotation );
-    	updateViewersTransformation();
-	}
+    public void addViewpointRotation( Quat4d rotation )
+    {
+        model .addViewpointRotation( rotation );
+        updateViewersTransformation();
+    }
 
-	/**
-	 * All view parameters will scale with distance, to keep the frustum
-	 * shape fixed.
-	 * @param distance
-	 */
-	public void setMagnification( float exp )
-	{
-		model .setMagnification( exp );
-		
-		// have to adjust the projection, since the clipping distances
-		//   adjust with distance
-		updateViewersTransformation();
-		updateViewersProjection();
-	}
+    /**
+     * All view parameters will scale with distance, to keep the frustum
+     * shape fixed.
+     * @param distance
+     */
+    public void setMagnification( float exp )
+    {
+        model .setMagnification( exp );
 
-    
+        // have to adjust the projection, since the clipping distances
+        //   adjust with distance
+        updateViewersTransformation();
+        updateViewersProjection();
+    }
+
+
     private final LinkedList<Camera> recentViews = new LinkedList<>();
-    
+
     private Camera baselineView = model;  // invariant: baselineView .equals( mParameters) whenever the view
-                                                    // is "at rest" (not rolling or zooming), AND baselineView equals the latest recentView
+    // is "at rest" (not rolling or zooming), AND baselineView equals the latest recentView
     private final static int MAX_RECENT = 20;
-    
+
     private int currentRecentView = 0;
-    
+
     private boolean saveBaselineView()
     {
         if ( model .equals( baselineView ) )
@@ -257,39 +259,39 @@ public class CameraController extends DefaultController
         currentRecentView = recentViews .size();
         return true;
     }
-    
+
     private static final Vector3f Z = new Vector3f( 0f, 0f, -1f ), Y = new Vector3f( 0f, 1f, 0f );
-    
+
     private Snapper mSnapper = null;
-    
+
     private boolean mSnapping = false;
 
     public void setSnapper( Snapper snapper )
     {
-    	mSnapper = snapper;
+        mSnapper = snapper;
         if ( mSnapping ) {
             saveBaselineView(); // might have been zooming
             snapView();
             saveBaselineView();
         }
     }
-    
+
     public boolean isSnapping()
     {
-    	return mSnapping;
+        return mSnapping;
     }
-    
-	public void snapView()
-	{
-		Z .set( 0f, 0f, -1f );
-		mapViewToWorld( Z );
-		Y .set( 0f, 1f, 0f );
-		mapViewToWorld( Y );
 
-		mSnapper .snapDirections( Z, Y );
+    public void snapView()
+    {
+        Z .set( 0f, 0f, -1f );
+        mapViewToWorld( Z );
+        Y .set( 0f, 1f, 0f );
+        mapViewToWorld( Y );
 
-		setViewDirection( Z, Y );
-	}
+        mSnapper .snapDirections( Z, Y );
+
+        setViewDirection( Z, Y );
+    }
 
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
@@ -346,7 +348,7 @@ public class CameraController extends DefaultController
             saveBaselineView();
         }
     }
-    
+
     public MouseTool getTrackball()
     {
         return new Trackball()
@@ -357,19 +359,19 @@ public class CameraController extends DefaultController
                 saveBaselineView(); // might have been zooming
                 super .mousePressed( e );
             }
-            
+
             @Override
             public void trackballRolled( Quat4d roll )
             {
                 Quat4d copy = new Quat4d( roll );
-                
+
                 getWorldRotation( copy );
-                
+
                 addViewpointRotation( copy );
-                
+
                 // TODO give will-snap feedback when drag paused
             }
-            
+
             @Override
             public void mouseReleased( MouseEvent e )
             {
@@ -379,16 +381,16 @@ public class CameraController extends DefaultController
             }
         };
     }
-    
+
     // ticks <-> mag mapping is duplicated in ViewPlatformControlPanel... should live here only
-    
+
     private static final float MAG_PER_TICKS = -50f; // MAX_MAG = 4f, MIN_MAG = -2f;
-    
+
     private static int magToTicks( float magnification )
     {
         return Math.round( MAG_PER_TICKS * ( magnification - 1f ) );
     }
-    
+
     private static float ticksToMag( int ticks )
     {
         return ( ticks / MAG_PER_TICKS ) + 1f;
@@ -416,21 +418,22 @@ public class CameraController extends DefaultController
     public String getProperty( String propName )
     {
         switch( propName) {
+
         case "magnification":
             return Float .toString(  model .getMagnification() );
 
         case "perspective":
-			return Boolean .toString( model .isPerspective() );
-			
+            return Boolean .toString( model .isPerspective() );
+
         case "snap":
-			return Boolean .toString( isSnapping() );
-			
+            return Boolean .toString( isSnapping() );
+
         case "stereo":
-			return Boolean .toString( model .isStereo() );
+            return Boolean .toString( model .isStereo() );
 
         case "viewDistance":
             return Float .toString(  model .getViewDistance() );
-                
+
         case "lookAtPoint":
             Point3d lookAt = model .getLookAtPoint();
             return lookAt.toString();
@@ -442,7 +445,7 @@ public class CameraController extends DefaultController
             model .getViewOrientation(lookDir, upDir);
             return lookDir.toString();
         }
-        
+
         case "upDir":
         {
             Vector3d lookDir = new Vector3d();
@@ -450,43 +453,60 @@ public class CameraController extends DefaultController
             model .getViewOrientation(lookDir, upDir);
             return upDir.toString();
         }
+
+        case "drawOutlines": // for the trackball rendering
+            return "false";
+
+        case "showIcosahedralLabels":
+            // TODO refactor to fix this
+            if ( super .propertyIsTrue( "isIcosahedralSymmetry" ) )
+                return super.getProperty( "trackball.showIcosahedralLabels" );
+            else
+                return "false";
+            
+        default:
+            return super .getProperty( propName );
         }
-        
-        return super .getProperty( propName );
     }
-    
+
     private final static long ZOOM_PAUSE = 3000; // three seconds
-    
+
     private long lastZoom = 0;
-    
-    
+
+
     @Override
     public void setProperty( String propName, Object value )
     {
-    	if ( "magnification" .equals( propName ) )
+        if ( "magnification" .equals( propName ) )
         {
             long now = System .currentTimeMillis();
             if ( now - lastZoom > ZOOM_PAUSE ) {
                 // it has been a while... save the last view
                 saveBaselineView();
             }
-			setMagnification( Float .parseFloat( (String) value ) );
+            setMagnification( Float .parseFloat( (String) value ) );
             lastZoom = now;
         }
     }
 
-	public void copyView( Camera newView )
-	{
-		this .copied = newView;
-	}
+    public void copyView( Camera newView )
+    {
+        this .copied = newView;
+    }
 
-	public void useCopiedView()
-	{
-		this .restoreView( this .copied );
-	}
+    public void useCopiedView()
+    {
+        this .restoreView( this .copied );
+    }
 
-	public boolean hasCopiedView()
-	{
-		return this .copied != null;
-	}
+    public boolean hasCopiedView()
+    {
+        return this .copied != null;
+    }
+
+    @Override
+    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas, String name )
+    {
+        ((Controller3d) this .mNextController) .attachViewer( viewer, scene, canvas, name );
+    }
 }

@@ -24,7 +24,7 @@ import javax.media.j3d.PolygonAttributes;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
-import org.vorthmann.ui.Controller;
+import org.vorthmann.j3d.J3dComponentFactory;
 
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
@@ -38,11 +38,11 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
+import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 
-public class Java3dFactory implements RenderingViewer.Factory
+public class Java3dFactory implements J3dComponentFactory
 {
     private static class GraphicsConfigurationFactory {
         private static final Logger logger = Logger.getLogger(new Throwable().getStackTrace()[0].getClassName());
@@ -106,22 +106,6 @@ public class Java3dFactory implements RenderingViewer.Factory
         outlines .setColoringAttributes( new ColoringAttributes( new Color3f( Color.BLACK ), ColoringAttributes .SHADE_FLAT ) );
     }
     
-    @Override
-    public RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas )
-    {
-        if ( canvas == null ) // this viewer is for offscreen rendering
-        {
-            canvas = new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration(), true );
-        }
-        return new Java3dRenderingViewer( (Java3dSceneGraph) scene, (CapturingCanvas3D) canvas );
-    }
-
-    @Override
-	public RenderingChanges createRenderingChanges( boolean isSticky, Controller controller )
-	{
-		return new Java3dSceneGraph( this, this .lights, isSticky, controller );
-	}
-
     Colors getColors()
     {
         return mAppearances .getColors();
@@ -311,8 +295,12 @@ public class Java3dFactory implements RenderingViewer.Factory
     }
 
     @Override
-    public Component createJ3dComponent()
+    public Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller, String name )
     {
-        return new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration() );
+        CapturingCanvas3D canvas = new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration(), isOffScreen );
+        Java3dSceneGraph scene = new Java3dSceneGraph( this, this .lights, isSticky, controller );
+        RenderingViewer viewer = new Java3dRenderingViewer( scene, canvas );
+        controller .attachViewer( viewer, scene, canvas, name );
+        return canvas;
     }
 }

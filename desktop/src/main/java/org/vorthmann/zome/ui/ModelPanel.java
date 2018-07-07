@@ -24,12 +24,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
+import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.CardPanel;
 import org.vorthmann.ui.Controller;
 
-import com.vzome.core.render.RenderingChanges;
 import com.vzome.desktop.controller.Controller3d;
-import com.vzome.desktop.controller.RenderingViewer;
 
 public class ModelPanel extends JPanel implements PropertyChangeListener, SymmetryToolbarsPanel.ButtonFactory
 {
@@ -41,18 +40,18 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
     private final JToolBar oldToolBar, bookmarkBar;
     private final JScrollPane bookmarkScroller;
     private final boolean isEditor;
-    private final Controller controller, view;
+    private final Controller controller, cameraController;
     private final JPanel mMonocularPanel;
     private int nextBookmarkIcon = 0;
     private final CardPanel toolbarCards;
     private final Collection<SymmetryToolbarsPanel> toolBarPanels = new ArrayList<SymmetryToolbarsPanel>();
     private final ToolConfigDialog bookmarkConfigDialog;
 
-    public ModelPanel( Controller3d controller, RenderingViewer.Factory factory, ControlActions enabler, boolean isEditor, boolean fullPower )
+    public ModelPanel( Controller3d controller, J3dComponentFactory factory, ControlActions enabler, boolean isEditor, boolean fullPower )
     {
         super( new BorderLayout() );
         this .controller = controller;
-        this .view = controller .getSubController( "viewPlatform" );
+        this .cameraController = controller .getSubController( "camera" );
         this .isEditor = isEditor;
 
         this .bookmarkConfigDialog = new ToolConfigDialog( (JFrame) this.getParent(), true );
@@ -75,11 +74,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         mMonocularPanel = new JPanel( new BorderLayout() );
 
         mMonocularPanel .setPreferredSize( new Dimension( 2000, 2000 ) );
-        monocularCanvas = factory .createJ3dComponent();
-        RenderingChanges scene = factory .createRenderingChanges( true, controller );
-        RenderingViewer viewer = factory .createRenderingViewer( scene, this .monocularCanvas );
-        controller .attachViewer( viewer, scene, this .monocularCanvas, "mainViewer-monocular" );
-        // attachViewer must precede this getSubController
+        monocularCanvas = factory .createRenderingComponent( true, false, controller, "model" );
+        // createRenderingComponent must precede this getSubController
         Controller monoController = controller .getSubController( "monocularPicking" );
         mMonocularPanel .add( monocularCanvas, BorderLayout.CENTER );
 
@@ -98,7 +94,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         //            monoStereoCardLayout .show( monoStereoPanel, "stereo" );
         //        else
         monoStereoCardLayout .show( monoStereoPanel, "mono" );
-        view .addPropertyListener( new PropertyChangeListener()
+        cameraController .addPropertyListener( new PropertyChangeListener()
         {
             @Override
             public void propertyChange( PropertyChangeEvent chg )

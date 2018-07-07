@@ -71,7 +71,7 @@ public abstract class Exporter3d
      */
     public void doExport( DocumentModel doc, File file, File parentFile, Writer writer, int height, int width ) throws Exception
     {
-        mScene = doc .getViewModel();
+        mScene = doc .getCamera();
         mModel = doc .getRenderedModel();
         this .doExport( file, parentFile, writer, height, width );
         mScene = null;

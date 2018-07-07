@@ -20,15 +20,14 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.core.render.Color;
-import com.vzome.core.render.RenderingChanges;
 import com.vzome.desktop.controller.Controller3d;
-import com.vzome.desktop.controller.RenderingViewer;
 
 public class ControllerWebSocket implements WebSocketListener
 {
@@ -91,7 +90,7 @@ public class ControllerWebSocket implements WebSocketListener
     		}
             consumer.start();
             RemoteClientRendering clientRendering = new RemoteClientRendering( queue );
-            this .docController .attachViewer( clientRendering, clientRendering, null, "custom" );
+            this .docController .attachViewer( clientRendering, clientRendering, null );
     		try {
     			this .docController .doAction( "finish.load", null );
     			publish( "{ \"render\": \"flush\" }" );
@@ -169,28 +168,16 @@ public class ControllerWebSocket implements WebSocketListener
 			{
 				System .out .println( "UI event: " + e .toString() );
 			}
-		}, props, new RenderingViewer.Factory() {
-			
-			// These will never be called.  We need this just to avoid the default Java3dFactory construction.
-			
-			@Override
-			public Component createJ3dComponent( String name )
-			{
-				return null;
-			}
-			
-			@Override
-			public RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas )
-			{
-				return null;
-			}
-			
-			@Override
-			public RenderingChanges createRenderingChanges( boolean isSticky, Controller controller )
-			{
-				return null;
-			}
-		} );
+		}, props, new J3dComponentFactory()
+        {
+            @Override
+            public Component createRenderingComponent( boolean isSticky,
+                    boolean isOffScreen, Controller3d controller )
+            {
+                // Should never be called
+                return null;
+            }
+        });
 		APP .setErrorChannel( new Controller.ErrorChannel() {
 			
 			@Override

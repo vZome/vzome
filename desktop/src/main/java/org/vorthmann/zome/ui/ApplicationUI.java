@@ -32,6 +32,8 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
+import com.vzome.desktop.controller.Controller3d;
+
 /**
  * Top-level UI class for vZome.
  * 
@@ -288,7 +290,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 		switch ( evt .getPropertyName() ) {
 
 		case "newDocument":
-			Controller controller = (Controller) evt. getNewValue();
+		    Controller3d controller = (Controller3d) evt. getNewValue();
 			DocumentFrame window = new DocumentFrame( controller, this .mController .getJ3dFactory() );
 	        window .setVisible( true );
 	        window .setAppUI( new PropertyChangeListener() {

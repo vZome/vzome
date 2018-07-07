@@ -64,7 +64,6 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -98,7 +97,7 @@ public class DocumentController extends DefaultController implements Controller3
 
     private RenderedModel currentSnapshot;
 
-    private CameraController mViewPlatform;
+    private CameraController cameraController;
     
     private Lights sceneLighting;
     
@@ -150,7 +149,6 @@ public class DocumentController extends DefaultController implements Controller3
     private Camera currentView;
 
     private MouseTool lessonPageClick, articleModeMainTrackball, modelModeMainTrackball;
-    private final Controller trackballProperties;
 
     private Component modelCanvas;
 
@@ -261,8 +259,8 @@ public class DocumentController extends DefaultController implements Controller3
                 else if ( "currentView" .equals( change .getPropertyName() ) )
                 {
                     Camera newView = (Camera) change .getNewValue();
-                    if ( ! newView .equals( mViewPlatform .getView() ) )
-                        mViewPlatform .restoreView( newView );
+                    if ( ! newView .equals( cameraController .getView() ) )
+                        cameraController .restoreView( newView );
                 }
                 else if ( "thumbnailChanged" .equals( change .getPropertyName() ) )
                 {
@@ -294,46 +292,19 @@ public class DocumentController extends DefaultController implements Controller3
 
         sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
 
-        // this seems backwards, I know... the TrackballViewPlatformModel is the main
-        // model, and only forwards two events to trackballVPM
-        mViewPlatform = new CameraController( document .getViewModel() );
-        mViewPlatform .setNextController( this );
+        cameraController = new CameraController( document .getCamera() );
+        cameraController .setNextController( this );
 
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
         showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
-            // TODO define a standalone controller class for contextual menus, etc.
-        this .trackballProperties = new DefaultController()
-        {
-            @Override
-            public String getProperty( String name )
-            {
-                switch ( name ) {
-
-                case "drawOutlines":
-                    return "false";
-
-                case "showIcosahedralLabels":
-                    if ( super .userHasEntitlement( "developer.extras" )
-                            && documentModel.getSymmetrySystem().getSymmetry() instanceof IcosahedralSymmetry ) {
-                        return super.getProperty( "trackball.showIcosahedralLabels" );
-                    } else
-                        return "false";
-
-                default:
-                    return super.getProperty( name );
-                }
-            }
-        };
-        this .trackballProperties .setNextController( this );
-
         thumbnails = new ThumbnailRendererImpl( app .getJ3dFactory() );
 
         mApp = app;
         
-        lessonController = new LessonController( this .documentModel .getLesson(), mViewPlatform );
+        lessonController = new LessonController( this .documentModel .getLesson(), cameraController );
         lessonController .setNextController( this );
 
         setSymmetrySystem( this .documentModel .getSymmetrySystem() );
@@ -352,11 +323,12 @@ public class DocumentController extends DefaultController implements Controller3
         copyThisView(); // initialize the "copied" view at startup.
     }
     
+    @Override
     public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas, String name )
     {
     		// This is called on a UI thread!
     	
-        if ( name.startsWith( "mainViewer" ) )
+        if ( name.startsWith( "model" ) )
         {
         		this .modelCanvas = canvas;
         		this .mainScene = scene;
@@ -365,12 +337,12 @@ public class DocumentController extends DefaultController implements Controller3
         		if ( this .mainScene instanceof PropertyChangeListener )
         			this .addPropertyListener( (PropertyChangeListener) this .mainScene );
 
-        		this .mViewPlatform .addViewer( this .imageCaptureViewer );
+        		this .cameraController .addViewer( this .imageCaptureViewer );
         		this .monoController = new PickingController( this .imageCaptureViewer, this );
 
         		AlgebraicField field = this .documentModel .getField();
         		// The preview strut rendering is the main reason we distinguish the mainScene as a listener
-        		this .previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
+        		this .previewStrut = new PreviewStrut( field, mainScene, cameraController );
         		this .previewStrut .setPropertyChangeSupport( this .properties() );
 
 //                leftEyeCanvas = rvFactory .createJ3dComponent( "" );
@@ -413,7 +385,7 @@ public class DocumentController extends DefaultController implements Controller3
             };
             lessonPageClick = mouseTool; // will not be attached, initially; gets attached on switchToArticle
 
-            mouseTool = new MouseToolFilter( mViewPlatform .getZoomScroller() )
+            mouseTool = new MouseToolFilter( cameraController .getZoomScroller() )
             {
                 @Override
                 public void mouseWheelMoved( MouseWheelEvent e )
@@ -435,7 +407,7 @@ public class DocumentController extends DefaultController implements Controller3
             };
             mouseTool .attach( modelCanvas );
 
-            mouseTool = mViewPlatform .getTrackball();
+            mouseTool = cameraController .getTrackball();
             if ( propertyIsTrue( "presenter.mode" ) )
                 ((Trackball) mouseTool) .setModal( false );
 //            if ( ! editingModel )
@@ -567,25 +539,25 @@ public class DocumentController extends DefaultController implements Controller3
             // mRenderedModel .setFactory( mViewer .getSceneGraphFactory() );
             // mRenderedModel .setTopGroup( mViewer .getSceneGraphRoot() );
 
-            mViewPlatform .updateViewers();
+            cameraController .updateViewers();
         }
-        else if ( name.equals( "controlViewer" ) )
+        else if ( name.equals( "trackball" ) )
         {
-            MouseTool trackball = this .mViewPlatform .getTrackball();
+            MouseTool trackball = this .cameraController .getTrackball();
    
             // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
             //  and ViewPlatformControlPanel will attach a better one to the parent component 
             canvas .addMouseListener( trackball );
             canvas .addMouseMotionListener( trackball );
 
-            this .mViewPlatform .addViewer( new TrackballRenderingViewer( viewer ) );
+            this .cameraController .addViewer( new TrackballRenderingViewer( viewer ) );
 
             // mControlBallScene .reset();
             this .mControlBallScene = scene;
             for ( RenderedManifestation rm : this .mControlBallModel )
                 this .mControlBallScene .manifestationAdded( rm );
 
-            this .mViewPlatform .updateViewers();
+            this .cameraController .updateViewers();
         }
         else
         {
@@ -623,7 +595,7 @@ public class DocumentController extends DefaultController implements Controller3
             for ( RenderedManifestation rm : mControlBallModel )
                 mControlBallScene.manifestationAdded( rm );
         }
-        mViewPlatform .setSnapper( symmetryController.getSnapper() );
+        cameraController .setSnapper( symmetryController.getSnapper() );
         properties().firePropertyChange( "symmetry", null, name ); // notify UI, so cardpanel can flip, or whatever
         setRenderingStyle();
     }
@@ -684,7 +656,7 @@ public class DocumentController extends DefaultController implements Controller3
         try {
             if ( action .equals( "switchToArticle" ) )
             {
-                currentView = mViewPlatform .getView();
+                currentView = cameraController .getView();
                 
                 selectionClick .detach( modelCanvas );
                 previewStrutStart .detach( modelCanvas );
@@ -706,7 +678,7 @@ public class DocumentController extends DefaultController implements Controller3
             {
                 documentModel .removePropertyChangeListener( this .articleChanges );
                 documentModel .addPropertyChangeListener( this .modelChanges );
-                mViewPlatform .restoreView( currentView );
+                cameraController .restoreView( currentView );
 
                 RenderedModel .renderChange( currentSnapshot, mRenderedModel, mainScene );
                 currentSnapshot = mRenderedModel;
@@ -725,7 +697,7 @@ public class DocumentController extends DefaultController implements Controller3
             }
             else if ( action .equals( "takeSnapshot" ) )
             {
-                documentModel .addSnapshotPage( mViewPlatform .getView() );
+                documentModel .addSnapshotPage( cameraController .getView() );
             }
 
             else if ( "nextPage" .equals( action ) )
@@ -748,7 +720,7 @@ public class DocumentController extends DefaultController implements Controller3
 
             else if ( action.equals( "refresh.2d" ) )
             {
-                Java2dExporter exporter = new Java2dExporter( mViewPlatform.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
+                Java2dExporter exporter = new Java2dExporter( cameraController.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
                 this .mSnapshot .setExporter( exporter );
             }
 
@@ -800,15 +772,15 @@ public class DocumentController extends DefaultController implements Controller3
             }
             else if ( action.equals( "useCopiedView" ) )
             {
-                mViewPlatform .useCopiedView();
+                cameraController .useCopiedView();
             }
             else if ( action.equals( "lookAtOrigin" ) )
-                mViewPlatform.setLookAtPoint( new Point3d( 0, 0, 0 ) );
+                cameraController.setLookAtPoint( new Point3d( 0, 0, 0 ) );
             
             else if ( action.equals( "lookAtSymmetryCenter" ) )
             {
                 RealVector loc = documentModel .getParamLocation( "ball" );
-                mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+                cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
             }
 
             else if ( action .equals( "usedOrbits" ) )
@@ -937,7 +909,7 @@ public class DocumentController extends DefaultController implements Controller3
 
     private void copyThisView()
     {
-        mViewPlatform.copyView(mViewPlatform.getView());
+        cameraController.copyView(cameraController.getView());
     }
 
     @Override
@@ -1030,7 +1002,7 @@ public class DocumentController extends DefaultController implements Controller3
                 String js = readResource( "org/vorthmann/zome/app/j360-loop.js" );
                 writeFile( js, new File( dir, "j360-loop.js" ) );
 
-                AnimationCaptureController animation = new AnimationCaptureController( this .mViewPlatform, dir );
+                AnimationCaptureController animation = new AnimationCaptureController( this .cameraController, dir );
                 captureImageFile( null, AnimationCaptureController.TYPE, animation );
                 this .openApplication( htmlFile );
                 return;
@@ -1051,7 +1023,7 @@ public class DocumentController extends DefaultController implements Controller3
                 Dimension size = this .modelCanvas .getSize();              
                 try {
                     String format = command .substring( "export." .length() ) .toLowerCase();
-                    Exporter3d exporter = documentModel .getNaiveExporter( format, mViewPlatform .getView(), colors, sceneLighting, currentSnapshot );
+                    Exporter3d exporter = documentModel .getNaiveExporter( format, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
                         exporter.doExport( file, file.getParentFile(), out, size.height, size.width );
                     }
@@ -1059,7 +1031,7 @@ public class DocumentController extends DefaultController implements Controller3
                         exporter = this .mApp .getExporter( format );
                         if ( exporter == null ) {
                             // currently just "partgeom"
-                            exporter = documentModel .getStructuredExporter( format, mViewPlatform .getView(), colors, sceneLighting, mRenderedModel );
+                            exporter = documentModel .getStructuredExporter( format, cameraController .getView(), colors, sceneLighting, mRenderedModel );
                         }
                         if ( exporter != null )
                             exporter .doExport( documentModel, file, file.getParentFile(), out, size.height, size.width );
@@ -1259,7 +1231,7 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
 
             case "useCopiedView":
-                result[ i ] = mViewPlatform .hasCopiedView();
+                result[ i ] = cameraController .hasCopiedView();
                 break;
 
             default:
@@ -1279,108 +1251,120 @@ public class DocumentController extends DefaultController implements Controller3
     public void setErrorChannel( ErrorChannel errors )
     {
         mErrors = errors;
-        if ( mViewPlatform == null )
+        if ( cameraController == null )
             return;
-        mViewPlatform.setErrorChannel( errors );
+        cameraController.setErrorChannel( errors );
         lessonController.setErrorChannel( errors );
         toolsController .setErrorChannel( errors );
     }
 
     @Override
-    public String getProperty( String string )
+    public String getProperty( String propName )
     {
-        if ( "useGraphicalViews".equals( string ) ) {
+        switch ( propName ) {
+
+        case "isIcosahedralSymmetry":
+            return Boolean .toString( symmetryController.getSymmetry().getName() .equals( "icosahedral" ) );
+
+        case "showIcosahedralLabels":
+            // TODO refactor to a controller for ModelPanel
+            return "false";
+
+        case "trackball.showIcosahedralLabels":
+            if ( super .userHasEntitlement( "developer.extras" ) ) {
+                return super.getProperty( "trackball.showIcosahedralLabels" );
+            } else
+                return "false";
+
+        case "useGraphicalViews":
             return Boolean.toString( this.useGraphicalViews );
-        }
-        if ( "showStrutScales".equals( string ) ) {
+            
+        case "clipboard":
+            return systemClipboard != null ? systemClipboard.getClipboardContents() : designClipboard;
+
+        case "showFrameLabels":
+            return Boolean .toString( showFrameLabels );
+
+        case "drawOutlines":
+            return Boolean .toString( drawOutlines );
+
+        case "useWorkingPlane":
+            return Boolean .toString( useWorkingPlane );
+
+        case "workingPlaneDefined":
+            return Boolean .toString( workingPlaneAxis != null );
+
+        case "showStrutScales":
             return Boolean.toString( this.showStrutScales );
-        }
-        if ( "startReader".equals( string ) )
+
+        case "startReader":
             return Boolean.toString( startReader );
 
-        if ( "migrated".equals( string ) )
+        case "migrated":
             return Boolean.toString( this .documentModel .isMigrated() );
 
-        if ( "edited".equals( string ) )
+        case "edited":
             return Boolean.toString( this .isEdited() );
 
-        if ( "symmetry".equals( string ) )
+        case "symmetry":
             return symmetryController.getSymmetry().getName();
 
-        if ( "field.name".equals( string ) )
+        case "field.name":
             return this .documentModel .getField() .getName();
-        
-        if ( "field.label".equals( string ) ) {
-            
+
+        case "field.label": {
             String name = this .documentModel .getField() .getName();
             return super.getProperty( "field.label." + name ); // defer to app controller
             // TODO implement AlgebraicField.getLabel()
         }
-        
-        if ( string .startsWith( "supports.symmetry." ) )
-        {
-            String group = string .substring( "supports.symmetry." .length() );
-            Symmetry symm = this .documentModel .getFieldApplication() .getSymmetryPerspective( group ) .getSymmetry();
-            return Boolean .toString(symm != null);
-        }
-        
-        if ( "clipboard" .equals( string ) )
-            return systemClipboard != null
-                    ? systemClipboard.getClipboardContents()
-                    : designClipboard;
-        
-        if ( "showFrameLabels" .equals( string ) )
-            return Boolean .toString( showFrameLabels );
-                
-        if ( "drawOutlines" .equals( string ) )
-            return Boolean .toString( drawOutlines );
-                
-        if ( "useWorkingPlane" .equals( string ) )
-            return Boolean .toString( useWorkingPlane );
-                
-        if ( "workingPlaneDefined" .equals( string ) )
-            return Boolean .toString( workingPlaneAxis != null );
-                
-        if ( string .startsWith( "tool.description." ) )
-        {
-            string = string .substring( "tool.description." .length() ); // strip "tool.description."
-            if ( "bookmark" .equals( string ) )
-                return "set the selection to be whatever it is now";
-            else if ( "module" .equals( string ) )
-                return "duplicate a module at every point";
-            else if ( "point reflection" .equals( string ) )
-                return "apply a central inversion through a point";
-            else if ( "mirror" .equals( string ) )
-                return "reflect objects in a mirror plane";
-            else if ( "translation" .equals( string ) )
-                return "translate objects by the given offset";
-            else if ( "linear map" .equals( string ) )
-                return "apply a linear transformation";
-            else if ( "rotation" .equals( string ) )
-                return "rotate objects around an axis, by a fixed angle";
-            else if ( "scaling" .equals( string ) )
-                return "scale objects linearly, relative to a fixed point";
-            else if ( "plane" .equals( string ) )
-                return "select objects based on incidence on a plane or half-space";
-            else
-                return "replicate objects to create " + string + " symmetry";
-        }
-        
-        if ( string .startsWith( "file-dialog-title." ) ) {
-            switch ( string .substring( "file-dialog-title." .length() ) ) {
-            case "capture-animation":
-                return "Choose a target folder for animation frames";
 
-            default:
-                break; // fall through to properties or super
+        default:
+            if ( propName .startsWith( "supports.symmetry." ) )
+            {
+                String group = propName .substring( "supports.symmetry." .length() );
+                Symmetry symm = this .documentModel .getFieldApplication() .getSymmetryPerspective( group ) .getSymmetry();
+                return Boolean .toString(symm != null);
+            }   
+            else if ( propName .startsWith( "tool.description." ) )
+            {
+                propName = propName .substring( "tool.description." .length() ); // strip "tool.description."
+                if ( "bookmark" .equals( propName ) )
+                    return "set the selection to be whatever it is now";
+                else if ( "module" .equals( propName ) )
+                    return "duplicate a module at every point";
+                else if ( "point reflection" .equals( propName ) )
+                    return "apply a central inversion through a point";
+                else if ( "mirror" .equals( propName ) )
+                    return "reflect objects in a mirror plane";
+                else if ( "translation" .equals( propName ) )
+                    return "translate objects by the given offset";
+                else if ( "linear map" .equals( propName ) )
+                    return "apply a linear transformation";
+                else if ( "rotation" .equals( propName ) )
+                    return "rotate objects around an axis, by a fixed angle";
+                else if ( "scaling" .equals( propName ) )
+                    return "scale objects linearly, relative to a fixed point";
+                else if ( "plane" .equals( propName ) )
+                    return "select objects based on incidence on a plane or half-space";
+                else
+                    return "replicate objects to create " + propName + " symmetry";
             }
+            else if ( propName .startsWith( "file-dialog-title." ) ) {
+                switch ( propName .substring( "file-dialog-title." .length() ) ) {
+                case "capture-animation":
+                    return "Choose a target folder for animation frames";
+
+                default:
+                    break; // fall through to properties or super
+                }
+            }
+
+            String result = this .properties .getProperty( propName );
+            if ( result != null )
+                return result;
+
+            return super.getProperty( propName );
         }
-
-        String result = this .properties .getProperty( string );
-        if ( result != null )
-            return result;
-
-        return super.getProperty( string );
     }
     
     @Override
@@ -1391,11 +1375,8 @@ public class DocumentController extends DefaultController implements Controller3
         case "monocularPicking":
             return monoController;
 
-        case "viewPlatform":
-            return mViewPlatform;
-
-        case "trackball":  // TODO combine this with viewPlatform controller
-            return this .trackballProperties;
+        case "camera":
+            return cameraController;
 
         case "symmetry":
             return symmetryController;
@@ -1414,7 +1395,7 @@ public class DocumentController extends DefaultController implements Controller3
         
         case "snapshot.2d": {
             if ( mSnapshot == null ) {
-                Java2dExporter exporter = new Java2dExporter( mViewPlatform.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
+                Java2dExporter exporter = new Java2dExporter( cameraController.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
                 mSnapshot = new Java2dSnapshot( exporter );
                 mSnapshot .setNextController( this );
             }
@@ -1514,7 +1495,7 @@ public class DocumentController extends DefaultController implements Controller3
 
             case "lookAtThis":
                 RealVector loc = documentModel .getCentroid( singleConstruction );
-                mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+                cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
                 
             case "setBuildOrbitAndLength": {
@@ -1699,21 +1680,21 @@ public class DocumentController extends DefaultController implements Controller3
                 buf.append( this.getProperty("field.label" ));
 
                 buf.append( "\n\nsymmetry: " );
-                buf.append( mViewPlatform.getProperty( "symmetry" ) );
+                buf.append( cameraController.getProperty( "symmetry" ) );
                 if( propertyIsTrue("show.camera.properties") ) {
                     buf.append( "\n\nlook at point: " );
-                    buf.append( mViewPlatform.getProperty( "lookAtPoint" ) );
+                    buf.append( cameraController.getProperty( "lookAtPoint" ) );
 
                     buf.append( "\n\nlook direction: " );
-                    buf.append( mViewPlatform.getProperty( "lookDir" ) );
+                    buf.append( cameraController.getProperty( "lookDir" ) );
                     buf.append( "\n  up direction: " );
-                    buf.append( mViewPlatform.getProperty( "upDir" ) );
+                    buf.append( cameraController.getProperty( "upDir" ) );
                     
                     buf.append( "\n\nview distance: " );
-                    buf.append( mViewPlatform.getProperty( "viewDistance" ) );
+                    buf.append( cameraController.getProperty( "viewDistance" ) );
                     
                     buf.append( "\n\nmagnification: " );
-                    buf.append( mViewPlatform.getProperty( "magnification" ) );
+                    buf.append( cameraController.getProperty( "magnification" ) );
                 }
                
                 return buf.toString();
