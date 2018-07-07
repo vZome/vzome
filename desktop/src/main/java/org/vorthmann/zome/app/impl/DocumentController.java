@@ -131,9 +131,7 @@ public class DocumentController extends DefaultController implements Controller3
     private SymmetryController symmetryController;
     
     private Segment workingPlaneAxis = null;
-    
-    private final ToolsController toolsController;
-    
+        
     private final PartsController partsController;
 
     private Map<String,SymmetryController> symmetries = new HashMap<>();
@@ -147,6 +145,7 @@ public class DocumentController extends DefaultController implements Controller3
 
     private MouseTool lessonPageClick, articleModeMainTrackball, modelModeMainTrackball;
 
+    // Needed only for switchToArticle/Model, and dimensions for export/capture
     private Component modelCanvas;
 
     private MouseTool selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
@@ -154,8 +153,6 @@ public class DocumentController extends DefaultController implements Controller3
     private final NumberController importScaleController;
 
     private int changeCount = 0;
-
-    private PickingController monoController;
         
    /*
      * See the javadoc to control the logging:
@@ -194,8 +191,8 @@ public class DocumentController extends DefaultController implements Controller3
                 ? new ClipboardController()
                 : null;
         
-        toolsController = new ToolsController( document .getToolsModel() );
-        toolsController .setNextController( this );
+        ToolsController toolsController = new ToolsController( document .getToolsModel() );
+        this .addSubController( "tools", toolsController );
         this .addPropertyListener( toolsController );
         
 		toolsController .addTool( document .getToolsModel() .get( "bookmark.builtin/ball at origin" ) );
@@ -207,6 +204,8 @@ public class DocumentController extends DefaultController implements Controller3
             this .symmetries .put( name, symmController );
         }
 
+        this .addSubController( "bookmark", new ToolFactoryController( this .documentModel .getBookmarkFactory() ) );
+        
         this .addSubController( "polytopes", new PolytopesController( this .documentModel ) );
         
         this .addSubController( "undoRedo", new UndoRedoController( this .documentModel .getHistoryModel() ) );
@@ -290,7 +289,7 @@ public class DocumentController extends DefaultController implements Controller3
         sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
 
         cameraController = new CameraController( document .getCamera() );
-        cameraController .setNextController( this );
+        this .addSubController( "camera", cameraController );
 
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
@@ -302,7 +301,7 @@ public class DocumentController extends DefaultController implements Controller3
         mApp = app;
         
         lessonController = new LessonController( this .documentModel .getLesson(), cameraController );
-        lessonController .setNextController( this );
+        this .addSubController( "lesson", lessonController );
 
         setSymmetrySystem( this .documentModel .getSymmetrySystem() );
 
@@ -314,7 +313,7 @@ public class DocumentController extends DefaultController implements Controller3
         }
 
         partsController = new PartsController( symmetryController .getOrbitSource() );
-        partsController .setNextController( this );
+        this .addSubController( "parts", partsController );
         mRenderedModel .addListener( partsController );
 
         copyThisView(); // initialize the "copied" view at startup.
@@ -333,7 +332,8 @@ public class DocumentController extends DefaultController implements Controller3
         			this .addPropertyListener( (PropertyChangeListener) this .mainScene );
 
         		this .cameraController .addViewer( this .imageCaptureViewer );
-        		this .monoController = new PickingController( this .imageCaptureViewer, this );
+        		
+        		this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
         		AlgebraicField field = this .documentModel .getField();
         		// The preview strut rendering is the main reason we distinguish the mainScene as a listener
@@ -539,6 +539,7 @@ public class DocumentController extends DefaultController implements Controller3
         return result;
     }
 
+
     private void setSymmetrySystem( SymmetrySystem symmetrySystem )
     {
         String name =  symmetrySystem .getName();
@@ -569,6 +570,7 @@ public class DocumentController extends DefaultController implements Controller3
         if ( previewStrut != null )
             previewStrut .setSymmetryController( symmetryController );
     }
+
 
     @Override
     public void doAction( String action, ActionEvent e ) throws Failure
@@ -869,6 +871,7 @@ public class DocumentController extends DefaultController implements Controller3
         cameraController.copyView(cameraController.getView());
     }
 
+
     @Override
     public void doScriptAction( String command, String script )
     {
@@ -1124,6 +1127,7 @@ public class DocumentController extends DefaultController implements Controller3
         } );
     }
     
+    
     private static String readFile( File file ) throws IOException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1137,6 +1141,7 @@ public class DocumentController extends DefaultController implements Controller3
         }
         return new String( out.toByteArray() );
     }
+    
     
     private static String readResource( String resourcePath )
     {
@@ -1162,6 +1167,7 @@ public class DocumentController extends DefaultController implements Controller3
         }
     }
 
+
     private static void writeFile( String content, File file ) throws Exception
     {
         // A try-with-resources block closes the resource even if an exception occurs
@@ -1171,6 +1177,7 @@ public class DocumentController extends DefaultController implements Controller3
             throw ex;
         }
     }
+
 
     @Override
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
@@ -1198,11 +1205,13 @@ public class DocumentController extends DefaultController implements Controller3
         return result;
     }
 
+
     public boolean isEdited()
     {
         int currentChangeCount = this .documentModel .getChangeCount();
         return currentChangeCount > this .changeCount;
     }
+
 
     @Override
     public void setErrorChannel( ErrorChannel errors )
@@ -1212,8 +1221,8 @@ public class DocumentController extends DefaultController implements Controller3
             return;
         cameraController.setErrorChannel( errors );
         lessonController.setErrorChannel( errors );
-        toolsController .setErrorChannel( errors );
     }
+
 
     @Override
     public String getProperty( String propName )
@@ -1324,31 +1333,15 @@ public class DocumentController extends DefaultController implements Controller3
         }
     }
     
+
     @Override
     public Controller getSubController( String name )
     {
         switch ( name ) {
 
-        case "monocularPicking":
-            return monoController;
-
-        case "camera":
-            return cameraController;
-
         case "symmetry":
+            // This value is transient, so we don't want to use getSubController()
             return symmetryController;
-
-        case "tools":
-            return toolsController;
-        
-        case "parts":
-            return partsController; 
-        
-        case "lesson":
-            return lessonController;
-        
-        case "bookmark":
-            return new ToolFactoryController( this .documentModel .getBookmarkFactory() );
         
         case "snapshot.2d": {
             if ( mSnapshot == null ) {
@@ -1366,6 +1359,7 @@ public class DocumentController extends DefaultController implements Controller3
                 return super .getSubController( name );
         }
     }
+
 
     @Override
     public void setProperty( String cmd, Object value )
@@ -1409,6 +1403,7 @@ public class DocumentController extends DefaultController implements Controller3
         super.setProperty( cmd, value );
     }
 
+
     @Override
     public String[] getCommandList( String listName )
     {
@@ -1419,6 +1414,7 @@ public class DocumentController extends DefaultController implements Controller3
         return super.getCommandList( listName );
     }
     
+
     public void doManifestationAction( Manifestation pickedManifestation, String action )
     {
         Construction singleConstruction = null;
