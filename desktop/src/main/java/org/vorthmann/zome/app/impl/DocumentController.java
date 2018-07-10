@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -32,7 +31,6 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import javax.vecmath.Point3d;
-import javax.vecmath.Quat4d;
 
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
@@ -53,7 +51,6 @@ import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
@@ -89,70 +86,57 @@ import com.vzome.desktop.controller.ThumbnailRendererImpl;
  */
 public class DocumentController extends DefaultController implements Controller3d
 {
+    // local state
+    //
+    private int changeCount = 0;
+    private final boolean startReader;
     private DocumentModel documentModel;
+    private boolean editingModel;
+    private Camera currentView; // ?? TBD if this is in the right group
+    private final Properties properties;
     
-    private PreviewStrut previewStrut;
-
-    private final RenderedModel mRenderedModel;
-
-    private RenderedModel currentSnapshot;
-
-    private CameraController cameraController;
-    
-    private Lights sceneLighting;
-    
+    // to RenderedModelController
+    //
     private RenderingViewer imageCaptureViewer;
-    
-    private ThumbnailRenderer thumbnails;
-
+    private final RenderedModel mRenderedModel;
     private RenderingChanges mainScene;
-
-    private final ApplicationController mApp;
-
-    private Java2dSnapshot mSnapshot = null;
-
-    private boolean useGraphicalViews = false;
-    private boolean showStrutScales = false;
-    private boolean mRequireShift = false;
+    private Lights sceneLighting;
+    private MouseTool modelModeMainTrackball;
+    private Component modelCanvas;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
-    private boolean useWorkingPlane = false;
+    private Java2dSnapshot mSnapshot = null;
+    private CameraController cameraController;
+    private final ApplicationController mApp;
 
-    private final LessonController lessonController;
-
-    private final boolean startReader;
-    
-    private final ManifestationChanges selectionRendering;
-    
-    private PropertyChangeListener articleChanges, modelChanges;
-
-    private final Properties properties;
-        
+    // to SymmetryRenderingController?
+    //
     private SymmetryController symmetryController;
-    
-    private Segment workingPlaneAxis = null;
-        
+    private Map<String,SymmetryController> symmetries = new HashMap<>();
     private final PartsController partsController;
 
-    private Map<String,SymmetryController> symmetries = new HashMap<>();
+    // to SelectionController (subclass of RenderedModelController?)
+    //
+    private MouseTool selectionClick;
+    private boolean mRequireShift = false;
+    private final ManifestationChanges selectionRendering;
+    
+    private final StrutBuilderController strutBuilder;
 
+    // to LessonController
+    //
+    private ThumbnailRenderer thumbnails;
+    private MouseTool lessonPageClick, articleModeMainTrackball;
+    private final LessonController lessonController;
+    private PropertyChangeListener articleChanges;
+    private RenderedModel currentSnapshot;
+    
+    private PropertyChangeListener modelChanges;
+        
     private final ClipboardController systemClipboard;
     private String designClipboard;
-
-    private boolean editingModel;
-
-    private Camera currentView;
-
-    private MouseTool lessonPageClick, articleModeMainTrackball, modelModeMainTrackball;
-
-    // Needed only for switchToArticle/Model, and dimensions for export/capture
-    private Component modelCanvas;
-
-    private MouseTool selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
     
     private final NumberController importScaleController;
-
-    private int changeCount = 0;
         
    /*
      * See the javadoc to control the logging:
@@ -291,9 +275,12 @@ public class DocumentController extends DefaultController implements Controller3
         cameraController = new CameraController( document .getCamera() );
         this .addSubController( "camera", cameraController );
 
+        strutBuilder = new StrutBuilderController( this, cameraController )
+                .withGraphicalViews( app .propertyIsTrue( "useGraphicalViews" ) )
+                .withShowStrutScales( app .propertyIsTrue( "showStrutScales" ) );
+        this .addSubController( "strutBuilder", strutBuilder );
+
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
-        useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
-        showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
         thumbnails = new ThumbnailRendererImpl( app .getJ3dFactory() );
@@ -335,11 +322,8 @@ public class DocumentController extends DefaultController implements Controller3
         		
         		this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
-        		AlgebraicField field = this .documentModel .getField();
-        		// The preview strut rendering is the main reason we distinguish the mainScene as a listener
-        		this .previewStrut = new PreviewStrut( field, mainScene, cameraController );
-        		this .previewStrut .setPropertyChangeSupport( this .properties() );
-
+        		this .strutBuilder .attach( viewer, scene );
+        		
 //                leftEyeCanvas = rvFactory .createJ3dComponent( "" );
 //                RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
 //                mViewPlatform .addViewer( viewer );
@@ -379,28 +363,6 @@ public class DocumentController extends DefaultController implements Controller3
                 }
             };
             lessonPageClick = mouseTool; // will not be attached, initially; gets attached on switchToArticle
-
-            mouseTool = new MouseToolFilter( cameraController .getZoomScroller() )
-            {
-                @Override
-                public void mouseWheelMoved( MouseWheelEvent e )
-                {
-                    LengthController length = previewStrut .getLengthModel();
-                    if ( length != null )
-                    {
-                        // scroll to scale the preview strut (when it is rendered)
-                        length .getMouseTool() .mouseWheelMoved( e );
-                        // don't adjustPreviewStrut() here, let the prop change trigger it,
-                        // so we don't flicker for every tick of the mousewheel
-                    }
-                    else
-                    {
-                        // no strut build in progress, so zoom the view
-                        super .mouseWheelMoved( e );
-                    }
-                }
-            };
-            mouseTool .attach( modelCanvas );
 
             mouseTool = cameraController .getTrackball();
             if ( propertyIsTrue( "presenter.mode" ) )
@@ -474,62 +436,8 @@ public class DocumentController extends DefaultController implements Controller3
                 mouseTool .attach( modelCanvas );
             selectionClick = mouseTool;
 
-            // drag events to render or realize the preview strut;
-            //   only works when drag starts over a ball
-            mouseTool = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
-            {                
-                @Override
-                protected void dragStarted( Manifestation target, boolean b )
-                {
-                    if ( target instanceof Connector )
-                    {
-                        mErrors .clearError();
-                        Point point = (Point) target .getConstructions() .next();
-                        AlgebraicVector workingPlaneNormal = null;
-                        if ( useWorkingPlane && (workingPlaneAxis != null ) )
-                            workingPlaneNormal = workingPlaneAxis .getOffset();
-                        previewStrut .startRendering( symmetryController, point, workingPlaneNormal );
-                    }
-                }
-
-                @Override
-                protected void dragFinished( Manifestation target, boolean b )
-                {
-                    previewStrut .finishPreview( documentModel );
-                }
-            } );
             if ( editingModel )
-                mouseTool .attach( modelCanvas );
-            previewStrutStart = mouseTool;
-
-            // trackball to adjust the preview strut (when it is rendered)
-            mouseTool = new LeftMouseDragAdapter( new Trackball()
-            {
-                @Override
-                protected void trackballRolled( Quat4d roll )
-                {
-                    previewStrut .trackballRolled( roll );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( modelCanvas );
-            previewStrutRoll = mouseTool;
-            
-            // working plane drag events to adjust the preview strut (when it is rendered)
-            mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
-            {
-                @Override
-                public void mouseDragged( MouseEvent e )
-                {
-                    Point3d imagePt = new Point3d();
-                    Point3d eyePt = new Point3d();
-                    imageCaptureViewer .pickPoint( e, imagePt, eyePt );
-                    previewStrut .workingPlaneDrag( imagePt, eyePt );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( modelCanvas );
-            previewStrutPlanarDrag = mouseTool;
+                this .strutBuilder .attach( modelCanvas );
         }
     }
 
@@ -567,8 +475,7 @@ public class DocumentController extends DefaultController implements Controller3
             if ( partsController != null )
                 partsController .endSwitch();
         }
-        if ( previewStrut != null )
-            previewStrut .setSymmetryController( symmetryController );
+        strutBuilder .setSymmetryController( symmetryController );
     }
 
 
@@ -618,9 +525,7 @@ public class DocumentController extends DefaultController implements Controller3
                 currentView = cameraController .getView();
                 
                 selectionClick .detach( modelCanvas );
-                previewStrutStart .detach( modelCanvas );
-                previewStrutRoll .detach( modelCanvas );
-                previewStrutPlanarDrag .detach( modelCanvas );
+                strutBuilder .detach( modelCanvas );
                 modelModeMainTrackball .detach( modelCanvas );
                 
                 lessonPageClick .attach( modelCanvas );
@@ -646,9 +551,7 @@ public class DocumentController extends DefaultController implements Controller3
                 articleModeMainTrackball .detach( modelCanvas );
                 
                 selectionClick .attach( modelCanvas );
-                previewStrutStart .attach( modelCanvas );
-                previewStrutRoll .attach( modelCanvas );
-                previewStrutPlanarDrag .attach( modelCanvas );
+                strutBuilder .attach( modelCanvas );
                 modelModeMainTrackball .attach( modelCanvas );
 
                 this .editingModel = true;
@@ -696,27 +599,6 @@ public class DocumentController extends DefaultController implements Controller3
             {
                 drawOutlines = ! drawOutlines;
                 properties() .firePropertyChange( "drawOutlines", !drawOutlines, drawOutlines );
-            }
-
-            else if ( action.equals( "toggleWorkingPlane" ) )
-            {
-                useWorkingPlane = ! useWorkingPlane;
-//                if ( useWorkingPlane )
-//                    mainScene .enableWorkingPlane( workingPlaneOrbits );
-//                else
-//                    mainScene .disableWorkingPlane( workingPlaneOrbits );
-            }
-
-            else if ( action.equals( "toggleOrbitViews" ) ) {
-                boolean old = useGraphicalViews;
-                useGraphicalViews = ! old;
-                properties().firePropertyChange( "useGraphicalViews", old, this.useGraphicalViews );
-            }
-
-            else if ( action.equals( "toggleStrutScales" ) ) {
-                boolean old = showStrutScales;
-                showStrutScales = ! old;
-                properties().firePropertyChange( "showStrutScales", old, this.showStrutScales );
             }
 
             else if ( action.startsWith( "setSymmetry." ) ) {
@@ -1241,9 +1123,6 @@ public class DocumentController extends DefaultController implements Controller3
                 return super.getProperty( "trackball.showIcosahedralLabels" );
             } else
                 return "false";
-
-        case "useGraphicalViews":
-            return Boolean.toString( this.useGraphicalViews );
             
         case "clipboard":
             return systemClipboard != null ? systemClipboard.getClipboardContents() : designClipboard;
@@ -1253,15 +1132,6 @@ public class DocumentController extends DefaultController implements Controller3
 
         case "drawOutlines":
             return Boolean .toString( drawOutlines );
-
-        case "useWorkingPlane":
-            return Boolean .toString( useWorkingPlane );
-
-        case "workingPlaneDefined":
-            return Boolean .toString( workingPlaneAxis != null );
-
-        case "showStrutScales":
-            return Boolean.toString( this.showStrutScales );
 
         case "startReader":
             return Boolean.toString( startReader );
@@ -1360,15 +1230,10 @@ public class DocumentController extends DefaultController implements Controller3
         }
     }
 
-
     @Override
     public void setProperty( String cmd, Object value )
     {
-        if ( "useGraphicalViews".equals( cmd ) ) {
-            this.useGraphicalViews = "true".equals( value );
-            properties().firePropertyChange( cmd, false, this.useGraphicalViews );
-            return;
-        } else if ( "visible".equals( cmd ) ) {
+        if ( "visible".equals( cmd ) ) {
             // Window is listening, will bring itself to the front, or close itself
             // App controller will set topDocument, or remove the document.
             properties() .firePropertyChange( "visible", null, value );
@@ -1379,10 +1244,6 @@ public class DocumentController extends DefaultController implements Controller3
             sceneLighting .setProperty( cmd, value );
         } else if ( "terminating".equals( cmd ) ) {
             properties().firePropertyChange( cmd, null, value );
-        } else if ( "showStrutScales".equals( cmd ) ) {
-            boolean old = showStrutScales;
-            this.showStrutScales = "true" .equals( value );
-            properties().firePropertyChange( "showStrutScales", old, this.showStrutScales );
         }
         else if ( "clipboard" .equals( cmd ) ) {
             if( systemClipboard != null ) {
@@ -1437,13 +1298,11 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
 
             case "setWorkingPlaneAxis":
-                this .workingPlaneAxis = (Segment) singleConstruction;
-                this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
+                this .strutBuilder .setWorkingPlaneAxis( (Segment) singleConstruction );
                 break;
 
             case "setWorkingPlane":
-                this .workingPlaneAxis = this .documentModel .getPlaneAxis( (Polygon) singleConstruction );
-                this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
+                this .strutBuilder .setWorkingPlaneAxis( this .documentModel .getPlaneAxis( (Polygon) singleConstruction ) );
                 break;
 
             case "lookAtThis":
@@ -1666,5 +1525,15 @@ public class DocumentController extends DefaultController implements Controller3
         default:
             return this .getProperty( propName );
         }
+    }
+
+    public DocumentModel getModel()
+    {
+        return this .documentModel;
+    }
+
+    public SymmetryController getSymmetryController()
+    {
+        return this .symmetryController;
     }
 }

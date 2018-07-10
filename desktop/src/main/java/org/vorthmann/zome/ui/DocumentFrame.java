@@ -511,13 +511,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 modelArticleEditPanel .setLayout( modelArticleCardLayout );
                 if ( this .isEditor )
                 {
-                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this, mController .getProperty( "symmetry" ), mController, this );
+                    Controller sbController = controller .getSubController( "strutBuilder" );
+                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this, mController .getProperty( "symmetry" ), sbController, this );
                     if ( this .fullPower )
                     {
                         tabbedPane .addTab( "build", buildPanel );
                         if ( mController .propertyIsTrue( "original.tools" ) )
                         {
-                        	ToolsPanel toolsPanel = new ToolsPanel( DocumentFrame.this, toolsController );
+                            ToolsPanel toolsPanel = new ToolsPanel( DocumentFrame.this, toolsController );
                             tabbedPane .addTab( "tools", toolsPanel );
                         }
                         
