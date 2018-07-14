@@ -126,7 +126,7 @@ public class DocumentController extends DefaultController implements Controller3
     // to LessonController
     //
     private ThumbnailRenderer thumbnails;
-    private MouseTool lessonPageClick, articleModeMainTrackball;
+    private MouseTool lessonPageClick, articleModeMainTrackball, articleModeZoom;
     private final LessonController lessonController;
     private PropertyChangeListener articleChanges;
     private RenderedModel currentSnapshot;
@@ -274,6 +274,7 @@ public class DocumentController extends DefaultController implements Controller3
 
         cameraController = new CameraController( document .getCamera() );
         this .addSubController( "camera", cameraController );
+        this .articleModeZoom = this .cameraController .getZoomScroller();
 
         strutBuilder = new StrutBuilderController( this, cameraController )
                 .withGraphicalViews( app .propertyIsTrue( "useGraphicalViews" ) )
@@ -304,141 +305,138 @@ public class DocumentController extends DefaultController implements Controller3
         mRenderedModel .addListener( partsController );
 
         copyThisView(); // initialize the "copied" view at startup.
+
+        /*
+         * Mouse tools here follow some general principles:
+         * 
+         * 1. Don't try to dispatch events by pipelining tools ("first one eats").  Instead, all tools get the event,
+         *     and let mutually-exclusive conditions make sure that only the desired processing
+         *     occurs.  MouseToolFilter is a good way to filter events.
+         *     
+         * 2. Use LeftMouseDragAdapter whenever you need drag / click hysteresis.  Really, the
+         *     only "drag" tool here that does not need that is the targetManifestationDrag,
+         *     since that is not a true drag.
+         *     
+         * 3. Use mode switch (article/model) to detach and attach sets of tools.
+         * 
+         * 4. A Trackball can be subclassed to determine what the transform operates on.
+         * 
+         */
+
+        // these are for the model viewer (article mode)
+        // will not be attached, initially; gets attached on switchToArticle
+        lessonPageClick = new MouseToolDefault()
+        {
+            @Override
+            public void mouseClicked( MouseEvent e )
+            {
+                actionPerformed( new ActionEvent( e .getSource(), ActionEvent.ACTION_PERFORMED, "nextPage" ) );
+                e .consume();
+            }
+        };
+
+        articleModeMainTrackball = cameraController .getTrackball();
+        // will not be attached, initially; gets attached on switchToArticle
+        if ( propertyIsTrue( "presenter.mode" ) )
+            ((Trackball) articleModeMainTrackball) .setModal( false );
+//        if ( ! editingModel )
+//        {
+//            // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
+//            //  and ViewPlatformControlPanel will attach a better one to the parent component 
+//            canvas .addMouseListener( mouseTool );
+//            canvas .addMouseMotionListener( mouseTool );
+//        }
+
+        // this wrapper for mainCanvasTrackball is disabled when the press is initiated over a ball
+        modelModeMainTrackball = new LeftMouseDragAdapter( new MouseToolFilter( articleModeMainTrackball )
+        {
+            boolean live = false;
+
+            @Override
+            public void mousePressed( MouseEvent e )
+            {
+                RenderedManifestation rm = imageCaptureViewer .pickManifestation( e );
+                if ( rm == null || !( rm .getManifestation() instanceof Connector ) )
+                {
+                    this .live = true;
+                    super .mousePressed( e );
+                }
+            }
+
+            @Override
+            public void mouseDragged( MouseEvent e )
+            {
+                if ( live )
+                    super .mouseDragged( e );
+            }
+
+            @Override
+            public void mouseReleased( MouseEvent e )
+            {
+                this .live = false;
+                super .mouseReleased( e );
+            }
+        } );
     }
     
     @Override
     public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
     {
     		// This is called on a UI thread!
+        this .modelCanvas = canvas;
+        this .mainScene = scene;
+        this .imageCaptureViewer = viewer;
+
+//      leftEyeCanvas = rvFactory .createJ3dComponent( "" );
+//      RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
+//      mViewPlatform .addViewer( viewer );
+//      viewer .setEye( RenderingViewer .LEFT_EYE );
+//      leftController = new PickingController( viewer, this );
+//
+//      rightEyeCanvas = rvFactory .createJ3dComponent( "" );
+//      viewer = rvFactory .createRenderingViewer( mainScene, rightEyeCanvas );
+//      mViewPlatform .addViewer( viewer );
+//      viewer .setEye( RenderingViewer .RIGHT_EYE );
+//      rightController = new PickingController( viewer, this );
+
+        if ( this .mainScene instanceof PropertyChangeListener )
+            this .addPropertyListener( (PropertyChangeListener) this .mainScene );
+
+        
+        // clicks become select or deselect all
+        selectionClick = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
         {
-        		this .modelCanvas = canvas;
-        		this .mainScene = scene;
-        		this .imageCaptureViewer = viewer;
-
-        		if ( this .mainScene instanceof PropertyChangeListener )
-        			this .addPropertyListener( (PropertyChangeListener) this .mainScene );
-
-        		this .cameraController .addViewer( this .imageCaptureViewer );
-        		
-        		this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
-
-        		this .strutBuilder .attach( viewer, scene );
-        		
-//                leftEyeCanvas = rvFactory .createJ3dComponent( "" );
-//                RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
-//                mViewPlatform .addViewer( viewer );
-//                viewer .setEye( RenderingViewer .LEFT_EYE );
-//                leftController = new PickingController( viewer, this );
-        //
-//                rightEyeCanvas = rvFactory .createJ3dComponent( "" );
-//                viewer = rvFactory .createRenderingViewer( mainScene, rightEyeCanvas );
-//                mViewPlatform .addViewer( viewer );
-//                viewer .setEye( RenderingViewer .RIGHT_EYE );
-//                rightController = new PickingController( viewer, this );
-            /*
-             * Mouse tools here follow some general principles:
-             * 
-             * 1. Don't try to dispatch events by pipelining tools ("first one eats").  Instead, all tools get the event,
-             *     and let mutually-exclusive conditions make sure that only the desired processing
-             *     occurs.  MouseToolFilter is a good way to filter events.
-             *     
-             * 2. Use LeftMouseDragAdapter whenever you need drag / click hysteresis.  Really, the
-             *     only "drag" tool here that does not need that is the targetManifestationDrag,
-             *     since that is not a true drag.
-             *     
-             * 3. Use mode switch (article/model) to detach and attach sets of tools.
-             * 
-             * 4. A Trackball can be subclassed to determine what the transform operates on.
-             * 
-             */
-
-            // these are for the model viewer (article mode)
-            MouseTool mouseTool = new MouseToolDefault()
+            @Override
+            protected void manifestationPicked( Manifestation target, boolean shiftKey )
             {
-                @Override
-                public void mouseClicked( MouseEvent e )
-                {
-                    actionPerformed( new ActionEvent( e .getSource(), ActionEvent.ACTION_PERFORMED, "nextPage" ) );
-                    e .consume();
-                }
-            };
-            lessonPageClick = mouseTool; // will not be attached, initially; gets attached on switchToArticle
-
-            mouseTool = cameraController .getTrackball();
-            if ( propertyIsTrue( "presenter.mode" ) )
-                ((Trackball) mouseTool) .setModal( false );
-//            if ( ! editingModel )
-//            {
-//                // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
-//                //  and ViewPlatformControlPanel will attach a better one to the parent component 
-//                canvas .addMouseListener( mouseTool );
-//                canvas .addMouseMotionListener( mouseTool );
-//            }
-            articleModeMainTrackball = mouseTool; // will not be attached, initially; gets attached on switchToArticle
-
-            // this wrapper for mainCanvasTrackball is disabled when the press is initiated over a ball
-            mouseTool = new LeftMouseDragAdapter( new MouseToolFilter( articleModeMainTrackball )
-            {
-                boolean live = false;
-
-                @Override
-                public void mousePressed( MouseEvent e )
-                {
-                    RenderedManifestation rm = imageCaptureViewer .pickManifestation( e );
-                    if ( rm == null || !( rm .getManifestation() instanceof Connector ) )
-                    {
-                        this .live = true;
-                        super .mousePressed( e );
+                mErrors .clearError();
+                boolean shift = true;
+                if ( mRequireShift )
+                    shift = shiftKey;
+                if ( target == null )
+                    try {
+                        documentModel .performAndRecord( documentModel .deselectAll() );
+                    } catch ( Exception e ) {
+                        mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
                     }
-                }
+                else
+                    documentModel .performAndRecord( documentModel .selectManifestation( target, ! shift ) );
+            }
+        } );
+        this .cameraController .addViewer( this .imageCaptureViewer );
+        this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
-                @Override
-                public void mouseDragged( MouseEvent e )
-                {
-                    if ( live )
-                        super .mouseDragged( e );
-                }
-
-                @Override
-                public void mouseReleased( MouseEvent e )
-                {
-                    this .live = false;
-                    super .mouseReleased( e );
-                }
-            } );
-            modelModeMainTrackball = mouseTool;
-            if ( editingModel )
-                modelModeMainTrackball .attach( modelCanvas );
-            else
-                articleModeMainTrackball .attach( modelCanvas );
-            
-            // clicks become select or deselect all
-            mouseTool = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
-            {
-                @Override
-                protected void manifestationPicked( Manifestation target, boolean shiftKey )
-                {
-                    mErrors .clearError();
-                    boolean shift = true;
-                    if ( mRequireShift )
-                        shift = shiftKey;
-                    if ( target == null )
-                        try {
-                            documentModel .performAndRecord( documentModel .deselectAll() );
-                        } catch ( Exception e ) {
-                            mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
-                        }
-                    else
-                        documentModel .performAndRecord( documentModel .selectManifestation( target, ! shift ) );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( modelCanvas );
-            selectionClick = mouseTool;
-
-            if ( editingModel )
-                this .strutBuilder .attach( modelCanvas );
+        this .strutBuilder .attach( viewer, scene );
+        if ( editingModel ) {
+            this .selectionClick .attach( modelCanvas );
+            this .modelModeMainTrackball .attach( modelCanvas );
+            this .strutBuilder .attach( modelCanvas );
+        } else {
+            this .articleModeMainTrackball .attach( modelCanvas );
+            this .articleModeZoom .attach( modelCanvas );
+            this .lessonPageClick .attach( modelCanvas );
         }
+
     }
 
     private SymmetryController getSymmetryController( String name )
@@ -522,37 +520,39 @@ public class DocumentController extends DefaultController implements Controller3
         try {
             if ( action .equals( "switchToArticle" ) )
             {
-                currentView = cameraController .getView();
+                this .currentView = this .cameraController .getView();
                 
-                selectionClick .detach( modelCanvas );
-                strutBuilder .detach( modelCanvas );
-                modelModeMainTrackball .detach( modelCanvas );
+                this .selectionClick .detach( this .modelCanvas );
+                this .strutBuilder .detach( this .modelCanvas );
+                this .modelModeMainTrackball .detach( this .modelCanvas );
                 
-                lessonPageClick .attach( modelCanvas );
-                articleModeMainTrackball .attach( modelCanvas );
+                this .lessonPageClick .attach( this .modelCanvas );
+                this .articleModeMainTrackball .attach( this .modelCanvas );
+                this .articleModeZoom .attach( this .modelCanvas );
 
-                documentModel .addPropertyChangeListener( this .articleChanges );
-                documentModel .removePropertyChangeListener( this .modelChanges );
-                lessonController .doAction( "restoreSnapshot", e );
+                this .documentModel .addPropertyChangeListener( this .articleChanges );
+                this .documentModel .removePropertyChangeListener( this .modelChanges );
+                this .lessonController .doAction( "restoreSnapshot", e );
 
                 this .editingModel = false;
                 properties() .firePropertyChange( "editor.mode", "model", "article" );
             }
             else if ( action .equals( "switchToModel" ) )
             {
-                documentModel .removePropertyChangeListener( this .articleChanges );
-                documentModel .addPropertyChangeListener( this .modelChanges );
-                cameraController .restoreView( currentView );
+                this .documentModel .removePropertyChangeListener( this .articleChanges );
+                this .documentModel .addPropertyChangeListener( this .modelChanges );
+                this .cameraController .restoreView( this .currentView );
 
-                RenderedModel .renderChange( currentSnapshot, mRenderedModel, mainScene );
-                currentSnapshot = mRenderedModel;
+                RenderedModel .renderChange( this .currentSnapshot, this .mRenderedModel, this .mainScene );
+                this .currentSnapshot = this .mRenderedModel;
 
-                lessonPageClick .detach( modelCanvas );
-                articleModeMainTrackball .detach( modelCanvas );
+                this .lessonPageClick .detach( this .modelCanvas );
+                this .articleModeMainTrackball .detach( this .modelCanvas );
+                this .articleModeZoom .detach( this .modelCanvas );
                 
-                selectionClick .attach( modelCanvas );
-                strutBuilder .attach( modelCanvas );
-                modelModeMainTrackball .attach( modelCanvas );
+                this .selectionClick .attach( this .modelCanvas );
+                this .modelModeMainTrackball .attach( this .modelCanvas );
+                this .strutBuilder .attach( this .modelCanvas );
 
                 this .editingModel = true;
                 properties() .firePropertyChange( "editor.mode", "article", "model" );
