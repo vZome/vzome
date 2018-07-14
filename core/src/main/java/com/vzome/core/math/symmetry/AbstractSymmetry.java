@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.vecmath.Matrix3d;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
@@ -97,6 +101,24 @@ public abstract class AbstractSymmetry implements Symmetry
         
         createFrameOrbit( frameColor );
         createOtherOrbits();
+        
+        ObjectMapper jsonMapper = new ObjectMapper();
+        for (AlgebraicMatrix orientation : mMatrices) {
+			Matrix3d matrix = new Matrix3d();
+			for ( int i = 0; i < 3; i++) {
+				for ( int j = 0; j < 3; j++) {
+					double value = orientation .getElement( i, j ) .evaluate();
+					matrix .setElement( i, j, value );
+				}
+			}
+			try {
+				String jsonString = jsonMapper .writeValueAsString( matrix );
+				System .out .println( jsonString );
+			} catch (JsonProcessingException e) {
+				// TODO: handle exception
+				e .printStackTrace();
+			}
+		}
 
 //        for ( int i = 0; i < order; i++ ) {
 //            if ( initialPerms[ i ] )

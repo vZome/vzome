@@ -104,6 +104,12 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         return mLights;
     }
 
+    /**
+     * @param factory
+     * @param lights
+     * @param isSticky true if each RenderedManifestation should record the resulting graphics object
+     * @param controller
+     */
     public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky, Controller controller )
     {
         mFactory = factory;
@@ -427,18 +433,25 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         mScene.removeAllChildren();
     }
 
+    /* (non-Javadoc)
+     * @see com.vzome.core.render.RenderingChanges#manifestationSwitched(com.vzome.core.render.RenderedManifestation, com.vzome.core.render.RenderedManifestation)
+     */
     @Override
     public void manifestationSwitched( RenderedManifestation from, RenderedManifestation to )
     {
+        // This call is the only reason we ever do setGraphicsObject,
+        //   all in support of the setUserData below.
         BranchGroup target = (BranchGroup) from .getGraphicsObject();
+
         if ( target == null ) {
             return;
         }
         TransformGroup tg = (TransformGroup) target .getChild( 0 );
         Shape3D poly = (Shape3D) tg .getChild( 0 );
-        poly .setUserData( to );
+        poly .setUserData( to );  // This keeps picking consistent
         if ( this .isSticky )
         {
+            // 
             to .setGraphicsObject( target );
             from .setGraphicsObject( null );
         }

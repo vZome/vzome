@@ -48,7 +48,8 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
-import com.vzome.desktop.controller.ViewPlatformControlPanel;
+import com.vzome.desktop.controller.CameraControlPanel;
+import com.vzome.desktop.controller.Controller3d;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {
@@ -80,7 +81,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private JLabel statusText;
 
-    private Controller viewPlatform;
+    private Controller cameraController;
 
     private Controller lessonController;
     
@@ -118,14 +119,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     	this .appUI = appUI;
     }
         
-    public DocumentFrame( final Controller controller )
+    public DocumentFrame( final Controller3d controller, final J3dComponentFactory factory3d )
     {
         mController = controller;
         mController .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
         
         int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
-
         // Keep the tool tip showing
         ToolTipManager.sharedInstance().setDismissDelay( 20000 );
 
@@ -422,7 +422,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         // -------------------------------------- create panels and tools
 
-        viewPlatform = mController .getSubController( "viewPlatform" );
+        cameraController = mController .getSubController( "camera" );
         lessonController = mController .getSubController( "lesson" );
         lessonController .addPropertyListener( this );
 
@@ -488,7 +488,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     leftCenterPanel .add(  modeAndStatusPanel, BorderLayout.PAGE_START );
                 }
 
-                modelPanel = new ModelPanel( mController, this, this .isEditor, fullPower );
+                modelPanel = new ModelPanel( (Controller3d) mController, factory3d, (ControlActions) this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );
@@ -502,8 +502,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
             JPanel rightPanel = new JPanel( new BorderLayout() );
             {
-                Component trackballCanvas = ( (J3dComponentFactory) mController ) .createJ3dComponent( "controlViewer" );
-                viewControl = new ViewPlatformControlPanel( trackballCanvas, viewPlatform );
+                viewControl = new CameraControlPanel( factory3d, cameraController );
                 // this is probably moot for reader mode
                 rightPanel .add( viewControl, BorderLayout.PAGE_START );
                 
@@ -512,13 +511,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 modelArticleEditPanel .setLayout( modelArticleCardLayout );
                 if ( this .isEditor )
                 {
-                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this, mController .getProperty( "symmetry" ), mController, this );
+                    Controller sbController = controller .getSubController( "strutBuilder" );
+                    JPanel buildPanel = new StrutBuilderPanel( DocumentFrame.this, mController .getProperty( "symmetry" ), sbController, this );
                     if ( this .fullPower )
                     {
                         tabbedPane .addTab( "build", buildPanel );
                         if ( mController .propertyIsTrue( "original.tools" ) )
                         {
-                        	ToolsPanel toolsPanel = new ToolsPanel( DocumentFrame.this, toolsController );
+                            ToolsPanel toolsPanel = new ToolsPanel( DocumentFrame.this, toolsController );
                             tabbedPane .addTab( "tools", toolsPanel );
                         }
                         
@@ -627,7 +627,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
                 if ( ! mController .userHasEntitlement( "model.edit" ) )
                 {
-                	mController .doAction( "switchToArticle", e );
+                    mController .doAction( "switchToArticle", e );
                     if ( url != null )
                         title = url .toExternalForm();
                     migrated = false;

@@ -2,8 +2,8 @@ language: java
 jdk:
 - oraclejdk8
 script:
-- "./gradlew :desktop:build"
+- "./gradlew :server:build"
 branches:
   only:
-    - master
-    - server
+  - master
+  - server

@@ -111,6 +111,11 @@ public class Color
         return red + "," + green + "," + blue + ( (alpha<0xFF)? "," + alpha : "" );
     }
 
+    public String toWebString()
+    {
+    		return String.format( "#%02X%02X%02X", red, green, blue );
+    }
+    
     public static Color parseColor( String str )
     {
         StringTokenizer toks = new StringTokenizer( str, "," );

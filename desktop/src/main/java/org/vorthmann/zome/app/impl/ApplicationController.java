@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
@@ -39,7 +40,6 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
-import com.vzome.desktop.controller.RenderingViewer;
 
 public class ApplicationController extends DefaultController
 {
@@ -53,7 +53,7 @@ public class ApplicationController extends DefaultController
     
     private final Properties properties = new Properties();
     
-    private RenderingViewer.Factory rvFactory;
+    private J3dComponentFactory rvFactory;
 
     private final com.vzome.core.editor.Application modelApp;
 
@@ -63,7 +63,7 @@ public class ApplicationController extends DefaultController
 
 	private Map<String, RenderedModel> symmetryModels = new HashMap<String, RenderedModel>();
     
-	public ApplicationController( ActionListener ui, Properties commandLineArgs )
+	public ApplicationController( ActionListener ui, Properties commandLineArgs, J3dComponentFactory rvFactory )
     {
 		super();
 		
@@ -134,21 +134,26 @@ public class ApplicationController extends DefaultController
         modelApp = new com.vzome.core.editor.Application( true, failures, properties );
         
         Colors colors = modelApp .getColors();
+        Lights lights = modelApp .getLights();
         
+        if ( rvFactory != null ) {
+        		this .rvFactory = rvFactory;
+        }
+        else
         {
-        	boolean useEmissiveColor = ! propertyIsTrue( "no.glowing.selection" );
-            // need this set up before we do any loadModel
-            String factoryName = getProperty( "RenderingViewer.Factory.class" );
-            if ( factoryName == null )
-                factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
-            try {
-                Class<?> factoryClass = Class.forName( factoryName );
-                Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Colors.class, Boolean.class } );
-                rvFactory = (RenderingViewer.Factory) constructor.newInstance( new Object[] { colors, useEmissiveColor } );
-            } catch ( Exception e ) {
-                mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
-                System.exit( 0 );
-            }
+	        	boolean useEmissiveColor = ! propertyIsTrue( "no.glowing.selection" );
+	        	// need this set up before we do any loadModel
+	        	String factoryName = getProperty( "RenderingViewer.Factory.class" );
+	        	if ( factoryName == null )
+	        		factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
+	        	try {
+	        		Class<?> factoryClass = Class.forName( factoryName );
+	        		Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Lights.class, Colors.class, Boolean.class } );
+	        		this .rvFactory = (J3dComponentFactory) constructor.newInstance( new Object[] { lights, colors, useEmissiveColor } );
+	        	} catch ( Exception e ) {
+	        		mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
+	        		System.exit( 0 );
+	        	}
         }
 
         long endtime = System.currentTimeMillis();
@@ -274,7 +279,6 @@ public class ApplicationController extends DefaultController
             else if ( action .startsWith( "newFromResource-" ) )
             {
                 Properties docProps = new Properties();
-                String title = "Untitled " + ++lastUntitled;
                 docProps .setProperty( "as.template", "true" ); // don't set window.file!
                 String path = action .substring( "newFromResource-" .length() );
                 ClassLoader cl = Thread .currentThread() .getContextClassLoader();
@@ -381,7 +385,7 @@ public class ApplicationController extends DefaultController
 		newDocumentController( name, document, properties );
 	}
 
-    RenderingViewer.Factory getJ3dFactory()
+    public J3dComponentFactory getJ3dFactory()
     {
         return rvFactory;
     }
@@ -521,7 +525,7 @@ public class ApplicationController extends DefaultController
 				case "visible":
 					if ( Boolean.FALSE .equals( evt .getNewValue() ) ) {
 						docControllers .remove( name );
-						if ( docControllers .isEmpty() )
+						if ( ! propertyIsTrue( "keep.alive" ) && docControllers .isEmpty() )
 							// closed the last window, so we're exiting
 							System .exit( 0 );
 					}

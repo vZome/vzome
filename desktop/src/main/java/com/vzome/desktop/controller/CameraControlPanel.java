@@ -18,6 +18,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.Controller;
 
 /**
@@ -25,7 +26,7 @@ import org.vorthmann.ui.Controller;
  * 
  * @author Scott Vorthmann 2003
  */
-public class ViewPlatformControlPanel extends JPanel {
+public class CameraControlPanel extends JPanel {
 
     protected JSlider zslider;
     
@@ -60,7 +61,7 @@ public class ViewPlatformControlPanel extends JPanel {
 //    }
     
     
-	public ViewPlatformControlPanel( Component modelPanel, final Controller controller )
+	public CameraControlPanel( J3dComponentFactory factory3d, final Controller controller )
 	{
         this .setBorder( BorderFactory .createTitledBorder( "viewing" ) );
         int nearTicks = magToTicks( MAX_MAG );
@@ -98,7 +99,8 @@ public class ViewPlatformControlPanel extends JPanel {
             add( zslider, BorderLayout .EAST );
 
         trackpad = new JPanel( new BorderLayout() );
-        trackpad .add( modelPanel, BorderLayout.CENTER );
+        Component trackballCanvas = factory3d .createRenderingComponent( false, false, ((Controller3d) controller) );
+        trackpad .add( trackballCanvas, BorderLayout.CENTER );
         trackpad .setAlignmentX( JLabel .CENTER_ALIGNMENT );
         trackpad .setBorder( BorderFactory .createTitledBorder( "rotation trackball" ) );
         trackpad .setMinimumSize( new Dimension( 100, 100 ) );
@@ -126,13 +128,13 @@ public class ViewPlatformControlPanel extends JPanel {
         snapperCheckbox .setSelected( "true" .equals( controller .getProperty( "snap" ) ) );
         checkboxesPanel .add( snapperCheckbox );
 
-        final JCheckBox stereoCheckbox = new JCheckBox( "stereo" );
-        //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
-        stereoCheckbox .addActionListener( controller );
-        stereoCheckbox .setActionCommand( "toggleStereo" );
-        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
-//        stereoCheckbox .setEnabled( false );
-        checkboxesPanel .add( stereoCheckbox );
+//        final JCheckBox stereoCheckbox = new JCheckBox( "stereo" );
+//        //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
+//        stereoCheckbox .addActionListener( controller );
+//        stereoCheckbox .setActionCommand( "toggleStereo" );
+//        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
+////        stereoCheckbox .setEnabled( false );
+//        checkboxesPanel .add( stereoCheckbox );
         
         this .addMouseWheelListener( new MouseWheelListener()
         {
@@ -149,7 +151,7 @@ public class ViewPlatformControlPanel extends JPanel {
         // TODO this is silly, to have both getProperty and addPropertyListener
         perspectiveCheckbox .setSelected( "true" .equals( controller .getProperty( "perspective" ) ) );
         snapperCheckbox .setSelected( "true" .equals( controller .getProperty( "snap" ) ) );
-        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
+//        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
 
         controller .addPropertyListener( new PropertyChangeListener()
             {
@@ -168,10 +170,10 @@ public class ViewPlatformControlPanel extends JPanel {
                         boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
                         snapperCheckbox .setSelected( enabling );
                     }
-                    else if ( "stereo" .equals( e .getPropertyName() ) ) {
-                        boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
-                        stereoCheckbox .setSelected( enabling );
-                    }
+//                    else if ( "stereo" .equals( e .getPropertyName() ) ) {
+//                        boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
+//                        stereoCheckbox .setSelected( enabling );
+//                    }
                     else if ( "editor.mode" .equals( e .getPropertyName() ) )
                     {
                         if ( isEditor )

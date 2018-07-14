@@ -4,11 +4,14 @@ package org.vorthmann.zome.render.java3d;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.ColoringAttributes;
@@ -22,7 +25,6 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
 import org.vorthmann.j3d.J3dComponentFactory;
-import org.vorthmann.ui.Controller;
 
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
@@ -36,15 +38,11 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
+import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 
-import java.awt.GraphicsDevice;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFactory
+public class Java3dFactory implements J3dComponentFactory
 {
     private static class GraphicsConfigurationFactory {
         private static final Logger logger = Logger.getLogger(new Throwable().getStackTrace()[0].getClassName());
@@ -93,9 +91,12 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
 
     private static Logger logger = Logger .getLogger( "org.vorthmann.zome.render.java3d.Java3dFactory" );
 
-    public Java3dFactory( Colors colors, Boolean useEmissiveColor )
+	private final Lights lights;
+
+    public Java3dFactory( Lights lights, Colors colors, Boolean useEmissiveColor )
     {
-        mHasEmissiveColor = useEmissiveColor .booleanValue();
+        this .lights = lights;
+		mHasEmissiveColor = useEmissiveColor .booleanValue();
         mAppearances = new Appearances( colors, mHasEmissiveColor );
         outlines = new Appearance();
         PolygonAttributes wirePa = new PolygonAttributes( PolygonAttributes.POLYGON_LINE, PolygonAttributes.CULL_BACK, -10f );
@@ -105,22 +106,6 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         outlines .setColoringAttributes( new ColoringAttributes( new Color3f( Color.BLACK ), ColoringAttributes .SHADE_FLAT ) );
     }
     
-    @Override
-    public RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas )
-    {
-        if ( canvas == null ) // this viewer is for offscreen rendering
-        {
-            canvas = new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration(), true );
-        }
-        return new Java3dRenderingViewer( (Java3dSceneGraph) scene, (CapturingCanvas3D) canvas );
-    }
-
-    @Override
-	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, Controller controller )
-	{
-		return new Java3dSceneGraph( this, lights, isSticky, controller );
-	}
-
     Colors getColors()
     {
         return mAppearances .getColors();
@@ -310,8 +295,12 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     }
 
     @Override
-    public Component createJ3dComponent( String name )
+    public Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller )
     {
-        return new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration() );
+        CapturingCanvas3D canvas = new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration(), isOffScreen );
+        Java3dSceneGraph scene = new Java3dSceneGraph( this, this .lights, isSticky, controller );
+        RenderingViewer viewer = new Java3dRenderingViewer( scene, canvas );
+        controller .attachViewer( viewer, scene, canvas );
+        return canvas;
     }
 }

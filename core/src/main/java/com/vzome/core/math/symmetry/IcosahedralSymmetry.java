@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.BigRational;
+import com.vzome.core.algebra.PentagonField;
 
 
 /**
@@ -22,6 +24,10 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 
 	private Axis preferredAxis;
     
+	public static void main(String[] args) {
+		new IcosahedralSymmetry( new PentagonField(), "" );
+	}
+	
     public IcosahedralSymmetry( AlgebraicField field, String defaultStyle )
     {
         super( 60, field, "blue", defaultStyle );

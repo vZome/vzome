@@ -3,9 +3,13 @@
 
 package com.vzome.desktop.controller;
 
+import java.awt.Component;
+
 import org.vorthmann.ui.Controller;
+
+import com.vzome.core.render.RenderingChanges;
 
 public interface Controller3d extends Controller
 {
-    void addRenderingViewer( RenderingViewer viewer, String name );
+    void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas );
 }

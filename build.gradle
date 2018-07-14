@@ -55,3 +55,10 @@ project(':desktop') {
         compile project(':core')
     }
 }
+
+project(':server') {
+    dependencies {
+        compile project(':desktop')
+    }
+}
+
