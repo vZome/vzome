@@ -2,8 +2,6 @@
 
 package com.vzome.core.construction;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -79,13 +77,13 @@ public class ChangeOfBasis extends Transformation
 
             AlgebraicMatrix transform = newMatrix .times( oldMatrix .inverse() );
             
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-            	    System .out .println( mapper .writeValueAsString( transform ) );
-            } catch (JsonProcessingException e) {
-            	    // TODO Auto-generated catch block
-            	    e.printStackTrace();
-            }
+//            ObjectMapper mapper = new ObjectMapper();
+//            try {
+//            	    System .out .println( mapper .writeValueAsString( transform ) );
+//            } catch (JsonProcessingException e) {
+//            	    // TODO Auto-generated catch block
+//            	    e.printStackTrace();
+//            }
 
             return setStateVariables( transform, loc, false );
         }
