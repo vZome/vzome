@@ -427,16 +427,17 @@ public class DocumentController extends DefaultController implements Controller3
         this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
         this .strutBuilder .attach( viewer, scene );
-        if ( editingModel ) {
-            this .selectionClick .attach( modelCanvas );
-            this .modelModeMainTrackball .attach( modelCanvas );
-            this .strutBuilder .attach( modelCanvas );
-        } else {
-            this .articleModeMainTrackball .attach( modelCanvas );
-            this .articleModeZoom .attach( modelCanvas );
-            this .lessonPageClick .attach( modelCanvas );
-        }
-
+        
+        if ( this .modelCanvas != null )
+            if ( editingModel ) {
+                this .selectionClick .attach( modelCanvas );
+                this .modelModeMainTrackball .attach( modelCanvas );
+                this .strutBuilder .attach( modelCanvas );
+            } else {
+                this .articleModeMainTrackball .attach( modelCanvas );
+                this .articleModeZoom .attach( modelCanvas );
+                this .lessonPageClick .attach( modelCanvas );
+            }
     }
 
     private SymmetryController getSymmetryController( String name )
