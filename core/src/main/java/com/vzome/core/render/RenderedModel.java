@@ -502,6 +502,15 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         return snapshot;
     }
     
+    /**
+     * Switch a scene graph (changes) from rendering one RenderedModel to another one.
+     * For RenderedManifestations that show the same object in both, just update the
+     * attributes.
+     * When "from" is empty, this is the initial rendering of the "to" RenderedModel.
+     * @param from is an empty RenderedModel in some cases
+     * @param to
+     * @param changes is a scene graph
+     */
     public static void renderChange( RenderedModel from, RenderedModel to, RenderingChanges changes )
     {
         // TODO: Does clone() perform any better than new HashSet(), or is there any other reason to keep it?
@@ -522,6 +531,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             for ( RenderedManifestation toRm : to .mRendered ) {
                 if ( fromRm .equals( toRm ) )
                 {
+                    // This part is fragile.  The next call relies on the fact that "changes"
+                    //   is the only sticky RenderingChanges that ever touches these RMs,
+                    //   or picking will break.
                     changes .manifestationSwitched( fromRm, toRm );
                     if ( Float.floatToIntBits( fromRm .getGlow() ) != Float .floatToIntBits( toRm .getGlow() ) )
                         changes .glowChanged( toRm );

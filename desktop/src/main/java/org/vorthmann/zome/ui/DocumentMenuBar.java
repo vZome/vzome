@@ -1,5 +1,7 @@
 package org.vorthmann.zome.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
@@ -19,6 +21,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
@@ -206,7 +209,16 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu .add( withAccelerator( KeyEvent.VK_B, COMMAND_SHIFT, withAction( "undoRedo", "undoToBreakpoint", new JMenuItem( "Undo To Breakpoint" ) ) ) );
             menu .add( withAccelerator( KeyEvent.VK_B, COMMAND_OPTION, withAction( "undoRedo", "redoToBreakpoint", new JMenuItem( "Redo To Breakpoint" ) ) ) );
             menu .add( withAccelerator( KeyEvent.VK_B, COMMAND, withAction( "undoRedo", "setBreakpoint", new JMenuItem( "Set Breakpoint" ) ) ) );
-            menu .add( withAction( "undoRedo", "redoUntilEdit", new JMenuItem( "Redo to Edit Number..." ) ) );
+            menu .add( withAction( new JMenuItem( "Redo to Edit Number..." ), new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    String number = JOptionPane.showInputDialog( null, "Enter the edit number.", "Set Edit Number",
+                            JOptionPane.PLAIN_MESSAGE );
+                    controller .getSubController( "undoRedo" ) .actionPerformed( new ActionEvent( DocumentMenuBar.this, ActionEvent.ACTION_PERFORMED, "redoUntilEdit." + number ) );
+                }
+            } ) );
         }
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Cut", ( "cut" ), KeyEvent.VK_X, COMMAND ) ) );
@@ -570,6 +582,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
     {
         control .setEnabled( enable );
         return control;
+    }
+
+    private JMenuItem withAction( JMenuItem menuItem, ActionListener action )
+    {
+        menuItem .setEnabled( true );
+        menuItem .addActionListener( action );
+        return menuItem;
     }
 
     private JMenuItem withAction( String controllerName, String action, JMenuItem menuItem )

@@ -271,16 +271,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     snapshot2dFrame.setVisible( true );
                     break;
 
-                case "redoUntilEdit":
-                    String number = JOptionPane.showInputDialog( null, "Enter the edit number.", "Set Edit Number",
-                            JOptionPane.PLAIN_MESSAGE );
-                    try {
-                        mController .doAction( "redoUntilEdit." + number, new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "redoUntilEdit." + number ) );
-                    } catch ( Exception e1 ) {
-                        errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ e1 } );
-                    }
-                    break;
-
                 case "showToolsPanel":
                     tabbedPane .setSelectedIndex( 1 );  // should be "tools" tab
                     break;
@@ -710,133 +700,132 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     @Override
     public AbstractButton setButtonAction( String command, Controller controller, AbstractButton control )
     {
-    	control .setActionCommand( command );
-    	boolean enable = true;
-    	switch ( command ) {
-    	
-    	// TODO: find a better way to disable these... they are found in OrbitPanel.java
-    	case "predefinedOrbits":
-    	case "usedOrbits":
-    	case "setAllDirections":
+        control .setActionCommand( command );
+        boolean enable = true;
+        switch ( command ) {
+
+        // TODO: find a better way to disable these... they are found in OrbitPanel.java
+        case "predefinedOrbits":
+        case "usedOrbits":
+        case "setAllDirections":
             enable = fullPower;
             break;
-            
-    	case "save":
-    	case "saveAs":
-    	case "saveDefault":
-    		enable = this .canSave;
-    		break;
 
-    	default:
-        	if ( command .startsWith( "export." ) ) {
-        		enable = this .canSave;
-        	}
-    	}
-    	control .setEnabled( enable );
+        case "save":
+        case "saveAs":
+        case "saveDefault":
+            enable = this .canSave;
+            break;
+
+        default:
+            if ( command .startsWith( "export." ) ) {
+                enable = this .canSave;
+            }
+        }
+        control .setEnabled( enable );
         if ( control .isEnabled() )
         {
-        	ActionListener actionListener = controller;
-        	switch ( command ) {
-            
-    		// these can fall through to the ApplicationController
-        	case "quit":
-        	case "new":
-        	case "new-rootTwo":
-        	case "new-rootThree":
-        	case "new-heptagon":
-        	case "new-snubDodec":
-        	case "openURL":
-        	case "showAbout":
+            ActionListener actionListener = controller;
+            switch ( command ) {
 
-        	// these will be handled by the DocumentController
-        	case "toggleWireframe":
-        	case "toggleOrbitViews":
-        	case "toggleStrutScales":
-        	case "toggleFrameLabels":
-        	case "toggleOutlines":
-        		actionListener = controller;
-        		break;
+            // these can fall through to the ApplicationController
+            case "quit":
+            case "new":
+            case "new-rootTwo":
+            case "new-rootThree":
+            case "new-heptagon":
+            case "new-snubDodec":
+            case "openURL":
+            case "showAbout":
 
-			case "open":
-        	case "newFromTemplate":
-        	case "openDeferringRedo":
-        		actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vZome", controller );
-        		break;
-                
-        	case "saveAs":
-        		actionListener = saveAsAction;
-        		break;
-
-        	case "save":
-        	case "saveDefault":
-        	case "close":
-        	case "snapshot.2d":
-        	case "showToolsPanel":
-        	case "setItemColor":
-        	case "setBackgroundColor":
-        	case "showPolytopesDialog":
-        	case "showZomicWindow":
-        	case "showPythonWindow":
-        	case "rZomeOrbits":
-        	case "predefinedOrbits":
-        	case "usedOrbits":
-        	case "setAllDirections":
-        	case "configureShapes":
-        	case "configureDirections":
-        	case "redoUntilEdit":
-        	case "addBookmark":
-        	case "importVefWithScale":
-        		actionListener = this .localActions;
+                // these will be handled by the DocumentController
+            case "toggleWireframe":
+            case "toggleOrbitViews":
+            case "toggleStrutScales":
+            case "toggleFrameLabels":
+            case "toggleOutlines":
+                actionListener = controller;
                 break;
-                                                
-        	case "capture-animation":
-        		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, "png", controller );
+
+            case "open":
+            case "newFromTemplate":
+            case "openDeferringRedo":
+                actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vZome", controller );
                 break;
-                                                
-        	default:
-        		if ( command .startsWith( "openResource-" ) ) {
-        			actionListener = controller;
-        		}
-        		else if ( command .startsWith( "setSymmetry." ) ) {
-        			actionListener = this .localActions;
-        		}
-        		else if ( command .startsWith( "execCommandLine/" ) ) {
-        			actionListener = this .localActions;
-        		}
-        		else if ( command .startsWith( "showProperties-" ) ) {
-        			actionListener = this .localActions;
-        		}
-        		else if ( command .startsWith( "capture." ) ) {
-        			String ext = command .substring( "capture." .length() );
-            		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
-        		}
-        		else if ( command .startsWith( "export." ) ) {
-        			String ext = command .substring( "export." .length() );
-        			switch ( ext ) {
-        			case "vrml": ext = "wrl"; break;
-        			case "size": ext = "txt"; break;
-        			case "partslist": ext = "txt"; break;
-        			case "partgeom": ext = "vef"; break;
-					default:
-						break;
-					}
-            		actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
-        		}
-        		else {
-            		actionListener = getExclusiveAction( command, controller );
+
+            case "saveAs":
+                actionListener = saveAsAction;
+                break;
+
+            case "save":
+            case "saveDefault":
+            case "close":
+            case "snapshot.2d":
+            case "showToolsPanel":
+            case "setItemColor":
+            case "setBackgroundColor":
+            case "showPolytopesDialog":
+            case "showZomicWindow":
+            case "showPythonWindow":
+            case "rZomeOrbits":
+            case "predefinedOrbits":
+            case "usedOrbits":
+            case "setAllDirections":
+            case "configureShapes":
+            case "configureDirections":
+            case "addBookmark":
+            case "importVefWithScale":
+                actionListener = this .localActions;
+                break;
+
+            case "capture-animation":
+                actionListener = new ControllerFileAction( new FileDialog( this ), false, command, "png", controller );
+                break;
+
+            default:
+                if ( command .startsWith( "openResource-" ) ) {
+                    actionListener = controller;
+                }
+                else if ( command .startsWith( "setSymmetry." ) ) {
+                    actionListener = this .localActions;
+                }
+                else if ( command .startsWith( "execCommandLine/" ) ) {
+                    actionListener = this .localActions;
+                }
+                else if ( command .startsWith( "showProperties-" ) ) {
+                    actionListener = this .localActions;
+                }
+                else if ( command .startsWith( "capture." ) ) {
+                    String ext = command .substring( "capture." .length() );
+                    actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
+                }
+                else if ( command .startsWith( "export." ) ) {
+                    String ext = command .substring( "export." .length() );
+                    switch ( ext ) {
+                    case "vrml": ext = "wrl"; break;
+                    case "size": ext = "txt"; break;
+                    case "partslist": ext = "txt"; break;
+                    case "partgeom": ext = "vef"; break;
+                    default:
+                        break;
+                    }
+                    actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
+                }
+                else {
+                    actionListener = getExclusiveAction( command, controller );
                     this .mExcluder .addExcludable( control );
-        		}
+                }
                 break;
-        	}
-        	control .addActionListener( actionListener );
+            }
+            control .addActionListener( actionListener );
         }
-    	return control;
+        return control;
     }
     
     @Override
     public JMenuItem setMenuAction( String command, Controller controller, JMenuItem menuItem )
     {
-    	return (JMenuItem) this .setButtonAction( command, controller, menuItem );
+        return (JMenuItem) this .setButtonAction( command, controller, menuItem );
     }
 
 	@Override
