@@ -13,7 +13,7 @@ let App = ({ enabled }) => (
       <h1 className="App-title">Welcome to vZome-React</h1>
     </header>
     <ModelUrlControl/>
-		{ enabled? <ModelCanvas width={950} height={500} scale={5}/> : <div/> }
+		<ModelCanvas width={950} height={500} scale={5}/>
     <EditButtons/>
   </div>
 )
