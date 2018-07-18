@@ -11,7 +11,7 @@ import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class JoinSkewLines extends ChangeManifestations {
-    public static final String NAME = "joinSkewLines";
+    public static final String NAME = "JoinSkewLines";
 
     public JoinSkewLines(Selection selection, RealizedModel realized) {
         super(selection, realized);
@@ -125,6 +125,6 @@ public class JoinSkewLines extends ChangeManifestations {
 
     @Override
     protected String getXmlElementName() {
-        return "JoinSkewLines";
+        return NAME;
     }
 }
