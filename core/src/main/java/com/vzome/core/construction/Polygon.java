@@ -75,6 +75,12 @@ public abstract class Polygon extends Construction
         return mVertices[i];
     }
     
+    public AlgebraicVector getNormal()
+    {
+        // TODO: Don't base this on the first 3 vectors and expect them to be non-collinear 
+        return AlgebraicVectors.getNormal(mVertices[0], mVertices[1], mVertices[2]);
+    }
+    
     public AlgebraicVector getCentroid()
     {
         return AlgebraicVectors.getCentroid( mVertices );

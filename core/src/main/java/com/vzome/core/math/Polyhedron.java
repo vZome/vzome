@@ -17,6 +17,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.symmetry.Direction;
 
 
@@ -315,12 +316,11 @@ public class Polyhedron implements Cloneable
         
         void computeNormal( List<AlgebraicVector> vertices )
         {
-            AlgebraicVector v0 = vertices .get( getVertex( 0 ) );
-            AlgebraicVector v1 = vertices .get( getVertex( 1 ) );
-            AlgebraicVector v2 = vertices .get( getVertex( 2 ) );
-            v1 = v1 .minus( v0 );
-            v2 = v2 .minus( v0 );
-            mNormal = v1 .cross( v2 );
+            // TODO: Don't depend on the first three vertices to be non-collinear
+            mNormal = AlgebraicVectors.getNormal(
+                    vertices .get( getVertex( 0 ) ), 
+                    vertices .get( getVertex( 1 ) ), 
+                    vertices .get( getVertex( 2 ) ) ); 
         }
 		
 		void canonicallyOrder()

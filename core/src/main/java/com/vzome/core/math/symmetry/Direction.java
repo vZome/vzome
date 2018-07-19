@@ -16,6 +16,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.RealVector;
 
 /**
@@ -201,12 +202,12 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     {
         for (Axis axis : zoneVectors .values()) {
             AlgebraicVector normal = axis .normal();
-            if ( normal .cross( vector ) .isOrigin() ) {
+            if ( AlgebraicVectors.areParallel( normal, vector ) ) {
                 // parallel
                 AlgebraicNumber dotProd = normal .dot( vector );
-                if ( dotProd .evaluate() > 0 )
+                if ( dotProd .evaluate() > 0 ) { // positive
                     return axis;
-                else {
+                } else {
                 	AlgebraicMatrix principalReflection = this .mSymmetryGroup .getPrincipalReflection();
                 	if ( principalReflection == null ) {
                 		// the traditional way... anti-parallel means just flip the sense

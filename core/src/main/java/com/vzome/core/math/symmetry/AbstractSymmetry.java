@@ -17,6 +17,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.RealVector;
 
 /**
@@ -325,24 +326,24 @@ public abstract class AbstractSymmetry implements Symmetry
             return null;
         }
         Direction canonicalOrbit = this .getSpecialOrbit( SpecialOrbit.BLACK );
-        if ( canonicalOrbit == null )
-                        // the old, brute-force approach
-        for (Direction dir : orbits) {
-            Axis candidate = dir .getAxis( vector );
-            if ( candidate != null )
-            {
-                return candidate;
+        if ( canonicalOrbit == null ) {
+            // the old, brute-force approach
+            for (Direction dir : orbits) {
+                Axis candidate = dir .getAxis( vector );
+                if ( candidate != null ) {
+                    return candidate;
+                }
             }
-        }
-        else {
+        } else {
             // smarter: find the orientation first, then check orbits
             Axis zone = canonicalOrbit .getAxis( vector .toRealVector() );
             int orientation = zone .getOrientation();
             int sense = zone .getSense();
             for (Direction orbit : orbits) {
                 Axis candidate = orbit .getCanonicalAxis( sense, orientation );
-                if ( candidate .normal() .cross( vector ) .isOrigin() )
+                if ( AlgebraicVectors.areParallel(candidate .normal(), vector ) ) {
                     return candidate;
+                }
             }
         }
         return null;

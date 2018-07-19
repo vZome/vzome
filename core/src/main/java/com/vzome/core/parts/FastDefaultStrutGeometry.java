@@ -126,7 +126,7 @@ public class FastDefaultStrutGeometry implements StrutGeometry
         
         AlgebraicVector b2g2 = g2_vector .minus( b2_vector );
         AlgebraicVector y2g2 = g2_vector .minus( y2_vector );
-        AlgebraicVector normal = b2g2 .cross( y2g2 );
+        AlgebraicVector normal = AlgebraicVectors.getNormal( b2g2, y2g2 );
         AlgebraicVector intersection = AlgebraicVectors .getLinePlaneIntersection( field .origin( 3 ), v, g2_vector, normal );
         
         AlgebraicVector g2_offset = g2_vector .minus( centroid );
