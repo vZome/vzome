@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.DomUtils;
 
 
@@ -64,9 +65,19 @@ public abstract class Polygon extends Construction
         }
     }
 
-    
-    public AlgebraicVector[] getVertices()
+    public int getVertexCount()
     {
-        return mVertices .clone();
+        return mVertices.length;
     }
+    
+    public AlgebraicVector getVertex(int i)
+    {
+        return mVertices[i];
+    }
+    
+    public AlgebraicVector getCentroid()
+    {
+        return AlgebraicVectors.getCentroid( mVertices );
+    }
+
 }

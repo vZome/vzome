@@ -40,7 +40,6 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
@@ -811,7 +810,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         else if ( target instanceof Segment )
             return this .renderedModel .renderVector( ( (Segment) target ).getStart() );
         else if ( target instanceof Polygon )
-            return this .renderedModel .renderVector( ( (Polygon) target ).getVertices()[ 0 ] );
+            return this .renderedModel .renderVector( ( (Polygon) target ).getVertex( 0 ) );
         else
             return new RealVector( 0, 0, 0 );
     }
@@ -822,11 +821,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         if ( target instanceof Point)
             v = ( (Point) target ).getLocation();
         else if ( target instanceof Segment ) {
-            Segment segment = (Segment) target;
-            v = AlgebraicVectors.getCentroid(new AlgebraicVector[] { segment.getStart(), segment.getEnd() });
+            v = ((Segment) target). getCentroid( );
         }
         else if ( target instanceof Polygon )
-            v = AlgebraicVectors.getCentroid( ( (Polygon) target ).getVertices() );
+            v = ((Polygon) target). getCentroid( );
         else
             v = this.getField().origin(3);
         
@@ -1420,12 +1418,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     	return mEditorModel .getSymmetrySegment();
     }
 
+    // Working plane
 	public Segment getPlaneAxis( Polygon panel )
 	{
-		AlgebraicVector[] vertices = panel.getVertices();
-		FreePoint p0 = new FreePoint( vertices[ 0 ] );
-		FreePoint p1 = new FreePoint( vertices[ 1 ] );
-		FreePoint p2 = new FreePoint( vertices[ 2 ] );
+		FreePoint p0 = new FreePoint( panel.getVertex( 0 ) );
+		FreePoint p1 = new FreePoint( panel.getVertex( 1 ) );
+		FreePoint p2 = new FreePoint( panel.getVertex( 2 ) );
 		Segment s1 = new SegmentJoiningPoints( p0, p1 );
 		Segment s2 = new SegmentJoiningPoints( p1, p2 );
 		return new SegmentCrossProduct( s1, s2 );

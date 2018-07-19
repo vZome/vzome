@@ -86,9 +86,8 @@ public class Symmetry4d extends ChangeManifestations
                         throw new Command.Failure( "Some strut end is not in the W=0 hyperplane." );
                 } else if (construction instanceof Polygon) {
                     Polygon p = (Polygon) construction;
-                    AlgebraicVector[] vertices = p .getVertices();
-                    for (AlgebraicVector vertice : vertices) {
-                        if (!inW0hyperplane(vertice)) {
+                    for( int i = 0; i < p.getVertexCount(); i++) {
+                        if (!inW0hyperplane(p.getVertex(i))) {
                             throw new Command.Failure( "Some panel vertex is not in the W=0 hyperplane." );
                         }
                     }
