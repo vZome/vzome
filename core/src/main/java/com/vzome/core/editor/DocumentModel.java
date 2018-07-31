@@ -49,7 +49,6 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.ManifestationColorMappers.CentroidNearestSpecialOrbitColorMap;
 import com.vzome.core.editor.ManifestationColorMappers.ManifestationColorMapper;
 import com.vzome.core.editor.ManifestationColorMappers.NearestSpecialOrbitColorMap;
@@ -1417,14 +1416,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     	return mEditorModel .getSymmetrySegment();
     }
 
-    // Working plane axis
-	public Segment getPlaneAxis( Polygon panel )
-	{
-	    AlgebraicVector normal = panel.getNormal();
-        return new SegmentJoiningPoints(new FreePoint( normal.getField().origin(3) ), new FreePoint( normal ));
-	}
-
-	public RealizedModel getRealizedModel()
+    public RealizedModel getRealizedModel()
 	{
 		return this .mRealizedModel;
 	}
