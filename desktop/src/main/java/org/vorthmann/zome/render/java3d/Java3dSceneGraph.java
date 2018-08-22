@@ -83,8 +83,10 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     private final boolean isSticky;
 
-	private boolean drawOutlines;
+    private boolean drawNormals;
 
+	private boolean drawOutlines;
+	
     private FrameLabels frameLabels = null;
 
     private IcosahedralLabels icosahedralLabels = null;
@@ -253,6 +255,9 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 //            axisZLines.setColor( 0, black );
 //        }
 
+        if ( controller .propertyIsTrue( "drawNormals" ) )
+            propertyChange("drawNormals", true );
+
         if ( controller .propertyIsTrue( "drawOutlines" ) )
             propertyChange("drawOutlines", true );
 
@@ -400,6 +405,13 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
             Shape3D outlinePolyhedron = new Shape3D( geom );
             outlinePolyhedron .setAppearance( mFactory .getOutlineAppearance() );
         	tg .addChild( outlinePolyhedron );
+        }
+        
+        if(drawNormals && rm.getShape().isPanel()) {
+            geom = mFactory .makePanelNormalGeometry( rm );
+            Shape3D normalPolyhedron = new Shape3D( geom );
+            normalPolyhedron .setAppearance( mFactory .getPanelNormalAppearance() );
+            tg .addChild( normalPolyhedron );
         }
 
         // Create a Text2D leaf node, add it to the scene graph.
@@ -623,6 +635,11 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     protected void propertyChange(String propertyName, Object newValue, Object oldValue) {
         switch (propertyName) {
+            case "drawNormals":
+                drawNormals = (Boolean) newValue;
+                refreshPolygonOutlines();
+                break;
+
             case "drawOutlines":
                 drawOutlines = (Boolean) newValue;
                 ambientForOutlines.setEnable(drawOutlines);

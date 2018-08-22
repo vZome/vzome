@@ -103,6 +103,7 @@ public class DocumentController extends DefaultController implements Controller3
     private Lights sceneLighting;
     private MouseTool modelModeMainTrackball;
     private Component modelCanvas;
+    private boolean drawNormals = false;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
     private Java2dSnapshot mSnapshot = null;
@@ -594,6 +595,12 @@ public class DocumentController extends DefaultController implements Controller3
             {
                 showFrameLabels = ! showFrameLabels;
                 properties() .firePropertyChange( "showFrameLabels", !showFrameLabels, showFrameLabels );
+            }
+
+            else if ( action.equals( "toggleNormals" ) )
+            {
+                drawNormals = ! drawNormals;
+                properties() .firePropertyChange( "drawNormals", !drawNormals, drawNormals );
             }
 
             else if ( action.equals( "toggleOutlines" ) )
@@ -1130,6 +1137,9 @@ public class DocumentController extends DefaultController implements Controller3
 
         case "showFrameLabels":
             return Boolean .toString( showFrameLabels );
+
+        case "drawNormals":
+            return Boolean .toString( drawNormals );
 
         case "drawOutlines":
             return Boolean .toString( drawOutlines );
