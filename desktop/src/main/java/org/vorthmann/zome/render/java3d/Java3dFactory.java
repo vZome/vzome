@@ -156,9 +156,11 @@ public class Java3dFactory implements J3dComponentFactory
         AlgebraicNumber avgQuadrance = totalQuadrance.dividedBy(poly.getField().createRational(vertices.size()));
         double avgDistance = Math.sqrt(avgQuadrance.evaluate());
         // normalize vN then scale it by the average distance from centroid to all vertices,
-        // which makes the normal lines scale with the panels so tyhey can be seen at any scale.
+        // which makes the normal lines scale with the panels so they can be seen at any scale.
         // The additional scaling by one half is just a factor that I think looks good.
-        // There is no mathematical basis for it. 
+        // There is no mathematical basis for it, but it was chosen in part so that a cube
+        // with all normals facing the center would show 6 distinct normals rather than 
+        // having them overlap and appear as three lines between opposite faces.
         vN = vN.normalize().scale(avgDistance/2d);
 
         RealVector v0 = embedding.embedInR3( centroid );
