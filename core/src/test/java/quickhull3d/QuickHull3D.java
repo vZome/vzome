@@ -156,8 +156,8 @@ public class QuickHull3D {
     private Vertex[] maxVtxs = new Vertex[3];
     private Vertex[] minVtxs = new Vertex[3];
 
-    protected Vector faces = new Vector(16);
-    protected Vector horizon = new Vector(16);
+    protected Vector<Face> faces = new Vector<>(16);
+    protected Vector<HalfEdge> horizon = new Vector<>(16);
 
     private FaceList newFaces = new FaceList();
     private VertexList unclaimed = new VertexList();
@@ -306,8 +306,8 @@ public class QuickHull3D {
 
     private HalfEdge findHalfEdge(Vertex tail, Vertex head) {
         // brute force ... OK, since setHull is not used much
-        for (Iterator it = faces.iterator(); it.hasNext();) {
-            HalfEdge he = ((Face) it.next()).findEdge(tail, head);
+        for (Iterator<Face> it = faces.iterator(); it.hasNext();) {
+            HalfEdge he = it.next().findEdge(tail, head);
             if (he != null) {
                 return he;
             }
@@ -361,7 +361,7 @@ public class QuickHull3D {
             }
             ps.flush();
             ps.close();
-            Vector indexList = new Vector(3);
+            Vector<Integer> indexList = new Vector<>(3);
             stok.eolIsSignificant(true);
             printQhullErrors(proc);
 
@@ -389,8 +389,8 @@ public class QuickHull3D {
                 }
                 faceIndices[i] = new int[indexList.size()];
                 int k = 0;
-                for (Iterator it = indexList.iterator(); it.hasNext();) {
-                    faceIndices[i][k++] = ((Integer) it.next()).intValue();
+                for (Iterator<Integer> it = indexList.iterator(); it.hasNext();) {
+                    faceIndices[i][k++] = it.next().intValue();
                 }
             }
             setHull(coords, nump, faceIndices, numf);
@@ -494,8 +494,8 @@ public class QuickHull3D {
     public void triangulate() {
         double minArea = 1000 * charLength * DOUBLE_PREC;
         newFaces.clear();
-        for (Iterator it = faces.iterator(); it.hasNext();) {
-            Face face = (Face) it.next();
+        for (Iterator<Face> it = faces.iterator(); it.hasNext();) {
+            Face face = it.next();
             if (face.mark == Face.VISIBLE) {
                 face.triangulate(newFaces, minArea);
                 // splitFace (face);
@@ -832,8 +832,8 @@ public class QuickHull3D {
     public int[][] getFaces(int indexFlags) {
         int[][] allFaces = new int[faces.size()][];
         int k = 0;
-        for (Iterator it = faces.iterator(); it.hasNext();) {
-            Face face = (Face) it.next();
+        for (Iterator<Face> it = faces.iterator(); it.hasNext();) {
+            Face face = it.next();
             allFaces[k] = new int[face.numVertices()];
             getFaceIndices(allFaces[k], face, indexFlags);
             k++;
@@ -896,8 +896,8 @@ public class QuickHull3D {
             Point3d pnt = pointBuffer[vertexPointIndices[i]].pnt;
             ps.println("v " + pnt.x + " " + pnt.y + " " + pnt.z);
         }
-        for (Iterator fi = faces.iterator(); fi.hasNext();) {
-            Face face = (Face) fi.next();
+        for (Iterator<Face> fi = faces.iterator(); fi.hasNext();) {
+            Face face = fi.next();
             int[] indices = new int[face.numVertices()];
             getFaceIndices(indices, face, indexFlags);
 
@@ -995,7 +995,6 @@ public class QuickHull3D {
         do {
             Face oppFace = hedge.oppositeFace();
             boolean merge = false;
-            double dist1, dist2;
 
             if (mergeType == NONCONVEX) { // then merge faces if they are definitively non-convex
                 if (oppFaceDistance(hedge) > -tolerance || oppFaceDistance(hedge.opposite) > -tolerance) {
@@ -1006,7 +1005,7 @@ public class QuickHull3D {
               // wrt to the larger face; otherwise, just mark
               // the face non-convex for the second pass.
                 if (face.area > oppFace.area) {
-                    if ((dist1 = oppFaceDistance(hedge)) > -tolerance) {
+                    if ((oppFaceDistance(hedge)) > -tolerance) {
                         merge = true;
                     } else if (oppFaceDistance(hedge.opposite) > -tolerance) {
                         convex = false;
@@ -1042,7 +1041,7 @@ public class QuickHull3D {
         return false;
     }
 
-    protected void calculateHorizon(Point3d eyePnt, HalfEdge edge0, Face face, Vector horizon) {
+    protected void calculateHorizon(Point3d eyePnt, HalfEdge edge0, Face face, Vector<HalfEdge> horizon) {
         // oldFaces.add (face);
         deleteFacePoints(face, null);
         face.mark = Face.DELETED;
@@ -1079,14 +1078,14 @@ public class QuickHull3D {
         return face.getEdge(0);
     }
 
-    protected void addNewFaces(FaceList newFaces, Vertex eyeVtx, Vector horizon) {
+    protected void addNewFaces(FaceList newFaces, Vertex eyeVtx, Vector<HalfEdge> horizon) {
         newFaces.clear();
 
         HalfEdge hedgeSidePrev = null;
         HalfEdge hedgeSideBegin = null;
 
-        for (Iterator it = horizon.iterator(); it.hasNext();) {
-            HalfEdge horizonHe = (HalfEdge) it.next();
+        for (Iterator<HalfEdge> it = horizon.iterator(); it.hasNext();) {
+            HalfEdge horizonHe = it.next();
             HalfEdge hedgeSide = addAdjoiningFace(eyeVtx, horizonHe);
             if (debug) {
                 System.out.println("new face: " + hedgeSide.face.getVertexString());
@@ -1189,8 +1188,8 @@ public class QuickHull3D {
         }
         // remove inactive faces and mark active vertices
         numFaces = 0;
-        for (Iterator it = faces.iterator(); it.hasNext();) {
-            Face face = (Face) it.next();
+        for (Iterator<Face> it = faces.iterator(); it.hasNext();) {
+            Face face = it.next();
             if (face.mark != Face.VISIBLE) {
                 it.remove();
             } else {
@@ -1243,8 +1242,8 @@ public class QuickHull3D {
     protected boolean checkFaces(double tol, PrintStream ps) {
         // check edge convexity
         boolean convex = true;
-        for (Iterator it = faces.iterator(); it.hasNext();) {
-            Face face = (Face) it.next();
+        for (Iterator<Face> it = faces.iterator(); it.hasNext();) {
+            Face face = it.next();
             if (face.mark == Face.VISIBLE) {
                 if (!checkFaceConvexity(face, tol, ps)) {
                     convex = false;
@@ -1307,8 +1306,8 @@ public class QuickHull3D {
 
         for (int i = 0; i < numPoints; i++) {
             Point3d pnt = pointBuffer[i].pnt;
-            for (Iterator it = faces.iterator(); it.hasNext();) {
-                Face face = (Face) it.next();
+            for (Iterator<Face> it = faces.iterator(); it.hasNext();) {
+                Face face = it.next();
                 if (face.mark == Face.VISIBLE) {
                     dist = face.distanceToPlane(pnt);
                     if (dist > pointTol) {
