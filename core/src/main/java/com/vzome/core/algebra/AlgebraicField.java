@@ -364,13 +364,15 @@ public abstract class AlgebraicField
         // create an identity matrix
         for ( int j = 0; j < length; j++ ) {
             for ( int i = 0; i < length; i++ ) {
-                if ( i == j )
-                    reciprocal[ j ][ i ] = new BigRational( 1 );
-                else
-                    reciprocal[ j ][ i ] = new BigRational( 0 );
+                reciprocal[ j ][ i ] = ( i == j ) ? BigRational.ONE : BigRational.ZERO;
             }
         }
-        Fields .gaussJordanReduction( representation, reciprocal );
+        int rank = Fields .gaussJordanReduction( representation, reciprocal );
+        if(rank != length) {
+            // TODO: What should we do here?
+            System.err.println((new Throwable()).getStackTrace()[0].getMethodName() 
+                    + " expects matrix rank to be " + length + ", but it is " + rank + "."); 
+        }
         BigRational[] reciprocalFactors = new BigRational[ length ];
         System.arraycopy(reciprocal[ 0 ], 0, reciprocalFactors, 0, length);
         return reciprocalFactors;
@@ -444,7 +446,8 @@ public abstract class AlgebraicField
     }
 
     /**
-     * Create a matrix from integer data.
+     * Create a 3x3 square matrix from integer data.
+     * TODO: Generalize this method to create a matrix with dimensions matching the dimensions of the data array
      * Sample input data for an order-4 field:
      *   {{{7,5,0,1,-4,5,0,1},{-2,5,0,1,4,5,0,1},{0,1,-8,5,0,1,6,5}},
      *    {{-2,5,0,1,4,5,0,1},{7,5,0,1,-4,5,0,1},{0,1,8,5,0,1,-6,5}},
