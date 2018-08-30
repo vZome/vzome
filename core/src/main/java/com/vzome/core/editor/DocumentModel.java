@@ -451,9 +451,15 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 			edit = new SelectAutomaticStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
                     this .mSelection, this .mRealizedModel );
 			break;
-		case "SelectCollinear":
-			edit = new SelectCollinear( this .mSelection, this .mRealizedModel );
-			break;
+        case "SelectCollinear":
+            edit = new SelectCollinear( this .mSelection, this .mRealizedModel );
+            break;
+        case SelectByDiameter.NAME:
+            edit = mEditorModel.selectByDiameter();
+            break;
+        case SelectByRadius.NAME:
+            edit = mEditorModel.selectByRadius();
+            break;
 		case "ValidateSelection":
 			edit = new ValidateSelection( this.mSelection );
 			break;
@@ -629,6 +635,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case "SelectParallelStruts":
 			edit = mEditorModel.selectParallelStruts();
 			break;
+        case SelectByDiameter.NAME:
+            edit = mEditorModel.selectByDiameter();
+            break;
+        case SelectByRadius.NAME:
+            edit = mEditorModel.selectByRadius();
+            break;
 		case "invertSelection":
 			edit = mEditorModel.invertSelection();
 			break;

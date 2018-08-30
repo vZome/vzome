@@ -36,7 +36,7 @@ public class PlaneSelectionTool extends Tool
 		@Override
 		public Tool createToolInternal( String id )
 		{
-			return new ModuleTool( id, getToolsModel() );
+			return new PlaneSelectionTool( id, getToolsModel() );
 		}
 
 		@Override
@@ -50,7 +50,7 @@ public class PlaneSelectionTool extends Tool
     
     private AlgebraicVector anchor;
     
-	private boolean halfSpace = false;
+	private boolean halfSpace = true;
 	private boolean boundaryOpen = false;
 	private boolean above = true;
 	private boolean includeBalls = true;
