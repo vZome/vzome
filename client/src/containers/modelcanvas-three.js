@@ -172,6 +172,7 @@ class ModelCanvasThree extends React.Component {
       cameraRotation,
     } = this.state;
 
+//     console.log( JSON.stringify(this.props) );
 		return (
 			<React3
 				mainCamera="mainCamera" // this points to the perspectiveCamera below
