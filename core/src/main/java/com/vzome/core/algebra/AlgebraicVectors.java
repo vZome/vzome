@@ -13,6 +13,39 @@ public class AlgebraicVectors {
         return v1.minus(v0).cross(v2.minus(v0));
     }
 
+    /** 
+     * @return a vector that is orthogonal to a plane defined by three of the vertices.
+     * If vertices are all collinear, then the origin is returned.
+     * @throws IllegalArgumentException if fewer than three vectors are in the collection.
+     */ 
+    public static AlgebraicVector getNormal(final Collection<AlgebraicVector> vectors) 
+    { 
+        if(vectors.size() < 3) { 
+            throw new IllegalArgumentException("3 vertices are required to calculate a normal. Found " + vectors.size()); 
+        } 
+        AlgebraicVector v0 = null;
+        AlgebraicVector v1 = null;
+        AlgebraicVector normal = null;
+        for(AlgebraicVector vector : vectors)
+        {
+            if(v0 == null) {
+                v0 = vector;
+            }
+            else if(v1 == null) {
+                if(vector != v0) { // in case vectors are not unique
+                    v1 = vector;
+                }
+            }
+            else {
+                normal = getNormal(v0, v1, vector);
+                if(!normal.isOrigin()) {
+                    return normal;
+                }
+            }
+        }
+        return normal;
+    }
+
     public static boolean areCollinear(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
         return getNormal(v0, v1, v2).isOrigin();
     }
