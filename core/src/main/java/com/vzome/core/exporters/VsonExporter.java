@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
@@ -71,9 +72,10 @@ public class VsonExporter extends Exporter3d
             {
                 ObjectNode strutJson = mapper .createObjectNode();
                 JsonNode start = mapper .valueToTree( sortedVertexList .indexOf( man .getLocation() ) );
-                strutJson .set( "start", start );
                 JsonNode end = mapper .valueToTree( sortedVertexList .indexOf( ((Strut) man) .getEnd() ) );
-                strutJson .set( "end", end );
+                boolean reverse = rm .getStrutSense() == Axis.MINUS;
+                strutJson .set( "start", reverse? end : start );
+                strutJson .set( "end", reverse? start : end );
                 JsonNode length = mapper .valueToTree( rm .getStrutLength() );
                 strutJson .set( "length", length );
                 JsonNode orbit = mapper .valueToTree( rm .getStrutOrbit() .getName() );

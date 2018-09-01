@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
@@ -60,7 +61,7 @@ public class ObservableJsonExporter extends Exporter3d
         ArrayList<JsonNode> shapes = new ArrayList<>();
         ArrayList<JsonNode> balls = new ArrayList<>();
         ArrayList<JsonNode> struts = new ArrayList<>();
-        Set<String> shapeIds = new HashSet<>();
+        Set<String> shapeNames = new HashSet<>();
         Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -68,18 +69,22 @@ public class ObservableJsonExporter extends Exporter3d
             Manifestation man = rm .getManifestation();
             Polyhedron shape = rm .getShape();
             Quat4d quaternion = getQuaternion( rm .getOrientation(), rotations );
-            String shapeId = shape .getGuid() .toString();
-            if ( ! shapeIds .contains( shapeId ) )
+            Direction orbit = rm .getStrutOrbit();
+            String shapeName = (orbit==null)? "ball" : orbit .getName() + ":" + rm .getStrutLength() .toString();
+            if ( ! shapeNames .contains( shapeName ) )
             {
-                shapes .add( mapper .valueToTree( shape ) );
-                shapeIds .add( shapeId );
+                ObjectNode shapeNode = mapper .valueToTree( shape );
+                shapeNode .remove( "id" );
+                shapeNode .set( "name", mapper .valueToTree( shapeName ) );
+                //shapes .add( shapeNode );
+                shapeNames .add( shapeName );
             }
             if ( man instanceof Strut )
             {
                 ObjectNode strutJson = mapper .createObjectNode();
                 strutJson .set( "start", mapper .valueToTree( rm .getLocation() ) );
                 strutJson .set( "rotation", mapper .valueToTree( quaternion ) );
-                strutJson .set( "shape", mapper .valueToTree( shapeId ) );
+                strutJson .set( "shape", mapper .valueToTree( shapeName ) );
                 strutJson .set( "color", mapper .valueToTree( rm .getColor() .toWebString() ) );
                 struts .add( strutJson );
             }
@@ -87,7 +92,7 @@ public class ObservableJsonExporter extends Exporter3d
             {
                 ObjectNode ballJson = mapper .createObjectNode();
                 ballJson .set( "center", mapper .valueToTree( rm .getLocation() ) );
-                ballJson .set( "shape", mapper .valueToTree( shapeId ) );
+                ballJson .set( "shape", mapper .valueToTree( shapeName ) );
                 ballJson .set( "color", mapper .valueToTree( "0xfcfcfc" ) );
                 balls .add( ballJson );
             }

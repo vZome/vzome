@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Colors;

@@ -94,7 +94,7 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
 
     public final RealVector toRealVector()
     {
-    	return new RealVector( this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() );
+        return new RealVector( this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() );
     }
 
     /**
@@ -205,7 +205,7 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
 
     public AlgebraicVector inflateTo4d()
     {
-    	return this .inflateTo4d( true );
+        return this .inflateTo4d( true );
     }
 
     public AlgebraicVector inflateTo4d( boolean wFirst )
@@ -273,7 +273,7 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
         }
         throw new IllegalStateException( "vector is the origin!" );
     }
-    
+
     @JsonIgnore
     public AlgebraicField getField()
     {

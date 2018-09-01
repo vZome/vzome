@@ -15,7 +15,9 @@ import javax.vecmath.Quat4d;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
@@ -28,7 +30,11 @@ import com.vzome.desktop.controller.RenderingViewer;
 
 class RemoteClientRendering implements RenderingChanges, RenderingViewer, PropertyChangeListener
 {
-	private final ObjectMapper objectMapper = new ObjectMapper();
+    // Keep things simple for the client code: all real numbers, all faces triangulated
+	private final ObjectWriter objectWriter = new ObjectMapper()
+            .writerWithView( AlgebraicNumber.Views.Real.class )
+            .withView( Polyhedron.Views.Triangles.class );
+
 	private final Set<String> shapeIds = new HashSet<>();
 	private Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
 	private final ThrottledQueue queue;
@@ -88,15 +94,14 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 			if ( ! this .shapeIds .contains( shapeId ) )
 			{
 				this .shapeIds .add( shapeId );
-				String shapeJson = this .objectMapper .writeValueAsString( shape );
+				String shapeJson = this .objectWriter .writeValueAsString( shape );
 				this .queue .add( "{ \"render\": \"shape\", \"shape\": " + shapeJson +" }" );
 			}
 			if ( man instanceof Strut )
 			{
-				Strut strut = (Strut) man;
 				RealVector start = rm .getLocation();
-				String startJson = this .objectMapper .writeValueAsString( start );
-				String quatJson = this .objectMapper .writeValueAsString( quaternion );
+				String startJson = this .objectWriter .writeValueAsString( start );
+				String quatJson = this .objectWriter .writeValueAsString( quaternion );
 				String color = rm .getColor() .toWebString();
 				this .queue .add( "{ \"render\": \"segment\", \"start\": " + startJson
 						+ ", \"id\": \"" + rm .getGuid()
@@ -108,7 +113,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 			{
 				Connector ball = (Connector) man;
 				RealVector center = ball .getLocation() .toRealVector();
-				String centerJson = this .objectMapper .writeValueAsString( center );
+				String centerJson = this .objectWriter .writeValueAsString( center );
 				Color color = rm .getColor();
 				if ( color == null )
 					color = Color.WHITE;
@@ -145,7 +150,6 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	@Override
 	public void manifestationRemoved( RenderedManifestation rm )
 	{
-		Manifestation man = rm .getManifestation();
 		this .queue .add( "{ \"render\": \"delete\", \"id\": \"" + rm .getGuid() + "\" }" );
 	}
 

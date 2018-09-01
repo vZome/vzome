@@ -128,7 +128,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     private final int index;
 
-    private int canonicalize = 0;
+    public int canonicalize = 0;
     
     public Direction( String name, Symmetry group, int prototype, int rotatedPrototype, AlgebraicVector vector, boolean isStd )
     {

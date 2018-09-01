@@ -10,6 +10,7 @@ import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
@@ -59,9 +60,11 @@ import com.vzome.core.editor.ManifestationColorMappers.SystemCentroidColorMap;
 import com.vzome.core.editor.ManifestationColorMappers.SystemColorMap;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.ObservableJsonExporter;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
+import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
@@ -548,6 +551,34 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         }
 		exporter .finish();
 		return out .toString();
+	}
+
+	public String copyRenderedModel( String format )
+	{
+	    StringWriter out = new StringWriter();
+	    switch ( format ) {
+
+        case "vson":
+            VsonExporter vsonEx = new VsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
+            try {
+                vsonEx .doExport( null, out, 0, 0 );
+            } catch (IOException e) {
+                // TODO fail better here
+                e.printStackTrace();
+            }
+            break;
+
+        case "observable":
+            ObservableJsonExporter ojex = new ObservableJsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
+            try {
+                ojex .doExport( null, out, 0, 0 );
+            } catch (IOException e) {
+                // TODO fail better here
+                e.printStackTrace();
+            }
+            break;
+	    }
+	    return out .toString();
 	}
 
 	public void pasteVEF( String vefContent )
