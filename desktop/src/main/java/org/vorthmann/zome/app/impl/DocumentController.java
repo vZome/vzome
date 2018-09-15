@@ -666,6 +666,10 @@ public class DocumentController extends DefaultController implements Controller3
             }
             else if ( action .equals( "copy" ) )
                 setProperty( "clipboard", documentModel .copySelectionVEF() );
+            else if ( action .equals( "copy.observable" ) )
+                setProperty( "clipboard", documentModel .copyRenderedModel( "observable" ) );
+            else if ( action .equals( "copy.vson" ) )
+                setProperty( "clipboard", documentModel .copyRenderedModel( "vson" ) );
             else if ( action.equals( "paste" ) )
             {
                 String vefContent = getProperty( "clipboard" );

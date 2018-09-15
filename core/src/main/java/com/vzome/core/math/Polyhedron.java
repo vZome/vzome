@@ -9,14 +9,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Polygon;
 import com.vzome.core.math.symmetry.Direction;
 
 
@@ -24,31 +25,22 @@ public class Polyhedron implements Cloneable
 {
 	private static Logger logger = Logger .getLogger( "com.vzome.core.math.Polyhedron" );
     
-    @JsonIgnore
 	protected int numVertices = 0;
 
-    @JsonIgnore
 	protected final Map<AlgebraicVector, Integer> m_vertices = new HashMap<>();
     
-    @JsonIgnore
 	protected List<AlgebraicVector> m_vertexList = new ArrayList<>();
 
-    @JsonIgnore
 	protected Set<Face> m_faces = new HashSet<>();
     
-    @JsonIgnore
     private final AlgebraicField field;
     
-    @JsonIgnore
     private Polyhedron evilTwin; // for struts in symmetries with truly chiral orbits
     
-    @JsonIgnore
     private boolean isEvil = false;
     
-    @JsonIgnore
     private boolean isPanel = false;
 
-    @JsonIgnore
 	private final UUID guid = UUID .randomUUID();
 
 	public Polyhedron( AlgebraicField field )
@@ -64,7 +56,6 @@ public class Polyhedron implements Cloneable
 	 * outward.
 	 * @return
 	 */
-    @JsonIgnore
 	public Polyhedron getEvilTwin( AlgebraicMatrix reflection )
 	{
 		if ( this .evilTwin == null )
@@ -93,7 +84,7 @@ public class Polyhedron implements Cloneable
 		return this .evilTwin;
 	}
 	
-    @JsonIgnore
+	@JsonIgnore
     public AlgebraicField getField()
     {
         return field;
@@ -152,16 +143,6 @@ public class Polyhedron implements Cloneable
 //			for ( Iterator<Integer> vertices = face .iterator(); vertices .hasNext(); )
 //			    System .out .println( m_vertexList .get(vertices.next() ) );
 		}
-	}
-	
-    @JsonIgnore
-	public List<AlgebraicVector> getVertexList(){
-		return m_vertexList;
-	}
-
-    @JsonIgnore
-	public Set<Face> getFaceSet(){
-		return m_faces;
 	}
 
     public Face newFace()
@@ -232,157 +213,132 @@ public class Polyhedron implements Cloneable
 		return true;
 	}
 
-	@JsonProperty( "id" )
-	public UUID getGuid()
-	{
-		return this .guid;
-	}
-
-	@JsonProperty( "vertices" )
-	public List<Object> getRealVertices()
-	{
-		return m_vertexList .stream()
-		        .map( vertex -> vertex .toRealVector() )
-		        .collect( Collectors.toList() ); 
-	}
-
-	@JsonProperty( "faces" )
-	public List<Face.Triangle> getTriangleFaces()
-	{
-		ArrayList<Face.Triangle> result = new ArrayList<>();
-		for ( Face face : m_faces ) {
-			result .addAll( face .getTriangles() );
-		}
-		return result;
-	}
-
-	public class Face extends ArrayList<Integer> implements Cloneable
+	@SuppressWarnings("serial")
+    public class Face extends ArrayList<Integer> implements Cloneable
     {
-        private AlgebraicVector mNormal;
-                
-        private Face(){}
-		
-        @JsonIgnore
-		public int getVertex( int index )
-        {
-            if ( index >= size() )
-            {
-                String msg = "index larger than Face size";
-                logger .severe( msg );
-                throw new IllegalStateException( msg );
-            }
-			return get( index );
-		}
-        
-        public class Triangle
-        {
-        	public int[] vertices = new int[3];
-        	public RealVector normal;
-        	
-        	public Triangle( int v0, int v1, int v2, RealVector normal )
-        	{
-        		this .vertices[ 0 ] = v0;
-        		this .vertices[ 1 ] = v1;
-        		this .vertices[ 2 ] = v2;
-        		this .normal = normal;
-        	}
-        }
-        
-        public List<Triangle> getTriangles()
-        {
-        	int arity = this .size();
-        	ArrayList<Triangle> result = new ArrayList<>();
-            int v0 = -1, v1 = -1;
-        	for ( int j = 0; j < arity; j++ ){
-        		Integer index = this .get( j );
-                if ( v0 == -1 )
-                {
-                    v0 = index;
-                }
-                else if ( v1 == -1 )
-                {
-                    v1 = index;
-                }
-                else
-                {
-                	Triangle triangle = new Triangle( v0, v1, index, this .mNormal .toRealVector() );
-                	result .add( triangle );
-                    v1 = index;
-                }
-        	}
-        	return result;
-        }
-        
-        void computeNormal( List<AlgebraicVector> vertices )
-        {
-            AlgebraicVector v0 = vertices .get( getVertex( 0 ) );
-            AlgebraicVector v1 = vertices .get( getVertex( 1 ) );
-            AlgebraicVector v2 = vertices .get( getVertex( 2 ) );
-            v1 = v1 .minus( v0 );
-            v2 = v2 .minus( v0 );
-            mNormal = v1 .cross( v2 );
-        }
-		
-		void canonicallyOrder()
-		{
-			int minIndex = -1;
-			int minVertex = Integer.MAX_VALUE;
-			int sz = size();
-			for ( int i = 0; i < sz; i++ )
-				if ( getVertex(i) <= minVertex ){
-					minVertex = getVertex(i);
-					minIndex = i;
-				}
-			Integer[] temp = new Integer[ sz ];	
-			for ( int j = 0; j < sz; j++  ) {
-				temp[j] = get( (j+minIndex) % sz );
-			}
-			for ( int k = 0; k < sz; k++ )
-				set( k, temp[k] );
-		}
-		
-        @Override
-		public int hashCode()
-		{
-			int tot = 0;
-			for ( int i = 0; i < size(); i++ )
-				tot += getVertex(i);
-			return tot;
-		}
-		
-        @Override
-		public boolean equals( Object other )
-		{
-			if( other == null )
-				return false;
-			if ( other == this )
-			    return true;
-			if ( ! ( other instanceof Face ) )
-				return false;
-			Face otherFace = (Face) other;
-			if ( otherFace .size() != size() )
-			    return false;
-			for ( int i = 0; i < size(); i++ )
-				// this relies on both faces being in canonical order
-				if ( ! get(i) .equals( otherFace .get(i)) )
-					return false;
-			return true;
-		}
-        
-        @JsonIgnore
-        public AlgebraicVector getNormal()
-        {
-            return mNormal;
-        }
-	}
+	    private AlgebraicVector mNormal;
+
+	    private Face(){}
+
+	    @JsonIgnore
+	    public int getVertex( int index )
+	    {
+	        if ( index >= size() )
+	        {
+	            String msg = "index larger than Face size";
+	            logger .severe( msg );
+	            throw new IllegalStateException( msg );
+	        }
+	        return get( index );
+	    }
+
+	    public class Triangle
+	    {
+	        public int[] vertices = new int[3];
+	        public RealVector normal;
+
+	        public Triangle( int v0, int v1, int v2, RealVector normal )
+	        {
+	            this .vertices[ 0 ] = v0;
+	            this .vertices[ 1 ] = v1;
+	            this .vertices[ 2 ] = v2;
+	            this .normal = normal;
+	        }
+	    }
+
+	    public List<Triangle> getTriangles()
+	    {
+	        int arity = this .size();
+	        ArrayList<Triangle> result = new ArrayList<>();
+	        int v0 = -1, v1 = -1;
+	        for ( int j = 0; j < arity; j++ ){
+	            Integer index = this .get( j );
+	            if ( v0 == -1 )
+	            {
+	                v0 = index;
+	            }
+	            else if ( v1 == -1 )
+	            {
+	                v1 = index;
+	            }
+	            else
+	            {
+	                Triangle triangle = new Triangle( v0, v1, index, this .mNormal .toRealVector() );
+	                result .add( triangle );
+	                v1 = index;
+	            }
+	        }
+	        return result;
+	    }
+
+	    void computeNormal( List<AlgebraicVector> vertices )
+	    {
+	        AlgebraicVector v0 = vertices .get( getVertex( 0 ) );
+	        AlgebraicVector v1 = vertices .get( getVertex( 1 ) );
+	        AlgebraicVector v2 = vertices .get( getVertex( 2 ) );
+	        v1 = v1 .minus( v0 );
+	        v2 = v2 .minus( v0 );
+	        mNormal = v1 .cross( v2 );
+	    }
+
+	    void canonicallyOrder()
+	    {
+	        int minIndex = -1;
+	        int minVertex = Integer.MAX_VALUE;
+	        int sz = size();
+	        for ( int i = 0; i < sz; i++ )
+	            if ( getVertex(i) <= minVertex ){
+	                minVertex = getVertex(i);
+	                minIndex = i;
+	            }
+	        Integer[] temp = new Integer[ sz ];	
+	        for ( int j = 0; j < sz; j++  ) {
+	            temp[j] = get( (j+minIndex) % sz );
+	        }
+	        for ( int k = 0; k < sz; k++ )
+	            set( k, temp[k] );
+	    }
+
+	    @Override
+	    public int hashCode()
+	    {
+	        int tot = 0;
+	        for ( int i = 0; i < size(); i++ )
+	            tot += getVertex(i);
+	        return tot;
+	    }
+
+	    @Override
+	    public boolean equals( Object other )
+	    {
+	        if( other == null )
+	            return false;
+	        if ( other == this )
+	            return true;
+	        if ( ! ( other instanceof Face ) )
+	            return false;
+	        Face otherFace = (Face) other;
+	        if ( otherFace .size() != size() )
+	            return false;
+	        for ( int i = 0; i < size(); i++ )
+	            // this relies on both faces being in canonical order
+	            if ( ! get(i) .equals( otherFace .get(i)) )
+	                return false;
+	        return true;
+	    }
+
+	    @JsonIgnore
+	    public AlgebraicVector getNormal()
+	    {
+	        return mNormal;
+	    }
+    }
 	
-    @JsonIgnore
     public void setOrbit( Direction orbit )
     {
         this .orbit = orbit;
     }
 
-    @JsonIgnore
     public void setLength( AlgebraicNumber length )
     {
         this .length = length;
@@ -406,11 +362,47 @@ public class Polyhedron implements Cloneable
 		return isPanel;
 	}
 
-    @JsonIgnore
 	public void setPanel( boolean isPanel )
 	{
 		this.isPanel = isPanel;
 	}
+	
+	// JSON serialization
+	//
+	//  The view mechanism works fine, but there is only ONE view at a time.
+	//  Fortunately, the mechanism uses "isAssignableFrom", so you can have
+	//  a view class that extends others or implements interfaces.
+	//
+	//  I thought I needed a customer serializer here, but that turned out
+	//  to be unworkable, as it would not pass along the SerializerProvider,
+	//  which carries the view.
+    
+    @JsonProperty( "vertices" )
+    public List<AlgebraicVector> getVertexList(){
+        return m_vertexList;
+    }
+
+    @JsonProperty( "polygons" )
+    @JsonView( Polygon.Views.Polygons.class )
+    public Set<Face> getFaceSet(){
+        return m_faces;
+    }
+
+    @JsonProperty( "id" )
+    @JsonView( Polygon.Views.Triangles.class )
+    public UUID getGuid()
+    {
+        return this .guid;
+    }
+
+    @JsonProperty( "faces" )
+    @JsonView( Polygon.Views.Triangles.class )
+    public List<Face.Triangle> getTriangleFaces()
+    {
+        ArrayList<Face.Triangle> result = new ArrayList<>();
+        for ( Face face : m_faces ) {
+            result .addAll( face .getTriangles() );
+        }
+        return result;
+    }
 }
-
-

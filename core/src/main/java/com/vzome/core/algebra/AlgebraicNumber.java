@@ -3,17 +3,22 @@
 
 package com.vzome.core.algebra;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 /**
  * 
  * Immutable representation of an Algebraic Number
  *
  */
+@JsonSerialize( using = AlgebraicNumber.Serializer.class )
 public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Comparable<AlgebraicNumber>
 {
     private final AlgebraicField field;
@@ -21,11 +26,17 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
 
     private final boolean isOne;
     private final boolean isZero;
-    
+
     private Double doubleValue;	// initialized on first use
     private final String[] toString = new String[AlgebraicField .VEF_FORMAT + 1]; // cache various String representations
-    
+
     private Integer hashCode;	// initialized on first use
+
+    // for JSON serialization
+    public static class Views {
+        public interface Rational {}
+        public interface Real {}
+    }
 
     /**
      * This non-varargs constructor does not call normalize(), 
@@ -55,34 +66,32 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         for ( int i = 0; i < newFactors.length; i++ ) {
             this .factors[ i ] = newFactors[ i ] == null 
                     ? BigRational.ZERO
-                    : newFactors[ i ];
+                            : newFactors[ i ];
         }
         for ( int i = newFactors.length; i < this.factors.length; i++ ) {
             this .factors[ i ] = BigRational.ZERO;
         }
         field.normalize(this.factors);
-    	  isZero = isZero(this.factors);
-    	  isOne = isOne(this.factors);
+        isZero = isZero(this.factors);
+        isOne = isOne(this.factors);
     }
 
     /**
      * Extract the least common multiple of the divisors.
      * @return
      */
-    @JsonIgnore
     public final BigInteger getDivisor()
     {
         BigInteger lcm = BigInteger.ONE;
         for (BigRational factor : this.factors) {
-        	if(! factor.isWhole() ) {
-        		BigInteger aDivisor = factor.getDenominator();
-        		lcm = lcm .multiply( aDivisor ) .abs() .divide( lcm .gcd( aDivisor ) );
-        	}
+            if(! factor.isWhole() ) {
+                BigInteger aDivisor = factor.getDenominator();
+                lcm = lcm .multiply( aDivisor ) .abs() .divide( lcm .gcd( aDivisor ) );
+            }
         }
         return lcm;
     }
 
-    @JsonValue
     public BigRational[] getFactors()
     {
         return this .factors.clone(); // return a copy to ensure that this instance remains immutable
@@ -91,10 +100,10 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     @Override
     public int hashCode()
     {
-    	if(hashCode == null) {
+        if(hashCode == null) {
             hashCode = 31 // prime
-        		+ Arrays.hashCode( factors );
-    	}
+                    + Arrays.hashCode( factors );
+        }
         return hashCode;
     }
 
@@ -143,8 +152,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         // TODO: Consider if it's worth the overhead of using BigDecimal.compareTo() in this case
         return d1.compareTo(d2);
     }
-    
-    @JsonIgnore
+
     public AlgebraicField getField()
     {
         return this .field;
@@ -166,7 +174,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     }
 
     @Override
-	public AlgebraicNumber times( AlgebraicNumber that )
+    public AlgebraicNumber times( AlgebraicNumber that )
     {
         if ( this.isZero() || that .isZero() )
             return this .field .zero();
@@ -196,9 +204,9 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
 
     public double evaluate()
     {
-    	if(doubleValue == null) {
-        	doubleValue = field .evaluateNumber( factors );
-    	}
+        if(doubleValue == null) {
+            doubleValue = field .evaluateNumber( factors );
+        }
         return doubleValue;
     }
 
@@ -239,7 +247,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     public boolean isZero()     { return isZero; }
     @Override
     public boolean isOne()      { return isOne; }
-    
+
     @Override
     public AlgebraicNumber negate()
     {
@@ -263,19 +271,19 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * The result is formatted as follows:
      * <br>
      * {@code DEFAULT_FORMAT    // 4 + 3φ}<br>
-	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
-	 * {@code ZOMIC_FORMAT      // 4 3}<br>
-	 * {@code VEF_FORMAT        // (3,4)}<br>
+     * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
+     * {@code ZOMIC_FORMAT      // 4 3}<br>
+     * {@code VEF_FORMAT        // (3,4)}<br>
      */
     public void getNumberExpression( StringBuffer buf, int format )
     {
-    	if(toString[format] == null) {
-    		int originalLength = buf.length(); // may not be empty
-    		field .getNumberExpression( buf, factors, format ); // calculate it
-    		toString[format] = buf.toString().substring(originalLength); // cache it 
-    	} else {
-    		buf.append(toString[format]);
-    	}
+        if(toString[format] == null) {
+            int originalLength = buf.length(); // may not be empty
+            field .getNumberExpression( buf, factors, format ); // calculate it
+            toString[format] = buf.toString().substring(originalLength); // cache it 
+        } else {
+            buf.append(toString[format]);
+        }
     }
 
     /**
@@ -284,19 +292,19 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * The result is formatted as follows:
      * <br>
      * {@code DEFAULT_FORMAT    // 4 + 3φ}<br>
-	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
-	 * {@code ZOMIC_FORMAT      // 4 3}<br>
-	 * {@code VEF_FORMAT        // (3,4)}
+     * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
+     * {@code ZOMIC_FORMAT      // 4 3}<br>
+     * {@code VEF_FORMAT        // (3,4)}
      * @return 
      */
     public String toString( int format )
     {
-    	if(toString[format] == null) {
-	        StringBuffer buf = new StringBuffer();
-	        getNumberExpression( buf, format );
-//	        toString[format] = buf .toString(); // getNumberExpression() will have cached it so no need to do it again here 
-    	}
-    	return toString[format];
+        if(toString[format] == null) {
+            StringBuffer buf = new StringBuffer();
+            getNumberExpression( buf, format );
+            //	        toString[format] = buf .toString(); // getNumberExpression() will have cached it so no need to do it again here 
+        }
+        return toString[format];
     }
 
     @Override
@@ -305,4 +313,44 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return this .toString( AlgebraicField .DEFAULT_FORMAT );
     }
 
+    // JSON serialization:
+    //
+    //  A custom serializer works here without compromising the view mechanism,
+    //  because we don't need to recursively serialize objects that use views
+    //  themselves.  It is difficult or impossible to pass along the SerializerProvider,
+    //  which carries the view class.
+    //
+    //  AlgebraicNumber itself cannot use views, since they don't control @JsonValue,
+    //  which is really what we are simulating here.  You can only have one @JsonValue
+    //  annotation per class.
+    
+    @SuppressWarnings("serial")
+    public static class Serializer extends StdSerializer<AlgebraicNumber> {
+        
+        public Serializer()
+        {
+            this(null);
+        }
+       
+        public Serializer( Class<AlgebraicNumber> t )
+        {
+            super(t);
+        }
+     
+        @Override
+        public void serialize( AlgebraicNumber value, JsonGenerator jgen, SerializerProvider provider ) 
+            throws IOException, JsonProcessingException
+        {
+            @SuppressWarnings("rawtypes")
+            Class view = provider .getActiveView();
+            if ( ( view != null ) && Views.Real.class .isAssignableFrom( view ) )
+            {
+                jgen .writeNumber( value .evaluate() );
+            }
+            else
+            {
+                jgen .writeObject( value .factors );
+            }
+        }
+    }
 }

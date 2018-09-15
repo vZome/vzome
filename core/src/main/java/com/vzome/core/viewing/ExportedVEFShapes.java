@@ -36,33 +36,33 @@ import com.vzome.core.render.Colors;
  */
 public class ExportedVEFShapes extends AbstractShapes
 {
-	public static final String MODEL_PREFIX = "com/vzome/core/parts/";
+    public static final String MODEL_PREFIX = "com/vzome/core/parts/";
 
     private static final String NODE_MODEL = "connector";
-    
+
     private final File prefsFolder;
-    
+
     private final AbstractShapes fallback;
-    
+
     private final Properties colors = new Properties();
-    
+
     private static final Logger logger = Logger.getLogger( "com.vzome.core.viewing.shapes" );
-        
+
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {
-    	this( prefsFolder, pkgName, name, alias, symm, ( symm instanceof IcosahedralSymmetry )? new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) : null );
+        this( prefsFolder, pkgName, name, alias, symm, ( symm instanceof IcosahedralSymmetry )? new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) : null );
     }
-    
+
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
     {
         this( prefsFolder, pkgName, name, null, symm );
     }
-    
+
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, AbstractShapes fallback )
     {
-    	this( prefsFolder, pkgName, name, null, symm, fallback );
+        this( prefsFolder, pkgName, name, null, symm, fallback );
     }
-    
+
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm, AbstractShapes fallback )
     {
         super( pkgName, name, alias, symm );
@@ -74,22 +74,22 @@ public class ExportedVEFShapes extends AbstractShapes
             ClassLoader cl = Application.class .getClassLoader();
             InputStream in = cl .getResourceAsStream( colorProps );
             if ( in != null )
-            	this .colors .load( in );
+                this .colors .load( in );
         } catch ( IOException ioe ) {
-        	if ( logger .isLoggable( Level.FINE ) )
-        		logger .fine( "problem with shape color properties: " + colorProps );
+            if ( logger .isLoggable( Level.FINE ) )
+                logger .fine( "problem with shape color properties: " + colorProps );
         }
     }
-    
+
     @Override
     protected Polyhedron buildConnectorShape( String pkgName )
     {
-    	String vefData = loadVefData( NODE_MODEL );
-    	if ( vefData != null ) {
+        String vefData = loadVefData( NODE_MODEL );
+        if ( vefData != null ) {
             VefToShape parser = new VefToShape();
             parser .parseVEF( vefData, mSymmetry .getField() );
             return parser .getConnectorPolyhedron();
-    	}
+        }
         if ( this .fallback != null )
             return this .fallback .buildConnectorShape( pkgName );
         else
@@ -99,16 +99,16 @@ public class ExportedVEFShapes extends AbstractShapes
     @Override
     protected StrutGeometry createStrutGeometry( Direction dir )
     {
-    	String vefData = loadVefData( dir .getName() );
-    	if ( vefData != null ) {
+        String vefData = loadVefData( dir .getName() );
+        if ( vefData != null ) {
             VefToShape parser = new VefToShape();
             parser .parseVEF( vefData, mSymmetry .getField() );
             return parser .getStrutGeometry( dir .getAxis( Symmetry .PLUS, 0 ) .normal() );
-    	}
-    	else  if ( this .fallback != null )
-    		return this .fallback .createStrutGeometry( dir );
-    	else
-    		return super .createStrutGeometry( dir );
+        }
+        else  if ( this .fallback != null )
+            return this .fallback .createStrutGeometry( dir );
+        else
+            return super .createStrutGeometry( dir );
     }
 
     protected String loadVefData( String name )
@@ -123,46 +123,46 @@ public class ExportedVEFShapes extends AbstractShapes
                 script = MODEL_PREFIX + script;
                 stream = Thread.currentThread() .getContextClassLoader().getResourceAsStream( script );
                 if ( stream == null )
-                	return null; // avoid the NPE!
+                    return null; // avoid the NPE!
             }
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buf = new byte[1024];
             int num;
             while ( ( num = stream .read( buf, 0, 1024 )) > 0 )
-            	out .write( buf, 0, num );
+                out .write( buf, 0, num );
             return new String( out .toByteArray() );
 
         } catch (Exception e) {
             logger .fine( "Failure loading VEF data from " + shapeFile );
-		} finally {
-			if ( stream != null )
-				try {
-					stream .close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		}
+        } finally {
+            if ( stream != null )
+                try {
+                    stream .close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+        }
         return null;
-    }
-    
-    @Override
-    public boolean hasColors()
-    {
-    	return ! this .colors .isEmpty();
     }
 
     @Override
-	public Color getColor( Direction dir )
+    public boolean hasColors()
     {
-    	if ( this .colors .isEmpty() )
-    		return null;
-		String dirName = ( dir == null )? NODE_MODEL : dir .getName();
-		String colorString = this .colors .getProperty( dirName );
-		if ( colorString == null )
-			return null;
-		return Colors .parseColor( colorString );
-	}
+        return ! this .colors .isEmpty();
+    }
+
+    @Override
+    public Color getColor( Direction dir )
+    {
+        if ( this .colors .isEmpty() )
+            return null;
+        String dirName = ( dir == null )? NODE_MODEL : dir .getName();
+        String colorString = this .colors .getProperty( dirName );
+        if ( colorString == null )
+            return null;
+        return Colors .parseColor( colorString );
+    }
 
     /*
      * The VEF file format parsed here is an "extended profile" of the usual format.
@@ -178,34 +178,34 @@ public class ExportedVEFShapes extends AbstractShapes
      * As of August 2015, this now supports another extension; after the "tip" vertex, an arbitrary number
      * of "middle" vertices may be specified.  Whereas the tip vertex specifies the strut tip relative to
      * strut end vertices, the middle vertices will track the midpoint of the strut.  This is so that we can
-	 * use this mechanism to model classic Zometool red and yellow struts, and any others that use a central structure.
+     * use this mechanism to model classic Zometool red and yellow struts, and any others that use a central structure.
      */
-    
+
     private class VefToShape extends VefParser
     {                
         private Set<Integer> tipVertexIndices = new HashSet<>();
-        
+
         private Set<Integer> midpointVertexIndices = new HashSet<>();
-        
+
         private AlgebraicVector tipVertex;
-        
+
         private List<AlgebraicVector> vertices = new ArrayList<>();
-        
+
         private List< List<Integer> > faces = new ArrayList<>();
-                
+
         public StrutGeometry getStrutGeometry( AlgebraicVector prototype )
         {
             // next, get the arbitrary axis that the strut model lies along
             Axis tipAxis = mSymmetry .getAxis( tipVertex );
-         //   int sense = tipAxis .getSense();  // TODO make this logic the same regardless of sense
-            
+            //   int sense = tipAxis .getSense();  // TODO make this logic the same regardless of sense
+
             AlgebraicVector midpoint = tipVertex .scale( mSymmetry .getField() .createRational( 1, 2 ) );
-            
+
             // find the orientation index, and invert it...
             int orientation = mSymmetry .inverse( tipAxis .getOrientation() );
             // ... so we can get the inverse matrix without recomputing it
             AlgebraicMatrix adjustment = mSymmetry .getMatrix( orientation );
-            
+
             // now, adjust the vertex data
             List<AlgebraicVector> newVertices = new ArrayList<>();
             for ( int i = 0; i < vertices .size(); i++ )
@@ -215,7 +215,7 @@ public class ExportedVEFShapes extends AbstractShapes
                 if ( tipVertexIndices .contains(i) )
                     originalVertex = originalVertex .minus( tipVertex );
                 else if ( midpointVertexIndices .contains(i) )
-                	originalVertex = originalVertex .minus( midpoint );
+                    originalVertex = originalVertex .minus( midpoint );
                 // then, rotate to align with the 0-index zone for this orbit
                 AlgebraicVector adjustedVertex = adjustment .timesColumn( originalVertex );
                 newVertices .add( adjustedVertex );
@@ -223,7 +223,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
             return new ExportedVEFStrutGeometry( newVertices, faces, prototype, tipVertexIndices, midpointVertexIndices, mSymmetry .getField() );
         }
-        
+
         public Polyhedron getConnectorPolyhedron()
         {
             Polyhedron result = new Polyhedron( mSymmetry .getField() );
@@ -237,7 +237,7 @@ public class ExportedVEFShapes extends AbstractShapes
             }
             return result;
         }
-        
+
         @Override
         protected void addFace( int index, int[] verts )
         {
@@ -259,7 +259,7 @@ public class ExportedVEFShapes extends AbstractShapes
         @Override
         protected void addBall( int index, int vertex )
         {
-        	tipVertexIndices .add(vertex);
+            tipVertexIndices .add(vertex);
         }
 
         @Override
@@ -267,7 +267,7 @@ public class ExportedVEFShapes extends AbstractShapes
         {
             if ( ! tokens .hasMoreTokens() )
                 return;
-            
+
             String token = tokens .nextToken();
             if ( ! "tip" .equals( token ) )
                 throw new IllegalStateException( "VEF format error: token after face list (\"" + token + "\" should be \"tip\"" );
@@ -282,12 +282,12 @@ public class ExportedVEFShapes extends AbstractShapes
             } catch ( NumberFormatException e ) {
                 throw new RuntimeException( "VEF format error: strut tip vertex index (\"" + token + "\") must be an integer", e );
             }
-            
+
             this .tipVertex = vertices .get( tipIndex );
 
             if ( ! tokens .hasMoreTokens() )
                 return;
-            
+
             token = tokens .nextToken();
             if ( ! "middle" .equals( token ) )
                 throw new IllegalStateException( "VEF format error: token after tip vertex (\"" + token + "\" should be \"middle\"" );
@@ -295,18 +295,18 @@ public class ExportedVEFShapes extends AbstractShapes
                 token = tokens .nextToken();
                 int vertexIndex;
                 try {
-                	vertexIndex = Integer .parseInt( token );
+                    vertexIndex = Integer .parseInt( token );
                 } catch ( NumberFormatException e ) {
                     throw new RuntimeException( "VEF format error: middle vertex index (\"" + token + "\") must be an integer", e );
                 }                
-        		midpointVertexIndices .add(vertexIndex);
+                midpointVertexIndices .add(vertexIndex);
             }
         }
 
         @Override
         protected void startBalls( int numVertices )
         {}
-        
+
         @Override
         protected void startEdges( int numEdges )
         {}
