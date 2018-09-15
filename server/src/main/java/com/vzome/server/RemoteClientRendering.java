@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.construction.Polygon;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
@@ -33,7 +34,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
     // Keep things simple for the client code: all real numbers, all faces triangulated
 	private final ObjectWriter objectWriter = new ObjectMapper()
             .writerWithView( AlgebraicNumber.Views.Real.class )
-            .withView( Polyhedron.Views.Triangles.class );
+            .withView( Polygon.Views.Triangles.class );
 
 	private final Set<String> shapeIds = new HashSet<>();
 	private Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
