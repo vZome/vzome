@@ -48,4 +48,8 @@ public interface Tool
     public EnumSet<InputBehaviors> getInputBehaviors();
 
     public void setInputBehaviors( EnumSet<InputBehaviors> inputBehaviors );
+
+    boolean isHidden();
+
+    void setHidden( boolean hidden );
 }

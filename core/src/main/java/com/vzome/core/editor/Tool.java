@@ -22,7 +22,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
     protected final List<Construction> parameters = new ArrayList<>();
     private String category;
 
-    private boolean predefined;
+    private boolean predefined, hidden;
     private String label;
     private EnumSet<InputBehaviors> inputBehaviors;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
@@ -165,5 +165,18 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
     public void setLabel( String label )
     {
         this .label = label;
+    }
+
+    @Override
+    public boolean isHidden()
+    {
+        return hidden;
+    }
+
+    @Override
+    public void setHidden( boolean hidden )
+    {
+        this.hidden = hidden;
+        this .tools .hideTool( this );
     }
 }
