@@ -161,6 +161,13 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                             }
                             break;
 
+                        case "tool.hidden":
+                            String id = (String) evt .getOldValue();
+                            for (SymmetryToolbarsPanel panel : toolBarPanels ) {
+                                panel .hideTool( id );
+                            }
+                            break;
+
                         default:
                             break;
                         }

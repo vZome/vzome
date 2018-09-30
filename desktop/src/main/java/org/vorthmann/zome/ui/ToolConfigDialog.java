@@ -34,7 +34,7 @@ import com.jogamp.newt.event.KeyEvent;
 
 public class ToolConfigDialog extends JDialog implements ActionListener
 {
-    private final JButton iconButton;
+    private final JButton iconButton, hideButton;
     private final JTextField toolName;
     private final JLabel toolLabel;
 	private final CardPanel namePanel;
@@ -48,61 +48,61 @@ public class ToolConfigDialog extends JDialog implements ActionListener
     {
         super( frame, true );
 
-//        setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
+        //        setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
         WindowListener closeEvents = new WindowAdapter()
         {
- 			@Override
-			public void windowClosed( WindowEvent e )
-			{
+            @Override
+            public void windowClosed( WindowEvent e )
+            {
                 closer .actionPerformed( new ActionEvent( e .getSource(), 0, null ) );
                 super .windowClosed( e );
-			}
-		
-		};
+            }
+
+        };
         addWindowListener( closeEvents );
-        
+
         //setUndecorated( true );
         setResizable( false );
         setLayout( new BorderLayout() );
-        setTitle( "tool configuration" );
-        
+        setTitle( "tool management" );
+
         // The old key modifiers, from core, in case we want to bring back transient overrides.
-//        selectInputs = ( modes & ActionEvent.SHIFT_MASK ) != 0;
-//        deselectOutputs = ( modes & ActionEvent.ALT_MASK ) != 0;
-//        justSelect = ( modes & ActionEvent.META_MASK ) != 0;
-//        deleteInputs = ( modes & ActionEvent.CTRL_MASK ) != 0;
+        //        selectInputs = ( modes & ActionEvent.SHIFT_MASK ) != 0;
+        //        deselectOutputs = ( modes & ActionEvent.ALT_MASK ) != 0;
+        //        justSelect = ( modes & ActionEvent.META_MASK ) != 0;
+        //        deleteInputs = ( modes & ActionEvent.CTRL_MASK ) != 0;
 
         checkboxChanges = new PropertyChangeListener()
-		{
-			@Override
-			public void propertyChange( PropertyChangeEvent evt )
-			{
-				if ( ! ( evt .getNewValue() instanceof String ) )
-					return;
-				boolean value = Boolean .parseBoolean( (String) evt .getNewValue() );
-				switch ( evt .getPropertyName() ) {
-				
-				case "deleteInputs":
-					selectInputsCheckbox .setEnabled( !value );
-					break;
+        {
+            @Override
+            public void propertyChange( PropertyChangeEvent evt )
+            {
+                if ( ! ( evt .getNewValue() instanceof String ) )
+                    return;
+                boolean value = Boolean .parseBoolean( (String) evt .getNewValue() );
+                switch ( evt .getPropertyName() ) {
 
-				case "selectInputs":
-					selectInputsCheckbox .setSelected( value );
-					break;
+                case "deleteInputs":
+                    selectInputsCheckbox .setEnabled( !value );
+                    break;
 
-				case "selectOutputs":
-					selectOutputsCheckbox .setSelected( value );
-					break;
+                case "selectInputs":
+                    selectInputsCheckbox .setSelected( value );
+                    break;
 
-				case "createOutputs":
-					selectOutputsCheckbox .setEnabled( value );
-					break;
+                case "selectOutputs":
+                    selectOutputsCheckbox .setSelected( value );
+                    break;
 
-				default:
-					break;
-				}
-			}
-		};
+                case "createOutputs":
+                    selectOutputsCheckbox .setEnabled( value );
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        };
 
         closer = new ActionListener()
         {
@@ -110,8 +110,9 @@ public class ToolConfigDialog extends JDialog implements ActionListener
             public void actionPerformed( ActionEvent e )
             {
                 setVisible( false );
-        		controller .removePropertyListener( checkboxChanges );
-        		controller = null;
+                tabs .setSelectedIndex( 0 );  // should be "behavior" tab
+                controller .removePropertyListener( checkboxChanges );
+                controller = null;
             }
         };
 
@@ -159,46 +160,50 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         if ( ! forBookmark )
             this .add( tabs, BorderLayout .CENTER );
         {
-        	JPanel inputsOutputs = new JPanel();
-        	tabs .addTab( "behavior", inputsOutputs );
-        	tabs .setSelectedIndex( 0 );  // should be "behavior" tab
-        	inputsOutputs .setLayout( new GridLayout( 1, 2 ) );
-        	{
-        		JPanel inputs = new JPanel();
-        		inputs .setBorder( BorderFactory .createTitledBorder( "inputs" ) );
-        		inputsOutputs .add( inputs );
-        		inputs .setLayout( new GridLayout( 2, 1 ) );
-        		selectInputsCheckbox = new JCheckBox( "select" );
-        		selectInputsCheckbox .setActionCommand( "selectInputs" );
-        		selectInputsCheckbox .addActionListener( this );
-        		inputs .add( selectInputsCheckbox );
-        		deleteInputsCheckbox = new JCheckBox( "delete" );
-        		deleteInputsCheckbox .setActionCommand( "deleteInputs" );
-        		deleteInputsCheckbox .addActionListener( this );
-        		inputs .add( deleteInputsCheckbox );
-        	}
-        	{
-        		JPanel outputs = new JPanel();
-        		outputs .setBorder( BorderFactory .createTitledBorder( "outputs" ) );
-        		inputsOutputs .add( outputs );
-        		outputs .setLayout( new GridLayout( 2, 1 ) );
-        		selectOutputsCheckbox = new JCheckBox( "select" );
-        		selectOutputsCheckbox .setActionCommand( "selectOutputs" );
-        		selectOutputsCheckbox .addActionListener( this );
-        		outputs .add( selectOutputsCheckbox );
-        		createOutputsCheckbox = new JCheckBox( "create" );
-        		createOutputsCheckbox .setActionCommand( "createOutputs" );
-        		createOutputsCheckbox .addActionListener( this );
-        		outputs .add( createOutputsCheckbox );
-        	}
+            JPanel inputsOutputs = new JPanel();
+            tabs .addTab( "behavior", inputsOutputs );
+            tabs .setSelectedIndex( 0 );  // should be "behavior" tab
+            inputsOutputs .setLayout( new GridLayout( 1, 2 ) );
+            {
+                JPanel inputs = new JPanel();
+                inputs .setBorder( BorderFactory .createTitledBorder( "inputs" ) );
+                inputsOutputs .add( inputs );
+                inputs .setLayout( new GridLayout( 2, 1 ) );
+                selectInputsCheckbox = new JCheckBox( "select" );
+                selectInputsCheckbox .setActionCommand( "selectInputs" );
+                selectInputsCheckbox .addActionListener( this );
+                inputs .add( selectInputsCheckbox );
+                deleteInputsCheckbox = new JCheckBox( "delete" );
+                deleteInputsCheckbox .setActionCommand( "deleteInputs" );
+                deleteInputsCheckbox .addActionListener( this );
+                inputs .add( deleteInputsCheckbox );
+            }
+            {
+                JPanel outputs = new JPanel();
+                outputs .setBorder( BorderFactory .createTitledBorder( "outputs" ) );
+                inputsOutputs .add( outputs );
+                outputs .setLayout( new GridLayout( 2, 1 ) );
+                selectOutputsCheckbox = new JCheckBox( "select" );
+                selectOutputsCheckbox .setActionCommand( "selectOutputs" );
+                selectOutputsCheckbox .addActionListener( this );
+                outputs .add( selectOutputsCheckbox );
+                createOutputsCheckbox = new JCheckBox( "create" );
+                createOutputsCheckbox .setActionCommand( "createOutputs" );
+                createOutputsCheckbox .addActionListener( this );
+                outputs .add( createOutputsCheckbox );
+            }
 
-        	JPanel showParamsPanel = new JPanel();
-        	tabs .add( "parameters", showParamsPanel );
-        	showParamsPanel .setLayout( new BorderLayout() );
-        	JButton showParamsButton = new JButton( "Show and select parameters" );
-        	showParamsPanel .add( showParamsButton, BorderLayout .SOUTH );
-        	showParamsButton .setActionCommand( "selectParams" );
-        	showParamsButton .addActionListener( this );
+            JPanel showParamsPanel = new JPanel();
+            tabs .add( "configuration", showParamsPanel );
+            showParamsPanel .setLayout( new BorderLayout() );
+            this .hideButton = new JButton( "Hide permanently" );
+            showParamsPanel .add( this .hideButton, BorderLayout .NORTH );
+            this .hideButton .setActionCommand( "hideTool" );
+            this .hideButton .addActionListener( this );
+            JButton showParamsButton = new JButton( "Show and select parameters" );
+            showParamsPanel .add( showParamsButton, BorderLayout .SOUTH );
+            showParamsButton .setActionCommand( "selectParams" );
+            showParamsButton .addActionListener( this );
         }
         pack();
     }
@@ -213,6 +218,7 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 		toolLabel .setText(label );
 		boolean predefined = controller .propertyIsTrue( "predefined" );
         namePanel .showCard( predefined? "builtin" : "editable" );
+        this .hideButton .setEnabled( ! predefined );
 		boolean selectInputs = controller .propertyIsTrue( "selectInputs" );
 		selectInputsCheckbox .setSelected( selectInputs );
 		selectInputsCheckbox .setEnabled( ! predefined );
@@ -236,7 +242,8 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 		this .controller .actionPerformed( e );
 		switch ( e .getActionCommand() ) {
 		
-		case "apply":
+        case "apply":
+        case "hideTool":
 		case "selectParams":
 			closer .actionPerformed( e );
 			break;
