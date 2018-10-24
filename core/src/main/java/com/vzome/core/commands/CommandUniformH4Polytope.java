@@ -398,7 +398,6 @@ public class CommandUniformH4Polytope extends CommandTransform
                 reflections[ mirror ] = symm .reflect( mirror, prototype );
 
         Set<Edge> edges = new HashSet<>();
-        StringBuffer vefEdges = new StringBuffer();
         for (Quaternion outerRoot : mRoots) { 
             for (Quaternion innerRoot : mRoots) {
                 AlgebraicVector vertex = outerRoot.rightMultiply(prototype);
@@ -417,9 +416,7 @@ public class CommandUniformH4Polytope extends CommandTransform
                         	Edge edge = new Edge( p .getIndex(), p2 .getIndex() );
                             if ( edges .contains( edge ) )
                                 continue;
-                            edges .add( edge );
-                            vefEdges .append( p .getIndex() + "\t" + p2 .getIndex() + "\n" );
-                            
+                            edges .add( edge );                            
                             listener .addEdge( p, p2 );
                         }
                     }

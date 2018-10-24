@@ -6,6 +6,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -16,6 +19,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
@@ -37,6 +41,7 @@ public class VsonExporter extends Exporter3d
         SortedSet<AlgebraicVector> vertices = new TreeSet<>();
         ArrayList<Integer> ballIndices = new ArrayList<>();
         ArrayList<JsonNode> struts = new ArrayList<>();
+        ArrayList<JsonNode> panels = new ArrayList<>();
 
         // phase one: find and index all vertices
         for (RenderedManifestation rm : mModel) {
@@ -49,6 +54,12 @@ public class VsonExporter extends Exporter3d
             {
                 vertices .add( man .getLocation() );
                 vertices .add( ((Strut) man) .getEnd() );
+            }
+            else if ( man instanceof Panel )
+            {
+                for ( AlgebraicVector vertex : (Panel) man ) {
+                    vertices .add( vertex );
+                }
             }
         }
 
@@ -84,6 +95,16 @@ public class VsonExporter extends Exporter3d
                 strutJson .set( "orientation", orientation );
                 struts .add( strutJson );
             }
+            else if ( man instanceof Panel )
+            {
+                ObjectNode panelJson = mapper .createObjectNode();
+                @SuppressWarnings("unchecked")
+                Stream<AlgebraicVector> vertexStream = StreamSupport.stream( ( (Iterable<AlgebraicVector>) man ).spliterator(), false);
+                JsonNode node = mapper .valueToTree( vertexStream.map( v -> sortedVertexList .indexOf( v ) ). collect( Collectors.toList() ) );
+                panelJson .set( "vertices", node );
+                panelJson .set( "color", mapper .valueToTree( rm .getColor() .toWebString() ) );
+                panels .add( panelJson );
+            }
         }
 
         JsonFactory factory = new JsonFactory();
@@ -97,6 +118,7 @@ public class VsonExporter extends Exporter3d
         generator .writeObjectField( "vertices", sortedVertexList );
         generator .writeObjectField( "balls", ballIndices );
         generator .writeObjectField( "struts", struts );
+        generator .writeObjectField( "panels", panels );
         generator .writeEndObject();
         generator.close();
     }
