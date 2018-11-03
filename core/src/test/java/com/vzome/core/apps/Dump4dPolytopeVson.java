@@ -6,23 +6,20 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
-import com.vzome.core.render.Shapes;
 
 public class Dump4dPolytopeVson
 {
 	public static class VsonBuilder implements Listener
 	{
-        SortedSet<AlgebraicVector> vertices = new TreeSet<>();
-        ArrayList<AlgebraicVector[]> struts = new ArrayList<>();
+        public SortedSet<AlgebraicVector> vertices = new TreeSet<>();
+        public ArrayList<AlgebraicVector[]> edges = new ArrayList<>();
 
         @Override
         public Object addVertex( AlgebraicVector v )
@@ -41,7 +38,7 @@ public class Dump4dPolytopeVson
         public Object addEdge( Object p1, Object p2 )
         {
             AlgebraicVector[] result = new AlgebraicVector[]{ (AlgebraicVector) p1, (AlgebraicVector) p2 };
-            struts .add( result );
+            edges .add( result );
             return result;
         }
         
@@ -60,18 +57,16 @@ public class Dump4dPolytopeVson
         String groupName = ( args.length > 1 )? args[1] : "H4";          // optional second argument
 
         String indexStr = ( args.length > 0 )? args[0] : "1000";          // optional first argument
-        int index = Integer.parseInt( indexStr );
-
-        AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
-
+        int index = Integer.parseInt( indexStr, 2 );
+        
         Listener vsonBuilder = new VsonBuilder();
-		fieldApp .constructPolytope( groupName, index, index, edgeScales, vsonBuilder  );
+		fieldApp .constructPolytope( groupName, index, index, null, vsonBuilder  );
 		        
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			System .out .println( mapper .writerWithDefaultPrettyPrinter()
                     .withView( View.class )
-			        .writeValueAsString( shapes ) );
+			        .writeValueAsString( vsonBuilder ) );
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
