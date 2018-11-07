@@ -8,6 +8,7 @@ import java.util.Iterator;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -46,7 +47,7 @@ public class DefaultStrutGeometry implements StrutGeometry
                 }
             }
         }
-        AlgebraicVector y = x .cross( unitNormal );
+        AlgebraicVector y = AlgebraicVectors.getNormal( x, unitNormal );
         AlgebraicNumber scaleFactor = field .createAlgebraicNumber( 1, 0, 2, -2 );
         x = x .scale( scaleFactor );
         y = y .scale( scaleFactor );

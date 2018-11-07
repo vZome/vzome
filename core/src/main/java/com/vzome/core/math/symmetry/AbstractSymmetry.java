@@ -18,6 +18,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.RealVector;
 
 /**
@@ -342,8 +343,9 @@ public abstract class AbstractSymmetry implements Symmetry
             int sense = zone .getSense();
             for (Direction orbit : orbits) {
                 Axis candidate = orbit .getCanonicalAxis( sense, orientation );
-                if ( candidate .normal() .cross( vector ) .isOrigin() )
+                if ( AlgebraicVectors.areParallel(candidate .normal(), vector ) ) {
                     return candidate;
+                }
             }
         }
         return null;

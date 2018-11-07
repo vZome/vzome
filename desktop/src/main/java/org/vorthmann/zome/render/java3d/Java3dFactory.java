@@ -138,7 +138,7 @@ public class Java3dFactory implements J3dComponentFactory
         }
         List<AlgebraicVector> vertices = poly .getVertexList();
         AlgebraicVector centroid = AlgebraicVectors.calculateCentroid(vertices);
-        AlgebraicVector normal = AlgebraicVectors.getNormal(vertices);
+        AlgebraicVector normal = AlgebraicVectors.getNormal( vertices .get( 0 ), vertices .get( 1 ), vertices .get( 2 ) );
         AlgebraicMatrix matrix = rm .getOrientation();
         if ( matrix != null ) {
             centroid = matrix .timesColumn( centroid );
