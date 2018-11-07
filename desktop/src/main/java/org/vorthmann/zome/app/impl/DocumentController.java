@@ -1313,11 +1313,11 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
 
             case "setWorkingPlaneAxis":
-                this .strutBuilder .setWorkingPlaneAxis( (Segment) singleConstruction );
+                this .strutBuilder .setWorkingPlaneAxis( ((Segment) singleConstruction).getOffset() );
                 break;
 
             case "setWorkingPlane":
-                this .strutBuilder .setWorkingPlaneAxis( this .documentModel .getPlaneAxis( (Polygon) singleConstruction ) );
+                this .strutBuilder .setWorkingPlaneAxis( ((Polygon) singleConstruction ).getNormal() );
                 break;
 
             case "lookAtThis":

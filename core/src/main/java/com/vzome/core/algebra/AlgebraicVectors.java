@@ -9,43 +9,49 @@ import java.util.TreeSet;
 public class AlgebraicVectors {
     private AlgebraicVectors() {}
 
+    /**
+     * 
+     * @param v1
+     * @param v2
+     * @return normal to position vectors v1 and v2, 
+     * with both v1 and v2 starting at the origin
+     * using the righthand rule.
+     */
+    public static AlgebraicVector getNormal(final AlgebraicVector v1, final AlgebraicVector v2) {
+        return v1.cross(v2);
+    }
+
+    /**
+     * 
+     * @param v0
+     * @param v1
+     * @param v2
+     * @return normal to vectors v1 and v2, 
+     * with both v1 and v2 positioned at v0
+     * using the righthand rule.
+     */
     public static AlgebraicVector getNormal(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
-        return v1.minus(v0).cross(v2.minus(v0));
+        return getNormal(v1.minus(v0), v2.minus(v0));
     }
 
-    /** 
-     * @return a vector that is orthogonal to a plane defined by three of the vertices.
-     * If vertices are all collinear, then the origin is returned.
-     * @throws IllegalArgumentException if fewer than three vectors are in the collection.
-     */ 
-    public static AlgebraicVector getNormal(final Collection<AlgebraicVector> vectors) 
-    { 
-        if(vectors.size() < 3) { 
-            throw new IllegalArgumentException("3 vertices are required to calculate a normal. Found " + vectors.size()); 
-        } 
-        AlgebraicVector v0 = null;
-        AlgebraicVector v1 = null;
-        AlgebraicVector normal = null;
-        for(AlgebraicVector vector : vectors)
-        {
-            if(v0 == null) {
-                v0 = vector;
-            }
-            else if(v1 == null) {
-                if(vector != v0) { // in case vectors are not unique
-                    v1 = vector;
-                }
-            }
-            else {
-                normal = getNormal(v0, v1, vector);
-                if(!normal.isOrigin()) {
-                    return normal;
-                }
-            }
-        }
-        return normal;
+    /**
+     * 
+     * @param v1
+     * @param v2
+     * @return true if vectors v1 and v2 are parallel, otherwise false.
+     * Considered as position vectors, this is the same as testing if they are collinear with the origin.
+     */
+    public static boolean areParallel(final AlgebraicVector v1, final AlgebraicVector v2) {
+        return getNormal(v1, v2).isOrigin();
     }
-
+    
+    /**
+     * 
+     * @param v0
+     * @param v1
+     * @param v2
+     * @return true if position vectors v0, v1 and v2 are collinear, otherwise false.
+     */
     public static boolean areCollinear(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
         return getNormal(v0, v1, v2).isOrigin();
     }

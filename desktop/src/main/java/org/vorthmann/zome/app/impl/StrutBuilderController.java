@@ -20,7 +20,6 @@ import org.vorthmann.ui.LeftMouseDragAdapter;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
-import com.vzome.core.construction.Segment;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.render.RenderingChanges;
@@ -35,7 +34,7 @@ public class StrutBuilderController extends DefaultController implements CanvasT
 
     private boolean useWorkingPlane = false;
 
-    private Segment workingPlaneAxis = null;
+    private AlgebraicVector workingPlaneAxis = null;
 
     private PreviewStrut previewStrut;
 
@@ -178,7 +177,7 @@ public class StrutBuilderController extends DefaultController implements CanvasT
                     Point point = (Point) target .getConstructions() .next();
                     AlgebraicVector workingPlaneNormal = null;
                     if ( useWorkingPlane && (workingPlaneAxis != null ) )
-                        workingPlaneNormal = workingPlaneAxis .getOffset();
+                        workingPlaneNormal = workingPlaneAxis;
                     previewStrut .startRendering( docController .getSymmetryController(), point, workingPlaneNormal );
                 }
             }
@@ -238,9 +237,9 @@ public class StrutBuilderController extends DefaultController implements CanvasT
         previewStrutLength .detach( canvas );
     }
 
-    public void setWorkingPlaneAxis( Segment workingPlaneAxis )
+    public void setWorkingPlaneAxis( AlgebraicVector axis )
     {
-        this .workingPlaneAxis = workingPlaneAxis;
+        this .workingPlaneAxis = axis;
         this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
     }
 }
