@@ -40,7 +40,8 @@ public class ControllerWebSocket implements WebSocketListener
     public void onWebSocketClose( int statusCode, String reason )
     {
         this.outbound = null;
-        this .docController .setProperty( "visible", false );
+        if ( this .docController != null )
+            this .docController .setProperty( "visible", false );
         LOG.info( "WebSocket Close: {} - {}", statusCode, reason );
     }
 
@@ -82,6 +83,10 @@ public class ControllerWebSocket implements WebSocketListener
         } else {
             APP .doAction( "openURL-" + urlStr, null );
             this .docController = (Controller3d) APP .getSubController( urlStr );
+            if ( this .docController == null ) {
+                publish( "{ \"error\": \"Document load FAILURE: " + urlStr + "\" }" );
+                return;
+            }
             String bkgdColor = docController .getProperty( "backgroundColor" );
             if ( bkgdColor != null ) {
                 int rgb =  Integer .parseInt( bkgdColor, 16 );
@@ -97,7 +102,7 @@ public class ControllerWebSocket implements WebSocketListener
                 publish( "{ \"info\": \"Document load SUCCESS\" }" );
             } catch ( Exception e ) {
                 e.printStackTrace();
-                publish( "{ \"error\": \"Document load FAILURE\" }" );
+                publish( "{ \"error\": \"Document load unknown FAILURE\" }" );
             }
         }
     }

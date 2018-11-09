@@ -16,7 +16,7 @@ public interface Shapes{
 	Polyhedron getConnectorShape();
 
     Polyhedron getStrutShape( Direction dir, AlgebraicNumber length );
-    
+        
 	void addListener( Changes change );
 	
 	void removeListener( Changes changes );

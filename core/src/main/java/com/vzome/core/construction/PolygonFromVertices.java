@@ -3,12 +3,18 @@
 
 package com.vzome.core.construction;
 
+import java.util.List;
+
 import com.vzome.core.algebra.AlgebraicVector;
 
 public class PolygonFromVertices extends Polygon
 {
     private final Point[] mVertices;
 
+    public PolygonFromVertices( List<Point> points ) {
+        this( points .toArray( new Point[points.size()] ) );
+    }
+    
     public PolygonFromVertices( Point[] vertices )
     {
         super( vertices.length == 0 ? null : vertices[ 0 ] .field );

@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 
 
 /**
@@ -59,6 +60,11 @@ public abstract class Segment extends Construction
     public AlgebraicVector getOffset()
     {
         return mOffset;
+    }
+
+    public AlgebraicVector getCentroid()
+    {
+        return AlgebraicVectors.getCentroid(new AlgebraicVector[] { mStart, mEnd });
     }
 
     @Override

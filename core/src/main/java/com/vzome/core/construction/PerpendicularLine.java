@@ -3,6 +3,7 @@
 package com.vzome.core.construction;
 
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 
 
 /**
@@ -34,11 +35,10 @@ public class PerpendicularLine extends Line
     @Override
     protected final boolean mapParamsToState()
     {
-        if ( mLine1 .isImpossible() || mLine2 .isImpossible() || mPoint .isImpossible() )
+        if ( mLine1 .isImpossible() || mLine2 .isImpossible() || mPoint .isImpossible() ) {
             return setStateVariables( null, null, true );
-        AlgebraicVector norm1 = mLine1 .getDirection();
-        AlgebraicVector norm2 = mLine2 .getDirection();
-        AlgebraicVector cross = norm1 .cross( norm2 );
-        return setStateVariables( mPoint .getLocation(), cross, cross .isOrigin() );
+        }
+        AlgebraicVector normal = AlgebraicVectors.getNormal(  mLine1 .getDirection(),  mLine2 .getDirection() );
+        return setStateVariables( mPoint .getLocation(), normal, normal .isOrigin() );
     }
 }

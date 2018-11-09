@@ -25,10 +25,10 @@ public class PolygonVertex extends Point
     @Override
     protected final boolean mapParamsToState()
     {
-        if (  polygon .isImpossible() )
+        if ( polygon .isImpossible() ) {
             return setStateVariable( null, true );
-        AlgebraicVector[] vertices = polygon .getVertices();
-        AlgebraicVector loc = vertices[ this .index ];
+        }
+        AlgebraicVector loc = polygon .getVertex( this .index );
         return setStateVariable( loc, false );
     }
 }

@@ -758,6 +758,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "toggleOrbitViews":
             case "toggleStrutScales":
             case "toggleFrameLabels":
+            case "toggleNormals":
             case "toggleOutlines":
                 actionListener = controller;
                 break;

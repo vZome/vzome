@@ -3,9 +3,13 @@
  */
 package com.vzome.core.viewing;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
@@ -18,14 +22,14 @@ import com.vzome.core.render.Shapes;
 
 public abstract class AbstractShapes implements Shapes
 {
-	private final Map<Direction, Map<AlgebraicNumber, Polyhedron> > strutShapesByLengthAndOrbit = new HashMap<>();
+    private final Map<Direction, Map<AlgebraicNumber, Polyhedron> > strutShapesByLengthAndOrbit = new HashMap<>();
 
     private final Map<Direction, StrutGeometry> strutGeometriesByOrbit = new HashMap<>();
 
     protected final String mPkgName;
 
     final String mName, alias;
-    
+
     protected final Symmetry mSymmetry;
 
     protected Polyhedron mConnectorGeometry;
@@ -43,22 +47,41 @@ public abstract class AbstractShapes implements Shapes
     {
         this( pkgName, name, null, symm );
     }
-    
+
     @Override
-	public Color getColor( Direction dir )
+    public Color getColor( Direction dir )
     {
-		return null;
-	}
-    
+        return null;
+    }
+
     @Override
     public boolean hasColors()
     {
-    	return false;
+        return false;
     }
 
     protected StrutGeometry createStrutGeometry( Direction dir )
     {
         return new FastDefaultStrutGeometry( dir );
+    }
+    
+    private StrutGeometry getStrutGeometry( Direction orbit )
+    {
+        StrutGeometry orbitStrutGeometry = strutGeometriesByOrbit.get( orbit );
+
+        if ( orbitStrutGeometry == null ) {
+            orbitStrutGeometry = createStrutGeometry( orbit );
+            strutGeometriesByOrbit.put( orbit, orbitStrutGeometry );
+        }
+        return orbitStrutGeometry;
+    }
+    
+    public Map<String, StrutGeometry> getStrutGeometries()
+    {
+        // Will lazy-populate strutGeometries
+        return Arrays .stream( this .mSymmetry .getDirectionNames() )
+                .collect( Collectors .toMap( Function.identity(),
+                        name -> getStrutGeometry( this .mSymmetry .getDirection( name ) ) ) );
     }
 
     @Override
@@ -68,12 +91,14 @@ public abstract class AbstractShapes implements Shapes
     }
 
     @Override
+    @JsonIgnore
     public String getAlias()
     {
         return this.alias;
     }
 
     @Override
+    @JsonIgnore
     public String getPackage()
     {
         return mPkgName;
@@ -88,9 +113,9 @@ public abstract class AbstractShapes implements Shapes
         }
         return mConnectorGeometry;
     }
-    
+
     protected abstract Polyhedron buildConnectorShape( String pkgName );
-    
+
     /*
      * TODO:
      * 
@@ -126,16 +151,10 @@ public abstract class AbstractShapes implements Shapes
             strutShapesByLength = new HashMap<>();
             strutShapesByLengthAndOrbit.put( orbit, strutShapesByLength );
         }
-//        int[] normSquared = mSymmetry .getField() .dot( offset, offset );
+        //        int[] normSquared = mSymmetry .getField() .dot( offset, offset );
         Polyhedron lengthShape = strutShapesByLength.get( length );
         if ( lengthShape == null ) {
-            StrutGeometry orbitStrutGeometry = strutGeometriesByOrbit.get( orbit );
-
-            if ( orbitStrutGeometry == null ) {
-                orbitStrutGeometry = createStrutGeometry( orbit );
-                strutGeometriesByOrbit.put( orbit, orbitStrutGeometry );
-            }
-
+            StrutGeometry orbitStrutGeometry = getStrutGeometry( orbit ); // may lazy-create the geometry
             lengthShape = orbitStrutGeometry .getStrutPolyhedron( length );
             strutShapesByLength.put( length, lengthShape );
             if ( lengthShape != null ) {
@@ -159,6 +178,7 @@ public abstract class AbstractShapes implements Shapes
     {}
 
     @Override
+    @JsonIgnore
     public Symmetry getSymmetry()
     {
         return mSymmetry;

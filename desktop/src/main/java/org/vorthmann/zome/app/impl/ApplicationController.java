@@ -292,9 +292,15 @@ public class ApplicationController extends DefaultController
                 String path = action .substring( "openURL-" .length() );
                 final String vzomeExt = ".vzome";
                 path = removeProxyFileExtension( path, vzomeExt);
-                docProps .setProperty( "window.title", path );
+                URI uri = new URI( path );
+                // In case path is an encoded file URI (e.g. whitespace encoded as %20),
+                // show the decoded local file name and path in the title bar.
+                // This occurs when an associated vZome file is opened in Windows by double clicking on it.
+                String title = ( uri.getScheme().equals("file") )
+                        ? (new File(uri)).getPath()
+                        : uri.getPath();
+                docProps .setProperty( "window.title", title );
                 if ( path .toLowerCase() .endsWith( vzomeExt ) ) {
-                    URI uri = new URI( path );
                     URL url = uri .toURL();
                     InputStream bytes = url .openStream();
                     loadDocumentController( path, bytes, docProps );

@@ -329,6 +329,13 @@ regression.dependsOn makeRegressionOutputDir
 task regressionYear( dependsOn: tasks.matching { Task task -> task.name.startsWith( "regression-" ) } )
 
 
+task dump4dPolytope( type: JavaExec, dependsOn: build ) {
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'com.vzome.core.apps.Dump4dPolytopeVson'
+
+	group = 'Verification'
+}
+
 task zomicPP( type: JavaExec, dependsOn: build) {
     def theFile = 'src/regression/files/Zomic/yellowAxisSaddleWeb/yellowAxisSaddleWeb.zomic'
 	if( project.hasProperty( 'zomicFile' ) ){

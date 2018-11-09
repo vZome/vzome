@@ -4,7 +4,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.w3c.dom.Document;
@@ -17,6 +19,7 @@ import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.construction.Point;
 import com.vzome.core.math.DomUtils;
 
+@SuppressWarnings("serial")
 public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 {
 	private EditorModel editor;
@@ -28,6 +31,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 	// These are used only during deserialization
     private final Map<String, String> toolLabels = new HashMap<>();
     private final Map<String, EnumSet<InputBehaviors>> toolInputBehaviors = new HashMap<>();
+    private final Set<String> hiddenTools = new HashSet<>();
     
 	public ToolsModel( UndoableEdit.Context context, Point originPoint )
 	{
@@ -137,6 +141,8 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         		Element toolElem = doc .createElement( "Tool" );
         		DomUtils .addAttribute( toolElem, "id", tool .getId() );
         		DomUtils .addAttribute( toolElem, "label", tool .getLabel() );
+        		if ( tool .isHidden() )
+        		    DomUtils .addAttribute( toolElem, "hidden", "true" );
         		EnumSet<InputBehaviors> inputBehaviors = tool .getInputBehaviors();
         		if ( inputBehaviors .contains( InputBehaviors.SELECT ) )
         		    toolElem .setAttribute( "selectInputs", "true" );
@@ -167,6 +173,10 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
                 if ( value != null && value .equals( "true" ) )
                     inputBehaviors .add( InputBehaviors .DELETE );
                 this .toolInputBehaviors .put( id, inputBehaviors );
+                
+                String hiddenStr = toolElem .getAttribute( "hidden" );
+                if ( hiddenStr != null && hiddenStr .equals( "true" ) )
+                    this .hiddenTools .add( id );
             }
         }
     }
@@ -174,7 +184,14 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     public void setConfiguration( Tool tool )
     {
         // update the tool from the maps, deserialized earlier
-        tool .setLabel( this .toolLabels .get( tool .getId() ) );
-        tool .setInputBehaviors( this .toolInputBehaviors .get( tool .getId() ) );
+        String id = tool .getId();
+        tool .setLabel( this .toolLabels .get( id ) );
+        tool .setInputBehaviors( this .toolInputBehaviors .get( id ) );
+        tool .setHidden( this .hiddenTools .contains( id ) );
+    }
+
+    public void hideTool( Tool tool )
+    {
+        this .pcs .firePropertyChange( "tool.instances", tool, null );
     }
 }
