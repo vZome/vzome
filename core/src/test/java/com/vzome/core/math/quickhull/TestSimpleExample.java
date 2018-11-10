@@ -1,6 +1,5 @@
 package com.vzome.core.math.quickhull;
 
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Test;
@@ -16,8 +15,8 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.VefToModel;
 import com.vzome.core.generic.Utilities;
+import com.vzome.core.math.Projection;
 import com.vzome.core.math.convexhull.QuickHull3D;
-import com.vzome.fields.sqrtphi.SqrtPhiField;
 
 public class TestSimpleExample {
     @SuppressWarnings("serial")
@@ -33,8 +32,9 @@ public class TestSimpleExample {
                 add( s.getStart() );
                 add( s.getEnd() );
             } else if(c instanceof Polygon) {
-                for( AlgebraicVector v : ((Polygon) c).getVertices()) {
-                    add( v );
+                Polygon polygon = (Polygon) c;
+                for( int i=0; i<polygon.getVertexCount(); i++) {
+                    add( polygon.getVertex(i) );
                 }
             }
         }
@@ -85,9 +85,9 @@ public class TestSimpleExample {
                 "";
         
         AlgebraicField field = new PentagonField();
-        AlgebraicVector quaternion = null;
+        Projection projection = null;
         NewConstructions effects = new NewConstructions();
-        VefToModel parser = new VefToModel( quaternion, effects, field.one(), null );
+        VefToModel parser = new VefToModel( projection, effects, field.one(), null );
         parser .parseVEF( vefData, field );
         
         AlgebraicVector[] points = effects.toArray(new AlgebraicVector[ effects.size() ]);

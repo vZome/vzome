@@ -178,7 +178,6 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return a.lessThanOrEqualTo(b) ? a : b;
     }
 
-    @JsonIgnore
     public AlgebraicField getField()
     {
         return this .field;
