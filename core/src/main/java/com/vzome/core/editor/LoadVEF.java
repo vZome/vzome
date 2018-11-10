@@ -33,10 +33,10 @@ public class LoadVEF extends ChangeManifestations
     {
         super( selection, realized, false );
         this .vefData = vefData;
-        this .scale = scale;
         if (scale == null) {
             scale = mManifestations.getField().one();
         }
+        this .scale = scale;
         this.projection = projection;
     }
 
