@@ -64,7 +64,9 @@ import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
+import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.TetrahedralProjection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
@@ -1200,12 +1202,20 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     
     public void importVEF( AlgebraicNumber scale, String script )
     {
-        UndoableEdit edit = null;
         Segment symmAxis = mEditorModel .getSymmetrySegment();
-        AlgebraicVector quat = ( symmAxis == null ) ? null : symmAxis.getOffset();
-        if ( quat != null )
-            quat = quat .scale( scale .reciprocal() );
-        edit = new LoadVEF( mSelection, mRealizedModel, script, quat, scale );
+        AlgebraicVector quaternion = ( symmAxis == null ) 
+                ? null 
+                : symmAxis.getOffset() .scale( scale.reciprocal() );
+        Projection projection = quaternion == null
+                ? null
+                : new QuaternionProjection(field, null, quaternion);
+        UndoableEdit edit = new LoadVEF( mSelection, mRealizedModel, script, projection, scale );
+        this .performAndRecord( edit );
+    }
+
+    public void importVEFTetrahedralProjection( AlgebraicNumber scale, String script )
+    {
+        UndoableEdit edit = new LoadVEF( mSelection, mRealizedModel, script, new TetrahedralProjection(field), scale );
         this .performAndRecord( edit );
     }
 

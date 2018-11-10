@@ -20,6 +20,8 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.VefToModel;
 import com.vzome.core.math.DomUtils;
+import com.vzome.core.math.Projection;
+import com.vzome.core.math.QuaternionProjection;
 
 /**
  * @author Scott Vorthmann
@@ -42,6 +44,16 @@ public class CommandImportVEFData extends AbstractCommand
         new Object[][]{ { VEF_STRING_ATTR_NAME, String.class }, { Command.FIELD_ATTR_NAME, InputStream.class }, { NO_INVERSION_ATTR_NAME, InputStream.class } };
 
     private static final Logger logger = Logger .getLogger( "com.vzome.core.commands.importVEF" );
+    
+    private Projection mProjection;
+
+    public CommandImportVEFData() {
+        this(null);
+    }
+
+    public CommandImportVEFData(Projection projection) {
+        mProjection = projection;
+    }
 
     @Override
     public Object[][] getParameterSignature()
@@ -58,10 +70,7 @@ public class CommandImportVEFData extends AbstractCommand
     @Override
     public boolean attributeIs3D( String attrName )
     {
-        if ( "symmetry.axis.segment" .equals( attrName ) )
-            return false;
-        else
-            return true;
+        return ! "symmetry.axis.segment" .equals( attrName );
     }
 
     /*
@@ -122,19 +131,39 @@ public class CommandImportVEFData extends AbstractCommand
         String vefData = (String) attributes .get( VEF_STRING_ATTR_NAME );
         Boolean noInversion = (Boolean) attributes .get( NO_INVERSION_ATTR_NAME );
         
-        AlgebraicVector quaternion = quaternionVector;
-        
-        if ( quaternion == null )
-            quaternion = (symmAxis==null)? null : symmAxis .getOffset();  // will get inflated to 4D when we know wFirst()
-        
-        if ( quaternion != null )
-            quaternion = quaternion .scale( field .createPower( -5 ) );
-        
+        Projection projection = mProjection;
+        if(projection == null) {
+            AlgebraicVector quaternion = quaternionVector;
+
+            if ( quaternion == null )
+                quaternion = (symmAxis==null)? null : symmAxis .getOffset();  // will get inflated to 4D when we know wFirst()
+
+            if ( quaternion != null )
+                quaternion = quaternion .scale( field .createPower( -5 ) );
+
+            projection = quaternion == null
+                    ? null
+                    : new QuaternionProjection(field, null, quaternion);
+        }
+
         if ( noInversion != null && noInversion )
-            new VefToModelNoInversion( quaternion, field, effects ) .parseVEF( vefData, field );
+            new VefToModelNoInversion( projection, field, effects ) .parseVEF( vefData, field );
         else
-            new VefToModel( quaternion, effects, field .createPower( 5 ), null ) .parseVEF( vefData, field );
-        
+            new VefToModel( projection, effects, field .createPower( 5 ), null ) .parseVEF( vefData, field );
+//        
+//        AlgebraicVector quaternion = quaternionVector;
+//        
+//        if ( quaternion == null )
+//            quaternion = (symmAxis==null)? null : symmAxis .getOffset();  // will get inflated to 4D when we know wFirst()
+//        
+//        if ( quaternion != null )
+//            quaternion = quaternion .scale( field .createPower( -5 ) );
+//        
+//        if ( noInversion != null && noInversion )
+//            new VefToModelNoInversion( quaternion, field, effects ) .parseVEF( vefData, field );
+//        else
+//            new VefToModel( quaternion, effects, field .createPower( 5 ), null ) .parseVEF( vefData, field );
+//        
         return result;
     }
 
@@ -145,9 +174,9 @@ public class CommandImportVEFData extends AbstractCommand
         
         protected final Set<Point> mUsedPoints = new HashSet<>();
         
-        public VefToModelNoInversion( AlgebraicVector quaternion, AlgebraicField field, ConstructionChanges effects )
+        public VefToModelNoInversion( Projection projection, AlgebraicField field, ConstructionChanges effects )
         {
-            super( quaternion, effects, field .createPower( 5 ), null );
+            super( projection, effects, field .createPower( 5 ), null );
         }
 
         @Override
