@@ -123,8 +123,14 @@ format-2.1.0-models.vZome-files
 #new color mapping commands
 2017/08-Aug/31-David-colorMapping
 
-#New JoinSkewLines command
+#new JoinSkewLines command
 2018/07-Jul/18-David-JoinSkewLines
 
-#New SelectByRadius command
+#new SelectByRadius command
 2018/07-Jul/30-David-SelectByRadius
+
+#new Tetrahedral Projections and legacy Quaternion Projections
+2018/08-Aug/28-David-Projections
+
+#new 2D and 3D Convex Hulls
+2018/11-Nov/10-David-ConvexHulls
