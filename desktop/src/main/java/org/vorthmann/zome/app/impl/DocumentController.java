@@ -103,6 +103,7 @@ public class DocumentController extends DefaultController implements Controller3
     private Lights sceneLighting;
     private MouseTool modelModeMainTrackball;
     private Component modelCanvas;
+    private boolean drawNormals = false;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
     private Java2dSnapshot mSnapshot = null;
@@ -596,6 +597,12 @@ public class DocumentController extends DefaultController implements Controller3
                 properties() .firePropertyChange( "showFrameLabels", !showFrameLabels, showFrameLabels );
             }
 
+            else if ( action.equals( "toggleNormals" ) )
+            {
+                drawNormals = ! drawNormals;
+                properties() .firePropertyChange( "drawNormals", !drawNormals, drawNormals );
+            }
+
             else if ( action.equals( "toggleOutlines" ) )
             {
                 drawOutlines = ! drawOutlines;
@@ -659,6 +666,10 @@ public class DocumentController extends DefaultController implements Controller3
             }
             else if ( action .equals( "copy" ) )
                 setProperty( "clipboard", documentModel .copySelectionVEF() );
+            else if ( action .equals( "copy.observable" ) )
+                setProperty( "clipboard", documentModel .copyRenderedModel( "observable" ) );
+            else if ( action .equals( "copy.vson" ) )
+                setProperty( "clipboard", documentModel .copyRenderedModel( "vson" ) );
             else if ( action.equals( "paste" ) )
             {
                 String vefContent = getProperty( "clipboard" );
@@ -761,6 +772,7 @@ public class DocumentController extends DefaultController implements Controller3
         if ( command.equals( "runZomicScript" ) 
                 || command.equals( "runPythonScript" )
                 || command.equals( "import.vef" ) 
+                || command.equals( "import.vef.tetrahedral" ) 
                 //|| command.equals( "import.zomod" ) 
                 )
             documentModel .doScriptAction( command, script );
@@ -890,6 +902,11 @@ public class DocumentController extends DefaultController implements Controller3
                     ) {
                 String vefData = readFile( file );
                 documentModel .importVEF( this .importScaleController .getValue(), vefData );
+                return;
+            }
+            if ( command.equals( "import.vef.tetrahedral" ) ) {
+                String vefData = readFile( file );
+                documentModel .importVEFTetrahedralProjection( this .importScaleController .getValue(), vefData );
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {
@@ -1131,6 +1148,9 @@ public class DocumentController extends DefaultController implements Controller3
         case "showFrameLabels":
             return Boolean .toString( showFrameLabels );
 
+        case "drawNormals":
+            return Boolean .toString( drawNormals );
+
         case "drawOutlines":
             return Boolean .toString( drawOutlines );
 
@@ -1299,11 +1319,11 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
 
             case "setWorkingPlaneAxis":
-                this .strutBuilder .setWorkingPlaneAxis( (Segment) singleConstruction );
+                this .strutBuilder .setWorkingPlaneAxis( ((Segment) singleConstruction).getOffset() );
                 break;
 
             case "setWorkingPlane":
-                this .strutBuilder .setWorkingPlaneAxis( this .documentModel .getPlaneAxis( (Polygon) singleConstruction ) );
+                this .strutBuilder .setWorkingPlaneAxis( ((Polygon) singleConstruction ).getNormal() );
                 break;
 
             case "lookAtThis":

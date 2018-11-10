@@ -444,6 +444,9 @@ public class CameraController extends DefaultController implements Controller3d
             return upDir.toString();
         }
 
+        case "drawNormals": // for the trackball rendering
+            return "false";
+
         case "drawOutlines": // for the trackball rendering
             return "false";
 

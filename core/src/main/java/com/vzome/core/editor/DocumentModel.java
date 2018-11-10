@@ -10,6 +10,7 @@ import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
@@ -40,7 +41,6 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
@@ -50,8 +50,6 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.construction.SegmentCrossProduct;
-import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.ManifestationColorMappers.CentroidNearestSpecialOrbitColorMap;
 import com.vzome.core.editor.ManifestationColorMappers.ManifestationColorMapper;
 import com.vzome.core.editor.ManifestationColorMappers.NearestSpecialOrbitColorMap;
@@ -59,12 +57,16 @@ import com.vzome.core.editor.ManifestationColorMappers.SystemCentroidColorMap;
 import com.vzome.core.editor.ManifestationColorMappers.SystemColorMap;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.ObservableJsonExporter;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
+import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
+import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.TetrahedralProjection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
@@ -457,9 +459,15 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 			edit = new SelectAutomaticStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
                     this .mSelection, this .mRealizedModel );
 			break;
-		case "SelectCollinear":
-			edit = new SelectCollinear( this .mSelection, this .mRealizedModel );
-			break;
+        case "SelectCollinear":
+            edit = new SelectCollinear( this .mSelection, this .mRealizedModel );
+            break;
+        case SelectByDiameter.NAME:
+            edit = mEditorModel.selectByDiameter();
+            break;
+        case SelectByRadius.NAME:
+            edit = mEditorModel.selectByRadius();
+            break;
 		case "ValidateSelection":
 			edit = new ValidateSelection( this.mSelection );
 			break;
@@ -550,6 +558,34 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		return out .toString();
 	}
 
+	public String copyRenderedModel( String format )
+	{
+	    StringWriter out = new StringWriter();
+	    switch ( format ) {
+
+        case "vson":
+            VsonExporter vsonEx = new VsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
+            try {
+                vsonEx .doExport( null, out, 0, 0 );
+            } catch (IOException e) {
+                // TODO fail better here
+                e.printStackTrace();
+            }
+            break;
+
+        case "observable":
+            ObservableJsonExporter ojex = new ObservableJsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
+            try {
+                ojex .doExport( null, out, 0, 0 );
+            } catch (IOException e) {
+                // TODO fail better here
+                e.printStackTrace();
+            }
+            break;
+	    }
+	    return out .toString();
+	}
+
 	public void pasteVEF( String vefContent )
 	{
         if( vefContent != null && vefContent.startsWith("vZome VEF" )) {
@@ -635,6 +671,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case "SelectParallelStruts":
 			edit = mEditorModel.selectParallelStruts();
 			break;
+        case SelectByDiameter.NAME:
+            edit = mEditorModel.selectByDiameter();
+            break;
+        case SelectByRadius.NAME:
+            edit = mEditorModel.selectByRadius();
+            break;
 		case "invertSelection":
 			edit = mEditorModel.invertSelection();
 			break;
@@ -823,7 +865,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         else if ( target instanceof Segment )
             return this .renderedModel .renderVector( ( (Segment) target ).getStart() );
         else if ( target instanceof Polygon )
-            return this .renderedModel .renderVector( ( (Polygon) target ).getVertices()[ 0 ] );
+            return this .renderedModel .renderVector( ( (Polygon) target ).getVertex( 0 ) );
         else
             return new RealVector( 0, 0, 0 );
     }
@@ -834,11 +876,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         if ( target instanceof Point)
             v = ( (Point) target ).getLocation();
         else if ( target instanceof Segment ) {
-            Segment segment = (Segment) target;
-            v = AlgebraicVectors.getCentroid(new AlgebraicVector[] { segment.getStart(), segment.getEnd() });
+            v = ((Segment) target). getCentroid( );
         }
         else if ( target instanceof Polygon )
-            v = AlgebraicVectors.getCentroid( ( (Polygon) target ).getVertices() );
+            v = ((Polygon) target). getCentroid( );
         else
             v = this.getField().origin(3);
         
@@ -1173,12 +1214,20 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     
     public void importVEF( AlgebraicNumber scale, String script )
     {
-        UndoableEdit edit = null;
         Segment symmAxis = mEditorModel .getSymmetrySegment();
-        AlgebraicVector quat = ( symmAxis == null ) ? null : symmAxis.getOffset();
-        if ( quat != null )
-            quat = quat .scale( scale .reciprocal() );
-        edit = new LoadVEF( mSelection, mRealizedModel, script, quat, scale );
+        AlgebraicVector quaternion = ( symmAxis == null ) 
+                ? null 
+                : symmAxis.getOffset() .scale( scale.reciprocal() );
+        Projection projection = quaternion == null
+                ? null
+                : new QuaternionProjection(field, null, quaternion);
+        UndoableEdit edit = new LoadVEF( mSelection, mRealizedModel, script, projection, scale );
+        this .performAndRecord( edit );
+    }
+
+    public void importVEFTetrahedralProjection( AlgebraicNumber scale, String script )
+    {
+        UndoableEdit edit = new LoadVEF( mSelection, mRealizedModel, script, new TetrahedralProjection(field), scale );
         this .performAndRecord( edit );
     }
 
@@ -1432,18 +1481,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     	return mEditorModel .getSymmetrySegment();
     }
 
-	public Segment getPlaneAxis( Polygon panel )
-	{
-		AlgebraicVector[] vertices = panel.getVertices();
-		FreePoint p0 = new FreePoint( vertices[ 0 ] );
-		FreePoint p1 = new FreePoint( vertices[ 1 ] );
-		FreePoint p2 = new FreePoint( vertices[ 2 ] );
-		Segment s1 = new SegmentJoiningPoints( p0, p1 );
-		Segment s2 = new SegmentJoiningPoints( p1, p2 );
-		return new SegmentCrossProduct( s1, s2 );
-	}
-
-	public RealizedModel getRealizedModel()
+    public RealizedModel getRealizedModel()
 	{
 		return this .mRealizedModel;
 	}

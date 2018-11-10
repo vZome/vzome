@@ -1,13 +1,14 @@
 
 import { ActionTypes } from "redux-simple-websocket"
 import { OPEN_URL, CLOSE_VIEW } from '../actions'
+import { DEFAULT_MODEL } from '../models/dodecahedron'
 
 const reducer = (state = {
   modelUrl: "",
   connectionLive: false,
-  segments: [],
-  balls: [],
-  shapes: [],
+  segments: DEFAULT_MODEL.segments,
+  balls: DEFAULT_MODEL.balls,
+  shapes: DEFAULT_MODEL.shapes,
   lastError: null
 }, action) => {
   switch (action.type) {
@@ -23,15 +24,18 @@ const reducer = (state = {
         ...state,
 				modelUrl: "",
         connectionLive: false,
-        shapes: [],
-        segments: [],
-        balls: []
+        segments: DEFAULT_MODEL.segments,
+        balls: DEFAULT_MODEL.balls,
+        shapes: DEFAULT_MODEL.shapes
       }
 
     case ActionTypes.WEBSOCKET_CONNECTED:
       return {
         ...state,
         connectionLive: true,
+        shapes: [],
+        balls: [],
+        segments: []
       }
 
 		case ActionTypes.WEBSOCKET_ERROR:
@@ -44,9 +48,9 @@ const reducer = (state = {
 			return {
 				...state,
         connectionLive: false,
-        shapes: [],
-        segments: [],
-        balls: []
+        segments: DEFAULT_MODEL.segments,
+        balls: DEFAULT_MODEL.balls,
+        shapes: DEFAULT_MODEL.shapes
 			}
 
 		case ActionTypes.SEND_DATA_TO_WEBSOCKET:

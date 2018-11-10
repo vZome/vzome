@@ -163,6 +163,16 @@ public class EditorModel
 		return new SelectParallelStruts( symmetrySystem, mSelection, mRealized );
 	}
 
+    public UndoableEdit selectByDiameter()
+    {
+        return new SelectByDiameter(mSelection, mRealized );
+    }
+
+    public UndoableEdit selectByRadius()
+    {
+        return new SelectByRadius(mSelection, mRealized );
+    }
+
     public UndoableEdit invertSelection()
     {
         return new InvertSelection( mSelection, mRealized, false );

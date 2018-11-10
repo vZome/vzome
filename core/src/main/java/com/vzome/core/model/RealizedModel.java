@@ -102,11 +102,9 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
         {
             Polygon p = (Polygon) c;
             List<AlgebraicVector> vertices = new ArrayList<>();
-            AlgebraicVector[] vertexArray = p .getVertices();
-            for (AlgebraicVector source : vertexArray) {
-                vertices .add( mProjection .projectImage( source, true ) );
+            for (int i = 0; i < p.getVertexCount(); i++) {
+                vertices .add( mProjection .projectImage( p.getVertex( i ), true ) );
             }
-        
             m = new Panel( vertices );
         }
         return m;

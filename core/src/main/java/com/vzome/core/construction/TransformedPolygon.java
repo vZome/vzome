@@ -28,10 +28,10 @@ public class TransformedPolygon extends Polygon
         // TODO implement impossibility
 //      if ( mStart .isImpossible() || mEnd .isImpossible() )
 //          return setStateVariables( null, null, true );
-        AlgebraicVector [] protoLocs = mPrototype .getVertices();
-        AlgebraicVector [] locs = new AlgebraicVector[ protoLocs .length ];
-        for ( int i = 0; i < locs .length; i++ )
-            locs[ i ] = mTransform .transform( protoLocs[ i ] );
-        return setStateVariable( locs, false );
+        AlgebraicVector [] vertices = new AlgebraicVector[ mPrototype .getVertexCount() ];
+        for ( int i = 0; i < vertices .length; i++ ) {
+            vertices[ i ] = mTransform .transform( mPrototype .getVertex( i ) );
+        }
+        return setStateVariable( vertices, false );
     }
 }

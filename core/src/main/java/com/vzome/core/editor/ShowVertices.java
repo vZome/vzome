@@ -4,7 +4,6 @@
 package com.vzome.core.editor;
 
 
-import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonVertex;
@@ -25,6 +24,10 @@ public class ShowVertices extends ChangeManifestations
     {
         for (Manifestation man : mSelection) {
             unselect( man );
+            // TODO: Should we unselect all of the balls and then redo before entering this loop?
+            // If any balls on selected struts or panels are pre-selected, then they become deselected.
+            // TODO: They should only be deselected if they are not on any selected panels or struts,
+            // but how does this affect backward compatability?
             if ( man instanceof Strut )
             {
                 Segment s = (Segment) man .getConstructions() .next();
@@ -36,8 +39,7 @@ public class ShowVertices extends ChangeManifestations
             else if ( man instanceof Panel )
             {
                 Polygon polygon = (Polygon) ((Panel) man) .getConstructions() .next();
-                AlgebraicVector[] vertices = polygon .getVertices();
-                for (int i = 0; i < vertices.length; i++) {
+                for (int i = 0; i < polygon.getVertexCount(); i++) {
                     PolygonVertex v = new PolygonVertex( polygon, i );
                     select( manifestConstruction( v ) );
                 }

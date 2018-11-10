@@ -39,9 +39,13 @@ public class ToolController extends DefaultController
 			this .tool .apply( inputBehaviors, outputBehaviors );
 			break;
 
-		case "selectParams":
-			this .tool .selectParameters();
-			break;
+        case "hideTool":
+            this .tool .setHidden( true );
+            break;
+
+        case "selectParams":
+            this .tool .selectParameters();
+            break;
 
 		case "selectInputs":
 			if ( inputBehaviors .contains( InputBehaviors.SELECT ) )
@@ -92,8 +96,11 @@ public class ToolController extends DefaultController
 	{
 		switch ( name ) {
 
-		case "label":
-			return this .tool .getLabel();
+        case "id":
+            return this .tool .getId();
+
+        case "label":
+            return this .tool .getLabel();
 
 		case "kind":
 			return this .tool .getCategory();

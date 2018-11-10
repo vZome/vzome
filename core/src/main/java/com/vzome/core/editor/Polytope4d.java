@@ -30,32 +30,32 @@ public class Polytope4d extends ChangeManifestations
     private Projection proj;
     private AlgebraicVector quaternion;
     private String groupName;
-    
+
     // new controls
     private int edgesToRender = 0xF;
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private String renderGroupName;
-	private final FieldApplication fieldApp;
+    private final FieldApplication fieldApp;
 
     public Polytope4d( Selection selection, RealizedModel realized,
-    		FieldApplication fieldApp,
+            FieldApplication fieldApp,
             AlgebraicVector quaternion, int index, String groupName,
             int edgesToRender, AlgebraicNumber[] edgeScales,
             String renderGroupName, boolean groupInSelection )
     {
-    	super( selection, realized, groupInSelection );
-		this.fieldApp = fieldApp;
-    	this.field = fieldApp .getField();
+        super( selection, realized, groupInSelection );
+        this.fieldApp = fieldApp;
+        this.field = fieldApp .getField();
 
-    	this.index = index;
-    	this.quaternion = quaternion;
-    	this.groupName = groupName;
+        this.index = index;
+        this.quaternion = quaternion;
+        this.groupName = groupName;
 
-    	this .renderGroupName = renderGroupName;
-    	this .edgesToRender = edgesToRender;
-    	if ( edgeScales != null )
-    		this .edgeScales = edgeScales;
-    	else
+        this .renderGroupName = renderGroupName;
+        this .edgesToRender = edgesToRender;
+        if ( edgeScales != null )
+            this .edgeScales = edgeScales;
+        else
             for (int i = 0; i < this .edgeScales .length; i++)
             {
                 this .edgeScales[ i ] = this .field .createPower( 0 );
@@ -63,12 +63,12 @@ public class Polytope4d extends ChangeManifestations
     }
 
     public Polytope4d( Selection selection, RealizedModel realized,
-    		FieldApplication fieldApp,
-    		Segment symmAxis, int index, String groupName, boolean groupInSelection )
+            FieldApplication fieldApp,
+            Segment symmAxis, int index, String groupName, boolean groupInSelection )
     {
         this( selection, realized, fieldApp,
-        		( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d(),
-        		index, groupName, index, null, groupName, groupInSelection );
+                ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d(),
+                        index, groupName, index, null, groupName, groupInSelection );
     }
 
     @Override
@@ -81,13 +81,13 @@ public class Polytope4d extends ChangeManifestations
     public void getXmlAttributes( Element xml )
     {
         if ( quaternion != null )
-        	DomUtils .addAttribute( xml, "quaternion", quaternion .toParsableString() );        
+            DomUtils .addAttribute( xml, "quaternion", quaternion .toParsableString() );        
         DomUtils .addAttribute( xml, "group", this.groupName );
         DomUtils .addAttribute( xml, "wythoff", Integer .toString( this.index, 2 ) );
         if ( this .edgesToRender != 0xF )
-        	DomUtils .addAttribute( xml, "renderEdges", Integer .toString( this.edgesToRender, 2 ) );
+            DomUtils .addAttribute( xml, "renderEdges", Integer .toString( this.edgesToRender, 2 ) );
         if ( ! this .renderGroupName .equals( this .groupName ) )
-        	DomUtils .addAttribute( xml, "renderGroup", this.renderGroupName );
+            DomUtils .addAttribute( xml, "renderGroup", this.renderGroupName );
     }
 
     @Override
@@ -100,40 +100,40 @@ public class Polytope4d extends ChangeManifestations
         this .groupName = xml .getAttribute( "group" );
         String rgString = xml .getAttribute( "renderGroup" );
         this .renderGroupName = ( rgString==null || rgString .isEmpty() )? this .groupName : rgString;
-        
+
         String quatString = xml .getAttribute( "quaternion" );
         if ( quatString != null && ! "" .equals( quatString ) ) {
-        	// newest format
-        	if ( quatString .contains( "+" ) ) {
-            	// First, deal with the bug we had in serialization...
-        		quatString = quatString .replace( ',', ' ' );
-        		quatString = quatString .replace( '(', ' ' );
-        		quatString = quatString .replace( ')', ' ' );
-        		quatString = quatString .replace( '+', ' ' );
-        		char irrat = this .field .getIrrational( 0 ) .charAt( 0 );
-        		quatString = quatString .replace( irrat, ' ' );
-        		quatString = quatString + " 0 0 0";  // This is probably OK, but
-        		//  it is known to work only for those particular files I have seen,
-        		//  in which the X, Y, and Z coordinates are all zero.
-        	}
-        	this .quaternion = this .field .parseVector( quatString );
+            // newest format
+            if ( quatString .contains( "+" ) ) {
+                // First, deal with the bug we had in serialization...
+                quatString = quatString .replace( ',', ' ' );
+                quatString = quatString .replace( '(', ' ' );
+                quatString = quatString .replace( ')', ' ' );
+                quatString = quatString .replace( '+', ' ' );
+                char irrat = this .field .getIrrational( 0 ) .charAt( 0 );
+                quatString = quatString .replace( irrat, ' ' );
+                quatString = quatString + " 0 0 0";  // This is probably OK, but
+                //  it is known to work only for those particular files I have seen,
+                //  in which the X, Y, and Z coordinates are all zero.
+            }
+            this .quaternion = this .field .parseVector( quatString );
         }
         else {
-        	// legacy formats
-        	Segment segment = null;
-        	if ( format .commandEditsCompacted() )
-            	segment = format .parseSegment( xml, "start", "end" );
+            // legacy formats
+            Segment segment = null;
+            if ( format .commandEditsCompacted() )
+                segment = format .parseSegment( xml, "start", "end" );
             else
             {
                 AttributeMap attrs = format .loadCommandAttributes( xml );
-        		segment = (Segment) attrs .get( "rotation" );
+                segment = (Segment) attrs .get( "rotation" );
             }
-        	if ( segment != null )
-        		this.quaternion = segment .getOffset() .inflateTo4d();
+            if ( segment != null )
+                this.quaternion = segment .getOffset() .inflateTo4d();
         }
     }
-    
-    
+
+
     @Override
     public void perform()
     {
@@ -145,7 +145,7 @@ public class Polytope4d extends ChangeManifestations
         redo();
     }
 
-    
+
     private class WythoffListener implements WythoffConstruction.Listener
     {
         private int numVertices = 0;
@@ -168,13 +168,13 @@ public class Polytope4d extends ChangeManifestations
         @Override
         public Object addVertex( AlgebraicVector vertex )
         {
-        	Point p = vertices .get( vertex );
+            Point p = vertices .get( vertex );
             if ( p == null )
             {
                 AlgebraicVector projected = vertex;
                 if ( proj != null )
                     projected = proj .projectImage( vertex, true );
-                
+
                 projected = projected .scale( field .createPower( 5 ) );
 
                 p = new FreePoint( projected );

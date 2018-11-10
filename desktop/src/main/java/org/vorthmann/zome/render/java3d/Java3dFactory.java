@@ -31,7 +31,9 @@ import com.sun.j3d.utils.geometry.NormalGenerator;
 import com.sun.j3d.utils.geometry.Stripifier;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.Polyhedron.Face;
 import com.vzome.core.math.RealVector;
@@ -118,9 +120,64 @@ public class Java3dFactory implements J3dComponentFactory
     
     Appearance getOutlineAppearance()
     {
-    	return this .outlines;
+        return this .outlines;
     }
     
+    Appearance getPanelNormalAppearance()
+    {
+        // for now, use the same appearance as for outlines
+        // TODO: use a seperate appearance for panel normals
+        return this .outlines;
+    }
+
+    Geometry makePanelNormalGeometry( RenderedManifestation rm )
+    {
+        Polyhedron poly = rm .getShape();
+        if (! poly .isPanel() ) {
+            throw new IllegalArgumentException("Polyhedron must be a panel");
+        }
+        List<AlgebraicVector> vertices = poly .getVertexList();
+        AlgebraicVector centroid = AlgebraicVectors.calculateCentroid(vertices);
+        AlgebraicVector normal = AlgebraicVectors.getNormal( vertices .get( 0 ), vertices .get( 1 ), vertices .get( 2 ) );
+        AlgebraicMatrix matrix = rm .getOrientation();
+        if ( matrix != null ) {
+            centroid = matrix .timesColumn( centroid );
+            normal = matrix .timesColumn( normal );
+        }
+
+        Embedding embedding = rm.getEmbedding();
+        RealVector vN = embedding.embedInR3( normal );
+
+        AlgebraicNumber totalQuadrance = poly.getField().zero();
+        for (AlgebraicVector vertex : vertices) {
+            AlgebraicVector distance = vertex.minus(centroid);
+            totalQuadrance = totalQuadrance.plus(distance.dot(distance));
+        }
+        AlgebraicNumber avgQuadrance = totalQuadrance.dividedBy(poly.getField().createRational(vertices.size()));
+        double avgDistance = Math.sqrt(avgQuadrance.evaluate());
+        // normalize vN then scale it by the average distance from centroid to all vertices,
+        // which makes the normal lines scale with the panels so they can be seen at any scale.
+        // The additional scaling by one half is just a factor that I think looks good.
+        // There is no mathematical basis for it, but it was chosen in part so that a cube
+        // with all normals facing the center would show 6 distinct normals rather than 
+        // having them overlap and appear as three lines between opposite faces.
+        vN = vN.normalize().scale(avgDistance/2d);
+
+        RealVector v0 = embedding.embedInR3( centroid );
+        RealVector v1 = v0.plus(vN);
+
+        // just 2 points
+        IndexedLineStripArray strips = new IndexedLineStripArray( 2, GeometryArray.COORDINATES, 2, new int [] {2} );
+
+        strips .setCoordinate( 0, new Point3d( v0.x, v0.y, v0.z ) );
+        strips .setCoordinate( 1, new Point3d( v1.x, v1.y, v1.z ) );
+        
+        strips .setCoordinateIndex(0, 0);
+        strips .setCoordinateIndex(1, 1);
+        
+        return strips;
+    }
+
     // The resulting geometry does not support the polygon offset
     //  required to avoid "stitching" when the line geometry is rendered at the same Z-depth
     //  as the solid geometry.

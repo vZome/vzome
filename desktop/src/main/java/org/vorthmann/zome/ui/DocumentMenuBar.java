@@ -247,6 +247,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu.add( enableIf( isEditor, createMenuItem( "All", ( "unselectAll" ) ) ) );
         menu.add(submenu);
 
+        menu.add( enableIf( isEditor, createMenuItem( "Select by Diameter", ( "SelectByDiameter" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Select by Radius", ( "SelectByRadius" ) ) ) );
+
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Group", ( "group" ), KeyEvent.VK_G, COMMAND ) ) );
         menu .add( enableIf( isEditor, createMenuItem( "Ungroup", ( "ungroup" ), KeyEvent.VK_G, COMMAND_OPTION ) ) );
@@ -505,6 +508,11 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         cbMenuItem = actions .setMenuAction( "toggleFrameLabels", controller, new JCheckBoxMenuItem( "Show Frame Labels" ) );
         setting = "true".equals( controller .getProperty( "showFrameLabels" ) );
+        cbMenuItem .setSelected( setting );
+        menu.add( cbMenuItem );
+
+        cbMenuItem = actions .setMenuAction( "toggleNormals", controller, new JCheckBoxMenuItem( "Show Panel Normals" ) );
+        setting = "true".equals( controller .getProperty( "showNormals" ) );
         cbMenuItem .setSelected( setting );
         menu.add( cbMenuItem );
 

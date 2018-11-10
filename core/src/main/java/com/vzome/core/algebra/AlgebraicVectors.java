@@ -9,10 +9,42 @@ import java.util.TreeSet;
 public class AlgebraicVectors {
     private AlgebraicVectors() {}
 
-    public static AlgebraicVector getNormal(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
-        return v1.minus(v0).cross(v2.minus(v0));
+    /**
+     * 
+     * @param v1
+     * @param v2
+     * @return normal to position vectors v1 and v2, 
+     * with both v1 and v2 starting at the origin
+     * using the righthand rule.
+     */
+    public static AlgebraicVector getNormal(final AlgebraicVector v1, final AlgebraicVector v2) {
+        return v1.cross(v2);
     }
 
+    /**
+     * 
+     * @param v0
+     * @param v1
+     * @param v2
+     * @return normal to vectors v1 and v2, 
+     * with both v1 and v2 positioned at v0
+     * using the righthand rule.
+     */
+    public static AlgebraicVector getNormal(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
+        return getNormal(v1.minus(v0), v2.minus(v0));
+    }
+
+    /**
+     * 
+     * @param v1
+     * @param v2
+     * @return true if vectors v1 and v2 are parallel, otherwise false.
+     * Considered as position vectors, this is the same as testing if they are collinear with the origin.
+     */
+    public static boolean areParallel(final AlgebraicVector v1, final AlgebraicVector v2) {
+        return getNormal(v1, v2).isOrigin();
+    }
+    
     /** 
      * @return a vector that is orthogonal to a plane defined by three of the vertices.
      * If vertices are all collinear, then the origin is returned.
@@ -100,7 +132,13 @@ public class AlgebraicVectors {
                 ? true 
                 : getNormal(vectors).isOrigin();
     }
-    
+     /**
+     * 
+     * @param v0
+     * @param v1
+     * @param v2
+     * @return true if position vectors v0, v1 and v2 are collinear, otherwise false.
+     */
     public static boolean areCollinear(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
         return getNormal(v0, v1, v2).isOrigin();
     }
