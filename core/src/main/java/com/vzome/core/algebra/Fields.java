@@ -77,28 +77,33 @@ public class Fields
     }
     
     @SuppressWarnings("unchecked")
-    public static <T extends Element<T>> void gaussJordanReduction( T[][] m, T[][] adjoined )
+    public static <T extends Element<T>> int gaussJordanReduction( T[][] m, T[][] adjoined )
     {
+        // Array "m" is copied to a local array named matrix so that m remains unchanged.
+        // The adjoined array is modified in place and will be accessible to the caller.
         final Object[][] matrix = new Object[ m.length ][];
         for (int i = 0; i < m.length; i++) {
         	matrix[i] = Arrays.copyOf( m[i], m[i].length );
         }
-        for ( int upleft = 0; upleft < matrix.length; upleft++ )
-        {
+        
+        // now the real work...
+        for ( int upleft = 0; upleft < matrix.length; upleft++ ) {
             int pivot = -1;
             // find pivot: skip columns all zero, find highest non-zero row
             for ( int j = upleft; j < matrix[0].length; j++ ) {
                 for ( int i = upleft; i < matrix.length; i++ ) {
-                    T tmp = (T) matrix[ i ][ j ];
-                    if ( ! tmp .isZero() ) {
+                    if ( ! ((T)matrix[ i ][ j ]) .isZero() ) {
                         pivot = i;
                         break;
                     }
                 }
-                if ( pivot >= 0 ) break;
+                if ( pivot >= 0 ) {
+                    break;
+                }
             }
-            if ( pivot < 0 )
-                return; // all done, in ReREF
+            if ( pivot < 0 ) {
+                break; // all done, matrix is now in Reduced Row Echelon Form (ReREF)
+            }
 
             // exchange pivot and top rows
             if ( pivot != upleft ) {
@@ -115,29 +120,25 @@ public class Fields
             }
 
             // normalize the top row
-            T tmp = (T) matrix[ upleft ][ upleft ];
-            if ( ! tmp .isOne() ) {
-                T divisor = ( (T) matrix[ upleft ][ upleft ] ) .reciprocal();
+            if ( ! ((T) matrix[ upleft ][ upleft ]) .isOne() ) {
+                T divisor = ((T) matrix[ upleft ][ upleft ]) .reciprocal();
                 for ( int j = upleft; j < matrix[0].length; j++ ) {
-                    T tmp2 = (T) matrix[ upleft ][ j ];
-                    matrix[ upleft ][ j ] = tmp2.times( divisor );
+                    matrix[ upleft ][ j ] = ((T) matrix[ upleft ][ j ]) .times( divisor );
                 }
                 for ( int j = 0; j < adjoined[0].length; j++ ) {
                 	adjoined[ upleft ][ j ] = adjoined[ upleft ][ j ] .times( divisor );
                 }
             }
 
-            // zero out all other entries in the upleft column, subtracting m[i,upleft]*m[upleft,j] from m[i,j]
+            // zero out all other entries in the upleft column, 
+            // by subtracting matrix[i,upleft] * matrix[upleft,j] from matrix[i,j]
             for ( int i = 0; i < matrix.length; i++ ) {
-                T tmp2 = (T) matrix[ i ][ upleft ];
-                if ( i != upleft && ! tmp2 .isZero() ) {
+                if ( i != upleft && ! ((T) matrix[ i ][ upleft ]) .isZero() ) {
                     T factor = (T) matrix[ i ][ upleft ];
                     matrix[ i ][ upleft ] = factor .plus( factor .negate() ); // zero it out
                     for ( int j = upleft+1; j < matrix[0].length; j++ ) {
-                        T tmp3 = (T) matrix[ upleft ][ j ];
-                        T temp = tmp3 .times( factor );
-                        T tmp4 = (T) matrix[ i ][ j ];
-                        matrix[ i ][ j ] = tmp4 .plus( temp .negate() );
+                        T temp = ((T) matrix[ upleft ][ j ]) .times( factor );
+                        matrix[ i ][ j ] = ((T) matrix[ i ][ j ]) .plus( temp .negate() );
                     }
                     for ( int j = 0; j < adjoined[0].length; j++ ) {
                     	T temp = adjoined[ upleft ][ j ] .times( factor );
@@ -146,5 +147,16 @@ public class Fields
                 }
             }
         }
+        // since the caller won't have access to the matrix in reduced row echelon form,
+        // we'll return its rank so the caller can determine if it is invertable
+        int rank = 0;
+        for ( int i = 0; i < matrix.length; i++ ) {
+            if(i < matrix[i].length ) {
+                if(((T) matrix[i][i]) .isOne()) {
+                    rank++;
+                }
+            }
+        }
+        return rank;
     }
 }

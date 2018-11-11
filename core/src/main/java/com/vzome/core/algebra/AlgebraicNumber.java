@@ -28,6 +28,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     private final boolean isZero;
 
     private Double doubleValue;	// initialized on first use
+    private Integer signum;     // initialized on first use
     private final String[] toString = new String[AlgebraicField .VEF_FORMAT + 1]; // cache various String representations
 
     private Integer hashCode;	// initialized on first use
@@ -128,6 +129,22 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         }
         return Arrays.equals( factors, other.factors );
     }
+    
+    public boolean greaterThan(AlgebraicNumber other) {
+        return compareTo(other) > 0;
+    }
+
+    public boolean lessThan(AlgebraicNumber other) {
+        return compareTo(other) < 0;
+    }
+
+    public boolean greaterThanOrEqualTo(AlgebraicNumber other) {
+        return compareTo(other) >= 0;
+    }
+
+    public boolean lessThanOrEqualTo(AlgebraicNumber other) {
+        return compareTo(other) <= 0;
+    }
 
     @Override
     public int compareTo(AlgebraicNumber other) {
@@ -151,6 +168,14 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         // TODO: Develop a test case to show this scenario
         // TODO: Consider if it's worth the overhead of using BigDecimal.compareTo() in this case
         return d1.compareTo(d2);
+    }
+    
+    public static AlgebraicNumber max(AlgebraicNumber a, AlgebraicNumber b) {
+        return a.greaterThanOrEqualTo(b) ? a : b;
+    }
+
+    public static AlgebraicNumber min(AlgebraicNumber a, AlgebraicNumber b) {
+        return a.lessThanOrEqualTo(b) ? a : b;
     }
 
     public AlgebraicField getField()
@@ -247,7 +272,14 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     public boolean isZero()     { return isZero; }
     @Override
     public boolean isOne()      { return isOne; }
-
+    
+    public int signum() {
+        if(signum == null) {
+            signum = Double.valueOf( Math.signum(evaluate()) ).intValue();
+        }
+        return signum;
+    }
+    
     @Override
     public AlgebraicNumber negate()
     {

@@ -402,6 +402,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "JoinPoints":
             edit = new JoinPoints( this.mSelection, this.mRealizedModel, groupInSelection );
             break;
+        case ConvexHull2d.NAME:
+            edit = mEditorModel.convexHull2d();
+            break;
+        case ConvexHull3d.NAME:
+            edit = mEditorModel.convexHull3d();
+            break;
         case JoinSkewLines.NAME:
             edit = mEditorModel.joinSkewLines();
             break;
@@ -704,6 +710,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case "joinBallsAllPossible":
 			edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_POSSIBLE );
 			break;
+        case ConvexHull2d.NAME:
+            edit = mEditorModel.convexHull2d();
+            break;
+        case ConvexHull3d.NAME:
+            edit = mEditorModel.convexHull3d();
+            break;
         case JoinSkewLines.NAME:
             edit = mEditorModel.joinSkewLines();
             break;

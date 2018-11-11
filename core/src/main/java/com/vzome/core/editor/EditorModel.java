@@ -184,6 +184,16 @@ public class EditorModel
         return new JoinSkewLines( mSelection, mRealized );
     }
     
+    public UndoableEdit convexHull2d()
+    {
+        return new ConvexHull2d( mSelection, mRealized );
+    }
+    
+    public UndoableEdit convexHull3d()
+    {
+        return new ConvexHull3d( mSelection, mRealized );
+    }
+    
     public UndoableEdit validate2Manifold()
     {
         return new Validate2Manifold( mSelection, mRealized );
