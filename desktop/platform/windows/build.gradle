@@ -74,7 +74,7 @@ launch4j {
     jdkPreference = 'jdkOnly' // default is 'preferJre'
     jreRuntimeBits = '64'
 
-	opt = '-Xmx3048M'
+    opt = '-Xmx3072M'
 	// Most of the rootProject.jvmArgs have apple in the name. Exclude those...
 	rootProject.project('desktop').jvmArgs.each { entry ->
 		if(!entry.key.contains("apple.")) {
