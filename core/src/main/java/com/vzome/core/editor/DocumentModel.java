@@ -606,26 +606,26 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public boolean doEdit( String action )
     {
-    	// TODO break all these cases out as dedicated DocumentModel methods
-    	
-    	if ( this .mEditorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
-    		action = "showHidden";
-		}
+        // TODO break all these cases out as dedicated DocumentModel methods
 
-    	Command command = this .kind .getLegacyCommand( action );
-    	if ( command != null )
-    	{
-    		CommandEdit edit = new CommandEdit( (AbstractCommand) command, mEditorModel, false );
+        if ( this .mEditorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
+            action = "showHidden";
+        }
+
+        Command command = this .kind .getLegacyCommand( action );
+        if ( command != null )
+        {
+            CommandEdit edit = new CommandEdit( (AbstractCommand) command, mEditorModel, false );
             this .performAndRecord( edit );
             return true;
-    	}
-    	
-//      if ( action.equals( "sixLattice" ) )
-//      edit = new SixLattice( mSelection, mRealizedModel, mDerivationModel );
+        }
 
-  // not supported currently, so I don't have to deal with the mTargetManifestation problem
-//  if ( action .equals( "reversePanel" ) )
-//      edit = new ReversePanel( mTargetManifestation, mSelection, mRealizedModel, mDerivationModel );
+        //      if ( action.equals( "sixLattice" ) )
+        //      edit = new SixLattice( mSelection, mRealizedModel, mDerivationModel );
+
+        // not supported currently, so I don't have to deal with the mTargetManifestation problem
+        //  if ( action .equals( "reversePanel" ) )
+        //      edit = new ReversePanel( mTargetManifestation, mSelection, mRealizedModel, mDerivationModel );
 
         UndoableEdit edit = null;
         switch (action) {
@@ -744,7 +744,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 			edit = new ShowHidden( mSelection, mRealizedModel, false );
 			break;
 		case RealizeMetaParts.NAME:
-			edit = new RealizeMetaParts( mSelection, mRealizedModel );
+			edit = new RealizeMetaParts( mSelection, mRealizedModel, true );
 			break;
 		case "affinePentagon":
 			edit = new AffinePentagon( mSelection, mRealizedModel );
