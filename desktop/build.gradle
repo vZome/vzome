@@ -10,7 +10,7 @@ task recordBuildProperties {
     ext.outputDir = propsFile .getParentFile()
     doFirst {
         writeProjectProperties( [ 'version', 'edition', 'buildNumber', 'gitCommit' ], propsFile )
-        println ' recorded desktop build properties'
+        println " recorded desktop build properties in $propsFile"
     }
 }
 processResources { 
@@ -36,7 +36,7 @@ ext.vzomeArgs = [  // a list, not a map
 mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'
 // used by the 'application' Gradle plugin
 run.args( vzomeArgs )
-applicationDefaultJvmArgs = [ '-Xmx3048M', '-Dfile.encoding=UTF8' ]
+applicationDefaultJvmArgs = [ '-Xmx3072M', '-Dfile.encoding=UTF8' ]
 jvmArgs.each { entry ->
     applicationDefaultJvmArgs << "-D$entry.key=$entry.value"
 }

@@ -45,7 +45,7 @@ task recordBuildProperties {
     ext.outputDir = propsFile .getParentFile()
     doFirst {
         writeProjectProperties( [ 'version', 'gitCommit' ], propsFile )
-        println ' recorded core build properties'
+        println " recorded core build properties in $propsFile"
     }
 }
 processResources {
@@ -298,7 +298,7 @@ task regression(type: JavaExec, dependsOn: check) {
     classpath = sourceSets.regression.runtimeClasspath
     main = 'com.vzome.core.regression.TestVZomeFiles'
     args( testHome, testFile, testOut )
-    jvmArgs( '-Xmx3048M' )
+    jvmArgs( '-Xmx3072M' )
     jvmArgs( '-Djava.util.logging.config.file=core/regression-logging.properties' )
 }
 regression.dependsOn makeRegressionOutputDir
@@ -323,7 +323,7 @@ regression.dependsOn makeRegressionOutputDir
         classpath = sourceSets.regression.runtimeClasspath
         main = 'com.vzome.core.regression.TestVZomeFiles'
         args( testHome, testFile, testOut )
-        jvmArgs( '-Xmx3048M' )
+        jvmArgs( '-Xmx3072M' )
     }
 }
 task regressionYear( dependsOn: tasks.matching { Task task -> task.name.startsWith( "regression-" ) } )
