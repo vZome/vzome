@@ -487,6 +487,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 		case RealizeMetaParts.NAME:
 			edit = new RealizeMetaParts( mSelection, mRealizedModel );
 			break;
+		case ReplaceWithShape.NAME:
+			edit = new ReplaceWithShape( mSelection, mRealizedModel, null );
+			break;
         case ShowVertices.NAME:
             edit = new ShowVertices( mSelection, mRealizedModel );
             break;
@@ -744,7 +747,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 			edit = new ShowHidden( mSelection, mRealizedModel, false );
 			break;
 		case RealizeMetaParts.NAME:
-			edit = new RealizeMetaParts( mSelection, mRealizedModel, true );
+			edit = new RealizeMetaParts( mSelection, mRealizedModel );
 			break;
 		case "affinePentagon":
 			edit = new AffinePentagon( mSelection, mRealizedModel );
@@ -931,6 +934,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         UndoableEdit edit = new AdjustSelectionByOrbitLength(mEditorModel .getSymmetrySystem(), orbit, null, mSelection, mRealizedModel, IGNORE, DESELECT);
         this .performAndRecord( edit );
     }
+
+	public void replaceWithShape( Manifestation ballOrStrut )
+	{
+        UndoableEdit edit = new ReplaceWithShape( mSelection, mRealizedModel, ballOrStrut );
+        this .performAndRecord( edit );
+	}
 
     public Color getSelectionColor()
     {

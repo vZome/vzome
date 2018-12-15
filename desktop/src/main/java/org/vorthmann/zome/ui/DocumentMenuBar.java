@@ -73,8 +73,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         boolean enable4d = developerExtras || ( fullPower && controller .userHasEntitlement( "4d.symmetries" ) );
 
-        boolean metaModels = developerExtras || ( fullPower && controller .userHasEntitlement( "meta.models" ) );
-
         boolean canSave = controller .userHasEntitlement( "save.files" );
 
         boolean isGolden = "golden" .equals( fieldName );
@@ -341,9 +339,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         //        menu.add( enableIf( isEditor, createMenuItem( "Affine Transform All", getExclusiveAction( "affineTransformAll" ) ) );
         //        menuItem = enableIf( isEditor, createMenuItem( "Conjugate", getExclusiveAction( "conjugate" ) );
-        if ( metaModels ) {
-            menu .add(  createMenuItem( "Meta-model", ( "realizeMetaParts" ) ) );
-        }
         menu.add( enableIf( isEditor, createMenuItem( "Parallelepiped", "parallelepiped", KeyEvent.VK_P, COMMAND_SHIFT ) ) );
         if ( isGolden ) {
             menu.add( enableIf( isEditor, createMenuItem( "\u03C6 Divide", ( "tauDivide" ) ) ) );
