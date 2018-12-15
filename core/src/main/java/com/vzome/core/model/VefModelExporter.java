@@ -4,19 +4,20 @@
 package com.vzome.core.model;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.generic.ArrayComparator;
 import com.vzome.core.math.Polyhedron;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class VefModelExporter implements Exporter
 {
@@ -50,17 +51,6 @@ public class VefModelExporter implements Exporter
         ArrayComparator<AlgebraicVector> arrayComparator = new ArrayComparator<>();
         strutEnds = new TreeSet<>( arrayComparator.getContentFirstArrayComparator() );
         panelVertices = new TreeSet<>( arrayComparator.getLengthFirstArrayComparator() );
-    }
-
-    /**
-    * @deprecated On 8/10/2016 I realized that exportStrutPolyhedron() is not being used
-    * by the current vzome-core or vzome-desktop, and it's not compatible with the new code for sorting vertices
-    * so I have deprecated it and commented out all of the code.
-    * I'll leave it here for now so we don't need to bump the version yet.
-    */
-    @Deprecated
-    public void exportStrutPolyhedron( Polyhedron poly, AlgebraicMatrix rotation, boolean reverseFaces, AlgebraicVector endpoint )
-    {
     }
 
 	@Override
@@ -242,4 +232,21 @@ public class VefModelExporter implements Exporter
 
         output .flush();
     }
+
+	public static String exportPolyhedron( Polyhedron polyhedron )
+	{
+    	StringWriter out = new StringWriter();
+        Exporter exporter = new VefModelExporter( out, polyhedron .getField() );
+    	List<AlgebraicVector> vertexList = polyhedron .getVertexList();
+    	for (Polyhedron.Face face : polyhedron .getFaceSet()) {
+    		List<AlgebraicVector> vertices = new ArrayList<>( face .size() );
+    		for ( int i = 0; i < face.size(); i++ ) {
+    			int vertexIndex = face .getVertex( i );
+    			vertices.add( vertexList .get( vertexIndex ) );
+    		}
+    		exporter .exportManifestation( new Panel( vertices ) );
+    	}
+        exporter .finish();
+		return out .toString();
+	}
 }

@@ -1331,6 +1331,10 @@ public class DocumentController extends DefaultController implements Controller3
                 cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
                 
+            case "replaceWithShape":
+            	documentModel .replaceWithShape( pickedManifestation );
+                break;
+                
             case "setBuildOrbitAndLength": {
                 AlgebraicVector offset = ((Strut) pickedManifestation) .getOffset();
                 Axis zone = symmetryController .getZone( offset );

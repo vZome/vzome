@@ -72,24 +72,24 @@ public abstract class ChangeManifestations extends ChangeSelection
     
     public Manifestation manifestConstruction( Construction c )
     {
-//        if ( realizer != null )
-//            return realizeConstruction( c );
-//        
+        //        if ( realizer != null )
+        //            return realizeConstruction( c );
+        //        
         Manifestation m = mManifestations .findConstruction( c );
         if ( m == null )
             return null;
         Manifestation made = mManifestedNow .get( m );
         if ( made != null )
-        	return made;
+            return made;
         if ( m .isUnnecessary() )  { // just manifested, not added yet
             // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-        	mManifestedNow .put( m, m );
-        	plan( new ManifestConstruction( c, m, true ) );
+            mManifestedNow .put( m, m );
+            plan( new ManifestConstruction( c, m, true ) );
         }
         else {
-        	// already manifested, just make sure it shows
-        	if ( m .getRenderedObject() == null )
-        		plan( new RenderManifestation( m, true ) );
+            // already manifested, just make sure it shows
+            if ( m .getRenderedObject() == null )
+                plan( new RenderManifestation( m, true ) );
         }
         return m;
     }

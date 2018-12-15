@@ -474,6 +474,10 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 
             this .addSeparator();
 
+            this .add( setMenuAction( "replaceWithShape", new JMenuItem( "Replace With Panels" ) ) );
+
+            this .addSeparator();
+
             this .add( setMenuAction( "setBuildOrbitAndLength", new JMenuItem( "Build With This" ) ) );
             this .add( enabler .setMenuAction( "showProperties-"+key, this .controller, new JMenuItem( "Show Properties" ) ) );
         }
