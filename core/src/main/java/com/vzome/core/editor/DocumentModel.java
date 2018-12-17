@@ -1530,4 +1530,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     {
         return this .mHistory;
     }
+    
+    public EditorModel getEditorModel()
+    {
+    	return this .mEditorModel;
+    }
 }
