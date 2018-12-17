@@ -530,6 +530,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         JPanel bomPanel = new PartsPanel( mController .getSubController( "parts" ) );
                         tabbedPane .addTab( "parts", bomPanel );
                         
+                        JPanel measurePanel = new MeasurePanel( mController .getSubController( "measure" ) );
+                        tabbedPane .addTab( "measure", measurePanel );
+                        
                         modelArticleEditPanel .add( tabbedPane, "model" );
                     }
                     else

@@ -68,6 +68,7 @@ public class PartsPanel extends JPanel
         bomTable .setRowSelectionAllowed( false );
         bomTable .setCellSelectionEnabled( false );
         bomTable .getTableHeader() .setReorderingAllowed( false );
+        bomTable .getTableHeader() .setBackground( Color.lightGray );
         TableColumn column = bomTable .getColumnModel() .getColumn( 0 );
         column .setMaxWidth( 50 );
         column = bomTable .getColumnModel() .getColumn( 1 );

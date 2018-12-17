@@ -219,6 +219,8 @@ public class DocumentController extends DefaultController implements Controller3
             public void manifestationColored( Manifestation m, Color c ) {}
         };
         this .documentModel .addSelectionListener( selectionRendering );
+        
+        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel() ) );
 
         this .articleChanges = new PropertyChangeListener()
         {   
