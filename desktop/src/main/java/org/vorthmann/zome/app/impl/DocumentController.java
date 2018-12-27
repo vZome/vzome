@@ -873,6 +873,14 @@ public class DocumentController extends DefaultController implements Controller3
 //            {
 //                new ZomespaceExporter( file ) .exportArticle( document, colors, sceneLighting, getSaveXml(), getProperty( "edition" ), getProperty( "version" ) );
 //            } else
+            if ( command.startsWith( "export.2d." ) )
+            {
+                Dimension size = this .modelCanvas .getSize();              
+                String format = command .substring( "export.2d." .length() ) .toLowerCase();
+                documentModel .export2d( format, currentSnapshot, file, size.height, size.width, cameraController .getView(), sceneLighting, drawOutlines );
+                this .openApplication( file );
+                return;
+            }
             if ( command.startsWith( "export." ) )
             {
                 Writer out = new FileWriter( file );

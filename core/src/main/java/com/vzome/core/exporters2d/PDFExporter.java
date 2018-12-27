@@ -7,8 +7,8 @@ import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 
 
-public class PDFExporter extends SnapshotExporter {
-	
+public class PDFExporter extends SnapshotExporter
+{
 	// ---------- MIMIC NATIVE QUARTZ METHODS 
 
     @Override

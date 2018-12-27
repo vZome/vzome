@@ -10,9 +10,12 @@ import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -62,6 +65,9 @@ import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.VsonExporter;
+import com.vzome.core.exporters2d.Java2dExporter;
+import com.vzome.core.exporters2d.Java2dSnapshot;
+import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
@@ -141,6 +147,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
 	private final FieldApplication kind;
 
+	private final Application app;
+
     public void addPropertyChangeListener( PropertyChangeListener listener )
     {
     	propertyChangeSupport .addPropertyChangeListener( listener );
@@ -165,6 +173,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	{
 		super();
 		this .kind = kind;
+        this .app = app;
 		this .field = kind .getField();
 		AlgebraicVector origin = this .field .origin( 3 );
 		this .originPoint = new FreePoint( origin );
@@ -1543,5 +1552,23 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     public EditorModel getEditorModel()
     {
     	return this .mEditorModel;
+    }
+
+    public void export2d( String format, RenderedModel model, File file, int height, int width, Camera camera, Lights lights, boolean drawOutlines ) throws Exception
+    {
+        SnapshotExporter exporter = this .app .getSnapshotExporter( format );
+        Java2dSnapshot snapshot = new Java2dSnapshot( new ArrayList<>(), new ArrayList<>() );
+        snapshot .setDoLighting( true );
+        snapshot .setDoOutlines( true );
+        snapshot .setLineDrawing( false );
+
+        Java2dExporter captureSnapshot = new Java2dExporter( camera, null, lights, model );
+        captureSnapshot .setSnapshot( snapshot );
+        captureSnapshot .doExport( new File(""), null, null, height, width );
+
+        // A try-with-resources block closes the resource even if an exception occurs
+        try (Writer out = new FileWriter( file )) {
+            exporter .export( snapshot, out );
+        }
     }
 }
