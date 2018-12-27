@@ -40,8 +40,6 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
 import org.vorthmann.zome.app.impl.PartsController.PartInfo;
-import org.vorthmann.zome.export.java2d.Java2dExporter;
-import org.vorthmann.zome.export.java2d.Java2dSnapshot;
 import org.vorthmann.zome.ui.PartsPanel.PartsPanelActionEvent;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -57,6 +55,7 @@ import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters2d.Java2dExporter;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -106,7 +105,7 @@ public class DocumentController extends DefaultController implements Controller3
     private boolean drawNormals = false;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
-    private Java2dSnapshot mSnapshot = null;
+    private Java2dSnapshotController mSnapshot = null;
     private CameraController cameraController;
     private final ApplicationController mApp;
 
@@ -1239,7 +1238,7 @@ public class DocumentController extends DefaultController implements Controller3
         case "snapshot.2d": {
             if ( mSnapshot == null ) {
                 Java2dExporter exporter = new Java2dExporter( cameraController.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
-                mSnapshot = new Java2dSnapshot( exporter );
+                mSnapshot = new Java2dSnapshotController( exporter );
                 mSnapshot .setNextController( this );
             }
             return mSnapshot;

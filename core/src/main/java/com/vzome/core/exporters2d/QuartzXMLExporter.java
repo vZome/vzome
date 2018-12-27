@@ -1,14 +1,12 @@
 /*
  * Created on Jan 2, 2004
  */
-package org.vorthmann.zome.export.java2d;
+package com.vzome.core.exporters2d;
 
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.Iterator;
-import org.vorthmann.zome.export.java2d.Java2dSnapshot.Polygon;
 
 
 public class QuartzXMLExporter {
@@ -48,8 +46,7 @@ public class QuartzXMLExporter {
 		output .println();
 		output .println( "    <setLineWidth width='" + mSnapshot .getStrokeWidth() + "'/>" );
 		
-		for ( Iterator<Polygon> paths = mSnapshot .getPolygons(); paths .hasNext(); ){
-			Polygon polygon = paths .next();
+        for ( Java2dSnapshot.Polygon polygon : mSnapshot .getPolygons() ) {
 			renderPath( polygon .getPath() );
 			rgb = polygon .getColor() .getRGBColorComponents( null );
 			setRGBFillColor( rgb[0], rgb[1], rgb[2] );
