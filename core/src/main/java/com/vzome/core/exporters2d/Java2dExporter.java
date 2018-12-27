@@ -42,6 +42,7 @@ public class Java2dExporter extends Exporter3d
 	private final Color[] lightColors = new Color[3];
 	private final Color ambientLight;
 	private final Matrix4d viewTransform;
+    private final Matrix4d eyeTrans;
 
     /**
      * @param v[]
@@ -58,6 +59,14 @@ public class Java2dExporter extends Exporter3d
         this .view .getViewTransform( viewMatrix, 0d );
         this .viewTransform = viewMatrix;
         
+        if ( ! view .isPerspective() ) {
+            double edge = view .getWidth() / 2;
+            this .eyeTrans = ortho( -edge, edge, -edge, edge, view .getNearClipDistance(), view .getFarClipDistance() );
+        }
+        else
+            this .eyeTrans = perspective( view .getFieldOfView(), 1.0d, view .getNearClipDistance(), view .getFarClipDistance() );
+            // TODO - make aspect ratio track the screen window shape
+
         for ( int i = 0; i < lightDirs.length; i++ ) {
             lightDirs[ i ] = new Vector3f();
             // the next line fills in the direction, as well as returning the color... bad style!
@@ -175,33 +184,6 @@ public class Java2dExporter extends Exporter3d
     
 
     /**
-     * Given a point in world coordinates, adjust it in place to be in
-     * screen coordinates (after projection).
-     * 
-     * @param point
-     */
-    public void mapWorldToScreen( Camera view, Point3f point )
-    {
-        Matrix4d viewMatrix = new Matrix4d();
-        this .view .getViewTransform( viewMatrix, 0d );
-        viewMatrix .transform( point );
-        // point is now in view coordinates
-        Vector4f p4 = new Vector4f( point.x, point.y, point.z, 1f );
-
-        Matrix4d eyeTrans;
-        if ( ! view .isPerspective() ) {
-			double edge = view .getWidth() / 2;
-			eyeTrans = ortho( -edge, edge, -edge, edge, view .getNearClipDistance(), view .getFarClipDistance() );
-		}
-		else
-		    eyeTrans = perspective( view .getFieldOfView(), 1.0d, view .getNearClipDistance(), view .getFarClipDistance() );
-			// TODO - make aspect ratio track the screen window shape
-        
-        eyeTrans .transform( p4 );
-        point .project( new Point4f( p4 ) );
-    }
-
-    /**
      * Creates a perspective projection transform that mimics a standard,
      * camera-based,
      * view-model.  
@@ -221,7 +203,7 @@ public class Java2dExporter extends Exporter3d
      * near clip plane).
      * @param zFar the distance to the frustum's far clipping plane
      */
-    public Matrix4d perspective( double fovx, double aspect, double zNear, double zFar )
+    public static Matrix4d perspective( double fovx, double aspect, double zNear, double zFar )
     {
         Matrix4d m = new Matrix4d();
         double sine, cotangent, deltaZ;
@@ -265,7 +247,7 @@ public class Java2dExporter extends Exporter3d
      * (the value -near is the location of the near clip plane)
      * @param far the distance to the frustum's far clipping plane
      */
-    public Matrix4d ortho( double left, double right, double bottom,
+    public static Matrix4d ortho( double left, double right, double bottom,
                            double top, double near, double far )
     {
         Matrix4d m = new Matrix4d();
@@ -290,7 +272,13 @@ public class Java2dExporter extends Exporter3d
     {
         float xscale = width/2f;
         Point3f vr = new Point3f( (float)rv.x, (float)rv.y, (float)rv.z );
-        mapWorldToScreen( view, vr );
+        // vr is still in world coordinates
+        this .viewTransform .transform( vr );
+        // vr is now in view coordinates
+        Vector4f p4 = new Vector4f( vr.x, vr.y, vr.z, 1f );
+        this .eyeTrans .transform( p4 );
+        // p4 is in screen coordinates
+        vr .project( new Point4f( p4 ) );
 
         // The next two lines map Java3d screen coordinates to Java2d coordinates.
         // The rectangles are:
