@@ -31,7 +31,14 @@ import com.vzome.core.exporters2d.SnapshotExporter;
  * @author vorth
  */
 public class Java2dSnapshotController extends DefaultController
-{
+{    
+    private Java2dExporter exporter;
+    
+    private boolean current;
+        
+    private Java2dSnapshot snapshot = new Java2dSnapshot( new ArrayList<>(), new ArrayList<>() );
+
+    
     public Java2dSnapshotController( Java2dExporter exporter )
     {
         this.setExporter( exporter );
@@ -223,13 +230,6 @@ public class Java2dSnapshotController extends DefaultController
 
         g2d.dispose(); //clean up
     }
-    
-    private Java2dExporter exporter;
-    
-    private boolean current;
-    	
-	private Java2dSnapshot snapshot = new Java2dSnapshot( new ArrayList<>(),
-            new ArrayList<>() );
 
     public void setExporter( Java2dExporter exporter )
     {

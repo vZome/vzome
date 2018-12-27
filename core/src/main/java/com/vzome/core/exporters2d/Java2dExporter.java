@@ -13,7 +13,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.exporters.Exporter3d;
@@ -36,13 +35,13 @@ import com.vzome.core.viewing.Lights;
  */
 public class Java2dExporter extends Exporter3d
 {
-	private final Camera view;
-	
 	private final Vector3f[] lightDirs = new Vector3f[3];
 	private final Color[] lightColors = new Color[3];
 	private final Color ambientLight;
 	private final Matrix4d viewTransform;
     private final Matrix4d eyeTrans;
+    
+    private Java2dSnapshot mSnapshot;
 
     /**
      * @param v[]
@@ -54,10 +53,8 @@ public class Java2dExporter extends Exporter3d
     {
         super( view, colors, lights, model );
         
-        this .view = view;
-        Matrix4d viewMatrix = new Matrix4d();
-        this .view .getViewTransform( viewMatrix, 0d );
-        this .viewTransform = viewMatrix;
+        this .viewTransform = new Matrix4d();
+        view .getViewTransform( this .viewTransform, 0d );
         
         if ( ! view .isPerspective() ) {
             double edge = view .getWidth() / 2;
@@ -79,8 +76,6 @@ public class Java2dExporter extends Exporter3d
 
     }
     
-	private Java2dSnapshot mSnapshot;
-    
     public void setSnapshot( Java2dSnapshot snapshot )
     {
         this.mSnapshot = snapshot;
@@ -89,8 +84,6 @@ public class Java2dExporter extends Exporter3d
     @Override
     public void doExport( File directory, Writer writer, int height, int width ) throws Exception
     {
-        AlgebraicField field = mModel .getField();
-        
         mSnapshot .setStrokeWidth( 0.5f );
         mSnapshot .setRect( new Rectangle2D.Float( 0f, 0f, width, height ) );
         
@@ -107,8 +100,8 @@ public class Java2dExporter extends Exporter3d
                 if ( m instanceof Strut ) {
                     AlgebraicVector start = ((Strut) m) .getLocation();
                     AlgebraicVector end = ((Strut) m) .getEnd();
-                    Vector3f v0 = mapCoordinates( mModel .renderVector( start ), height, width, field, view );
-                    Vector3f v1 = mapCoordinates( mModel .renderVector( end ), height, width, field, view );
+                    Vector3f v0 = mapCoordinates( mModel .renderVector( start ), height, width );
+                    Vector3f v1 = mapCoordinates( mModel .renderVector( end ), height, width );
                     mSnapshot .addLineSegment( color, v0, v1 );
                 }
                 continue;
@@ -128,7 +121,7 @@ public class Java2dExporter extends Exporter3d
                 AlgebraicVector gv = vertices .get( i );
                 gv = partOrientation .timesColumn( gv );
                 RealVector rv = location .plus( mModel .renderVector( gv ) );
-                Vector3f v = mapCoordinates( rv, height, width, field, view );
+                Vector3f v = mapCoordinates( rv, height, width );
                 mappedVertices .add( v );
             }
             
@@ -268,7 +261,7 @@ public class Java2dExporter extends Exporter3d
     }
 
     
-    private Vector3f mapCoordinates( RealVector rv, int height, int width, AlgebraicField field, Camera view )
+    private Vector3f mapCoordinates( RealVector rv, int height, int width )
     {
         float xscale = width/2f;
         Point3f vr = new Point3f( (float)rv.x, (float)rv.y, (float)rv.z );

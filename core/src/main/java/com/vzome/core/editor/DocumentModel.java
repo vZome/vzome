@@ -1385,18 +1385,27 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
 	public Exporter3d getNaiveExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel currentSnapshot )
 	{
-        Exporter3d exporter = null;
-        if ( format.equals( "pov" ) )
-            exporter = new POVRayExporter( camera, colors, lights, currentSnapshot );
-        else if ( format.equals( "opengl" ) )
-        	exporter = new OpenGLExporter( camera, colors, lights, currentSnapshot );
+	    Exporter3d exporter = null;
+	    switch ( format ) {
 
-        boolean inArticleMode = (renderedModel != currentSnapshot);
-        if(exporter != null && exporter.needsManifestations() && inArticleMode ) {
-            throw new IllegalStateException("The " + format + " exporter can only operate on the current model, not article pages.");
+        case "pov":
+            exporter = new POVRayExporter( camera, colors, lights, currentSnapshot );
+            break;
+
+        case "opengl":
+            exporter = new OpenGLExporter( camera, colors, lights, currentSnapshot );
+            break;
+
+        default:
+            break;
         }
-        return exporter;
-    }
+
+	    boolean inArticleMode = (renderedModel != currentSnapshot);
+	    if ( exporter != null && exporter.needsManifestations() && inArticleMode ) {
+	        throw new IllegalStateException("The " + format + " exporter can only operate on the current model, not article pages.");
+	    }
+	    return exporter;
+	}
 
 	/*
 	 * These exporters fall in two categories: rendering and geometry.  The ones that support the currentSnapshot
@@ -1424,10 +1433,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	
 	public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel mRenderedModel )
 	{
-        if ( format.equals( "partgeom" ) )
-        	return new PartGeometryExporter( camera, colors, lights, mRenderedModel, mSelection );
-        else
-        	return null;
+	    if ( format.equals( "partgeom" ) )
+	        return new PartGeometryExporter( camera, colors, lights, mRenderedModel, mSelection );
+	    else
+	        return null;
 	}
 
 	public LessonModel getLesson()
