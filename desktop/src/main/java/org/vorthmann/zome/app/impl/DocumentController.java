@@ -585,7 +585,7 @@ public class DocumentController extends DefaultController implements Controller3
 
             else if ( action.equals( "refresh.2d" ) )
             {
-                this .java2dController .setScene( cameraController.getView(), this.sceneLighting, this.currentSnapshot );
+                this .java2dController .setScene( cameraController.getView(), this.sceneLighting, this.currentSnapshot, this.drawOutlines );
             }
 
             else if ( action.startsWith( "setStyle." ) )
@@ -878,7 +878,7 @@ public class DocumentController extends DefaultController implements Controller3
                 Dimension size = this .modelCanvas .getSize();              
                 String format = command .substring( "export2d." .length() ) .toLowerCase();
                 Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
-                documentModel .export2d( snapshot, format, file, true, false );
+                documentModel .export2d( snapshot, format, file, this .drawOutlines, false );
                 this .openApplication( file );
                 return;
             }
@@ -1246,7 +1246,8 @@ public class DocumentController extends DefaultController implements Controller3
         
         case "snapshot.2d": {
             if ( java2dController == null ) {
-                java2dController = new Java2dSnapshotController( this .documentModel, cameraController.getView(), this.sceneLighting, this.currentSnapshot );
+                java2dController = new Java2dSnapshotController( this .documentModel, cameraController.getView(), this.sceneLighting,
+                						this.currentSnapshot, this.drawOutlines );
                 java2dController .setNextController( this );
             }
             return java2dController;

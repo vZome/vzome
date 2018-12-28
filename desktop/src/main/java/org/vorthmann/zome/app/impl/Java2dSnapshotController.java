@@ -29,7 +29,7 @@ public class Java2dSnapshotController extends DefaultController
 {    
     private boolean current = false;
  
-    private boolean showBackground = false, monochrome = true, lineDrawing = false, doLighting = true, outlinePanels = true;
+    private boolean showBackground = true, monochrome = true, lineDrawing = false, doLighting = true, outlinePanels = true;
 
     private transient Java2dSnapshot snapshot;
 
@@ -42,12 +42,13 @@ public class Java2dSnapshotController extends DefaultController
     private RenderedModel model;
 
     
-    public Java2dSnapshotController( DocumentModel document, Camera camera, Lights lights, RenderedModel model )
+    public Java2dSnapshotController( DocumentModel document, Camera camera, Lights lights, RenderedModel model, boolean outlinePanels )
     {
         this .document = document;
         this .camera = camera;
         this .lights = lights;
         this .model = model;
+        this .outlinePanels = outlinePanels;
     }
 
     private final static String[] DRAW_STYLES = new String[]{ "outlined shapes", "shaded shapes", "shaded, outlined shapes", "colored lines", "black lines" };
@@ -214,12 +215,13 @@ public class Java2dSnapshotController extends DefaultController
     }
 
 
-    public void setScene( Camera camera, Lights lights, RenderedModel model )
+    public void setScene( Camera camera, Lights lights, RenderedModel model, boolean outlinePanels )
     {
         this .camera = camera;
         this .lights = lights;
         this .model = model;
         this .current = false;
+        this .outlinePanels = outlinePanels;
     }
 }
 
