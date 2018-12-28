@@ -1,7 +1,7 @@
 /*
  * Created on Jul 30, 2004
  */
-package org.vorthmann.zome.export.java2d;
+package com.vzome.core.exporters2d;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;

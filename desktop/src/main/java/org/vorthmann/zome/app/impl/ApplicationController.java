@@ -163,40 +163,40 @@ public class ApplicationController extends DefaultController
 
     public RenderedModel getSymmetryModel( String path, Symmetry symmetry )
     {
-    	RenderedModel result = this .symmetryModels .get( path );
-    	// The cache does not care if the symmetry matches.
-    	if ( result != null )
-    		return result;
-    	
+        RenderedModel result = this .symmetryModels .get( path );
+        // The cache does not care if the symmetry matches.
+        if ( result != null )
+            return result;
+
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         InputStream bytes = cl.getResourceAsStream( path );
 
         try {
-    		DocumentModel document = this .modelApp .loadDocument( bytes );
-    		// a RenderedModel that only creates panels
-    		document .setRenderedModel( new RenderedModel( symmetry ) 	 	 
-    		{
-				@Override
-    			protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
-				{
-					// For struts, we still want to find the zone, since we may need it to do
-					//   a well-behaved line-line intersection
-					AlgebraicVector offset = strut .getOffset();
-					if ( offset .isOrigin() )
-					    return; // should catch this earlier
-					Axis axis = getOrbitSource() .getAxis( offset );
-					if ( axis == null )
-						return; // this should only happen when using the bare Symmetry-based OrbitSource
-					
-					// This lets the Strut represent Lines better.
-					strut .setZoneVector( axis .normal() );
-				} 	 	 
+            DocumentModel document = this .modelApp .loadDocument( bytes );
+            // a RenderedModel that only creates panels
+            document .setRenderedModel( new RenderedModel( symmetry ) 	 	 
+            {
+                @Override
+                protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
+                {
+                    // For struts, we still want to find the zone, since we may need it to do
+                    //   a well-behaved line-line intersection
+                    AlgebraicVector offset = strut .getOffset();
+                    if ( offset .isOrigin() )
+                        return; // should catch this earlier
+                    Axis axis = getOrbitSource() .getAxis( offset );
+                    if ( axis == null )
+                        return; // this should only happen when using the bare Symmetry-based OrbitSource
 
-				@Override
-    			protected void resetAttributes(RenderedManifestation rm, 	 	 
-    					boolean justShape, Connector m) {} 	 	 
-    		} .withColorPanels( false ) ); 
-    		document .finishLoading( false, false );
+                    // This lets the Strut represent Lines better.
+                    strut .setZoneVector( axis .normal() );
+                } 	 	 
+
+                @Override
+                protected void resetAttributes(RenderedManifestation rm, 	 	 
+                        boolean justShape, Connector m) {} 	 	 
+            } .withColorPanels( false ) ); 
+            document .finishLoading( false, false );
             result = document .getRenderedModel();
             this .symmetryModels .put( path, result );
             return result;

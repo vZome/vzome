@@ -10,9 +10,12 @@ import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -62,6 +65,9 @@ import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.VsonExporter;
+import com.vzome.core.exporters2d.Java2dExporter;
+import com.vzome.core.exporters2d.Java2dSnapshot;
+import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
@@ -141,6 +147,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
 	private final FieldApplication kind;
 
+	private final Application app;
+
     public void addPropertyChangeListener( PropertyChangeListener listener )
     {
     	propertyChangeSupport .addPropertyChangeListener( listener );
@@ -165,6 +173,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	{
 		super();
 		this .kind = kind;
+        this .app = app;
 		this .field = kind .getField();
 		AlgebraicVector origin = this .field .origin( 3 );
 		this .originPoint = new FreePoint( origin );
@@ -1385,18 +1394,27 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
 	public Exporter3d getNaiveExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel currentSnapshot )
 	{
-        Exporter3d exporter = null;
-        if ( format.equals( "pov" ) )
-            exporter = new POVRayExporter( camera, colors, lights, currentSnapshot );
-        else if ( format.equals( "opengl" ) )
-        	exporter = new OpenGLExporter( camera, colors, lights, currentSnapshot );
+	    Exporter3d exporter = null;
+	    switch ( format ) {
 
-        boolean inArticleMode = (renderedModel != currentSnapshot);
-        if(exporter != null && exporter.needsManifestations() && inArticleMode ) {
-            throw new IllegalStateException("The " + format + " exporter can only operate on the current model, not article pages.");
+        case "pov":
+            exporter = new POVRayExporter( camera, colors, lights, currentSnapshot );
+            break;
+
+        case "opengl":
+            exporter = new OpenGLExporter( camera, colors, lights, currentSnapshot );
+            break;
+
+        default:
+            break;
         }
-        return exporter;
-    }
+
+	    boolean inArticleMode = (renderedModel != currentSnapshot);
+	    if ( exporter != null && exporter.needsManifestations() && inArticleMode ) {
+	        throw new IllegalStateException("The " + format + " exporter can only operate on the current model, not article pages.");
+	    }
+	    return exporter;
+	}
 
 	/*
 	 * These exporters fall in two categories: rendering and geometry.  The ones that support the currentSnapshot
@@ -1424,10 +1442,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 	
 	public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel mRenderedModel )
 	{
-        if ( format.equals( "partgeom" ) )
-        	return new PartGeometryExporter( camera, colors, lights, mRenderedModel, mSelection );
-        else
-        	return null;
+	    if ( format.equals( "partgeom" ) )
+	        return new PartGeometryExporter( camera, colors, lights, mRenderedModel, mSelection );
+	    else
+	        return null;
 	}
 
 	public LessonModel getLesson()
@@ -1438,16 +1456,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     @Override
     public void recordSnapshot( int id )
     {
-    	RenderedModel snapshot = ( renderedModel == null )? null : renderedModel .snapshot();
-    	if ( thumbnailLogger .isLoggable( Level.FINER ) )
-    		thumbnailLogger .finer( "recordSnapshot: " + id );
-    	numSnapshots = Math .max( numSnapshots, id + 1 );
-    	if ( id >= snapshots.length )
-    	{
-    		int newLength = Math .max( 2 * snapshots .length, numSnapshots );
-    		snapshots = Arrays .copyOf( snapshots, newLength );
-    	}
-    	snapshots[ id ] = snapshot;
+        RenderedModel snapshot = ( renderedModel == null )? null : renderedModel .snapshot();
+        if ( thumbnailLogger .isLoggable( Level.FINER ) )
+            thumbnailLogger .finer( "recordSnapshot: " + id );
+        numSnapshots = Math .max( numSnapshots, id + 1 );
+        if ( id >= snapshots.length )
+        {
+            int newLength = Math .max( 2 * snapshots .length, numSnapshots );
+            snapshots = Arrays .copyOf( snapshots, newLength );
+        }
+        snapshots[ id ] = snapshot;
     }
 
     @Override
@@ -1512,8 +1530,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     
     public void setSymmetrySystem( String name )
     {
-    	SymmetrySystem system = this .symmetrySystems .get( name );
-    	this .mEditorModel .setSymmetrySystem( system );
+        SymmetrySystem system = this .symmetrySystems .get( name );
+        this .mEditorModel .setSymmetrySystem( system );
     }
 
 	public FieldApplication getFieldApplication()
@@ -1533,6 +1551,24 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     
     public EditorModel getEditorModel()
     {
-    	return this .mEditorModel;
+        return this .mEditorModel;
+    }
+
+    public Java2dSnapshot capture2d( RenderedModel model, int height, int width, Camera camera, Lights lights,
+            boolean drawLines, boolean doLighting ) throws Exception
+    {
+        Java2dExporter captureSnapshot = new Java2dExporter();
+        Java2dSnapshot snapshot = captureSnapshot .render2d( model, camera, lights, height, width, drawLines, doLighting );
+        
+        return snapshot;
+    }
+
+    public void export2d( Java2dSnapshot snapshot, String format, File file, boolean doOutlines, boolean monochrome ) throws Exception
+    {
+        SnapshotExporter exporter = this .app .getSnapshotExporter( format );
+        // A try-with-resources block closes the resource even if an exception occurs
+        try ( Writer out = new FileWriter( file ) ) {
+            exporter .export( snapshot, out, doOutlines, monochrome );
+        }
     }
 }

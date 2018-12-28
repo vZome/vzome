@@ -1,14 +1,14 @@
 /*
  * Created on Jan 2, 2004
  */
-package org.vorthmann.zome.export.java2d;
+package com.vzome.core.exporters2d;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 
 
-public class PDFExporter extends SnapshotExporter {
-	
+public class PDFExporter extends SnapshotExporter
+{
 	// ---------- MIMIC NATIVE QUARTZ METHODS 
 
     @Override

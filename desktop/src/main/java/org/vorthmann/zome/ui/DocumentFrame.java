@@ -819,6 +819,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     String ext = command .substring( "capture." .length() );
                     actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
                 }
+                else if ( command .startsWith( "export.2d." ) ) {
+                    String ext = command .substring( "export.2d." .length() );
+                    actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
+                }
                 else if ( command .startsWith( "export." ) ) {
                     String ext = command .substring( "export." .length() );
                     switch ( ext ) {

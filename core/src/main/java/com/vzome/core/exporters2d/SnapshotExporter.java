@@ -1,7 +1,7 @@
 /*
  * Created on Jan 2, 2004
  */
-package org.vorthmann.zome.export.java2d;
+package com.vzome.core.exporters2d;
 
 import java.awt.Color;
 import java.awt.geom.GeneralPath;
@@ -12,10 +12,8 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
-import org.vorthmann.zome.export.java2d.Java2dSnapshot.LineSegment;
-import org.vorthmann.zome.export.java2d.Java2dSnapshot.Polygon;
 
 
 /**
@@ -79,7 +77,7 @@ public abstract class SnapshotExporter {
 		}
 	}
 	
-	public void export( Java2dSnapshot snapshot, Writer writer )
+	public void export( Java2dSnapshot snapshot, Writer writer, boolean doOutlines, boolean monochrome )
 	{
         XY_FORMAT .setGroupingUsed( false );
         XY_FORMAT .setMaximumFractionDigits( 2 );
@@ -87,25 +85,26 @@ public abstract class SnapshotExporter {
 
 		output = new CountingPrintWriter( writer );
 		Rectangle2D rect = snapshot .getRect();
-		height = (float) rect .getHeight();
-		width = (float) rect .getWidth();
-		
+		this .height = (float) rect .getHeight();
+		this .width = (float) rect .getWidth();
+
+        List<Java2dSnapshot.LineSegment> lines = snapshot .getLines();
+
 		float strokeWidth = snapshot .getStrokeWidth();
+		if ( ! snapshot .isLineDrawing() && ! doOutlines )
+		    strokeWidth = -1f;
 		outputPrologue( snapshot .getRect(), strokeWidth );
 		
 		Color bgColor = snapshot .getBackgroundColor();
 		if ( bgColor != null )
 			outputBackground( bgColor );
 		
-        Iterator<LineSegment> lines = snapshot .getLines();
-        if ( lines .hasNext() )
-            while ( lines .hasNext() ) {
-                Java2dSnapshot.LineSegment line = lines .next();
-                outputLine( line, snapshot .isMonochrome() );
+        if ( ! lines .isEmpty() )
+            for ( Java2dSnapshot.LineSegment line : lines ) {
+                outputLine( line, monochrome );
             }
         else
-            for ( Iterator<Polygon> paths = snapshot .getPolygons(); paths .hasNext(); ){
-                Polygon polygon = paths .next();
+            for ( Java2dSnapshot.Polygon polygon : snapshot .getPolygons() ) {
                 outputPolygon( polygon, strokeWidth > 0 );
             }
 
