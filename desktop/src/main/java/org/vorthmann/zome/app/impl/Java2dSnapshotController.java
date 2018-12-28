@@ -151,7 +151,7 @@ public class Java2dSnapshotController extends DefaultController
     public void doFileAction( String command, File file )
     {
         try {
-            String format = command .substring( "export.2d." .length() ) .toLowerCase();
+            String format = command .substring( "export2d." .length() ) .toLowerCase();
             this .document .export2d( snapshot, format, file, this .outlinePanels, this .monochrome );
             openApplication( file );
         } catch ( Exception e ) {

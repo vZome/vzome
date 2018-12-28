@@ -101,7 +101,7 @@ public class Snapshot2dFrame extends JFrame
                 default:
                     break;
                 }
-                ActionListener delegate = new ControllerFileAction( mFileChooser, false, "export.2d."+tail, tail, controller );
+                ActionListener delegate = new ControllerFileAction( mFileChooser, false, "export2d."+tail, tail, controller );
                 delegate .actionPerformed( e );
             }
         });
@@ -132,33 +132,6 @@ public class Snapshot2dFrame extends JFrame
             }
         } );
         buttonPanel .add( formatsCombo );
-
-//        button = new JButton( "Save as PDF" );
-//        button .addActionListener( new ControllerFileAction( mFileChooser, false, "export.2d.pdf", "pdf", controller ) );
-//        button .setToolTipText( "Save a PDF file." );
-//        buttonPanel .add( button );
-//
-//        button = new JButton( "Save as PS" );
-//        button .addActionListener( new ControllerFileAction( mFileChooser, false, "export.2d.ps", "ps", controller ) );
-//        button .setToolTipText( "Save a PostScript file." );
-//        buttonPanel .add( button );
-//
-//        button = new JButton( "Save as SVG" );
-//        button .addActionListener( new ControllerFileAction( mFileChooser, false, "export.2d.svg", "svg", controller ) );
-//        button .setToolTipText( "Save an SVG file." );
-//        buttonPanel .add( button );
-
-//        setting = Boolean .valueOf( controller .getProperty( "lineDrawing" ) ) .booleanValue();
-//        checkbox = new JCheckBox( "line drawing", setting );
-//        checkbox .setActionCommand( "toggleLineDrawing" );
-//        checkbox.addActionListener( actions );        
-//        buttonPanel .add( checkbox );
-//
-//        setting = Boolean .valueOf( controller .getProperty( "monochrome" ) ) .booleanValue();
-//        checkbox = new JCheckBox( "monochrome", setting );
-//        checkbox .setActionCommand( "toggleMonochrome" );
-//        checkbox.addActionListener( actions );        
-//        buttonPanel .add( checkbox );
 
         contentPane .add( buttonPanel, BorderLayout.NORTH );
         contentPane .add( snapshotPanel, BorderLayout.CENTER );
