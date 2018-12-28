@@ -818,6 +818,7 @@ public class DocumentController extends DefaultController implements Controller3
             			if(cmd.length == 2 ) {
             				switch (cmd[0]) {
         					case "capture":
+        					case "export2d":
         					case "export":
         						extension = cmd[1];
         						break;
@@ -872,10 +873,10 @@ public class DocumentController extends DefaultController implements Controller3
 //            {
 //                new ZomespaceExporter( file ) .exportArticle( document, colors, sceneLighting, getSaveXml(), getProperty( "edition" ), getProperty( "version" ) );
 //            } else
-            if ( command.startsWith( "export.2d." ) )
+            if ( command.startsWith( "export2d." ) )
             {
                 Dimension size = this .modelCanvas .getSize();              
-                String format = command .substring( "export.2d." .length() ) .toLowerCase();
+                String format = command .substring( "export2d." .length() ) .toLowerCase();
                 Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
                 documentModel .export2d( snapshot, format, file, true, false );
                 this .openApplication( file );
