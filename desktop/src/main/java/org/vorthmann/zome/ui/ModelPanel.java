@@ -187,12 +187,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                     button.setRolloverEnabled( true );
 
                     String fieldName = controller.getProperty( "field.name" );
-                    if ( "golden" .equals( fieldName ) ) {
-                        button = makeLegacyEditButton( enabler, "icosasymm-golden", "Repeat selection with chiral icosahedral symmetry" );
-                        oldToolBar.add( button );
-                        button.setRolloverEnabled( true );
-                    } else if ( "snubDodec" .equals( fieldName ) ) {
-                        button = makeLegacyEditButton( enabler, "icosasymm-snubDodec", "Repeat selection with chiral icosahedral symmetry" );
+                    if ( "golden" .equals( fieldName ) || "snubDodec" .equals( fieldName ) ) {
+                        button = makeLegacyEditButton( enabler, "icosasymm", "Repeat selection with chiral icosahedral symmetry" );
                         oldToolBar.add( button );
                         button.setRolloverEnabled( true );
                     } else {
@@ -346,7 +342,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         else if ( imageName .endsWith( "-golden" ) )
             imageName = command .substring( 0, command.length() - 7 );
         AbstractButton button = makeIconButton( tooltip, "/icons/" + imageName + "_on.png" );
-        button = enabler .setButtonAction( command, this .controller, button );
+        button = enabler .setButtonAction( command, this .controller .getSubController( "symmetry" ), button );
         Dimension dim = new Dimension( 100, 63 );
         button .setPreferredSize( dim );
         button .setMaximumSize( dim );
