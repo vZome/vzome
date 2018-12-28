@@ -48,6 +48,48 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     private static final Logger logger = Logger.getLogger( "com.vzome.core.render.RenderedModel" );
 
+    private static final class SymmetryOrbitSource implements OrbitSource
+    {
+        private final Symmetry symmetry;
+
+        private final OrbitSet orbits;
+
+        private SymmetryOrbitSource( Symmetry symmetry )
+        {
+            this.symmetry = symmetry;
+            orbits = new OrbitSet( symmetry );
+        }
+
+        @Override
+        public Color getColor( Direction orbit )
+        {
+            return new Color( 128, 123, 128 );
+        }
+
+        @Override
+        public Axis getAxis( AlgebraicVector vector )
+        {
+            return symmetry .getAxis( vector );
+        }
+
+        @Override
+        public OrbitSet getOrbits()
+        {
+            return orbits;
+        }
+
+        @Override
+        public Shapes getShapes() {
+            return null;
+        }
+
+        @Override
+        public Symmetry getSymmetry()
+        {
+            return symmetry;
+        }
+    }
+
     public interface OrbitSource
     {
     	Symmetry getSymmetry();
@@ -71,39 +113,13 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     public RenderedModel( final Symmetry symmetry )
     {
-    	this( symmetry .getField(), new OrbitSource()
-    	{
-        	private final OrbitSet orbits = new OrbitSet( symmetry );
-        	
-            @Override
-			public Color getColor( Direction orbit )
-			{
-				return new Color( 128, 123, 128 );
-			}
-			
-            @Override
-			public Axis getAxis( AlgebraicVector vector )
-			{
-				return symmetry .getAxis( vector );
-			}
-
-			@Override
-			public OrbitSet getOrbits()
-			{
-				return orbits;
-			}
-
-			@Override
-			public Shapes getShapes() {
-				return null;
-			}
-
-			@Override
-			public Symmetry getSymmetry()
-			{
-				return symmetry;
-			}
-		});
+        this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
+    }
+    
+    public RenderedModel( final Symmetry symmetry, boolean enabled )
+    {
+        this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
+        this .enabled = enabled;
     }
     
     public RenderedModel( final AlgebraicField field, boolean enabled )
@@ -493,7 +509,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     public RenderedModel snapshot()
     {
-        RenderedModel snapshot = new RenderedModel( this .field, false );
+        RenderedModel snapshot = new RenderedModel( this .orbitSource .getSymmetry(), false );
         for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
             copy .setModel( this );
