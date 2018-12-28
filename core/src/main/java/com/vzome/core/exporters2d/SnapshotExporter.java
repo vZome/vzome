@@ -77,7 +77,7 @@ public abstract class SnapshotExporter {
 		}
 	}
 	
-	public void export( Java2dSnapshot snapshot, Writer writer )
+	public void export( Java2dSnapshot snapshot, Writer writer, boolean doOutlines, boolean monochrome )
 	{
         XY_FORMAT .setGroupingUsed( false );
         XY_FORMAT .setMaximumFractionDigits( 2 );
@@ -87,9 +87,11 @@ public abstract class SnapshotExporter {
 		Rectangle2D rect = snapshot .getRect();
 		this .height = (float) rect .getHeight();
 		this .width = (float) rect .getWidth();
-		
+
+        List<Java2dSnapshot.LineSegment> lines = snapshot .getLines();
+
 		float strokeWidth = snapshot .getStrokeWidth();
-		if ( ! snapshot .isLineDrawing() && ! snapshot .isDoOutlines() )
+		if ( ! snapshot .isLineDrawing() && ! doOutlines )
 		    strokeWidth = -1f;
 		outputPrologue( snapshot .getRect(), strokeWidth );
 		
@@ -97,10 +99,9 @@ public abstract class SnapshotExporter {
 		if ( bgColor != null )
 			outputBackground( bgColor );
 		
-        List<Java2dSnapshot.LineSegment> lines = snapshot .getLines();
         if ( ! lines .isEmpty() )
             for ( Java2dSnapshot.LineSegment line : lines ) {
-                outputLine( line, snapshot .isMonochrome() );
+                outputLine( line, monochrome );
             }
         else
             for ( Java2dSnapshot.Polygon polygon : snapshot .getPolygons() ) {

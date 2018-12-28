@@ -55,7 +55,7 @@ import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.exporters.Exporter3d;
-import com.vzome.core.exporters2d.Java2dExporter;
+import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -105,7 +105,7 @@ public class DocumentController extends DefaultController implements Controller3
     private boolean drawNormals = false;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
-    private Java2dSnapshotController mSnapshot = null;
+    private Java2dSnapshotController java2dController = null;
     private CameraController cameraController;
     private final ApplicationController mApp;
 
@@ -585,8 +585,7 @@ public class DocumentController extends DefaultController implements Controller3
 
             else if ( action.equals( "refresh.2d" ) )
             {
-                Java2dExporter exporter = new Java2dExporter( cameraController.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
-                this .mSnapshot .setExporter( exporter );
+                this .java2dController .setScene( cameraController.getView(), this.sceneLighting, this.currentSnapshot );
             }
 
             else if ( action.startsWith( "setStyle." ) )
@@ -877,7 +876,8 @@ public class DocumentController extends DefaultController implements Controller3
             {
                 Dimension size = this .modelCanvas .getSize();              
                 String format = command .substring( "export.2d." .length() ) .toLowerCase();
-                documentModel .export2d( format, currentSnapshot, file, size.height, size.width, cameraController .getView(), sceneLighting, drawOutlines );
+                Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
+                documentModel .export2d( snapshot, format, file, true, false );
                 this .openApplication( file );
                 return;
             }
@@ -1244,12 +1244,11 @@ public class DocumentController extends DefaultController implements Controller3
             return symmetryController;
         
         case "snapshot.2d": {
-            if ( mSnapshot == null ) {
-                Java2dExporter exporter = new Java2dExporter( cameraController.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
-                mSnapshot = new Java2dSnapshotController( exporter );
-                mSnapshot .setNextController( this );
+            if ( java2dController == null ) {
+                java2dController = new Java2dSnapshotController( this .documentModel, cameraController.getView(), this.sceneLighting, this.currentSnapshot );
+                java2dController .setNextController( this );
             }
-            return mSnapshot;
+            return java2dController;
         }
 
         default:

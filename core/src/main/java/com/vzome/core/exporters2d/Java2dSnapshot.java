@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,11 +13,9 @@ import javax.vecmath.Vector3f;
 
 public class Java2dSnapshot
 {
-    private boolean showBackground = false, monochrome = true, lineDrawing = false, doLighting = true, doOutlines = true;
+    private List<Polygon> polygons = new ArrayList<>();
 
-    private List<Polygon> polygons;
-
-    private List<LineSegment> lines;
+    private List<LineSegment> lines = new ArrayList<>();
 
     private Rectangle2D mRect;
 
@@ -24,25 +23,14 @@ public class Java2dSnapshot
 
     private Color backgroundColor;
 
-    public Java2dSnapshot( List<Polygon> mPolygons, List<LineSegment> mLines )
-    {
-        this.polygons = mPolygons;
-        this.lines = mLines;
-    }
-
     public Color getBackgroundColor()
     {
         return this .backgroundColor;
     }
 
-    public boolean isMonochrome()
-    {
-        return this .monochrome;
-    }
-
     public boolean isLineDrawing()
     {
-        return this .lineDrawing;
+        return ! this .lines .isEmpty();
     }
 
     public void addPolygon( Polygon polygon )
@@ -57,18 +45,13 @@ public class Java2dSnapshot
     
     public void depthSort()
     {
-        if ( this .lineDrawing )
+        if ( this .isLineDrawing() )
             Collections .sort( this .lines );
             // TODO eliminate duplicates
         else
             Collections .sort( this .polygons );
     }
     
-    public boolean hasLighting()
-    {
-        return this .doLighting;
-    }
-
     public void setRect( Rectangle2D rect )
     {
         this .mRect = rect;
@@ -92,21 +75,6 @@ public class Java2dSnapshot
     public Dimension getDimension()
     {
         return new Dimension( (int) this .mRect .getWidth(), (int) this .mRect .getHeight() ) ;
-    }
-
-    public boolean showBackground()
-    {
-        return this .showBackground;
-    }
-
-    public boolean isDoOutlines()
-    {
-        return doOutlines;
-    }
-
-    public void setDoOutlines( boolean doOutlines )
-    {
-        this.doOutlines = doOutlines;
     }
 
     public List<LineSegment> getLines()
@@ -232,40 +200,10 @@ public class Java2dSnapshot
         }
     }
 
-    public void toggleBackground()
-    {
-        this .showBackground = ! this .showBackground;
-    }
-
-    public void toggleLineDrawing()
-    {
-        this.setLineDrawing( ! this .isLineDrawing() );
-    }
-
-    public void toggleMonochrome()
-    {
-        this.setMonochrome( ! this .isMonochrome() );
-    }
-
-    public void setMonochrome( boolean monochrome )
-    {
-        this .monochrome = monochrome;
-    }
-
     public void clear()
     {
         this .lines .clear();
         this .polygons .clear();
-    }
-
-    public void setDoLighting( boolean doLighting )
-    {
-        this .doLighting = doLighting;
-    }
-
-    public void setLineDrawing( boolean lineDrawing )
-    {
-        this.lineDrawing = lineDrawing;
     }
 
     public void setBackgroundColor( Color backgroundColor )

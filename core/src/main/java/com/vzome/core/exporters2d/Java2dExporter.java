@@ -2,8 +2,6 @@ package com.vzome.core.exporters2d;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +13,11 @@ import javax.vecmath.Vector4f;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.Polyhedron.Face;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Camera;
@@ -29,30 +25,22 @@ import com.vzome.core.viewing.Lights;
 
 
 /**
- * An Exporter3d that builds a Java2dSnapshot, for use in rendering to a Snapshot2dPanel
+ * Builds a Java2dSnapshot, for use in rendering to a Snapshot2dPanel
  * or exporting via a SnapshotExporter.
  * @author vorth
  */
-public class Java2dExporter extends Exporter3d
+public class Java2dExporter
 {
-	private final Vector3f[] lightDirs = new Vector3f[3];
-	private final Color[] lightColors = new Color[3];
-	private final Color ambientLight;
-	private final Matrix4d viewTransform;
-    private final Matrix4d eyeTrans;
-    
-    private Java2dSnapshot mSnapshot;
-
-    /**
-     * @param v[]
-     * @param colors
-     * @param lights
-     * @param model
-     */
-    public Java2dExporter( Camera view, Colors colors, Lights lights, RenderedModel model )
-    {
-        super( view, colors, lights, model );
+	private transient Matrix4d viewTransform, eyeTrans;
         
+    public Java2dSnapshot render2d( RenderedModel model, Camera view, Lights lights, int height, int width, boolean drawLines, boolean doLighting ) throws Exception
+    {
+        Vector3f[] lightDirs = new Vector3f[ lights .size() ];
+        Color[] lightColors = new Color[ lights .size() ];
+        Color ambientLight;
+        Color background;
+        Java2dSnapshot snapshot = new Java2dSnapshot();
+
         this .viewTransform = new Matrix4d();
         view .getViewTransform( this .viewTransform, 0d );
         
@@ -67,42 +55,36 @@ public class Java2dExporter extends Exporter3d
         for ( int i = 0; i < lightDirs.length; i++ ) {
             lightDirs[ i ] = new Vector3f();
             // the next line fills in the direction, as well as returning the color... bad style!
-            lightColors[ i ] = new Color( mLights .getDirectionalLight( i, lightDirs[ i ] ) .getRGB() );
+            lightColors[ i ] = new Color( lights .getDirectionalLight( i, lightDirs[ i ] ) .getRGB() );
             // the lights stay fixed relative to the viewpoint, so we must not apply the view transform
             lightDirs[ i ] .normalize();
             lightDirs[ i ] .negate();
         }
-        ambientLight = new Color( mLights .getAmbientColor() .getRGB() );
+        ambientLight = new Color( lights .getAmbientColor() .getRGB() );
 
-    }
-    
-    public void setSnapshot( Java2dSnapshot snapshot )
-    {
-        this.mSnapshot = snapshot;
-    }
+        float[] rgb = new float[3];
+        lights .getBackgroundColor() .getRGBColorComponents( rgb );
+        background = new Color( rgb[0], rgb[1], rgb[2] );
 
-    @Override
-    public void doExport( File directory, Writer writer, int height, int width ) throws Exception
-    {
-        mSnapshot .setStrokeWidth( 0.5f );
-        mSnapshot .setRect( new Rectangle2D.Float( 0f, 0f, width, height ) );
+        snapshot .setStrokeWidth( 0.5f );
+        snapshot .setRect( new Rectangle2D.Float( 0f, 0f, width, height ) );
         
-        mSnapshot .setBackgroundColor( this .getBackgroundColor() );
+        snapshot .setBackgroundColor( background );
 
         List<Vector3f> mappedVertices = new ArrayList<>( 60 );
-        for (RenderedManifestation rm : mModel) {
+        for (RenderedManifestation rm : model) {
             Polyhedron shape = rm .getShape();
             com.vzome.core.render.Color c = rm .getColor();
             Color color = (c == null)? Color.WHITE : new Color( c .getRGB() );
             
-            if ( mSnapshot .isLineDrawing() ) {
+            if ( drawLines ) {
                 Manifestation m = rm .getManifestation();
                 if ( m instanceof Strut ) {
                     AlgebraicVector start = ((Strut) m) .getLocation();
                     AlgebraicVector end = ((Strut) m) .getEnd();
-                    Vector3f v0 = mapCoordinates( mModel .renderVector( start ), height, width );
-                    Vector3f v1 = mapCoordinates( mModel .renderVector( end ), height, width );
-                    mSnapshot .addLineSegment( color, v0, v1 );
+                    Vector3f v0 = mapCoordinates( model .renderVector( start ), height, width );
+                    Vector3f v1 = mapCoordinates( model .renderVector( end ), height, width );
+                    snapshot .addLineSegment( color, v0, v1 );
                 }
                 continue;
             }
@@ -120,7 +102,7 @@ public class Java2dExporter extends Exporter3d
             {
                 AlgebraicVector gv = vertices .get( i );
                 gv = partOrientation .timesColumn( gv );
-                RealVector rv = location .plus( mModel .renderVector( gv ) );
+                RealVector rv = location .plus( model .renderVector( gv ) );
                 Vector3f v = mapCoordinates( rv, height, width );
                 mappedVertices .add( v );
             }
@@ -159,20 +141,21 @@ public class Java2dExporter extends Exporter3d
                 path .close();
                 if ( ! backFacing )
                 {
-                    if ( mSnapshot .hasLighting() ) {
+                    if ( doLighting ) {
                         AlgebraicVector faceNormal = partOrientation .timesColumn( face .getNormal() );
-                        RealVector normal = mModel .renderVector( faceNormal ) .normalize();
+                        RealVector normal = model .renderVector( faceNormal ) .normalize();
                         Vector3f normalV = new Vector3f( (float) normal.x, (float) normal.y, (float) normal.z );
                         this .viewTransform .transform( normalV );
                         
-                        path .applyLighting( normalV, this .lightDirs, this .lightColors, this .ambientLight );
+                        path .applyLighting( normalV, lightDirs, lightColors, ambientLight );
                     }
-                    mSnapshot .addPolygon( path );
+                    snapshot .addPolygon( path );
                 }
             }        
         }
 
-        mSnapshot .depthSort();  // TODO could do more here than just "painter's algorithm"
+        snapshot .depthSort();  // TODO could do more here than just "painter's algorithm"
+        return snapshot;
     }
     
 
@@ -289,19 +272,6 @@ public class Java2dExporter extends Exporter3d
         vr.y = ( height - ( width * vr.y) ) / 2f;
         
         return new Vector3f( vr.x, vr.y, vr.z );
-    }
-
-    @Override
-    public String getFileExtension()
-    {
-        return "java2d";  // this should never get called
-    }
-
-    public Color getBackgroundColor()
-    {
-        float[] rgb = new float[3];
-        this .mLights .getBackgroundColor() .getRGBColorComponents( rgb );
-        return new Color( rgb[0], rgb[1], rgb[2] );
     }
 }
 

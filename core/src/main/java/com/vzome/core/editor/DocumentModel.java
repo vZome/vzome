@@ -1456,16 +1456,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     @Override
     public void recordSnapshot( int id )
     {
-    	RenderedModel snapshot = ( renderedModel == null )? null : renderedModel .snapshot();
-    	if ( thumbnailLogger .isLoggable( Level.FINER ) )
-    		thumbnailLogger .finer( "recordSnapshot: " + id );
-    	numSnapshots = Math .max( numSnapshots, id + 1 );
-    	if ( id >= snapshots.length )
-    	{
-    		int newLength = Math .max( 2 * snapshots .length, numSnapshots );
-    		snapshots = Arrays .copyOf( snapshots, newLength );
-    	}
-    	snapshots[ id ] = snapshot;
+        RenderedModel snapshot = ( renderedModel == null )? null : renderedModel .snapshot();
+        if ( thumbnailLogger .isLoggable( Level.FINER ) )
+            thumbnailLogger .finer( "recordSnapshot: " + id );
+        numSnapshots = Math .max( numSnapshots, id + 1 );
+        if ( id >= snapshots.length )
+        {
+            int newLength = Math .max( 2 * snapshots .length, numSnapshots );
+            snapshots = Arrays .copyOf( snapshots, newLength );
+        }
+        snapshots[ id ] = snapshot;
     }
 
     @Override
@@ -1530,8 +1530,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     
     public void setSymmetrySystem( String name )
     {
-    	SymmetrySystem system = this .symmetrySystems .get( name );
-    	this .mEditorModel .setSymmetrySystem( system );
+        SymmetrySystem system = this .symmetrySystems .get( name );
+        this .mEditorModel .setSymmetrySystem( system );
     }
 
 	public FieldApplication getFieldApplication()
@@ -1551,24 +1551,24 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     
     public EditorModel getEditorModel()
     {
-    	return this .mEditorModel;
+        return this .mEditorModel;
     }
 
-    public void export2d( String format, RenderedModel model, File file, int height, int width, Camera camera, Lights lights, boolean drawOutlines ) throws Exception
+    public Java2dSnapshot capture2d( RenderedModel model, int height, int width, Camera camera, Lights lights,
+            boolean drawLines, boolean doLighting ) throws Exception
+    {
+        Java2dExporter captureSnapshot = new Java2dExporter();
+        Java2dSnapshot snapshot = captureSnapshot .render2d( model, camera, lights, height, width, drawLines, doLighting );
+        
+        return snapshot;
+    }
+
+    public void export2d( Java2dSnapshot snapshot, String format, File file, boolean doOutlines, boolean monochrome ) throws Exception
     {
         SnapshotExporter exporter = this .app .getSnapshotExporter( format );
-        Java2dSnapshot snapshot = new Java2dSnapshot( new ArrayList<>(), new ArrayList<>() );
-        snapshot .setDoLighting( true );
-        snapshot .setDoOutlines( true );
-        snapshot .setLineDrawing( false );
-
-        Java2dExporter captureSnapshot = new Java2dExporter( camera, null, lights, model );
-        captureSnapshot .setSnapshot( snapshot );
-        captureSnapshot .doExport( new File(""), null, null, height, width );
-
         // A try-with-resources block closes the resource even if an exception occurs
-        try (Writer out = new FileWriter( file )) {
-            exporter .export( snapshot, out );
+        try ( Writer out = new FileWriter( file ) ) {
+            exporter .export( snapshot, out, doOutlines, monochrome );
         }
     }
 }
