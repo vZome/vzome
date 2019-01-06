@@ -11,6 +11,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -578,4 +579,25 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	{
 		return this .orbitSource .getSymmetry();
 	}
+
+	public double measureDistanceCm( Connector p1, Connector p2 )
+	{
+		RealVector offset = this .renderVector( p1 .getLocation() .minus( p2 .getLocation() ) );
+		double distance = offset .length();
+		return distance * Exporter3d.RZOME_CM_SCALING;
+	}
+
+	public double measureDihedralAngle( Panel p1, Panel p2 )
+	{
+        RealVector n1 = p1 .getNormal( this .getEmbedding() );
+        RealVector n2 = p2 .getNormal( this .getEmbedding() );
+        return Math.acos( n1 .dot( n2 ) / ( n1 .length() * n2 .length() ) );
+	}
+
+    public double measureAngle( Strut p1, Strut p2 )
+    {
+        RealVector n1 = this .renderVector( p1 .getOffset() );
+        RealVector n2 = this .renderVector( p2 .getOffset() );
+        return Math.acos( n1 .dot( n2 ) / ( n1 .length() * n2 .length() ) );
+    }
 }

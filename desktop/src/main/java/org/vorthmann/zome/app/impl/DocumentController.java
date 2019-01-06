@@ -219,7 +219,7 @@ public class DocumentController extends DefaultController implements Controller3
         };
         this .documentModel .addSelectionListener( selectionRendering );
         
-        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel() ) );
+        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel(), this .documentModel .getRenderedModel() ) );
 
         this .articleChanges = new PropertyChangeListener()
         {   
