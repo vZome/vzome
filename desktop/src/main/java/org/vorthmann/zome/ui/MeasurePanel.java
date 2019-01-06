@@ -34,7 +34,7 @@ public class MeasurePanel extends JPanel
         measureTable .getTableHeader() .setReorderingAllowed( false );
         measureTable .getTableHeader() .setBackground( Color.lightGray );
         TableColumn column = measureTable .getColumnModel() .getColumn( 0 );
-        column .setMaxWidth( 150 );
+        column .setPreferredWidth( 150 );
         JScrollPane scroller = new JScrollPane( measureTable );
 
         super.add( scroller );
