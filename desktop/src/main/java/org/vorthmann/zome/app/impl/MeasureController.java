@@ -134,11 +134,16 @@ public class MeasureController extends DefaultController implements SelectionSum
 
 	private void reportAngles( double radians )
 	{
-	    double fraction = radians / Math.PI;
-        double supplement = 1.0 - fraction;
-		this .measurements .put( "radians", fourPlaces .format( fraction ) + "\u03C0" );
-        this .measurements .put( "radians (supplement)", fourPlaces .format( supplement ) + "\u03C0" );
-        this .measurements .put( "degrees", twoPlaces .format( fraction * 180 ) + "\u00B0" );
-        this .measurements .put( "degrees (supplement)", twoPlaces .format( supplement * 180 ) + "\u00B0" );
+	    if(Double.isFinite(radians)) {
+    	    double fraction = radians / Math.PI;
+            double supplement = 1.0 - fraction;
+    		this .measurements .put( "radians", fourPlaces .format( fraction ) + "\u03C0" );
+            this .measurements .put( "radians (supplement)", fourPlaces .format( supplement ) + "\u03C0" );
+            this .measurements .put( "degrees", twoPlaces .format( fraction * 180 ) + "\u00B0" );
+            this .measurements .put( "degrees (supplement)", twoPlaces .format( supplement * 180 ) + "\u00B0" );
+	    } else {
+	        // This shouldn't happen, but if it does, at least we get a visual clue
+            this .measurements .put( "angle", Double.toString(radians) );
+	    }
 	}
 }
