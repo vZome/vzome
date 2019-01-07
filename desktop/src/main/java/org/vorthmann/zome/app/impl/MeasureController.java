@@ -1,10 +1,15 @@
 package org.vorthmann.zome.app.impl;
 
 import java.text.NumberFormat;
-import java.util.TreeMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.vorthmann.ui.DefaultController;
 
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.Manifestations;
 import com.vzome.core.editor.Selection;
@@ -18,9 +23,8 @@ public class MeasureController extends DefaultController implements SelectionSum
 {
 	private final Selection selection;
 	
-	private final TreeMap<String, String> measurements = new TreeMap<>();
-	
-	private static final String[] EMPTY = new String[] {};
+	// LinkedHashMap preserves insertion order rather than auto-sorting
+	private final Map<String, String> measurements = new LinkedHashMap<>();
 	
 	private final RenderedModel renderedModel;
 
@@ -39,7 +43,7 @@ public class MeasureController extends DefaultController implements SelectionSum
 	@Override
 	public String[] getCommandList( String listName )
 	{
-		return this .measurements .keySet() .toArray( EMPTY );
+		return this .measurements .keySet() .toArray( new String[this .measurements .keySet().size()] );
 	}
 
 	@Override
@@ -51,60 +55,81 @@ public class MeasureController extends DefaultController implements SelectionSum
 	@Override
 	public void selectionChanged( int total, int balls, int struts, int panels )
 	{
-		boolean newMeasurements = false;
-
-		if ( total == 2 && panels == 2 )
-		{
-			this .measurements .clear();
-			Panel p1 = null, p2 = null;
-			for ( Panel panel : Manifestations.getPanels( this .selection ) ) {
-				if ( p1 == null )
-					p1 = panel;
-				else
-					p2 = panel;
-			}
-			double radians = this .renderedModel .measureDihedralAngle( p1, p2 );
-			this .reportAngles( radians );
-			newMeasurements = true;
-		}
-		else if ( total == 2 && struts == 2 )
-		{
-			this .measurements .clear();
-	        Strut p1 = null, p2 = null;
-	        for ( Strut strut : Manifestations.getStruts( this .selection ) ) {
-	            if ( p1 == null )
-	                p1 = strut;
-	            else
-	                p2 = strut;
+        this .measurements .clear();
+	    if( total != 0 ) {
+	        if(balls != 0) {
+	            this .measurements .put( "balls", Integer.toString(balls) );
 	        }
-            double radians = this .renderedModel .measureAngle( p1, p2 );
-            this .reportAngles( radians );
-			newMeasurements = true;
-		}
-		else if ( total == 2 && balls == 2 )
-		{
-			this .measurements .clear();
-			Connector p1 = null, p2 = null;
-			for ( Connector conn : Manifestations.getConnectors( this .selection ) ) {
-				if ( p1 == null )
-					p1 = conn;
-				else
-					p2 = conn;
-			}
-			double cm = this .renderedModel .measureDistanceCm( p1, p2 );
-			this .measurements .put( "distance (cm)", twoPlaces .format( cm ) + " cm" );
-			double in = cm / 2.54;
-			this .measurements .put( "distance (in)", twoPlaces .format( in ) + " in" );
-			newMeasurements = true;
-		}
-		else if ( this .measurements .size() != 0 )
-		{
-			this .measurements .clear();
-			newMeasurements = true;
-		}
-		
-		if ( newMeasurements )
-			this .properties() .firePropertyChange( "measures", false, true );
+	        if(struts != 0) {
+	            this .measurements .put( "struts", Integer.toString(struts) );
+	        }
+	        if(panels != 0) {
+	            this .measurements .put( "panels", Integer.toString(panels) );
+	        }
+	        
+	        if( total == 1 || total == 2 ) {
+	            this .measurements .put( "", "" ); // visual separator
+	        }
+            
+            if( total == 1 ) {
+                if( panels == 1 ) {
+                    Panel panel = Manifestations.getPanels( this .selection ).next();
+                    this .measurements .put( "vertices", Integer.toString(panel.getVertexCount()) );
+                } else if ( struts == 1 ) {
+                    Strut strut = Manifestations.getStruts( this .selection ).next();
+                    double cm = this .renderedModel .measureLengthCm( strut );
+                    this .measurements .put( "length (cm)", twoPlaces .format( cm ) + " cm" );
+                    double in = cm / 2.54;
+                    this .measurements .put( "length (in)", twoPlaces .format( in ) + " in" );
+                } else if ( balls == 1 ) {
+                    Connector conn = Manifestations.getConnectors( this .selection ).next();
+                    this .measurements .put( "location", conn.getLocation().toString());
+                }
+            } else if( total == 2 ) {
+        		if( panels == 2 ) {
+        			Panel p1 = null, p2 = null;
+        			for ( Panel panel : Manifestations.getPanels( this .selection ) ) {
+        				if ( p1 == null )
+        					p1 = panel;
+        				else
+        					p2 = panel;
+        			}
+        			double radians = this .renderedModel .measureDihedralAngle( p1, p2 );
+        			this .reportAngles( radians );
+        		} else if ( struts == 2 ) {
+        	        Strut s1 = null, s2 = null;
+        	        for ( Strut strut : Manifestations.getStruts( this .selection ) ) {
+        	            if ( s1 == null )
+        	                s1 = strut;
+        	            else
+        	                s2 = strut;
+        	        }
+                    Set<AlgebraicVector> points = new HashSet<>();
+                    points.add(s1.getLocation());
+                    points.add(s1.getEnd());
+                    points.add(s2.getLocation());
+                    points.add(s2.getEnd());
+                    if(points.size() > 3) {
+                        this .measurements .put( "coplanar", AlgebraicVectors.areCoplanar(points) ? "yes" : "no" );
+                    }
+                    double radians = this .renderedModel .measureAngle( s1, s2 );
+                    this .reportAngles( radians );
+        		} else if ( balls == 2 ) {
+        			Connector b1 = null, b2 = null;
+        			for ( Connector conn : Manifestations.getConnectors( this .selection ) ) {
+        				if ( b1 == null )
+        					b1 = conn;
+        				else
+        					b2 = conn;
+        			}
+        			double cm = this .renderedModel .measureDistanceCm( b1, b2 );
+        			this .measurements .put( "distance (cm)", twoPlaces .format( cm ) + " cm" );
+        			double in = cm / 2.54;
+        			this .measurements .put( "distance (in)", twoPlaces .format( in ) + " in" );
+        		}
+            }
+        }
+		this .properties() .firePropertyChange( "measures", false, true );
 	}
 
 	private void reportAngles( double radians )

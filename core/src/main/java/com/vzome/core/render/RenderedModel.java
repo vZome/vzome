@@ -580,12 +580,20 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		return this .orbitSource .getSymmetry();
 	}
 
-	public double measureDistanceCm( Connector p1, Connector p2 )
-	{
-		RealVector offset = this .renderVector( p1 .getLocation() .minus( p2 .getLocation() ) );
-		double distance = offset .length();
-		return distance * Exporter3d.RZOME_CM_SCALING;
-	}
+    public double measureDistanceCm( Connector c1, Connector c2 )
+    {
+        return measureLengthCm( renderVector( c1 .getLocation() .minus( c2 .getLocation() ) ) );
+    }
+
+    public static double measureLengthCm( RealVector rv )
+    {
+        return rv.length() * Exporter3d.RZOME_CM_SCALING;
+    }
+
+    public double measureLengthCm( Strut strut )
+    {
+        return measureLengthCm( this .renderVector( strut .getOffset() ) );
+    }
 
 	public double measureDihedralAngle( Panel p1, Panel p2 )
 	{
@@ -594,10 +602,10 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         return Math.acos( n1 .dot( n2 ) / ( n1 .length() * n2 .length() ) );
 	}
 
-    public double measureAngle( Strut p1, Strut p2 )
+    public double measureAngle( Strut s1, Strut s2 )
     {
-        RealVector n1 = this .renderVector( p1 .getOffset() );
-        RealVector n2 = this .renderVector( p2 .getOffset() );
+        RealVector n1 = this .renderVector( s1 .getOffset() );
+        RealVector n2 = this .renderVector( s2 .getOffset() );
         return Math.acos( n1 .dot( n2 ) / ( n1 .length() * n2 .length() ) );
     }
 }
