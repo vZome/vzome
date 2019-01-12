@@ -580,24 +580,55 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		return this .orbitSource .getSymmetry();
 	}
 
-	public double measureDistanceCm( Connector p1, Connector p2 )
-	{
-		RealVector offset = this .renderVector( p1 .getLocation() .minus( p2 .getLocation() ) );
-		double distance = offset .length();
-		return distance * Exporter3d.RZOME_CM_SCALING;
-	}
+    public double measureDistanceCm( Connector c1, Connector c2 )
+    {
+        return measureLengthCm( renderVector( c1 .getLocation() .minus( c2 .getLocation() ) ) );
+    }
+
+    public static double measureLengthCm( RealVector rv )
+    {
+        return rv.length() * Exporter3d.RZOME_CM_SCALING;
+    }
+
+    public double measureLengthCm( Strut strut )
+    {
+        return measureLengthCm( this .renderVector( strut .getOffset() ) );
+    }
 
 	public double measureDihedralAngle( Panel p1, Panel p2 )
 	{
-        RealVector n1 = p1 .getNormal( this .getEmbedding() );
-        RealVector n2 = p2 .getNormal( this .getEmbedding() );
-        return Math.acos( n1 .dot( n2 ) / ( n1 .length() * n2 .length() ) );
+        RealVector v1 = p1 .getNormal( this .getEmbedding() );
+        RealVector v2 = p2 .getNormal( this .getEmbedding() );
+        return safeAcos(v1, v2);
 	}
 
-    public double measureAngle( Strut p1, Strut p2 )
+    public double measureAngle( Strut s1, Strut s2 )
     {
-        RealVector n1 = this .renderVector( p1 .getOffset() );
-        RealVector n2 = this .renderVector( p2 .getOffset() );
-        return Math.acos( n1 .dot( n2 ) / ( n1 .length() * n2 .length() ) );
+        RealVector v1 = this .renderVector( s1 .getOffset() );
+        RealVector v2 = this .renderVector( s2 .getOffset() );
+        return safeAcos(v1, v2);
+    }
+    
+    /*
+     * The two struts in this VEF exemplify cosine being barely out of range:
+vZome VEF 6 field heptagon
+4
+(0,0,0) (-1,3,-2) (2,-1,2) (1,2,0)
+(0,0,0) (0,2,-1) (2,-1,2) (0,0,0)
+(0,0,0) (2,-1,2) (0,2,-1) (0,0,0)
+(0,0,0) (1,2,0) (0,0,0) (1,2,0)
+2
+2 1
+3 0
+0
+0
+     */
+    public static double safeAcos(RealVector v1, RealVector v2) {
+        double cosine = v1 .dot( v2 ) / ( v1 .length() * v2 .length() );
+        // rounding errors can result in cosine being slightly outside the valid range 
+        // of -1 to +1 in which case Math.acos() returns NaN 
+        cosine = Math.min( 1.0d, cosine);
+        cosine = Math.max(-1.0d, cosine);
+        return Math.acos( cosine );
     }
 }
