@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
@@ -18,7 +17,6 @@ import com.vzome.core.commands.CommandTetrahedralSymmetry;
 import com.vzome.core.editor.AxialStretchTool;
 import com.vzome.core.editor.AxialSymmetryToolFactory;
 import com.vzome.core.editor.BookmarkTool;
-import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.IcosahedralToolFactory;
 import com.vzome.core.editor.InversionTool;
 import com.vzome.core.editor.LinearMapTool;
@@ -47,25 +45,23 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  * @author vorth
  *
  */
-public class SnubDodecFieldApplication implements FieldApplication
+public class SnubDodecFieldApplication extends DefaultFieldApplication
 {
-	private final AlgebraicField field = new SnubDodecField();
+	public SnubDodecFieldApplication()
+	{
+        super( new SnubDodecField() );
+        // TODO Auto-generated constructor stub
+    }
 
 	@Override
 	public String getName()
 	{
-		return this .field .getName();
-	}
-
-	@Override
-	public AlgebraicField getField()
-	{
-		return this .field;
+		return this .getField() .getName();
 	}
 
     private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()
     {
-        private final IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" )
+        private final IcosahedralSymmetry symmetry = new IcosahedralSymmetry( getField(), "solid connectors" )
         {
         	@Override
         	protected void createOtherOrbits()
@@ -100,12 +96,12 @@ public class SnubDodecFieldApplication implements FieldApplication
         };
         
         private final AbstractShapes defaultShapes = new ExportedVEFShapes( null, "default", "solid connectors", symmetry );
-    	private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", symmetry, defaultShapes );
-    	private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", symmetry );
+        private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", symmetry, defaultShapes );
+        private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", symmetry );
 
-    	private final Command icosasymm = new CommandSymmetry( symmetry );
-    	private final Command tetrasymm = new CommandTetrahedralSymmetry( symmetry );
-    	private final Command axialsymm = new CommandAxialSymmetry( symmetry );
+        private final Command icosasymm = new CommandSymmetry( symmetry );
+        private final Command tetrasymm = new CommandTetrahedralSymmetry( symmetry );
+        private final Command axialsymm = new CommandAxialSymmetry( symmetry );
 
 		@Override
 		public Symmetry getSymmetry()
@@ -266,10 +262,4 @@ public class SnubDodecFieldApplication implements FieldApplication
 	@Override
 	public void constructPolytope( String groupName, int index,
 			int edgesToRender, AlgebraicNumber[] edgeScales, Listener listener ) {}
-
-	@Override
-	public Command getLegacyCommand( String action )
-	{
-		return null;
-	}
 }
