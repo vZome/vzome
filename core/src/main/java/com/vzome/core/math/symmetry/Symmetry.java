@@ -18,10 +18,10 @@ import com.vzome.core.math.RealVector;
 public interface Symmetry extends Iterable<Direction>, Embedding
 {
 	public enum SpecialOrbit {
-	    BLUE,
-	    RED,
-	    YELLOW,
-	    BLACK
+	    BLUE,    // used for orbit dots
+	    RED,     // used for orbit dots and in RotationTool, for the default rotation axis
+	    YELLOW,  // used for orbit dots
+	    BLACK    // if defined, used for orbit finding in getAxis
     }
 
     int PLUS = Axis.PLUS, MINUS = Axis.MINUS;
@@ -83,4 +83,14 @@ public interface Symmetry extends Iterable<Direction>, Embedding
 	 * @return {@link AlgebraicMatrix}
 	 */
 	public abstract AlgebraicMatrix getPrincipalReflection();
+	
+	/**
+	 * Compute the orbit triangle dots for all existing orbits,
+	 * and leave behind an OrbitDotLocator for new ones.
+	 * The result is just a VEF string, for debugging.
+	 * @return
+	 */
+	public String computeOrbitDots();
+
+    public boolean reverseOrbitTriangle();
 }

@@ -14,10 +14,12 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
     // All vectors and matrices here were constructed and captured using the octahedral system.
     //  See https://www.dropbox.com/s/qvtp8tpy1roc8pp/symmetry-axis-study.vZome?dl=0
     //   or Dropbox/vZome/attachments/2018/05-May/09-Scott-kostick-symmetry/symmetry-axis-study.vZome
-    
+
     private static final int[][] FIVEFOLD_AXIS = new int[][]{ {-3,1, 0,1, -5,1, 0,1}, {3,1, 0,1, 5,1, 0,1}, {0,1, 1,1, 0,1, 2,1} };
 
     private static final int[][] TWOFOLD_AXIS = new int[][]{ {0,1}, {2,1, 0,1, 3,1, 0,1}, {0,1, -3,1, 0,1, -5,1} };
+    
+    private static final int[][] NEXT_TWOFOLD_AXIS = new int[][]{ {2,1, 0,1, 3,1, 0,1}, {3,1, 0,1, 5,1, 0,1}, {0,1, -2,1, 0,1, -3,1} };
     
     // AlgebraicMatrix is stored in row-major order, and the data here
     //  is also represented that way, but remember that the
@@ -80,28 +82,35 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
         mMatrices[ 7 ] = mMatrices[ 2 ] .times( mMatrices[ 5 ] );
         mMatrices[ 8 ] = mMatrices[ 3 ] .times( mMatrices[ 5 ] );
         mMatrices[ 9 ] = mMatrices[ 4 ] .times( mMatrices[ 5 ] );
-	}
+    }
 
-	@Override
-	protected void createOtherOrbits()
-	{
-		// Breaking the bad pattern of orbit initialization in the AbstractSymmetry constructor
-	}
+    @Override
+    protected void createOtherOrbits() {}
+
+    @Override
+    protected AlgebraicVector[] getOrbitTriangle()
+    {
+        AlgebraicVector redVertex = this .mField .createVector( FIVEFOLD_AXIS );
+        AlgebraicVector greenVertex = this .mField .createVector( TWOFOLD_AXIS );
+        AlgebraicVector orthoVertex = this .mField .createVector( NEXT_TWOFOLD_AXIS );
+        return new AlgebraicVector[] { greenVertex, redVertex, orthoVertex };
+    }
 
 	public PentagonalAntiprismSymmetry createStandardOrbits( String frameColor )
 	{
+	    AlgebraicVector redVertex = this .mField .createVector( FIVEFOLD_AXIS );
+	    AlgebraicVector greenVertex = this .mField .createVector( TWOFOLD_AXIS );
+
 	    AlgebraicNumber unitLength = this .mField .createPower( -6 );
-		Direction redOrbit = createZoneOrbit( "red", 0, 1, this .mField .createVector( FIVEFOLD_AXIS ), true, false, unitLength );
-        redOrbit .setDotLocation( 1d, 0d );
+		Direction redOrbit = createZoneOrbit( "red", 0, 1, redVertex, true, false, unitLength );
         this .preferredAxis = redOrbit .getAxis( Symmetry.PLUS, 0 );
 
-        Direction greenOrbit = createZoneOrbit( "green", 0, 5, this .mField .createVector( TWOFOLD_AXIS ), true, false, unitLength );
-        greenOrbit .setDotLocation( 0d, 1d );
+        createZoneOrbit( "green", 0, 5, greenVertex, true, false, unitLength );
         
         unitLength = this .mField .createPower( 6 );
-		Direction blueOrbit = createZoneOrbit( "blue", 0, -1, this .mField .basisVector( 3, AlgebraicVector.X ), true, false, unitLength );
-		blueOrbit .setDotLocation( 1d, 1d );
+		createZoneOrbit( "blue", 0, -1, this .mField .basisVector( 3, AlgebraicVector.X ), true, false, unitLength );
 
+		this .computeOrbitDots();
         return this;
     }
     

@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.vecmath.Matrix3d;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vzome.core.algebra.AlgebraicField;
@@ -42,6 +40,8 @@ public abstract class AbstractSymmetry implements Symmetry
     protected final String defaultStyle;
 
     private AlgebraicMatrix principalReflection = null;
+
+    private OrbitDotLocator dotLocator;
 
     protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle )
     {
@@ -102,28 +102,23 @@ public abstract class AbstractSymmetry implements Symmetry
         createFrameOrbit( frameColor );
         createOtherOrbits();
 
-        //        ObjectMapper jsonMapper = new ObjectMapper();
-        for (AlgebraicMatrix orientation : mMatrices) {
-            Matrix3d matrix = new Matrix3d();
-            for ( int i = 0; i < 3; i++) {
-                for ( int j = 0; j < 3; j++) {
-                    double value = orientation .getElement( i, j ) .evaluate();
-                    matrix .setElement( i, j, value );
-                }
-            }
-            //			try {
-            //				String jsonString = jsonMapper .writeValueAsString( matrix );
-            //				System .out .println( jsonString );
-            //			} catch (JsonProcessingException e) {
-            //				// TODO: handle exception
-            //				e .printStackTrace();
-            //			}
-        }
-
-        //        for ( int i = 0; i < order; i++ ) {
-        //            if ( initialPerms[ i ] )
-        //                System .out .println( i + " = " + mMatrices[ i ] .toString() );
-        //        }        
+//        ObjectMapper jsonMapper = new ObjectMapper();
+//        for (AlgebraicMatrix orientation : mMatrices) {
+//            Matrix3d matrix = new Matrix3d();
+//            for ( int i = 0; i < 3; i++) {
+//                for ( int j = 0; j < 3; j++) {
+//                    double value = orientation .getElement( i, j ) .evaluate();
+//                    matrix .setElement( i, j, value );
+//                }
+//            }
+//            try {
+//                String jsonString = jsonMapper .writeValueAsString( matrix );
+//                System .out .println( jsonString );
+//            } catch (JsonProcessingException e) {
+//                // TODO: handle exception
+//                e .printStackTrace();
+//            }
+//        }
     }
 
     protected abstract void createFrameOrbit( String frameColor );
@@ -201,20 +196,27 @@ public abstract class AbstractSymmetry implements Symmetry
             this .orbitSet .remove( existingDir );
             this .mDirectionList .remove( existingDir );
         }
-        Direction dir = new Direction( name, this, prototype, rotatedPrototype, norm, standard );
+        Direction orbit = new Direction( name, this, prototype, rotatedPrototype, norm, standard );
         if ( halfSizes )
-            dir .setHalfSizes( true );
-        dir .setUnitLength( unitLength );
-        mDirectionMap .put( dir .getName(), dir );
-        mDirectionList .add( dir );
-        orbitSet .add( dir );
-        return dir;
+            orbit .setHalfSizes( true );
+        orbit .setUnitLength( unitLength );
+        mDirectionMap .put( orbit .getName(), orbit );
+        mDirectionList .add( orbit );
+        orbitSet .add( orbit );
+
+        if ( this .dotLocator != null )
+            this .dotLocator .locateOrbitDot( orbit );
+
+        return orbit;
     }
 
     @Override
     public Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm )
     {
-        return new Direction( name, this, prototype, rotatedPrototype, norm, false ) .withCorrection();
+        Direction orbit = new Direction( name, this, prototype, rotatedPrototype, norm, false ) .withCorrection();
+        if ( this .dotLocator != null )
+            this .dotLocator .locateOrbitDot( orbit );
+        return orbit;
     }
 
 
@@ -532,5 +534,27 @@ public abstract class AbstractSymmetry implements Symmetry
     public AlgebraicMatrix getPrincipalReflection()
     {
         return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
+    }
+    
+    protected AlgebraicVector[] getOrbitTriangle()
+    {
+        AlgebraicVector blueVertex = this .getSpecialOrbit( SpecialOrbit.BLUE ) .getPrototype();
+        AlgebraicVector redVertex = this .getSpecialOrbit( SpecialOrbit.RED ) .getPrototype();
+        AlgebraicVector yellowVertex = this .getSpecialOrbit( SpecialOrbit.YELLOW ) .getPrototype();
+        return new AlgebraicVector[] { blueVertex, redVertex, yellowVertex };
+    }
+
+    public String computeOrbitDots()
+    {
+        this.dotLocator = new OrbitDotLocator( this, this .getOrbitTriangle() );
+        for ( Direction orbit : mDirectionList ) {
+            dotLocator .locateOrbitDot( orbit );
+        }
+        return dotLocator .getDebuggerOutput(); // stop logging new orbits
+    }
+
+    public boolean reverseOrbitTriangle()
+    {
+        return false;
     }
 }

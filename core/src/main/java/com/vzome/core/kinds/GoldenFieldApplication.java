@@ -92,7 +92,10 @@ public class GoldenFieldApplication extends DefaultFieldApplication
     private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()
     {
         private final IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( getField(), "solid connectors" );
-        
+        {
+            icosaSymm .computeOrbitDots();
+        }
+
         private final AbstractShapes icosadefaultShapes = new ExportedVEFShapes( null, "default", "solid connectors", icosaSymm );
         private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", icosaSymm, icosadefaultShapes );
         private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", icosaSymm );

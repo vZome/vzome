@@ -35,18 +35,16 @@ import com.vzome.core.render.RenderedModel.OrbitSource;
 
 public class OrbitSetController extends DefaultController implements PropertyChangeListener
 {
-	private final OrbitSource colorSource;
-	
+    private final OrbitSource colorSource;
+
     private final OrbitSet orbits, allOrbits;
-    
+
     private Direction lastOrbit = null;
-    
+
     private boolean mOneAtATime = true, showLastOrbit = false;
 
-    double xMax = 0d, yMax = 0d;
-    
     private final Map<Direction, OrbitState> orbitDots = new HashMap<>();
-    
+
     private final MouseTool mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
     {
         @Override
@@ -65,7 +63,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         double dotX, dotY;
         int dotXint, dotYint;
     }
-    
+
     public OrbitSetController( OrbitSet orbits, OrbitSet allOrbits, OrbitSource colorSource, boolean showLastOrbit )
     {
         this.orbits = orbits;
@@ -75,11 +73,11 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         this.mOneAtATime = orbits .size() == 1;
         recalculateDots();
     }
-    
+
     private synchronized void recalculateDots()
     {
         orbits .retainAll( allOrbits );
-        
+
         Symmetry symmetry = allOrbits .getSymmetry();
         RealVector test = new RealVector( 0.1d, 0.1d, 1d );
         if ( symmetry instanceof OctahedralSymmetry )
@@ -88,7 +86,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             test = new RealVector( 10d, 1d, 1d );
 
         orbitDots .clear();
-//        lastOrbit = null;  // cannot do this, we might have a valid value, for example after loading from XML
+        //        lastOrbit = null;  // cannot do this, we might have a valid value, for example after loading from XML
         boolean lastOrbitChanged = false;
         for ( Direction dir : allOrbits )
         {
@@ -100,42 +98,29 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             }
             OrbitState orbit = new OrbitState();
             orbitDots .put( dir, orbit );
-            
+
             orbit .dotX = dir .getDotX();
             if ( orbit .dotX >= -90d ) {
-            	// This orbit supports pre-computed dot locations
-            	orbit .dotY = dir .getDotY();
+                // This orbit supports pre-computed dot locations
+                orbit .dotY = dir .getDotY();
             }
             else {
-            	// The old way
-            	Axis axis = symmetry .getAxis( test, Collections .singleton( dir ) );
-            	AlgebraicVector v = axis .normal();
-            	double z =  v .getComponent( 2 ) .evaluate();
+                // The old way
+                Axis axis = symmetry .getAxis( test, Collections .singleton( dir ) );
+                AlgebraicVector v = axis .normal();
+                double z =  v .getComponent( 2 ) .evaluate();
                 if(z == 0.0d) {
                     z = 1.0d; // hack to partially fix DodecagonalSymmetry layout, but I think blue is still in wrong position.
                 }
-            	orbit.dotX = v .getComponent( 0 ) .evaluate();
-            	orbit.dotX = orbit.dotX / z; // intersect with z=0 plane
-            	orbit.dotY = v .getComponent( 1 ) .evaluate();
-            	orbit.dotY = orbit.dotY / z; // intersect with z=0 plane
+                orbit.dotX = v .getComponent( 0 ) .evaluate();
+                orbit.dotX = orbit.dotX / z; // intersect with z=0 plane
+                orbit.dotY = v .getComponent( 1 ) .evaluate();
+                orbit.dotY = orbit.dotY / z; // intersect with z=0 plane
             }
-
-        	//            if ( symmetry instanceof IcosahedralSymmetry )
-        	{
-        		// switch X and Y (why? don't know, it just works)
-        		double temp = orbit.dotX;
-        		orbit.dotX = orbit.dotY;
-        		orbit.dotY = temp;
-        	}
-            
-            if ( orbit.dotY > yMax )
-                yMax = orbit.dotY;
-            if ( orbit.dotX > xMax )
-                xMax = orbit.dotX;
         }
         if ( ( lastOrbit == null ) || (! allOrbits .contains( lastOrbit ) ) )
         {
-        	lastOrbitChanged = true;
+            lastOrbitChanged = true;
             if ( ! orbits .isEmpty() )
                 lastOrbit = orbits .last();
             else if ( ! orbitDots .isEmpty() )
@@ -144,9 +129,9 @@ public class OrbitSetController extends DefaultController implements PropertyCha
                 lastOrbit = null;
         }
         if ( lastOrbitChanged )
-        	properties() .firePropertyChange( "selectedOrbit", null, lastOrbit == null? null : lastOrbit .getName() );
+            properties() .firePropertyChange( "selectedOrbit", null, lastOrbit == null? null : lastOrbit .getName() );
     }
-    
+
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
@@ -156,8 +141,8 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             return;
         }
         if ( action .equals( "toggleHalf" ) || action .equals( "reset" )
-          || action .equals( "short" ) || action .equals( "medium" ) || action .equals( "long" )
-          || action .startsWith( "adjustScale." ) || action .equals( "scaleUp" ) || action .equals( "scaleDown" ) )
+                || action .equals( "short" ) || action .equals( "medium" ) || action .equals( "long" )
+                || action .startsWith( "adjustScale." ) || action .equals( "scaleUp" ) || action .equals( "scaleDown" ) )
         {
             getSubController( "currentLength" ) .doAction( action, e );
             return;
@@ -229,10 +214,10 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     public void propertyChange( PropertyChangeEvent evt )
     {
         if ( "length" .equals( evt .getPropertyName() )
-        && evt .getSource() == getSubController( "currentLength" ) )
+                && evt .getSource() == getSubController( "currentLength" ) )
             properties() .firePropertyChange( evt ); // forward to the NewLengthPanel
     }
-        
+
     void toggleOrbit( Direction dir )
     {
         if ( mOneAtATime )
@@ -245,15 +230,15 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         else if ( orbits .remove( dir ) )
         {
             // leave lastOrbit alone, it can stay "circled", so we always have a length panel... just like "setNoDirections"
-//            if ( lastOrbit == dir )
-//            {
-//                lastOrbit = null;
-//                if ( ! orbits .isEmpty() )
-//                {
-//                    lastOrbit = (Direction) orbits .last();
-//                }
-//                properties() .firePropertyChange( "selectedOrbit", null, lastOrbit == null ? null : lastOrbit .getName() );
-//            }
+            //            if ( lastOrbit == dir )
+            //            {
+            //                lastOrbit = null;
+            //                if ( ! orbits .isEmpty() )
+            //                {
+            //                    lastOrbit = (Direction) orbits .last();
+            //                }
+            //                properties() .firePropertyChange( "selectedOrbit", null, lastOrbit == null ? null : lastOrbit .getName() );
+            //            }
         }
         else
             throw new IllegalStateException( "could not toggle direction " + dir .getName() );
@@ -292,7 +277,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             return ( lastOrbit == null )? null : lastOrbit .getScaleName( 2 );
         if ( "scaleName.long" .equals( string ) )
             return ( lastOrbit == null )? null : lastOrbit .getScaleName( 3 );
-        
+
         if ( "color" .equals( string ) )
         {
             Color color = colorSource .getColor( lastOrbit );
@@ -301,10 +286,10 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             int rgb = color .getRGB();
             return "0x" + Integer .toHexString( rgb );
         }
-        
+
         if ( "half" .equals( string ) | "unitText" .equals( string ) | "multiplierText" .equals( string ) )
             return getSubController( "currentLength" ) .getProperty( string );
-        
+
         return super .getProperty( string );
     }
 
@@ -350,7 +335,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         {
             int fullwidth = (int) size .getWidth();
             int fullheight = (int) size .getHeight();
-            
+
             Graphics2D g2d = (Graphics2D) graphics;
             g2d .clearRect( 0, 0, fullwidth, fullheight );
             g2d .setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
@@ -358,19 +343,14 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             if ( fullheight > 180 )
                 fullheight = 180;
             int width = fullwidth - 2*TOP;
-            double scaleY = width / yMax;  // FLIP note: was xMax
             int height = fullheight - 2*LEFT;
-            double scaleX = height / xMax; 
 
             int right = LEFT + width;
             int bottom = TOP + height ;
             int corner = LEFT;
             Symmetry symm = allOrbits .getSymmetry();
-            if ( symm instanceof OctahedralSymmetry || symm instanceof DodecagonalSymmetry )
+            if ( symm .reverseOrbitTriangle() )
                 corner = right;
-
-//          g2d .setPaint( java.awt.Color.black );
-//          g2d .fill( g2d .getClipBounds() );
 
             g2d .setStroke( new BasicStroke( 1.5f , BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND ) );
             g2d .setPaint( java.awt.Color.black );
@@ -386,13 +366,14 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             for (Direction dir : orbitDots .keySet()) {
                 OrbitState orbit = orbitDots .get( dir );
                 Color color = colorSource .getColor( dir );
-                int x = LEFT +  (int) Math .round( orbit.dotY * scaleY );
-//                if ( allOrbits .getSymmetry() == OctahedralSymmetry .GOLDEN_INSTANCE ) {
-//                    x = right - x + LEFT;
-//                }
+                int x = LEFT + (int) Math .round( orbit.dotX * width );
+                // flip right/left if necessary
+                if ( corner == right )
+                    x = corner - (int) Math .round( orbit.dotX * width );
+                int y = bottom - (int) Math .round( orbit.dotY * height );
                 // now store the int coords for later picking
                 orbit.dotXint = x;
-                orbit.dotYint = bottom -  (int) Math .round( orbit.dotX * scaleX );
+                orbit.dotYint = y;
                 g2d .setPaint( color == null? java.awt.Color.WHITE : new java.awt.Color( color .getRGB() ) );
                 g2d .fillOval( orbit.dotXint-RADIUS, orbit.dotYint-RADIUS, DIAM, DIAM );
                 g2d .setPaint( java.awt.Color.black );
@@ -437,7 +418,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         return this .mouseTool;
     }
 
-	@Override
+    @Override
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
     {
         boolean[] result = new boolean[menu.length];
@@ -445,17 +426,17 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             String menuItem = menu[i];
             switch ( menuItem ) {
 
-			case "rZomeOrbits":
-			case "predefinedOrbits":
-			case "setAllDirections":
-			case "usedOrbits":
-			case "configureDirections":
+            case "rZomeOrbits":
+            case "predefinedOrbits":
+            case "setAllDirections":
+            case "usedOrbits":
+            case "configureDirections":
                 result[i] = true;
-				break;
+                break;
 
-			default:
+            default:
                 result[i] = false;
-			}
+            }
         }
         return result;
     }
@@ -469,7 +450,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             int i = 0;
             for ( Direction dir :  orbits ) {
                 result[ i ] = dir .getName();
-                 i++;
+                i++;
             }
             return result;
         }
