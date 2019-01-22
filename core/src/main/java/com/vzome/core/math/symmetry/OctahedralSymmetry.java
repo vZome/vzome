@@ -45,6 +45,20 @@ public class OctahedralSymmetry extends AbstractSymmetry
         }
     }
 
+    public boolean reverseOrbitTriangle()
+    {
+        return true;
+    }
+
+    @Override
+    protected AlgebraicVector[] getOrbitTriangle()
+    {
+        AlgebraicVector greenVertex = this .getDirection( "green" ) .getPrototype();
+        AlgebraicVector blueVertex = this .getDirection( "blue" ) .getPrototype();
+        AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype();
+        return new AlgebraicVector[] { greenVertex, blueVertex, yellowVertex };
+    }
+
     @Override
     protected void createInitialPermutations()
     {

@@ -43,6 +43,7 @@ public final class OctahedralSymmetryPerspective implements SymmetryPerspective
 		super();
 		this .field = field;
 		this .symmetry = new OctahedralSymmetry( this .field, "blue", "small octahedra" );
+        this .symmetry .computeOrbitDots();
 		
 		this .commands .put( "octasymm", new CommandSymmetry( this .symmetry ) );
 		this .commands .put( "axialsymm", new CommandAxialSymmetry( this .symmetry ) );

@@ -6,8 +6,8 @@ package com.vzome.core.math.symmetry;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.BigRational;
 import com.vzome.core.algebra.PentagonField;
 
 
@@ -156,6 +156,17 @@ public class IcosahedralSymmetry extends AbstractSymmetry
             result .setComponent( i, mField .createAlgebraicNumber( factors ) );
         }
         return result;
+    }
+    
+    @Override
+    protected AlgebraicVector[] getOrbitTriangle()
+    {
+        AlgebraicNumber twice = this .getField() .createRational( 2 );
+        AlgebraicVector blueVertex = this .getDirection( "blue" ) .getPrototype() .scale( twice );
+        AlgebraicVector redVertex = this .getDirection( "red" ) .getPrototype();
+        AlgebraicNumber phiInv = this .getField() .createPower( -1 );
+        AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype() .scale( phiInv );
+        return new AlgebraicVector[] { blueVertex, redVertex, yellowVertex };
     }
 
     @Override

@@ -98,156 +98,156 @@ public class SymmetryTool extends TransformationTool
 
 	@Override
     protected String checkSelection( boolean prepareTool )
-    {
-        Point center = null;
-        Strut axis = null;
-        boolean correct = true;
-        boolean hasPanels = false;
-        if ( ! isAutomatic() )
-        	for (Manifestation man : mSelection) {
-        		if ( prepareTool ) // not just validating the selection
-        			unselect( man );
-        		if ( man instanceof Connector )
-        		{
-        			if ( center != null )
-        				return "No unique symmetry center selected";
-        			center = (Point) ((Connector) man) .getConstructions() .next();
-        		}
-        		else if ( man instanceof Strut )
-        		{
-        			if ( axis != null )
-        				correct = false;
-        			else
-        				axis = (Strut) man;
-        		}
-        		else if ( man instanceof Panel )
-        		{
-        			hasPanels = true;
-        		}
-        	}
-        if ( center == null ) {
-        	if ( prepareTool ) { // after validation, or when loading from a file
-        		center = originPoint;
-        		this .addParameter( center );
-        	}
-        	else // just validating the selection, not really creating a tool
-        		return "No symmetry center selected";
-        }
-        
-        if ( hasPanels ) {
-        	if ( ! prepareTool ) // just validating the selection, not really creating a tool
-        		return "panels are selected";
-        }
-        
-        int[] closure = symmetry .subgroup( Symmetry.TETRAHEDRAL );
-        
-        switch ( symmetry .getName() ) {
-        
-		case "icosahedral":
-        	if ( !prepareTool && ( axis != null ) && getCategory() .equals( "icosahedral" ) )
-        		return "No struts needed for icosahedral symmetry.";
+	{
+	    Point center = null;
+	    Strut axis = null;
+	    boolean correct = true;
+	    boolean hasPanels = false;
+	    if ( ! isAutomatic() )
+	        for (Manifestation man : mSelection) {
+	            if ( prepareTool ) // not just validating the selection
+	                unselect( man );
+	            if ( man instanceof Connector )
+	            {
+	                if ( center != null )
+	                    return "No unique symmetry center selected";
+	                center = (Point) ((Connector) man) .getConstructions() .next();
+	            }
+	            else if ( man instanceof Strut )
+	            {
+	                if ( axis != null )
+	                    correct = false;
+	                else
+	                    axis = (Strut) man;
+	            }
+	            else if ( man instanceof Panel )
+	            {
+	                hasPanels = true;
+	            }
+	        }
+	    if ( center == null ) {
+	        if ( prepareTool ) { // after validation, or when loading from a file
+	            center = originPoint;
+	            this .addParameter( center );
+	        }
+	        else // just validating the selection, not really creating a tool
+	            return "No symmetry center selected";
+	    }
 
-            switch ( getCategory() ) {
+	    if ( hasPanels ) {
+	        if ( ! prepareTool ) // just validating the selection, not really creating a tool
+	            return "panels are selected";
+	    }
 
-        	case "tetrahedral":
-        		if ( !correct )
-        			return "no unique alignment strut selected.";
-        		if ( axis == null ) {
-        			if ( !prepareTool )
-        				return "no aligment strut selected.";
-        		} else {
-        			// align the tetrahedral symmetry with this yellow, blue, or green strut
-        			IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
-        			Axis zone = icosa .getAxis( axis .getOffset() );
-        			if ( zone == null )
-        				return "selected alignment strut is not a tetrahedral axis.";
-        			boolean allowYellow = prepareTool;  // yellow only allowed for legacy use
-        			closure = icosa .subgroup( Symmetry.TETRAHEDRAL, zone, allowYellow );
-        			if ( closure == null )
-        				return "selected alignment strut is not a tetrahedral axis.";
-        		}
-                if ( prepareTool ) {
+	    int[] closure = symmetry .subgroup( Symmetry.TETRAHEDRAL );
+
+	    switch ( symmetry .getName() ) {
+
+	    case "icosahedral":
+	        if ( !prepareTool && ( axis != null ) && getCategory() .equals( "icosahedral" ) )
+	            return "No struts needed for icosahedral symmetry.";
+
+	        switch ( getCategory() ) {
+
+	        case "tetrahedral":
+	            if ( !correct )
+	                return "no unique alignment strut selected.";
+	            if ( axis == null ) {
+	                if ( !prepareTool )
+	                    return "no aligment strut selected.";
+	            } else {
+	                // align the tetrahedral symmetry with this yellow, blue, or green strut
+	                IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
+	                Axis zone = icosa .getAxis( axis .getOffset() );
+	                if ( zone == null )
+	                    return "selected alignment strut is not a tetrahedral axis.";
+	                boolean allowYellow = prepareTool;  // yellow only allowed for legacy use
+	                closure = icosa .subgroup( Symmetry.TETRAHEDRAL, zone, allowYellow );
+	                if ( closure == null )
+	                    return "selected alignment strut is not a tetrahedral axis.";
+	            }
+	            if ( prepareTool ) {
 	                int order = closure .length;
 	                this .transforms = new Transformation[ order-1 ];
 	                for ( int i = 0; i < order-1; i++ )
 	                    transforms[ i ] = new SymmetryTransformation( symmetry, closure[ i+1 ], center );
-				}
-        		break;
+	            }
+	            break;
 
-        	case "octahedral":
-        		AlgebraicMatrix orientation = null;
-        		if ( !correct )
-        			return "no unique alignment strut selected.";
-        		if ( axis == null ) {
-        			if ( !prepareTool )
-        				return "no aligment strut selected.";
-        		} else {
-        			// align the octahedral symmetry with this blue or green strut
-        			IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
-        			Axis zone = icosa .getAxis( axis .getOffset() );
-        			if ( zone == null )
-        				return "selected alignment strut is not an octahedral axis.";
-        			int blueIndex = 0;
-        			switch ( zone .getDirection() .getName() ) {
+	        case "octahedral":
+	            AlgebraicMatrix orientation = null;
+	            if ( !correct )
+	                return "no unique alignment strut selected.";
+	            if ( axis == null ) {
+	                if ( !prepareTool )
+	                    return "no aligment strut selected.";
+	            } else {
+	                // align the octahedral symmetry with this blue or green strut
+	                IcosahedralSymmetry icosa = (IcosahedralSymmetry) symmetry;
+	                Axis zone = icosa .getAxis( axis .getOffset() );
+	                if ( zone == null )
+	                    return "selected alignment strut is not an octahedral axis.";
+	                int blueIndex = 0;
+	                switch ( zone .getDirection() .getName() ) {
 
-        			case "green":
-        				blueIndex = icosa .blueTetrahedralFromGreen( zone .getOrientation() );
-        				break;
-        				
-        			case "blue":
-        				blueIndex = zone .getOrientation();
-						break;
+	                case "green":
+	                    blueIndex = icosa .blueTetrahedralFromGreen( zone .getOrientation() );
+	                    break;
 
-					default:
-        				return "selected alignment strut is not an octahedral axis.";
-					}
-                	orientation = symmetry .getMatrix( blueIndex );
-        		}
-                if ( prepareTool ) {
-                	AlgebraicMatrix inverse = orientation .inverse();
-        			OctahedralSymmetry octa = new OctahedralSymmetry( symmetry .getField(), null, null );
-        	    	int order = octa .getChiralOrder();
-        	    	this .transforms = new Transformation[ order-1 ];
-        	    	for ( int i = 0; i < order-1; i++ ) {
-        	            AlgebraicMatrix matrix = octa .getMatrix( i+1 );
-        	            matrix = orientation .times( matrix .times( inverse ) );
-        	    		transforms[ i ] = new MatrixTransformation( matrix, center .getLocation() );
-        	    	}
-				}
-        		break;
+	                case "blue":
+	                    blueIndex = zone .getOrientation();
+	                    break;
 
-        	default:
-                if ( prepareTool )
-		        	prepareFullSymmetry( center );
-        		break;
-        	}
-			break;
+	                default:
+	                    return "selected alignment strut is not an octahedral axis.";
+	                }
+	                orientation = symmetry .getMatrix( blueIndex );
+	            }
+	            if ( prepareTool ) {
+	                AlgebraicMatrix inverse = orientation .inverse();
+	                OctahedralSymmetry octa = new OctahedralSymmetry( symmetry .getField(), null, null );
+	                int order = octa .getChiralOrder();
+	                this .transforms = new Transformation[ order-1 ];
+	                for ( int i = 0; i < order-1; i++ ) {
+	                    AlgebraicMatrix matrix = octa .getMatrix( i+1 );
+	                    matrix = orientation .times( matrix .times( inverse ) );
+	                    transforms[ i ] = new MatrixTransformation( matrix, center .getLocation() );
+	                }
+	            }
+	            break;
 
-		case "octahedral":
-			if ( prepareTool ) {
-				if ( getCategory() .equals( "tetrahedral" ) ) {
+	        default:
+	            if ( prepareTool )
+	                prepareFullSymmetry( center );
+	            break;
+	        }
+	        break;
+
+	    case "octahedral":
+	        if ( prepareTool ) {
+	            if ( getCategory() .equals( "tetrahedral" ) ) {
 	                int order = closure .length;
 	                this .transforms = new Transformation[ order-1 ];
 	                for ( int i = 0; i < order-1; i++ )
 	                    transforms[ i ] = new SymmetryTransformation( symmetry, closure[ i+1 ], center );
-				} else {
-		        	prepareFullSymmetry( center );
-				}
-			} else {
-				// validating selection
-				if ( axis != null )
-					return "No struts needed for symmetry";
-			}
-			break;
+	            } else {
+	                prepareFullSymmetry( center );
+	            }
+	        } else {
+	            // validating selection
+	            if ( axis != null )
+	                return "No struts needed for symmetry";
+	        }
+	        break;
 
-    	default:
+	    default:
 	        if ( prepareTool )
-	        	prepareFullSymmetry( center );
-			break;
-		}
-        
-        return null;
-    }
+	            prepareFullSymmetry( center );
+	        break;
+	    }
+
+	    return null;
+	}
 	
 	private void prepareFullSymmetry( Point center )
 	{
