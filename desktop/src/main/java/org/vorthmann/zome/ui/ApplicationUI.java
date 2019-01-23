@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
@@ -147,22 +149,31 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
      */
     public static ApplicationUI initialize( String[] args, URL codebase ) throws MalformedURLException
     {
-    	/*
-    	 * First, fail-fast if we can see any environmental issue that will prevent vZome from launching correctly.
-    	 */
-    	
-		if( System.getProperty("os.name").toLowerCase().contains("windows")) {
-			if( "console".compareToIgnoreCase(System.getenv("SESSIONNAME")) != 0) {
-				logger.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
-				final String msg = "vZome cannot be run under Windows Terminal Services.";
-				logger.severe(msg);
-				JOptionPane.showMessageDialog( null, msg, "vZome Fatal Error", JOptionPane.ERROR_MESSAGE );
-				System .exit( 0 );
-			}
-		}
-		
-		/*
-		 * Get the splash screen up before doing any more work.
+        String className = UIManager.getSystemLookAndFeelClassName();
+        try {
+            // Set System L&F
+            UIManager .setLookAndFeel( className );
+        } 
+        catch (Exception e) {
+            // live without it
+            logger.severe( "The look&feel was not set successfully: " + className );
+        }
+        /*
+         * First, fail-fast if we can see any environmental issue that will prevent vZome from launching correctly.
+         */
+
+        if( System.getProperty("os.name").toLowerCase().contains("windows")) {
+            if( "console".compareToIgnoreCase(System.getenv("SESSIONNAME")) != 0) {
+                logger.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
+                final String msg = "vZome cannot be run under Windows Terminal Services.";
+                logger.severe(msg);
+                JOptionPane.showMessageDialog( null, msg, "vZome Fatal Error", JOptionPane.ERROR_MESSAGE );
+                System .exit( 0 );
+            }
+        }
+
+        /*
+         * Get the splash screen up before doing any more work.
          */
 
         SplashScreen splash = null;
@@ -186,7 +197,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
         // NOW we're ready to spend the cost of further initialization, but on the event thread
         EventQueue .invokeLater( new InitializationWorker( theUI, args, codebase, splash ) );
-        
+
         return theUI;
     }
     
