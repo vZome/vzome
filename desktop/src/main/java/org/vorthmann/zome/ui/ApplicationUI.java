@@ -27,7 +27,6 @@ import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
@@ -149,14 +148,17 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
      */
     public static ApplicationUI initialize( String[] args, URL codebase ) throws MalformedURLException
     {
-        String className = UIManager.getSystemLookAndFeelClassName();
-        try {
-            // Set System L&F
-            UIManager .setLookAndFeel( className );
-        } 
-        catch (Exception e) {
-            // live without it
-            logger.severe( "The look&feel was not set successfully: " + className );
+        String disableSLAF = System .getProperty( "vzome.disable.system.laf" );
+        if ( null == disableSLAF || "false" .equals( disableSLAF ) ) {
+            String className = UIManager.getSystemLookAndFeelClassName();
+            try {
+                // Set System L&F
+                UIManager .setLookAndFeel( className );
+            } 
+            catch (Exception e) {
+                // live without it
+                logger.severe( "The look&feel was not set successfully: " + className );
+            }
         }
         /*
          * First, fail-fast if we can see any environmental issue that will prevent vZome from launching correctly.
