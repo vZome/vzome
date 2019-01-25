@@ -148,18 +148,6 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
      */
     public static ApplicationUI initialize( String[] args, URL codebase ) throws MalformedURLException
     {
-        String disableSLAF = System .getProperty( "vzome.disable.system.laf" );
-        if ( null == disableSLAF || "false" .equals( disableSLAF ) ) {
-            String className = UIManager.getSystemLookAndFeelClassName();
-            try {
-                // Set System L&F
-                UIManager .setLookAndFeel( className );
-            } 
-            catch (Exception e) {
-                // live without it
-                logger.severe( "The look&feel was not set successfully: " + className );
-            }
-        }
         /*
          * First, fail-fast if we can see any environmental issue that will prevent vZome from launching correctly.
          */
@@ -256,8 +244,19 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
 	        ui .mController = new ApplicationController( ui, configuration, null );
 
-	        configuration .setProperty( "coreVersion", ui .mController .getProperty( "coreVersion" ) );
-			logConfig( configuration );
+	        if ( ! ui .mController .propertyIsTrue( "vzome.disable.system.laf" ) ) {
+	            String className = UIManager.getSystemLookAndFeelClassName();
+	            try {
+	                // Set System L&F
+	                UIManager .setLookAndFeel( className );
+	            } 
+	            catch (Exception e) {
+	                // live without it
+	                logger.severe( "The look&feel was not set successfully: " + className );
+	            }
+	        }
+
+	        logConfig( configuration );
 
             ui.errors =  new Controller.ErrorChannel()
 	        {

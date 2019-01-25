@@ -64,102 +64,102 @@ public class ApplicationController extends DefaultController
 	private Map<String, RenderedModel> symmetryModels = new HashMap<String, RenderedModel>();
     
 	public ApplicationController( ActionListener ui, Properties commandLineArgs, J3dComponentFactory rvFactory )
-    {
-		super();
-		
-        long starttime = System.currentTimeMillis();
+	{
+	    super();
 
-        if ( logger .isLoggable( Level .INFO ) )
-            logger .info( "ApplicationController .initialize() starting" );
+	    long starttime = System.currentTimeMillis();
 
-		this.ui = ui;
-        
-        File prefsFolder = Platform .getPreferencesFolder();        
-        File prefsFile = new File( prefsFolder, "vZome.preferences" );
-        if ( ! prefsFile .exists() ) {
-            prefsFolder = new File( System.getProperty( "user.home" ) );
-            prefsFile = new File( prefsFolder, "vZome.preferences" );
-        }
-        if ( ! prefsFile .exists() ) {
-            prefsFile = new File( prefsFolder, ".vZome.prefs" );
-        }
-        this.preferencesFile = prefsFile;
-        if ( ! prefsFile .exists() ) {
-        	logger .config( "Used default preferences." );
-        } else {
-            try {
-                InputStream in = new FileInputStream( prefsFile );
-                userPreferences .load( in );
-    			logger .config( "User Preferences loaded from " + prefsFile .getAbsolutePath() );
-            } catch ( Throwable t ) {
-    			logger .severe( "problem reading user preferences: " + t.getMessage() );
-            }
-        }
-        
-		Properties defaults = new Properties();
-        String defaultRsrc = "org/vorthmann/zome/app/defaultPrefs.properties";
-        try {
-            ClassLoader cl = ApplicationUI.class.getClassLoader();
-            InputStream in = cl.getResourceAsStream( defaultRsrc );
-            if ( in != null )
-            	defaults .load( in ); // override the core defaults
-        } catch ( IOException ioe ) {
-        	logger.severe( "problem reading default preferences: " + defaultRsrc );
-        }
+	    if ( logger .isLoggable( Level .INFO ) )
+	        logger .info( "ApplicationController .initialize() starting" );
 
-        // last-wins, so getProperty() will show command-line args overriding user prefs, which override built-in defaults
-        properties .putAll( defaults );
-        properties .putAll( userPreferences );
-        properties .putAll( commandLineArgs );
+	    this.ui = ui;
 
-        // This seems to get rid of the "white-out" problem on David's (Windows) computer.
-        // Otherwise it shows up spuratically, but still frequently. 
-        // It is usually, but not always, triggered by such events as context menus,
-        // tool tips, or modal dialogs being rendered on top of the main frame.
-        // Since the problem has not been reported elsewhere, this fix will be configurable, rather than hard coded.
-        final String NOERASEBACKGROUND = "sun.awt.noerasebackground";
-        if( propertyIsTrue(NOERASEBACKGROUND)) { // if it's set to true in the prefs file or command line
-            System.setProperty(NOERASEBACKGROUND, "true"); // then set the System property so the AWT/Swing components will use it.
-            logger .config( NOERASEBACKGROUND + " is set to 'true'." );
-        }
+	    File prefsFolder = Platform .getPreferencesFolder();        
+	    File prefsFile = new File( prefsFolder, "vZome.preferences" );
+	    if ( ! prefsFile .exists() ) {
+	        prefsFolder = new File( System.getProperty( "user.home" ) );
+	        prefsFile = new File( prefsFolder, "vZome.preferences" );
+	    }
+	    if ( ! prefsFile .exists() ) {
+	        prefsFile = new File( prefsFolder, ".vZome.prefs" );
+	    }
+	    this.preferencesFile = prefsFile;
+	    if ( ! prefsFile .exists() ) {
+	        logger .config( "Used default preferences." );
+	    } else {
+	        try {
+	            InputStream in = new FileInputStream( prefsFile );
+	            userPreferences .load( in );
+	            logger .config( "User Preferences loaded from " + prefsFile .getAbsolutePath() );
+	        } catch ( Throwable t ) {
+	            logger .severe( "problem reading user preferences: " + t.getMessage() );
+	        }
+	    }
 
-        final FailureChannel failures = new FailureChannel()
-        {	
-			@Override
-			public void reportFailure( Failure f )
-			{
+	    Properties defaults = new Properties();
+	    String defaultRsrc = "org/vorthmann/zome/app/defaultPrefs.properties";
+	    try {
+	        ClassLoader cl = ApplicationUI.class.getClassLoader();
+	        InputStream in = cl.getResourceAsStream( defaultRsrc );
+	        if ( in != null )
+	            defaults .load( in ); // override the core defaults
+	    } catch ( IOException ioe ) {
+	        logger.severe( "problem reading default preferences: " + defaultRsrc );
+	    }
+
+	    // last-wins, so getProperty() will show command-line args overriding user prefs, which override built-in defaults
+	    properties .putAll( defaults );
+	    properties .putAll( userPreferences );
+	    properties .putAll( commandLineArgs );
+
+	    // This seems to get rid of the "white-out" problem on David's (Windows) computer.
+	    // Otherwise it shows up spuratically, but still frequently. 
+	    // It is usually, but not always, triggered by such events as context menus,
+	    // tool tips, or modal dialogs being rendered on top of the main frame.
+	    // Since the problem has not been reported elsewhere, this fix will be configurable, rather than hard coded.
+	    final String NOERASEBACKGROUND = "sun.awt.noerasebackground";
+	    if( propertyIsTrue(NOERASEBACKGROUND)) { // if it's set to true in the prefs file or command line
+	        System.setProperty(NOERASEBACKGROUND, "true"); // then set the System property so the AWT/Swing components will use it.
+	        logger .config( NOERASEBACKGROUND + " is set to 'true'." );
+	    }
+
+	    final FailureChannel failures = new FailureChannel()
+	    {	
+	        @Override
+	        public void reportFailure( Failure f )
+	        {
 	            mErrors.reportError( USER_ERROR_CODE, new Object[] { f } );
-			}
-		};
-        modelApp = new com.vzome.core.editor.Application( true, failures, properties );
-        
-        Colors colors = modelApp .getColors();
-        Lights lights = modelApp .getLights();
-        
-        if ( rvFactory != null ) {
-        		this .rvFactory = rvFactory;
-        }
-        else
-        {
-	        	boolean useEmissiveColor = ! propertyIsTrue( "no.glowing.selection" );
-	        	// need this set up before we do any loadModel
-	        	String factoryName = getProperty( "RenderingViewer.Factory.class" );
-	        	if ( factoryName == null )
-	        		factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
-	        	try {
-	        		Class<?> factoryClass = Class.forName( factoryName );
-	        		Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Lights.class, Colors.class, Boolean.class } );
-	        		this .rvFactory = (J3dComponentFactory) constructor.newInstance( new Object[] { lights, colors, useEmissiveColor } );
-	        	} catch ( Exception e ) {
-	        		mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
-	        		System.exit( 0 );
-	        	}
-        }
+	        }
+	    };
+	    modelApp = new com.vzome.core.editor.Application( true, failures, properties );
 
-        long endtime = System.currentTimeMillis();
-        if ( logger .isLoggable( Level .INFO ) )
-            logger .log(Level.INFO, "ApplicationController initialization in milliseconds: {0}", ( endtime - starttime ));
-   	}
+	    Colors colors = modelApp .getColors();
+	    Lights lights = modelApp .getLights();
+
+	    if ( rvFactory != null ) {
+	        this .rvFactory = rvFactory;
+	    }
+	    else
+	    {
+	        boolean useEmissiveColor = ! propertyIsTrue( "no.glowing.selection" );
+	        // need this set up before we do any loadModel
+	        String factoryName = getProperty( "RenderingViewer.Factory.class" );
+	        if ( factoryName == null )
+	            factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
+	        try {
+	            Class<?> factoryClass = Class.forName( factoryName );
+	            Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Lights.class, Colors.class, Boolean.class } );
+	            this .rvFactory = (J3dComponentFactory) constructor.newInstance( new Object[] { lights, colors, useEmissiveColor } );
+	        } catch ( Exception e ) {
+	            mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
+	            System.exit( 0 );
+	        }
+	    }
+
+	    long endtime = System.currentTimeMillis();
+	    if ( logger .isLoggable( Level .INFO ) )
+	        logger .log(Level.INFO, "ApplicationController initialization in milliseconds: {0}", ( endtime - starttime ));
+	}
 
     public RenderedModel getSymmetryModel( String path, Symmetry symmetry )
     {
