@@ -263,6 +263,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 				@Override
 	            public void reportError( String errorCode, Object[] arguments )
 	            {
+					// TODO: Refactor this duplicate code into one place
 	            	// code copied from DocumentFrame!
 	            	
 	                if ( Controller.USER_ERROR_CODE.equals( errorCode ) ) {
@@ -272,7 +273,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 	                } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
 	                    errorCode = ( (Exception) arguments[0] ).getMessage();
 	                    logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
-	                    errorCode = "internal error, see the log file at " + getLogFileName();
+	                    errorCode = "internal error has been logged";
 	                } else {
 	                    logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
 	                    // TODO use resources
@@ -386,7 +387,6 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 		appendPropertiesList(sb, loggingProperties(), new String[] 
         {
             "default.charset",
-            "logfile.name",
             "logging.properties.filename",
             "logging.properties.file.exists",
         });
@@ -427,7 +427,6 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         }
         Properties props = new Properties();
         props.put("default.charset", java.nio.charset.Charset.defaultCharset().name());
-        props.put("logfile.name", getLogFileName());        
         props.put("logging.properties.filename", fname);        
         props.put("logging.properties.file.exists", Boolean.toString(f.exists()));        
         return props;
@@ -487,35 +486,6 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 		}
 	}
 
-    private static String logFileName = null;
-
-    public static String getLogFileName() {
-        // determined on demand and cached so we only need to do all of this the first time.
-        if (logFileName == null) {
-            for (Handler handler : Logger.getLogger("").getHandlers()) {
-                if (handler.getClass().isAssignableFrom(FileHandler.class)) {
-                    FileHandler fileHandler = (FileHandler) handler;
-                    try {
-                        // FileHandler.files has private access, 
-                        // so I'm going to resort to reflection to get the file name.
-                        Field privateFilesField = fileHandler.getClass().getDeclaredField("files");
-                        privateFilesField.setAccessible(true); // allow access to this private field
-                        File[] files = (File[]) privateFilesField.get(fileHandler);
-                        logFileName = files[0].getCanonicalPath();
-                        break;
-                    } catch (NullPointerException | NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException | IOException ex) {
-                        logger.log(Level.SEVERE, "Unable to determine log file name.", ex);
-                    }
-                }
-            }
-            if (logFileName == null) {
-                logFileName = "your home directory"; // just be sure it's not null
-                logger.warning("Unable to identify log file name.");
-            }
-        }
-        return logFileName;
-    }
-    
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // These next three methods may be invoked by the mac Adapter.
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
