@@ -3,8 +3,8 @@
 group = 'com.vzome'
 version = '6.0'
 
-task wrapper(type: Wrapper) {
-   gradleVersion = '4.5.1' //version required
+wrapper() {
+   gradleVersion = '4.10' //version required
 }
 
 // these environment variables are available during a Jenkins build
@@ -21,10 +21,10 @@ subprojects {
   apply plugin: 'eclipse'
 
   compileJava {
-	// set these to 9 for Java 9
+	// set these to 11 for Java 11
 	// set them to 1.8 for Java 8
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 11
+    targetCompatibility = 11
     options.encoding = 'UTF-8'
   }
 

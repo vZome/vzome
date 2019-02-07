@@ -585,7 +585,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     public Object toJson()
     {
         if ( this.isWhole && this.notBig() )
-            return new Long( this .num );
+            return Long.valueOf ( this .num );
         else
             return toString;    
     }
