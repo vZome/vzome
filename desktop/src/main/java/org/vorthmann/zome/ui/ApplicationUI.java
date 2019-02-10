@@ -396,7 +396,6 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 				"version",
 				"buildNumber",
 				"gitCommit",
-				"coreVersion"
 			});
         // Use an anonymousLogger to ensure that this is always written to the log file 
         // regardless of the settings in the logging.properties file
