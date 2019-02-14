@@ -1,7 +1,5 @@
 package org.vorthmann.zome.ui;
 
-import static org.vorthmann.zome.ui.ApplicationUI.getLogFileName;
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -157,7 +155,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
                     errorCode = ( (Exception) arguments[0] ).getMessage();
                     logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
-                    errorCode = "internal error, see the log file at " + getLogFileName();
+                    errorCode = "internal error has been logged";
                 } else {
                     logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
                     // TODO use resources
