@@ -97,7 +97,7 @@ public class ControllerWebSocket implements WebSocketListener
             RemoteClientRendering clientRendering = new RemoteClientRendering( queue );
             this .docController .attachViewer( clientRendering, clientRendering, null );
             try {
-                this .docController .doAction( "finish.load", null );
+                this .docController .actionPerformed( this, "finish.load" );
                 publish( "{ \"render\": \"flush\" }" );
                 publish( "{ \"info\": \"Document load SUCCESS\" }" );
             } catch ( Exception e ) {
@@ -133,7 +133,7 @@ public class ControllerWebSocket implements WebSocketListener
                 }
                 action = tokens .nextToken();
 
-                controller .doAction( action, null );
+                controller .actionPerformed( this, action );
             } catch (Throwable e) {
                 LOG.warn( "doAction error: [{}]", e .getMessage() );
                 e.printStackTrace();

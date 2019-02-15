@@ -53,7 +53,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             Direction pickedDir = pickDirection( click );
             if ( pickedDir != null ) {
                 toggleOrbit( pickedDir );
-                properties() .firePropertyChange( "orbits", true, false );
+                firePropertyChange( "orbits", true, false );
             }
         }
     }, /* half-second forgiveness */ 500 );
@@ -129,7 +129,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
                 lastOrbit = null;
         }
         if ( lastOrbitChanged )
-            properties() .firePropertyChange( "selectedOrbit", null, lastOrbit == null? null : lastOrbit .getName() );
+            firePropertyChange( "selectedOrbit", null, lastOrbit == null? null : lastOrbit .getName() );
     }
 
     @Override
@@ -144,7 +144,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
                 || action .equals( "short" ) || action .equals( "medium" ) || action .equals( "long" )
                 || action .startsWith( "adjustScale." ) || action .equals( "scaleUp" ) || action .equals( "scaleDown" ) )
         {
-            getSubController( "currentLength" ) .doAction( action, e );
+            getSubController( "currentLength" ) .actionPerformed( e );
             return;
         }
         if ( action .equals( "setNoDirections" ) )
@@ -207,7 +207,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             Direction dir = allOrbits .getDirection( dirName );
             toggleOrbit( dir );
         }
-        properties() .firePropertyChange( "orbits", true, false );
+        firePropertyChange( "orbits", true, false );
     }
 
     @Override
@@ -215,7 +215,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     {
         if ( "length" .equals( evt .getPropertyName() )
                 && evt .getSource() == getSubController( "currentLength" ) )
-            properties() .firePropertyChange( evt ); // forward to the NewLengthPanel
+            firePropertyChange( evt ); // forward to the NewLengthPanel
     }
 
     void toggleOrbit( Direction dir )
@@ -225,7 +225,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         if ( orbits .add( dir ) )
         {
             lastOrbit = dir;
-            properties() .firePropertyChange( "selectedOrbit", null, dir .getName() );
+            firePropertyChange( "selectedOrbit", null, dir .getName() );
         }
         else if ( orbits .remove( dir ) )
         {
@@ -294,14 +294,14 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     }
 
     @Override
-    public void setProperty( String cmd, Object value )
+    public void setModelProperty( String cmd, Object value )
     {
         if ( "oneAtATime" .equals( cmd ) )
             mOneAtATime = "true" .equals( value );
         else if ( "multiplier" .equals( cmd ) | "half" .equals( cmd ) )
             getSubController( "currentLength" ) .setProperty( cmd, value );
         else
-            super .setProperty( cmd, value );
+            super .setModelProperty( cmd, value );
     }
 
     private static final int RADIUS = 12;
@@ -464,6 +464,6 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             }
             return result;
         }
-        return new String[0];
+        return super .getCommandList( listName );
     }
 }

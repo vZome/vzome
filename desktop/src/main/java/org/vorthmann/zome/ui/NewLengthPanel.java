@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -15,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -22,6 +24,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
@@ -36,16 +39,18 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
     private static final Logger logger = Logger .getLogger( "org.vorthmann.zome.ui" );
     
     private final JButton scaleUp, scaleDown, superShortScale, shortScale, mediumScale, longScale;
+    
+    private final JRadioButton[] multiplierButtons;
 
     private final JCheckBox halfCheckbox;
 
     private final CardPanel halfCardPanel;
 
-    private final JLabel unitText, lengthText, sliderLabel;
+    private final JLabel lengthText, sliderLabel;
 
     private final JSlider scaleSlider;
 
-    private final JPanel coloredBackground, sliderPanel;
+    private final JPanel sliderPanel;
 
     private final JComponent upDownButtons, scaleButtons;
 
@@ -90,13 +95,41 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
         switchOrbit();
     }
 
-    public NewLengthPanel( JFrame frame )
+    public NewLengthPanel( JFrame frame, Controller initialController )
     {
         this .frame = frame;
+        this .controller = initialController;
 
         this .setLayout( new BorderLayout() );
+        JPanel mainPanel = new JPanel( new BorderLayout() );
+        this .add( mainPanel, BorderLayout.CENTER );
+        String[] labels = this .controller .getCommandList( "field.multipliers" );
+        this .multiplierButtons = new JRadioButton[ labels.length ];
         {
-            coloredBackground = new JPanel( new BorderLayout() );
+            JPanel coloredBackground = new JPanel( new BorderLayout() );
+            mainPanel .add( coloredBackground, BorderLayout .CENTER );
+            {
+                JPanel scalarPanel = new JPanel( new BorderLayout() );
+                scalarPanel .add( new Label( "Scale by: " ), BorderLayout.WEST );
+                if ( labels .length == 1 ) {
+                    scalarPanel .add( new Label( labels[ 0 ] ), BorderLayout.CENTER );
+                } else {
+                    JPanel scalarButtonsPanel = new JPanel();
+                    scalarPanel .add( scalarButtonsPanel, BorderLayout.CENTER );
+
+                    ButtonGroup group = new ButtonGroup();
+                    for ( int i = 0; i < labels.length; i++ ) {
+                        String scalar = labels[ i ];
+                        this .multiplierButtons[ i ] = new JRadioButton( scalar );
+                        scalarButtonsPanel .add( this .multiplierButtons[ i ] );
+                        group .add( this .multiplierButtons[ i ] );
+                        this .multiplierButtons[ i ] .setActionCommand( "setMultiplier." + i );
+                        this .multiplierButtons[ i ] .addActionListener( this );
+                    }
+                    this .multiplierButtons[ 0 ] .setSelected( true );
+                }
+                coloredBackground .add( scalarPanel, BorderLayout.NORTH );
+            }
             {
                 // left side: scale up/down buttons
                 upDownButtons = new JPanel();
@@ -198,32 +231,24 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                         5, 1, //rows, cols
                         5, 5,        //initX, initY
                         6, 6);       //xPad, yPad
-                coloredBackground .add( scaleButtons, BorderLayout .EAST );
+                mainPanel .add( scaleButtons, BorderLayout .EAST );
             }
-            this .add( coloredBackground, BorderLayout .CENTER );
 
             lengthDisplay = new JPanel( new BorderLayout() );
             lengthDisplay .setBorder( BorderFactory .createEmptyBorder( 4, 3, 4, 0 ) );
-            Font biggerFont;
             {
                 JPanel valuesColumn = new JPanel( new GridLayout( 2, 1 ) );
                 {
-                    unitText = new JLabel();
-                    biggerFont = unitText .getFont() .deriveFont( 14f );
-                    unitText .setFont( biggerFont );
-                    unitText .setHorizontalAlignment( SwingConstants .LEADING );
-                    valuesColumn .add( unitText );
-                }
-                {
                     lengthText = new JLabel();
+                    Font biggerFont = lengthText .getFont() .deriveFont( 14f );
                     lengthText .setFont( biggerFont );
                     lengthText .setHorizontalAlignment( SwingConstants .LEADING );
                     valuesColumn .add( lengthText );
                 }
-                lengthDisplay .add( valuesColumn, BorderLayout .CENTER );
+                lengthDisplay .add( lengthText, BorderLayout .CENTER );
             }
             {
-                JPanel buttonsColumn = new JPanel( new GridLayout( 2, 1 ) );
+                JPanel buttonsPanel = new JPanel( new GridLayout( 2, 1 ) );
                 {
                     JButton editButton = new JButton( "custom" );
 //                    editButton .setEnabled( false );
@@ -233,19 +258,21 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                         @Override
                         public void actionPerformed( ActionEvent e )
                         {
-                        	// Tell the LengthController to push the custom unit to the NumberController
-                        	controller .actionPerformed( new ActionEvent( e .getSource(), e .getID(), "setCustomUnit" ) );
-                        	// ... then update the dialog
+                            // Tell the LengthController to push the custom unit to the NumberController
+                            initialController .actionPerformed( new ActionEvent( e .getSource(), e .getID(), "setCustomUnit" ) );
+                            // ... then update the dialog
                             lengthDialog .syncFromModel();
                             lengthDialog .setVisible( true );
                         }} );
-                    buttonsColumn .add( editButton );
+                    buttonsPanel .add( editButton );
                 }
                 {
                     JButton rezeroButton = createButton( "newZeroScale", "rezero", this );
                     rezeroButton .setToolTipText( "set this length as the unit length" );
-                    buttonsColumn .add( rezeroButton );
+                    buttonsPanel .add( rezeroButton );
                 }
+                JPanel buttonsColumn = new JPanel( new BorderLayout() );
+                buttonsColumn .add( buttonsPanel, BorderLayout.NORTH );
                 lengthDisplay .add( buttonsColumn, BorderLayout .EAST );
             }
             this .add( lengthDisplay, BorderLayout .SOUTH );
@@ -309,9 +336,17 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
         emitSliderEvents = false;
         scaleSlider .setValue( Integer .parseInt( controller .getProperty( "scale" ) ) );
         emitSliderEvents = true;
+        
+        if ( multiplierButtons[ 0 ] != null ) {
+            String multiplierStr = controller .getProperty( "multiplier" );
+            int multiplier = Integer .parseInt( multiplierStr );
+            for ( int j = 0; j < multiplierButtons.length; j++ ) {
+                multiplierButtons[ j ] .setSelected( j == multiplier );
+            }
+        }
 
-        unitText .setText( "<html>unit  =  <b>" + controller .getProperty( "unitText" ) + "</b></html>" );
-        lengthText .setText( "<html>" + controller .getProperty( "scaleFactorHtml" ) + "  \u2715  unit  =  <b>" + controller .getProperty( "lengthText" ) + "</b></html>" );
+        lengthText .setText( "<html>unit  =  <b>" + controller .getProperty( "unitText" ) + "</b>" +
+           "<br/>" + controller .getProperty( "scaleFactorHtml" ) + "unit<br/>   =  <b>" + controller .getProperty( "lengthText" ) + "</b></html>" );
         boolean custom = Boolean .parseBoolean( controller .getProperty( "unitIsCustom" ) );
         if ( custom && ! lengthDisplay .isVisible() )
         {
@@ -322,28 +357,28 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
     @Override
     public void propertyChange( PropertyChangeEvent e )
     {
-    	switch (e.getPropertyName()) {
+        switch (e.getPropertyName()) {
 
-    	case "length":
-    		renderLength();
-    		break;
+        case "length":
+            renderLength();
+            break;
 
-    	case "selectedOrbit":
-        	// this first one should fall "up" to the symmetry controller
-        	Controller newController = controller .getSubController( "buildOrbits" );
-        	newController = controller .getSubController( "currentLength" );
-    		// newController will be null if all directions are disabled.
-    		// in that case, just retain the controller from the previously selected orbit.
-    		if( newController != null ) {
-    			// we didn't set this.controller directly, since we need to disconnect from it first
-    			setController( newController );
-    		}
-    		break;
+        case "selectedOrbit":
+            // this first one should fall "up" to the symmetry controller
+            Controller newController = controller .getSubController( "buildOrbits" );
+            newController = controller .getSubController( "currentLength" );
+            // newController will be null if all directions are disabled.
+            // in that case, just retain the controller from the previously selected orbit.
+            if( newController != null ) {
+                // we didn't set this.controller directly, since we need to disconnect from it first
+                setController( newController );
+            }
+            break;
 
-    	case "showStrutScales":
-    		lengthDisplay .setVisible( (Boolean) e.getNewValue() );
-    		break;
-    	}
+        case "showStrutScales":
+            lengthDisplay .setVisible( (Boolean) e.getNewValue() );
+            break;
+        }
     }
 
 }

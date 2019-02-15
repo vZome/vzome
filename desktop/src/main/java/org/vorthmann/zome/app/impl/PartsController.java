@@ -74,10 +74,10 @@ public class PartsController extends DefaultController implements RenderingChang
             String propertyName = action + partTypeName;
             switch(action) {
                 case "add":
-                    properties().firePropertyChange( propertyName, null, partInfo );
+                    firePropertyChange( propertyName, null, partInfo );
                     break;
                 case "remove":
-                    properties().firePropertyChange( propertyName, partInfo, null );
+                    firePropertyChange( propertyName, partInfo, null );
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported action: " + (action == null ? "<null>" : action) + ".");

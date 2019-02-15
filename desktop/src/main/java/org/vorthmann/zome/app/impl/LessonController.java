@@ -36,7 +36,7 @@ public class LessonController extends DefaultController
             @Override
 			public void propertyChange( PropertyChangeEvent change )
 			{
-                properties() .firePropertyChange( change ); // forward to the view
+                firePropertyChange( change ); // forward to the view
 			}
 		} );
     }

@@ -41,7 +41,7 @@ public abstract class ParameterizedField<T extends Object> extends AlgebraicFiel
     @Override
 	final void normalize( BigRational[] factors ) 
     {
-    	normalizer.accept(this, factors);
+        normalizer.accept(this, factors);
     }
     
     protected void initialize()
@@ -60,8 +60,8 @@ public abstract class ParameterizedField<T extends Object> extends AlgebraicFiel
 
     protected void initializeNormalizer() 
     {
-    	normalizer = ParameterizedField::doNothing;
-    };
+        normalizer = ParameterizedField::doNothing;
+    }
 
     protected abstract void initializeMultiplierMatrix();
 
@@ -136,12 +136,6 @@ public abstract class ParameterizedField<T extends Object> extends AlgebraicFiel
     @Override
     public final String getIrrational(int i, int format) {
         return irrationalLabels[i][format];
-    }
-
-    @Override
-    public void defineMultiplier(StringBuffer buf, int w) {
-        // used by POVRayExporter
-        buf.append("");
     }
 
     public double getCoefficient(int i) {

@@ -301,7 +301,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     if ( polytopesDialog == null )
                         polytopesDialog = new PolytopesDialog( DocumentFrame.this, polytopesController );
                     try {
-                    	    polytopesController .doAction( "setQuaternion", new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "setQuaternion" ) );
+                    	    polytopesController .actionPerformed( DocumentFrame.this, "setQuaternion" );
                     } catch ( Exception e1 ) {
                         errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ e1 } );
                     }
@@ -623,8 +623,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			@Override
             protected void doAction( ActionEvent e ) throws Exception
             {
-				mController .doAction( "finish.load", e );
-                
+                mController .actionPerformed( this, "finish.load" );
+
                 String title = mController .getProperty( "window.title" );
                 boolean migrated = mController .propertyIsTrue( "migrated" );
                 
@@ -633,7 +633,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
                 if ( ! mController .userHasEntitlement( "model.edit" ) )
                 {
-                    mController .doAction( "switchToArticle", e );
+                    mController .actionPerformed( e .getSource(), "switchToArticle" );
                     if ( url != null )
                         title = url .toExternalForm();
                     migrated = false;
@@ -702,7 +702,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			@Override
             protected void doAction( ActionEvent e ) throws Exception
             {
-				controller .doAction( action, e );
+				controller .actionPerformed( e .getSource(), action );
             }
 
 			@Override

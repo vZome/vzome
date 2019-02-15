@@ -55,7 +55,7 @@ public class NumberController extends DefaultController
     }
 
     @Override
-    public void setProperty( String property, Object value )
+    public void setModelProperty( String property, Object value )
     {
         switch ( property ) {
 
@@ -72,7 +72,7 @@ public class NumberController extends DefaultController
             return;
 
 		default:
-            super.setProperty( property, value );
+            super .setModelProperty( property, value );
 		}
     }
 

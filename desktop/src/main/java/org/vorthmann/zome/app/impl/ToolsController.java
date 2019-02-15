@@ -3,7 +3,6 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -33,7 +32,7 @@ public class ToolsController extends DefaultController implements PropertyChange
         Tool tool = tools .get( name );
         if ( tool != null ) {
             Controller controller = new ToolController( tool );
-            controller .setNextController( this );
+            this .addSubController( name, controller );
             return controller;
         }
         return null;
@@ -42,8 +41,8 @@ public class ToolsController extends DefaultController implements PropertyChange
     void addTool( Tool tool )
     {
         Controller controller = new ToolController( tool );
-        controller .setNextController( this );
-        this .properties() .firePropertyChange( new PropertyChangeEvent( this, "tool.added", null, controller ) );
+        this .addSubController( "tools", controller );
+        this .firePropertyChange( new PropertyChangeEvent( this, "tool.added", null, controller ) );
     }
 
     @Override
@@ -59,11 +58,11 @@ public class ToolsController extends DefaultController implements PropertyChange
                     // ignore the forced events at startup, and tools that have been hidden
                     return;
                 Controller controller = new ToolController( tool );
-                this .properties() .firePropertyChange( new PropertyChangeEvent( this, "tool.added", null, controller ) );
+                this .firePropertyChange( new PropertyChangeEvent( this, "tool.added", null, controller ) );
             }
             else { // hiding a tool
                 Tool tool = (Tool) evt .getOldValue();
-                this .properties() .firePropertyChange( new PropertyChangeEvent( this, "tool.hidden", tool .getId(), null ) );
+                this .firePropertyChange( new PropertyChangeEvent( this, "tool.hidden", tool .getId(), null ) );
             }
             break;
 

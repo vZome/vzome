@@ -126,11 +126,11 @@ public class CameraController extends DefaultController implements Controller3d
         updateViewersProjection();
 
         if ( wasPerspective != model .isPerspective() )
-            properties() .firePropertyChange( "perspective", wasPerspective, model .isPerspective() );
+            firePropertyChange( "perspective", wasPerspective, model .isPerspective() );
         if ( wasStereo != model .isStereo() )
-            properties() .firePropertyChange( "stereo", wasStereo, model .isStereo() );
+            firePropertyChange( "stereo", wasStereo, model .isStereo() );
         if ( oldMag != model .getMagnification() )
-            properties() .firePropertyChange( "magnification", Float .toString( oldMag ), Float .toString( model .getMagnification() ) );
+            firePropertyChange( "magnification", Float .toString( oldMag ), Float .toString( model .getMagnification() ) );
 
         return model;
     }
@@ -305,7 +305,7 @@ public class CameraController extends DefaultController implements Controller3d
                 model .setStereoAngle( 0d );
             updateViewersTransformation();
             updateViewersProjection();
-            properties() .firePropertyChange( "stereo", wasStereo, !wasStereo );
+            firePropertyChange( "stereo", wasStereo, !wasStereo );
         }
         else if ( action .equals( "togglePerspective" ) )
         {
@@ -399,7 +399,7 @@ public class CameraController extends DefaultController implements Controller3d
                 ticks -= amt;
                 float newMag = ticksToMag( ticks );
                 setMagnification( newMag );
-                properties() .firePropertyChange( "magnification", Float .toString( oldMag ), Float .toString( newMag ) );
+                firePropertyChange( "magnification", Float .toString( oldMag ), Float .toString( newMag ) );
             }
         };
     }
@@ -468,7 +468,7 @@ public class CameraController extends DefaultController implements Controller3d
 
 
     @Override
-    public void setProperty( String propName, Object value )
+    public void setModelProperty( String propName, Object value )
     {
         if ( "magnification" .equals( propName ) )
         {
@@ -480,6 +480,8 @@ public class CameraController extends DefaultController implements Controller3d
             setMagnification( Float .parseFloat( (String) value ) );
             lastZoom = now;
         }
+        else
+            super .setModelProperty( propName, value );
     }
 
     public void copyView( Camera newView )

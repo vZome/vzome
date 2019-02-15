@@ -85,7 +85,6 @@ public class SymmetryController extends DefaultController// implements RenderedM
 
     public SymmetryController( Controller parent, SymmetrySystem model )
     {
-        this .setNextController( parent );
         this.symmetrySystem = model;
         Symmetry symmetry = model .getSymmetry();
         availableOrbits = new OrbitSet( symmetry );
@@ -105,20 +104,19 @@ public class SymmetryController extends DefaultController// implements RenderedM
                 }
             }
             renderOrbits .add( dir );
-            orbitLengths .put( dir, new LengthController( dir ) );
         }
         availableController = new OrbitSetController( availableOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
-        availableController .setNextController( this );
+        this .addSubController( "availableOrbits", availableController );
         snapController = new OrbitSetController( snapOrbits, availableOrbits, this .symmetrySystem, false );
-        snapController .setNextController( this );
+        this .addSubController( "snapOrbits", snapController );
         buildController = new OrbitSetController( buildOrbits, availableOrbits, this .symmetrySystem, true );
-        buildController .setNextController( this );
+        this .addSubController( "buildOrbits", buildController );
         renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
-        renderController .setNextController( this );
+        this .addSubController( "renderOrbits", renderController );
 
-        for (Direction dir : this .symmetrySystem .getOrbits()) {
+        for ( Direction dir : this .symmetrySystem .getOrbits() ) {
             LengthController lengthModel = new LengthController( dir );
-            lengthModel .setNextController( buildController );
+            buildController .addSubController( "length." + dir .getName(), lengthModel );
             orbitLengths .put( dir, lengthModel );
         }
         if ( parent .propertyIsTrue( "disable.known.directions" ) )
@@ -232,7 +230,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
             result = this .linearMapToolFactories .get( name );
             if ( result != null )
                 return result;
-            return null;
+            return super .getSubController( name );
         }
     }
 
@@ -264,7 +262,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
         if ( result == null && dir != null )
         {
             result = new LengthController( dir );
-            result .setNextController( buildController );
+            buildController .addSubController( "length." + dir .getName(), result );
             orbitLengths .put( dir, result );
             renderOrbits .add( dir );
             availableOrbits .add( dir );

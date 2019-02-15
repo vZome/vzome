@@ -85,26 +85,26 @@ public class StrutBuilderController extends DefaultController implements CanvasT
         }
     }
     @Override
-    public void setProperty( String name, Object value )
+    public void setModelProperty( String name, Object value )
     {
         switch ( name ) {
 
         case "useGraphicalViews": {
             boolean old = useGraphicalViews;
             this.useGraphicalViews = "true".equals( value );
-            properties().firePropertyChange( name, old, this.useGraphicalViews );
+            firePropertyChange( name, old, this.useGraphicalViews );
             break;
         }
             
         case "showStrutScales": {
             boolean old = showStrutScales;
             this.showStrutScales = "true" .equals( value );
-            properties().firePropertyChange( name, old, this.showStrutScales );
+            firePropertyChange( name, old, this.showStrutScales );
             break;
         }
 
         default:
-            super .setProperty( name, value );
+            super .setModelProperty( name, value );
         }
     }
     
@@ -120,14 +120,14 @@ public class StrutBuilderController extends DefaultController implements CanvasT
         case "toggleOrbitViews": {
             boolean old = useGraphicalViews;
             useGraphicalViews = ! old;
-            properties().firePropertyChange( "useGraphicalViews", old, this.useGraphicalViews );
+            firePropertyChange( "useGraphicalViews", old, this.useGraphicalViews );
             break;
         }
 
         case "toggleStrutScales": {
             boolean old = showStrutScales;
             showStrutScales = ! old;
-            properties().firePropertyChange( "showStrutScales", old, this.showStrutScales );
+            firePropertyChange( "showStrutScales", old, this.showStrutScales );
             break;
         }
 
@@ -141,7 +141,6 @@ public class StrutBuilderController extends DefaultController implements CanvasT
         // The preview strut rendering is the main reason we distinguish the mainScene as a listener
         AlgebraicField field = this .docController .getModel() .getField();
         this .previewStrut = new PreviewStrut( field, scene, cameraController );
-        this .previewStrut .setPropertyChangeSupport( this .properties() );
 
         this .previewStrutLength = new MouseToolFilter( cameraController .getZoomScroller() )
         {
@@ -240,6 +239,6 @@ public class StrutBuilderController extends DefaultController implements CanvasT
     public void setWorkingPlaneAxis( AlgebraicVector axis )
     {
         this .workingPlaneAxis = axis;
-        this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
+        this .firePropertyChange( "workingPlaneDefined", false, true );
     }
 }
