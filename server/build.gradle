@@ -11,6 +11,10 @@ dependencies {
 
 mainClassName = "com.vzome.server.ControllerWebSocket"
 
+// for Heroku
+task stage( dependsOn: ['installDist', 'clean'] )
+installDist.mustRunAfter clean
+
 sourceSets {
     main {
         resources {
