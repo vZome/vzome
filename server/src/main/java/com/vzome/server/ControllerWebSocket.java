@@ -33,7 +33,7 @@ public class ControllerWebSocket implements WebSocketListener
 {
     private static final Logger LOG = Log.getLogger( ControllerWebSocket.class );
     private Session outbound;
-    private final ThrottledQueue queue = new ThrottledQueue( 30, 1000 ); // 40 gets/second
+    private final ThrottledQueue queue = new ThrottledQueue( 200, 1000 ); // 40 gets/second
     private Controller3d docController;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -58,8 +58,10 @@ public class ControllerWebSocket implements WebSocketListener
             @Override
             public void run() {
                 while (true)
-                    if ( ! queue .isEmpty()) {
-                        session .getRemote() .sendString( (String) queue .get(), null );
+                    if ( ! queue .isEmpty() ) {
+                        String msg = (String) queue .get();
+                        session .getRemote() .sendString( msg, null );
+                        LOG.info( "WebSocket Send: ", msg );
                     }
             }
         } );
