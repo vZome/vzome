@@ -31,10 +31,10 @@ import com.vzome.desktop.controller.RenderingViewer;
 
 class RemoteClientRendering implements RenderingChanges, RenderingViewer, PropertyChangeListener
 {
+    private static class RealTrianglesView implements AlgebraicNumber.Views.Real, Polygon.Views.Triangles {}
+
     // Keep things simple for the client code: all real numbers, all faces triangulated
-	private final ObjectWriter objectWriter = new ObjectMapper()
-            .writerWithView( AlgebraicNumber.Views.Real.class )
-            .withView( Polygon.Views.Triangles.class );
+	private final ObjectWriter objectWriter = new ObjectMapper() .writerWithView( RealTrianglesView.class );
 
 	private final Set<String> shapeIds = new HashSet<>();
 	private Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
