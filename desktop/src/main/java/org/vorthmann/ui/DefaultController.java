@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.vorthmann.j3d.MouseTool;
 
 public class DefaultController implements Controller
@@ -27,7 +26,7 @@ public class DefaultController implements Controller
     
     protected DefaultController mNextController;
     
-    private final Map<String,Controller> subcontrollers = new HashMap<String, Controller>();
+    private final Map<String,Controller> subcontrollers = new HashMap<>();
 
     private String name = "";
 
@@ -202,7 +201,7 @@ public class DefaultController implements Controller
             }
         } );
         if ( mNextController instanceof DefaultController )
-            mErrors = ((DefaultController) mNextController) .mErrors;
+            mErrors = mNextController .mErrors;
     }
     
     protected void firePropertyChange( PropertyChangeEvent event )
