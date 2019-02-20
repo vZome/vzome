@@ -4,7 +4,7 @@ group = 'com.vzome'
 version = '6.0'
 
 wrapper() {
-   gradleVersion = '4.10' //version required
+   gradleVersion = '5.2.1' //version required
 }
 
 // these environment variables are available during a Jenkins build
@@ -34,7 +34,11 @@ subprojects {
     
     // this one is for javax.media.jai
     maven { url 'http://repository.springsource.com/maven/bundles/external' }
-
+    
+    // TODO: Gradle 5.2.1 generates this warning.:
+    // The IvyArtifactRepository.layout(String, Closure) method has been deprecated. 
+    // This is scheduled to be removed in Gradle 6.0. 
+    // Please use the IvyArtifactRepository.patternLayout(Action) method instead.
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for java3d/*
     // This failed due to issues mentioned here:
     //   https://discuss.gradle.org/t/gradle-fails-to-download-a-dependency-if-http-head-is-not-supported-by-a-web-server/9885/3

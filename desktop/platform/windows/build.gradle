@@ -11,7 +11,7 @@ buildscript {
 }
 
 plugins {
-  id "edu.sc.seis.launch4j" version "1.1.0"
+  id "edu.sc.seis.launch4j" version "2.4.4"
 }
 
 dependencies {
@@ -35,32 +35,28 @@ def folderName = "${l4jOutputBaseFileName}"
 ext.l4jOutputDir = "launch4j/${folderName}"  // path is relative to buildDir
 ext.bundledJrePath = './jre/'               // path is relative to launch4j.outputDir and must start with '.'
 
-// JRE version naming convention based on Oracle's Java version naming convention (e.g. 1.8.0_74)
+// JRE version naming convention based on Oracle's Java version naming convention (e.g. 11.0.2 for Java 11)
 ext.jreRevision = 0
 
-// *** THIS IS WHERE THE BUNDLED JRE TARGET VERSION IS CONTROLLED ***
-// 31 = Oracle
-// 40 = Azul            // TODO: Manually repackage the "jre" folder and the "release" file for 40 (Azul) as described in README.md
-// 74 = Oracle
-ext.jreBuildNumber = 74 // Default to version 74 of the Oracle Java 8 JRE
+// *** THIS IS WHERE THE DEFAULT BUNDLED JRE TARGET VERSION IS CONTROLLED ***
+ext.jreBuildNumber = 2 // Default to Java 11.0.2
 
 // allow ext.jreBuildNumber to be overridden by the gradle command line 
-// e.g. gradle createExe -PjreBuildOverride=40
-//   or gradle distSfx -PjreBuildOverride=40
-//   or gradle extraProperties -PjreBuildOverride=40
+// e.g. gradle createExe -PjreBuildOverride=3
+//   or gradle distSfx -PjreBuildOverride=3
+//   or gradle extraProperties -PjreBuildOverride=3
 if( project.hasProperty( 'jreBuildOverride' ) ) {
     project.jreBuildNumber = Integer.parseInt( jreBuildOverride )
 }
 
-ext.jreTargetVersion = "${targetCompatibility}.${jreRevision}_${jreBuildNumber}"   // target JRE version   (e.g. 1.8.0_74)
-ext.jrePriorVersion  = "${targetCompatibility}.${jreRevision}_${jreBuildNumber-1}" // target JRE version-1 (e.g. 1.8.0_73)
+ext.jreTargetVersion = "${targetCompatibility}.${jreRevision}.${jreBuildNumber}"   // target JRE version   (e.g. 11.0.2)
+ext.jrePriorVersion  = "${targetCompatibility}.${jreRevision}.${jreBuildNumber-1}" // target JRE version-1 (e.g. 11.0.2)
 // these are used by the zip and distribution tasks after launch4j has run
 ext.jreArchiveSourcePath = project.hasProperty( 'jreZips' ) ? project.getProperty( 'jreZips' ) : 'jre/x64' // path is relative to the root of this subproject
 ext.jreDistributionPath = "$l4jOutputDir/$bundledJrePath"
 ext.win64ZipBaseFileName = "${l4jOutputBaseFileName}"
 
 launch4j {
-    launch4jCmd = project.l4jCmdPath
     xmlFileName = project.l4jxmlFileName
     mainClassName = project.mainClassName
     outputDir = project.l4jOutputDir
@@ -74,11 +70,13 @@ launch4j {
     jdkPreference = 'jdkOnly' // default is 'preferJre'
     jreRuntimeBits = '64'
 
-    opt = '-Xmx3072M'
+    jvmOptions << '-Xmx3072M'
+    jvmOptions << '-Dfile.encoding=UTF-8'
+    jvmOptions << '-Ddefault.charset=UTF-8'
 	// Most of the rootProject.jvmArgs have apple in the name. Exclude those...
 	rootProject.project('desktop').jvmArgs.each { entry ->
 		if(!entry.key.contains("apple.")) {
-			opt = opt + " -D${entry.key}=${entry.value}"
+			jvmOptions << "-D${entry.key}=${entry.value}"
 		}
 	}
 	cmdLine = ''
@@ -93,7 +91,7 @@ launch4j {
     version = project.version
     textVersion = project.version
     copyright = project.copyright
-    description = 'Generates virtual zome 3D models'
+    fileDescription = 'Generates virtual zome 3D models'
     productName = rootProject.name
     internalName = rootProject.name
 }
