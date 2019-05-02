@@ -27,7 +27,7 @@ public class DefaultController implements Controller
     
     protected DefaultController mNextController;
     
-    private final Map<String,Controller> subcontrollers = new HashMap<String, Controller>();
+    private final Map<String,Controller> subcontrollers = new HashMap<>();
 
     private String name = "";
 
@@ -202,7 +202,7 @@ public class DefaultController implements Controller
             }
         } );
         if ( mNextController instanceof DefaultController )
-            mErrors = ((DefaultController) mNextController) .mErrors;
+            mErrors = mNextController .mErrors;
     }
     
     protected void firePropertyChange( PropertyChangeEvent event )
