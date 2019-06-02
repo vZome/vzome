@@ -24,8 +24,11 @@ import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.render.Color;
 import com.vzome.desktop.controller.Controller3d;
 
@@ -36,6 +39,7 @@ public class ControllerWebSocket implements WebSocketListener
     private final ThrottledQueue queue = new ThrottledQueue( 200, 1000 ); // 40 gets/second
     private Controller3d docController;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectWriter objectWriter = objectMapper .writer();
 
     public void onWebSocketClose( int statusCode, String reason )
     {
@@ -45,9 +49,24 @@ public class ControllerWebSocket implements WebSocketListener
         LOG.info( "WebSocket Close: {} - {}", statusCode, reason );
     }
 
-    private void publish( String message )
+    private void publish( JsonNode node )
     {
-        this .queue .add( message );
+        try {
+            this .queue .add( this .objectWriter .writeValueAsString( node ) );
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void publish( String key, String value )
+    {
+        ObjectNode wrapper = this .objectMapper .createObjectNode();
+        wrapper .put( key, value );
+        try {
+            this .queue .add( this .objectWriter .writeValueAsString( wrapper ) );
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onWebSocketConnect( Session session )
@@ -66,45 +85,53 @@ public class ControllerWebSocket implements WebSocketListener
             }
         } );
         LOG.info( "WebSocket Connect: {}", session );
-        publish( "{ \"info\": \"You are now connected to " + this.getClass().getName() + "\" }" );
+        publish( "info", "You are now connected to " + this.getClass().getName() );
 
         String urlStr = session .getUpgradeRequest() .getQueryString();
         try {
             urlStr = URLDecoder.decode( urlStr, "UTF-8");
-            publish( "{ \"info\": \"Opening " + urlStr + "\" }" );
+            publish( "info", "Opening " + urlStr );
         } catch (UnsupportedEncodingException e1) {
             e1.printStackTrace();
-            publish( e1 .getMessage() );
+            publish( "error", e1 .getMessage() );
             return;
         }
 
         docController = (Controller3d) APP .getSubController( urlStr );
         if ( docController != null ) {
-            publish( "{ \"error\": \"Document already in use: " + urlStr + "\" }" );
+            publish( "error", "Document already in use: " + urlStr );
             this .docController = null; // prevent action on the document
         } else {
             APP .doAction( "openURL-" + urlStr, null );
             this .docController = (Controller3d) APP .getSubController( urlStr );
             if ( this .docController == null ) {
-                publish( "{ \"error\": \"Document load FAILURE: " + urlStr + "\" }" );
+                publish( "error", "Document load FAILURE: " + urlStr );
                 return;
             }
             String bkgdColor = docController .getProperty( "backgroundColor" );
             if ( bkgdColor != null ) {
+                ObjectNode wrapper = this .objectMapper .createObjectNode();
+                wrapper .put( "render", "background" );
                 int rgb =  Integer .parseInt( bkgdColor, 16 );
-                String color = new Color( rgb ) .toWebString();
-                publish( "{ \"render\": \"background\", \"color\": \"" + color + "\" }" );
+                wrapper .put( "color", new Color( rgb ) .toWebString() );
+                publish( wrapper );
             }
             consumer.start();
-            RemoteClientRendering clientRendering = new RemoteClientRendering( queue );
+            RemoteClientRendering clientRendering = new RemoteClientRendering( new RemoteClientRendering.JsonSink() {
+                
+                @Override
+                public void sendJson( JsonNode node ) {
+                    publish( node );
+                }
+            } );
             this .docController .attachViewer( clientRendering, clientRendering, null );
             try {
                 this .docController .actionPerformed( this, "finish.load" );
-                publish( "{ \"render\": \"flush\" }" );
-                publish( "{ \"info\": \"Document load SUCCESS\" }" );
+                publish( "render", "flush" );
+                publish( "info", "Document load SUCCESS" );
             } catch ( Exception e ) {
                 e.printStackTrace();
-                publish( "{ \"error\": \"Document load unknown FAILURE\" }" );
+                publish( "error", "Document load unknown FAILURE}" );
             }
         }
     }

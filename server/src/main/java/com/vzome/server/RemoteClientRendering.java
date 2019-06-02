@@ -3,6 +3,7 @@ package com.vzome.server;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,9 +14,10 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.construction.Polygon;
@@ -34,15 +36,36 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
     private static class RealTrianglesView implements AlgebraicNumber.Views.Real, Polygon.Views.Triangles {}
 
     // Keep things simple for the client code: all real numbers, all faces triangulated
-	private final ObjectWriter objectWriter = new ObjectMapper() .writerWithView( RealTrianglesView.class );
+    private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectWriter objectWriter = objectMapper .writerWithView( RealTrianglesView.class );
 
 	private final Set<String> shapeIds = new HashSet<>();
 	private Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
-	private final ThrottledQueue queue;
-
-	public RemoteClientRendering( ThrottledQueue queue )
+    private JsonSink queue;
+	
+	public interface JsonSink
 	{
-		this .queue = queue;
+	    void sendJson( JsonNode node );
+	}
+	
+	private void sendJson( JsonNode node )
+	{
+	    this .queue .sendJson( node );
+	}
+	
+	private JsonNode asTreeWithView( Object object )
+	{
+	    try {
+            return objectMapper .readTree( objectWriter .writeValueAsString( object ) );
+        } catch (IOException e) {
+            e .printStackTrace();
+            return objectMapper .createObjectNode();
+        }
+	}
+
+	public RemoteClientRendering( JsonSink queue )
+	{
+        this .queue = queue;
 	}
 
 	@Override
@@ -91,42 +114,46 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 		Polyhedron shape = rm .getShape();
 		Quat4d quaternion = getQuaternion( rm .getOrientation() );
 		String shapeId = shape .getGuid() .toString();
-		try {
-			if ( ! this .shapeIds .contains( shapeId ) )
-			{
-				this .shapeIds .add( shapeId );
-				String shapeJson = this .objectWriter .writeValueAsString( shape );
-				this .queue .add( "{ \"render\": \"shape\", \"shape\": " + shapeJson +" }" );
-			}
-			if ( man instanceof Strut )
-			{
-				RealVector start = rm .getLocation();
-				String startJson = this .objectWriter .writeValueAsString( start );
-				String quatJson = this .objectWriter .writeValueAsString( quaternion );
-				String color = rm .getColor() .toWebString();
-				this .queue .add( "{ \"render\": \"segment\", \"start\": " + startJson
-						+ ", \"id\": \"" + rm .getGuid()
-						+ "\", \"shape\": \"" + shapeId
-						+ "\", \"rotation\": " + quatJson
-						+ ", \"color\": \"" + color + "\" }" );
-			}
-			else if ( man instanceof Connector )
-			{
-				Connector ball = (Connector) man;
-				RealVector center = ball .getLocation() .toRealVector();
-				String centerJson = this .objectWriter .writeValueAsString( center );
-				Color color = rm .getColor();
-				if ( color == null )
-					color = Color.WHITE;
-				String colorStr = color .toWebString();
-				this .queue .add( "{ \"render\": \"ball\", \"center\": " + centerJson
-						+ ", \"id\": \"" + rm .getGuid()
-						+ "\", \"shape\": \"" + shapeId
-						+ "\", \"color\": \"" + colorStr + "\" }" );
-			}
-		} catch ( JsonProcessingException e ) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if ( ! this .shapeIds .contains( shapeId ) )
+		{
+		    this .shapeIds .add( shapeId );
+		    ObjectNode node = this .objectMapper .createObjectNode();
+		    node .put( "render", "shape" );
+		    node .set( "shape", this .asTreeWithView( shape ) );
+		    sendJson( node );
+		}
+		if ( man instanceof Strut )
+		{
+
+		    ObjectNode node = this .objectMapper .createObjectNode();
+		    node .put( "render", "segment" );
+		    node .put( "id", rm .getGuid() .toString() );
+		    node .put( "shape", shapeId );
+
+		    node .put( "color", rm .getColor() .toWebString() );
+
+		    node .set( "start", this .asTreeWithView( rm .getLocation() ) );
+
+		    node .set( "rotation", this .asTreeWithView( quaternion ) );
+
+		    sendJson( node );
+		}
+		else if ( man instanceof Connector )
+		{
+		    ObjectNode node = this .objectMapper .createObjectNode();
+		    node .put( "render", "ball" );
+		    node .put( "id", rm .getGuid() .toString() );
+		    node .put( "shape", shapeId );
+
+		    Color color = rm .getColor();
+		    if ( color == null )
+		        color = Color.WHITE;
+		    node .put( "color", color .toWebString() );
+
+		    RealVector center = ((Connector) man) .getLocation() .toRealVector();
+		    node .set( "center", this .asTreeWithView( center ) );
+
+		    sendJson( node );
 		}
 	}
 
@@ -151,7 +178,10 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	@Override
 	public void manifestationRemoved( RenderedManifestation rm )
 	{
-		this .queue .add( "{ \"render\": \"delete\", \"id\": \"" + rm .getGuid() + "\" }" );
+        ObjectNode node = this .objectMapper .createObjectNode();
+        node .put( "render", "delete" );
+        node .put( "id", rm .getGuid() .toString() );
+        sendJson( node );
 	}
 
 	@Override
