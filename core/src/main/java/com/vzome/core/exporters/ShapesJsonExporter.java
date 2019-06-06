@@ -9,9 +9,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vzome.core.model.Connector;
-import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
@@ -20,11 +17,11 @@ import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 
 
-public class ObservableJsonExporter extends Exporter3d
+public class ShapesJsonExporter extends Exporter3d
 {
     private final JsonMapper mapper = new JsonMapper();
     
-    public ObservableJsonExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
+    public ShapesJsonExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
     {
         super( scene, colors, lights, model );
     }
@@ -33,8 +30,7 @@ public class ObservableJsonExporter extends Exporter3d
     public void doExport( File directory, Writer writer, int height, int width ) throws IOException
     {
         ArrayList<JsonNode> shapes = new ArrayList<>();
-        ArrayList<JsonNode> balls = new ArrayList<>();
-        ArrayList<JsonNode> struts = new ArrayList<>();
+        ArrayList<JsonNode> instances = new ArrayList<>();
 
         for (RenderedManifestation rm : mModel) {
             ObjectNode node = mapper .getObjectNode( rm );
@@ -42,20 +38,11 @@ public class ObservableJsonExporter extends Exporter3d
                 ObjectNode shapeNode = mapper .getShapeNode( rm .getShape() );
                 if ( shapeNode != null )
                 {
-                    shapes .add( shapeNode );
+                    shapes .add( shapeNode ); // a shape not reported yet
                 }
 
-                Manifestation man = rm .getManifestation();
-                if ( man instanceof Strut )
-                {
-                    ObjectNode strutJson = mapper .getObjectNode( rm );
-                    struts .add( strutJson );
-                }
-                else if ( man instanceof Connector )
-                {
-                    ObjectNode ballJson = mapper .getObjectNode( rm );
-                    balls .add( ballJson );
-                }
+                ObjectNode instanceNode = mapper .getObjectNode( rm );
+                instances .add( instanceNode );
             }
         }
 
@@ -66,8 +53,7 @@ public class ObservableJsonExporter extends Exporter3d
 
         generator .writeStartObject();
         generator .writeObjectField( "shapes", shapes );
-        generator .writeObjectField( "balls", balls );
-        generator .writeObjectField( "segments", struts );
+        generator .writeObjectField( "instances", instances );
         generator .writeEndObject();
         generator.close();
     }

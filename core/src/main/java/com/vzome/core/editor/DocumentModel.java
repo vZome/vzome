@@ -60,7 +60,7 @@ import com.vzome.core.editor.ManifestationColorMappers.SystemCentroidColorMap;
 import com.vzome.core.editor.ManifestationColorMappers.SystemColorMap;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
 import com.vzome.core.exporters.Exporter3d;
-import com.vzome.core.exporters.ObservableJsonExporter;
+import com.vzome.core.exporters.ShapesJsonExporter;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
@@ -585,8 +585,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             }
             break;
 
-        case "observable":
-            ObservableJsonExporter ojex = new ObservableJsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
+        case "shapes":
+            ShapesJsonExporter ojex = new ShapesJsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
             try {
                 ojex .doExport( null, out, 0, 0 );
             } catch (IOException e) {

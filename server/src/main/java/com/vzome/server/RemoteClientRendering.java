@@ -10,9 +10,6 @@ import javax.vecmath.Point3d;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vzome.core.model.Connector;
-import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.Strut;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
@@ -89,16 +86,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
                 shapeNode .put( "render", "shape" );
                 sendJson( shapeNode );
             }
-
-            Manifestation man = rm .getManifestation();
-            if ( man instanceof Strut )
-            {
-                node .put( "render", "segment" );
-            }
-            else if ( man instanceof Connector )
-            {
-                node .put( "render", "ball" );
-            }
+            node .put( "render", "instance" );
             node .put( "id", rm .getGuid() .toString() );
             sendJson( node );
         }

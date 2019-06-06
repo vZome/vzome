@@ -52,8 +52,7 @@ public class JsonMapper
         if ( ! this .shapeIds .contains( shapeId ) )
         {
             this .shapeIds .add( shapeId );
-            ObjectNode node = this .objectMapper .createObjectNode();
-            node .set( "shape", this .asTreeWithView( shape ) );
+            ObjectNode node = (ObjectNode) this .asTreeWithView( shape );
             return node;
         }
         else
@@ -73,7 +72,7 @@ public class JsonMapper
 
             node .put( "color", rm .getColor() .toWebString() );
 
-            node .set( "start", this .asTreeWithView( rm .getLocation() ) );
+            node .set( "position", this .asTreeWithView( rm .getLocation() ) );
 
             Quat4d quaternion = getQuaternion( rm .getOrientation() );
             node .set( "rotation", this .asTreeWithView( quaternion ) );
@@ -91,7 +90,7 @@ public class JsonMapper
             node .put( "color", color .toWebString() );
 
             RealVector center = ((Connector) man) .getLocation() .toRealVector();
-            node .set( "center", this .asTreeWithView( center ) );
+            node .set( "position", this .asTreeWithView( center ) );
 
             return node;
         }
