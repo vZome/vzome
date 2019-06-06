@@ -175,6 +175,22 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
         this(BigInteger.valueOf(numerator), denominator);
     }
 
+    public static BigRational[][] newMatrix(int [][] numerators) {
+        BigRational[][] matrix = new BigRational[numerators.length][];
+        for (int row = 0; row < numerators.length; row++) {
+            matrix[row] = newArray(numerators[row]);
+        }
+        return matrix;
+    }
+    
+    public static BigRational[] newArray(int [] numerators) {
+        BigRational[] array = new BigRational[numerators.length];
+        for (int col = 0; col < numerators.length; col++) {
+            array[col] = new BigRational(numerators[col]);
+        }
+        return array;
+    }
+    
     /**
      * 
      * @param numerator
