@@ -255,6 +255,10 @@ public class ControllerWebSocket implements WebSocketListener
         defHolder.setInitParameter("dirAllowed","true");
         context.addServlet(defHolder,"/");
 
+        // add exporter servlet
+        
+        context.addServlet( new ServletHolder( new ExporterServlet() ), "/exporter/*" );
+
         try
         {
             server.start();
