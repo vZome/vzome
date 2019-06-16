@@ -1,5 +1,7 @@
 package org.vorthmann.zome.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
@@ -19,6 +21,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
@@ -69,8 +72,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         boolean developerExtras = controller .userHasEntitlement( "developer.extras" );
 
         boolean enable4d = developerExtras || ( fullPower && controller .userHasEntitlement( "4d.symmetries" ) );
-
-        boolean metaModels = developerExtras || ( fullPower && controller .userHasEntitlement( "meta.models" ) );
 
         boolean canSave = controller .userHasEntitlement( "save.files" );
 
@@ -186,7 +187,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .add( createMenuItem( "Capture Animation...", "capture-animation" ) );
 
-        menu.add( enableIf( isEditor, createMenuItem( "Capture PDF or SVG...", "snapshot.2d" ) ) );
+        submenu = new JMenu( "Capture Vector Drawing..." );
+        submenu .add( createMenuItem( "PDF", "export2d.pdf" ) );
+        submenu .add( createMenuItem( "SVG", "export2d.svg" ) );
+        submenu .add( createMenuItem( "Postscript", "export2d.ps" ) );
+        submenu .addSeparator();
+        submenu .add( enableIf( isEditor, createMenuItem( "Customize...", "snapshot.2d" ) ) );
+        menu .add( submenu );
 
         menu.addSeparator();
         menu.add( createMenuItem( "Quit", "quit", KeyEvent.VK_Q, COMMAND ) );
@@ -206,7 +213,16 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu .add( withAccelerator( KeyEvent.VK_B, COMMAND_SHIFT, withAction( "undoRedo", "undoToBreakpoint", new JMenuItem( "Undo To Breakpoint" ) ) ) );
             menu .add( withAccelerator( KeyEvent.VK_B, COMMAND_OPTION, withAction( "undoRedo", "redoToBreakpoint", new JMenuItem( "Redo To Breakpoint" ) ) ) );
             menu .add( withAccelerator( KeyEvent.VK_B, COMMAND, withAction( "undoRedo", "setBreakpoint", new JMenuItem( "Set Breakpoint" ) ) ) );
-            menu .add( withAction( "undoRedo", "redoUntilEdit", new JMenuItem( "Redo to Edit Number..." ) ) );
+            menu .add( withAction( new JMenuItem( "Redo to Edit Number..." ), new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    String number = JOptionPane.showInputDialog( null, "Enter the edit number.", "Set Edit Number",
+                            JOptionPane.PLAIN_MESSAGE );
+                    controller .getSubController( "undoRedo" ) .actionPerformed( new ActionEvent( DocumentMenuBar.this, ActionEvent.ACTION_PERFORMED, "redoUntilEdit." + number ) );
+                }
+            } ) );
         }
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Cut", ( "cut" ), KeyEvent.VK_X, COMMAND ) ) );
@@ -234,6 +250,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "deselectPanels" ) ) ) );
         submenu.add( enableIf( isEditor, createMenuItem( "All", ( "unselectAll" ) ) ) );
         menu.add(submenu);
+
+        menu.add( enableIf( isEditor, createMenuItem( "Select by Diameter", ( "SelectByDiameter" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Select by Radius", ( "SelectByRadius" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Group", ( "group" ), KeyEvent.VK_G, COMMAND ) ) );
@@ -312,6 +331,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( enableIf( isEditor, createMenuItem( "Line-Line Intersection", ( "StrutIntersection" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Line-Plane Intersection", ( "LinePlaneIntersect" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Cross Product", ( "CrossProduct" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Normal to Skew Lines", ( "JoinSkewLines" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( enableIf( isEditor, createMenuItem( "Ball At Origin", ( "ballAtOrigin" ) ) ) );
@@ -319,11 +339,12 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu.add( enableIf( isEditor, createMenuItem( "Ball At Symmetry Center", ( "ballAtSymmCenter" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        menu.add( enableIf( isEditor, createMenuItem( "2D Convex Hull", ( "ConvexHull2d" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "3D Convex Hull", ( "ConvexHull3d" ) ) ) );
+
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         //        menu.add( enableIf( isEditor, createMenuItem( "Affine Transform All", getExclusiveAction( "affineTransformAll" ) ) );
         //        menuItem = enableIf( isEditor, createMenuItem( "Conjugate", getExclusiveAction( "conjugate" ) );
-        if ( metaModels ) {
-            menu .add(  createMenuItem( "Meta-model", ( "realizeMetaParts" ) ) );
-        }
         menu.add( enableIf( isEditor, createMenuItem( "Parallelepiped", "Parallelepiped", KeyEvent.VK_P, COMMAND_SHIFT ) ) );
         if ( isGolden ) {
             menu.add( enableIf( isEditor, createMenuItem( "\u03C6 Divide", ( "tauDivide" ) ) ) );
@@ -461,17 +482,18 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( createMenuItem( "Shapes...", "configureShapes" ) );
         menu.add( createMenuItem( "Directions...", "configureDirections" ) );
 
-        JMenuItem cbMenuItem = actions .setMenuAction( "toggleOrbitViews", controller, new JCheckBoxMenuItem( "Show Directions Graphically" ) );
-        boolean setting = "true".equals( controller .getProperty( "useGraphicalViews" ) );
+        Controller sbController = controller .getSubController( "strutBuilder" );
+        JMenuItem cbMenuItem = actions .setMenuAction( "toggleOrbitViews", sbController, new JCheckBoxMenuItem( "Show Directions Graphically" ) );
+        boolean setting = "true".equals( sbController .getProperty( "useGraphicalViews" ) );
         cbMenuItem .setSelected( setting );
         menu.add( cbMenuItem );
         cbMenuItem .setEnabled( fullPower );
 
-        final JMenuItem showStrutScalesItem = actions .setMenuAction( "toggleStrutScales", controller, new JCheckBoxMenuItem( "Show Strut Scales" ) );
-        setting = "true" .equals( controller .getProperty( "showStrutScales" ) );
+        final JMenuItem showStrutScalesItem = actions .setMenuAction( "toggleStrutScales", sbController, new JCheckBoxMenuItem( "Show Strut Scales" ) );
+        setting = "true" .equals( sbController .getProperty( "showStrutScales" ) );
         showStrutScalesItem .setSelected( setting );
         showStrutScalesItem .setEnabled( fullPower );
-        controller .addPropertyListener( new PropertyChangeListener(){
+        sbController .addPropertyListener( new PropertyChangeListener(){
             @Override
             public void propertyChange( PropertyChangeEvent chg )
             {
@@ -487,6 +509,11 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         cbMenuItem = actions .setMenuAction( "toggleFrameLabels", controller, new JCheckBoxMenuItem( "Show Frame Labels" ) );
         setting = "true".equals( controller .getProperty( "showFrameLabels" ) );
+        cbMenuItem .setSelected( setting );
+        menu.add( cbMenuItem );
+
+        cbMenuItem = actions .setMenuAction( "toggleNormals", controller, new JCheckBoxMenuItem( "Show Panel Normals" ) );
+        setting = "true".equals( controller .getProperty( "showNormals" ) );
         cbMenuItem .setSelected( setting );
         menu.add( cbMenuItem );
 
@@ -524,6 +551,15 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu .add( createMenuItem( "Welcome G4G10 Participant...", "openResource-org/vorthmann/zome/content/welcomeG4G10.vZome" ) );
         menu .add( createMenuItem( "Quick Start...", "openResource-org/vorthmann/zome/content/welcomeDodec.vZome" ) );
         menu .addSeparator(); 
+        {
+            JMenu submenu3d = new JMenu( "3D Printing Starters..." );
+            submenu3d .add( createMenuItem( "Red-tip Struts", "newFromResource-org/vorthmann/zome/print3d/redStruts/struts-template-enlarged.vZome" ) );
+            submenu3d .add( createMenuItem( "Yellow-tip Struts", "newFromResource-org/vorthmann/zome/print3d/yellowStruts/struts-template-enlarged.vZome" ) );
+            submenu3d .add( createMenuItem( "Blue-tip Struts", "newFromResource-org/vorthmann/zome/print3d/blueStruts/struts-template-enlarged.vZome" ) );
+            menu.add( submenu3d );
+        
+        }
+        menu .addSeparator(); 
         menu .add( createMenuItem( "About vZome...", "showAbout" ) );
         super .add( menu );
     }
@@ -559,6 +595,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
     {
         control .setEnabled( enable );
         return control;
+    }
+
+    private JMenuItem withAction( JMenuItem menuItem, ActionListener action )
+    {
+        menuItem .setEnabled( true );
+        menuItem .addActionListener( action );
+        return menuItem;
     }
 
     private JMenuItem withAction( String controllerName, String action, JMenuItem menuItem )

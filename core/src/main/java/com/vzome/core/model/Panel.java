@@ -7,6 +7,9 @@ import java.util.List;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
+import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Embedding;
+
 import java.util.ArrayList;
 
 public class Panel extends Manifestation implements Iterable<AlgebraicVector>
@@ -153,6 +156,16 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         AlgebraicVector v1 = mVertices.get( 1 );
         AlgebraicVector v2 = mVertices.get( 2 );
         return AlgebraicVectors.getNormal(v0, v1, v2);
+    }
+
+    public RealVector getNormal( Embedding embedding )
+    {
+        AlgebraicVector v0 = mVertices.get( 0 );
+        AlgebraicVector v1 = mVertices.get( 1 );
+        AlgebraicVector v2 = mVertices.get( 2 );
+        RealVector rv1 = embedding .embedInR3( v1 .minus( v0 ) );
+        RealVector rv2 = embedding .embedInR3( v2 .minus( v0 ) );
+        return rv1 .cross( rv2 );
     }
 
 	@Override

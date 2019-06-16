@@ -25,7 +25,7 @@ public class ToolFactoryController extends DefaultController implements Property
 
 		case "enabled":
 			// forward to the UI
-			this .properties() .firePropertyChange( evt );
+			this .firePropertyChange( evt );
 			break;
 
 		default:
@@ -53,7 +53,7 @@ public class ToolFactoryController extends DefaultController implements Property
 	}
 
 	@Override
-	public void actionPerformed( ActionEvent e )
+	public void doAction( String action, ActionEvent e ) throws Exception
 	{
 		switch ( e .getActionCommand() ) {
 
@@ -62,7 +62,7 @@ public class ToolFactoryController extends DefaultController implements Property
 			break;
 
 		default:
-			super .actionPerformed( e );
+			super .doAction( action, e);
 		}
 	}
 }

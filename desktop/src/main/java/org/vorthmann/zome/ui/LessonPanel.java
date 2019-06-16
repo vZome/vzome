@@ -176,7 +176,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
             Document doc = e .getDocument();
             try {
                 String text = doc .getText( start, len );
-                mController .doAction( "insertUpdateEvent " + whichField + " " + start + " " + text, null );
+                mController .actionPerformed( LessonPanel.this, "insertUpdateEvent " + whichField + " " + start + " " + text );
             } catch ( BadLocationException e1 ) {
                 logger .log( Level.SEVERE, "Bad textArea location", e1 );
             } catch ( Exception e2 ) {
@@ -190,7 +190,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
             int start = e .getOffset();
             int len = e .getLength();
             try {
-            	mController .doAction( "removeUpdateEvent " + whichField + " " + start + " " + len, null );
+            	mController .actionPerformed( LessonPanel.this, "removeUpdateEvent " + whichField + " " + start + " " + len );
             } catch ( Exception e1 ) {
                 logger .log( Level.SEVERE, "unable to remove text", e1 );
             }

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
@@ -18,7 +17,6 @@ import com.vzome.core.commands.CommandTetrahedralSymmetry;
 import com.vzome.core.editor.AxialStretchTool;
 import com.vzome.core.editor.AxialSymmetryToolFactory;
 import com.vzome.core.editor.BookmarkTool;
-import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.IcosahedralToolFactory;
 import com.vzome.core.editor.InversionTool;
 import com.vzome.core.editor.LinearMapTool;
@@ -47,32 +45,29 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  * @author vorth
  *
  */
-public class SnubDodecFieldApplication implements FieldApplication
+public class SnubDodecFieldApplication extends DefaultFieldApplication
 {
-	private final AlgebraicField field = new SnubDodecField();
+	public SnubDodecFieldApplication()
+	{
+        super( new SnubDodecField() );
+    }
 
 	@Override
 	public String getName()
 	{
-		return this .field .getName();
-	}
-
-	@Override
-	public AlgebraicField getField()
-	{
-		return this .field;
+		return this .getField() .getName();
 	}
 
     private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()
     {
-        private final IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" )
+        private final IcosahedralSymmetry symmetry = new IcosahedralSymmetry( getField(), "solid connectors" )
         {
-        	@Override
-        	protected void createOtherOrbits()
-        	{
-        		super .createOtherOrbits();
-        		/*
-        		 * 
+            @Override
+            protected void createOtherOrbits()
+            {
+                super .createOtherOrbits();
+                /*
+                 * 
 
           PENTAGON
           4 + phi*-4 + xi*0 + phi*xi*0 + xi^2*-2 + phi*xi^2*2, -4 + phi*0 + xi*0 + phi*xi*0 + xi^2*2 + phi*xi^2*0, 0 + phi*0 + xi*0 + phi*xi*0 + xi^2*0 + phi*xi^2*2
@@ -91,121 +86,124 @@ public class SnubDodecFieldApplication implements FieldApplication
           8 0 0 4 -4 0 0 -4 0 0 0 0 0 0 0 0 0 0
           (0,-4,4,0,0,8) (0,0,0,0,-4,0) (0,0,0,0,0,0)
 
-        		 */      
-        		AlgebraicNumber scale = mField .createPower( -3 );
-        		createZoneOrbit( "snubPentagon", 0, NO_ROTATION, rationalVector( new int[]{ 4,-4,0,0,-2,2,  -4,0,0,0,2,0,  0,0,0,0,0,2 } ), false, false, scale );
-        		createZoneOrbit( "snubTriangle", 0, NO_ROTATION, rationalVector( new int[]{ 0,-4,-2,0,0,2,  -4,4,0,-2,2,-2,  -4,0,-2,-2,2,0 } ), false, false, scale );
-        		createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, rationalVector( new int[]{ 8,0,0,4,-4,0,  0,-4,0,0,0,0,  0,0,0,0,0,0 } ), false, false, scale );
-        	}
+                 */      
+                AlgebraicNumber scale = mField .createPower( -3 );
+                createZoneOrbit( "snubPentagon", 0, NO_ROTATION, rationalVector( new int[]{ 4,-4,0,0,-2,2,  -4,0,0,0,2,0,  0,0,0,0,0,2 } ), false, false, scale ) .withCorrection();
+                createZoneOrbit( "snubTriangle", 0, NO_ROTATION, rationalVector( new int[]{ 0,-4,-2,0,0,2,  -4,4,0,-2,2,-2,  -4,0,-2,-2,2,0 } ), false, false, scale ) .withCorrection();
+                createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, rationalVector( new int[]{ 8,0,0,4,-4,0,  0,-4,0,0,0,0,  0,0,0,0,0,0 } ), false, false, scale ) .withCorrection();
+            }
         };
-        
+        {
+            symmetry .computeOrbitDots();
+        }
+
         private final AbstractShapes defaultShapes = new ExportedVEFShapes( null, "default", "solid connectors", symmetry );
-    	private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", symmetry, defaultShapes );
-    	private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", symmetry );
+        private final AbstractShapes lifelikeShapes = new ExportedVEFShapes( null, "lifelike", "lifelike", symmetry, defaultShapes );
+        private final AbstractShapes tinyShapes =  new ExportedVEFShapes( null, "tiny", "tiny connectors", symmetry );
 
-    	private final Command icosasymm = new CommandSymmetry( symmetry );
-    	private final Command tetrasymm = new CommandTetrahedralSymmetry( symmetry );
-    	private final Command axialsymm = new CommandAxialSymmetry( symmetry );
+        private final Command icosasymm = new CommandSymmetry( symmetry );
+        private final Command tetrasymm = new CommandTetrahedralSymmetry( symmetry );
+        private final Command axialsymm = new CommandAxialSymmetry( symmetry );
 
-		@Override
-		public Symmetry getSymmetry()
-		{
-			return this .symmetry;
-		}
-		
-		@Override
-		public String getName()
-		{
-			return "icosahedral";
-		}
+        @Override
+        public Symmetry getSymmetry()
+        {
+            return this .symmetry;
+        }
 
-		@Override
-		public List<Shapes> getGeometries()
-		{
-			return Arrays.asList( defaultShapes, lifelikeShapes, tinyShapes );
-		}
-		
-		@Override
-		public Shapes getDefaultGeometry()
-		{
-			return this .defaultShapes;
-		}
+        @Override
+        public String getName()
+        {
+            return "icosahedral";
+        }
 
-		@Override
-		public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
-		{
-			List<Tool.Factory> result = new ArrayList<>();
-			switch ( kind ) {
+        @Override
+        public List<Shapes> getGeometries()
+        {
+            return Arrays.asList( defaultShapes, lifelikeShapes, tinyShapes );
+        }
 
-			case SYMMETRY:
-				result .add( new IcosahedralToolFactory( tools, this .symmetry ) );
-				result .add( new TetrahedralToolFactory( tools, this .symmetry ) );
-				result .add( new InversionTool.Factory( tools ) );
-				result .add( new MirrorTool.Factory( tools ) );
-				result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
-				break;
+        @Override
+        public Shapes getDefaultGeometry()
+        {
+            return this .defaultShapes;
+        }
 
-			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, this .symmetry ) );
-				result .add( new RotationTool.Factory( tools, this .symmetry ) );
-				result .add( new TranslationTool.Factory( tools ) );
-				break;
+        @Override
+        public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
+        {
+            List<Tool.Factory> result = new ArrayList<>();
+            switch ( kind ) {
 
-			case LINEAR_MAP:
-				result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
-				break;
+            case SYMMETRY:
+                result .add( new IcosahedralToolFactory( tools, this .symmetry ) );
+                result .add( new TetrahedralToolFactory( tools, this .symmetry ) );
+                result .add( new InversionTool.Factory( tools ) );
+                result .add( new MirrorTool.Factory( tools ) );
+                result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
+                break;
 
-			default:
-				break;
-			}
-			return result;
-		}
+            case TRANSFORM:
+                result .add( new ScalingTool.Factory( tools, this .symmetry ) );
+                result .add( new RotationTool.Factory( tools, this .symmetry ) );
+                result .add( new TranslationTool.Factory( tools ) );
+                break;
 
-		@Override
-		public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
-		{
-			List<Tool> result = new ArrayList<>();
-			switch ( kind ) {
+            case LINEAR_MAP:
+                result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
+                break;
 
-			case SYMMETRY:
-				result .add( new IcosahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "icosahedral around origin" ) );
-				result .add( new TetrahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "tetrahedral around origin" ) );
-				result .add( new InversionTool.Factory( tools ) .createPredefinedTool( "reflection through origin" ) );
-				result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
-				result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around red through origin" ) );
-				break;
+            default:
+                break;
+            }
+            return result;
+        }
 
-			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
-				result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
-				result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around red through origin" ) );
-				result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
-				break;
+        @Override
+        public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
+        {
+            List<Tool> result = new ArrayList<>();
+            switch ( kind ) {
 
-			default:
-				break;
-			}
-			return result;
-		}
+            case SYMMETRY:
+                result .add( new IcosahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "icosahedral around origin" ) );
+                result .add( new TetrahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "tetrahedral around origin" ) );
+                result .add( new InversionTool.Factory( tools ) .createPredefinedTool( "reflection through origin" ) );
+                result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
+                result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around red through origin" ) );
+                break;
 
-		@Override
-		public Command getLegacyCommand( String action )
-		{
-			switch ( action ) {
-			case "icosasymm"    : return icosasymm;
-			case "tetrasymm"    : return tetrasymm;
-			case "axialsymm"    : return axialsymm;
-			default:
-				return null;
-			}
-		}
+            case TRANSFORM:
+                result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
+                result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
+                result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around red through origin" ) );
+                result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
+                break;
 
-		@Override
-		public String getModelResourcePath()
-		{
-			return "org/vorthmann/zome/app/icosahedral-vef.vZome";
-		}
-	};
+            default:
+                break;
+            }
+            return result;
+        }
+
+        @Override
+        public Command getLegacyCommand( String action )
+        {
+            switch ( action ) {
+            case "icosasymm"    : return icosasymm;
+            case "tetrasymm"    : return tetrasymm;
+            case "axialsymm"    : return axialsymm;
+            default:
+                return null;
+            }
+        }
+
+        @Override
+        public String getModelResourcePath()
+        {
+            return "org/vorthmann/zome/app/icosahedral-vef.vZome";
+        }
+    };
 	
 
 	@Override
@@ -266,10 +264,4 @@ public class SnubDodecFieldApplication implements FieldApplication
 	@Override
 	public void constructPolytope( String groupName, int index,
 			int edgesToRender, AlgebraicNumber[] edgeScales, Listener listener ) {}
-
-	@Override
-	public Command getLegacyCommand( String action )
-	{
-		return null;
-	}
 }

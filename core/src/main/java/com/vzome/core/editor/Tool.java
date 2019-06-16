@@ -17,49 +17,61 @@ import com.vzome.core.model.Manifestation;
 
 public abstract class Tool extends ChangeManifestations implements com.vzome.api.Tool
 {
-	private final String id;
-	private final ToolsModel tools;
+    private final String id;
+    private final ToolsModel tools;
     protected final List<Construction> parameters = new ArrayList<>();
-	private String category;
+    private String category;
 
-	private boolean predefined;
-	private String label;
-	private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
+    private boolean predefined, hidden;
+    private String label;
+    private EnumSet<InputBehaviors> inputBehaviors;
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
 
-	public Tool( String id, ToolsModel tools )
-	{
-		super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel(), false );
-		this .tools = tools;
-		this .id = id;
-	}
-	
-	public void addPropertyChangeListener( PropertyChangeListener listener )
-	{
-		this .pcs .addPropertyChangeListener( listener );
-	}
-
-	public void setCategory( String category )
-	{
-		this.category = category;
-	}
-
-	protected void addParameter( Construction c )
+    public Tool( String id, ToolsModel tools )
     {
-    	this .parameters .add( c );
-	}
+        super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel(), false );
+        this .tools = tools;
+        this .id = id;
+        this .inputBehaviors = EnumSet.of( InputBehaviors.SELECT );
+    }
 
-	List<Construction> getParameters()
-	{
-		return this .parameters;
-	}
-	
-	void setPredefined( boolean value )
-	{
-		this .predefined = value;
-	}
-	
+    public EnumSet<InputBehaviors> getInputBehaviors()
+    {
+        return this .inputBehaviors;
+    }
+
+    public void setInputBehaviors( EnumSet<InputBehaviors> inputBehaviors )
+    {
+        this .inputBehaviors = inputBehaviors;
+    }
+
+    public void addPropertyChangeListener( PropertyChangeListener listener )
+    {
+        this .pcs .addPropertyChangeListener( listener );
+    }
+
+    public void setCategory( String category )
+    {
+        this.category = category;
+    }
+
+    protected void addParameter( Construction c )
+    {
+        this .parameters .add( c );
+    }
+
+    List<Construction> getParameters()
+    {
+        return this .parameters;
+    }
+
+    void setPredefined( boolean value )
+    {
+        this .predefined = value;
+    }
+
     @Override
-	public boolean isSticky()
+    public boolean isSticky()
     {
         return true;
     }
@@ -79,11 +91,12 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
     @Override
     public void perform() throws Command.Failure
     {
-    	String error = checkSelection( true );
-    	if ( error != null )
-    		// the old way of creating tools, validating the selection after the user action
-    		throw new Command.Failure( error );
-	}
+        String error = checkSelection( true );
+        if ( error != null )
+            // the old way of creating tools, validating the selection after the user action
+            throw new Command.Failure( error );
+        this .tools .put( this .getId(), this ); // will trigger ToolController creation
+    }
 
     @Override
     protected void getXmlAttributes( Element element )
@@ -99,65 +112,71 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
      */
     protected abstract String checkSelection( boolean prepareTool );
 
-	abstract void prepare( ChangeManifestations applyTool );
-    
-	abstract void performEdit( Construction c, ChangeManifestations edit );
+    abstract void prepare( ChangeManifestations applyTool );
 
-	abstract void performSelect( Manifestation man, ChangeManifestations applyTool );
+    abstract void performEdit( Construction c, ChangeManifestations edit );
 
-	abstract void complete( ChangeManifestations applyTool );
-    
-	abstract boolean needsInput();
+    abstract void performSelect( Manifestation man, ChangeManifestations applyTool );
 
-	
-	//=================  Here begins the set of Tool interface implementations  =================================
-	
-	@Override
-	public String getId()
-	{
-		return this .id;
-	}
+    abstract void complete( ChangeManifestations applyTool );
 
-	@Override
-	public String getCategory()
-	{
-		return this .category;
-	}
+    abstract boolean needsInput();
 
-	@Override
-	public void apply( EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction )
-	{
-		this .tools .applyTool( this, inputAction, outputAction );
-	}
 
-	@Override
-	public void selectParameters()
-	{
-		this .tools .selectToolParameters( this );
-	}
+    //=================  Here begins the set of Tool interface implementations  =================================
 
-	@Override
-	public boolean isPredefined()
-	{
-		return this .predefined;
-	}
+    @Override
+    public String getId()
+    {
+        return this .id;
+    }
 
-	@Override
-	public String getLabel()
-	{
-		return this .label;
-	}
+    @Override
+    public String getCategory()
+    {
+        return this .category;
+    }
 
-	@Override
-	public void setLabel( String label )
-	{
-		this .label = label;
-		this .pcs .firePropertyChange( "label", null, label );
-	}
+    @Override
+    public void apply( EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction )
+    {
+        this .tools .applyTool( this, inputAction, outputAction );
+    }
 
-	@Override
-	public EnumSet<InputBehaviors> defaultInputBehaviors()
-	{
-		return EnumSet.of( InputBehaviors.SELECT );
-	}
+    @Override
+    public void selectParameters()
+    {
+        this .tools .selectToolParameters( this );
+    }
+
+    @Override
+    public boolean isPredefined()
+    {
+        return this .predefined;
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return this .label;
+    }
+
+    @Override
+    public void setLabel( String label )
+    {
+        this .label = label;
+    }
+
+    @Override
+    public boolean isHidden()
+    {
+        return hidden;
+    }
+
+    @Override
+    public void setHidden( boolean hidden )
+    {
+        this.hidden = hidden;
+        this .tools .hideTool( this );
+    }
 }

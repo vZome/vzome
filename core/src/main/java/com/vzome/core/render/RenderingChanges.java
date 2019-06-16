@@ -12,6 +12,12 @@ public interface RenderingChanges {
 
     void manifestationRemoved( RenderedManifestation manifestation );
 
+    /**
+     * Given two RMs that both render the same underlying Manifestation,
+     * switch the associated graphics object's userData.
+     * @param from
+     * @param to
+     */
     void manifestationSwitched( RenderedManifestation from, RenderedManifestation to );
 
     void glowChanged( RenderedManifestation manifestation );

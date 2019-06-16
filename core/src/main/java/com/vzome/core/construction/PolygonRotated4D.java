@@ -29,9 +29,9 @@ public class PolygonRotated4D extends Polygon
     {
         if (  mPrototype .isImpossible() )
             return setStateVariable( null, true );
-        AlgebraicVector[] vertices = mPrototype .getVertices();
+        AlgebraicVector[] vertices = new AlgebraicVector[ mPrototype .getVertexCount() ];
         for ( int i = 0; i < vertices.length; i++ ) {
-            AlgebraicVector loc = mRightQuaternion .leftMultiply( vertices[i] );
+            AlgebraicVector loc = mRightQuaternion .leftMultiply( mPrototype.getVertex(i) );
             loc = mLeftQuaternion .rightMultiply( loc );
             vertices[i] = loc; // field .projectTo3d( loc, true );
         }

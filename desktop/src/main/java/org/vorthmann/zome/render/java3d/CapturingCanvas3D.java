@@ -24,7 +24,6 @@ import com.vzome.desktop.controller.RenderingViewer;
 
 public class CapturingCanvas3D extends Canvas3D
 {
-
     public CapturingCanvas3D( GraphicsConfiguration gc, boolean isOffscreen )
     {
         super( gc, isOffscreen );

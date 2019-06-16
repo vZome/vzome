@@ -3,6 +3,10 @@ package com.vzome.core.editor;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.w3c.dom.Document;
@@ -15,6 +19,7 @@ import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.construction.Point;
 import com.vzome.core.math.DomUtils;
 
+@SuppressWarnings("serial")
 public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 {
 	private EditorModel editor;
@@ -22,27 +27,17 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
 	private final UndoableEdit.Context context;
 	private final Point originPoint;
+	
+	// These are used only during deserialization
+    private final Map<String, String> toolLabels = new HashMap<>();
+    private final Map<String, EnumSet<InputBehaviors>> toolInputBehaviors = new HashMap<>();
+    private final Set<String> hiddenTools = new HashSet<>();
     
 	public ToolsModel( UndoableEdit.Context context, Point originPoint )
 	{
 		super();
 		this .context = context;
 		this .originPoint = originPoint;
-	}
-	
-	void loadFromXml( Element xml )
-	{
-		NodeList nodes = xml .getChildNodes();
-		for ( int i = 0; i < nodes .getLength(); i++ ) {
-			Node node = nodes .item( i );
-			if ( node instanceof Element ) {
-				Element toolElem = (Element) node;
-				String id = toolElem .getAttribute( "id" );
-				String label = toolElem .getAttribute( "label" );
-				Tool tool = this .get( id );
-				tool .setLabel( label );
-			}
-		}
 	}
 	
 	public int reserveId()
@@ -56,8 +51,8 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 	 */
 	public void setMaxId( int id )
 	{
-		if ( id > this .lastId )
-			this .lastId = id;
+		if ( id >= this .lastId )
+			this .lastId = id + 1;
 	}
 
 	@Override
@@ -146,8 +141,57 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         		Element toolElem = doc .createElement( "Tool" );
         		DomUtils .addAttribute( toolElem, "id", tool .getId() );
         		DomUtils .addAttribute( toolElem, "label", tool .getLabel() );
+        		if ( tool .isHidden() )
+        		    DomUtils .addAttribute( toolElem, "hidden", "true" );
+        		EnumSet<InputBehaviors> inputBehaviors = tool .getInputBehaviors();
+        		if ( inputBehaviors .contains( InputBehaviors.SELECT ) )
+        		    toolElem .setAttribute( "selectInputs", "true" );
+        		if ( inputBehaviors .contains( InputBehaviors.DELETE ) )
+        		    toolElem .setAttribute( "deleteInputs", "true" );
         		result .appendChild( toolElem );
         	}
         return result;
+    }
+    
+    void loadFromXml( Element xml )
+    {
+        NodeList nodes = xml .getChildNodes();
+        for ( int i = 0; i < nodes .getLength(); i++ ) {
+            Node node = nodes .item( i );
+            if ( node instanceof Element ) {
+                Element toolElem = (Element) node;
+
+                String id = toolElem .getAttribute( "id" );
+                String label = toolElem .getAttribute( "label" );
+                this .toolLabels .put( id, label );
+
+                EnumSet<InputBehaviors> inputBehaviors = EnumSet.noneOf( InputBehaviors.class );
+                String value = toolElem .getAttribute( "selectInputs" );
+                if ( value != null && value .equals( "true" ) )
+                    inputBehaviors .add( InputBehaviors .SELECT );
+                value = toolElem .getAttribute( "deleteInputs" );
+                if ( value != null && value .equals( "true" ) )
+                    inputBehaviors .add( InputBehaviors .DELETE );
+                this .toolInputBehaviors .put( id, inputBehaviors );
+                
+                String hiddenStr = toolElem .getAttribute( "hidden" );
+                if ( hiddenStr != null && hiddenStr .equals( "true" ) )
+                    this .hiddenTools .add( id );
+            }
+        }
+    }
+
+    public void setConfiguration( Tool tool )
+    {
+        // update the tool from the maps, deserialized earlier
+        String id = tool .getId();
+        tool .setLabel( this .toolLabels .get( id ) );
+        tool .setInputBehaviors( this .toolInputBehaviors .get( id ) );
+        tool .setHidden( this .hiddenTools .contains( id ) );
+    }
+
+    public void hideTool( Tool tool )
+    {
+        this .pcs .firePropertyChange( "tool.instances", tool, null );
     }
 }

@@ -18,12 +18,13 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
+import com.vzome.core.viewing.Lights;
 
 public class Java3dWireframeFactory extends Java3dFactory
 {
-    public Java3dWireframeFactory( Colors colors, Boolean emissiveHighlights )
+    public Java3dWireframeFactory( Lights lights, Colors colors, Boolean emissiveHighlights )
     {
-        super( colors, emissiveHighlights );
+        super( lights, colors, emissiveHighlights );
     }
 
     @Override

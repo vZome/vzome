@@ -11,12 +11,11 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Projection;
-import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.VefParser;
 
 public class VefToModel extends VefParser
 {
-    protected final AlgebraicVector mQuaternion, offset;
+    protected final AlgebraicVector offset;
     
     protected final AlgebraicNumber scale;
 
@@ -31,39 +30,33 @@ public class VefToModel extends VefParser
     protected boolean noBallsSection = true;
 
     private static final Logger logger = Logger .getLogger( "com.vzome.core.construction.VefToModel" );
-
     
-    public VefToModel( AlgebraicVector quaternion, ConstructionChanges effects, AlgebraicNumber scale, AlgebraicVector offset )
+    public VefToModel( Projection projection, ConstructionChanges effects, AlgebraicNumber scale, AlgebraicVector offset )
     {
-        mQuaternion = quaternion;
         mEffects = effects;
         field = scale .getField();
         this.scale = scale;
         this.offset = offset;
+        mProjection = projection == null
+                ? new Projection.Default(field)
+                : projection;
 
-        if ( quaternion != null && logger .isLoggable( Level .FINEST ) )
-            logger .finest( "quaternion = " + quaternion .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
+        if ( projection != null && logger .isLoggable( Level .FINEST ) ) {
+            logger .finest( "projection = " + projection.getProjectionName() );
+        }
     }
 
     @Override
     protected void startVertices( int numVertices )
     {
         mVertices = new Point[ numVertices ];
-        if ( mQuaternion == null )
-            mProjection = new Projection.Default( field );
-        else
-        {
-            AlgebraicVector quat = mQuaternion .inflateTo4d( wFirst() );
-                // wFirst() is to match the projection, which will discard Z rather than W
-            mProjection = new QuaternionProjection( field, null, quat );
-        }
     }
 
     @Override
     protected void addVertex( int index, AlgebraicVector location )
     {
         logger .finest( "addVertex location = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
-        if ( scale != null && ! usesActualScale())
+        if ( scale != null )
         {
             location = location .scale( scale );
             logger .finest( "scaled = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );

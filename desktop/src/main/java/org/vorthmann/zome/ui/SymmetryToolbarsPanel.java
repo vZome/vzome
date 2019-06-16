@@ -5,6 +5,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -19,6 +21,7 @@ public class SymmetryToolbarsPanel extends JPanel
 {
 	private final ButtonFactory factory;
 	private final JToolBar secondToolbar;
+	private final Map<String,JButton> toolButtons = new HashMap<>(); // to support hiding tools
 	private final ToolConfigDialog toolConfigDialog;
 	private final Controller controller;
 
@@ -160,8 +163,19 @@ public class SymmetryToolbarsPanel extends JPanel
 				}
 			}
 		});
+		toolButtons .put( controller .getProperty( "id" ), button );
 		secondToolbar .add( button );
     }
+	
+	public void hideTool( String id )
+	{
+	    JButton button = toolButtons .remove( id );
+	    if ( button != null ) { // may be null during deserialization
+	        secondToolbar .remove( button );
+	        secondToolbar .revalidate();
+	        secondToolbar .repaint();
+	    }
+	}
 
 	private AbstractButton newToolButton( Controller symmController, String group )
 	{

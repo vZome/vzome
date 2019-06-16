@@ -4,6 +4,7 @@ package com.vzome.core.viewing;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -12,17 +13,19 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.parts.StrutGeometry;
 
 public class ExportedVEFStrutGeometry implements StrutGeometry
-{    
-    private final List<AlgebraicVector> prototypeVertices;  // the polyhedron from which others are derived
-    
-    private final List< List<Integer> > prototypeFaces;
-    
+{
+    @JsonProperty( "vertices" )
+    public final List<AlgebraicVector> prototypeVertices;  // the polyhedron from which others are derived
+
+    @JsonProperty( "polygons" )
+    public final List< List<Integer> > prototypeFaces;
+
     private final AlgebraicField field;
-    
-    private final AlgebraicVector prototypeVector; // the prototype strut vector from the symmetry group
-    
-    private final Set<Integer> fullScaleVertices, halfScaleVertices;  // the polyhedron vertices that must adjust for different strut lengths
-    
+
+    public final AlgebraicVector prototypeVector; // the prototype strut vector from the symmetry group
+
+    public final Set<Integer> fullScaleVertices, halfScaleVertices;  // the polyhedron vertices that must adjust for different strut lengths
+
     public ExportedVEFStrutGeometry( List<AlgebraicVector> vertices, List< List<Integer> > faces, AlgebraicVector prototype, Set<Integer> fullScaleVertices, Set<Integer> halfScaleVertices, AlgebraicField field )
     {
         prototypeVertices = vertices;
@@ -35,7 +38,7 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
 
     public ExportedVEFStrutGeometry( List<AlgebraicVector> vertices, List< List<Integer> > faces, AlgebraicVector prototype, Set<Integer> fullScaleVertices, AlgebraicField field )
     {
-    	this( vertices, faces, prototype, fullScaleVertices, null, field );
+        this( vertices, faces, prototype, fullScaleVertices, null, field );
     }
 
     @Override

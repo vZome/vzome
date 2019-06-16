@@ -9,10 +9,136 @@ import java.util.TreeSet;
 public class AlgebraicVectors {
     private AlgebraicVectors() {}
 
-    public static AlgebraicVector getNormal(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
-        return v1.minus(v0).cross(v2.minus(v0));
+    /**
+     * 
+     * @param v1
+     * @param v2
+     * @return normal to position vectors v1 and v2, 
+     * with both v1 and v2 starting at the origin
+     * using the righthand rule.
+     */
+    public static AlgebraicVector getNormal(final AlgebraicVector v1, final AlgebraicVector v2) {
+        return v1.cross(v2);
     }
 
+    /**
+     * 
+     * @param v0
+     * @param v1
+     * @param v2
+     * @return normal to vectors v1 and v2, 
+     * with both v1 and v2 positioned at v0
+     * using the righthand rule.
+     */
+    public static AlgebraicVector getNormal(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
+        return getNormal(v1.minus(v0), v2.minus(v0));
+    }
+
+    /**
+     * 
+     * @param v1
+     * @param v2
+     * @return true if vectors v1 and v2 are parallel, otherwise false.
+     * Considered as position vectors, this is the same as testing if they are collinear with the origin.
+     */
+    public static boolean areParallel(final AlgebraicVector v1, final AlgebraicVector v2) {
+        return getNormal(v1, v2).isOrigin();
+    }
+    
+    /** 
+     * @return a vector that is orthogonal to a plane defined by three of the vertices.
+     * If vertices are all collinear, then the origin is returned.
+     * @throws IllegalArgumentException if fewer than three vectors are in the collection.
+     */ 
+    public static AlgebraicVector getNormal(final Collection<AlgebraicVector> vectors) 
+    { 
+        if(vectors.size() < 3) { 
+            throw new IllegalArgumentException("Three vertices are required to calculate a normal. Found " + vectors.size()); 
+        } 
+        AlgebraicVector v0 = null;
+        AlgebraicVector v1 = null;
+        AlgebraicVector normal = null;
+        for(AlgebraicVector vector : vectors)
+        {
+            if(v0 == null) {
+                v0 = vector;
+            }
+            else if(v1 == null) {
+                if(vector != v0) { // in case vectors are not unique
+                    v1 = vector;
+                }
+            }
+            else {
+                normal = getNormal(v0, v1, vector);
+                if(!normal.isOrigin()) {
+                    return normal;
+                }
+            }
+        }
+        return normal;
+    }
+    
+    /**
+     * 
+     * @param vector
+     * @return index of the vector component having the greatest absolute value.
+     *      If more than one component has the same absolute value, 
+     *      the greatest index will be returned.
+     */
+    public static int getMaxComponentIndex(AlgebraicVector vector) {
+        int maxIndex = 0;
+        AlgebraicNumber maxSq = vector.getField().zero();
+        for(int i = 0; i < vector.dimension(); i++) {
+            AlgebraicNumber n = vector.getComponent(i);
+            AlgebraicNumber sq = n.times(n);
+            if(! sq.lessThan(maxSq) ) {
+                // ensure that we have the max index of any equal components
+                // by testing if not lessThan, not just if greaterThan
+                maxIndex = i;
+                maxSq = sq;
+            }
+        }
+        return maxIndex;
+    }
+
+    public static boolean areCoplanar(Collection<AlgebraicVector> vectors) {
+        if(vectors.size() < 4) {
+            return true;
+        }
+        AlgebraicVector normal = getNormal(vectors);
+        if(normal.isOrigin() || normal.dimension() < 3) {
+            return true;
+        }
+        return areOrthogonalTo(normal, vectors);
+    }
+    
+    public static boolean areOrthogonalTo(AlgebraicVector normal, Collection<AlgebraicVector> vectors) {
+        if(normal.isOrigin()) {
+            throw new IllegalArgumentException("Normal vector cannot be the origin"); 
+        }
+        AlgebraicVector v0 = null;
+        for(AlgebraicVector vector : vectors) {
+            if(v0 == null) {
+                v0 = vector;
+            } else if(!vector.minus(v0).dot(normal).isZero()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static boolean areCollinear(Collection<AlgebraicVector> vectors) {
+        return (vectors.size() < 3) 
+                ? true 
+                : getNormal(vectors).isOrigin();
+    }
+     /**
+     * 
+     * @param v0
+     * @param v1
+     * @param v2
+     * @return true if position vectors v0, v1 and v2 are collinear, otherwise false.
+     */
     public static boolean areCollinear(final AlgebraicVector v0, final AlgebraicVector v1, final AlgebraicVector v2) {
         return getNormal(v0, v1, v2).isOrigin();
     }

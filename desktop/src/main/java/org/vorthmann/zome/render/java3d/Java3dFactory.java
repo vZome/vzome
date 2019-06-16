@@ -4,11 +4,14 @@ package org.vorthmann.zome.render.java3d;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.ColoringAttributes;
@@ -22,29 +25,26 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
 import org.vorthmann.j3d.J3dComponentFactory;
-import org.vorthmann.ui.Controller;
 
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
 import com.sun.j3d.utils.geometry.Stripifier;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.Polyhedron.Face;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
+import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 
-import java.awt.GraphicsDevice;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFactory
+public class Java3dFactory implements J3dComponentFactory
 {
     private static class GraphicsConfigurationFactory {
         private static final Logger logger = Logger.getLogger(new Throwable().getStackTrace()[0].getClassName());
@@ -93,9 +93,12 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
 
     private static Logger logger = Logger .getLogger( "org.vorthmann.zome.render.java3d.Java3dFactory" );
 
-    public Java3dFactory( Colors colors, Boolean useEmissiveColor )
+	private final Lights lights;
+
+    public Java3dFactory( Lights lights, Colors colors, Boolean useEmissiveColor )
     {
-        mHasEmissiveColor = useEmissiveColor .booleanValue();
+        this .lights = lights;
+		mHasEmissiveColor = useEmissiveColor .booleanValue();
         mAppearances = new Appearances( colors, mHasEmissiveColor );
         outlines = new Appearance();
         PolygonAttributes wirePa = new PolygonAttributes( PolygonAttributes.POLYGON_LINE, PolygonAttributes.CULL_BACK, -10f );
@@ -105,22 +108,6 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
         outlines .setColoringAttributes( new ColoringAttributes( new Color3f( Color.BLACK ), ColoringAttributes .SHADE_FLAT ) );
     }
     
-    @Override
-    public RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas )
-    {
-        if ( canvas == null ) // this viewer is for offscreen rendering
-        {
-            canvas = new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration(), true );
-        }
-        return new Java3dRenderingViewer( (Java3dSceneGraph) scene, (CapturingCanvas3D) canvas );
-    }
-
-    @Override
-	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky, Controller controller )
-	{
-		return new Java3dSceneGraph( this, lights, isSticky, controller );
-	}
-
     Colors getColors()
     {
         return mAppearances .getColors();
@@ -133,9 +120,64 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     
     Appearance getOutlineAppearance()
     {
-    	return this .outlines;
+        return this .outlines;
     }
     
+    Appearance getPanelNormalAppearance()
+    {
+        // for now, use the same appearance as for outlines
+        // TODO: use a seperate appearance for panel normals
+        return this .outlines;
+    }
+
+    Geometry makePanelNormalGeometry( RenderedManifestation rm )
+    {
+        Polyhedron poly = rm .getShape();
+        if (! poly .isPanel() ) {
+            throw new IllegalArgumentException("Polyhedron must be a panel");
+        }
+        List<AlgebraicVector> vertices = poly .getVertexList();
+        AlgebraicVector centroid = AlgebraicVectors.calculateCentroid(vertices);
+        AlgebraicVector normal = AlgebraicVectors.getNormal( vertices .get( 0 ), vertices .get( 1 ), vertices .get( 2 ) );
+        AlgebraicMatrix matrix = rm .getOrientation();
+        if ( matrix != null ) {
+            centroid = matrix .timesColumn( centroid );
+            normal = matrix .timesColumn( normal );
+        }
+
+        Embedding embedding = rm.getEmbedding();
+        RealVector vN = embedding.embedInR3( normal );
+
+        AlgebraicNumber totalQuadrance = poly.getField().zero();
+        for (AlgebraicVector vertex : vertices) {
+            AlgebraicVector distance = vertex.minus(centroid);
+            totalQuadrance = totalQuadrance.plus(distance.dot(distance));
+        }
+        AlgebraicNumber avgQuadrance = totalQuadrance.dividedBy(poly.getField().createRational(vertices.size()));
+        double avgDistance = Math.sqrt(avgQuadrance.evaluate());
+        // normalize vN then scale it by the average distance from centroid to all vertices,
+        // which makes the normal lines scale with the panels so they can be seen at any scale.
+        // The additional scaling by one half is just a factor that I think looks good.
+        // There is no mathematical basis for it, but it was chosen in part so that a cube
+        // with all normals facing the center would show 6 distinct normals rather than 
+        // having them overlap and appear as three lines between opposite faces.
+        vN = vN.normalize().scale(avgDistance/2d);
+
+        RealVector v0 = embedding.embedInR3( centroid );
+        RealVector v1 = v0.plus(vN);
+
+        // just 2 points
+        IndexedLineStripArray strips = new IndexedLineStripArray( 2, GeometryArray.COORDINATES, 2, new int [] {2} );
+
+        strips .setCoordinate( 0, new Point3d( v0.x, v0.y, v0.z ) );
+        strips .setCoordinate( 1, new Point3d( v1.x, v1.y, v1.z ) );
+        
+        strips .setCoordinateIndex(0, 0);
+        strips .setCoordinateIndex(1, 1);
+        
+        return strips;
+    }
+
     // The resulting geometry does not support the polygon offset
     //  required to avoid "stitching" when the line geometry is rendered at the same Z-depth
     //  as the solid geometry.
@@ -310,8 +352,12 @@ public class Java3dFactory implements RenderingViewer.Factory, J3dComponentFacto
     }
 
     @Override
-    public Component createJ3dComponent( String name )
+    public Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller )
     {
-        return new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration() );
+        CapturingCanvas3D canvas = new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration(), isOffScreen );
+        Java3dSceneGraph scene = new Java3dSceneGraph( this, this .lights, isSticky, controller );
+        RenderingViewer viewer = new Java3dRenderingViewer( scene, canvas );
+        controller .attachViewer( viewer, scene, canvas );
+        return canvas;
     }
 }

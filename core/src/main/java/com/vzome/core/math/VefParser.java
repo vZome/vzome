@@ -79,21 +79,6 @@ public abstract class VefParser
         return isRational;
     }
 
-    /**
-     * True if this VEF file should be interpreted without additional
-     *  scaling in VefToModel.
-     * This is somewhat misplaced and confusing.  It does not govern the interpretation
-     * of vertex data within the parser.  It only governs additional scaling within
-     * addVertex in subclasses, and in fact only within one subclass, VefToModel.
-     * 
-     * This is no longer relevant, since VEF import now gives the user control over any scale factor.
-     * @return
-     */
-    public boolean usesActualScale()
-    {
-        return false;
-    }
-
     protected boolean wFirst()
     {
         return mVersion >= VERSION_W_FIRST;

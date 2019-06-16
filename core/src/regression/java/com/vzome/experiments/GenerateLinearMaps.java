@@ -129,7 +129,7 @@ public class GenerateLinearMaps
 				return false; // short-circuit because a1 and a2 guarantee white struts, regardless of a3
 			}
 
-			doc .undo();
+			doc. getHistoryModel() .undo();
 			deselect();
 
 			AlgebraicNumber blueShort = blue .getUnitLength() .times( field .createPower( 2 ) );

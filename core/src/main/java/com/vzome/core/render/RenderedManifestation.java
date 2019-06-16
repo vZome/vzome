@@ -2,6 +2,8 @@
 
 package com.vzome.core.render;
 
+import java.util.UUID;
+
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -18,7 +20,7 @@ import com.vzome.core.model.Strut;
  */
 public class RenderedManifestation
 {
-    private final Manifestation mManifestation;
+	private final Manifestation mManifestation;
     
     private Polyhedron mShape;
     
@@ -47,6 +49,8 @@ public class RenderedManifestation
 	private Direction strutOrbit = null;
 
 	private int strutSense;
+	
+	private final UUID guid = UUID .randomUUID();
     
 //    private transient Axis mAxis = null;
 
@@ -60,6 +64,17 @@ public class RenderedManifestation
         mOrientation = null; // factory .identity();
     }
     
+    @Override
+	public String toString()
+    {
+		return this .mManifestation .toString();
+	}
+
+	public UUID getGuid()
+	{
+		return guid;
+	}
+
 	public void setModel( RenderedModel model )
 	{
 		this .model = model;

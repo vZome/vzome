@@ -83,8 +83,10 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     private final boolean isSticky;
 
-	private boolean drawOutlines;
+    private boolean drawNormals;
 
+	private boolean drawOutlines;
+	
     private FrameLabels frameLabels = null;
 
     private IcosahedralLabels icosahedralLabels = null;
@@ -104,6 +106,12 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         return mLights;
     }
 
+    /**
+     * @param factory
+     * @param lights
+     * @param isSticky true if each RenderedManifestation should record the resulting graphics object
+     * @param controller
+     */
     public Java3dSceneGraph( Java3dFactory factory, Lights lights, boolean isSticky, Controller controller )
     {
         mFactory = factory;
@@ -246,6 +254,9 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 //            axisZLines.setColor( 1, blue );
 //            axisZLines.setColor( 0, black );
 //        }
+
+        if ( controller .propertyIsTrue( "drawNormals" ) )
+            propertyChange("drawNormals", true );
 
         if ( controller .propertyIsTrue( "drawOutlines" ) )
             propertyChange("drawOutlines", true );
@@ -395,6 +406,13 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
             outlinePolyhedron .setAppearance( mFactory .getOutlineAppearance() );
         	tg .addChild( outlinePolyhedron );
         }
+        
+        if(drawNormals && rm.getShape().isPanel()) {
+            geom = mFactory .makePanelNormalGeometry( rm );
+            Shape3D normalPolyhedron = new Shape3D( geom );
+            normalPolyhedron .setAppearance( mFactory .getPanelNormalAppearance() );
+            tg .addChild( normalPolyhedron );
+        }
 
         // Create a Text2D leaf node, add it to the scene graph.
         // Text2D text2D = new Text2D( "     label", new Color3f( 0.9f, 1.0f,
@@ -427,18 +445,25 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         mScene.removeAllChildren();
     }
 
+    /* (non-Javadoc)
+     * @see com.vzome.core.render.RenderingChanges#manifestationSwitched(com.vzome.core.render.RenderedManifestation, com.vzome.core.render.RenderedManifestation)
+     */
     @Override
     public void manifestationSwitched( RenderedManifestation from, RenderedManifestation to )
     {
+        // This call is the only reason we ever do setGraphicsObject,
+        //   all in support of the setUserData below.
         BranchGroup target = (BranchGroup) from .getGraphicsObject();
+
         if ( target == null ) {
             return;
         }
         TransformGroup tg = (TransformGroup) target .getChild( 0 );
         Shape3D poly = (Shape3D) tg .getChild( 0 );
-        poly .setUserData( to );
+        poly .setUserData( to );  // This keeps picking consistent
         if ( this .isSticky )
         {
+            // 
             to .setGraphicsObject( target );
             from .setGraphicsObject( null );
         }
@@ -610,6 +635,11 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     protected void propertyChange(String propertyName, Object newValue, Object oldValue) {
         switch (propertyName) {
+            case "drawNormals":
+                drawNormals = (Boolean) newValue;
+                refreshPolygonOutlines();
+                break;
+
             case "drawOutlines":
                 drawOutlines = (Boolean) newValue;
                 ambientForOutlines.setEnable(drawOutlines);

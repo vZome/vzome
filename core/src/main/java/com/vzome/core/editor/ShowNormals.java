@@ -29,30 +29,19 @@ public class ShowNormals extends ChangeManifestations
         unselectConnectors();
         unselectStruts();
         
-        for ( Panel panel : Manifestations .getPanels( mSelection ) )
-        {
+        for ( Panel panel : Manifestations .getPanels( mSelection ) ) {
             unselect( panel );
-            AlgebraicVector v1 = null, v2 = null, off1 = null;
-            for ( AlgebraicVector vertex : panel ) {
-                if ( v1 == null )
-                    v1 = vertex;
-                else if ( off1 == null ) {
-                    v2 = vertex;
-                    off1 = v2 .minus( v1 );
-                } else {
-                    AlgebraicVector off2 = vertex .minus( v2 );
-                    AlgebraicVector cp = off1 .cross( off2 ) .scale( SCALE_DOWN );
-                    AlgebraicVector centroid = panel .getCentroid();
-                    AlgebraicVector tip = centroid .plus( cp );
-                    Point p1 = new FreePoint( centroid );
-                    select( manifestConstruction( p1 ) );
-                    Point p2 = new FreePoint( tip );
-                    select( manifestConstruction( p2 ) );
-                    Segment s = new SegmentJoiningPoints( p1, p2 );
-                    select( manifestConstruction( s ) );
-                    break;
-                }
-            }
+            
+            AlgebraicVector centroid = panel .getCentroid();
+            AlgebraicVector tip = centroid .plus( panel.getNormal().scale( SCALE_DOWN ) );
+
+            Point p1 = new FreePoint( centroid );
+            Point p2 = new FreePoint( tip );
+            Segment s = new SegmentJoiningPoints( p1, p2 );
+
+            select( manifestConstruction( p1 ) );
+            select( manifestConstruction( p2 ) );
+            select( manifestConstruction( s ) );
         }
         redo();
     }

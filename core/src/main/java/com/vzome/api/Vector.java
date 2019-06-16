@@ -6,6 +6,7 @@ package com.vzome.api;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 
 public class Vector {
 
@@ -70,7 +71,7 @@ public class Vector {
 			return false;
 		if ( other == this )
 			return true;
-		return this .vector .cross( other .vector ) .isOrigin();
+		return AlgebraicVectors.areParallel(this .vector, other .vector );
 	}
 
     @Override

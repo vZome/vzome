@@ -11,6 +11,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -48,6 +49,48 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     private static final Logger logger = Logger.getLogger( "com.vzome.core.render.RenderedModel" );
 
+    private static final class SymmetryOrbitSource implements OrbitSource
+    {
+        private final Symmetry symmetry;
+
+        private final OrbitSet orbits;
+
+        private SymmetryOrbitSource( Symmetry symmetry )
+        {
+            this.symmetry = symmetry;
+            orbits = new OrbitSet( symmetry );
+        }
+
+        @Override
+        public Color getColor( Direction orbit )
+        {
+            return new Color( 128, 123, 128 );
+        }
+
+        @Override
+        public Axis getAxis( AlgebraicVector vector )
+        {
+            return symmetry .getAxis( vector );
+        }
+
+        @Override
+        public OrbitSet getOrbits()
+        {
+            return orbits;
+        }
+
+        @Override
+        public Shapes getShapes() {
+            return null;
+        }
+
+        @Override
+        public Symmetry getSymmetry()
+        {
+            return symmetry;
+        }
+    }
+
     public interface OrbitSource
     {
     	Symmetry getSymmetry();
@@ -71,39 +114,13 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     public RenderedModel( final Symmetry symmetry )
     {
-    	this( symmetry .getField(), new OrbitSource()
-    	{
-        	private final OrbitSet orbits = new OrbitSet( symmetry );
-        	
-            @Override
-			public Color getColor( Direction orbit )
-			{
-				return new Color( 128, 123, 128 );
-			}
-			
-            @Override
-			public Axis getAxis( AlgebraicVector vector )
-			{
-				return symmetry .getAxis( vector );
-			}
-
-			@Override
-			public OrbitSet getOrbits()
-			{
-				return orbits;
-			}
-
-			@Override
-			public Shapes getShapes() {
-				return null;
-			}
-
-			@Override
-			public Symmetry getSymmetry()
-			{
-				return symmetry;
-			}
-		});
+        this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
+    }
+    
+    public RenderedModel( final Symmetry symmetry, boolean enabled )
+    {
+        this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
+        this .enabled = enabled;
     }
     
     public RenderedModel( final AlgebraicField field, boolean enabled )
@@ -493,7 +510,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     public RenderedModel snapshot()
     {
-        RenderedModel snapshot = new RenderedModel( this .field, false );
+        RenderedModel snapshot = new RenderedModel( this .orbitSource .getSymmetry(), false );
         for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
             copy .setModel( this );
@@ -502,6 +519,15 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         return snapshot;
     }
     
+    /**
+     * Switch a scene graph (changes) from rendering one RenderedModel to another one.
+     * For RenderedManifestations that show the same object in both, just update the
+     * attributes.
+     * When "from" is empty, this is the initial rendering of the "to" RenderedModel.
+     * @param from is an empty RenderedModel in some cases
+     * @param to
+     * @param changes is a scene graph
+     */
     public static void renderChange( RenderedModel from, RenderedModel to, RenderingChanges changes )
     {
         // TODO: Does clone() perform any better than new HashSet(), or is there any other reason to keep it?
@@ -522,6 +548,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             for ( RenderedManifestation toRm : to .mRendered ) {
                 if ( fromRm .equals( toRm ) )
                 {
+                    // This part is fragile.  The next call relies on the fact that "changes"
+                    //   is the only sticky RenderingChanges that ever touches these RMs,
+                    //   or picking will break.
                     changes .manifestationSwitched( fromRm, toRm );
                     if ( Float.floatToIntBits( fromRm .getGlow() ) != Float .floatToIntBits( toRm .getGlow() ) )
                         changes .glowChanged( toRm );
@@ -550,4 +579,56 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	{
 		return this .orbitSource .getSymmetry();
 	}
+
+    public double measureDistanceCm( Connector c1, Connector c2 )
+    {
+        return measureLengthCm( renderVector( c1 .getLocation() .minus( c2 .getLocation() ) ) );
+    }
+
+    public static double measureLengthCm( RealVector rv )
+    {
+        return rv.length() * Exporter3d.RZOME_CM_SCALING;
+    }
+
+    public double measureLengthCm( Strut strut )
+    {
+        return measureLengthCm( this .renderVector( strut .getOffset() ) );
+    }
+
+	public double measureDihedralAngle( Panel p1, Panel p2 )
+	{
+        RealVector v1 = p1 .getNormal( this .getEmbedding() );
+        RealVector v2 = p2 .getNormal( this .getEmbedding() );
+        return safeAcos(v1, v2);
+	}
+
+    public double measureAngle( Strut s1, Strut s2 )
+    {
+        RealVector v1 = this .renderVector( s1 .getOffset() );
+        RealVector v2 = this .renderVector( s2 .getOffset() );
+        return safeAcos(v1, v2);
+    }
+    
+    /*
+     * The two struts in this VEF exemplify cosine being barely out of range:
+vZome VEF 6 field heptagon
+4
+(0,0,0) (-1,3,-2) (2,-1,2) (1,2,0)
+(0,0,0) (0,2,-1) (2,-1,2) (0,0,0)
+(0,0,0) (2,-1,2) (0,2,-1) (0,0,0)
+(0,0,0) (1,2,0) (0,0,0) (1,2,0)
+2
+2 1
+3 0
+0
+0
+     */
+    public static double safeAcos(RealVector v1, RealVector v2) {
+        double cosine = v1 .dot( v2 ) / ( v1 .length() * v2 .length() );
+        // rounding errors can result in cosine being slightly outside the valid range 
+        // of -1 to +1 in which case Math.acos() returns NaN 
+        cosine = Math.min( 1.0d, cosine);
+        cosine = Math.max(-1.0d, cosine);
+        return Math.acos( cosine );
+    }
 }

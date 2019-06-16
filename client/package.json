@@ -1,0 +1,26 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "bsock-middleware": "^1.1.1",
+    "prop-types": "^15.5.10",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-redux": "^5.0.5",
+    "react-scripts": "1.0.17",
+    "react-three-renderer": "^3.2.3",
+    "redux": "^3.5.2",
+    "redux-logger": "^3.0.6",
+    "redux-simple-websocket": "^1.0.3",
+    "serve": "^6.4.8",
+    "three": "^0.86.0"
+  },
+  "scripts": {
+    "buildDev": "react-scripts start",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

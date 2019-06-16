@@ -687,7 +687,7 @@ public class ExporterTest {
                 AlgebraicVector vector = new AlgebraicVector( dims );
 
                 // Here's what we're actually testing!
-                VefModelExporter.appendVector( buffer, vector );
+                VefModelExporter.appendVector( buffer, vector, null );
 
                 String expected = expectations[d - 1];
                 expected = expected.replace("(", zeroPad);

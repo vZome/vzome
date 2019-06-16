@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -32,9 +31,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import javax.vecmath.Point3d;
-import javax.vecmath.Quat4d;
 
-import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.MouseToolFilter;
@@ -43,8 +40,6 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
 import org.vorthmann.zome.app.impl.PartsController.PartInfo;
-import org.vorthmann.zome.export.java2d.Java2dExporter;
-import org.vorthmann.zome.export.java2d.Java2dSnapshot;
 import org.vorthmann.zome.ui.PartsPanel.PartsPanelActionEvent;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -54,18 +49,17 @@ import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -82,84 +76,67 @@ import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.desktop.controller.CameraController;
+import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
 
 /**
  * @author Scott Vorthmann 2003
  */
-public class DocumentController extends DefaultController implements J3dComponentFactory
+public class DocumentController extends DefaultController implements Controller3d
 {
+    // local state
+    //
+    private int changeCount = 0;
+    private final boolean startReader;
     private DocumentModel documentModel;
+    private boolean editingModel;
+    private Camera currentView; // ?? TBD if this is in the right group
+    private final Properties properties;
     
-    private final PreviewStrut previewStrut;
-
-    private final RenderedModel mRenderedModel;
-
-    private RenderedModel currentSnapshot;
-
-    private CameraController mViewPlatform;
-    
-    private Lights sceneLighting;
-    
+    // to RenderedModelController
+    //
     private RenderingViewer imageCaptureViewer;
-    
-    private ThumbnailRenderer thumbnails;
-
-    private RenderedModel mControlBallModel;
-
+    private final RenderedModel mRenderedModel;
     private RenderingChanges mainScene;
-    private final RenderingChanges mControlBallScene;
-
-    private final ApplicationController mApp;
-
-    private Java2dSnapshot mSnapshot = null;
-
-    private boolean useGraphicalViews = false;
-    private boolean showStrutScales = false;
-    private boolean mRequireShift = false;
+    private Lights sceneLighting;
+    private MouseTool modelModeMainTrackball;
+    private Component modelCanvas;
+    private boolean drawNormals = false;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
-    private boolean useWorkingPlane = false;
+    private Java2dSnapshotController java2dController = null;
+    private CameraController cameraController;
+    private final ApplicationController mApp;
 
-    private final LessonController lessonController;
-
-    private final boolean startReader;
-    
-    private final ManifestationChanges selectionRendering;
-    
-    private PropertyChangeListener articleChanges, modelChanges;
-
-    private final Properties properties;
-        
+    // to SymmetryRenderingController?
+    //
     private SymmetryController symmetryController;
-    
-    private Segment workingPlaneAxis = null;
-    
-    private final ToolsController toolsController;
-    
+    private Map<String,SymmetryController> symmetries = new HashMap<>();
     private final PartsController partsController;
 
-    private Map<String,SymmetryController> symmetries = new HashMap<>();
+    // to SelectionController (subclass of RenderedModelController?)
+    //
+    private MouseTool selectionClick;
+    private boolean mRequireShift = false;
+    private final ManifestationChanges selectionRendering;
+    
+    private final StrutBuilderController strutBuilder;
 
+    // to LessonController
+    //
+    private ThumbnailRenderer thumbnails;
+    private MouseTool lessonPageClick, articleModeMainTrackball, articleModeZoom;
+    private final LessonController lessonController;
+    private PropertyChangeListener articleChanges;
+    private RenderedModel currentSnapshot;
+    
+    private PropertyChangeListener modelChanges;
+        
     private final ClipboardController systemClipboard;
     private String designClipboard;
-
-    private boolean editingModel;
-
-    private Camera currentView;
-
-    private MouseTool lessonPageClick, articleModeMainTrackball, modelModeMainTrackball;
-
-    private final Component modelCanvas, leftEyeCanvas, rightEyeCanvas;
-
-    private MouseTool selectionClick, previewStrutStart, previewStrutRoll, previewStrutPlanarDrag;
     
     private final NumberController importScaleController;
-
-    private int changeCount = 0;
-
-    private final PickingController monoController, leftController, rightController;
         
    /*
      * See the javadoc to control the logging:
@@ -179,7 +156,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         this .properties = props;
         this .documentModel = document;
         
-        setNextController( app );
+        app .addSubController( "someDoc", this ); // TODO fix this
    
         if ( this .documentModel .isMigrated() )
             this .changeCount = -1; // this will force isEdited() to return true
@@ -198,19 +175,14 @@ public class DocumentController extends DefaultController implements J3dComponen
                 ? new ClipboardController()
                 : null;
         
-        toolsController = new ToolsController( document .getToolsModel() );
-        toolsController .setNextController( this );
+        ToolsController toolsController = new ToolsController( document .getToolsModel() );
+        this .addSubController( "tools", toolsController );
         this .addPropertyListener( toolsController );
         
 		toolsController .addTool( document .getToolsModel() .get( "bookmark.builtin/ball at origin" ) );
-        
-        for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
-        {
-            String name = symper .getName();
-            SymmetryController symmController = new SymmetryController( this, this .documentModel .getSymmetrySystem( name ) );
-            this .symmetries .put( name, symmController );
-        }
 
+        this .addSubController( "bookmark", new ToolFactoryController( this .documentModel .getBookmarkFactory() ) );
+        
         this .addSubController( "polytopes", new PolytopesController( this .documentModel ) );
         
         this .addSubController( "undoRedo", new UndoRedoController( this .documentModel .getHistoryModel() ) );
@@ -239,6 +211,8 @@ public class DocumentController extends DefaultController implements J3dComponen
             public void manifestationColored( Manifestation m, Color c ) {}
         };
         this .documentModel .addSelectionListener( selectionRendering );
+        
+        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel(), this .documentModel .getRenderedModel() ) );
 
         this .articleChanges = new PropertyChangeListener()
         {   
@@ -260,8 +234,8 @@ public class DocumentController extends DefaultController implements J3dComponen
                 else if ( "currentView" .equals( change .getPropertyName() ) )
                 {
                     Camera newView = (Camera) change .getNewValue();
-                    if ( ! newView .equals( mViewPlatform .getView() ) )
-                        mViewPlatform .restoreView( newView );
+                    if ( ! newView .equals( cameraController .getView() ) )
+                        cameraController .restoreView( newView );
                 }
                 else if ( "thumbnailChanged" .equals( change .getPropertyName() ) )
                 {
@@ -278,7 +252,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 switch ( change .getPropertyName() ) {
 
                 case "current.edit.xml":
-                    properties() .firePropertyChange( change ); // forward to the UI for display
+                    firePropertyChange( change ); // forward to the UI for display
                     break;
 
                 default:
@@ -293,73 +267,32 @@ public class DocumentController extends DefaultController implements J3dComponen
 
         sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
 
-        // this seems backwards, I know... the TrackballViewPlatformModel is the main
-        // model, and only forwards two events to trackballVPM
-        mViewPlatform = new CameraController( document .getViewModel() );
-        mViewPlatform .setNextController( this );
+        cameraController = new CameraController( document .getCamera() );
+        this .addSubController( "camera", cameraController );
+        this .articleModeZoom = this .cameraController .getZoomScroller();
+
+        strutBuilder = new StrutBuilderController( this, cameraController )
+                .withGraphicalViews( app .propertyIsTrue( "useGraphicalViews" ) )
+                .withShowStrutScales( app .propertyIsTrue( "showStrutScales" ) );
+        this .addSubController( "strutBuilder", strutBuilder );
+        
+        for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
+        {
+            String name = symper .getName();
+            SymmetryController symmController = new SymmetryController( strutBuilder, this .documentModel .getSymmetrySystem( name ) );
+            strutBuilder .addSubController( "symmetry." + name, symmController );
+            this .symmetries .put( name, symmController );
+        }
 
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
-        useGraphicalViews = "true".equals( app.getProperty( "useGraphicalViews" ) );
-        showStrutScales = "true" .equals( app.getProperty( "showStrutScales" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
-        RenderingViewer.Factory rvFactory = app .getJ3dFactory();
-        mainScene = rvFactory .createRenderingChanges( sceneLighting, true, this );
-        this .addPropertyListener( (PropertyChangeListener) mainScene );
-
-        modelCanvas = rvFactory .createJ3dComponent( "" ); // name not relevant there
-        imageCaptureViewer = rvFactory.createRenderingViewer( mainScene, modelCanvas );
-        mViewPlatform .addViewer( imageCaptureViewer );
-        monoController = new PickingController( imageCaptureViewer, this );
-        
-        leftEyeCanvas = rvFactory .createJ3dComponent( "" );
-        RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
-        mViewPlatform .addViewer( viewer );
-        viewer .setEye( RenderingViewer .LEFT_EYE );
-        leftController = new PickingController( viewer, this );
-
-        rightEyeCanvas = rvFactory .createJ3dComponent( "" );
-        viewer = rvFactory .createRenderingViewer( mainScene, rightEyeCanvas );
-        mViewPlatform .addViewer( viewer );
-        viewer .setEye( RenderingViewer .RIGHT_EYE );
-        rightController = new PickingController( viewer, this );
-
-            // TODO define a standalone controller class for contextual menus, etc.
-        Controller controlBallProps = new DefaultController()
-        {
-            @Override
-            public String getProperty( String name )
-            {
-                switch ( name ) {
-
-                case "drawOutlines":
-                    return "false";
-
-                case "showIcosahedralLabels":
-                    if ( super .userHasEntitlement( "developer.extras" )
-                            && documentModel.getSymmetrySystem().getSymmetry() instanceof IcosahedralSymmetry ) {
-                        return super.getProperty( "trackball.showIcosahedralLabels" );
-                    } else
-                        return "false";
-
-                default:
-                    return super.getProperty( name );
-                }
-            }
-        };
-        controlBallProps .setNextController( this );
-        mControlBallScene = rvFactory .createRenderingChanges( sceneLighting, true, controlBallProps );
-
-        thumbnails = new ThumbnailRendererImpl( rvFactory, sceneLighting );
+        thumbnails = new ThumbnailRendererImpl( app .getJ3dFactory() );
 
         mApp = app;
-
-        AlgebraicField field = this .documentModel .getField();
-        previewStrut = new PreviewStrut( field, mainScene, mViewPlatform );
-        previewStrut .setPropertyChangeSupport( this .properties() );
         
-        lessonController = new LessonController( this .documentModel .getLesson(), mViewPlatform );
-        lessonController .setNextController( this );
+        lessonController = new LessonController( this .documentModel .getLesson(), cameraController );
+        this .addSubController( "lesson", lessonController );
 
         setSymmetrySystem( this .documentModel .getSymmetrySystem() );
 
@@ -371,252 +304,143 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
 
         partsController = new PartsController( symmetryController .getOrbitSource() );
-        partsController .setNextController( this );
+        this .addSubController( "parts", partsController );
         mRenderedModel .addListener( partsController );
 
         copyThisView(); // initialize the "copied" view at startup.
+
+        /*
+         * Mouse tools here follow some general principles:
+         * 
+         * 1. Don't try to dispatch events by pipelining tools ("first one eats").  Instead, all tools get the event,
+         *     and let mutually-exclusive conditions make sure that only the desired processing
+         *     occurs.  MouseToolFilter is a good way to filter events.
+         *     
+         * 2. Use LeftMouseDragAdapter whenever you need drag / click hysteresis.  Really, the
+         *     only "drag" tool here that does not need that is the targetManifestationDrag,
+         *     since that is not a true drag.
+         *     
+         * 3. Use mode switch (article/model) to detach and attach sets of tools.
+         * 
+         * 4. A Trackball can be subclassed to determine what the transform operates on.
+         * 
+         */
+
+        // these are for the model viewer (article mode)
+        // will not be attached, initially; gets attached on switchToArticle
+        lessonPageClick = new MouseToolDefault()
+        {
+            @Override
+            public void mouseClicked( MouseEvent e )
+            {
+                actionPerformed( new ActionEvent( e .getSource(), ActionEvent.ACTION_PERFORMED, "nextPage" ) );
+                e .consume();
+            }
+        };
+
+        articleModeMainTrackball = cameraController .getTrackball();
+        // will not be attached, initially; gets attached on switchToArticle
+        if ( propertyIsTrue( "presenter.mode" ) )
+            ((Trackball) articleModeMainTrackball) .setModal( false );
+//        if ( ! editingModel )
+//        {
+//            // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
+//            //  and ViewPlatformControlPanel will attach a better one to the parent component 
+//            canvas .addMouseListener( mouseTool );
+//            canvas .addMouseMotionListener( mouseTool );
+//        }
+
+        // this wrapper for mainCanvasTrackball is disabled when the press is initiated over a ball
+        modelModeMainTrackball = new LeftMouseDragAdapter( new MouseToolFilter( articleModeMainTrackball )
+        {
+            boolean live = false;
+
+            @Override
+            public void mousePressed( MouseEvent e )
+            {
+                RenderedManifestation rm = imageCaptureViewer .pickManifestation( e );
+                if ( rm == null || !( rm .getManifestation() instanceof Connector ) )
+                {
+                    this .live = true;
+                    super .mousePressed( e );
+                }
+            }
+
+            @Override
+            public void mouseDragged( MouseEvent e )
+            {
+                if ( live )
+                    super .mouseDragged( e );
+            }
+
+            @Override
+            public void mouseReleased( MouseEvent e )
+            {
+                this .live = false;
+                super .mouseReleased( e );
+            }
+        } );
     }
-
+    
     @Override
-    public Component createJ3dComponent( String name )
+    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
     {
-        if ( name.startsWith( "mainViewer" ) )
+    		// This is called on a UI thread!
+        this .modelCanvas = canvas;
+        this .mainScene = scene;
+        this .imageCaptureViewer = viewer;
+
+//      leftEyeCanvas = rvFactory .createJ3dComponent( "" );
+//      RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
+//      mViewPlatform .addViewer( viewer );
+//      viewer .setEye( RenderingViewer .LEFT_EYE );
+//      leftController = new PickingController( viewer, this );
+//
+//      rightEyeCanvas = rvFactory .createJ3dComponent( "" );
+//      viewer = rvFactory .createRenderingViewer( mainScene, rightEyeCanvas );
+//      mViewPlatform .addViewer( viewer );
+//      viewer .setEye( RenderingViewer .RIGHT_EYE );
+//      rightController = new PickingController( viewer, this );
+
+        if ( this .mainScene instanceof PropertyChangeListener )
+            this .addPropertyListener( (PropertyChangeListener) this .mainScene );
+
+        
+        // clicks become select or deselect all
+        selectionClick = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
         {
-            Component canvas = null;
-            if ( name .endsWith( "monocular" ) )
-                canvas = modelCanvas;
-            else if ( name .endsWith( "leftEye" ) )
-                canvas = leftEyeCanvas;
-            else
-                canvas = rightEyeCanvas;
-            
-            /*
-             * Mouse tools here follow some general principles:
-             * 
-             * 1. Don't try to dispatch events by pipelining tools ("first one eats").  Instead, all tools get the event,
-             *     and let mutually-exclusive conditions make sure that only the desired processing
-             *     occurs.  MouseToolFilter is a good way to filter events.
-             *     
-             * 2. Use LeftMouseDragAdapter whenever you need drag / click hysteresis.  Really, the
-             *     only "drag" tool here that does not need that is the targetManifestationDrag,
-             *     since that is not a true drag.
-             *     
-             * 3. Use mode switch (article/model) to detach and attach sets of tools.
-             * 
-             * 4. A Trackball can be subclassed to determine what the transform operates on.
-             * 
-             */
-
-            // these are for the model viewer (article mode)
-            MouseTool mouseTool = new MouseToolDefault()
+            @Override
+            protected void manifestationPicked( Manifestation target, boolean shiftKey )
             {
-                @Override
-                public void mouseClicked( MouseEvent e )
-                {
-                    actionPerformed( new ActionEvent( e .getSource(), ActionEvent.ACTION_PERFORMED, "nextPage" ) );
-                    e .consume();
-                }
-            };
-            if ( canvas == modelCanvas )
-                lessonPageClick = mouseTool; // will not be attached, initially; gets attached on switchToArticle
-
-            mouseTool = new MouseToolFilter( mViewPlatform .getZoomScroller() )
-            {
-                @Override
-                public void mouseWheelMoved( MouseWheelEvent e )
-                {
-                    LengthController length = previewStrut .getLengthModel();
-                    if ( length != null )
-                    {
-                        // scroll to scale the preview strut (when it is rendered)
-                        length .getMouseTool() .mouseWheelMoved( e );
-                        // don't adjustPreviewStrut() here, let the prop change trigger it,
-                        // so we don't flicker for every tick of the mousewheel
+                mErrors .clearError();
+                boolean shift = true;
+                if ( mRequireShift )
+                    shift = shiftKey;
+                if ( target == null )
+                    try {
+                        documentModel .performAndRecord( documentModel .deselectAll() );
+                    } catch ( Exception e ) {
+                        mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
                     }
-                    else
-                    {
-                        // no strut build in progress, so zoom the view
-                        super .mouseWheelMoved( e );
-                    }
-                }
-            };
-            mouseTool .attach( canvas );
+                else
+                    documentModel .performAndRecord( documentModel .selectManifestation( target, ! shift ) );
+            }
+        } );
+        this .cameraController .addViewer( this .imageCaptureViewer );
+        this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
-            mouseTool = mViewPlatform .getTrackball();
-            if ( propertyIsTrue( "presenter.mode" ) )
-                ((Trackball) mouseTool) .setModal( false );
-//            if ( ! editingModel )
-//            {
-//                // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
-//                //  and ViewPlatformControlPanel will attach a better one to the parent component 
-//                canvas .addMouseListener( mouseTool );
-//                canvas .addMouseMotionListener( mouseTool );
-//            }
-            if ( canvas == modelCanvas )
-                articleModeMainTrackball = mouseTool; // will not be attached, initially; gets attached on switchToArticle
-
-            // this wrapper for mainCanvasTrackball is disabled when the press is initiated over a ball
-            mouseTool = new LeftMouseDragAdapter( new MouseToolFilter( articleModeMainTrackball )
-            {
-                boolean live = false;
-
-                @Override
-                public void mousePressed( MouseEvent e )
-                {
-                    RenderedManifestation rm = imageCaptureViewer .pickManifestation( e );
-                    if ( rm == null || !( rm .getManifestation() instanceof Connector ) )
-                    {
-                        this .live = true;
-                        super .mousePressed( e );
-                    }
-                }
-
-                @Override
-                public void mouseDragged( MouseEvent e )
-                {
-                    if ( live )
-                        super .mouseDragged( e );
-                }
-
-                @Override
-                public void mouseReleased( MouseEvent e )
-                {
-                    this .live = false;
-                    super .mouseReleased( e );
-                }
-            } );
-            if ( canvas == modelCanvas )
-                modelModeMainTrackball = mouseTool;
-            if ( editingModel )
-                modelModeMainTrackball .attach( canvas );
-            else
-                articleModeMainTrackball .attach( canvas );
-            
-            // clicks become select or deselect all
-            mouseTool = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
-            {
-                @Override
-                protected void manifestationPicked( Manifestation target, boolean shiftKey )
-                {
-                    mErrors .clearError();
-                    boolean shift = true;
-                    if ( mRequireShift )
-                        shift = shiftKey;
-                    if ( target == null )
-                        try {
-                            documentModel .performAndRecord( documentModel .deselectAll() );
-                        } catch ( Exception e ) {
-                            mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
-                        }
-                    else
-                        documentModel .performAndRecord( documentModel .selectManifestation( target, ! shift ) );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                selectionClick = mouseTool;
-
-            // drag events to render or realize the preview strut;
-            //   only works when drag starts over a ball
-            mouseTool = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
-            {                
-                @Override
-                protected void dragStarted( Manifestation target, boolean b )
-                {
-                    if ( target instanceof Connector )
-                    {
-                        mErrors .clearError();
-                        Point point = (Point) target .getConstructions() .next();
-                        AlgebraicVector workingPlaneNormal = null;
-                        if ( useWorkingPlane && (workingPlaneAxis != null ) )
-                            workingPlaneNormal = workingPlaneAxis .getOffset();
-                        previewStrut .startRendering( symmetryController, point, workingPlaneNormal );
-                    }
-                }
-
-                @Override
-                protected void dragFinished( Manifestation target, boolean b )
-                {
-                    previewStrut .finishPreview( documentModel );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                previewStrutStart = mouseTool;
-
-            // trackball to adjust the preview strut (when it is rendered)
-            mouseTool = new LeftMouseDragAdapter( new Trackball()
-            {
-                @Override
-                protected void trackballRolled( Quat4d roll )
-                {
-                    previewStrut .trackballRolled( roll );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                previewStrutRoll = mouseTool;
-            
-            // working plane drag events to adjust the preview strut (when it is rendered)
-            mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
-            {
-                @Override
-                public void mouseDragged( MouseEvent e )
-                {
-                    Point3d imagePt = new Point3d();
-                    Point3d eyePt = new Point3d();
-                    imageCaptureViewer .pickPoint( e, imagePt, eyePt );
-                    previewStrut .workingPlaneDrag( imagePt, eyePt );
-                }
-            } );
-            if ( editingModel )
-                mouseTool .attach( canvas );
-            if ( canvas == modelCanvas )
-                previewStrutPlanarDrag = mouseTool;
-            
-            // mRenderedModel .setFactory( mViewer .getSceneGraphFactory() );
-            // mRenderedModel .setTopGroup( mViewer .getSceneGraphRoot() );
-
-            mViewPlatform .updateViewers();
-//            currentDesign .render( true, null );   // I think this is not necessary now
-            return canvas;
-        }
-        else if ( name.equals( "controlViewer" ) )
-        {
-            MouseTool trackball = mViewPlatform .getTrackball();
-            RenderingViewer.Factory rvFactory = mApp .getJ3dFactory();
-            Component canvas = rvFactory .createJ3dComponent( name ); // name not relevant there
-   
-            // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
-            //  and ViewPlatformControlPanel will attach a better one to the parent component 
-            canvas .addMouseListener( trackball );
-            canvas .addMouseMotionListener( trackball );
-
-            RenderingViewer viewer = rvFactory .createRenderingViewer( mControlBallScene, canvas );
-            mViewPlatform .addViewer( new TrackballRenderingViewer( viewer ) );
-
-            // mControlBallScene .reset();
-            for ( RenderedManifestation rm : mControlBallModel )
-                mControlBallScene.manifestationAdded( rm );
-
-            mViewPlatform .updateViewers();
-            return canvas;
-        }
-        else
-        {
-            RenderingViewer.Factory rvFactory = mApp .getJ3dFactory();
-            Component canvas = rvFactory .createJ3dComponent( name ); // name not relevant there
-
-            drawOutlines = true;
-            RenderingChanges scene = rvFactory.createRenderingChanges( sceneLighting, true, this );
-            mRenderedModel.addListener( scene );
-            RenderingViewer viewer = rvFactory.createRenderingViewer( mainScene, canvas );
-            this.addPropertyListener( (PropertyChangeListener) viewer );
-            return canvas;
-        }
+        this .strutBuilder .attach( viewer, scene );
+        
+        if ( this .modelCanvas != null )
+            if ( editingModel ) {
+                this .selectionClick .attach( modelCanvas );
+                this .modelModeMainTrackball .attach( modelCanvas );
+                this .strutBuilder .attach( modelCanvas );
+            } else {
+                this .articleModeMainTrackball .attach( modelCanvas );
+                this .articleModeZoom .attach( modelCanvas );
+                this .lessonPageClick .attach( modelCanvas );
+            }
     }
 
     private SymmetryController getSymmetryController( String name )
@@ -624,6 +448,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         SymmetryController result = this .symmetries .get( name );
         return result;
     }
+
 
     private void setSymmetrySystem( SymmetrySystem symmetrySystem )
     {
@@ -636,14 +461,10 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
 
         String modelResourcePath = this .symmetryController .getProperty( "modelResourcePath" );
-        mControlBallModel = this .mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
-        if ( mControlBallScene != null ) {
-            mControlBallScene.reset();
-            for ( RenderedManifestation rm : mControlBallModel )
-                mControlBallScene.manifestationAdded( rm );
-        }
-        mViewPlatform .setSnapper( symmetryController.getSnapper() );
-        properties().firePropertyChange( "symmetry", null, name ); // notify UI, so cardpanel can flip, or whatever
+        RenderedModel model = this .mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
+        cameraController .setSymmetry( model, symmetryController .getSnapper() );
+
+        firePropertyChange( "symmetry", null, name ); // notify UI, so cardpanel can flip, or whatever
         setRenderingStyle();
     }
 
@@ -656,9 +477,9 @@ public class DocumentController extends DefaultController implements J3dComponen
             if ( partsController != null )
                 partsController .endSwitch();
         }
-        if ( previewStrut != null )
-            previewStrut .setSymmetryController( symmetryController );
+        strutBuilder .setSymmetryController( symmetryController );
     }
+
 
     @Override
     public void doAction( String action, ActionEvent e ) throws Failure
@@ -672,7 +493,30 @@ public class DocumentController extends DefaultController implements J3dComponen
             this .documentModel .finishLoading( openUndone, asTemplate );
                         
             // mainScene is not listening to mRenderedModel yet, so batch the rendering changes to it
-            this .syncRendering();
+            if ( mainScene != null )
+            {
+                if ( editingModel )
+                {
+                    RenderedModel .renderChange( new RenderedModel( null, null ), mRenderedModel, mainScene );
+                    mRenderedModel .addListener( mainScene );
+                    // get the thumbnails updating in the background
+                    if ( lessonController != null )
+                        lessonController .renderThumbnails( documentModel, thumbnails );
+                }
+                else
+                    try {
+                        currentSnapshot = new RenderedModel( null, null ); // force render of first snapshot, see "renderSnapshot." below
+                        lessonController .doAction( "restoreSnapshot", new ActionEvent( this, 0, "restoreSnapshot" ) );
+                        // order these to avoid issues with the thumbnails (unexplained)
+                        lessonController .renderThumbnails( documentModel, thumbnails );
+                    } catch ( Exception e1 ) {
+                        Throwable cause = e1.getCause();
+                        if ( cause instanceof Command.Failure )
+                            mErrors.reportError( USER_ERROR_CODE, new Object[] { cause } );
+                        else
+                            mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { e1 } );
+                    }
+            }
             return;
         }
         
@@ -680,48 +524,46 @@ public class DocumentController extends DefaultController implements J3dComponen
         try {
             if ( action .equals( "switchToArticle" ) )
             {
-                currentView = mViewPlatform .getView();
+                this .currentView = this .cameraController .getView();
                 
-                selectionClick .detach( modelCanvas );
-                previewStrutStart .detach( modelCanvas );
-                previewStrutRoll .detach( modelCanvas );
-                previewStrutPlanarDrag .detach( modelCanvas );
-                modelModeMainTrackball .detach( modelCanvas );
+                this .selectionClick .detach( this .modelCanvas );
+                this .strutBuilder .detach( this .modelCanvas );
+                this .modelModeMainTrackball .detach( this .modelCanvas );
                 
-                lessonPageClick .attach( modelCanvas );
-                articleModeMainTrackball .attach( modelCanvas );
+                this .lessonPageClick .attach( this .modelCanvas );
+                this .articleModeMainTrackball .attach( this .modelCanvas );
+                this .articleModeZoom .attach( this .modelCanvas );
 
-                documentModel .addPropertyChangeListener( this .articleChanges );
-                documentModel .removePropertyChangeListener( this .modelChanges );
-                lessonController .doAction( "restoreSnapshot", e );
+                this .documentModel .addPropertyChangeListener( this .articleChanges );
+                this .documentModel .removePropertyChangeListener( this .modelChanges );
+                this .lessonController .doAction( "restoreSnapshot", e );
 
                 this .editingModel = false;
-                properties() .firePropertyChange( "editor.mode", "model", "article" );
+                firePropertyChange( "editor.mode", "model", "article" );
             }
             else if ( action .equals( "switchToModel" ) )
             {
-                documentModel .removePropertyChangeListener( this .articleChanges );
-                documentModel .addPropertyChangeListener( this .modelChanges );
-                mViewPlatform .restoreView( currentView );
+                this .documentModel .removePropertyChangeListener( this .articleChanges );
+                this .documentModel .addPropertyChangeListener( this .modelChanges );
+                this .cameraController .restoreView( this .currentView );
 
-                RenderedModel .renderChange( currentSnapshot, mRenderedModel, mainScene );
-                currentSnapshot = mRenderedModel;
+                RenderedModel .renderChange( this .currentSnapshot, this .mRenderedModel, this .mainScene );
+                this .currentSnapshot = this .mRenderedModel;
 
-                lessonPageClick .detach( modelCanvas );
-                articleModeMainTrackball .detach( modelCanvas );
+                this .lessonPageClick .detach( this .modelCanvas );
+                this .articleModeMainTrackball .detach( this .modelCanvas );
+                this .articleModeZoom .detach( this .modelCanvas );
                 
-                selectionClick .attach( modelCanvas );
-                previewStrutStart .attach( modelCanvas );
-                previewStrutRoll .attach( modelCanvas );
-                previewStrutPlanarDrag .attach( modelCanvas );
-                modelModeMainTrackball .attach( modelCanvas );
+                this .selectionClick .attach( this .modelCanvas );
+                this .modelModeMainTrackball .attach( this .modelCanvas );
+                this .strutBuilder .attach( this .modelCanvas );
 
                 this .editingModel = true;
-                properties() .firePropertyChange( "editor.mode", "article", "model" );
+                firePropertyChange( "editor.mode", "article", "model" );
             }
             else if ( action .equals( "takeSnapshot" ) )
             {
-                documentModel .addSnapshotPage( mViewPlatform .getView() );
+                documentModel .addSnapshotPage( cameraController .getView() );
             }
 
             else if ( "nextPage" .equals( action ) )
@@ -744,8 +586,7 @@ public class DocumentController extends DefaultController implements J3dComponen
 
             else if ( action.equals( "refresh.2d" ) )
             {
-                Java2dExporter exporter = new Java2dExporter( mViewPlatform.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
-                this .mSnapshot .setExporter( exporter );
+                this .java2dController .setScene( cameraController.getView(), this.sceneLighting, this.currentSnapshot, this.drawOutlines );
             }
 
             else if ( action.startsWith( "setStyle." ) )
@@ -754,34 +595,19 @@ public class DocumentController extends DefaultController implements J3dComponen
             else if ( action.equals( "toggleFrameLabels" ) )
             {
                 showFrameLabels = ! showFrameLabels;
-                properties() .firePropertyChange( "showFrameLabels", !showFrameLabels, showFrameLabels );
+                firePropertyChange( "showFrameLabels", !showFrameLabels, showFrameLabels );
+            }
+
+            else if ( action.equals( "toggleNormals" ) )
+            {
+                drawNormals = ! drawNormals;
+                firePropertyChange( "drawNormals", !drawNormals, drawNormals );
             }
 
             else if ( action.equals( "toggleOutlines" ) )
             {
                 drawOutlines = ! drawOutlines;
-                properties() .firePropertyChange( "drawOutlines", !drawOutlines, drawOutlines );
-            }
-
-            else if ( action.equals( "toggleWorkingPlane" ) )
-            {
-                useWorkingPlane = ! useWorkingPlane;
-//                if ( useWorkingPlane )
-//                    mainScene .enableWorkingPlane( workingPlaneOrbits );
-//                else
-//                    mainScene .disableWorkingPlane( workingPlaneOrbits );
-            }
-
-            else if ( action.equals( "toggleOrbitViews" ) ) {
-                boolean old = useGraphicalViews;
-                useGraphicalViews = ! old;
-                properties().firePropertyChange( "useGraphicalViews", old, this.useGraphicalViews );
-            }
-
-            else if ( action.equals( "toggleStrutScales" ) ) {
-                boolean old = showStrutScales;
-                showStrutScales = ! old;
-                properties().firePropertyChange( "showStrutScales", old, this.showStrutScales );
+                firePropertyChange( "drawOutlines", !drawOutlines, drawOutlines );
             }
 
             else if ( action.startsWith( "setSymmetry." ) ) {
@@ -796,15 +622,15 @@ public class DocumentController extends DefaultController implements J3dComponen
             }
             else if ( action.equals( "useCopiedView" ) )
             {
-                mViewPlatform .useCopiedView();
+                cameraController .useCopiedView();
             }
             else if ( action.equals( "lookAtOrigin" ) )
-                mViewPlatform.setLookAtPoint( new Point3d( 0, 0, 0 ) );
+                cameraController.setLookAtPoint( new Point3d( 0, 0, 0 ) );
             
             else if ( action.equals( "lookAtSymmetryCenter" ) )
             {
                 RealVector loc = documentModel .getParamLocation( "ball" );
-                mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+                cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
             }
 
             else if ( action .equals( "usedOrbits" ) )
@@ -841,12 +667,16 @@ public class DocumentController extends DefaultController implements J3dComponen
             }
             else if ( action .equals( "copy" ) )
                 setProperty( "clipboard", documentModel .copySelectionVEF() );
+            else if ( action .equals( "copy.observable" ) )
+                setProperty( "clipboard", documentModel .copyRenderedModel( "observable" ) );
+            else if ( action .equals( "copy.vson" ) )
+                setProperty( "clipboard", documentModel .copyRenderedModel( "vson" ) );
             else if ( action.equals( "paste" ) )
             {
                 String vefContent = getProperty( "clipboard" );
                 documentModel .pasteVEF( vefContent );
             }
-            else if ( PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
+            else if ( e != null && PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
             {
                 // this is a select or deselect command from the PartsPanel context menu
                 PartsPanelActionEvent ppae = PartsPanelActionEvent.class.cast(e);
@@ -933,36 +763,9 @@ public class DocumentController extends DefaultController implements J3dComponen
 
     private void copyThisView()
     {
-        mViewPlatform.copyView(mViewPlatform.getView());
+        cameraController.copyView(cameraController.getView());
     }
 
-    public void syncRendering()
-    {
-        if ( mainScene != null )
-        {
-            if ( editingModel )
-            {
-                RenderedModel .renderChange( new RenderedModel( null, null ), mRenderedModel, mainScene );
-                mRenderedModel .addListener( mainScene );
-                // get the thumbnails updating in the background
-                if ( lessonController != null )
-                    lessonController .renderThumbnails( documentModel, thumbnails );
-            }
-            else
-                try {
-                    currentSnapshot = new RenderedModel( null, null ); // force render of first snapshot, see "renderSnapshot." below
-                    lessonController .doAction( "restoreSnapshot", new ActionEvent( this, 0, "restoreSnapshot" ) );
-                    // order these to avoid issues with the thumbnails (unexplained)
-                    lessonController .renderThumbnails( documentModel, thumbnails );
-                } catch ( Exception e1 ) {
-                    Throwable cause = e1.getCause();
-                    if ( cause instanceof Command.Failure )
-                        mErrors.reportError( USER_ERROR_CODE, new Object[] { cause } );
-                    else
-                        mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { e1 } );
-                }
-        }
-    }
 
     @Override
     public void doScriptAction( String command, String script )
@@ -970,6 +773,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         if ( command.equals( "runZomicScript" ) 
                 || command.equals( "runPythonScript" )
                 || command.equals( "import.vef" ) 
+                || command.equals( "import.vef.tetrahedral" ) 
                 //|| command.equals( "import.zomod" ) 
                 )
             documentModel .doScriptAction( command, script );
@@ -1015,6 +819,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             			if(cmd.length == 2 ) {
             				switch (cmd[0]) {
         					case "capture":
+        					case "export2d":
         					case "export":
         						extension = cmd[1];
         						break;
@@ -1054,7 +859,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 String js = readResource( "org/vorthmann/zome/app/j360-loop.js" );
                 writeFile( js, new File( dir, "j360-loop.js" ) );
 
-                AnimationCaptureController animation = new AnimationCaptureController( this .mViewPlatform, dir );
+                AnimationCaptureController animation = new AnimationCaptureController( this .cameraController, dir );
                 captureImageFile( null, AnimationCaptureController.TYPE, animation );
                 this .openApplication( htmlFile );
                 return;
@@ -1069,13 +874,22 @@ public class DocumentController extends DefaultController implements J3dComponen
 //            {
 //                new ZomespaceExporter( file ) .exportArticle( document, colors, sceneLighting, getSaveXml(), getProperty( "edition" ), getProperty( "version" ) );
 //            } else
+            if ( command.startsWith( "export2d." ) )
+            {
+                Dimension size = this .modelCanvas .getSize();              
+                String format = command .substring( "export2d." .length() ) .toLowerCase();
+                Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
+                documentModel .export2d( snapshot, format, file, this .drawOutlines, false );
+                this .openApplication( file );
+                return;
+            }
             if ( command.startsWith( "export." ) )
             {
                 Writer out = new FileWriter( file );
                 Dimension size = this .modelCanvas .getSize();              
                 try {
                     String format = command .substring( "export." .length() ) .toLowerCase();
-                    Exporter3d exporter = documentModel .getNaiveExporter( format, mViewPlatform .getView(), colors, sceneLighting, currentSnapshot );
+                    Exporter3d exporter = documentModel .getNaiveExporter( format, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
                         exporter.doExport( file, file.getParentFile(), out, size.height, size.width );
                     }
@@ -1083,7 +897,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                         exporter = this .mApp .getExporter( format );
                         if ( exporter == null ) {
                             // currently just "partgeom"
-                            exporter = documentModel .getStructuredExporter( format, mViewPlatform .getView(), colors, sceneLighting, mRenderedModel );
+                            exporter = documentModel .getStructuredExporter( format, cameraController .getView(), colors, sceneLighting, mRenderedModel );
                         }
                         if ( exporter != null )
                             exporter .doExport( documentModel, file, file.getParentFile(), out, size.height, size.width );
@@ -1099,6 +913,11 @@ public class DocumentController extends DefaultController implements J3dComponen
                     ) {
                 String vefData = readFile( file );
                 documentModel .importVEF( this .importScaleController .getValue(), vefData );
+                return;
+            }
+            if ( command.equals( "import.vef.tetrahedral" ) ) {
+                String vefData = readFile( file );
+                documentModel .importVEFTetrahedralProjection( this .importScaleController .getValue(), vefData );
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {
@@ -1219,6 +1038,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         } );
     }
     
+    
     private static String readFile( File file ) throws IOException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1232,6 +1052,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
         return new String( out.toByteArray() );
     }
+    
     
     private static String readResource( String resourcePath )
     {
@@ -1257,6 +1078,7 @@ public class DocumentController extends DefaultController implements J3dComponen
         }
     }
 
+
     private static void writeFile( String content, File file ) throws Exception
     {
         // A try-with-resources block closes the resource even if an exception occurs
@@ -1266,6 +1088,7 @@ public class DocumentController extends DefaultController implements J3dComponen
             throw ex;
         }
     }
+
 
     @Override
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
@@ -1283,7 +1106,7 @@ public class DocumentController extends DefaultController implements J3dComponen
                 break;
 
             case "useCopiedView":
-                result[ i ] = mViewPlatform .hasCopiedView();
+                result[ i ] = cameraController .hasCopiedView();
                 break;
 
             default:
@@ -1293,159 +1116,142 @@ public class DocumentController extends DefaultController implements J3dComponen
         return result;
     }
 
+
     public boolean isEdited()
     {
         int currentChangeCount = this .documentModel .getChangeCount();
         return currentChangeCount > this .changeCount;
     }
 
+
     @Override
     public void setErrorChannel( ErrorChannel errors )
     {
         mErrors = errors;
-        if ( mViewPlatform == null )
+        if ( cameraController == null )
             return;
-        mViewPlatform.setErrorChannel( errors );
+        cameraController.setErrorChannel( errors );
         lessonController.setErrorChannel( errors );
-        toolsController .setErrorChannel( errors );
     }
 
+
     @Override
-    public String getProperty( String string )
+    public String getProperty( String propName )
     {
-        if ( "useGraphicalViews".equals( string ) ) {
-            return Boolean.toString( this.useGraphicalViews );
-        }
-        if ( "showStrutScales".equals( string ) ) {
-            return Boolean.toString( this.showStrutScales );
-        }
-        if ( "startReader".equals( string ) )
+        switch ( propName ) {
+
+        case "isIcosahedralSymmetry":
+            return Boolean .toString( symmetryController.getSymmetry().getName() .equals( "icosahedral" ) );
+
+        case "showIcosahedralLabels":
+            // TODO refactor to a controller for ModelPanel
+            return "false";
+
+        case "trackball.showIcosahedralLabels":
+            if ( super .userHasEntitlement( "developer.extras" ) ) {
+                return super.getProperty( "trackball.showIcosahedralLabels" );
+            } else
+                return "false";
+            
+        case "clipboard":
+            return systemClipboard != null ? systemClipboard.getClipboardContents() : designClipboard;
+
+        case "showFrameLabels":
+            return Boolean .toString( showFrameLabels );
+
+        case "drawNormals":
+            return Boolean .toString( drawNormals );
+
+        case "drawOutlines":
+            return Boolean .toString( drawOutlines );
+
+        case "startReader":
             return Boolean.toString( startReader );
 
-        if ( "migrated".equals( string ) )
+        case "migrated":
             return Boolean.toString( this .documentModel .isMigrated() );
 
-        if ( "edited".equals( string ) )
+        case "edited":
             return Boolean.toString( this .isEdited() );
 
-        if ( "symmetry".equals( string ) )
+        case "symmetry":
             return symmetryController.getSymmetry().getName();
 
-        if ( "field.name".equals( string ) )
+        case "field.name":
             return this .documentModel .getField() .getName();
-        
-        if ( "field.label".equals( string ) ) {
-            
+
+        case "field.label": {
             String name = this .documentModel .getField() .getName();
             return super.getProperty( "field.label." + name ); // defer to app controller
             // TODO implement AlgebraicField.getLabel()
         }
-        
-        if ( string .startsWith( "supports.symmetry." ) )
-        {
-            String group = string .substring( "supports.symmetry." .length() );
-            Symmetry symm = this .documentModel .getFieldApplication() .getSymmetryPerspective( group ) .getSymmetry();
-            return Boolean .toString(symm != null);
-        }
-        
-        if ( "clipboard" .equals( string ) )
-            return systemClipboard != null
-                    ? systemClipboard.getClipboardContents()
-                    : designClipboard;
-        
-        if ( "showFrameLabels" .equals( string ) )
-            return Boolean .toString( showFrameLabels );
-                
-        if ( "drawOutlines" .equals( string ) )
-            return Boolean .toString( drawOutlines );
-                
-        if ( "useWorkingPlane" .equals( string ) )
-            return Boolean .toString( useWorkingPlane );
-                
-        if ( "workingPlaneDefined" .equals( string ) )
-            return Boolean .toString( workingPlaneAxis != null );
-                
-        if ( string .startsWith( "tool.description." ) )
-        {
-            string = string .substring( "tool.description." .length() ); // strip "tool.description."
-            if ( "bookmark" .equals( string ) )
-                return "set the selection to be whatever it is now";
-            else if ( "module" .equals( string ) )
-                return "duplicate a module at every point";
-            else if ( "point reflection" .equals( string ) )
-                return "apply a central inversion through a point";
-            else if ( "mirror" .equals( string ) )
-                return "reflect objects in a mirror plane";
-            else if ( "translation" .equals( string ) )
-                return "translate objects by the given offset";
-            else if ( "linear map" .equals( string ) )
-                return "apply a linear transformation";
-            else if ( "rotation" .equals( string ) )
-                return "rotate objects around an axis, by a fixed angle";
-            else if ( "scaling" .equals( string ) )
-                return "scale objects linearly, relative to a fixed point";
-            else if ( "plane" .equals( string ) )
-                return "select objects based on incidence on a plane or half-space";
-            else
-                return "replicate objects to create " + string + " symmetry";
-        }
-        
-        if ( string .startsWith( "file-dialog-title." ) ) {
-            switch ( string .substring( "file-dialog-title." .length() ) ) {
-            case "capture-animation":
-                return "Choose a target folder for animation frames";
 
-            default:
-                break; // fall through to properties or super
+        default:
+            if ( propName .startsWith( "supports.symmetry." ) )
+            {
+                String group = propName .substring( "supports.symmetry." .length() );
+                Symmetry symm = this .documentModel .getFieldApplication() .getSymmetryPerspective( group ) .getSymmetry();
+                return Boolean .toString(symm != null);
+            }   
+            else if ( propName .startsWith( "tool.description." ) )
+            {
+                propName = propName .substring( "tool.description." .length() ); // strip "tool.description."
+                if ( "bookmark" .equals( propName ) )
+                    return "set the selection to be whatever it is now";
+                else if ( "module" .equals( propName ) )
+                    return "duplicate a module at every point";
+                else if ( "point reflection" .equals( propName ) )
+                    return "apply a central inversion through a point";
+                else if ( "mirror" .equals( propName ) )
+                    return "reflect objects in a mirror plane";
+                else if ( "translation" .equals( propName ) )
+                    return "translate objects by the given offset";
+                else if ( "linear map" .equals( propName ) )
+                    return "apply a linear transformation";
+                else if ( "rotation" .equals( propName ) )
+                    return "rotate objects around an axis, by a fixed angle";
+                else if ( "scaling" .equals( propName ) )
+                    return "scale objects linearly, relative to a fixed point";
+                else if ( "plane" .equals( propName ) )
+                    return "select objects based on incidence on a plane or half-space";
+                else
+                    return "replicate objects to create " + propName + " symmetry";
             }
+            else if ( propName .startsWith( "file-dialog-title." ) ) {
+                switch ( propName .substring( "file-dialog-title." .length() ) ) {
+                case "capture-animation":
+                    return "Choose a target folder for animation frames";
+
+                default:
+                    break; // fall through to properties or super
+                }
+            }
+
+            String result = this .properties .getProperty( propName );
+            if ( result != null )
+                return result;
+
+            return super.getProperty( propName );
         }
-
-        String result = this .properties .getProperty( string );
-        if ( result != null )
-            return result;
-
-        return super.getProperty( string );
     }
     
+
     @Override
     public Controller getSubController( String name )
     {
         switch ( name ) {
 
-        case "monocularPicking":
-            return monoController;
-
-        case "leftEyePicking":
-            return leftController;
-
-        case "rightEyePicking":
-            return rightController;
-
-        case "viewPlatform":
-            return mViewPlatform;
-
         case "symmetry":
+            // This value is transient, so we don't want to use getSubController()
             return symmetryController;
-
-        case "tools":
-            return toolsController;
-        
-        case "parts":
-            return partsController; 
-        
-        case "lesson":
-            return lessonController;
-        
-        case "bookmark":
-            return new ToolFactoryController( this .documentModel .getBookmarkFactory() );
         
         case "snapshot.2d": {
-            if ( mSnapshot == null ) {
-                Java2dExporter exporter = new Java2dExporter( mViewPlatform.getView(), this.mApp.getColors(), this.sceneLighting, this.currentSnapshot );
-                mSnapshot = new Java2dSnapshot( exporter );
-                mSnapshot .setNextController( this );
+            if ( java2dController == null ) {
+                java2dController = new Java2dSnapshotController( this .documentModel, cameraController.getView(), this.sceneLighting,
+                						this.currentSnapshot, this.drawOutlines );
+                this .addSubController( name, java2dController );
             }
-            return mSnapshot;
+            return java2dController;
         }
 
         default:
@@ -1457,27 +1263,19 @@ public class DocumentController extends DefaultController implements J3dComponen
     }
 
     @Override
-    public void setProperty( String cmd, Object value )
+    public void setModelProperty( String cmd, Object value )
     {
-        if ( "useGraphicalViews".equals( cmd ) ) {
-            this.useGraphicalViews = "true".equals( value );
-            properties().firePropertyChange( cmd, false, this.useGraphicalViews );
-            return;
-        } else if ( "visible".equals( cmd ) ) {
+        if ( "visible".equals( cmd ) ) {
             // Window is listening, will bring itself to the front, or close itself
             // App controller will set topDocument, or remove the document.
-            properties() .firePropertyChange( "visible", null, value );
+            firePropertyChange( "visible", null, value );
         } else if ( "name".equals( cmd ) ) {
             // App controller is listening, will change its map
-            properties() .firePropertyChange( "name", null, value );
+            firePropertyChange( "name", null, value );
         } else if ( "backgroundColor".equals( cmd ) ) {
             sceneLighting .setProperty( cmd, value );
         } else if ( "terminating".equals( cmd ) ) {
-            properties().firePropertyChange( cmd, null, value );
-        } else if ( "showStrutScales".equals( cmd ) ) {
-            boolean old = showStrutScales;
-            this.showStrutScales = "true" .equals( value );
-            properties().firePropertyChange( "showStrutScales", old, this.showStrutScales );
+            firePropertyChange( cmd, null, value );
         }
         else if ( "clipboard" .equals( cmd ) ) {
             if( systemClipboard != null ) {
@@ -1492,22 +1290,49 @@ public class DocumentController extends DefaultController implements J3dComponen
         {
             boolean old = showFrameLabels;
             showFrameLabels = "true" .equals( value );
-            properties() .firePropertyChange( "showFrameLabels", old, showFrameLabels );
+            firePropertyChange( "showFrameLabels", old, showFrameLabels );
         }
 
-        super.setProperty( cmd, value );
+        super .setModelProperty( cmd, value );
     }
+
 
     @Override
     public String[] getCommandList( String listName )
     {
-        if ( "symmetryPerspectives" .equals( listName ) )
-        {
+        switch ( listName ) {
+
+        case "symmetryPerspectives":
             return this .symmetries .keySet() .toArray( new String[]{} );
+
+        case "field.irrationals":
+        {
+            AlgebraicField field = this .documentModel .getField();
+            int len = field .getNumIrrationals();
+            String[] result = new String[ len ];
+            for ( int i = 0; i < result.length; i++ ) {
+                result[ i ] = field .getIrrational( i+1 );
+            }
+            return result;
         }
-        return super.getCommandList( listName );
+
+        case "field.multipliers":
+        {
+            AlgebraicField field = this .documentModel .getField();
+            int len = field. getNumMultipliers();
+            String[] result = new String[ len ];
+            for ( int i = 0; i < result.length; i++ ) {
+                result[ i ] = field .getIrrational( i+1 );
+            }
+            return result;
+        }
+
+        default:
+            return super.getCommandList( listName );
+        }
     }
     
+
     public void doManifestationAction( Manifestation pickedManifestation, String action )
     {
         Construction singleConstruction = null;
@@ -1530,18 +1355,20 @@ public class DocumentController extends DefaultController implements J3dComponen
                 break;
 
             case "setWorkingPlaneAxis":
-                this .workingPlaneAxis = (Segment) singleConstruction;
-                this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
+                this .strutBuilder .setWorkingPlaneAxis( ((Segment) singleConstruction).getOffset() );
                 break;
 
             case "setWorkingPlane":
-                this .workingPlaneAxis = this .documentModel .getPlaneAxis( (Polygon) singleConstruction );
-                this .properties() .firePropertyChange( "workingPlaneDefined", false, true );
+                this .strutBuilder .setWorkingPlaneAxis( ((Polygon) singleConstruction ).getNormal() );
                 break;
 
             case "lookAtThis":
                 RealVector loc = documentModel .getCentroid( singleConstruction );
-                mViewPlatform .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+                cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+                break;
+                
+            case "replaceWithShape":
+            	documentModel .replaceWithShape( pickedManifestation );
                 break;
                 
             case "setBuildOrbitAndLength": {
@@ -1623,6 +1450,9 @@ public class DocumentController extends DefaultController implements J3dComponen
                     buf.append("start: ");
                     Strut strut = Strut.class.cast(man);
                     strut.getLocation().getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
+                    
+                    buf.append("\n\nend: ");
+                    strut.getEnd().getVectorExpression(buf, AlgebraicField.DEFAULT_FORMAT);
                     
                     buf.append("\n\noffset: ");
                     AlgebraicVector offset = strut.getOffset();
@@ -1723,21 +1553,21 @@ public class DocumentController extends DefaultController implements J3dComponen
                 buf.append( this.getProperty("field.label" ));
 
                 buf.append( "\n\nsymmetry: " );
-                buf.append( mViewPlatform.getProperty( "symmetry" ) );
+                buf.append( cameraController.getProperty( "symmetry" ) );
                 if( propertyIsTrue("show.camera.properties") ) {
                     buf.append( "\n\nlook at point: " );
-                    buf.append( mViewPlatform.getProperty( "lookAtPoint" ) );
+                    buf.append( cameraController.getProperty( "lookAtPoint" ) );
 
                     buf.append( "\n\nlook direction: " );
-                    buf.append( mViewPlatform.getProperty( "lookDir" ) );
+                    buf.append( cameraController.getProperty( "lookDir" ) );
                     buf.append( "\n  up direction: " );
-                    buf.append( mViewPlatform.getProperty( "upDir" ) );
+                    buf.append( cameraController.getProperty( "upDir" ) );
                     
                     buf.append( "\n\nview distance: " );
-                    buf.append( mViewPlatform.getProperty( "viewDistance" ) );
+                    buf.append( cameraController.getProperty( "viewDistance" ) );
                     
                     buf.append( "\n\nmagnification: " );
-                    buf.append( mViewPlatform.getProperty( "magnification" ) );
+                    buf.append( cameraController.getProperty( "magnification" ) );
                 }
                
                 return buf.toString();
@@ -1756,5 +1586,15 @@ public class DocumentController extends DefaultController implements J3dComponen
         default:
             return this .getProperty( propName );
         }
+    }
+
+    public DocumentModel getModel()
+    {
+        return this .documentModel;
+    }
+
+    public SymmetryController getSymmetryController()
+    {
+        return this .symmetryController;
     }
 }

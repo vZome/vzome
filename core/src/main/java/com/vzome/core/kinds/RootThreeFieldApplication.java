@@ -37,150 +37,153 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  */
 public class RootThreeFieldApplication extends DefaultFieldApplication
 {
-	public RootThreeFieldApplication()
-	{
-		super( new RootThreeField() );
-		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
-		AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();
-		
-		symm .createZoneOrbit( "red",   0, Symmetry .NO_ROTATION, new int[][] { {1,1, 1,2}, {1,2, 0,1}, {0,1, 0,1} }, true );
-		symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {2,1, 0,1} } );
+    public RootThreeFieldApplication()
+    {
+        super( new RootThreeField() );
+        OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
+        AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();
 
-		AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootThreeOctaSmall", "small octahedra", "small connectors", symm );
-		octahedralPerspective .addShapes( defaultShapes );
-		octahedralPerspective .setDefaultGeometry( defaultShapes );
-	}
+        symm .createZoneOrbit( "red",   0, Symmetry .NO_ROTATION, new int[][] { {1,1, 1,2}, {1,2, 0,1}, {0,1, 0,1} }, true );
+        symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {2,1, 0,1} } );
 
-	final SymmetryPerspective dodecagonalPerspective = new SymmetryPerspective()
+        AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootThreeOctaSmall", "small octahedra", "small connectors", symm );
+        octahedralPerspective .addShapes( defaultShapes );
+        octahedralPerspective .setDefaultGeometry( defaultShapes );
+    }
+
+    final SymmetryPerspective dodecagonalPerspective = new SymmetryPerspective()
     {
         private final DodecagonalSymmetry symmetry = new DodecagonalSymmetry( getField(), "prisms" );
-        
+        {
+            symmetry .computeOrbitDots();
+        }
+
         private final AbstractShapes defaultShapes = new ExportedVEFShapes( null, "dodecagon3d", "prisms", symmetry );
-    	private final AbstractShapes hexagonShapes = new DodecagonalShapes( "dodecagonal", "hexagons", "flat hexagons", symmetry );
-    	
-    	private final Command dodecagonsymm = new CommandSymmetry( this .symmetry );
-    			
-		@Override
-		public Symmetry getSymmetry()
-		{
-			return this .symmetry;
-		}
-		
-		@Override
-		public String getName()
-		{
-			return "dodecagonal";
-		}
+        private final AbstractShapes hexagonShapes = new DodecagonalShapes( "dodecagonal", "hexagons", "flat hexagons", symmetry );
 
-		@Override
-		public List<Shapes> getGeometries()
-		{
-			return Arrays.asList( defaultShapes, hexagonShapes );
-		}
-		
-		@Override
-		public Shapes getDefaultGeometry()
-		{
-			return this .defaultShapes;
-		}
+        private final Command dodecagonsymm = new CommandSymmetry( this .symmetry );
 
-		@Override
-		public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
-		{
-			List<Tool.Factory> result = new ArrayList<>();
-			switch ( kind ) {
+        @Override
+        public Symmetry getSymmetry()
+        {
+            return this .symmetry;
+        }
 
-			case SYMMETRY:
-				result .add( new SymmetryTool.Factory( tools, this .symmetry ) );
-				result .add( new InversionTool.Factory( tools ) );
-				result .add( new MirrorTool.Factory( tools ) );
-				result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
-				break;
+        @Override
+        public String getName()
+        {
+            return "dodecagonal";
+        }
 
-			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, this .symmetry ) );
-				result .add( new RotationTool.Factory( tools, this .symmetry ) );
-				result .add( new TranslationTool.Factory( tools ) );
-				break;
+        @Override
+        public List<Shapes> getGeometries()
+        {
+            return Arrays.asList( defaultShapes, hexagonShapes );
+        }
 
-			case LINEAR_MAP:
-				result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
-				break;
+        @Override
+        public Shapes getDefaultGeometry()
+        {
+            return this .defaultShapes;
+        }
 
-			default:
-				break;
-			}
-			return result;
-		}
+        @Override
+        public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
+        {
+            List<Tool.Factory> result = new ArrayList<>();
+            switch ( kind ) {
 
-		@Override
-		public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
-		{
-			List<Tool> result = new ArrayList<>();
-			switch ( kind ) {
+            case SYMMETRY:
+                result .add( new SymmetryTool.Factory( tools, this .symmetry ) );
+                result .add( new InversionTool.Factory( tools ) );
+                result .add( new MirrorTool.Factory( tools ) );
+                result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
+                break;
 
-			case SYMMETRY:
-				result .add( new SymmetryTool.Factory( tools, this .symmetry ) .createPredefinedTool( "dodecagonal antiprism around origin" ) );
-				result .add( new InversionTool.Factory( tools ) .createPredefinedTool( "reflection through origin" ) );
-				result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
-				result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around red through origin" ) );
-				break;
+            case TRANSFORM:
+                result .add( new ScalingTool.Factory( tools, this .symmetry ) );
+                result .add( new RotationTool.Factory( tools, this .symmetry ) );
+                result .add( new TranslationTool.Factory( tools ) );
+                break;
 
-			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
-				result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
-				result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around red through origin" ) );
-				result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
-				break;
+            case LINEAR_MAP:
+                result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
+                break;
 
-			default:
-				break;
-			}
-			return result;
-		}
+            default:
+                break;
+            }
+            return result;
+        }
 
-		@Override
-		public Command getLegacyCommand( String action )
-		{
-			switch ( action ) {
+        @Override
+        public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
+        {
+            List<Tool> result = new ArrayList<>();
+            switch ( kind ) {
 
-			case "dodecagonsymm":
-				return this .dodecagonsymm;
+            case SYMMETRY:
+                result .add( new SymmetryTool.Factory( tools, this .symmetry ) .createPredefinedTool( "dodecagonal antiprism around origin" ) );
+                result .add( new InversionTool.Factory( tools ) .createPredefinedTool( "reflection through origin" ) );
+                result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
+                result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around red through origin" ) );
+                break;
 
-			default:
-				return null;
-			}
-		}
+            case TRANSFORM:
+                result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
+                result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
+                result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around red through origin" ) );
+                result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
+                break;
 
-		@Override
-		public String getModelResourcePath()
-		{
-			return "org/vorthmann/zome/app/dodecagonal.vZome";
-		}
+            default:
+                break;
+            }
+            return result;
+        }
+
+        @Override
+        public Command getLegacyCommand( String action )
+        {
+            switch ( action ) {
+
+            case "dodecagonsymm":
+                return this .dodecagonsymm;
+
+            default:
+                return null;
+            }
+        }
+
+        @Override
+        public String getModelResourcePath()
+        {
+            return "org/vorthmann/zome/app/dodecagonal.vZome";
+        }
     };
-    
-	@Override
-	public SymmetryPerspective getDefaultSymmetryPerspective()
-	{
-		return this .dodecagonalPerspective;
-	}
 
-	@Override
-	public Collection<SymmetryPerspective> getSymmetryPerspectives()
-	{
-		return Arrays.asList( super .getDefaultSymmetryPerspective(), this .dodecagonalPerspective );
-	}
+    @Override
+    public SymmetryPerspective getDefaultSymmetryPerspective()
+    {
+        return this .dodecagonalPerspective;
+    }
 
-	@Override
-	public SymmetryPerspective getSymmetryPerspective( String symmName )
-	{
-		switch ( symmName ) {
+    @Override
+    public Collection<SymmetryPerspective> getSymmetryPerspectives()
+    {
+        return Arrays.asList( super .getDefaultSymmetryPerspective(), this .dodecagonalPerspective );
+    }
 
-		case "dodecagonal":
-			return this .dodecagonalPerspective;
+    @Override
+    public SymmetryPerspective getSymmetryPerspective( String symmName )
+    {
+        switch ( symmName ) {
 
-		default:
-			return super .getSymmetryPerspective( symmName );
-		}
-	}
+        case "dodecagonal":
+            return this .dodecagonalPerspective;
+
+        default:
+            return super .getSymmetryPerspective( symmName );
+        }
+    }
 }

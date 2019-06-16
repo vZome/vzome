@@ -28,6 +28,7 @@ import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.LiveGraphicsExporter;
+import com.vzome.core.exporters.ShapesJsonExporter;
 import com.vzome.core.exporters.OffExporter;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
@@ -43,6 +44,10 @@ import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.exporters.VefExporter;
 import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.exporters.WebviewJsonExporter;
+import com.vzome.core.exporters2d.PDFExporter;
+import com.vzome.core.exporters2d.PostScriptExporter;
+import com.vzome.core.exporters2d.SVGExporter;
+import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
@@ -66,6 +71,8 @@ public class Application
     private final Map<String, Exporter3d> exporters = new HashMap<>();
 
     private final Lights mLights = new Lights();
+
+    private final Map<String, Supplier<SnapshotExporter>> exporters2d = new HashMap<>();
 
     private static final Logger logger = Logger.getLogger( "com.vzome.core.editor" );
 
@@ -93,6 +100,7 @@ public class Application
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         this .exporters .put( "vson", new VsonExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "shapes", new ShapesJsonExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
@@ -111,6 +119,10 @@ public class Application
         this .exporters .put( "seg", new SegExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "ply", new PlyExporter( this .mColors, this .mLights ) );
         this .exporters .put( "history", new HistoryExporter( null, this .mColors, this .mLights, null ) );
+        
+        this .exporters2d .put( "pdf", PDFExporter::new );
+        this .exporters2d .put( "svg", SVGExporter::new );
+        this .exporters2d .put( "ps",  PostScriptExporter::new );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         this.fieldAppSuppliers.put("golden", GoldenFieldApplication::new);
@@ -254,4 +266,13 @@ public class Application
 	{
 		return this .properties .getProperty( "version" );
 	}
+
+    public SnapshotExporter getSnapshotExporter( String format )
+    {
+        Supplier<SnapshotExporter> supplier = this .exporters2d .get( format );
+        if ( supplier == null )
+            throw new RuntimeException();
+        else
+            return supplier.get();
+    }
 }

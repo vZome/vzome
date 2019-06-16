@@ -42,205 +42,217 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  */
 public class RootTwoFieldApplication extends DefaultFieldApplication
 {
-	public RootTwoFieldApplication()
-	{
-		super( new RootTwoField() );
-		
-		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
-		
-		AbstractSymmetry symmetry = (AbstractSymmetry) octahedralPerspective .getSymmetry();
-		
-		symmetry .createZoneOrbit( "yellow", 0, 4, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {1,1, 0,1} }, true );
-		symmetry .createZoneOrbit( "green",  1, 8, new int[][] { {0,1, 1,2}, {0,1, 1,2}, {0,1, 0,1} }, true );
-		symmetry .createZoneOrbit( "brown",  0, Symmetry .NO_ROTATION, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {2,1, 0,1} }, true );
-
-		AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", "small connectors", symmetry );
-		octahedralPerspective .setDefaultGeometry( defaultShapes );
-		octahedralPerspective .addShapes( defaultShapes );
-		octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwo", "Tesseractix", symmetry, defaultShapes ) );
-		octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes ) );
-	}
-
-	/*
-	 * This is not really a different symmetry, but it uses different colors and default shapes for the orbits.
-	 * 
-	 * Actually, it may be a different field, even, since I've learned that Synestructics does not really
-	 * scale by root-two, but by doubling!  That means that octagons are still irregular in this system.
-	 * It also raises some interesting questions about algebraic fields, and vZome's assumptions about them.
-	 * Unlike the golden field, one cannot scale down in this field without using fractions; basically, this
-	 * field is just the Integers!
-	 */
-
-	private final SymmetryPerspective synestructicsPerspective = new SymmetryPerspective()
+    public RootTwoFieldApplication()
     {
-    	private final OctahedralSymmetry symmetry = new OctahedralSymmetry( getField(), "orange", "Synestructics" )
-    	{
-    		@Override
-    		public String getName()
-    		{
-    			return "synestructics";
-    		}
+        super( new RootTwoField() );
 
-    		@Override
-    		public Direction getSpecialOrbit( SpecialOrbit which )
-    		{
-    			switch ( which ) {
+        OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 
-    			case BLUE:
-    				return this .getDirection( "orange" );
+        AbstractSymmetry symmetry = (AbstractSymmetry) octahedralPerspective .getSymmetry();
 
-    			case RED:
-    				return this .getDirection( "magenta" );
+        symmetry .createZoneOrbit( "yellow", 0, 4, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {1,1, 0,1} }, true );
+        symmetry .createZoneOrbit( "green",  1, 8, new int[][] { {0,1, 1,2}, {0,1, 1,2}, {0,1, 0,1} }, true );
+        symmetry .createZoneOrbit( "brown",  0, Symmetry .NO_ROTATION, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {2,1, 0,1} }, true );
 
-    			case YELLOW:
-    				return this .getDirection( "yellow" );
+        AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", "small connectors", symmetry );
+        octahedralPerspective .setDefaultGeometry( defaultShapes );
+        octahedralPerspective .addShapes( defaultShapes );
+        octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwo", "Tesseractix", symmetry, defaultShapes ) );
+        octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes ) );
+    }
 
-    			default:
-    				return null; // TODO pick/define an orbit that needs no correction
-    			}
-    		}
+    /*
+     * This is not really a different symmetry, but it uses different colors and default shapes for the orbits.
+     * 
+     * Actually, it may be a different field, even, since I've learned that Synestructics does not really
+     * scale by root-two, but by doubling!  That means that octagons are still irregular in this system.
+     * It also raises some interesting questions about algebraic fields, and vZome's assumptions about them.
+     * Unlike the golden field, one cannot scale down in this field without using fractions; basically, this
+     * field is just the Integers!
+     */
 
-    		@Override
-    		protected void createOtherOrbits()
-    		{
-    			AlgebraicVector v = new AlgebraicVector( this .mField .one(), this .mField .one(), this .mField .one() );
-    			createZoneOrbit( "yellow", 0, 4, v, true );
+    private final SymmetryPerspective synestructicsPerspective = new SymmetryPerspective()
+    {
+        private final OctahedralSymmetry symmetry = new OctahedralSymmetry( getField(), "orange", "Synestructics" )
+        {
+            @Override
+            public String getName()
+            {
+                return "synestructics";
+            }
 
-    			AlgebraicNumber sqrt2 = this .mField .createPower( 1 );
-    			AlgebraicNumber half = this .mField .createRational( 1, 2 );
-    			v = new AlgebraicVector( sqrt2, sqrt2, this .mField .zero() ) .scale( half );
-    			createZoneOrbit( "magenta", 1, 8, v, true );
+            @Override
+            public Direction getSpecialOrbit( SpecialOrbit which )
+            {
+                switch ( which ) {
 
-    			v = new AlgebraicVector( this .mField .one(), this .mField .one(), this .mField .one() .plus( this .mField .one() ) );
-    			createZoneOrbit( "brown", 0, NO_ROTATION, v, true );
-    		}
-    	};
-        
+                case BLUE:
+                    return this .getDirection( "orange" );
+
+                case RED:
+                    return this .getDirection( "magenta" );
+
+                case YELLOW:
+                    return this .getDirection( "yellow" );
+
+                default:
+                    return null; // TODO pick/define an orbit that needs no correction
+                }
+            }
+
+            @Override
+            protected AlgebraicVector[] getOrbitTriangle()
+            {
+                AlgebraicVector magentaVertex = this .getDirection( "magenta" ) .getPrototype();
+                AlgebraicVector orangeVertex = this .getDirection( "orange" ) .getPrototype();
+                AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype();
+                return new AlgebraicVector[] { magentaVertex, orangeVertex, yellowVertex };
+            }
+
+            @Override
+            protected void createOtherOrbits()
+            {
+                AlgebraicVector v = new AlgebraicVector( this .mField .one(), this .mField .one(), this .mField .one() );
+                createZoneOrbit( "yellow", 0, 4, v, true );
+
+                AlgebraicNumber sqrt2 = this .mField .createPower( 1 );
+                AlgebraicNumber half = this .mField .createRational( 1, 2 );
+                v = new AlgebraicVector( sqrt2, sqrt2, this .mField .zero() ) .scale( half );
+                createZoneOrbit( "magenta", 1, 8, v, true );
+
+                v = new AlgebraicVector( this .mField .one(), this .mField .one(), this .mField .one() .plus( this .mField .one() ) );
+                createZoneOrbit( "brown", 0, NO_ROTATION, v, true );
+            }
+        };
+        {
+            symmetry .computeOrbitDots();
+        }
+
         private final AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", symmetry, null );
-    	private final AbstractShapes smallOctaShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", symmetry, defaultShapes );
-    	private final AbstractShapes synestructicsShapes = new ExportedVEFShapes( null, "rootTwo", "Synestructics", symmetry, defaultShapes );
-    	private final AbstractShapes ornateShapes = new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes );
+        private final AbstractShapes smallOctaShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", symmetry, defaultShapes );
+        private final AbstractShapes synestructicsShapes = new ExportedVEFShapes( null, "rootTwo", "Synestructics", symmetry, defaultShapes );
+        private final AbstractShapes ornateShapes = new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes );
 
-    	private final Command octasymm = new CommandSymmetry( symmetry );
-    	private final Command tetrasymm = new CommandTetrahedralSymmetry( symmetry );
-    	private final Command axialsymm = new CommandAxialSymmetry( symmetry );
+        private final Command octasymm = new CommandSymmetry( symmetry );
+        private final Command tetrasymm = new CommandTetrahedralSymmetry( symmetry );
+        private final Command axialsymm = new CommandAxialSymmetry( symmetry );
 
-		@Override
-		public Symmetry getSymmetry()
-		{
-			return this .symmetry;
-		}
-		
-		@Override
-		public String getName()
-		{
-			return "synestructics";
-		}
+        @Override
+        public Symmetry getSymmetry()
+        {
+            return this .symmetry;
+        }
 
-		@Override
-		public List<Shapes> getGeometries()
-		{
-			return Arrays.asList( defaultShapes, smallOctaShapes, synestructicsShapes, ornateShapes );
-		}
-		
-		@Override
-		public Shapes getDefaultGeometry()
-		{
-			return this .defaultShapes;
-		}
+        @Override
+        public String getName()
+        {
+            return "synestructics";
+        }
 
-		@Override
-		public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
-		{
-			List<Tool.Factory> result = new ArrayList<>();
-			switch ( kind ) {
+        @Override
+        public List<Shapes> getGeometries()
+        {
+            return Arrays.asList( defaultShapes, smallOctaShapes, synestructicsShapes, ornateShapes );
+        }
 
-			case SYMMETRY:
-				result .add( new OctahedralToolFactory( tools, this .symmetry ) );
-				result .add( new TetrahedralToolFactory( tools, this .symmetry ) );
-				result .add( new InversionTool.Factory( tools ) );
-				result .add( new MirrorTool.Factory( tools ) );
-				result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
-				break;
+        @Override
+        public Shapes getDefaultGeometry()
+        {
+            return this .defaultShapes;
+        }
 
-			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, this .symmetry ) );
-				result .add( new RotationTool.Factory( tools, this .symmetry ) );
-				result .add( new TranslationTool.Factory( tools ) );
-				break;
+        @Override
+        public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
+        {
+            List<Tool.Factory> result = new ArrayList<>();
+            switch ( kind ) {
 
-			case LINEAR_MAP:
-				result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
-				break;
+            case SYMMETRY:
+                result .add( new OctahedralToolFactory( tools, this .symmetry ) );
+                result .add( new TetrahedralToolFactory( tools, this .symmetry ) );
+                result .add( new InversionTool.Factory( tools ) );
+                result .add( new MirrorTool.Factory( tools ) );
+                result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
+                break;
 
-			default:
-				break;
-			}
-			return result;
-		}
+            case TRANSFORM:
+                result .add( new ScalingTool.Factory( tools, this .symmetry ) );
+                result .add( new RotationTool.Factory( tools, this .symmetry ) );
+                result .add( new TranslationTool.Factory( tools ) );
+                break;
 
-		@Override
-		public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
-		{
-			List<Tool> result = new ArrayList<>();
-			switch ( kind ) {
+            case LINEAR_MAP:
+                result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
+                break;
 
-			case SYMMETRY:
-				result .add( new OctahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "octahedral around origin" ) );
-				result .add( new TetrahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "tetrahedral around origin" ) );
-				result .add( new InversionTool.Factory( tools ) .createPredefinedTool( "reflection through origin" ) );
-				result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
-				result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around green through origin" ) );
-				break;
+            default:
+                break;
+            }
+            return result;
+        }
 
-			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
-				result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
-				result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around green through origin" ) );
-				result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
-				break;
+        @Override
+        public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
+        {
+            List<Tool> result = new ArrayList<>();
+            switch ( kind ) {
 
-			default:
-				break;
-			}
-			return result;
-		}
+            case SYMMETRY:
+                result .add( new OctahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "octahedral around origin" ) );
+                result .add( new TetrahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "tetrahedral around origin" ) );
+                result .add( new InversionTool.Factory( tools ) .createPredefinedTool( "reflection through origin" ) );
+                result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
+                result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around green through origin" ) );
+                break;
 
-		@Override
-		public Command getLegacyCommand( String action )
-		{
-			switch ( action ) {
-			case "octasymm"     : return octasymm;
-			case "tetrasymm"    : return tetrasymm;
-			case "axialsymm"    : return axialsymm;
-			default:
-				return null;
-			}
-		}
+            case TRANSFORM:
+                result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
+                result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
+                result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around green through origin" ) );
+                result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
+                break;
 
-		@Override
-		public String getModelResourcePath()
-		{
-			return "org/vorthmann/zome/app/octahedral-vef.vZome";
-		}
-	};
+            default:
+                break;
+            }
+            return result;
+        }
 
-	@Override
-	public Collection<SymmetryPerspective> getSymmetryPerspectives()
-	{
-		return Arrays.asList( super .getDefaultSymmetryPerspective(), this .synestructicsPerspective );
-	}
+        @Override
+        public Command getLegacyCommand( String action )
+        {
+            switch ( action ) {
+            case "octasymm"     : return octasymm;
+            case "tetrasymm"    : return tetrasymm;
+            case "axialsymm"    : return axialsymm;
+            default:
+                return null;
+            }
+        }
 
-	@Override
-	public SymmetryPerspective getSymmetryPerspective( String symmName )
-	{
-		switch ( symmName ) {
+        @Override
+        public String getModelResourcePath()
+        {
+            return "org/vorthmann/zome/app/octahedral-vef.vZome";
+        }
+    };
 
-		case "synestructics":
-			return this .synestructicsPerspective;
+    @Override
+    public Collection<SymmetryPerspective> getSymmetryPerspectives()
+    {
+        return Arrays.asList( super .getDefaultSymmetryPerspective(), this .synestructicsPerspective );
+    }
 
-		default:
-			return super .getSymmetryPerspective( symmName );
-		}
-	}
+    @Override
+    public SymmetryPerspective getSymmetryPerspective( String symmName )
+    {
+        switch ( symmName ) {
+
+        case "synestructics":
+            return this .synestructicsPerspective;
+
+        default:
+            return super .getSymmetryPerspective( symmName );
+        }
+    }
 }

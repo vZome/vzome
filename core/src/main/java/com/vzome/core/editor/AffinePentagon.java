@@ -138,11 +138,6 @@ public class AffinePentagon extends ChangeManifestations
 
         redo();
     }
-
-    public AffinePentagon( Selection selection, RealizedModel realized )
-    {
-        super( selection, realized, false );
-    }
         
     public AffinePentagon( Selection selection, RealizedModel realized, boolean groupInSelection )
     {

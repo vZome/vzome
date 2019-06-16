@@ -160,10 +160,35 @@ public class EditorModel
         return new SelectParallelStruts( symmetrySystem, mSelection, mRealized );
     }
 
+    public UndoableEdit selectByDiameter()
+    {
+        return new SelectByDiameter(mSelection, mRealized );
+    }
+
+    public UndoableEdit selectByRadius()
+    {
+        return new SelectByRadius(mSelection, mRealized );
+    }
+
     public UndoableEdit invertSelection()
     {
         return new InvertSelection( mSelection, mRealized, false );
         // always a change, by definition
+    }
+    
+    public UndoableEdit joinSkewLines()
+    {
+        return new JoinSkewLines( mSelection, mRealized );
+    }
+    
+    public UndoableEdit convexHull2d()
+    {
+        return new ConvexHull2d( mSelection, mRealized );
+    }
+    
+    public UndoableEdit convexHull3d()
+    {
+        return new ConvexHull3d( mSelection, mRealized );
     }
     
     public UndoableEdit createEdit( String name, boolean groupInSelection )

@@ -11,10 +11,12 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.RealVector;
 
 /**
@@ -23,48 +25,50 @@ import com.vzome.core.math.RealVector;
  */
 public abstract class AbstractSymmetry implements Symmetry
 {
-	protected final Map<String, Direction> mDirectionMap = new HashMap<>();
-    
+    protected final Map<String, Direction> mDirectionMap = new HashMap<>();
+
     protected final List<Direction> mDirectionList = new ArrayList<>(); // TODO remove, redundant with orbitSet
-    
+
     protected final OrbitSet orbitSet = new OrbitSet( this );
 
     protected final Permutation[] mOrientations;
-    
+
     protected final AlgebraicMatrix[] mMatrices;
-    
+
     protected final AlgebraicField mField;
-    
+
     protected final String defaultStyle;
 
     private AlgebraicMatrix principalReflection = null;
-    
+
+    private OrbitDotLocator dotLocator;
+
     protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle )
     {
-    	this( order, field, frameColor, defaultStyle, null );
+        this( order, field, frameColor, defaultStyle, null );
     }
-        
+
     protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle, AlgebraicMatrix principalReflection )
     {
         mField = field;
-        
+
         this.principalReflection = principalReflection;
-        
+
         this .defaultStyle = defaultStyle;
-        
+
         mOrientations = new Permutation[ order ];
         mMatrices = new AlgebraicMatrix[ order ];
-        
+
         createInitialPermutations();
 
-//        boolean[] initialPerms = new boolean[ order ];
-//        for ( int i = 0; i < order; i++ ) {
-//            Permutation p1 = mOrientations[ i ];
-//            if ( p1 == null )
-//                continue;
-//            initialPerms[ i ] = true;
-//        }
-        
+        //        boolean[] initialPerms = new boolean[ order ];
+        //        for ( int i = 0; i < order; i++ ) {
+        //            Permutation p1 = mOrientations[ i ];
+        //            if ( p1 == null )
+        //                continue;
+        //            initialPerms[ i ] = true;
+        //        }
+
         // now, discover all possible compositions of these
         boolean done = false;
         while ( ! done ) {
@@ -85,7 +89,7 @@ public abstract class AbstractSymmetry implements Symmetry
                     int result = p1 .mapIndex( p2 .mapIndex( 0 ) );
                     if ( mOrientations[ result ] != null )
                         continue;
-//                    System .out .println( result + " = " + i + " * " + j );
+                    //                    System .out .println( result + " = " + i + " * " + j );
                     int[] map = new int[order];
                     for ( int k = 0; k < order; k++ )
                         map[ k ] = p1 .mapIndex( p2 .mapIndex( k ) );
@@ -94,22 +98,35 @@ public abstract class AbstractSymmetry implements Symmetry
                 if ( done ) break;
             }
         }
-        
+
         createFrameOrbit( frameColor );
         createOtherOrbits();
 
-//        for ( int i = 0; i < order; i++ ) {
-//            if ( initialPerms[ i ] )
-//                System .out .println( i + " = " + mMatrices[ i ] .toString() );
-//        }        
+//        ObjectMapper jsonMapper = new ObjectMapper();
+//        for (AlgebraicMatrix orientation : mMatrices) {
+//            Matrix3d matrix = new Matrix3d();
+//            for ( int i = 0; i < 3; i++) {
+//                for ( int j = 0; j < 3; j++) {
+//                    double value = orientation .getElement( i, j ) .evaluate();
+//                    matrix .setElement( i, j, value );
+//                }
+//            }
+//            try {
+//                String jsonString = jsonMapper .writeValueAsString( matrix );
+//                System .out .println( jsonString );
+//            } catch (JsonProcessingException e) {
+//                // TODO: handle exception
+//                e .printStackTrace();
+//            }
+//        }
     }
-    
+
     protected abstract void createFrameOrbit( String frameColor );
 
     protected abstract void createOtherOrbits();
 
     protected abstract void createInitialPermutations();
-    
+
     @Override
     @JsonIgnore
     public String getDefaultStyle()
@@ -123,14 +140,14 @@ public abstract class AbstractSymmetry implements Symmetry
     {
         return mField;
     }
-    
+
     @Override
     @JsonIgnore
-	public Axis getPreferredAxis()
-	{
-		return null;
-	}
-	
+    public Axis getPreferredAxis()
+    {
+        return null;
+    }
+
     public Direction createZoneOrbit( String name, int prototype, int rotatedPrototype, int[][] norm )
     {
         AlgebraicVector aNorm = mField .createVector( norm );
@@ -179,20 +196,27 @@ public abstract class AbstractSymmetry implements Symmetry
             this .orbitSet .remove( existingDir );
             this .mDirectionList .remove( existingDir );
         }
-        Direction dir = new Direction( name, this, prototype, rotatedPrototype, norm, standard );
+        Direction orbit = new Direction( name, this, prototype, rotatedPrototype, norm, standard );
         if ( halfSizes )
-            dir .setHalfSizes( true );
-        dir .setUnitLength( unitLength );
-        mDirectionMap .put( dir .getName(), dir );
-        mDirectionList .add( dir );
-        orbitSet .add( dir );
-        return dir;
+            orbit .setHalfSizes( true );
+        orbit .setUnitLength( unitLength );
+        mDirectionMap .put( orbit .getName(), orbit );
+        mDirectionList .add( orbit );
+        orbitSet .add( orbit );
+
+        if ( this .dotLocator != null )
+            this .dotLocator .locateOrbitDot( orbit );
+
+        return orbit;
     }
-    
+
     @Override
     public Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm )
     {
-        return new Direction( name, this, prototype, rotatedPrototype, norm, false ) .withCorrection();
+        Direction orbit = new Direction( name, this, prototype, rotatedPrototype, norm, false ) .withCorrection();
+        if ( this .dotLocator != null )
+            this .dotLocator .locateOrbitDot( orbit );
+        return orbit;
     }
 
 
@@ -205,30 +229,30 @@ public abstract class AbstractSymmetry implements Symmetry
     {
         return this.orbitSet;
     }
-    
-    /**
-	 * @param unit
-	 * @param rot
-	 * @return
-	 */
-    @Override
-	public int getMapping( int from, int to )
-	{
-	    if ( to == NO_ROTATION )
-	        return NO_ROTATION;
-		for ( int p = 0; p < mOrientations.length; p++ )
-			if ( mOrientations[ p ] .mapIndex( from ) == to )
-				return p;
-		return NO_ROTATION;
-	}
 
-	public Permutation mapAxis( Axis from, Axis to )
+    /**
+     * @param unit
+     * @param rot
+     * @return
+     */
+    @Override
+    public int getMapping( int from, int to )
+    {
+        if ( to == NO_ROTATION )
+            return NO_ROTATION;
+        for ( int p = 0; p < mOrientations.length; p++ )
+            if ( mOrientations[ p ] .mapIndex( from ) == to )
+                return p;
+        return NO_ROTATION;
+    }
+
+    public Permutation mapAxis( Axis from, Axis to )
     {
         return mapAxes( new Axis[]{ from }, new Axis[]{ to } );
     }
 
     public Permutation mapAxes( final Axis[] from, final Axis[] to )
-    throws MismatchedAxes
+            throws MismatchedAxes
     {
         if ( from .length != to .length )
             throw new MismatchedAxes( "must map to equal number of axes" );
@@ -239,28 +263,28 @@ public abstract class AbstractSymmetry implements Symmetry
                 throw new MismatchedAxes( "must map between same color axes" );
         final Permutation[] result = new Permutation[1];
         // try right handed ones first!
-//		new ForEachOrientation( true, false, this ){
-//			public boolean doOrientation( Permutation current ){
-//				for ( int i = 0; i < from .length; i++ )
-//					if ( ! to[i] .equals( current .permute( from[i] ) ) )
-//						return true;
-//				result[0] = current;
-//				return false;
-//			}
-//		} .doEach();
-//		// now try left-handed ones
-//		if ( result[0] == null )
-//			new ForEachOrientation( false, true, this ){
-//				public boolean doOrientation( Permutation current ){
-//					for ( int i = 0; i < from .length; i++ )
-//						if ( ! to[i] .equals( current .permute( from[i] ) ) )
-//							return true;
-//					result[0] = current;
-//					return false;
-//				}
-//			} .doEach();
-//		if ( result[0] == null )
-//            throw new MismatchedAxes( "map is impossible" );
+        //		new ForEachOrientation( true, false, this ){
+        //			public boolean doOrientation( Permutation current ){
+        //				for ( int i = 0; i < from .length; i++ )
+        //					if ( ! to[i] .equals( current .permute( from[i] ) ) )
+        //						return true;
+        //				result[0] = current;
+        //				return false;
+        //			}
+        //		} .doEach();
+        //		// now try left-handed ones
+        //		if ( result[0] == null )
+        //			new ForEachOrientation( false, true, this ){
+        //				public boolean doOrientation( Permutation current ){
+        //					for ( int i = 0; i < from .length; i++ )
+        //						if ( ! to[i] .equals( current .permute( from[i] ) ) )
+        //							return true;
+        //					result[0] = current;
+        //					return false;
+        //				}
+        //			} .doEach();
+        //		if ( result[0] == null )
+        //            throw new MismatchedAxes( "map is impossible" );
         return result[0];
     }
 
@@ -278,10 +302,10 @@ public abstract class AbstractSymmetry implements Symmetry
     {
         return mDirectionList .iterator();
     }
-    
+
     /**
-    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-    */
+     * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
+     */
     @Deprecated
     @Override
     @JsonIgnore
@@ -289,15 +313,15 @@ public abstract class AbstractSymmetry implements Symmetry
     {
         return this .iterator();
     }
-    
-    
+
+
     @Override
     public Axis getAxis( AlgebraicVector vector )
     {
-    	return this .getAxis( vector, this .orbitSet );
+        return this .getAxis( vector, this .orbitSet );
     }
-    
-    
+
+
     @Override
     public Axis getAxis( AlgebraicVector vector, OrbitSet orbits )
     {
@@ -306,14 +330,14 @@ public abstract class AbstractSymmetry implements Symmetry
         }
         Direction canonicalOrbit = this .getSpecialOrbit( SpecialOrbit.BLACK );
         if ( canonicalOrbit == null )
-                        // the old, brute-force approach
-        for (Direction dir : orbits) {
-            Axis candidate = dir .getAxis( vector );
-            if ( candidate != null )
-            {
-                return candidate;
+            // the old, brute-force approach
+            for (Direction dir : orbits) {
+                Axis candidate = dir .getAxis( vector );
+                if ( candidate != null )
+                {
+                    return candidate;
+                }
             }
-        }
         else {
             // smarter: find the orientation first, then check orbits
             Axis zone = canonicalOrbit .getAxis( vector .toRealVector() );
@@ -321,27 +345,28 @@ public abstract class AbstractSymmetry implements Symmetry
             int sense = zone .getSense();
             for (Direction orbit : orbits) {
                 Axis candidate = orbit .getCanonicalAxis( sense, orientation );
-                if ( candidate .normal() .cross( vector ) .isOrigin() )
+                if ( AlgebraicVectors.areParallel(candidate .normal(), vector ) ) {
                     return candidate;
+                }
             }
         }
         return null;
     }
 
 
-	/**
-	 * Returns the axis nearest the given the direction,
-	 * subject to the mask of directions to accept.
-	 *
-	 */
+    /**
+     * Returns the axis nearest the given the direction,
+     * subject to the mask of directions to accept.
+     *
+     */
     @Override
-	public Axis getAxis( RealVector vector, Set<Direction> dirMask )
-	{
-		if ( RealVector .ORIGIN .equals( vector ) ) {
-			return null;
-		}
+    public Axis getAxis( RealVector vector, Set<Direction> dirMask )
+    {
+        if ( RealVector .ORIGIN .equals( vector ) ) {
+            return null;
+        }
 
-	    // largest cosine means smallest angle
+        // largest cosine means smallest angle
         //  and cosine is (a . b ) / |a| |b|
         double maxCosine = - 1d;
         Axis closest = null;
@@ -349,34 +374,35 @@ public abstract class AbstractSymmetry implements Symmetry
         int sense = -1;
 
         Direction chiralOrbit = this .getSpecialOrbit( SpecialOrbit.BLACK );
-		if ( chiralOrbit != null )
-		{
-		    // We can use the optimized approach, first finding the one fundamental region to look at,
-		    //  then checking the orbits.
-		    Axis closestChiralAxis = chiralOrbit .getChiralAxis( vector );
-	        orientation = closestChiralAxis .getOrientation();
-	        sense = closestChiralAxis .getSense();
-		}
-		
-		Iterator<Direction> dirs = dirMask == null 
-                ? orbitSet .iterator() 
-                : dirMask .iterator();
-        while ( dirs .hasNext() ) {
-            Direction dir = dirs .next();
-            Axis axis = ( orientation >= 0 )
-                ? dir .getCanonicalAxis( sense, orientation ) // we found the orientation above, so we don't need to iterate over the whole orbit
-                : dir .getAxisBruteForce( vector ); // iterate over zones in the orbit
-            RealVector axisV = axis .normal() .toRealVector(); // TODO invert the Embedding to get this right
-            double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
-            if ( cosine > maxCosine ) {
-                maxCosine = cosine;
-                closest = axis;
-            }
+        if ( chiralOrbit != null )
+        {
+            // We can use the optimized approach, first finding the one fundamental region to look at,
+            //  then checking the orbits.
+            Axis closestChiralAxis = chiralOrbit .getChiralAxis( vector );
+            orientation = closestChiralAxis .getOrientation();
+            sense = closestChiralAxis .getSense();
         }
-		return closest;
-	}
+
+        Iterator<Direction> dirs = dirMask == null 
+                ? orbitSet .iterator() 
+                        : dirMask .iterator();
+                while ( dirs .hasNext() ) {
+                    Direction dir = dirs .next();
+                    Axis axis = ( orientation >= 0 )
+                            ? dir .getCanonicalAxis( sense, orientation ) // we found the orientation above, so we don't need to iterate over the whole orbit
+                                    : dir .getAxisBruteForce( vector ); // iterate over zones in the orbit
+                            RealVector axisV = axis .normal() .toRealVector(); // TODO invert the Embedding to get this right
+                            double cosine = vector .dot( axisV ) / (vector .length() * axisV .length());
+                            if ( cosine > maxCosine ) {
+                                maxCosine = cosine;
+                                closest = axis;
+                            }
+                }
+                return closest;
+    }
 
     @Override
+    @JsonIgnore
     public int getChiralOrder()
     {
         return mOrientations .length;
@@ -385,41 +411,41 @@ public abstract class AbstractSymmetry implements Symmetry
     @Override
     public Permutation getPermutation( int i )
     {
-    	if ( ( i < 0 ) || ( i > mOrientations .length ) )
-    		return null;
+        if ( ( i < 0 ) || ( i > mOrientations .length ) )
+            return null;
         return mOrientations[ i ];
     }
 
     public Permutation[] getPermutations()
     {
-    	return this .mOrientations;
+        return this .mOrientations;
     }
 
     @Override
-	public AlgebraicMatrix getMatrix( int i )
-	{
-		return mMatrices[ i ];
-	}
-    
+    public AlgebraicMatrix getMatrix( int i )
+    {
+        return mMatrices[ i ];
+    }
+
     public AlgebraicMatrix[] getMatrices()
     {
-    	return mMatrices;
+        return mMatrices;
     }
 
     @Override
-	public int inverse( int orientation )
-	{
-    	if ( ( orientation < 0 ) || ( orientation > mOrientations .length ) )
-    		return Symmetry .NO_ROTATION;
-		return mOrientations[ orientation ] .inverse() .mapIndex( 0 );
-	}
+    public int inverse( int orientation )
+    {
+        if ( ( orientation < 0 ) || ( orientation > mOrientations .length ) )
+            return Symmetry .NO_ROTATION;
+        return mOrientations[ orientation ] .inverse() .mapIndex( 0 );
+    }
 
     @Override
-	public Direction getDirection( String color )
-	{
-		return mDirectionMap .get( color );
-	}
-    
+    public Direction getDirection( String color )
+    {
+        return mDirectionMap .get( color );
+    }
+
     @Override
     @JsonIgnore
     public String[] getDirectionNames()
@@ -441,14 +467,14 @@ public abstract class AbstractSymmetry implements Symmetry
         List<Permutation> newPerms = new ArrayList<>(); // work list, new permutations to compose with all known perms
         Permutation[] knownPerms = new Permutation[ mOrientations .length ]; // known permutations (entries may be null)
         int closureSize = 0;
-        
+
         for ( int i = 0; i < perms.length; i++ ) {
             Permutation perm = mOrientations[ perms[i] ];
             knownPerms[ perms[i] ] = perm;
             newPerms .add( perm );
             ++ closureSize;
         }
-        
+
         // iterate until the work list (newPerms) is empty
         while ( !newPerms .isEmpty() ) {
             Permutation perm = newPerms .remove(0);
@@ -458,7 +484,7 @@ public abstract class AbstractSymmetry implements Symmetry
                     Permutation composition = perm.compose(knownPerm);
                     int j = composition .mapIndex( 0 );
                     if ( knownPerms[ j ] == null ) {
-                    	// haven't seen this permutation yet, schedule it
+                        // haven't seen this permutation yet, schedule it
                         newPerms .add( composition );
                         knownPerms[ j ] = composition; // and make it a known permutation
                         ++ closureSize;
@@ -473,7 +499,7 @@ public abstract class AbstractSymmetry implements Symmetry
                 }
             }
         }
-        
+
         int[] result = new int[ closureSize ];
         int j = 0;
         for (int i = 0; i < knownPerms.length; i++ ) {
@@ -489,23 +515,46 @@ public abstract class AbstractSymmetry implements Symmetry
     {
         return null;
     }
-    
+
     @Override
-	public RealVector embedInR3( AlgebraicVector v )
+    public RealVector embedInR3( AlgebraicVector v )
     {
-		return v .toRealVector();
-	}
-    
+        return v .toRealVector();
+    }
+
     @Override
     @JsonIgnore
     public boolean isTrivial()
     {
-    	return true; // a trivial embedding, implemented by toRealVector()
+        return true; // a trivial embedding, implemented by toRealVector()
+    }
+
+    @Override
+    @JsonInclude( JsonInclude.Include.NON_NULL )
+    public AlgebraicMatrix getPrincipalReflection()
+    {
+        return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
     }
     
-    @Override
-	public AlgebraicMatrix getPrincipalReflection()
+    protected AlgebraicVector[] getOrbitTriangle()
     {
-    	return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
+        AlgebraicVector blueVertex = this .getSpecialOrbit( SpecialOrbit.BLUE ) .getPrototype();
+        AlgebraicVector redVertex = this .getSpecialOrbit( SpecialOrbit.RED ) .getPrototype();
+        AlgebraicVector yellowVertex = this .getSpecialOrbit( SpecialOrbit.YELLOW ) .getPrototype();
+        return new AlgebraicVector[] { blueVertex, redVertex, yellowVertex };
+    }
+
+    public String computeOrbitDots()
+    {
+        this.dotLocator = new OrbitDotLocator( this, this .getOrbitTriangle() );
+        for ( Direction orbit : mDirectionList ) {
+            dotLocator .locateOrbitDot( orbit );
+        }
+        return dotLocator .getDebuggerOutput(); // stop logging new orbits
+    }
+
+    public boolean reverseOrbitTriangle()
+    {
+        return false;
     }
 }

@@ -45,5 +45,11 @@ public interface Tool
 
 	public void setLabel( String label );
 
-	public EnumSet<InputBehaviors> defaultInputBehaviors();
+    public EnumSet<InputBehaviors> getInputBehaviors();
+
+    public void setInputBehaviors( EnumSet<InputBehaviors> inputBehaviors );
+
+    boolean isHidden();
+
+    void setHidden( boolean hidden );
 }

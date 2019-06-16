@@ -3,15 +3,18 @@
 
 package com.vzome.core.math;
 
+import org.w3c.dom.Element;
+
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.commands.XmlSaveFormat;
 
 public class PerspectiveProjection implements Projection
 {
     private final AlgebraicField field;
     
-    private final AlgebraicNumber cameraDist;
+    private AlgebraicNumber cameraDist;
     
     public PerspectiveProjection( AlgebraicField field, AlgebraicNumber cameraDist )
     {
@@ -57,4 +60,23 @@ public class PerspectiveProjection implements Projection
         result .setComponent( 3, source .getComponent( 3 ) .times( numerator ) );
         return result;
     }
+
+    @Override
+    public void getXmlAttributes(Element element) {
+        if (cameraDist != null) {
+            XmlSaveFormat.serializeNumber(element, "cameraDist", cameraDist);
+        }
+    }
+
+    @Override
+    public void setXmlAttributes(Element xml, XmlSaveFormat format)
+    {
+        cameraDist = format.parseNumber(xml, "cameraDist");
+    }
+
+    @Override
+    public String getProjectionName() {
+        return "Perspective";
+    }
+
 }

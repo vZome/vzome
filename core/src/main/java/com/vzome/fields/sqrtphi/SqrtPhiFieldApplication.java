@@ -68,7 +68,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		symm .getDirection( "blue" ) .setUnitLength( scale );
 		symm .getDirection( "green" ) .setUnitLength( scale );
 		symm .getDirection( "yellow" ) .setUnitLength( scale );
-
+        
 		AlgebraicNumber x = field .createAlgebraicNumber( new int[]{ 0, -1, 0, 0 } );
 		AlgebraicNumber y = field .createAlgebraicNumber( new int[]{ -1, 0, 0, 0 } );
 		AlgebraicNumber z = field .zero();
@@ -87,7 +87,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		z = field .createAlgebraicNumber( new int[]{ 0, -1, 0, 1 } );
 		norm = new AlgebraicVector( x, y, z );
 		symm .createZoneOrbit( "ivory", 0, Symmetry .NO_ROTATION, norm, true, false, unitLength );
-
+		
 		AbstractShapes defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symm );
 		defaultShapes = new ExportedVEFShapes( null, "sqrtPhi/octahedra", "octahedra", null, symm, defaultShapes );
 		octahedralPerspective .setDefaultGeometry( defaultShapes );
@@ -97,7 +97,10 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
     private final SymmetryPerspective icosahedralPerspective = new SymmetryPerspective()
     {
         private final IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( getField(), "small octahedra" );
-                
+        {
+            icosaSymm .computeOrbitDots();
+        }
+
         private final Command icosasymm = new CommandSymmetry( icosaSymm );
         private final Command tetrasymm = new CommandTetrahedralSymmetry( icosaSymm );
         private final Command axialsymm = new CommandAxialSymmetry( icosaSymm );

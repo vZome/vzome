@@ -59,7 +59,7 @@ public class Document
 	
 	public Camera getViewModel()
 	{
-	    return this .delegate .getViewModel();
+	    return this .delegate .getCamera();
 	}
 	
 	public float[][] getOrientations()

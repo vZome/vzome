@@ -303,6 +303,8 @@ public class CommandUniformH4Polytope extends CommandTransform
         private final ConstructionChanges effects;
 		private final Projection proj;
 		private final AlgebraicNumber scale;
+        private final Set<Edge> edges = new HashSet<>();
+
         
         ConstructionChangesAdapter( ConstructionChanges effects, Projection proj, AlgebraicNumber scale )
         {
@@ -312,10 +314,15 @@ public class CommandUniformH4Polytope extends CommandTransform
         }
 
         @Override
-        public Object addEdge( Object p1, Object p2 )
+        public Object addEdge( Object v1, Object v2 )
         {
-            Segment edge = new SegmentJoiningPoints( (Point) p1, (Point) p2 );
-            this .effects .constructionAdded( edge );
+            Point p1 = (Point) v1;
+            Point p2 = (Point) v2;
+            Edge edge = new Edge( p1 .getIndex(), p2 .getIndex() );
+            if ( edges .contains( edge ) )
+                return null;
+            edges .add( edge );                            
+            this .effects .constructionAdded( new SegmentJoiningPoints( p1, p2 ) );
             return edge;
         }
 
@@ -397,46 +404,38 @@ public class CommandUniformH4Polytope extends CommandTransform
             if ( ( renderEdges & ( 1 << mirror ) ) != 0 )
                 reflections[ mirror ] = symm .reflect( mirror, prototype );
 
-        Set<Edge> edges = new HashSet<>();
-        StringBuffer vefEdges = new StringBuffer();
         for (Quaternion outerRoot : mRoots) { 
             for (Quaternion innerRoot : mRoots) {
                 AlgebraicVector vertex = outerRoot.rightMultiply(prototype);
                 vertex = innerRoot.leftMultiply(vertex);
 
-                Point p = (Point) listener .addVertex( vertex );
-                
+                Object p1 = listener .addVertex( vertex );
+
                 for (int mirror = 0; mirror < 4; mirror++) {
                     if (reflections[ mirror ] != null) {
                         AlgebraicVector other = outerRoot.rightMultiply(reflections[ mirror ]);
                         other = innerRoot.leftMultiply( other );
                         if ( ! other .equals( vertex ) )
                         {
-                        	Point p2 = (Point) listener .addVertex( other );
-                            
-                        	Edge edge = new Edge( p .getIndex(), p2 .getIndex() );
-                            if ( edges .contains( edge ) )
-                                continue;
-                            edges .add( edge );
-                            vefEdges .append( p .getIndex() + "\t" + p2 .getIndex() + "\n" );
-                            
-                            listener .addEdge( p, p2 );
+                            Object p2 = listener .addVertex( other );
+
+                            listener .addEdge( p1, p2 );
                         }
                     }
                 }
             }
-//        try {
-//            String wythoff = Integer .toBinaryString( index );
-//            wythoff = "0000" .substring( wythoff .length() ) + wythoff;
-//            PrintWriter out = new PrintWriter( new FileWriter( new File( "H4_" + wythoff + ".vef" ) ) );
-//            out .println( vertices .size() );
-//            out .println( vefVertices .toString() );
-//            out .println( edges .size() );
-//            out .println( vefEdges .toString() );
-//            out .close();
-//        } catch ( IOException e ) {
-//            e.printStackTrace();
-//        }
+            //        try {
+            //            String wythoff = Integer .toBinaryString( index );
+            //            wythoff = "0000" .substring( wythoff .length() ) + wythoff;
+            //            PrintWriter out = new PrintWriter( new FileWriter( new File( "H4_" + wythoff + ".vef" ) ) );
+            //            out .println( vertices .size() );
+            //            out .println( vefVertices .toString() );
+            //            out .println( edges .size() );
+            //            out .println( vefEdges .toString() );
+            //            out .close();
+            //        } catch ( IOException e ) {
+            //            e.printStackTrace();
+            //        }
         }
             
     }

@@ -13,8 +13,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.UndoableEdit.Context;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
@@ -278,10 +278,24 @@ public class EditHistory implements Iterable<UndoableEdit>
 
     private UndoableEdit redoBlock() throws Command.Failure
     {
+        String lastSuccessfulRedo = "none";
+        int startingEditNumber = mEditNumber;
         UndoableEdit redone;
         do {
             redone = redo();
-        } while ( ! (redone instanceof EndBlock) );
+            if(redone == null) {
+                // Should never occur, but this loop has hung several times, so just in case.... 
+                throw new IllegalStateException("All " + mEditNumber + " edits have been redone without reaching an EndBlock. " 
+                        + "Starting edit number was " + startingEditNumber + ". "
+                        + "Last successful redo was " + lastSuccessfulRedo + ". ");
+            }
+            lastSuccessfulRedo = redone.getClass().getSimpleName();
+            if(logger.isLoggable(Level.FINE)) {
+                String msg = "redoBlock is redoing edits from " + startingEditNumber + ". Current edit number is " + mEditNumber + ". Last redone was " + lastSuccessfulRedo;
+//                System.out.println(msg);
+                logger.fine(msg);
+            }
+        } while (! (redone instanceof EndBlock) );
         return redone;
     }
 
