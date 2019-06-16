@@ -324,104 +324,75 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     private UndoableEdit createEdit( String name, boolean groupInSelection )
     {
-        UndoableEdit edit = null;
         switch (name) {
         case "Snapshot":
-            edit = new Snapshot( -1, this );
-            break;
+            return new Snapshot( -1, this );
         case "Branch":
-            edit = new Branch( this );
-            break;
+            return new Branch( this );
         case "setItemColor":
-            edit = new ColorManifestations( this.mSelection, this.mRealizedModel, null, groupInSelection );
-            break;
+            return new ColorManifestations( this.mSelection, this.mRealizedModel, null, groupInSelection );
         case "AffineTransformAll":
-            edit = new AffineTransformAll( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
-            break;
+            return new AffineTransformAll( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
         case "DodecagonSymmetry":
-            edit = new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), this .mEditorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
-            break;
+            return new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), this .mEditorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
         case "GhostSymmetry24Cell":
-            edit = new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mEditorModel.getSymmetrySegment(), this .mEditorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
-            break;
+            return new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mEditorModel.getSymmetrySegment(), this .mEditorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
         case "StrutCreation":
-            edit = new StrutCreation( null, null, null, this.mRealizedModel );
-            break;
+            return new StrutCreation( null, null, null, this.mRealizedModel );
         case "Polytope4d":
-            edit = new Polytope4d( this.mSelection, this.mRealizedModel, this .kind, null, 0, null, groupInSelection );
-            break;
+            return new Polytope4d( this.mSelection, this.mRealizedModel, this .kind, null, 0, null, groupInSelection );
         case "GroupSelection":
-            edit = new GroupSelection( this.mSelection, false );
-            break;
+            return new GroupSelection( this.mSelection, false );
         case "BeginBlock":
-            edit = new BeginBlock();
-            break;
+            return new BeginBlock();
         case "EndBlock":
-            edit = new EndBlock();
-            break;
+            return new EndBlock();
         case "DeselectAll":
-            edit = new DeselectAll( this.mSelection, groupInSelection );
-            break;
+            return new DeselectAll( this.mSelection, groupInSelection );
         case "ValidateSelection":
-            edit = new ValidateSelection( this.mSelection );
-            break;
+            return new ValidateSelection( this.mSelection );
         case "SymmetryCenterChange":
-            edit = new SymmetryCenterChange( this.mEditorModel, null );
-            break;
+            return new SymmetryCenterChange( this.mEditorModel, null );
         case "SymmetryAxisChange":
-            edit = new SymmetryAxisChange( this.mEditorModel, null );
-            break;
+            return new SymmetryAxisChange( this.mEditorModel, null );
         case "RunZomicScript":
-            edit = new RunZomicScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint(),
+            return new RunZomicScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint(),
                     (IcosahedralSymmetry) this .mEditorModel .getSymmetrySystem() .getSymmetry() );
-            break;
         case "RunPythonScript":
-            edit = new RunPythonScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
-            break;
+            return new RunPythonScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
         case "Symmetry4d":
             QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
-            edit = new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
-            break;
+            return new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
 
         case ReplaceWithShape.NAME:
-            edit = new ReplaceWithShape( mSelection, mRealizedModel, null );
-            break;
+            return new ReplaceWithShape( mSelection, mRealizedModel, null );
             
         case SelectByDiameter.NAME:
-            edit = mEditorModel.selectByDiameter();
-            break;
+            return mEditorModel.selectByDiameter();
         case SelectByRadius.NAME:
-            edit = mEditorModel.selectByRadius();
-            break;
+            return mEditorModel.selectByRadius();
             
         case ConvexHull2d.NAME:
-            edit = mEditorModel.convexHull2d();
-            break;
+            return mEditorModel.convexHull2d();
         case ConvexHull3d.NAME:
-            edit = mEditorModel.convexHull3d();
-            break;
+            return mEditorModel.convexHull3d();
         case JoinSkewLines.NAME:
-            edit = mEditorModel.joinSkewLines();
-            break;
+            return mEditorModel.joinSkewLines();
         case "AdjustSelectionByClass":
         case "DeselectByClass": // legacy command now handled by AdjustSelectionByClass
-            edit = new AdjustSelectionByClass( this.mSelection, this.mRealizedModel, IGNORE, IGNORE, IGNORE);
-            break;
+            return new AdjustSelectionByClass( this.mSelection, this.mRealizedModel, IGNORE, IGNORE, IGNORE);
         case "SelectManifestation":
-            edit = new SelectManifestation( null, false, this.mSelection, this.mRealizedModel, groupInSelection );
-            break;
+            return new SelectManifestation( null, false, this.mSelection, this.mRealizedModel, groupInSelection );
             
         default:
-            edit = this .mEditorModel .createEdit( name, groupInSelection );
+            return this .mEditorModel .createEdit( name, groupInSelection );
         }
-        return edit;
     }
 
     @Override
     public UndoableEdit createEdit( Element xml, boolean groupInSelection )
     {
         String name = xml .getLocalName();
-        UndoableEdit edit = null;
         switch (name) {
 
         // all the cases in this switch require access to the XML
@@ -430,12 +401,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             // Different Color Mappers require different parameters, including symmetry,
             //  so they are all handled together in getColorMapper()
             // See the note below about deserializing symmetry from XML.
-            edit = getColorMapper(xml.getAttribute("colorMapper"), xml.getAttribute("symmetry"));
-            break;
+            return getColorMapper(xml.getAttribute("colorMapper"), xml.getAttribute("symmetry"));
 
         case "PolarZonohedron":
-            edit = new PolarZonohedron( this.mSelection, this.mRealizedModel, this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ) );
-            break;
+            return new PolarZonohedron( this.mSelection, this.mRealizedModel, this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ) );
 
         case "AdjustSelectionByOrbitLength":
         case "SelectSimilarSize": // legacy command now handled by AdjustSelectionByOrbitLength
@@ -447,33 +416,33 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             Also see the comments of commit # 8c8cb08a1e4d71f91f24669b203fef0378230b19 on 3/8/2015
              */
 
-            edit = new AdjustSelectionByOrbitLength( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
+            return new AdjustSelectionByOrbitLength( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
                     null, null, this .mSelection, this .mRealizedModel, IGNORE, IGNORE );
 
         case "SelectParallelStruts":
             // See the note above about deserializing symmetry from XML.
-            edit = new SelectParallelStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
+            return new SelectParallelStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
                     this .mSelection, this .mRealizedModel );
-            break;
 
         case "SelectAutomaticStruts":
             // See the note above about deserializing symmetry from XML.
-            edit = new SelectAutomaticStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
+            return new SelectAutomaticStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
                     this .mSelection, this .mRealizedModel );
-            break;
 
 
         default:
-            edit = this .tools .createEdit( xml );
-            if ( edit == null )
-                edit = this .createToolEdit( xml );
-            if ( edit == null )
-                edit = this .createEdit( name, groupInSelection );
-            if ( edit == null )
-                // this is only relevant for deserialization, so it cannot go inside the prior createEdit call
-                edit = new CommandEdit( null, this .mEditorModel, groupInSelection );
+            UndoableEdit edit = this .tools .createEdit( xml );
+            if ( edit != null ) return edit;
+
+            edit = this .createToolEdit( xml );
+            if ( edit != null ) return edit;
+
+            edit = this .createEdit( name, groupInSelection );
+            if ( edit != null ) return edit;
+
+            // this is only relevant for deserialization, so it cannot go inside the prior createEdit call
+            return new CommandEdit( null, this .mEditorModel, groupInSelection );
         }
-        return edit;
     }
 
     public UndoableEdit createToolEdit( Element xml )
