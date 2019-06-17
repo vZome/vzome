@@ -9,9 +9,9 @@ import com.vzome.core.model.RealizedModel;
 
 public class SelectAll extends ChangeSelection
 {
-    public SelectAll( Selection selection, RealizedModel model, boolean groupInSelection )
+    public SelectAll( Selection selection, RealizedModel model )
     {
-        super( selection, groupInSelection );
+        super( selection );
         for (Manifestation m : model) {
             if ( m .getRenderedObject() != null )
             {

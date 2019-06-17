@@ -15,9 +15,9 @@ public class ShowPoint extends ChangeManifestations
 {
     private Point point;
     
-    public ShowPoint( Point point, Selection selection, RealizedModel realized, boolean groupInSelection )
+    public ShowPoint( Point point, Selection selection, RealizedModel realized )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
         this.point = point;
     }
     

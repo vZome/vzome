@@ -31,11 +31,6 @@ public abstract class ChangeManifestations extends ChangeSelection
         mManifestedNow = new HashMap<>();
     }
 
-    public ChangeManifestations( Selection selection, RealizedModel realized, boolean groupInSelection )
-    {
-        this( selection, realized );
-    }
-
     /**
      * This records the NEW manifestations produced by manifestConstruction for this edit,
      * to avoid creating colliding manifestations.  It is never referenced after the last

@@ -24,9 +24,9 @@ public class DodecagonSymmetry extends ChangeManifestations
     
     private final Symmetry symmetry;
     
-    public DodecagonSymmetry( Selection selection, RealizedModel realized, Point center, Symmetry symmetry, boolean groupInSelection )
+    public DodecagonSymmetry( Selection selection, RealizedModel realized, Point center, Symmetry symmetry )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
         this .center = center;
         this .symmetry = new DodecagonalSymmetry( symmetry .getField(), null );
     }

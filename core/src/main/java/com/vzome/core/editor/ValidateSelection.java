@@ -17,7 +17,7 @@ public class ValidateSelection extends ChangeSelection
 
     public ValidateSelection( Selection selection )
     {
-        super( selection, false ); 
+        super( selection ); 
     }
 
     @Override

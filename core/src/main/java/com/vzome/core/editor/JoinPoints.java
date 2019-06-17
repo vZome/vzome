@@ -29,8 +29,9 @@ public class JoinPoints extends ChangeManifestations {
 //	protected ToolBehavior toolBehavior = new ToolBehavior();
 
     // Any code that calls this c'tor must call setXmlAttributes() to set the joinMode (and ToolBehavior) before calling perform().
-    public JoinPoints(Selection selection, RealizedModel realized, boolean groupInSelection) {
-        super(selection, realized, groupInSelection);
+    public JoinPoints( Selection selection, RealizedModel realized ) 
+    {
+        super( selection, realized );
     }
 
 	// TODO: Implement a new ToolBehavior class as a parameter, behaving similar to the modes parmeter in the 
@@ -46,7 +47,7 @@ public class JoinPoints extends ChangeManifestations {
     // Once I figure out how to get the parameter into the JoinPoints c'tor, then I can implement the appropriate behaviors.
     public JoinPoints(Selection selection, RealizedModel realized, boolean groupInSelection, JoinModeEnum joinMode) //, ToolBehavior behavior )
     {
-        super(selection, realized, groupInSelection);
+        super(selection, realized);
         this.joinMode = joinMode;
         //if(behavior!= null) { this.toolBehavior = behavior; }
     }

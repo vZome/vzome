@@ -31,7 +31,7 @@ public class RunZomicScript extends ChangeManifestations
 
     public RunZomicScript( Selection selection, RealizedModel realized, String text, Point origin, IcosahedralSymmetry symmetry )
     {
-        super( selection, realized, false );
+        super( selection, realized );
         this .programText = text;
         this .origin = origin;
 		this .symm = symmetry;

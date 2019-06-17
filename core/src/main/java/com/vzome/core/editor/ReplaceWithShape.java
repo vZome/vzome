@@ -77,7 +77,7 @@ public class ReplaceWithShape extends ChangeManifestations
 
     public ReplaceWithShape( Selection selection, RealizedModel realized, Manifestation ballOrStrut )
     {
-        super( selection, realized, false );
+        super( selection, realized );
 		this .ballOrStrut = ballOrStrut;
 		if ( this .ballOrStrut != null ) // first creation from the editor
 			this .shape = ballOrStrut .getRenderedObject() .getShape();

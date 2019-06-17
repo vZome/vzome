@@ -335,17 +335,17 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "setItemColor":
             return new ColorManifestations( this.mSelection, this.mRealizedModel, null );
         case "ShowPoint":
-            return new ShowPoint( null, this.mSelection, this.mRealizedModel, false );
+            return new ShowPoint( null, this.mSelection, this.mRealizedModel );
         case "AffineTransformAll":
             return new AffineTransformAll( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint() );
         case "DodecagonSymmetry":
-            return new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint(), this .editorModel .getSymmetrySystem() .getSymmetry(), false );
+            return new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint(), this .editorModel .getSymmetrySystem() .getSymmetry() );
         case "GhostSymmetry24Cell":
-            return new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.editorModel.getSymmetrySegment(), this .editorModel .getSymmetrySystem() .getSymmetry(), false );
+            return new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.editorModel.getSymmetrySegment(), this .editorModel .getSymmetrySystem() .getSymmetry() );
         case "StrutCreation":
             return new StrutCreation( null, null, null, this.mRealizedModel );
         case "Polytope4d":
-            return new Polytope4d( this.mSelection, this.mRealizedModel, this .kind, null, 0, null, false );
+            return new Polytope4d( this.mSelection, this.mRealizedModel, this .kind, null, 0, null );
         case "GroupSelection":
             return new GroupSelection( this.mSelection, false );
         case "BeginBlock":
@@ -353,7 +353,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "EndBlock":
             return new EndBlock();
         case "DeselectAll":
-            return new DeselectAll( this.mSelection, false );
+            return new DeselectAll( this.mSelection );
         case "ValidateSelection":
             return new ValidateSelection( this.mSelection );
         case "RunZomicScript":
@@ -369,7 +369,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new ReplaceWithShape( mSelection, mRealizedModel, null );
             
         case "SelectManifestation":
-            return new SelectManifestation( null, false, this.mSelection, this.mRealizedModel, false );
+            return new SelectManifestation( null, false, this.mSelection, this.mRealizedModel );
             
         default:
             return this .editorModel .createEdit( name );
@@ -586,10 +586,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             edit = editorModel.ungroupSelection();
             break;
         case "ballAtOrigin":
-            edit = new ShowPoint( originPoint, mSelection, mRealizedModel, false );
+            edit = new ShowPoint( originPoint, mSelection, mRealizedModel );
             break;
         case "ballAtSymmCenter":
-            edit = new ShowPoint( editorModel.getCenterPoint(), mSelection, mRealizedModel, false );
+            edit = new ShowPoint( editorModel.getCenterPoint(), mSelection, mRealizedModel );
             break;
         case "affineTransformAll":
             edit = new AffineTransformAll( mSelection, mRealizedModel, editorModel.getCenterPoint() );
@@ -1296,7 +1296,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, AlgebraicVector quaternion, AlgebraicNumber[] edgeScales )
     {
-        UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, this .kind, quaternion, index, group, edgesToRender, edgeScales, renderGroup, false );
+        UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, this .kind, quaternion, index, group, edgesToRender, edgeScales, renderGroup );
         this .performAndRecord( edit );
     }
 

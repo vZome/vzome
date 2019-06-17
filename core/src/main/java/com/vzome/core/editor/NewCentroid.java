@@ -38,9 +38,9 @@ public class NewCentroid extends ChangeManifestations
         redo();
     }
 
-    public NewCentroid( Selection selection, RealizedModel realized, boolean groupInSelection )
+    public NewCentroid( Selection selection, RealizedModel realized )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
     }
         
     @Override

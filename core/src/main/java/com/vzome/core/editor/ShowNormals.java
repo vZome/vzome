@@ -48,7 +48,7 @@ public class ShowNormals extends ChangeManifestations
     
     public ShowNormals( Selection selection, RealizedModel realized )
     {
-        super( selection, realized, false );
+        super( selection, realized );
     }
 
     @Override

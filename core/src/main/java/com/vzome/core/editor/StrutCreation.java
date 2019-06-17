@@ -24,7 +24,7 @@ public class StrutCreation extends ChangeManifestations
     
     public StrutCreation( Point anchor, Axis axis, AlgebraicNumber len, RealizedModel realized )
     {
-        super( null, realized, false );
+        super( null, realized );
         
         mAnchor = anchor;
         mAxis = axis;

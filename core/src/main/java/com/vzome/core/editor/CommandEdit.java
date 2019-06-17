@@ -57,11 +57,6 @@ public class CommandEdit extends ChangeManifestations
         mCommand = cmd;
     }
 
-    public CommandEdit( AbstractCommand cmd, EditorModel editor, boolean groupInSelection )
-    {
-        this( cmd, editor );
-    }
-
     @Override
     protected String getXmlElementName()
     {
@@ -314,18 +309,18 @@ public class CommandEdit extends ChangeManifestations
                     if ( ! selectedBefore .contains( m ) )
                         toUnselect .add( m );
                 }
-                ChangeSelection edit = new SelectAll( mSelection, mManifestations, false );
+                ChangeSelection edit = new SelectAll( mSelection, mManifestations );
                 context .performAndRecord( edit );
                 for (Manifestation m : toUnselect) {
-                    edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
+                    edit = new SelectManifestation( m, false, mSelection, mManifestations );
                     context .performAndRecord( edit );
                 }
             }
             else {
-                ChangeSelection edit = new DeselectAll( mSelection, false );
+                ChangeSelection edit = new DeselectAll( mSelection );
                 context .performAndRecord( edit );
                 for (Manifestation m : selectedBefore) {
-                    edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
+                    edit = new SelectManifestation( m, false, mSelection, mManifestations );
                     context .performAndRecord( edit );
                 }
             }

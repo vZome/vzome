@@ -41,7 +41,7 @@ public class Symmetry4d extends ChangeManifestations
 
     public Symmetry4d( Selection selection, RealizedModel realized, final QuaternionicSymmetry leftSymm, final QuaternionicSymmetry rightSymm )
     {
-        super( selection, realized, false );
+        super( selection, realized );
 		this.left = leftSymm;
 		right = rightSymm;
     }

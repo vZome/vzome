@@ -29,7 +29,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
 
     public Tool( String id, ToolsModel tools )
     {
-        super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel(), false );
+        super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel() );
         this .tools = tools;
         this .id = id;
         this .inputBehaviors = EnumSet.of( InputBehaviors.SELECT );

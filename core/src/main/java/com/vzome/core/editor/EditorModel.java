@@ -73,7 +73,7 @@ public class EditorModel
 
     public UndoableEdit selectManifestation( Manifestation m, boolean replace )
     {
-        ChangeSelection edit = new SelectManifestation( m, replace, mSelection, mRealized, false );
+        ChangeSelection edit = new SelectManifestation( m, replace, mSelection, mRealized );
         if ( edit .selectionChanged() )
             return edit;
         else
@@ -82,7 +82,7 @@ public class EditorModel
 
     public UndoableEdit selectAll()
     {
-        ChangeSelection edit = new SelectAll( mSelection, mRealized, false );
+        ChangeSelection edit = new SelectAll( mSelection, mRealized );
         if ( edit .selectionChanged() )
             return edit;
         else
@@ -91,7 +91,7 @@ public class EditorModel
 
     public UndoableEdit unselectAll()
     {
-        ChangeSelection edit = new DeselectAll( mSelection, false );
+        ChangeSelection edit = new DeselectAll( mSelection );
         if ( edit .selectionChanged() )
             return edit;
         else
@@ -152,7 +152,7 @@ public class EditorModel
 
     public UndoableEdit selectNeighbors()
     {
-        ChangeSelection edit = new SelectNeighbors( mSelection, mRealized, false );
+        ChangeSelection edit = new SelectNeighbors( mSelection, mRealized );
         if ( edit .selectionChanged() )
             return edit;
         else
@@ -170,7 +170,7 @@ public class EditorModel
 
     public UndoableEdit invertSelection()
     {
-        return new InvertSelection( mSelection, mRealized, false );
+        return new InvertSelection( mSelection, mRealized );
         // always a change, by definition
     }
         

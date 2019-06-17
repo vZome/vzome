@@ -50,7 +50,7 @@ public class ShowVertices extends ChangeManifestations
     
     public ShowVertices( Selection selection, RealizedModel realized )
     {
-        super( selection, realized, false );
+        super( selection, realized );
     }
 
     @Override

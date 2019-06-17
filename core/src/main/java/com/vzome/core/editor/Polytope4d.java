@@ -41,9 +41,9 @@ public class Polytope4d extends ChangeManifestations
             FieldApplication fieldApp,
             AlgebraicVector quaternion, int index, String groupName,
             int edgesToRender, AlgebraicNumber[] edgeScales,
-            String renderGroupName, boolean groupInSelection )
+            String renderGroupName )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
         this.fieldApp = fieldApp;
         this.field = fieldApp .getField();
 
@@ -64,11 +64,11 @@ public class Polytope4d extends ChangeManifestations
 
     public Polytope4d( Selection selection, RealizedModel realized,
             FieldApplication fieldApp,
-            Segment symmAxis, int index, String groupName, boolean groupInSelection )
+            Segment symmAxis, int index, String groupName )
     {
         this( selection, realized, fieldApp,
                 ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d(),
-                        index, groupName, index, null, groupName, groupInSelection );
+                        index, groupName, index, null, groupName );
     }
 
     @Override

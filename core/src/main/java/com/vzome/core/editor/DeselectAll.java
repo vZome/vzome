@@ -8,9 +8,9 @@ import com.vzome.core.model.Manifestation;
 
 public class DeselectAll extends ChangeSelection
 {
-    public DeselectAll( Selection selection, boolean groupInSelection )
+    public DeselectAll( Selection selection )
     {
-        super( selection, groupInSelection );
+        super( selection );
         
         for (Manifestation man : selection) {
             unselect( man, true );

@@ -26,14 +26,14 @@ public class SelectManifestation extends ChangeSelection
     
     private boolean mReplace;
 
-    public SelectManifestation( Selection selection, RealizedModel realized, boolean groupInSelection )
+    public SelectManifestation( Selection selection, RealizedModel realized )
     {
-        this( null, false, selection, realized, groupInSelection );
+        this( null, false, selection, realized );
     }
     
-    public SelectManifestation( Manifestation m, boolean replace, Selection selection, RealizedModel realized, boolean groupInSelection )
+    public SelectManifestation( Manifestation m, boolean replace, Selection selection, RealizedModel realized )
     {
-        super( selection, groupInSelection );
+        super( selection );
         
         mRealized = realized;
         mManifestation = m;

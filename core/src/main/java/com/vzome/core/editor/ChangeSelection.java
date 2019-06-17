@@ -46,11 +46,6 @@ public abstract class ChangeSelection extends SideEffects
         groupingDoneInSelection = false;
     }
 
-	public ChangeSelection( Selection selection, boolean groupInSelection )
-	{
-        this( selection );
-    }
-
     public void setOrderedSelection( boolean orderedSelection )
 	{
 		this.orderedSelection = orderedSelection;

@@ -15,14 +15,14 @@ import com.vzome.core.model.Strut;
 
 public class SelectNeighbors extends ChangeSelection
 {
-    public SelectNeighbors( Selection selection, RealizedModel model, boolean groupInSelection )
+    public SelectNeighbors( Selection selection, RealizedModel model )
     {
-        this( selection, model, groupInSelection, false );
+        this( selection, model, false );
     }
 
-    public SelectNeighbors( Selection selection, RealizedModel model, boolean groupInSelection, boolean withPanels )
+    public SelectNeighbors( Selection selection, RealizedModel model, boolean withPanels )
     {
-        super( selection, groupInSelection ); 
+        super( selection ); 
         
         Set<Panel> panels = new HashSet<>();
         Set<Strut> struts = new HashSet<>();

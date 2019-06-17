@@ -25,9 +25,9 @@ public class GhostSymmetry24Cell extends ChangeManifestations
     private Segment symmAxis;
     private Symmetry symm;
 
-    public GhostSymmetry24Cell( Selection selection, RealizedModel realized, Segment symmAxis, Symmetry symmetry, boolean groupInSelection )
+    public GhostSymmetry24Cell( Selection selection, RealizedModel realized, Segment symmAxis, Symmetry symmetry )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
 
         this .field = realized .getField();
         this .symm = new DodecagonalSymmetry( symmetry .getField(), null );

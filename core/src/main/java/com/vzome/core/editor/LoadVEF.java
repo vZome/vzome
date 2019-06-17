@@ -31,7 +31,7 @@ public class LoadVEF extends ChangeManifestations
 
     public LoadVEF( Selection selection, RealizedModel realized, String vefData, Projection projection, AlgebraicNumber scale )
     {
-        super( selection, realized, false );
+        super( selection, realized );
         this .vefData = vefData;
         if (scale == null) {
             scale = mManifestations.getField().one();
