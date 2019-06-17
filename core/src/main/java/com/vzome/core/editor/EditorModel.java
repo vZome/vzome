@@ -195,26 +195,17 @@ public class EditorModel
             Class<?> factoryClass = Class.forName( className );
 
             Constructor<?>[] constructors = factoryClass .getConstructors();
-            Constructor<?> goodConstructor = null, betterConstructor = null, editorConstructor = null;
+            Constructor<?> goodConstructor = null, editorConstructor = null;
             for ( Constructor<?> constructor : constructors ) {
                 Class<?>[] parameterTypes = constructor .getParameterTypes();
-                if ( parameterTypes.length >= 1 && parameterTypes[0] .equals( Selection.class ) ) {
-                    if ( parameterTypes.length >= 2 && parameterTypes[1] .equals( RealizedModel.class ) ) {
-                        if ( parameterTypes.length == 3 && parameterTypes[2] .equals( boolean.class ) ) {
-                            betterConstructor = constructor;
-                            break;
-                        } else if ( parameterTypes.length == 2 ) {
-                            goodConstructor = constructor;
-                        }
-                    }
+                if ( parameterTypes.length == 2 && parameterTypes[0] .equals( Selection.class ) && parameterTypes[1] .equals( RealizedModel.class ) ) {
+                    goodConstructor = constructor;
                 } else if ( parameterTypes.length == 1 && parameterTypes[0] .equals( EditorModel.class ) ) {
                     editorConstructor = constructor;
                 }
             }
             if ( editorConstructor != null ) {
                 return (UndoableEdit) editorConstructor .newInstance( new Object[] { this } );
-            } else if ( betterConstructor != null ) {
-                return (UndoableEdit) betterConstructor .newInstance( new Object[] { this.mSelection, this.mRealized, false } );
             } else if ( goodConstructor != null ) {
                 return (UndoableEdit) goodConstructor .newInstance( new Object[] { this.mSelection, this.mRealized } );
             } else {
