@@ -62,23 +62,18 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		return super .put( key, tool );
 	}
 
-	public UndoableEdit createEdit( Element xml )
+	public UndoableEdit createEdit( String className )
 	{
-		UndoableEdit edit = null;
-        String className = xml .getLocalName();
 		switch ( className ) {
 
         case "ToolApplied":
-			edit = new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), false );
-			return edit;
+            return new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), false );
 
         case "ApplyTool":
-			edit = new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), true );
-			return edit;
+            return new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), true );
         
 		case "SelectToolParameters":
-			edit = new SelectToolParameters( this, null );
-			return edit;
+		    return new SelectToolParameters( this, null );
 
         default:
 			return null;

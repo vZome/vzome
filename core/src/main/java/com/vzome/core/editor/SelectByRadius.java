@@ -5,7 +5,6 @@ import java.util.List;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
-import com.vzome.core.model.RealizedModel;
 
 public class SelectByRadius extends SelectByDiameter {
     public static final String NAME = "SelectByRadius";
@@ -17,8 +16,9 @@ public class SelectByRadius extends SelectByDiameter {
 
     protected AlgebraicNumber minRadiusSquared;
 
-    public SelectByRadius(Selection selection, RealizedModel realized) {
-        super(selection, realized);
+    public SelectByRadius( EditorModel editor )
+    {
+        super( editor );
     }
 
     @Override

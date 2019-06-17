@@ -18,6 +18,11 @@ public class SymmetryCenterChange implements UndoableEdit
     private Point mOldCenter, mNewCenter;
     private final EditorModel mEditor;
 
+    public SymmetryCenterChange( EditorModel editor )
+    {
+        this( editor, null );
+    }
+    
     public SymmetryCenterChange( EditorModel editor, Point newCenter )
     {
         mOldCenter = editor .getCenterPoint();

@@ -101,7 +101,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     private final Selection mSelection;
 
-    private final EditorModel mEditorModel;
+    private final EditorModel editorModel;
 
     private final EditHistory mHistory;
 
@@ -190,6 +190,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         this .coreVersion = app .getCoreVersion();
 
+     // TODO: vvv - most of this can be moved into EditorModel initialization
+        
         this .mRealizedModel = new RealizedModel( this .field, new Projection.Default( this .field ) );
 
         this .mSelection = new Selection();
@@ -224,22 +226,23 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
         // the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
-        this .mEditorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint, symmetrySystem );
-        this .tools .setEditorModel( this .mEditorModel );
+        this .editorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint, symmetrySystem, this .symmetrySystems );
+        this .tools .setEditorModel( this .editorModel );
 
         // cannot be done in the constructors
         for ( SymmetrySystem symmetrySys : this .symmetrySystems .values()) {
             symmetrySys .createToolFactories( this .tools );
-            symmetrySys .setEditorModel( this .mEditorModel );
         }
 
         this .kind .registerToolFactories( this .toolFactories, this .tools );
 
         this .bookmarkFactory = new BookmarkTool.Factory( tools );
-        this .mEditorModel .addSelectionSummaryListener( this .bookmarkFactory );
+        this .editorModel .addSelectionSummaryListener( this .bookmarkFactory );
 
         this .bookmarkFactory .createPredefinedTool( "ball at origin" );
 
+     // TODO: ^^^ - most of this can be moved into EditorModel initialization
+        
         this .defaultCamera = new Camera();
         Element views = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "Viewing" ) .item( 0 );
         if ( views != null ) {
@@ -271,7 +274,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             @Override
             public void publishChanges()
             {
-                mEditorModel .notifyListeners();
+                editorModel .notifyListeners();
             }
         });
 
@@ -334,11 +337,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "ShowPoint":
             return new ShowPoint( null, this.mSelection, this.mRealizedModel, groupInSelection );
         case "AffineTransformAll":
-            return new AffineTransformAll( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
+            return new AffineTransformAll( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint(), groupInSelection );
         case "DodecagonSymmetry":
-            return new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), this .mEditorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
+            return new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint(), this .editorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
         case "GhostSymmetry24Cell":
-            return new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.mEditorModel.getSymmetrySegment(), this .mEditorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
+            return new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.editorModel.getSymmetrySegment(), this .editorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
         case "StrutCreation":
             return new StrutCreation( null, null, null, this.mRealizedModel );
         case "Polytope4d":
@@ -353,15 +356,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new DeselectAll( this.mSelection, groupInSelection );
         case "ValidateSelection":
             return new ValidateSelection( this.mSelection );
-        case "SymmetryCenterChange":
-            return new SymmetryCenterChange( this.mEditorModel, null );
-        case "SymmetryAxisChange":
-            return new SymmetryAxisChange( this.mEditorModel, null );
         case "RunZomicScript":
-            return new RunZomicScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint(),
-                    (IcosahedralSymmetry) this .mEditorModel .getSymmetrySystem() .getSymmetry() );
+            return new RunZomicScript( this.mSelection, this.mRealizedModel, null, editorModel.getCenterPoint(),
+                    (IcosahedralSymmetry) this .editorModel .getSymmetrySystem() .getSymmetry() );
         case "RunPythonScript":
-            return new RunPythonScript( this.mSelection, this.mRealizedModel, null, mEditorModel.getCenterPoint() );
+            return new RunPythonScript( this.mSelection, this.mRealizedModel, null, editorModel.getCenterPoint() );
         case "Symmetry4d":
             QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
             return new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
@@ -369,17 +368,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case ReplaceWithShape.NAME:
             return new ReplaceWithShape( mSelection, mRealizedModel, null );
             
-        case SelectByDiameter.NAME:
-            return mEditorModel.selectByDiameter();
-        case SelectByRadius.NAME:
-            return mEditorModel.selectByRadius();
-            
-        case ConvexHull2d.NAME:
-            return mEditorModel.convexHull2d();
-        case ConvexHull3d.NAME:
-            return mEditorModel.convexHull3d();
-        case JoinSkewLines.NAME:
-            return mEditorModel.joinSkewLines();
         case "AdjustSelectionByClass":
         case "DeselectByClass": // legacy command now handled by AdjustSelectionByClass
             return new AdjustSelectionByClass( this.mSelection, this.mRealizedModel, IGNORE, IGNORE, IGNORE);
@@ -387,7 +375,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new SelectManifestation( null, false, this.mSelection, this.mRealizedModel, groupInSelection );
             
         default:
-            return this .mEditorModel .createEdit( name, groupInSelection );
+            return this .editorModel .createEdit( name, groupInSelection );
         }
     }
 
@@ -404,9 +392,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             //  so they are all handled together in getColorMapper()
             // See the note below about deserializing symmetry from XML.
             return getColorMapper(xml.getAttribute("colorMapper"), xml.getAttribute("symmetry"));
-
-        case "PolarZonohedron":
-            return new PolarZonohedron( this.mSelection, this.mRealizedModel, this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ) );
 
         case "AdjustSelectionByOrbitLength":
         case "SelectSimilarSize": // legacy command now handled by AdjustSelectionByOrbitLength
@@ -433,7 +418,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
 
         default:
-            UndoableEdit edit = this .tools .createEdit( xml );
+            UndoableEdit edit = this .tools .createEdit( name );
             if ( edit != null ) return edit;
 
             edit = this .createToolEdit( xml );
@@ -443,7 +428,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             if ( edit != null ) return edit;
 
             // this is only relevant for deserialization, so it cannot go inside the prior createEdit call
-            return new CommandEdit( null, this .mEditorModel, groupInSelection );
+            return new CommandEdit( null, this .editorModel, groupInSelection );
         }
     }
 
@@ -538,14 +523,14 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     {
         // TODO break all these cases out as dedicated DocumentModel methods
 
-        if ( this .mEditorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
+        if ( this .editorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
             action = "ShowHidden";
         }
 
         Command command = this .kind .getLegacyCommand( action );
         if ( command != null )
         {
-            CommandEdit edit = new CommandEdit( (AbstractCommand) command, mEditorModel, false );
+            CommandEdit edit = new CommandEdit( (AbstractCommand) command, editorModel, false );
             this .performAndRecord( edit );
             return true;
         }
@@ -560,58 +545,52 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         UndoableEdit edit = null;
         switch (action) {
         case "selectAll":
-            edit = mEditorModel.selectAll();
+            edit = editorModel.selectAll();
             break;
         case "unselectAll":
-            edit = mEditorModel.unselectAll();
+            edit = editorModel.unselectAll();
             break;
         case "unselectBalls":
-            edit = mEditorModel.unselectConnectors(); // legacy
+            edit = editorModel.unselectConnectors(); // legacy
             break;
         case "unselectStruts":
-            edit = mEditorModel.unselectStrutsAndPanels(); // legacy
+            edit = editorModel.unselectStrutsAndPanels(); // legacy
             break;
         case "deselectBalls":
-            edit = mEditorModel.deselectConnectors();
+            edit = editorModel.deselectConnectors();
             break;
         case "deselectStruts":
-            edit = mEditorModel.deselectStruts();
+            edit = editorModel.deselectStruts();
             break;
         case "deselectPanels":
-            edit = mEditorModel.deselectPanels();
+            edit = editorModel.deselectPanels();
             break;
         case "selectBalls":
-            edit = mEditorModel.selectConnectors();
+            edit = editorModel.selectConnectors();
             break;
         case "selectStruts":
-            edit = mEditorModel.selectStruts();
+            edit = editorModel.selectStruts();
             break;
         case "selectPanels":
-            edit = mEditorModel.selectPanels();
+            edit = editorModel.selectPanels();
             break;
         case "selectNeighbors":
-            edit = mEditorModel.selectNeighbors();
+            edit = editorModel.selectNeighbors();
             break;
         case "SelectAutomaticStruts":
-            edit = mEditorModel.selectAutomaticStruts();
+            edit = editorModel.selectAutomaticStruts();
             break;
         case "SelectParallelStruts":
-            edit = mEditorModel.selectParallelStruts();
-            break;
-        case SelectByDiameter.NAME:
-            edit = mEditorModel.selectByDiameter();
-            break;
-        case SelectByRadius.NAME:
-            edit = mEditorModel.selectByRadius();
+            edit = editorModel.selectParallelStruts();
             break;
         case "invertSelection":
-            edit = mEditorModel.invertSelection();
+            edit = editorModel.invertSelection();
             break;
         case "group":
-            edit = mEditorModel.groupSelection();
+            edit = editorModel.groupSelection();
             break;
         case "ungroup":
-            edit = mEditorModel.ungroupSelection();
+            edit = editorModel.ungroupSelection();
             break;
         case "chainBalls":
             edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CHAIN_BALLS );
@@ -632,13 +611,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             edit = new ShowPoint( originPoint, mSelection, mRealizedModel, false );
             break;
         case "ballAtSymmCenter":
-            edit = new ShowPoint( mEditorModel.getCenterPoint(), mSelection, mRealizedModel, false );
+            edit = new ShowPoint( editorModel.getCenterPoint(), mSelection, mRealizedModel, false );
             break;
         case "affineTransformAll":
-            edit = new AffineTransformAll( mSelection, mRealizedModel, mEditorModel.getCenterPoint(), false );
-            break;
-        case "polarZonohedron":
-            edit = new PolarZonohedron( mSelection, mRealizedModel, mEditorModel.getSymmetrySystem() );
+            edit = new AffineTransformAll( mSelection, mRealizedModel, editorModel.getCenterPoint(), false );
             break;
         case "apiProxy":
             edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
@@ -651,7 +627,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
                 String suffix = action.substring( beginIndex + 2 );
                 System.out.println( "computing " + group + " " + suffix );
                 int index = Integer.parseInt( suffix, 2 );
-                edit = new Polytope4d( mSelection, mRealizedModel, this .kind, mEditorModel.getSymmetrySegment(),
+                edit = new Polytope4d( mSelection, mRealizedModel, this .kind, editorModel.getSymmetrySegment(),
                         index, group, false );
             } 
             else if ( action.startsWith( "setItemColor/" ) ) {
@@ -660,7 +636,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             } 
             else if ( action.startsWith( "MapToColor/" ) ) {
                 String mapperName = action.substring("MapToColor/".length());
-                String symmetrySystemName = mEditorModel .getSymmetrySystem().getName();
+                String symmetrySystemName = editorModel .getSymmetrySystem().getName();
                 edit = getColorMapper(mapperName, symmetrySystemName);
             } 
             else {
@@ -690,7 +666,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
                 edit .perform();
                 this .mHistory .mergeSelectionChanges();
                 this .mHistory .addEdit( edit, DocumentModel.this );
-                this .mEditorModel .notifyListeners();
+                this .editorModel .notifyListeners();
             }
         }
         catch ( RuntimeException re )
@@ -714,9 +690,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     {
         UndoableEdit edit = null;
         if ( "ball" .equals( paramName ) )
-            edit = mEditorModel .setSymmetryCenter( singleConstruction );
+            edit = editorModel .setSymmetryCenter( singleConstruction );
         else if ( "strut" .equals( paramName ) )
-            edit = mEditorModel .setSymmetryAxis( singleConstruction );
+            edit = editorModel .setSymmetryAxis( singleConstruction );
         if ( edit != null )
             this .performAndRecord( edit );
     }
@@ -753,7 +729,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     {
         if ( "ball" .equals( string ) )
         {
-            Point ball = mEditorModel .getCenterPoint();
+            Point ball = editorModel .getCenterPoint();
             return ball .getLocation() .toRealVector();
         }
         return new RealVector( 0, 0, 0 );
@@ -767,31 +743,31 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void selectParallelStruts( Strut strut )
     {
-        UndoableEdit edit = new SelectParallelStruts( mEditorModel .getSymmetrySystem(), mSelection, mRealizedModel, strut );
+        UndoableEdit edit = new SelectParallelStruts( editorModel .getSymmetrySystem(), mSelection, mRealizedModel, strut );
         this .performAndRecord( edit );
     }
 
     public void selectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength(mEditorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel, SELECT, IGNORE);
+        UndoableEdit edit = new AdjustSelectionByOrbitLength(editorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel, SELECT, IGNORE);
         this .performAndRecord( edit );
     }
 
     public void deselectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength(mEditorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel, DESELECT, IGNORE);
+        UndoableEdit edit = new AdjustSelectionByOrbitLength(editorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel, DESELECT, IGNORE);
         this .performAndRecord( edit );
     }
 
     public void selectSimilarPanels( Direction orbit )
     {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength(mEditorModel .getSymmetrySystem(), orbit, null, mSelection, mRealizedModel, IGNORE, SELECT);
+        UndoableEdit edit = new AdjustSelectionByOrbitLength(editorModel .getSymmetrySystem(), orbit, null, mSelection, mRealizedModel, IGNORE, SELECT);
         this .performAndRecord( edit );
     }
 
     public void deselectSimilarPanels( Direction orbit )
     {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength(mEditorModel .getSymmetrySystem(), orbit, null, mSelection, mRealizedModel, IGNORE, DESELECT);
+        UndoableEdit edit = new AdjustSelectionByOrbitLength(editorModel .getSymmetrySystem(), orbit, null, mSelection, mRealizedModel, IGNORE, DESELECT);
         this .performAndRecord( edit );
     }
 
@@ -1054,7 +1030,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         childElement .appendChild( viewXml );
         vZomeRoot .appendChild( childElement );
 
-        childElement = this .mEditorModel .getSymmetrySystem() .getXml( doc );
+        childElement = this .editorModel .getSymmetrySystem() .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
         childElement = this .tools .getXml( doc );
@@ -1068,13 +1044,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         UndoableEdit edit = null;
         if ( command.equals( "runZomicScript" ) || command.equals( "zomic" ) )
         {
-            edit = new RunZomicScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint(),
-                    (IcosahedralSymmetry) this .mEditorModel .getSymmetrySystem() .getSymmetry() );
+            edit = new RunZomicScript( mSelection, mRealizedModel, script, editorModel.getCenterPoint(),
+                    (IcosahedralSymmetry) this .editorModel .getSymmetrySystem() .getSymmetry() );
             this .performAndRecord( edit );
         }
         else if ( command.equals( "runPythonScript" ) || command.equals( "py" ) )
         {
-            edit = new RunPythonScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint() );
+            edit = new RunPythonScript( mSelection, mRealizedModel, script, editorModel.getCenterPoint() );
             this .performAndRecord( edit );
         }
         //    else if ( command.equals( "import.zomod" ) )
@@ -1083,7 +1059,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void importVEF( AlgebraicNumber scale, String script )
     {
-        Segment symmAxis = mEditorModel .getSymmetrySegment();
+        Segment symmAxis = editorModel .getSymmetrySegment();
         AlgebraicVector quaternion = ( symmAxis == null ) 
                 ? null 
                         : symmAxis.getOffset() .scale( scale.reciprocal() );
@@ -1224,17 +1200,17 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     public void undoToManifestation( Manifestation man )
     {
         mHistory .undoToManifestation( man );
-        this .mEditorModel .notifyListeners();
+        this .editorModel .notifyListeners();
     }
 
     public UndoableEdit deselectAll()
     {
-        return mEditorModel .unselectAll();
+        return editorModel .unselectAll();
     }
 
     public UndoableEdit selectManifestation( Manifestation target, boolean replace )
     {
-        return mEditorModel .selectManifestation( target, replace );
+        return editorModel .selectManifestation( target, replace );
     }
 
     public void createStrut( Point point, Axis zone, AlgebraicNumber length )
@@ -1351,12 +1327,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public Segment getSelectedSegment()
     {
-        return (Segment) mEditorModel .getSelectedConstruction( Segment.class );
+        return (Segment) editorModel .getSelectedConstruction( Segment.class );
     }
 
     public Segment getSymmetryAxis()
     {
-        return mEditorModel .getSymmetrySegment();
+        return editorModel .getSymmetrySegment();
     }
 
     public RealizedModel getRealizedModel()
@@ -1371,7 +1347,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public SymmetrySystem getSymmetrySystem()
     {
-        return this .mEditorModel .getSymmetrySystem();
+        return this .editorModel .getSymmetrySystem();
     }
 
     public SymmetrySystem getSymmetrySystem( String name )
@@ -1382,7 +1358,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     public void setSymmetrySystem( String name )
     {
         SymmetrySystem system = this .symmetrySystems .get( name );
-        this .mEditorModel .setSymmetrySystem( system );
+        this .editorModel .setSymmetrySystem( system );
     }
 
     public FieldApplication getFieldApplication()
@@ -1402,7 +1378,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public EditorModel getEditorModel()
     {
-        return this .mEditorModel;
+        return this .editorModel;
     }
 
     public Java2dSnapshot capture2d( RenderedModel model, int height, int width, Camera camera, Lights lights,

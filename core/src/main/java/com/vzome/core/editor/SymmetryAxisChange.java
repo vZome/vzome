@@ -17,6 +17,11 @@ public class SymmetryAxisChange implements UndoableEdit
     private Segment mOldAxis, mNewAxis;
     private final EditorModel mEditor;
 
+    public SymmetryAxisChange( EditorModel editor )
+    {
+        this( editor, null );
+    }
+    
     public SymmetryAxisChange( EditorModel editor, Segment newAxis )
     {
         mOldAxis = editor .getSymmetrySegment();

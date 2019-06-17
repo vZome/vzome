@@ -7,6 +7,7 @@ import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.vzome.core.commands.Command;
@@ -20,12 +21,16 @@ import com.vzome.core.model.Strut;
 
 public class EditorModel
 {
-    public EditorModel( RealizedModel realized, Selection selection, boolean oldGroups, Point originPoint, SymmetrySystem symmetrySystem )
+    public EditorModel( RealizedModel realized, Selection selection, boolean oldGroups, Point originPoint, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
     {
         mRealized = realized;
         mSelection = selection;
         this.oldGroups = oldGroups;
         this.symmetrySystem = symmetrySystem;
+        this.symmetrySystems = symmetrySystems;
+        for ( SymmetrySystem symmetrySys : symmetrySystems .values()) {
+            symmetrySys .setEditorModel( this );
+        }
 
         this .selectionSummary = new SelectionSummary( this .mSelection );
 
@@ -160,37 +165,12 @@ public class EditorModel
         return new SelectParallelStruts( symmetrySystem, mSelection, mRealized );
     }
 
-    public UndoableEdit selectByDiameter()
-    {
-        return new SelectByDiameter(mSelection, mRealized );
-    }
-
-    public UndoableEdit selectByRadius()
-    {
-        return new SelectByRadius(mSelection, mRealized );
-    }
-
     public UndoableEdit invertSelection()
     {
         return new InvertSelection( mSelection, mRealized, false );
         // always a change, by definition
     }
-    
-    public UndoableEdit joinSkewLines()
-    {
-        return new JoinSkewLines( mSelection, mRealized );
-    }
-    
-    public UndoableEdit convexHull2d()
-    {
-        return new ConvexHull2d( mSelection, mRealized );
-    }
-    
-    public UndoableEdit convexHull3d()
-    {
-        return new ConvexHull3d( mSelection, mRealized );
-    }
-    
+        
     public UndoableEdit createEdit( String name, boolean groupInSelection )
     {
         switch ( name ) { // map command classes to support legacy documents
@@ -215,7 +195,7 @@ public class EditorModel
             Class<?> factoryClass = Class.forName( className );
 
             Constructor<?>[] constructors = factoryClass .getConstructors();
-            Constructor<?> goodConstructor = null, betterConstructor = null;
+            Constructor<?> goodConstructor = null, betterConstructor = null, editorConstructor = null;
             for ( Constructor<?> constructor : constructors ) {
                 Class<?>[] parameterTypes = constructor .getParameterTypes();
                 if ( parameterTypes.length >= 1 && parameterTypes[0] .equals( Selection.class ) ) {
@@ -227,9 +207,13 @@ public class EditorModel
                             goodConstructor = constructor;
                         }
                     }
+                } else if ( parameterTypes.length == 1 && parameterTypes[0] .equals( EditorModel.class ) ) {
+                    editorConstructor = constructor;
                 }
             }
-            if ( betterConstructor != null ) {
+            if ( editorConstructor != null ) {
+                return (UndoableEdit) editorConstructor .newInstance( new Object[] { this } );
+            } else if ( betterConstructor != null ) {
                 return (UndoableEdit) betterConstructor .newInstance( new Object[] { this.mSelection, this.mRealized, groupInSelection } );
             } else if ( goodConstructor != null ) {
                 return (UndoableEdit) goodConstructor .newInstance( new Object[] { this.mSelection, this.mRealized } );
@@ -253,6 +237,8 @@ public class EditorModel
     private Segment mSymmetryAxis;
 
     private SymmetrySystem symmetrySystem;
+
+    private final Map<String, SymmetrySystem> symmetrySystems;
 
     private final boolean oldGroups;
 
@@ -354,5 +340,10 @@ public class EditorModel
     public void setSymmetrySystem( SymmetrySystem system )
     {
         this .symmetrySystem = system;
+    }
+
+    public SymmetrySystem getSymmetrySystem( String name )
+    {
+        return this .symmetrySystems .get( name );
     }
 }
