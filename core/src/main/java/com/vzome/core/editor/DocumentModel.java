@@ -531,7 +531,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         // TODO: get rid of this switch, and do it all with reflection and uniform edit constructors
         
+        String[] tokens = action .split( "/" );
+        action = tokens[ 0 ];
+        String parameter = ( tokens.length == 2 )? tokens[ 1 ] : null;
         UndoableEdit edit = null;
+
         switch (action) {
         case "selectAll":
             edit = editorModel.selectAll();
@@ -581,21 +585,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "ungroup":
             edit = editorModel.ungroupSelection();
             break;
-        case "chainBalls":
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CHAIN_BALLS );
-            break;
-        case "joinballs":
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.CLOSED_LOOP );
-            break;
-        case "joinBallsAllToFirst":
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_TO_FIRST );
-            break;
-        case "joinBallsAllToLast":
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_TO_LAST );
-            break;
-        case "joinBallsAllPossible":
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.ALL_POSSIBLE );
-            break;
         case "ballAtOrigin":
             edit = new ShowPoint( originPoint, mSelection, mRealizedModel, false );
             break;
@@ -608,29 +597,24 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "apiProxy":
             edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
             break;
+            
+        // TODO remove these three cases by passing parameter to createEdit, etc.
+        
+        case "JoinPoints":
+            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.valueOf( parameter ) );
+            break;
+            
+        case "setItemColor":
+            edit = new ColorManifestations( mSelection, mRealizedModel, new Color( parameter ), false );
+            break;
+
+        case "MapToColor":
+            String symmetrySystemName = editorModel .getSymmetrySystem().getName();
+            edit = getColorMapper( parameter, symmetrySystemName );
+            break;
 
         default:
-            if ( action.startsWith( "polytope_" ) ) {
-                int beginIndex = "polytope_".length();
-                String group = action.substring( beginIndex, beginIndex + 2 );
-                String suffix = action.substring( beginIndex + 2 );
-                System.out.println( "computing " + group + " " + suffix );
-                int index = Integer.parseInt( suffix, 2 );
-                edit = new Polytope4d( mSelection, mRealizedModel, this .kind, editorModel.getSymmetrySegment(),
-                        index, group, false );
-            } 
-            else if ( action.startsWith( "setItemColor/" ) ) {
-                String value = action .substring( "setItemColor/" .length() );
-                edit = new ColorManifestations( mSelection, mRealizedModel, new Color( value ), false );
-            } 
-            else if ( action.startsWith( "MapToColor/" ) ) {
-                String mapperName = action.substring("MapToColor/".length());
-                String symmetrySystemName = editorModel .getSymmetrySystem().getName();
-                edit = getColorMapper(mapperName, symmetrySystemName);
-            } 
-            else {
-                edit = this .createEdit( action, false );
-            }
+            edit = this .createEdit( action, false );
         }
 
         if ( edit == null )

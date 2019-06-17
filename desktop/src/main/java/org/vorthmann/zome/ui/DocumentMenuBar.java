@@ -315,10 +315,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Construct menu
         menu = new JMenu( "Construct" );
 
-        menu.add( enableIf( isEditor, createMenuItem( "Loop Balls", "joinballs", KeyEvent.VK_J, COMMAND ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Chain Balls", "chainBalls", KeyEvent.VK_J, COMMAND_OPTION ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Join Balls to Last", "joinBallsAllToLast" ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Make All Possible Struts", "joinBallsAllPossible" ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Loop Balls", "JoinPoints/CLOSED_LOOP", KeyEvent.VK_J, COMMAND ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Chain Balls", "JoinPoints/CHAIN_BALLS", KeyEvent.VK_J, COMMAND_OPTION ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Join Balls to Last", "JoinPoints/ALL_TO_LAST" ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Make All Possible Struts", "JoinPoints/ALL_POSSIBLE" ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Panel", ( "panel" ), KeyEvent.VK_P, COMMAND ) ) );

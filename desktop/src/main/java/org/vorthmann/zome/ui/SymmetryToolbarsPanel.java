@@ -84,13 +84,13 @@ public class SymmetryToolbarsPanel extends JPanel
         
         secondToolbar .addSeparator();
 
-        button = makeEditButton( enabler, "joinballs", "Connect balls in a loop" );
+        button = makeEditButton( enabler, "JoinPoints/CLOSED_LOOP", "Connect balls in a loop" );
         secondToolbar .add( button );
-        button = makeEditButton( enabler, "chainBalls", "Connect balls in a chain" );
+        button = makeEditButton( enabler, "JoinPoints/CHAIN_BALLS", "Connect balls in a chain" );
         secondToolbar .add( button );
-        button = makeEditButton( enabler, "joinBallsAllToLast", "Connect all balls to last selected" );
+        button = makeEditButton( enabler, "JoinPoints/ALL_TO_LAST", "Connect all balls to last selected" );
         secondToolbar .add( button );
-        button = makeEditButton( enabler, "joinBallsAllPossible", "Connect balls in all possible ways" );
+        button = makeEditButton( enabler, "JoinPoints/ALL_POSSIBLE", "Connect balls in all possible ways" );
         secondToolbar .add( button );
         button = makeEditButton( enabler, "panel", "Make a panel polygon" );
         secondToolbar .add( button );
