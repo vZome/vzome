@@ -25,7 +25,7 @@ public class ApiEdit extends ChangeManifestations
 {
 	public ApiEdit( Selection selection, RealizedModel realized, Point origin )
 	{
-		super( selection, realized, false );
+		super( selection, realized );
 	}
 	
 	private Selection getSelection()

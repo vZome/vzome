@@ -170,8 +170,9 @@ public class AffineHeptagon extends ChangeManifestations
         redo();
     }
 
-    public AffineHeptagon(Selection selection, RealizedModel realized) {
-        super(selection, realized, false);
+    public AffineHeptagon( Selection selection, RealizedModel realized )
+    {
+        super( selection, realized );
     }
 
     @Override

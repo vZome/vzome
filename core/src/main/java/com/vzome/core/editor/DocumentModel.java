@@ -325,7 +325,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .mRealizedModel .show( m );
     }
 
-    private UndoableEdit createEdit( String name, boolean groupInSelection )
+    private UndoableEdit createEdit( String name )
     {
         switch (name) {
         case "Snapshot":
@@ -333,19 +333,19 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "Branch":
             return new Branch( this );
         case "setItemColor":
-            return new ColorManifestations( this.mSelection, this.mRealizedModel, null, groupInSelection );
+            return new ColorManifestations( this.mSelection, this.mRealizedModel, null );
         case "ShowPoint":
-            return new ShowPoint( null, this.mSelection, this.mRealizedModel, groupInSelection );
+            return new ShowPoint( null, this.mSelection, this.mRealizedModel, false );
         case "AffineTransformAll":
-            return new AffineTransformAll( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint(), groupInSelection );
+            return new AffineTransformAll( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint() );
         case "DodecagonSymmetry":
-            return new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint(), this .editorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
+            return new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint(), this .editorModel .getSymmetrySystem() .getSymmetry(), false );
         case "GhostSymmetry24Cell":
-            return new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.editorModel.getSymmetrySegment(), this .editorModel .getSymmetrySystem() .getSymmetry(), groupInSelection );
+            return new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.editorModel.getSymmetrySegment(), this .editorModel .getSymmetrySystem() .getSymmetry(), false );
         case "StrutCreation":
             return new StrutCreation( null, null, null, this.mRealizedModel );
         case "Polytope4d":
-            return new Polytope4d( this.mSelection, this.mRealizedModel, this .kind, null, 0, null, groupInSelection );
+            return new Polytope4d( this.mSelection, this.mRealizedModel, this .kind, null, 0, null, false );
         case "GroupSelection":
             return new GroupSelection( this.mSelection, false );
         case "BeginBlock":
@@ -353,7 +353,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "EndBlock":
             return new EndBlock();
         case "DeselectAll":
-            return new DeselectAll( this.mSelection, groupInSelection );
+            return new DeselectAll( this.mSelection, false );
         case "ValidateSelection":
             return new ValidateSelection( this.mSelection );
         case "RunZomicScript":
@@ -369,15 +369,15 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new ReplaceWithShape( mSelection, mRealizedModel, null );
             
         case "SelectManifestation":
-            return new SelectManifestation( null, false, this.mSelection, this.mRealizedModel, groupInSelection );
+            return new SelectManifestation( null, false, this.mSelection, this.mRealizedModel, false );
             
         default:
-            return this .editorModel .createEdit( name, groupInSelection );
+            return this .editorModel .createEdit( name );
         }
     }
 
     @Override
-    public UndoableEdit createEdit( Element xml, boolean groupInSelection )
+    public UndoableEdit createEdit( Element xml )
     {
         String name = xml .getLocalName();
         switch (name) {
@@ -420,11 +420,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             edit = this .createToolEdit( xml );
             if ( edit != null ) return edit;
 
-            edit = this .createEdit( name, groupInSelection );
+            edit = this .createEdit( name );
             if ( edit != null ) return edit;
 
             // this is only relevant for deserialization, so it cannot go inside the prior createEdit call
-            return new CommandEdit( null, this .editorModel, groupInSelection );
+            return new CommandEdit( null, this .editorModel );
         }
     }
 
@@ -524,7 +524,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         Command command = this .kind .getLegacyCommand( action );
         if ( command != null )
         {
-            CommandEdit edit = new CommandEdit( (AbstractCommand) command, editorModel, false );
+            CommandEdit edit = new CommandEdit( (AbstractCommand) command, editorModel );
             this .performAndRecord( edit );
             return true;
         }
@@ -592,7 +592,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             edit = new ShowPoint( editorModel.getCenterPoint(), mSelection, mRealizedModel, false );
             break;
         case "affineTransformAll":
-            edit = new AffineTransformAll( mSelection, mRealizedModel, editorModel.getCenterPoint(), false );
+            edit = new AffineTransformAll( mSelection, mRealizedModel, editorModel.getCenterPoint() );
             break;
         case "apiProxy":
             edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
@@ -605,7 +605,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             break;
             
         case "setItemColor":
-            edit = new ColorManifestations( mSelection, mRealizedModel, new Color( parameter ), false );
+            edit = new ColorManifestations( mSelection, mRealizedModel, new Color( parameter ) );
             break;
 
         case "MapToColor":
@@ -614,7 +614,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             break;
 
         default:
-            edit = this .createEdit( action, false );
+            edit = this .createEdit( action );
         }
 
         if ( edit == null )

@@ -34,7 +34,7 @@ public class AdjustSelectionByClass extends ChangeSelection
 
     public AdjustSelectionByClass( EditorModel editor, ActionEnum balls, ActionEnum struts, ActionEnum panels )
     {
-        super( editor .getSelection(), false );
+        super( editor .getSelection() );
         this.editor  = editor;
         this.ballAction = balls;
         this.strutAction = struts;

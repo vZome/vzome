@@ -30,7 +30,7 @@ public interface UndoableEdit
     //    
     public interface Context
     {
-        UndoableEdit createEdit( Element xml, boolean groupInSelection );
+        UndoableEdit createEdit( Element xml );
 
         void performAndRecord( UndoableEdit edit );
     }

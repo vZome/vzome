@@ -50,11 +50,16 @@ public class CommandEdit extends ChangeManifestations
     private static final Logger logger = Logger .getLogger( "com.vzome.core.editor.CommandEdit" );
     private static final Logger loadAndPerformLgger = Logger .getLogger( "com.vzome.core.editor.CommandEdit.loadAndPerform" );
 
-	public CommandEdit( AbstractCommand cmd, EditorModel editor, boolean groupInSelection )
+	public CommandEdit( AbstractCommand cmd, EditorModel editor )
     {
-        super( editor .mSelection, editor .getRealizedModel(), groupInSelection );
+        super( editor .mSelection, editor .getRealizedModel() );
         mEditorModel = editor;  // only needed to set symmetry axis/center
         mCommand = cmd;
+    }
+
+    public CommandEdit( AbstractCommand cmd, EditorModel editor, boolean groupInSelection )
+    {
+        this( cmd, editor );
     }
 
     @Override
@@ -330,7 +335,7 @@ public class CommandEdit extends ChangeManifestations
             // TODO work out a more generic migration technique
             if ( mCommand instanceof CommandObliquePentagon )
             {
-                UndoableEdit edit = new AffinePentagon( mSelection, mManifestations, false );
+                UndoableEdit edit = new AffinePentagon( mSelection, mManifestations );
                 context .performAndRecord( edit );
                 return;
             }

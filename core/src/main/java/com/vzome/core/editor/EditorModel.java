@@ -174,7 +174,7 @@ public class EditorModel
         // always a change, by definition
     }
         
-    public UndoableEdit createEdit( String name, boolean groupInSelection )
+    public UndoableEdit createEdit( String name )
     {
         switch ( name ) { // map legacy command names (left) to actual class names
 
@@ -214,7 +214,7 @@ public class EditorModel
             if ( editorConstructor != null ) {
                 return (UndoableEdit) editorConstructor .newInstance( new Object[] { this } );
             } else if ( betterConstructor != null ) {
-                return (UndoableEdit) betterConstructor .newInstance( new Object[] { this.mSelection, this.mRealized, groupInSelection } );
+                return (UndoableEdit) betterConstructor .newInstance( new Object[] { this.mSelection, this.mRealized, false } );
             } else if ( goodConstructor != null ) {
                 return (UndoableEdit) goodConstructor .newInstance( new Object[] { this.mSelection, this.mRealized } );
             } else {

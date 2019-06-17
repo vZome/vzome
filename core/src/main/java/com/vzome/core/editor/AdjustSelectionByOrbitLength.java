@@ -40,7 +40,7 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
     
     public AdjustSelectionByOrbitLength( EditorModel editor, Direction orbit, AlgebraicNumber length, ActionEnum struts, ActionEnum panels )
     {
-        super( editor .getSelection(), false );
+        super( editor .getSelection() );
         this.symmetry = editor .getSymmetrySystem();
         this.editor = editor;
         this.orbit = orbit;

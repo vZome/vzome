@@ -24,16 +24,16 @@ public abstract class ChangeManifestations extends ChangeSelection
     
     public ChangeManifestations( Selection selection, RealizedModel realized )
     {
-        this( selection, realized, false);
-    }
-    
-    public ChangeManifestations( Selection selection, RealizedModel realized, boolean groupInSelection )
-    {
-        super( selection, groupInSelection );
+        super( selection );
 
         mManifestations = realized;
         // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
         mManifestedNow = new HashMap<>();
+    }
+
+    public ChangeManifestations( Selection selection, RealizedModel realized, boolean groupInSelection )
+    {
+        this( selection, realized );
     }
 
     /**

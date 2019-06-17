@@ -22,9 +22,9 @@ public class AffineTransformAll extends ChangeManifestations
 {
     private Point center;
     
-    public AffineTransformAll( Selection selection, RealizedModel realized, Point center, boolean groupInSelection )
+    public AffineTransformAll( Selection selection, RealizedModel realized, Point center )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
         this .center = center;
     }
     

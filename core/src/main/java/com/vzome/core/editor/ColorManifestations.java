@@ -19,9 +19,9 @@ public class ColorManifestations extends ChangeManifestations
 {
     private Color color;
     
-    public ColorManifestations( Selection selection, RealizedModel realized, Color color, boolean groupInSelection )
+    public ColorManifestations( Selection selection, RealizedModel realized, Color color )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
 
         if ( color != null )
             initialize( color );

@@ -42,16 +42,16 @@ public abstract class ChangeSelection extends SideEffects
 
     ChangeSelection( Selection selection )
     {
-        this(selection, false);
-    }
-
-    ChangeSelection( Selection selection, boolean groupInSelection )
-    {
         mSelection = selection;
-        groupingDoneInSelection = groupInSelection;
+        groupingDoneInSelection = false;
     }
 
-	public void setOrderedSelection( boolean orderedSelection )
+	public ChangeSelection( Selection selection, boolean groupInSelection )
+	{
+        this( selection );
+    }
+
+    public void setOrderedSelection( boolean orderedSelection )
 	{
 		this.orderedSelection = orderedSelection;
 	}
@@ -122,7 +122,7 @@ public abstract class ChangeSelection extends SideEffects
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         String grouping = xml .getAttribute( "grouping" );
-        if ( "2.1.1" .equals( grouping ) )
+        if ( format .groupingDoneInSelection() || "2.1.1" .equals( grouping ) )
             groupingDoneInSelection = true;
         setXmlAttributes( xml, format );
         

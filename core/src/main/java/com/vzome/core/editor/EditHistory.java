@@ -533,7 +533,7 @@ public class EditHistory implements Iterable<UndoableEdit>
                 realized = new Breakpoint();
             }
             else
-                realized = context .createEdit( xml, format .groupingDoneInSelection() );
+                realized = context .createEdit( xml );
             //            System.out.println( "edit: " + num + " " + cmdName );
 
             try {
@@ -558,9 +558,9 @@ public class EditHistory implements Iterable<UndoableEdit>
                     }
 
                     @Override
-                    public UndoableEdit createEdit( Element xml, boolean groupInSelection )
+                    public UndoableEdit createEdit( Element xml )
                     {
-                        return context .createEdit( xml, groupInSelection );
+                        return context .createEdit( xml );
                     }
                 } ); // this method needs to have the history, since it may migrate
                 //        		System.out.println();
