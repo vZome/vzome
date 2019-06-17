@@ -159,15 +159,6 @@ public class EditorModel
             return new NoOp();
     }
 
-    public UndoableEdit selectAutomaticStruts()
-    {
-        return new SelectAutomaticStruts( symmetrySystem, mSelection, mRealized );
-    }
-
-    public UndoableEdit selectParallelStruts() {
-        return new SelectParallelStruts( symmetrySystem, mSelection, mRealized );
-    }
-
     public UndoableEdit invertSelection()
     {
         return new InvertSelection( mSelection, mRealized );

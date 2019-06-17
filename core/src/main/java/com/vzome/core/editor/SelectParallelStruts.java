@@ -1,23 +1,24 @@
 package com.vzome.core.editor;
 
+import org.w3c.dom.Element;
+
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import org.w3c.dom.Element;
 
 /**
  * @author David Hall
  */
 public class SelectParallelStruts extends ChangeManifestations
 {
-    private final SymmetrySystem symmetry;
+    private SymmetrySystem symmetry;
     private Direction orbit;
     private Axis axis;
+    private final EditorModel editor;
 
     /**
      * called from the main menu and when opening a file
@@ -25,10 +26,11 @@ public class SelectParallelStruts extends ChangeManifestations
      * @param selection
      * @param model
      */
-    public SelectParallelStruts(SymmetrySystem symmetry, Selection selection, RealizedModel model)
+    public SelectParallelStruts( EditorModel editor )
     {
-        super( selection, model );
-        this.symmetry = symmetry;
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this.editor = editor;
+        this.symmetry = editor .getSymmetrySystem();
     }
 
     /**
@@ -38,10 +40,12 @@ public class SelectParallelStruts extends ChangeManifestations
      * @param model
      * @param strut
      */
-    public SelectParallelStruts(SymmetrySystem symmetry, Selection selection, RealizedModel model, Strut strut) {
-        super( selection, model );
-        this.symmetry = symmetry;
-        this.axis = symmetry.getAxis( strut .getOffset() );
+    public SelectParallelStruts( EditorModel editor, Strut strut )
+    {
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this.editor = editor;
+        this.symmetry = editor .getSymmetrySystem();
+        this.axis = symmetry .getAxis( strut .getOffset() );
         this.orbit = this.axis .getOrbit();
     }
 
@@ -101,14 +105,12 @@ public class SelectParallelStruts extends ChangeManifestations
             XmlSaveFormat .serializeAxis( element, "symm", "dir", "index", "sense", axis );
     }
 
-    // Note that symmetry is read from the XML and passed to the c'tor
-    // unlike the normal pattern of deserializing the XML here.
-    // See the explanation in DocumentModel.createEdit()
     @Override
     protected void setXmlAttributes( Element xml, XmlSaveFormat format )
             throws Failure
     {
-        orbit = symmetry .getOrbits() .getDirection( xml .getAttribute( "orbit" ) );
+        this.symmetry = this .editor .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
+        orbit = this.symmetry .getOrbits() .getDirection( xml .getAttribute( "orbit" ) );
         axis = format .parseAxis( xml, "symm", "dir", "index", "sense" );
     }
 }

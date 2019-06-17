@@ -402,17 +402,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             // See the note below about deserializing symmetry from XML.
             return getColorMapper(xml.getAttribute("colorMapper"), xml.getAttribute("symmetry"));
 
-        case "SelectParallelStruts":
-            // See the note above about deserializing symmetry from XML.
-            return new SelectParallelStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
-                    this .mSelection, this .mRealizedModel );
-
-        case "SelectAutomaticStruts":
-            // See the note above about deserializing symmetry from XML.
-            return new SelectAutomaticStruts( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
-                    this .mSelection, this .mRealizedModel );
-
-
         default:
             UndoableEdit edit = this .tools .createEdit( name );
             if ( edit != null ) return edit;
@@ -570,12 +559,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "selectNeighbors":
             edit = editorModel.selectNeighbors();
             break;
-        case "SelectAutomaticStruts":
-            edit = editorModel.selectAutomaticStruts();
-            break;
-        case "SelectParallelStruts":
-            edit = editorModel.selectParallelStruts();
-            break;
         case "invertSelection":
             edit = editorModel.invertSelection();
             break;
@@ -718,7 +701,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void selectParallelStruts( Strut strut )
     {
-        UndoableEdit edit = new SelectParallelStruts( editorModel .getSymmetrySystem(), mSelection, mRealizedModel, strut );
+        UndoableEdit edit = new SelectParallelStruts( editorModel, strut );
         this .performAndRecord( edit );
     }
 
