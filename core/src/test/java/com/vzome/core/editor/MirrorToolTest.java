@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -128,7 +129,7 @@ public class MirrorToolTest
 	{
 		AlgebraicField field = originPoint .getField();
 		RealizedModel model = new RealizedModel( field, new Projection.Default( field ) );
-		EditorModel editor = new EditorModel( model, selection, false, originPoint, null, null );
+		EditorModel editor = new EditorModel( model, selection, false, originPoint, null, new HashMap<>() );
 		ToolsModel tools = new ToolsModel( null, originPoint );
 		tools .setEditorModel( editor );
 		return new MirrorTool.Factory( tools ) .createToolInternal( "1/foo" );
