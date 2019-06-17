@@ -14,7 +14,7 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class Centroid extends ChangeManifestations
+public class NewCentroid extends ChangeManifestations
 {
     @Override
     public void perform() throws Command.Failure
@@ -38,7 +38,7 @@ public class Centroid extends ChangeManifestations
         redo();
     }
 
-    public Centroid( Selection selection, RealizedModel realized, boolean groupInSelection )
+    public NewCentroid( Selection selection, RealizedModel realized, boolean groupInSelection )
     {
         super( selection, realized, groupInSelection );
     }

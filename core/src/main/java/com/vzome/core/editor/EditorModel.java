@@ -199,10 +199,6 @@ public class EditorModel
             name = "B4Polytope";
             break;
 
-        case "NewCentroid":  // "Centroid" is already used by a legacy CommandEdit
-            name = "Centroid";
-            break;
-
         case "DeselectByClass":
             name = "AdjustSelectionByClass";
             break;
