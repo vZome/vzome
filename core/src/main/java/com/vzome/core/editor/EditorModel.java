@@ -104,12 +104,6 @@ public class EditorModel
         else
             return new NoOp();
     }
-
-    public UndoableEdit invertSelection()
-    {
-        return new InvertSelection( mSelection, mRealized );
-        // always a change, by definition
-    }
         
     public UndoableEdit createEdit( String name )
     {

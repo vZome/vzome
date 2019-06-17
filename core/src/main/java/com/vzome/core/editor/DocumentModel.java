@@ -532,9 +532,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "selectNeighbors":
             edit = editorModel.selectNeighbors();
             break;
-        case "invertSelection":
-            edit = editorModel.invertSelection();
-            break;
         case "group":
             edit = editorModel.groupSelection();
             break;
