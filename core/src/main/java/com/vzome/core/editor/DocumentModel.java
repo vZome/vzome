@@ -525,32 +525,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "selectAll":
             edit = editorModel.selectAll();
             break;
+        case "DeselectAll":
         case "unselectAll":
             edit = editorModel.unselectAll();
-            break;
-        case "unselectBalls":
-            edit = editorModel.unselectConnectors(); // legacy
-            break;
-        case "unselectStruts":
-            edit = editorModel.unselectStrutsAndPanels(); // legacy
-            break;
-        case "deselectBalls":
-            edit = editorModel.deselectConnectors();
-            break;
-        case "deselectStruts":
-            edit = editorModel.deselectStruts();
-            break;
-        case "deselectPanels":
-            edit = editorModel.deselectPanels();
-            break;
-        case "selectBalls":
-            edit = editorModel.selectConnectors();
-            break;
-        case "selectStruts":
-            edit = editorModel.selectStruts();
-            break;
-        case "selectPanels":
-            edit = editorModel.selectPanels();
             break;
         case "selectNeighbors":
             edit = editorModel.selectNeighbors();

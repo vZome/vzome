@@ -681,7 +681,7 @@ public class DocumentController extends DefaultController implements Controller3
                 // this is a select or deselect command from the PartsPanel context menu
                 PartsPanelActionEvent ppae = PartsPanelActionEvent.class.cast(e);
                 PartInfo partInfo = ppae.row.partInfo;
-                String cmd = action.toLowerCase();
+                String cmd = ( "select" .equals( action.toLowerCase() ) )? "AdjustSelectionByClass/select" : "AdjustSelectionByClass/deselect";
                 switch(ppae.row.partClassGroupingOrder) {
                     case BALLS_TOTAL:
                         documentModel.doEdit(cmd+"Balls");

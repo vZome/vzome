@@ -1,9 +1,5 @@
 package com.vzome.core.editor;
 
-import static com.vzome.core.editor.ChangeSelection.ActionEnum.DESELECT;
-import static com.vzome.core.editor.ChangeSelection.ActionEnum.IGNORE;
-import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
@@ -97,58 +93,8 @@ public class EditorModel
         else
             return new NoOp();
     }
-
-    public UndoableEdit unselectConnectors()
-    {
-        return new AdjustSelectionByClass( this, DESELECT, IGNORE, IGNORE );
-    }
-
-    public UndoableEdit unselectStrutsAndPanels()
-    {
-        return new AdjustSelectionByClass( this, IGNORE, DESELECT, DESELECT );
-    }
-
-    /**
-     * This legacy method name is misleading because it actually deselects both struts and panels.
-     * @deprecated As of 8/23/2017: Use {@link #unselectStrutsAndPanels()} instead.
-     */
-    @Deprecated
-    public UndoableEdit unselectStruts()
-    {
-        return unselectStrutsAndPanels();
-    }
     
     // TODO: get rid of all this specific command knowledge, and replace with createEdit
-
-    public UndoableEdit deselectConnectors()
-    {
-        return new AdjustSelectionByClass( this, DESELECT, IGNORE, IGNORE );
-    }
-
-    public UndoableEdit deselectStruts()
-    {
-        return new AdjustSelectionByClass( this, IGNORE, DESELECT, IGNORE );
-    }
-
-    public UndoableEdit deselectPanels()
-    {
-        return new AdjustSelectionByClass( this, IGNORE, IGNORE, DESELECT );
-    }
-
-    public UndoableEdit selectConnectors()
-    {
-        return new AdjustSelectionByClass( this, SELECT, IGNORE, IGNORE );
-    }
-
-    public UndoableEdit selectStruts()
-    {
-        return new AdjustSelectionByClass( this, IGNORE, SELECT, IGNORE );
-    }
-
-    public UndoableEdit selectPanels()
-    {
-        return new AdjustSelectionByClass( this, IGNORE, IGNORE, SELECT );
-    }
 
     public UndoableEdit selectNeighbors()
     {

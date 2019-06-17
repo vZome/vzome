@@ -236,19 +236,19 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( enableIf( isEditor, createMenuItem( "Invert Selection", ( "invertSelection" ) ) ) );
 
         submenu = new JMenu("Select...");
-        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "selectBalls" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "selectStruts" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "selectPanels" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "AdjustSelectionByClass/selectBalls" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "AdjustSelectionByClass/selectStruts" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "AdjustSelectionByClass/selectPanels" ) ) ) );
         submenu.add( enableIf( isEditor, createMenuItem( "Automatic Struts", ( "SelectAutomaticStruts" ) ) ) );
         //		submenu.add( enableIf( isEditor, createMenuItem( "All Collinear", ( "SelectCollinear" ) ) ) );
         //      submenu.add( enableIf( isEditor, createMenuItem( "Parallel Struts", ( "SelectParallelStruts" ) ) ) );
         menu.add(submenu);
 
         submenu = new JMenu("Deselect...");
-        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "deselectBalls" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "deselectStruts" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "deselectPanels" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "All", ( "unselectAll" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "AdjustSelectionByClass/deselectBalls" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "AdjustSelectionByClass/deselectStruts" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "AdjustSelectionByClass/deselectPanels" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "All", ( "DeselectAll" ) ) ) );
         menu.add(submenu);
 
         menu.add( enableIf( isEditor, createMenuItem( "Select by Diameter", ( "SelectByDiameter" ) ) ) );

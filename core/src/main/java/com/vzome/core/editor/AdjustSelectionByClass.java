@@ -1,5 +1,7 @@
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
@@ -22,23 +24,51 @@ public class AdjustSelectionByClass extends ChangeSelection
     private ActionEnum strutAction = ActionEnum.IGNORE;
     private ActionEnum panelAction = ActionEnum.IGNORE;
     private final EditorModel editor;
-
-    /**
-     * Standard constructor for deserialization
-     * @param editor
-     */
+        
     public AdjustSelectionByClass( EditorModel editor )
     {
-        this( editor, ActionEnum.IGNORE, ActionEnum.IGNORE, ActionEnum.IGNORE );
-    }
-
-    public AdjustSelectionByClass( EditorModel editor, ActionEnum balls, ActionEnum struts, ActionEnum panels )
-    {
         super( editor .getSelection() );
-        this.editor  = editor;
-        this.ballAction = balls;
-        this.strutAction = struts;
-        this.panelAction = panels;
+        this.editor = editor;
+    }
+    
+    @Override
+    public void configure( Properties props ) 
+    {
+        String value = props .getProperty( "value" );
+        if ( value != null )
+            switch ( value ) {
+
+            case "selectBalls":
+                this.ballAction = ActionEnum.SELECT;
+                break;
+
+            case "selectStruts":
+                this.strutAction = ActionEnum.SELECT;
+                break;
+
+            case "selectPanels":
+                this.panelAction = ActionEnum.SELECT;
+                break;
+
+            case "deselectBalls":
+            case "unselectBalls":
+                this.ballAction = ActionEnum.DESELECT;
+                break;
+
+            case "deselectStruts":
+                this.strutAction = ActionEnum.DESELECT;
+                break;
+
+            case "deselectPanels":
+                this.panelAction = ActionEnum.DESELECT;
+                break;
+
+            case "unselectStruts":
+            case "unselectStrutsAndPanels":
+                this.strutAction = ActionEnum.DESELECT;
+                this.panelAction = ActionEnum.DESELECT; // legacy
+                break;
+            }
     }
 
     @Override
