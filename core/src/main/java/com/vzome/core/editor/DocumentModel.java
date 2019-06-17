@@ -332,8 +332,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new Snapshot( -1, this );
         case "Branch":
             return new Branch( this );
-        case "setItemColor":
-            return new ColorManifestations( this.mSelection, this.mRealizedModel, null );
         case "ShowPoint":
             return new ShowPoint( null, this.mSelection, this.mRealizedModel );
         case "AffineTransformAll":
@@ -582,10 +580,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             break;
             
         // TODO remove these three cases by passing parameter to configure() below
-        
-        case "setItemColor":
-            edit = new ColorManifestations( mSelection, mRealizedModel, new Color( parameter ) );
-            break;
 
         case "MapToColor":
             String symmetrySystemName = editorModel .getSymmetrySystem().getName();
@@ -594,11 +588,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         default:
             edit = this .createEdit( action );
-            if ( parameter != null ) {
-                Properties props = new Properties();
+            Properties props = new Properties();
+            if ( parameter != null )
                 props .put( "value", parameter );
-                edit .configure( props );
-            }
+            edit .configure( props );
         }
 
         if ( edit == null )

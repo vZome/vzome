@@ -169,6 +169,9 @@ public class EditorModel
     {
         switch ( name ) { // map legacy command names (left) to actual class names
 
+        case "setItemColor":        name = "ColorManifestations";
+            break;
+        
         case "BnPolyope":           name = "B4Polytope";
             break;
 

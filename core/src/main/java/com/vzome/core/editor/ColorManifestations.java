@@ -4,6 +4,8 @@
 package com.vzome.core.editor;
 
 
+import java.util.Properties;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -19,17 +21,24 @@ public class ColorManifestations extends ChangeManifestations
 {
     private Color color;
     
-    public ColorManifestations( Selection selection, RealizedModel realized, Color color )
+    public ColorManifestations( Selection selection, RealizedModel realized )
     {
         super( selection, realized );
-
-        if ( color != null )
-            initialize( color );
     }
     
+    @Override
+    public void configure( Properties props ) 
+    {
+        String value = props .getProperty( "value" );
+        if ( value != null )
+            initialize( new Color( value ) );
+    }
+
     private void initialize( Color color )
     {
         this.color = color;
+
+        // TODO: this behavior should move to perform()
         for (Manifestation m : mSelection) {
             RenderedManifestation rm = m .getRenderedObject();
             if ( rm != null )
