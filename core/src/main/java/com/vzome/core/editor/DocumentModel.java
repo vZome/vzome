@@ -368,9 +368,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case ReplaceWithShape.NAME:
             return new ReplaceWithShape( mSelection, mRealizedModel, null );
             
-        case "AdjustSelectionByClass":
-        case "DeselectByClass": // legacy command now handled by AdjustSelectionByClass
-            return new AdjustSelectionByClass( this.mSelection, this.mRealizedModel, IGNORE, IGNORE, IGNORE);
         case "SelectManifestation":
             return new SelectManifestation( null, false, this.mSelection, this.mRealizedModel, groupInSelection );
             
@@ -385,26 +382,25 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         String name = xml .getLocalName();
         switch (name) {
 
-        // all the cases in this switch require access to the XML
+        /*
+        The normal pattern is to have the edits deserialize their own parameters from the XML in setXmlAttributes()
+        but in the case of persisting the symmetry, it must be read here and passed into the c'tor
+        since this is where the map from a name to an actual SymmetrySystem is maintained.
+        These edits are still responsible for saving the symmetry name to XML in getXmlAttributes().
+        Also see the comments of commit # 8c8cb08a1e4d71f91f24669b203fef0378230b19 on 3/8/2015
+         */
+
+        /* 2019-06-16 scott@vorthmann.org
+         * I am eliminating the need for these special cases, by passing the SymmetrySystem map
+         * into the EditorModel, and defining one-argument constructors for all the relevant classes,
+         * taking an EditorModel.  Each will look up the symmetry during setXmlAttributes.
+         */
 
         case "MapToColor":
             // Different Color Mappers require different parameters, including symmetry,
             //  so they are all handled together in getColorMapper()
             // See the note below about deserializing symmetry from XML.
             return getColorMapper(xml.getAttribute("colorMapper"), xml.getAttribute("symmetry"));
-
-        case "AdjustSelectionByOrbitLength":
-        case "SelectSimilarSize": // legacy command now handled by AdjustSelectionByOrbitLength
-            /*
-            The normal pattern is to have the edits deserialize their own parameters from the XML in setXmlAttributes()
-            but in the case of persisting the symmetry, it must be read here and passed into the c'tor
-            since this is where the map from a name to an actual SymmetrySystem is maintained.
-            These edits are still responsible for saving the symmetry name to XML in getXmlAttributes().
-            Also see the comments of commit # 8c8cb08a1e4d71f91f24669b203fef0378230b19 on 3/8/2015
-             */
-
-            return new AdjustSelectionByOrbitLength( this .symmetrySystems .get( xml .getAttribute( "symmetry" ) ),
-                    null, null, this .mSelection, this .mRealizedModel, IGNORE, IGNORE );
 
         case "SelectParallelStruts":
             // See the note above about deserializing symmetry from XML.
@@ -521,8 +517,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public boolean doEdit( String action )
     {
-        // TODO break all these cases out as dedicated DocumentModel methods
-
         if ( this .editorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
             action = "ShowHidden";
         }
@@ -535,13 +529,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return true;
         }
 
-        //      if ( action.equals( "sixLattice" ) )
-        //      edit = new SixLattice( mSelection, mRealizedModel, mDerivationModel );
-
-        // not supported currently, so I don't have to deal with the mTargetManifestation problem
-        //  if ( action .equals( "reversePanel" ) )
-        //      edit = new ReversePanel( mTargetManifestation, mSelection, mRealizedModel, mDerivationModel );
-
+        // TODO: get rid of this switch, and do it all with reflection and uniform edit constructors
+        
         UndoableEdit edit = null;
         switch (action) {
         case "selectAll":
@@ -735,6 +724,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         return new RealVector( 0, 0, 0 );
     }
 
+    // TODO: get rid of all this knowledge of specific commands; replace calls with doEdit()
+    
     public void selectCollinear( Strut strut )
     {
         UndoableEdit edit = new SelectCollinear( mSelection, mRealizedModel, strut );
@@ -749,25 +740,25 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void selectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength(editorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel, SELECT, IGNORE);
+        UndoableEdit edit = new AdjustSelectionByOrbitLength( editorModel, orbit, length, SELECT, IGNORE );
         this .performAndRecord( edit );
     }
 
     public void deselectSimilarStruts( Direction orbit, AlgebraicNumber length )
     {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength(editorModel .getSymmetrySystem(), orbit, length, mSelection, mRealizedModel, DESELECT, IGNORE);
+        UndoableEdit edit = new AdjustSelectionByOrbitLength( editorModel, orbit, length, DESELECT, IGNORE);
         this .performAndRecord( edit );
     }
 
     public void selectSimilarPanels( Direction orbit )
     {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength(editorModel .getSymmetrySystem(), orbit, null, mSelection, mRealizedModel, IGNORE, SELECT);
+        UndoableEdit edit = new AdjustSelectionByOrbitLength( editorModel, orbit, null, IGNORE, SELECT);
         this .performAndRecord( edit );
     }
 
     public void deselectSimilarPanels( Direction orbit )
     {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength(editorModel .getSymmetrySystem(), orbit, null, mSelection, mRealizedModel, IGNORE, DESELECT);
+        UndoableEdit edit = new AdjustSelectionByOrbitLength( editorModel, orbit, null, IGNORE, DESELECT);
         this .performAndRecord( edit );
     }
 

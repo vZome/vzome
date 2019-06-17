@@ -100,11 +100,12 @@ public class EditorModel
 
     public UndoableEdit unselectConnectors()
     {
-        return new AdjustSelectionByClass(mSelection, mRealized, DESELECT, IGNORE, IGNORE);
+        return new AdjustSelectionByClass( this, DESELECT, IGNORE, IGNORE );
     }
 
-    public UndoableEdit unselectStrutsAndPanels() {
-        return new AdjustSelectionByClass(mSelection, mRealized, IGNORE, DESELECT, DESELECT);
+    public UndoableEdit unselectStrutsAndPanels()
+    {
+        return new AdjustSelectionByClass( this, IGNORE, DESELECT, DESELECT );
     }
 
     /**
@@ -116,35 +117,37 @@ public class EditorModel
     {
         return unselectStrutsAndPanels();
     }
+    
+    // TODO: get rid of all this specific command knowledge, and replace with createEdit
 
     public UndoableEdit deselectConnectors()
     {
-        return new AdjustSelectionByClass( mSelection, mRealized, DESELECT, IGNORE, IGNORE );
+        return new AdjustSelectionByClass( this, DESELECT, IGNORE, IGNORE );
     }
 
     public UndoableEdit deselectStruts()
     {
-        return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, DESELECT, IGNORE );
+        return new AdjustSelectionByClass( this, IGNORE, DESELECT, IGNORE );
     }
 
     public UndoableEdit deselectPanels()
     {
-        return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, IGNORE, DESELECT );
+        return new AdjustSelectionByClass( this, IGNORE, IGNORE, DESELECT );
     }
 
     public UndoableEdit selectConnectors()
     {
-        return new AdjustSelectionByClass( mSelection, mRealized, SELECT, IGNORE, IGNORE );
+        return new AdjustSelectionByClass( this, SELECT, IGNORE, IGNORE );
     }
 
     public UndoableEdit selectStruts()
     {
-        return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, SELECT, IGNORE );
+        return new AdjustSelectionByClass( this, IGNORE, SELECT, IGNORE );
     }
 
     public UndoableEdit selectPanels()
     {
-        return new AdjustSelectionByClass( mSelection, mRealized, IGNORE, IGNORE, SELECT );
+        return new AdjustSelectionByClass( this, IGNORE, IGNORE, SELECT );
     }
 
     public UndoableEdit selectNeighbors()
@@ -173,21 +176,18 @@ public class EditorModel
         
     public UndoableEdit createEdit( String name, boolean groupInSelection )
     {
-        switch ( name ) { // map command classes to support legacy documents
+        switch ( name ) { // map legacy command names (left) to actual class names
 
-        case "BnPolyope":
-            name = "B4Polytope";
+        case "BnPolyope":           name = "B4Polytope";
             break;
 
-        case "DeselectByClass":
-            name = "AdjustSelectionByClass";
+        case "DeselectByClass":     name = "AdjustSelectionByClass";
             break;
 
-        case "realizeMetaParts":
-            name = "RealizeMetaParts";
+        case "realizeMetaParts":    name = "RealizeMetaParts";
             break;
 
-        default:
+        case "SelectSimilarSize":   name = "AdjustSelectionByOrbitLength";
             break;
         }
         String className = this.getClass() .getPackage() .getName() + "." + name;

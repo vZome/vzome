@@ -1,13 +1,13 @@
 package com.vzome.core.editor;
 
+import org.w3c.dom.Element;
+
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import org.w3c.dom.Element;
 
 /**
  * @author David Hall
@@ -18,20 +18,24 @@ import org.w3c.dom.Element;
  */
 public class AdjustSelectionByClass extends ChangeSelection
 {
-    private final RealizedModel model;
     private ActionEnum ballAction = ActionEnum.IGNORE;
     private ActionEnum strutAction = ActionEnum.IGNORE;
     private ActionEnum panelAction = ActionEnum.IGNORE;
+    private final EditorModel editor;
 
-    public AdjustSelectionByClass( Selection selection, RealizedModel model )
+    /**
+     * Standard constructor for deserialization
+     * @param editor
+     */
+    public AdjustSelectionByClass( EditorModel editor )
     {
-        this( selection, model, ActionEnum.IGNORE, ActionEnum.IGNORE, ActionEnum.IGNORE );
+        this( editor, ActionEnum.IGNORE, ActionEnum.IGNORE, ActionEnum.IGNORE );
     }
 
-    public AdjustSelectionByClass( Selection selection, RealizedModel model, ActionEnum balls, ActionEnum struts, ActionEnum panels )
+    public AdjustSelectionByClass( EditorModel editor, ActionEnum balls, ActionEnum struts, ActionEnum panels )
     {
-        super(selection, false);
-        this.model  = model;
+        super( editor .getSelection(), false );
+        this.editor  = editor;
         this.ballAction = balls;
         this.strutAction = struts;
         this.panelAction = panels;
@@ -45,7 +49,7 @@ public class AdjustSelectionByClass extends ChangeSelection
                 ballAction == ActionEnum.SELECT ||
                 strutAction == ActionEnum.SELECT ||
                 panelAction == ActionEnum.SELECT)
-                ? model
+                ? this .editor .getRealizedModel()
                 : mSelection;
 
         for (Manifestation man : whichManifestationSet) {
