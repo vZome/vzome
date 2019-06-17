@@ -207,6 +207,10 @@ public class EditorModel
             name = "AdjustSelectionByClass";
             break;
 
+        case "realizeMetaParts":
+            name = "RealizeMetaParts";
+            break;
+
         default:
             break;
         }
