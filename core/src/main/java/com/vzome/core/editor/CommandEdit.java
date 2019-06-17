@@ -317,7 +317,7 @@ public class CommandEdit extends ChangeManifestations
                 }
             }
             else {
-                ChangeSelection edit = new DeselectAll( mSelection );
+                ChangeSelection edit = new DeselectAll( mEditorModel );
                 context .performAndRecord( edit );
                 for (Manifestation m : selectedBefore) {
                     edit = new SelectManifestation( m, false, mSelection, mManifestations );

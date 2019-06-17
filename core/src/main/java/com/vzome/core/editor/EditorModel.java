@@ -91,7 +91,7 @@ public class EditorModel
 
     public UndoableEdit unselectAll()
     {
-        ChangeSelection edit = new DeselectAll( mSelection );
+        ChangeSelection edit = new DeselectAll( this );
         if ( edit .selectionChanged() )
             return edit;
         else

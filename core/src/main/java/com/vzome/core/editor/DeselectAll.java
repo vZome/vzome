@@ -8,11 +8,12 @@ import com.vzome.core.model.Manifestation;
 
 public class DeselectAll extends ChangeSelection
 {
-    public DeselectAll( Selection selection )
+    public DeselectAll( EditorModel editor )
     {
-        super( selection );
+        super( editor .getSelection() );
         
-        for (Manifestation man : selection) {
+        // TODO: move this to perform()
+        for ( Manifestation man : this .mSelection ) {
             unselect( man, true );
         }
     }

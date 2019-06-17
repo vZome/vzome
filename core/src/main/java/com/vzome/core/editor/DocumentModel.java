@@ -350,8 +350,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new BeginBlock();
         case "EndBlock":
             return new EndBlock();
-        case "DeselectAll":
-            return new DeselectAll( this.mSelection );
         case "ValidateSelection":
             return new ValidateSelection( this.mSelection );
         case "RunZomicScript":
@@ -579,8 +577,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
             break;
             
-        // TODO remove these three cases by passing parameter to configure() below
-
+        // TODO remove this case by passing parameter to configure() below
         case "MapToColor":
             String symmetrySystemName = editorModel .getSymmetrySystem().getName();
             edit = getColorMapper( parameter, symmetrySystemName );
@@ -588,10 +585,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         default:
             edit = this .createEdit( action );
-            Properties props = new Properties();
-            if ( parameter != null )
-                props .put( "value", parameter );
-            edit .configure( props );
         }
 
         if ( edit == null )
@@ -599,6 +592,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             logger .warning( "no DocumentModel action for : " + action );
             return false;
         }
+        Properties props = new Properties();
+        if ( parameter != null )
+            props .put( "value", parameter );
+        edit .configure( props );
         this .performAndRecord( edit );
         return true;
     }
