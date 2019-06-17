@@ -331,6 +331,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new Branch( this );
         case "setItemColor":
             return new ColorManifestations( this.mSelection, this.mRealizedModel, null, groupInSelection );
+        case "ShowPoint":
+            return new ShowPoint( null, this.mSelection, this.mRealizedModel, groupInSelection );
         case "AffineTransformAll":
             return new AffineTransformAll( this.mSelection, this.mRealizedModel, this.mEditorModel.getCenterPoint(), groupInSelection );
         case "DodecagonSymmetry":
