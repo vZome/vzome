@@ -11,7 +11,9 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
+
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class JoinPoints extends ChangeManifestations {
 
@@ -28,13 +30,13 @@ public class JoinPoints extends ChangeManifestations {
     protected JoinModeEnum joinMode = JoinModeEnum.CLOSED_LOOP;
 //	protected ToolBehavior toolBehavior = new ToolBehavior();
 
-    // Any code that calls this c'tor must call setXmlAttributes() to set the joinMode (and ToolBehavior) before calling perform().
+    // Either configure() or setXmlAttributes() will be called before perform().
     public JoinPoints( Selection selection, RealizedModel realized ) 
     {
         super( selection, realized );
     }
 
-	// TODO: Implement a new ToolBehavior class as a parameter, behaving similar to the modes parmeter in the 
+    // TODO: Implement a new ToolBehavior class as a parameter, behaving similar to the modes parmeter in the 
     // ApplyTool c'tor. It should effect all the various joinXxx methods consistently, with the default behavior 
     //  being identical to the earlier versions of JoinPoints which didn't support that feature.
     // It mainly affects if and when unselect and redo should be called along the way.
@@ -45,11 +47,13 @@ public class JoinPoints extends ChangeManifestations {
     //  so I'm going to put the idea of a toolBehavior param on hold for now.
     // At this point, I've added the code to serialize to and from the xml if it is non-zero, but it's commented out.
     // Once I figure out how to get the parameter into the JoinPoints c'tor, then I can implement the appropriate behaviors.
-    public JoinPoints(Selection selection, RealizedModel realized, boolean groupInSelection, JoinModeEnum joinMode) //, ToolBehavior behavior )
+    
+    @Override
+    public void configure( Properties props ) 
     {
-        super(selection, realized);
-        this.joinMode = joinMode;
-        //if(behavior!= null) { this.toolBehavior = behavior; }
+        String value = props .getProperty( "value" );
+        if ( value != null )
+            this .joinMode = JoinModeEnum.valueOf( value );
     }
 
     // A few constant strings to help avoid typos...

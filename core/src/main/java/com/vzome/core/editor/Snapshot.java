@@ -3,6 +3,8 @@
 
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -45,6 +47,9 @@ public class Snapshot implements UndoableEdit
 
     @Override
     public void redo() {}
+
+    @Override
+    public void configure( Properties props ) {}
 
     @Override
     public boolean isVisible()

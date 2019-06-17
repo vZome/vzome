@@ -3,6 +3,8 @@
 
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -22,6 +24,9 @@ public class NoOp implements UndoableEdit
     {
         throw new IllegalStateException();
     }
+
+    @Override
+    public void configure( Properties props ) {}
 
     @Override
     public void redo() throws Failure

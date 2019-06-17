@@ -581,12 +581,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
             break;
             
-        // TODO remove these three cases by passing parameter to createEdit, etc.
+        // TODO remove these three cases by passing parameter to configure() below
         
-        case "JoinPoints":
-            edit = new JoinPoints( mSelection, mRealizedModel, false, JoinPoints.JoinModeEnum.valueOf( parameter ) );
-            break;
-            
         case "setItemColor":
             edit = new ColorManifestations( mSelection, mRealizedModel, new Color( parameter ) );
             break;
@@ -598,6 +594,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         default:
             edit = this .createEdit( action );
+            if ( parameter != null ) {
+                Properties props = new Properties();
+                props .put( "value", parameter );
+                edit .configure( props );
+            }
         }
 
         if ( edit == null )

@@ -5,6 +5,7 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Stack;
 
 import org.w3c.dom.Document;
@@ -89,6 +90,9 @@ public class Branch implements UndoableEdit
 
     @Override
     public void redo() {}
+
+    @Override
+    public void configure( Properties props ) {}
 
     @Override
     public boolean isVisible()

@@ -3,6 +3,8 @@
 
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -92,6 +94,9 @@ public class GroupSelection implements UndoableEdit
             else
                 mSelection .scatterGroup211();
     }
+
+    @Override
+    public void configure( Properties props ) {}
 
     @Override
     public void perform()

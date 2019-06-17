@@ -6,6 +6,7 @@ package com.vzome.core.editor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -107,6 +108,9 @@ public abstract class SideEffects implements UndoableEdit
         undo(); // in case there has been any redo() already
         throw new Command.Failure( message );
     }
+
+    @Override
+    public void configure( Properties props ) {}
 
     @Override
     public void redo()

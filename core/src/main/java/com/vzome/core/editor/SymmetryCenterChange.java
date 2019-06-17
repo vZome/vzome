@@ -3,6 +3,8 @@
 
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import com.vzome.core.commands.AttributeMap;
 
 import org.w3c.dom.Document;
@@ -47,6 +49,9 @@ public class SymmetryCenterChange implements UndoableEdit
     {
         mEditor .setCenterPoint( mOldCenter );
     }
+
+    @Override
+    public void configure( Properties props ) {}
 
     @Override
     public Element getXml( Document doc )

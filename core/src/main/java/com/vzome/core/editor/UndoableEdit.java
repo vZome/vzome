@@ -2,6 +2,8 @@
 
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -11,6 +13,8 @@ import com.vzome.core.commands.XmlSaveFormat;
 
 public interface UndoableEdit
 {
+    public void configure( Properties props );
+    
     public void perform() throws Command.Failure;
 
     public void undo();

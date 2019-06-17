@@ -3,6 +3,8 @@
 
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -53,6 +55,9 @@ public class EndBlock implements UndoableEdit
     @Override
     public void undo()
     {}
+
+    @Override
+    public void configure( Properties props ) {}
 
     @Override
     public void perform()

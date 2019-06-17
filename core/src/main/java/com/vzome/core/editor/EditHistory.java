@@ -6,6 +6,7 @@ package com.vzome.core.editor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -441,6 +442,9 @@ public class EditHistory implements Iterable<UndoableEdit>
         {}
 
         @Override
+        public void configure( Properties props ) {}
+
+        @Override
         public boolean isSticky()
         {
             return false;
@@ -586,6 +590,9 @@ public class EditHistory implements Iterable<UndoableEdit>
         {
             // called, but must be a no-op
         }
+
+        @Override
+        public void configure( Properties props ) {}
 
         @Override
         public void perform()

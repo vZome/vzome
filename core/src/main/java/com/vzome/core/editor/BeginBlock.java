@@ -3,6 +3,8 @@
 
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -63,4 +65,7 @@ public class BeginBlock implements UndoableEdit
     {
         return false;
     }
+
+    @Override
+    public void configure( Properties props ) {}
 }

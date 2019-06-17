@@ -3,6 +3,8 @@
 
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import com.vzome.core.commands.AttributeMap;
 
 import org.w3c.dom.Document;
@@ -46,6 +48,9 @@ public class SymmetryAxisChange implements UndoableEdit
     {
         mEditor .setSymmetrySegment( mOldAxis );
     }
+
+    @Override
+    public void configure( Properties props ) {}
 
     @Override
     public Element getXml( Document doc )
