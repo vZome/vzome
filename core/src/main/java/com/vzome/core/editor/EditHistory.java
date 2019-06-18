@@ -412,6 +412,12 @@ public class EditHistory implements Iterable<UndoableEdit>
         }
 
         @Override
+        public boolean isNoOp()
+        {
+            return false;
+        }
+
+        @Override
         public boolean isVisible()
         {
             return true;
@@ -476,6 +482,12 @@ public class EditHistory implements Iterable<UndoableEdit>
             this.format = format;
             this.xml = editElem;
             this.context = context;
+        }
+
+        @Override
+        public boolean isNoOp()
+        {
+            return false;
         }
 
         @Override

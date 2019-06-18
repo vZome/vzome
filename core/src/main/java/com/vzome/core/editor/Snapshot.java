@@ -26,7 +26,13 @@ public class Snapshot implements UndoableEdit
 	{
 		void actOnSnapshot( RenderedModel snapshot );
 	}
-	
+
+    @Override
+    public boolean isNoOp()
+    {
+        return false;
+    }
+
     private int id;
     private Recorder recorder;
 

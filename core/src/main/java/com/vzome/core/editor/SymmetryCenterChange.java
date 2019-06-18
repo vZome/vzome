@@ -30,7 +30,13 @@ public class SymmetryCenterChange implements UndoableEdit
         mNewCenter = newCenter;
         mEditor = editor;
     }
-    
+
+    @Override
+    public boolean isNoOp()
+    {
+        return false;
+    }
+
     @Override
     public boolean isVisible()
     {

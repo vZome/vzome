@@ -38,7 +38,6 @@ public class SelectManifestation extends ChangeSelection
         mRealized = realized;
         mManifestation = m;
         mReplace = replace;
-        setDirty();
         if ( m != null )
         {
             // must record the construction for save, because if this gets undone, there's no

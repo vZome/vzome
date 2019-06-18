@@ -24,6 +24,12 @@ public class EndBlock implements UndoableEdit
     }
 
     @Override
+    public boolean isNoOp()
+    {
+        return false;
+    }
+
+    @Override
 	public Element getXml( Document doc )
     {
         return doc .createElement( "EndBlock" );

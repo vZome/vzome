@@ -113,6 +113,12 @@ public abstract class SideEffects implements UndoableEdit
     public void configure( Map<String,Object> props ) {}
 
     @Override
+    public boolean isNoOp()
+    {
+        return this.mItems.size() == 0;
+    }
+
+    @Override
     public void redo()
     {
         for ( int i = redone; i < mItems .size(); i++ )

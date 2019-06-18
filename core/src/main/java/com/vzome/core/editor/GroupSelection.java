@@ -33,6 +33,12 @@ public class GroupSelection implements UndoableEdit
     }
 
     @Override
+    public boolean isNoOp()
+    {
+        return false;
+    }
+
+    @Override
     public Element getXml( Document doc )
     {
         Element elem = doc .createElement( "GroupSelection" );

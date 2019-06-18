@@ -26,6 +26,12 @@ public class Branch implements UndoableEdit
 		this .context = context;
 	}
 
+    @Override
+    public boolean isNoOp()
+    {
+        return false;
+    }
+
 	private List<UndoableEdit> edits = new ArrayList<>();
     private XmlSaveFormat format;
     private Element xml;

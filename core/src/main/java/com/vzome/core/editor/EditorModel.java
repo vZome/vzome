@@ -68,40 +68,24 @@ public class EditorModel
 
     public UndoableEdit selectManifestation( Manifestation m, boolean replace )
     {
-        ChangeSelection edit = new SelectManifestation( m, replace, mSelection, mRealized );
-        if ( edit .selectionChanged() )
-            return edit;
-        else
-            return new NoOp();
+        return new SelectManifestation( m, replace, mSelection, mRealized );
     }
 
     public UndoableEdit selectAll()
     {
-        ChangeSelection edit = new SelectAll( mSelection, mRealized );
-        if ( edit .selectionChanged() )
-            return edit;
-        else
-            return new NoOp();
+        return new SelectAll( mSelection, mRealized );
     }
 
     public UndoableEdit unselectAll()
     {
-        ChangeSelection edit = new DeselectAll( this );
-        if ( edit .selectionChanged() )
-            return edit;
-        else
-            return new NoOp();
+        return new DeselectAll( this );
     }
     
     // TODO: get rid of all this specific command knowledge, and replace with createEdit
 
     public UndoableEdit selectNeighbors()
     {
-        ChangeSelection edit = new SelectNeighbors( mSelection, mRealized );
-        if ( edit .selectionChanged() )
-            return edit;
-        else
-            return new NoOp();
+        return new SelectNeighbors( mSelection, mRealized );
     }
         
     public UndoableEdit createEdit( String name )

@@ -21,7 +21,7 @@ public class RunPythonScript extends ApiEdit
 
     public RunPythonScript( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
     }
     
     @Override

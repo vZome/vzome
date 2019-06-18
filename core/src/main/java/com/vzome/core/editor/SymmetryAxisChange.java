@@ -29,7 +29,13 @@ public class SymmetryAxisChange implements UndoableEdit
         mNewAxis = newAxis;
         mEditor = editor;
     }
-    
+
+    @Override
+    public boolean isNoOp()
+    {
+        return false;
+    }
+
     @Override
     public boolean isVisible()
     {

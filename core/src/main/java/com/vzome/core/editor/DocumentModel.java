@@ -524,12 +524,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     {
         if ( edit == null )
             return;
-        if ( edit instanceof NoOp )
-            return;
 
         try {
             synchronized ( this .mHistory ) {
                 edit .perform();
+                if ( edit .isNoOp() )
+                    return;
                 this .mHistory .mergeSelectionChanges();
                 this .mHistory .addEdit( edit, DocumentModel.this );
                 this .editorModel .notifyListeners();

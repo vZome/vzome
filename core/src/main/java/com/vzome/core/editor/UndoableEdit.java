@@ -21,6 +21,8 @@ public interface UndoableEdit
 
     public void redo() throws Command.Failure;
 
+    public boolean isNoOp();
+
     public boolean isVisible();
 
     public Element getXml( Document doc );

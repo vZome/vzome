@@ -20,6 +20,12 @@ public class NoOp implements UndoableEdit
     }
 
     @Override
+    public boolean isNoOp()
+    {
+        return true;
+    }
+
+    @Override
     public void undo()
     {
         throw new IllegalStateException();
