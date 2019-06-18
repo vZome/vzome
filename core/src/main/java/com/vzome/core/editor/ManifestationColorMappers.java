@@ -61,7 +61,7 @@ public class ManifestationColorMappers {
         }
     }
 
-    public static ManifestationColorMapper getColorMapper( String mapperName )
+    static ManifestationColorMapper getColorMapper( String mapperName )
     {
         // Handle all of the types with c'tor parameters, initialize() overridden, or other special handling.
         final String strTransparency = "TransparencyMapper@";
@@ -83,6 +83,23 @@ public class ManifestationColorMappers {
         }
         // try the re-usable static instances in the registered ColorMappers collection
         return colorMappers.get(mapperName);
+    }
+
+    static ManifestationColorMapper getColorMapper( String mapperName, SymmetrySystem symm )
+    {
+        ManifestationColorMapper colorMapper
+            = mapperName.equals("SystemColorMap") ? new SystemColorMap(symm)
+            : mapperName.equals("SystemCentroidColorMap") ? new SystemCentroidColorMap(symm)
+            : mapperName.equals("NearestSpecialOrbitColorMap") ? new NearestSpecialOrbitColorMap(symm)
+            : mapperName.equals("CentroidNearestSpecialOrbitColorMap") ? new CentroidNearestSpecialOrbitColorMap(symm)
+            : ManifestationColorMappers.getColorMapper(mapperName);
+
+        if (colorMapper == null) {
+            // Provide a do-nothing placeholder for an unrecognized (future???) mapper
+            colorMapper = new ManifestationColorMappers.Identity();
+//            logger.warning("Substituting " + colorMapper.getName() + " for unknown mapperName " + mapperName);
+        }
+        return colorMapper;
     }
 
     /**

@@ -53,11 +53,6 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.ManifestationColorMappers.CentroidNearestSpecialOrbitColorMap;
-import com.vzome.core.editor.ManifestationColorMappers.ManifestationColorMapper;
-import com.vzome.core.editor.ManifestationColorMappers.NearestSpecialOrbitColorMap;
-import com.vzome.core.editor.ManifestationColorMappers.SystemCentroidColorMap;
-import com.vzome.core.editor.ManifestationColorMappers.SystemColorMap;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.OpenGLExporter;
@@ -376,41 +371,17 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     public UndoableEdit createEdit( Element xml )
     {
         String name = xml .getLocalName();
-        switch (name) {
+        UndoableEdit edit = this .tools .createEdit( name );
+        if ( edit != null ) return edit;
 
-        /*
-        The normal pattern is to have the edits deserialize their own parameters from the XML in setXmlAttributes()
-        but in the case of persisting the symmetry, it must be read here and passed into the c'tor
-        since this is where the map from a name to an actual SymmetrySystem is maintained.
-        These edits are still responsible for saving the symmetry name to XML in getXmlAttributes().
-        Also see the comments of commit # 8c8cb08a1e4d71f91f24669b203fef0378230b19 on 3/8/2015
-         */
+        edit = this .createToolEdit( xml );
+        if ( edit != null ) return edit;
 
-        /* 2019-06-16 scott@vorthmann.org
-         * I am eliminating the need for these special cases, by passing the SymmetrySystem map
-         * into the EditorModel, and defining one-argument constructors for all the relevant classes,
-         * taking an EditorModel.  Each will look up the symmetry during setXmlAttributes.
-         */
+        edit = this .createEdit( name );
+        if ( edit != null ) return edit;
 
-        case "MapToColor":
-            // Different Color Mappers require different parameters, including symmetry,
-            //  so they are all handled together in getColorMapper()
-            // See the note below about deserializing symmetry from XML.
-            return getColorMapper(xml.getAttribute("colorMapper"), xml.getAttribute("symmetry"));
-
-        default:
-            UndoableEdit edit = this .tools .createEdit( name );
-            if ( edit != null ) return edit;
-
-            edit = this .createToolEdit( xml );
-            if ( edit != null ) return edit;
-
-            edit = this .createEdit( name );
-            if ( edit != null ) return edit;
-
-            // this is only relevant for deserialization, so it cannot go inside the prior createEdit call
-            return new CommandEdit( null, this .editorModel );
-        }
+        // this is only relevant for deserialization, so it cannot go inside the prior createEdit call
+        return new CommandEdit( null, this .editorModel );
     }
 
     public UndoableEdit createToolEdit( Element xml )
@@ -424,23 +395,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         if ( factory != null )
             edit = factory .deserializeTool( toolId );
         return edit;
-    }
-
-    private MapColors getColorMapper(String mapperName, String symmetrySystemName) {
-        SymmetrySystem symm = symmetrySystems.get(symmetrySystemName);
-        ManifestationColorMapper colorMapper
-        = mapperName.equals("SystemColorMap") ? new SystemColorMap(symm)
-                : mapperName.equals("SystemCentroidColorMap") ? new SystemCentroidColorMap(symm)
-                        : mapperName.equals("NearestSpecialOrbitColorMap") ? new NearestSpecialOrbitColorMap(symm)
-                                : mapperName.equals("CentroidNearestSpecialOrbitColorMap") ? new CentroidNearestSpecialOrbitColorMap(symm)
-                                        : ManifestationColorMappers.getColorMapper(mapperName);
-
-                                if (colorMapper == null) {
-                                    // Provide a do-nothing placeholder for an unrecognized (future???) mapper
-                                    colorMapper = new ManifestationColorMappers.Identity();
-                                    logger.warning("Substituting " + colorMapper.getName() + " for unknown mapperName " + mapperName);
-                                }
-                                return new MapColors(mSelection, mRealizedModel, colorMapper);
     }
 
     public String copySelectionVEF()
@@ -551,12 +505,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
             break;
             
-        // TODO remove this case by passing parameter to configure() below
-        case "MapToColor":
-            String symmetrySystemName = editorModel .getSymmetrySystem().getName();
-            edit = getColorMapper( parameter, symmetrySystemName );
-            break;
-
         default:
             edit = this .createEdit( action );
         }

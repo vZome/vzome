@@ -1,32 +1,49 @@
 package com.vzome.core.editor;
 
+import static com.vzome.core.math.DomUtils.addAttribute;
+
+import java.util.Properties;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.ManifestationColorMappers.ManifestationColorMapper;
-import static com.vzome.core.math.DomUtils.addAttribute;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * @author David Hall
  */
-public class MapColors extends ChangeManifestations {
+public class MapToColor extends ChangeManifestations {
 
-    private final ManifestationColorMapper colorMapper;
+    private ManifestationColorMapper colorMapper;
+    private final EditorModel editor;
 
-    public MapColors( Selection selection, RealizedModel realized, ManifestationColorMapper colorMapper )
+    public MapToColor( EditorModel editor )
     {
-        super( selection, realized );
-        this.colorMapper = colorMapper;
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this.editor = editor;
+    }
+    
+    @Override
+    public void configure( Properties props ) 
+    {
+        String colorMapperName = props .getProperty( "value" );
+        SymmetrySystem symmetry = this.editor .getSymmetrySystem();
+        if ( colorMapperName != null )
+            this .colorMapper = ManifestationColorMappers .getColorMapper( colorMapperName, symmetry );
     }
 
+    /**
+     * Either configure() or setXmlAttributes() is always called before perform()
+     */
     @Override
-	public void perform() throws Failure {
+	public void perform() throws Failure
+    {
         if( colorMapper .requiresOrderedSelection() ) {
             setOrderedSelection( true );
         }
@@ -41,7 +58,8 @@ public class MapColors extends ChangeManifestations {
     private static final String COLORMAPPER_ATTR_NAME = "colorMapper";
 
     @Override
-    public void getXmlAttributes( Element result ) {
+    public void getXmlAttributes( Element result )
+    {
         result .setAttribute( COLORMAPPER_ATTR_NAME, colorMapper.getName() );
         colorMapper.getXmlAttributes(result);
     }
@@ -49,7 +67,10 @@ public class MapColors extends ChangeManifestations {
     @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Command.Failure
     {
+        SymmetrySystem symmetry = this .editor .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
         String colorMapperName = xml .getAttribute( COLORMAPPER_ATTR_NAME );
+        this .colorMapper = ManifestationColorMappers .getColorMapper( colorMapperName, symmetry );
+
         if( !colorMapper.getName().equals(colorMapperName) ) {
             logger.warning("Substituting " + colorMapper.getName() + " for specifed " + COLORMAPPER_ATTR_NAME + ": " + colorMapperName);
         }
