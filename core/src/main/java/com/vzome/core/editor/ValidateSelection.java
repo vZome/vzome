@@ -15,9 +15,9 @@ public class ValidateSelection extends ChangeSelection
             throw new Failure( "selection is empty" );
     }
 
-    public ValidateSelection( Selection selection )
+    public ValidateSelection( EditorModel editor )
     {
-        super( selection ); 
+        super( editor .getSelection() ); 
     }
 
     @Override

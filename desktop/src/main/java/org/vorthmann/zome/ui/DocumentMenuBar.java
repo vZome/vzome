@@ -343,8 +343,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( enableIf( isEditor, createMenuItem( "3D Convex Hull", ( "ConvexHull3d" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        //        menu.add( enableIf( isEditor, createMenuItem( "Affine Transform All", getExclusiveAction( "affineTransformAll" ) ) );
-        //        menuItem = enableIf( isEditor, createMenuItem( "Conjugate", getExclusiveAction( "conjugate" ) );
         menu.add( enableIf( isEditor, createMenuItem( "Parallelepiped", "Parallelepiped", KeyEvent.VK_P, COMMAND_SHIFT ) ) );
         if ( isGolden ) {
             menu.add( enableIf( isEditor, createMenuItem( "\u03C6 Divide", ( "tauDivide" ) ) ) );

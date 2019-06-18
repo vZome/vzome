@@ -174,7 +174,7 @@ public class PythonConsolePanel extends JPanel implements Tool {
          button .addActionListener( new PythonOutputAction() {
             @Override
             public void outputScript( String script ){
-                mController .doScriptAction( "runPythonScript" , script );
+                mController .doScriptAction( "RunPythonScript" , script );
             }
         } );
         button .setToolTipText( "Execute the selection on the model." );

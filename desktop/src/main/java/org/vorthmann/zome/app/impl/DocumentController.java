@@ -756,8 +756,8 @@ public class DocumentController extends DefaultController implements Controller3
     @Override
     public void doScriptAction( String command, String script )
     {
-        if ( command.equals( "runZomicScript" ) 
-                || command.equals( "runPythonScript" )
+        if ( command.equals( "RunZomicScript" ) 
+                || command.equals( "RunPythonScript" )
                 || command.equals( "import.vef" ) 
                 || command.equals( "import.vef.tetrahedral" ) 
                 //|| command.equals( "import.zomod" ) 

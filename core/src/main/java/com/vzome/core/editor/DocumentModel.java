@@ -66,7 +66,6 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.TetrahedralProjection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.model.Connector;
@@ -325,12 +324,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new Branch( this );
         case "ShowPoint":
             return new ShowPoint( null, this.mSelection, this.mRealizedModel );
-        case "AffineTransformAll":
-            return new AffineTransformAll( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint() );
-        case "DodecagonSymmetry":
-            return new DodecagonSymmetry( this.mSelection, this.mRealizedModel, this.editorModel.getCenterPoint(), this .editorModel .getSymmetrySystem() .getSymmetry() );
-        case "GhostSymmetry24Cell":
-            return new GhostSymmetry24Cell( this.mSelection, this.mRealizedModel, this.editorModel.getSymmetrySegment(), this .editorModel .getSymmetrySystem() .getSymmetry() );
         case "StrutCreation":
             return new StrutCreation( null, null, null, this.mRealizedModel );
         case "Polytope4d":
@@ -341,13 +334,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new BeginBlock();
         case "EndBlock":
             return new EndBlock();
-        case "ValidateSelection":
-            return new ValidateSelection( this.mSelection );
-        case "RunZomicScript":
-            return new RunZomicScript( this.mSelection, this.mRealizedModel, null, editorModel.getCenterPoint(),
-                    (IcosahedralSymmetry) this .editorModel .getSymmetrySystem() .getSymmetry() );
-        case "RunPythonScript":
-            return new RunPythonScript( this.mSelection, this.mRealizedModel, null, editorModel.getCenterPoint() );
         case "Symmetry4d":
             QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
             return new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
@@ -490,9 +476,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "ballAtSymmCenter":
             edit = new ShowPoint( editorModel.getCenterPoint(), mSelection, mRealizedModel );
             break;
-        case "affineTransformAll":
-            edit = new AffineTransformAll( mSelection, mRealizedModel, editorModel.getCenterPoint() );
-            break;
         case "apiProxy":
             edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
             break;
@@ -514,7 +497,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         return true;
     }
     
-    // TODO: combine doEdit, doOrbitEdit, and doPickEdit by passing Properties from the Controller
+    // TODO: combine doEdit, doOrbitEdit, doScriptAction, and doPickEdit by passing Properties from the Controller
 
     public void doOrbitEdit( Direction orbit, AlgebraicNumber length, String action )
     {
@@ -545,6 +528,15 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             props .put( "mode", parameter );
         if ( pickedManifestation != null )
             props .put( "picked", pickedManifestation );
+        edit .configure( props );
+        this .performAndRecord( edit );
+    }
+
+    public void doScriptAction( String command, String script )
+    {
+        UndoableEdit edit = this .editorModel .createEdit( command );
+        Properties props = new Properties();
+        props .setProperty( "script", script );
         edit .configure( props );
         this .performAndRecord( edit );
     }
@@ -891,24 +883,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         vZomeRoot .appendChild( childElement );
 
         DomUtils .serialize( doc, out );
-    }
-
-    public void doScriptAction( String command, String script )
-    {
-        UndoableEdit edit = null;
-        if ( command.equals( "runZomicScript" ) || command.equals( "zomic" ) )
-        {
-            edit = new RunZomicScript( mSelection, mRealizedModel, script, editorModel.getCenterPoint(),
-                    (IcosahedralSymmetry) this .editorModel .getSymmetrySystem() .getSymmetry() );
-            this .performAndRecord( edit );
-        }
-        else if ( command.equals( "runPythonScript" ) || command.equals( "py" ) )
-        {
-            edit = new RunPythonScript( mSelection, mRealizedModel, script, editorModel.getCenterPoint() );
-            this .performAndRecord( edit );
-        }
-        //    else if ( command.equals( "import.zomod" ) )
-        //        edit = new RunZomodScript( mSelection, mRealizedModel, script, mEditorModel.getCenterPoint(), mField .getSymmetry( "icosahedral" ) );
     }
 
     public void importVEF( AlgebraicNumber scale, String script )

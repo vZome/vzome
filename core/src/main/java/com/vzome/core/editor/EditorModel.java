@@ -107,21 +107,21 @@ public class EditorModel
         
     public UndoableEdit createEdit( String name )
     {
-        switch ( name ) { // map legacy command names (left) to actual class names
-
+        // map legacy command names (left) to actual class names
+        switch ( name ) {
         case "setItemColor":        name = "ColorManifestations";
             break;
-        
         case "BnPolyope":           name = "B4Polytope";
             break;
-
         case "DeselectByClass":     name = "AdjustSelectionByClass";
             break;
-
         case "realizeMetaParts":    name = "RealizeMetaParts";
             break;
-
         case "SelectSimilarSize":   name = "AdjustSelectionByOrbitLength";
+            break;
+        case "zomic":               name = "RunZomicScript";
+            break;
+        case "py":                  name = "RunPythonScript";
             break;
         }
         String className = this.getClass() .getPackage() .getName() + "." + name;

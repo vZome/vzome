@@ -14,9 +14,7 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.DodecagonalSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.RealizedModel;
 
 public class GhostSymmetry24Cell extends ChangeManifestations
 {
@@ -25,13 +23,12 @@ public class GhostSymmetry24Cell extends ChangeManifestations
     private Segment symmAxis;
     private Symmetry symm;
 
-    public GhostSymmetry24Cell( Selection selection, RealizedModel realized, Segment symmAxis, Symmetry symmetry )
+    public GhostSymmetry24Cell( EditorModel editor )
     {
-        super( selection, realized );
-
-        this .field = realized .getField();
-        this .symm = new DodecagonalSymmetry( symmetry .getField(), null );
-        this .symmAxis = symmAxis;
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this.symm = editor .getSymmetrySystem() .getSymmetry();
+        this.field = this .symm .getField();
+        this.symmAxis = editor .getSymmetrySegment();
     }
 
     @Override
