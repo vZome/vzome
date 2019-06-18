@@ -32,7 +32,7 @@ public class MapToColor extends ChangeManifestations {
     @Override
     public void configure( Properties props ) 
     {
-        String colorMapperName = props .getProperty( "value" );
+        String colorMapperName = props .getProperty( "mode" );
         SymmetrySystem symmetry = this.editor .getSymmetrySystem();
         if ( colorMapperName != null )
             this .colorMapper = ManifestationColorMappers .getColorMapper( colorMapperName, symmetry );

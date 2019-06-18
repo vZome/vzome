@@ -3,10 +3,6 @@
 
 package com.vzome.core.editor;
 
-import static com.vzome.core.editor.ChangeSelection.ActionEnum.DESELECT;
-import static com.vzome.core.editor.ChangeSelection.ActionEnum.IGNORE;
-import static com.vzome.core.editor.ChangeSelection.ActionEnum.SELECT;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -355,10 +351,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "Symmetry4d":
             QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
             return new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
-
-        case ReplaceWithShape.NAME:
-            return new ReplaceWithShape( mSelection, mRealizedModel, null );
-            
         case "SelectManifestation":
             return new SelectManifestation( null, false, this.mSelection, this.mRealizedModel );
             
@@ -472,7 +464,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         
         String[] tokens = action .split( "/" );
         action = tokens[ 0 ];
-        String parameter = ( tokens.length == 2 )? tokens[ 1 ] : null;
+        String mode = ( tokens.length == 2 )? tokens[ 1 ] : null;
         UndoableEdit edit = null;
 
         switch (action) {
@@ -515,11 +507,46 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return false;
         }
         Properties props = new Properties();
-        if ( parameter != null )
-            props .put( "value", parameter );
+        if ( mode != null )
+            props .put( "mode", mode );
         edit .configure( props );
         this .performAndRecord( edit );
         return true;
+    }
+    
+    // TODO: combine doEdit, doOrbitEdit, and doPickEdit by passing Properties from the Controller
+
+    public void doOrbitEdit( Direction orbit, AlgebraicNumber length, String action )
+    {
+        String[] tokens = action .split( "/" );
+        action = tokens[ 0 ];
+        String mode = ( tokens.length == 2 )? tokens[ 1 ] : null;
+
+        UndoableEdit edit = this .editorModel .createEdit( action );
+        Properties props = new Properties();
+        if ( mode != null )
+            props .put( "mode", mode );
+        props .put( "orbit", orbit );
+        if ( length != null )
+            props .put( "length", length );
+        edit .configure( props );
+        this .performAndRecord( edit );
+    }
+
+    public void doPickEdit( Manifestation pickedManifestation, String action )
+    {
+        String[] tokens = action .split( "/" );
+        action = tokens[ 0 ];
+        String parameter = ( tokens.length == 2 )? tokens[ 1 ] : null;
+
+        UndoableEdit edit = this .editorModel .createEdit( action );
+        Properties props = new Properties();
+        if ( parameter != null )
+            props .put( "mode", parameter );
+        if ( pickedManifestation != null )
+            props .put( "picked", pickedManifestation );
+        edit .configure( props );
+        this .performAndRecord( edit );
     }
 
     @Override
@@ -603,51 +630,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         }
         return new RealVector( 0, 0, 0 );
     }
-
-    // TODO: get rid of all this knowledge of specific commands; replace calls with doEdit()
     
-    public void selectCollinear( Strut strut )
-    {
-        UndoableEdit edit = new SelectCollinear( mSelection, mRealizedModel, strut );
-        this .performAndRecord( edit );
-    }
-
-    public void selectParallelStruts( Strut strut )
-    {
-        UndoableEdit edit = new SelectParallelStruts( editorModel, strut );
-        this .performAndRecord( edit );
-    }
-
-    public void selectSimilarStruts( Direction orbit, AlgebraicNumber length )
-    {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength( editorModel, orbit, length, SELECT, IGNORE );
-        this .performAndRecord( edit );
-    }
-
-    public void deselectSimilarStruts( Direction orbit, AlgebraicNumber length )
-    {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength( editorModel, orbit, length, DESELECT, IGNORE);
-        this .performAndRecord( edit );
-    }
-
-    public void selectSimilarPanels( Direction orbit )
-    {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength( editorModel, orbit, null, IGNORE, SELECT);
-        this .performAndRecord( edit );
-    }
-
-    public void deselectSimilarPanels( Direction orbit )
-    {
-        UndoableEdit edit = new AdjustSelectionByOrbitLength( editorModel, orbit, null, IGNORE, DESELECT);
-        this .performAndRecord( edit );
-    }
-
-    public void replaceWithShape( Manifestation ballOrStrut )
-    {
-        UndoableEdit edit = new ReplaceWithShape( mSelection, mRealizedModel, ballOrStrut );
-        this .performAndRecord( edit );
-    }
-
     public Color getSelectionColor()
     {
         Manifestation last = null;

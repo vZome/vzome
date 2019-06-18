@@ -1,19 +1,20 @@
 package com.vzome.core.editor;
 
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Level;
+
+import org.w3c.dom.Element;
+
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
-import static com.vzome.core.editor.ChangeSelection.logger;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Connector;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import org.w3c.dom.Element;
 
 /**
  * @author David Hall
@@ -23,34 +24,25 @@ public class SelectCollinear extends ChangeManifestations {
     private AlgebraicVector vector1 = null;
     private AlgebraicVector vector2 = null;
 
-	/**
-	* Called by the context menu. 
-    * Inputs are the two endpoints of the strut associated with the context menu.
-	*/
-    public SelectCollinear(Selection selection, RealizedModel model, Strut strut) {
-        super(selection, model);
-        vector1 = strut.getLocation();
-        vector2 = strut.getEnd();
-    }
-
-	/**
-	* Called by the main menu and when opening a file.
-    * Inputs are either the two endpoints of the last selected strut if there is one,
-    * or else the location of the last two selected balls.
-    * The selection may be empty at the time the c'tor is called,
-    * specifically when de-serializing from a file, but in any case,
-    * it will be populated by the time perform() is called.
-    * Therefore, don't rely on any contents of selection in any UndoableEdit derived c'tor.
-    * Rather, save a reference to it for use later in perform().
-	*/
-    public SelectCollinear(Selection selection, RealizedModel model) {
-        super(selection, model);
-        vector1 = null;
-        vector2 = null;
+    public SelectCollinear( EditorModel editor )
+    {
+        super( editor .getSelection(), editor .getRealizedModel() );
     }
 
     @Override
-    public void perform() throws Command.Failure {
+    public void configure( Properties props )
+    {
+        Strut strut = (Strut) props .get( "picked" );
+        if ( strut != null ) // first creation from the editor
+        {
+            this.vector1 = strut .getLocation();
+            this.vector2 = strut .getEnd();
+        }
+    }
+
+    @Override
+    public void perform() throws Command.Failure
+    {
         if(vector1 == null || vector2 == null) {
             Strut lastStrut = getLastSelectedStrut();
             if (lastStrut != null) {
@@ -125,7 +117,8 @@ public class SelectCollinear extends ChangeManifestations {
     }
 
     @Override
-    protected String getXmlElementName() {
+    protected String getXmlElementName()
+    {
         return "SelectCollinear";
     }
 

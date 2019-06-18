@@ -29,9 +29,9 @@ public class ColorManifestations extends ChangeManifestations
     @Override
     public void configure( Properties props ) 
     {
-        String value = props .getProperty( "value" );
-        if ( value != null )
-            initialize( new Color( value ) );
+        String mode = props .getProperty( "mode" );
+        if ( mode != null )
+            initialize( new Color( mode ) );
     }
 
     private void initialize( Color color )

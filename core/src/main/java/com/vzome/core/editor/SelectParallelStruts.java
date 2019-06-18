@@ -1,5 +1,7 @@
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
@@ -33,20 +35,15 @@ public class SelectParallelStruts extends ChangeManifestations
         this.symmetry = editor .getSymmetrySystem();
     }
 
-    /**
-     * called from the strut context menu
-     * @param symmetry
-     * @param selection
-     * @param model
-     * @param strut
-     */
-    public SelectParallelStruts( EditorModel editor, Strut strut )
+    @Override
+    public void configure( Properties props )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
-        this.editor = editor;
-        this.symmetry = editor .getSymmetrySystem();
-        this.axis = symmetry .getAxis( strut .getOffset() );
-        this.orbit = this.axis .getOrbit();
+        Strut strut = (Strut) props .get( "picked" );
+        if ( strut != null ) // first creation from the editor
+        {
+            this.axis = symmetry .getAxis( strut .getOffset() );
+            this.orbit = this.axis .getOrbit();
+        }
     }
 
 	// Normal usage cases include invocation from:

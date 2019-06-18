@@ -34,9 +34,9 @@ public class AdjustSelectionByClass extends ChangeSelection
     @Override
     public void configure( Properties props ) 
     {
-        String value = props .getProperty( "value" );
-        if ( value != null )
-            switch ( value ) {
+        String mode = props .getProperty( "mode" );
+        if ( mode != null )
+            switch ( mode ) {
 
             case "selectBalls":
                 this.ballAction = ActionEnum.SELECT;

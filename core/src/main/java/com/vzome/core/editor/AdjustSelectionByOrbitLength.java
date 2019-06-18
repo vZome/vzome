@@ -1,5 +1,7 @@
 package com.vzome.core.editor;
 
+import java.util.Properties;
+
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -35,18 +37,46 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
      */
     public AdjustSelectionByOrbitLength( EditorModel editor )
     {
-        this( editor, null, null, ActionEnum.IGNORE, ActionEnum.IGNORE );
-    }
-    
-    public AdjustSelectionByOrbitLength( EditorModel editor, Direction orbit, AlgebraicNumber length, ActionEnum struts, ActionEnum panels )
-    {
         super( editor .getSelection() );
         this.symmetry = editor .getSymmetrySystem();
         this.editor = editor;
-        this.orbit = orbit;
-        this.length = length;
-        this.strutAction = struts;
-        this.panelAction = panels;
+    }
+
+    @Override
+    public void configure( Properties props )
+    {
+        String mode = props .getProperty( "mode" );
+        Strut strut = (Strut) props .get( "picked" );
+        this.orbit = (Direction) props .get( "orbit" );
+        this.length = (AlgebraicNumber) props .get( "length" );
+
+        if ( mode != null )
+            switch ( mode ) {
+
+            case "selectSimilarStruts":
+                this.strutAction = ActionEnum.SELECT;
+                break;
+
+            case "selectSimilarPanels":
+                this.panelAction = ActionEnum.SELECT;
+                break;
+
+            case "deselectSimilarStruts":
+                this.strutAction = ActionEnum.DESELECT;
+                break;
+
+            case "deselectSimilarPanels":
+                this.panelAction = ActionEnum.DESELECT;
+                break;
+            }
+
+        if ( strut != null ) // first creation from the editor
+        {
+            AlgebraicVector offset = strut .getOffset();
+            Axis zone = this.symmetry .getAxis( offset );
+            this.orbit = zone .getOrbit();
+            this.length = zone .getLength( offset );
+        }
     }
 
     /*

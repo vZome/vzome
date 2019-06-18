@@ -681,18 +681,18 @@ public class DocumentController extends DefaultController implements Controller3
                 // this is a select or deselect command from the PartsPanel context menu
                 PartsPanelActionEvent ppae = PartsPanelActionEvent.class.cast(e);
                 PartInfo partInfo = ppae.row.partInfo;
-                String cmd = ( "select" .equals( action.toLowerCase() ) )? "AdjustSelectionByClass/select" : "AdjustSelectionByClass/deselect";
+                String cmd = action.toLowerCase();
                 switch(ppae.row.partClassGroupingOrder) {
                     case BALLS_TOTAL:
-                        documentModel.doEdit(cmd+"Balls");
+                        documentModel .doEdit( "AdjustSelectionByClass/" + cmd + "Balls" );
                         break;
 
                     case STRUTS_TOTAL:
-                        documentModel.doEdit(cmd+"Struts");
+                        documentModel .doEdit( "AdjustSelectionByClass/" + cmd + "Struts" );
                         break;
 
                     case PANELS_TOTAL:
-                        documentModel.doEdit(cmd+"Panels");
+                        documentModel .doEdit( "AdjustSelectionByClass/" + cmd + "Panels" );
                         break;
 
                     case STRUTS:
@@ -700,28 +700,14 @@ public class DocumentController extends DefaultController implements Controller3
                         Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
                         AlgebraicNumber unitScalar = orbit.getLengthInUnits(symmetryController.getSymmetry().getField().one());
                         AlgebraicNumber rawLength = partInfo.strutLength.dividedBy(unitScalar);
-                        switch(cmd) {
-                            case "select":
-                                documentModel .selectSimilarStruts( orbit, rawLength ); // does performAndRecord
-                                break;
-                            case "deselect":
-                                documentModel .deselectSimilarStruts( orbit, rawLength ); // does performAndRecord
-                                break;
-                        }
+                        documentModel .doOrbitEdit( orbit, rawLength, "AdjustSelectionByOrbitLength/" + cmd + "SimilarStruts" );
                     }
                     break;
 
                     case PANELS:
                     {
                         Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
-                        switch(cmd) {
-                            case "select":
-                                documentModel .selectSimilarPanels( orbit ); // does performAndRecord
-                                break;
-                            case "deselect":
-                                documentModel .deselectSimilarPanels( orbit ); // does performAndRecord
-                                break;
-                        }
+                        documentModel .doOrbitEdit( orbit, null, "AdjustSelectionByOrbitLength/" + cmd + "SimilarPanels" );
                     }
                     break;
 
@@ -1366,11 +1352,7 @@ public class DocumentController extends DefaultController implements Controller3
                 RealVector loc = documentModel .getCentroid( singleConstruction );
                 cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
-                
-            case "replaceWithShape":
-            	documentModel .replaceWithShape( pickedManifestation );
-                break;
-                
+
             case "setBuildOrbitAndLength": {
                 AlgebraicVector offset = ((Strut) pickedManifestation) .getOffset();
                 Axis zone = symmetryController .getZone( offset );
@@ -1380,26 +1362,11 @@ public class DocumentController extends DefaultController implements Controller3
                 symmetryController .buildController .doAction( "setSingleDirection." + orbit .getName(), null );
                 LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
                 lmodel .setActualLength( length );
-                }
                 break;
-                
-            case "selectCollinear": 
-                documentModel .selectCollinear( (Strut) pickedManifestation );
-                break;
+            }
 
-            case "selectParallelStruts":
-                documentModel.selectParallelStruts( (Strut) pickedManifestation );
-                break;
-                
-            case "selectSimilarSize": {
-                Strut strut = (Strut) pickedManifestation;
-                AlgebraicVector offset = strut .getOffset();
-                Axis zone = symmetryController .getZone( offset );
-                Direction orbit = zone .getOrbit();
-                AlgebraicNumber length = zone .getLength( offset );
-                documentModel .selectSimilarStruts( orbit, length ); // does performAndRecord
-                }
-                break;
+            default:
+                documentModel .doPickEdit( pickedManifestation, action );
             }
         } catch ( Command.Failure failure ) {
             // signal an error to the user

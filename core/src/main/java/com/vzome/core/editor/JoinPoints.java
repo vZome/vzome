@@ -51,9 +51,9 @@ public class JoinPoints extends ChangeManifestations {
     @Override
     public void configure( Properties props ) 
     {
-        String value = props .getProperty( "value" );
-        if ( value != null )
-            this .joinMode = JoinModeEnum.valueOf( value );
+        String mode = props .getProperty( "mode" );
+        if ( mode != null )
+            this .joinMode = JoinModeEnum.valueOf( mode );
     }
 
     // A few constant strings to help avoid typos...
