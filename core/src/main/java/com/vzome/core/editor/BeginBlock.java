@@ -18,6 +18,11 @@ import com.vzome.core.commands.XmlSaveFormat;
  */
 public class BeginBlock implements UndoableEdit
 {
+    public BeginBlock( EditorModel editor )
+    {
+        super();
+    }
+
     @Override
 	public Element getXml( Document doc )
     {

@@ -357,9 +357,9 @@ public class EditHistory implements Iterable<UndoableEdit>
         if ( below instanceof ChangeSelection )
         {
             // two in a row, wrap with begin/end pair
-            UndoableEdit bracket = new BeginBlock();
+            UndoableEdit bracket = new BeginBlock( null );
             mEdits .add( cursor, bracket );
-            bracket = new EndBlock();
+            bracket = new EndBlock( null );
             mEdits .add( bracket );
             mEditNumber += 2;
         }

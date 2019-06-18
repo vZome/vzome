@@ -209,7 +209,7 @@ public class CommandEdit extends ChangeManifestations
         {
             // this edit needs to be migrated
             Set<Manifestation> selectedBefore = new LinkedHashSet<>();
-            context .performAndRecord( new BeginBlock() );
+            context .performAndRecord( new BeginBlock( null ) );
 
             mAttrs = new AttributeMap();
 
@@ -324,7 +324,7 @@ public class CommandEdit extends ChangeManifestations
                     context .performAndRecord( edit );
                 }
             }
-            context .performAndRecord( new EndBlock() );
+            context .performAndRecord( new EndBlock( null ) );
             this .redo(); // sync the selection state
             
             // TODO work out a more generic migration technique

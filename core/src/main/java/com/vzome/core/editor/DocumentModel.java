@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +39,6 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
@@ -68,18 +66,14 @@ import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
-import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
-import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
-import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 
@@ -216,7 +210,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
         // the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
-        this .editorModel = new EditorModel( this .mRealizedModel, this .mSelection, /*oldGroups*/ false, originPoint, symmetrySystem, this .symmetrySystems );
+        this .editorModel = new EditorModel( this .mRealizedModel, this .mSelection, originPoint, symmetrySystem, this .symmetrySystems );
         this .tools .setEditorModel( this .editorModel );
 
         // cannot be done in the constructors
@@ -322,16 +316,11 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new Snapshot( -1, this );
         case "Branch":
             return new Branch( this );
+
         case "StrutCreation":
             return new StrutCreation( null, null, null, this.mRealizedModel );
         case "Polytope4d":
             return new Polytope4d( this.mSelection, this.mRealizedModel, this .kind, null, 0, null );
-        case "GroupSelection":
-            return new GroupSelection( this.mSelection, false );
-        case "BeginBlock":
-            return new BeginBlock();
-        case "EndBlock":
-            return new EndBlock();
         case "Symmetry4d":
             QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
             return new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
@@ -467,9 +456,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             break;
         case "ungroup":
             edit = editorModel.ungroupSelection();
-            break;
-        case "apiProxy":
-            edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );
             break;
             
         default:
@@ -909,113 +895,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 
     private AbstractToolFactory bookmarkFactory;
-
-    /**
-     * @deprecated As of 8/11/2016:
-     * This code will continue to function properly,
-     * but its functionality has been replicated in vzome-desktop.
-     *
-     * Formatting such information for display should not be a function of vzome-core.
-     *
-     * When all references to this method have been replaced,
-     *   then it should be removed from vzome-core.
-     */
-    @Deprecated
-    public String getManifestationProperties( Manifestation man, OrbitSource symmetry )
-    {
-        if ( man instanceof Connector )
-        {
-            StringBuffer buf;
-            AlgebraicVector loc = man .getLocation();
-
-            System .out .println( loc .getVectorExpression( AlgebraicField.EXPRESSION_FORMAT ) );
-            System .out .println( loc .getVectorExpression( AlgebraicField.ZOMIC_FORMAT ) );
-            System .out .println( loc .getVectorExpression( AlgebraicField.VEF_FORMAT ) );
-
-            buf = new StringBuffer();
-            buf .append( "location: " );
-            loc .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
-            return buf.toString();
-        }
-        else if ( man instanceof Strut ) {
-            StringBuffer buf = new StringBuffer();
-            buf.append( "start: " );
-            Strut strut = Strut.class.cast(man);
-            strut .getLocation() .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
-            buf.append( "\n\noffset: " );
-            AlgebraicVector offset = strut .getOffset();
-
-            System .out .println( offset .getVectorExpression( AlgebraicField.EXPRESSION_FORMAT ) );
-            System .out .println( offset .getVectorExpression( AlgebraicField.ZOMIC_FORMAT ) );
-            System .out .println( offset .getVectorExpression( AlgebraicField.VEF_FORMAT ) );
-
-            offset .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
-            buf.append( "\n\nnorm squared: " );
-            AlgebraicNumber normSquared = offset .dot( offset );
-            double norm2d = normSquared .evaluate();
-            normSquared .getNumberExpression( buf, AlgebraicField.DEFAULT_FORMAT );
-            buf.append( " = " );
-            buf.append( FORMAT.format( norm2d ) );
-
-            if ( offset .isOrigin() )
-                return "zero length!";
-            Axis zone = symmetry .getAxis( offset );
-
-            AlgebraicNumber len = zone .getLength( offset );
-            len = zone .getOrbit() .getLengthInUnits( len );
-
-            buf.append( "\n\nlength in orbit units: " );
-            len .getNumberExpression( buf, AlgebraicField.DEFAULT_FORMAT );
-
-            if ( field instanceof PentagonField)
-            {
-                buf.append( "\n\nlength in Zome b1 struts: " );
-                if (FORMAT instanceof DecimalFormat) {
-                    ((DecimalFormat) FORMAT) .applyPattern( "0.0000" );
-                }
-                buf.append( FORMAT.format( Math.sqrt( norm2d ) / PentagonField.B1_LENGTH ) );
-            }
-            return buf .toString();
-        }
-        else if ( man instanceof Panel ) {
-            Panel panel = Panel.class.cast(man);
-            StringBuffer buf = new StringBuffer();
-
-            buf .append( "vertices: " );
-            buf .append( panel.getVertexCount() );
-
-            String delim = "";
-            for( AlgebraicVector vertex : panel) {
-                buf.append(delim);
-                buf.append("\n  ");
-                vertex .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
-                delim = ",";
-            }
-
-            AlgebraicVector normal = panel .getNormal();
-            buf .append( "\n\nnormal: " );
-            normal .getVectorExpression( buf, AlgebraicField.DEFAULT_FORMAT );
-
-            buf.append("\n\nnorm squared: ");
-            AlgebraicNumber normSquared = normal.dot(normal);
-            double norm2d = normSquared.evaluate();
-            normSquared.getNumberExpression(buf, AlgebraicField.DEFAULT_FORMAT);
-            buf.append(" = ");
-            buf.append(FORMAT.format(norm2d));
-
-            Axis zone = symmetry .getAxis( normal );
-            Direction direction = zone.getDirection();
-            buf.append( "\n\ndirection: " );
-            if( direction.isAutomatic() ) {
-                buf.append( "Automatic " );
-            }
-            buf.append( direction.getName() );
-
-
-            return buf.toString();
-        }
-        return man.getClass().getSimpleName();
-    }
 
     public void undoToManifestation( Manifestation man )
     {

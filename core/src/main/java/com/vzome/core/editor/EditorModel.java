@@ -17,11 +17,10 @@ import com.vzome.core.model.Strut;
 
 public class EditorModel
 {
-    public EditorModel( RealizedModel realized, Selection selection, boolean oldGroups, Point originPoint, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
+    public EditorModel( RealizedModel realized, Selection selection, Point originPoint, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
     {
         mRealized = realized;
         mSelection = selection;
-        this.oldGroups = oldGroups;
         this.symmetrySystem = symmetrySystem;
         this.symmetrySystems = symmetrySystems;
         for ( SymmetrySystem symmetrySys : symmetrySystems .values()) {
@@ -123,6 +122,8 @@ public class EditorModel
             break;
         case "py":                  name = "RunPythonScript";
             break;
+        case "apiProxy":            name = "ApiEdit";
+            break;
         }
         String className = this.getClass() .getPackage() .getName() + "." + name;
         try {
@@ -164,8 +165,6 @@ public class EditorModel
     private SymmetrySystem symmetrySystem;
 
     private final Map<String, SymmetrySystem> symmetrySystems;
-
-    private final boolean oldGroups;
 
     public Construction getSelectedConstruction( Class<? extends Construction > kind )
     {
@@ -221,7 +220,7 @@ public class EditorModel
 
     public UndoableEdit groupSelection()
     {
-        if ( !oldGroups && mSelection .isSelectionAGroup() )
+        if ( mSelection .isSelectionAGroup() )
             return new NoOp();
         else
             return new GroupSelection( mSelection, true );
@@ -229,7 +228,7 @@ public class EditorModel
 
     public UndoableEdit ungroupSelection()
     {
-        if ( oldGroups || mSelection .isSelectionAGroup() )
+        if ( mSelection .isSelectionAGroup() )
             return new GroupSelection( mSelection, false );
         else
             return new NoOp();
