@@ -1,6 +1,6 @@
 package com.vzome.core.editor;
 
-import java.util.Properties;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -32,9 +32,9 @@ public class AdjustSelectionByClass extends ChangeSelection
     }
     
     @Override
-    public void configure( Properties props ) 
+    public void configure( Map<String,Object> props ) 
     {
-        String mode = props .getProperty( "mode" );
+        String mode = (String) props .get( "mode" );
         if ( mode != null )
             switch ( mode ) {
 

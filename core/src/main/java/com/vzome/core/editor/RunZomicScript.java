@@ -4,7 +4,7 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
-import java.util.Properties;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -37,9 +37,9 @@ public class RunZomicScript extends ChangeManifestations
     }
     
     @Override
-    public void configure( Properties props ) 
+    public void configure( Map<String,Object> props ) 
     {
-        this.programText = props .getProperty( "script" );
+        this.programText = (String) props .get( "script" );
     }
 
 	@Override

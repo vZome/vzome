@@ -3,13 +3,13 @@
 
 package com.vzome.core.editor;
 
-import java.util.Properties;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 
 public class GroupSelection implements UndoableEdit
@@ -96,7 +96,7 @@ public class GroupSelection implements UndoableEdit
     }
 
     @Override
-    public void configure( Properties props ) {}
+    public void configure( Map<String,Object> props ) {}
 
     @Override
     public void perform()

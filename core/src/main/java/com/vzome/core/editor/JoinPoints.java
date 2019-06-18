@@ -1,19 +1,19 @@
 //(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
 package com.vzome.core.editor;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
-
-import java.util.ArrayList;
-import java.util.Properties;
 
 public class JoinPoints extends ChangeManifestations {
 
@@ -49,9 +49,9 @@ public class JoinPoints extends ChangeManifestations {
     // Once I figure out how to get the parameter into the JoinPoints c'tor, then I can implement the appropriate behaviors.
     
     @Override
-    public void configure( Properties props ) 
+    public void configure( Map<String,Object> props ) 
     {
-        String mode = props .getProperty( "mode" );
+        String mode = (String) props .get( "mode" );
         if ( mode != null )
             this .joinMode = JoinModeEnum.valueOf( mode );
     }

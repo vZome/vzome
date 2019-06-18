@@ -3,7 +3,7 @@
 
 package com.vzome.core.editor;
 
-import java.util.Properties;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -25,9 +25,9 @@ public class ShowPoint extends ChangeManifestations
     }
     
     @Override
-    public void configure( Properties props ) 
+    public void configure( Map<String,Object> props ) 
     {
-        switch ( props .getProperty( "mode" ) ) {
+        switch ( (String) props .get( "mode" ) ) {
 
         case "origin":
             AlgebraicVector origin = this.editor .getSymmetrySystem() .getSymmetry() .getField() .origin( 3 );

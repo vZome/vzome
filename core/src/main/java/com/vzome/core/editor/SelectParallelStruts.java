@@ -1,6 +1,6 @@
 package com.vzome.core.editor;
 
-import java.util.Properties;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -36,7 +36,7 @@ public class SelectParallelStruts extends ChangeManifestations
     }
 
     @Override
-    public void configure( Properties props )
+    public void configure( Map<String,Object> props )
     {
         Strut strut = (Strut) props .get( "picked" );
         if ( strut != null ) // first creation from the editor

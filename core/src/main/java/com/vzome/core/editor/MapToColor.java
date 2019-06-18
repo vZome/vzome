@@ -2,7 +2,7 @@ package com.vzome.core.editor;
 
 import static com.vzome.core.math.DomUtils.addAttribute;
 
-import java.util.Properties;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,9 +30,9 @@ public class MapToColor extends ChangeManifestations {
     }
     
     @Override
-    public void configure( Properties props ) 
+    public void configure( Map<String,Object> props ) 
     {
-        String colorMapperName = props .getProperty( "mode" );
+        String colorMapperName = (String) props .get( "mode" );
         SymmetrySystem symmetry = this.editor .getSymmetrySystem();
         if ( colorMapperName != null )
             this .colorMapper = ManifestationColorMappers .getColorMapper( colorMapperName, symmetry );

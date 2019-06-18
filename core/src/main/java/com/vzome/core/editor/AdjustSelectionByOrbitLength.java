@@ -1,6 +1,6 @@
 package com.vzome.core.editor;
 
-import java.util.Properties;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -43,9 +43,9 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
     }
 
     @Override
-    public void configure( Properties props )
+    public void configure( Map<String,Object> props )
     {
-        String mode = props .getProperty( "mode" );
+        String mode = (String) props .get( "mode" );
         Strut strut = (Strut) props .get( "picked" );
         this.orbit = (Direction) props .get( "orbit" );
         this.length = (AlgebraicNumber) props .get( "length" );

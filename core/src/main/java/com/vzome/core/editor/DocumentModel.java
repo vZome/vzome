@@ -481,7 +481,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             logger .warning( "no DocumentModel action for : " + action );
             return false;
         }
-        Properties props = new Properties();
+        Map<String,Object> props = new HashMap<>();
         if ( mode != null )
             props .put( "mode", mode );
         edit .configure( props );
@@ -498,7 +498,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         String mode = ( tokens.length == 2 )? tokens[ 1 ] : null;
 
         UndoableEdit edit = this .editorModel .createEdit( action );
-        Properties props = new Properties();
+        Map<String,Object> props = new HashMap<>();
         if ( mode != null )
             props .put( "mode", mode );
         props .put( "orbit", orbit );
@@ -515,7 +515,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         String parameter = ( tokens.length == 2 )? tokens[ 1 ] : null;
 
         UndoableEdit edit = this .editorModel .createEdit( action );
-        Properties props = new Properties();
+        Map<String,Object> props = new HashMap<>();
         if ( parameter != null )
             props .put( "mode", parameter );
         if ( pickedManifestation != null )
@@ -527,8 +527,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     public void doScriptAction( String command, String script )
     {
         UndoableEdit edit = this .editorModel .createEdit( command );
-        Properties props = new Properties();
-        props .setProperty( "script", script );
+        Map<String,Object> props = new HashMap<>();
+        props .put( "script", script );
         edit .configure( props );
         this .performAndRecord( edit );
     }

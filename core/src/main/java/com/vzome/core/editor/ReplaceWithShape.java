@@ -4,7 +4,7 @@
 package com.vzome.core.editor;
 
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -81,7 +81,7 @@ public class ReplaceWithShape extends ChangeManifestations
     }
 
     @Override
-    public void configure( Properties props )
+    public void configure( Map<String,Object> props )
     {
         this .ballOrStrut = (Manifestation) props .get( "picked" );
         if ( this .ballOrStrut != null ) // first creation from the editor

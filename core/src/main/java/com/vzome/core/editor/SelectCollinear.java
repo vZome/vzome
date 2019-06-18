@@ -1,6 +1,6 @@
 package com.vzome.core.editor;
 
-import java.util.Properties;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -30,7 +30,7 @@ public class SelectCollinear extends ChangeManifestations {
     }
 
     @Override
-    public void configure( Properties props )
+    public void configure( Map<String,Object> props )
     {
         Strut strut = (Strut) props .get( "picked" );
         if ( strut != null ) // first creation from the editor

@@ -3,6 +3,7 @@
 
 package com.vzome.core.editor;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.python.core.PyException;
@@ -24,9 +25,9 @@ public class RunPythonScript extends ApiEdit
     }
     
     @Override
-    public void configure( Properties props ) 
+    public void configure( Map<String,Object> props ) 
     {
-        this.programText = props .getProperty( "script" );
+        this.programText = (String) props .get( "script" );
     }
 
     @Override
