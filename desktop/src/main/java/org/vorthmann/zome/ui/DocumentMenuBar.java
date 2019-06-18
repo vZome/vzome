@@ -334,9 +334,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( enableIf( isEditor, createMenuItem( "Normal to Skew Lines", ( "JoinSkewLines" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu.add( enableIf( isEditor, createMenuItem( "Ball At Origin", ( "ballAtOrigin" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Ball At Origin", ( "ShowPoint/origin" ) ) ) );
         if ( controller .propertyIsTrue( "original.tools" ) )
-            menu.add( enableIf( isEditor, createMenuItem( "Ball At Symmetry Center", ( "ballAtSymmCenter" ) ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Ball At Symmetry Center", ( "ShowPoint/symmCenter" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( enableIf( isEditor, createMenuItem( "2D Convex Hull", ( "ConvexHull2d" ) ) ) );

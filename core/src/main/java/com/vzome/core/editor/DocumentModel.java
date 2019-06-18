@@ -322,8 +322,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new Snapshot( -1, this );
         case "Branch":
             return new Branch( this );
-        case "ShowPoint":
-            return new ShowPoint( null, this.mSelection, this.mRealizedModel );
         case "StrutCreation":
             return new StrutCreation( null, null, null, this.mRealizedModel );
         case "Polytope4d":
@@ -469,12 +467,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             break;
         case "ungroup":
             edit = editorModel.ungroupSelection();
-            break;
-        case "ballAtOrigin":
-            edit = new ShowPoint( originPoint, mSelection, mRealizedModel );
-            break;
-        case "ballAtSymmCenter":
-            edit = new ShowPoint( editorModel.getCenterPoint(), mSelection, mRealizedModel );
             break;
         case "apiProxy":
             edit = new ApiEdit( this .mSelection, this .mRealizedModel, this .originPoint );

@@ -3,24 +3,43 @@
 
 package com.vzome.core.editor;
 
-import com.vzome.core.commands.AttributeMap;
+import java.util.Properties;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.commands.AttributeMap;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
-import com.vzome.core.model.RealizedModel;
 
 public class ShowPoint extends ChangeManifestations
 {
     private Point point;
+    private final EditorModel editor;
     
-    public ShowPoint( Point point, Selection selection, RealizedModel realized )
+    public ShowPoint( EditorModel editor )
     {
-        super( selection, realized );
-        this.point = point;
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this.editor = editor;
     }
     
+    @Override
+    public void configure( Properties props ) 
+    {
+        switch ( props .getProperty( "mode" ) ) {
+
+        case "origin":
+            AlgebraicVector origin = this.editor .getSymmetrySystem() .getSymmetry() .getField() .origin( 3 );
+            this.point = new FreePoint( origin );
+            break;
+
+        case "symmCenter":
+            this.point = this.editor .getCenterPoint();
+            break;
+        }
+    }
+
     @Override
     public void perform()
     {
