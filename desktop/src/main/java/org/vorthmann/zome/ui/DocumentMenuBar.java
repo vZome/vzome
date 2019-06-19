@@ -255,8 +255,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( enableIf( isEditor, createMenuItem( "Select by Radius", ( "SelectByRadius" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu .add( enableIf( isEditor, createMenuItem( "Group", ( "group" ), KeyEvent.VK_G, COMMAND ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Ungroup", ( "ungroup" ), KeyEvent.VK_G, COMMAND_OPTION ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Group", ( "GroupSelection/group" ), KeyEvent.VK_G, COMMAND ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Ungroup", ( "GroupSelection/ungroup" ), KeyEvent.VK_G, COMMAND_OPTION ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Hide", ( "hideball" ), KeyEvent.VK_H, CONTROL ) ) );

@@ -16,26 +16,30 @@ public class GroupSelection implements UndoableEdit
 {
     protected Selection mSelection;
     
-    private boolean mGrouping;
+    private boolean mGrouping = false;
     
-    private boolean recursiveGroups; // 2.1.2 and later, 3.0b1 and later
+    private boolean recursiveGroups = true; // 2.1.2 and later, 3.0b1 and later
+
+    private final boolean alreadyGrouped;
 
     public GroupSelection( EditorModel editor )
     {
-        this( editor .getSelection(), false );
+        super();
+        this.mSelection = editor .getSelection();
+        this.alreadyGrouped = this.mSelection .isSelectionAGroup();
     }
-    
-    public GroupSelection( Selection selection, boolean groupThem )
+
+    @Override
+    public void configure( Map<String,Object> props )
     {
-        mSelection = selection;        
-        mGrouping = groupThem;
-        recursiveGroups = true;
+        String mode = (String) props .get( "mode" );
+        mGrouping = ( mode == null ) || mode .isEmpty() || mode .equals( "group" );
     }
 
     @Override
     public boolean isNoOp()
     {
-        return false;
+        return this.mGrouping == this.alreadyGrouped;
     }
 
     @Override
@@ -79,6 +83,9 @@ public class GroupSelection implements UndoableEdit
     @Override
     public void redo()
     {
+        if ( this .isNoOp() )
+            return;
+
         if ( mGrouping )
             if ( recursiveGroups )
                 mSelection .gatherGroup();
@@ -94,6 +101,9 @@ public class GroupSelection implements UndoableEdit
     @Override
     public void undo()
     {
+        if ( this .isNoOp() )
+            return;
+
         if ( !mGrouping )
             if ( recursiveGroups )
                 mSelection .gatherGroup();
@@ -105,9 +115,6 @@ public class GroupSelection implements UndoableEdit
             else
                 mSelection .scatterGroup211();
     }
-
-    @Override
-    public void configure( Map<String,Object> props ) {}
 
     @Override
     public void perform()

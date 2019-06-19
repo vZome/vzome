@@ -183,22 +183,6 @@ public class EditorModel
         return new SymmetryAxisChange( this, newAxis );
     }
 
-    public UndoableEdit groupSelection()
-    {
-        if ( mSelection .isSelectionAGroup() )
-            return new NoOp();
-        else
-            return new GroupSelection( mSelection, true );
-    }
-
-    public UndoableEdit ungroupSelection()
-    {
-        if ( mSelection .isSelectionAGroup() )
-            return new GroupSelection( mSelection, false );
-        else
-            return new NoOp();
-    }
-
     private final Set<Manifestation> failedConstructions = new HashSet<>();
 
     public void addFailedConstruction( Construction cons )

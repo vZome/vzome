@@ -305,51 +305,36 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .mRealizedModel .show( m );
     }
 
-    private UndoableEdit createEdit( String name )
-    {
-        switch (name) {
-        case "Snapshot":
-            return new Snapshot( -1, this );
-        case "Branch":
-            return new Branch( this );
-
-        case "Symmetry4d":
-            QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
-            return new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
-            
-        default:
-            return this .editorModel .createEdit( name );
-        }
-    }
-
     @Override
     public UndoableEdit createEdit( Element xml )
     {
         String name = xml .getLocalName();
         UndoableEdit edit = this .tools .createEdit( name );
-        if ( edit != null ) return edit;
+        if ( edit != null )
+            return edit;
 
-        edit = this .createToolEdit( xml );
-        if ( edit != null ) return edit;
+        String toolId = xml .getAttribute( "name" );
+        if ( toolId != null )
+        {
+            AbstractToolFactory factory = (AbstractToolFactory) this .toolFactories .get( name );
+            if ( factory != null )
+                edit = factory .deserializeTool( toolId );
+            if ( edit != null )
+                return edit;
+        }
 
-        edit = this .createEdit( name );
+        switch (name) {
+        case "Snapshot":
+            return new Snapshot( -1, this );
+        case "Branch":
+            return new Branch( this );
+        }
+        
+        edit = this .editorModel .createEdit( name );
         if ( edit != null ) return edit;
 
         // this is only relevant for deserialization, so it cannot go inside the prior createEdit call
         return new CommandEdit( null, this .editorModel );
-    }
-
-    public UndoableEdit createToolEdit( Element xml )
-    {
-        UndoableEdit edit = null;
-        String className = xml .getLocalName();
-        String toolId = xml .getAttribute( "name" );
-        if ( toolId == null )
-            return null;
-        AbstractToolFactory factory = (AbstractToolFactory) this .toolFactories .get( className );
-        if ( factory != null )
-            edit = factory .deserializeTool( toolId );
-        return edit;
     }
 
     public String copySelectionVEF()
@@ -403,12 +388,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         }
     }
 
-    public void applyQuaternionSymmetry( QuaternionicSymmetry left, QuaternionicSymmetry right )
-    {
-        UndoableEdit edit = new Symmetry4d( this.mSelection, this.mRealizedModel, left, right );
-        performAndRecord( edit );
-    }
-
     public boolean doEdit( String action, Map<String,Object> props )
     {
         if ( this .editorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
@@ -426,20 +405,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         String[] tokens = action .split( "/" );
         action = tokens[ 0 ];
         String mode = ( tokens.length == 2 )? tokens[ 1 ] : null;
-        UndoableEdit edit = null;
 
-        // TODO: get rid of this switch, and do it all with reflection and uniform edit constructors
-        switch (action) {
-        case "group":
-            edit = editorModel.groupSelection();
-            break;
-        case "ungroup":
-            edit = editorModel.ungroupSelection();
-            break;
-            
-        default:
-            edit = this .createEdit( action );
-        }
+        UndoableEdit edit = this .editorModel .createEdit( action );
 
         if ( edit == null )
         {

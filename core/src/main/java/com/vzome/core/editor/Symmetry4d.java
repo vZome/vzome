@@ -6,6 +6,7 @@ package com.vzome.core.editor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
@@ -37,13 +38,27 @@ import com.vzome.core.model.RealizedModel;
  */
 public class Symmetry4d extends ChangeManifestations
 {    
-	private final QuaternionicSymmetry left, right;
+    private QuaternionicSymmetry left, right;
 
-    public Symmetry4d( Selection selection, RealizedModel realized, final QuaternionicSymmetry leftSymm, final QuaternionicSymmetry rightSymm )
+    public Symmetry4d( EditorModel editor )
+    {
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this .left = editor .getKind() .getQuaternionSymmetry( "H_4" );
+        this .right = this .left;
+    }
+
+    public Symmetry4d( Selection selection, RealizedModel realized, QuaternionicSymmetry left, QuaternionicSymmetry right )
     {
         super( selection, realized );
-		this.left = leftSymm;
-		right = rightSymm;
+        this .left = left;
+        this .right = right;
+    }
+
+    @Override
+    public void configure( Map<String, Object> parameters )
+    {
+        this .left = (QuaternionicSymmetry) parameters .get( "left" );
+        this .right = (QuaternionicSymmetry) parameters .get( "right" );
     }
 
     @Override

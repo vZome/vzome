@@ -644,14 +644,6 @@ public class DocumentController extends DefaultController implements Controller3
                 }
             }
             
-// This was an experiment, to see if the applyQuaternionSymmetry() approach was workable.
-//  It seems it is too restrictive to insist upon all W=0 inputs.
-//            else if ( action.equals( "h4symmetry" ) )
-//            {
-//                QuaternionicSymmetry qsymm = document .getField() .getQuaternionSymmetry( "H_4" ); 
-//                document .applyQuaternionSymmetry( qsymm, qsymm );
-//            }
-//            
             else if ( action .equals( "delete" ) )
             {
                 documentModel .doEdit( action );
