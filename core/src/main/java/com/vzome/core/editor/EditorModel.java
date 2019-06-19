@@ -65,29 +65,7 @@ public class EditorModel
     {
         mSymmetryAxis = segment;
     }
-
-    public UndoableEdit selectManifestation( Manifestation m, boolean replace )
-    {
-        return new SelectManifestation( m, replace, mSelection, mRealized );
-    }
-
-    public UndoableEdit selectAll()
-    {
-        return new SelectAll( mSelection, mRealized );
-    }
-
-    public UndoableEdit unselectAll()
-    {
-        return new DeselectAll( this );
-    }
-    
-    // TODO: get rid of all this specific command knowledge, and replace with createEdit
-
-    public UndoableEdit selectNeighbors()
-    {
-        return new SelectNeighbors( mSelection, mRealized );
-    }
-        
+            
     public UndoableEdit createEdit( String name )
     {
         // map legacy command names (left) to actual class names

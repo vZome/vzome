@@ -5,17 +5,17 @@ package com.vzome.core.editor;
 
 
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class SelectAll extends ChangeSelection
 {
-    public SelectAll( Selection selection, RealizedModel model )
+    public SelectAll( EditorModel editor )
     {
-        super( selection );
-        for (Manifestation m : model) {
+        super( editor .getSelection() );
+        
+        for (Manifestation m : editor .getRealizedModel() ) {
             if ( m .getRenderedObject() != null )
             {
-                if ( ! selection .manifestationSelected( m ) )
+                if ( ! this .mSelection .manifestationSelected( m ) )
                     select( m, true );
             }
         }

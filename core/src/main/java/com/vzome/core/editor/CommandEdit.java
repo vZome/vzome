@@ -309,10 +309,10 @@ public class CommandEdit extends ChangeManifestations
                     if ( ! selectedBefore .contains( m ) )
                         toUnselect .add( m );
                 }
-                ChangeSelection edit = new SelectAll( mSelection, mManifestations );
+                ChangeSelection edit = new SelectAll( mEditorModel );
                 context .performAndRecord( edit );
                 for (Manifestation m : toUnselect) {
-                    edit = new SelectManifestation( m, false, mSelection, mManifestations );
+                    edit = new SelectManifestation( mEditorModel, m );
                     context .performAndRecord( edit );
                 }
             }
@@ -320,7 +320,7 @@ public class CommandEdit extends ChangeManifestations
                 ChangeSelection edit = new DeselectAll( mEditorModel );
                 context .performAndRecord( edit );
                 for (Manifestation m : selectedBefore) {
-                    edit = new SelectManifestation( m, false, mSelection, mManifestations );
+                    edit = new SelectManifestation( mEditorModel, m );
                     context .performAndRecord( edit );
                 }
             }
@@ -345,6 +345,7 @@ public class CommandEdit extends ChangeManifestations
             super.loadAndPerform( xml, format, context );
     }
 
+    @SuppressWarnings("serial")
     private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
     {
         @Override

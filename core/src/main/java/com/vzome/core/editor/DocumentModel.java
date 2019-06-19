@@ -12,14 +12,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -324,8 +322,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "Symmetry4d":
             QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
             return new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
-        case "SelectManifestation":
-            return new SelectManifestation( null, false, this.mSelection, this.mRealizedModel );
             
         default:
             return this .editorModel .createEdit( name );
@@ -441,16 +437,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         UndoableEdit edit = null;
 
         switch (action) {
-        case "selectAll":
-            edit = editorModel.selectAll();
-            break;
-        case "DeselectAll":
-        case "unselectAll":
-            edit = editorModel.unselectAll();
-            break;
-        case "selectNeighbors":
-            edit = editorModel.selectNeighbors();
-            break;
         case "group":
             edit = editorModel.groupSelection();
             break;
@@ -892,24 +878,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .mSelection .addListener( listener );
     }
 
-    private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
-
     private AbstractToolFactory bookmarkFactory;
 
     public void undoToManifestation( Manifestation man )
     {
         mHistory .undoToManifestation( man );
         this .editorModel .notifyListeners();
-    }
-
-    public UndoableEdit deselectAll()
-    {
-        return editorModel .unselectAll();
-    }
-
-    public UndoableEdit selectManifestation( Manifestation target, boolean replace )
-    {
-        return editorModel .selectManifestation( target, replace );
     }
 
     public void createStrut( Point point, Axis zone, AlgebraicNumber length )

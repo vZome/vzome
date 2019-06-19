@@ -231,8 +231,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .add( enableIf( isEditor, createMenuItem( "Delete", ( "Delete" ), KeyEvent.VK_BACK_SPACE, 0 ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu .add( enableIf( isEditor, createMenuItem( "Select All", ( "selectAll" ), KeyEvent.VK_A, COMMAND ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Select Neighbors", ( "selectNeighbors" ), KeyEvent.VK_A, COMMAND_OPTION ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Select All", ( "SelectAll" ), KeyEvent.VK_A, COMMAND ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Select Neighbors", ( "SelectNeighbors" ), KeyEvent.VK_A, COMMAND_OPTION ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Invert Selection", ( "InvertSelection" ) ) ) );
 
         submenu = new JMenu("Select...");

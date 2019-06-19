@@ -3,10 +3,11 @@
 
 package com.vzome.core.editor;
 
-import com.vzome.core.commands.AttributeMap;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.commands.AttributeMap;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
@@ -22,27 +23,38 @@ public class SelectManifestation extends ChangeSelection
     
     private Construction construction;  // just for save
     
-    private RealizedModel mRealized;
+    private final RealizedModel mRealized;
     
     private boolean mReplace;
 
-    public SelectManifestation( Selection selection, RealizedModel realized )
+    public SelectManifestation( EditorModel editor )
     {
-        this( null, false, selection, realized );
+        super( editor .getSelection() );
+        this.mRealized = editor .getRealizedModel();
     }
     
-    public SelectManifestation( Manifestation m, boolean replace, Selection selection, RealizedModel realized )
+    /**
+     * Used by CommandEdit.
+     * @param editor
+     * @param m
+     */
+    public SelectManifestation( EditorModel editor, Manifestation m )
     {
-        super( selection );
-        
-        mRealized = realized;
-        mManifestation = m;
-        mReplace = replace;
-        if ( m != null )
+        this( editor );
+        this .mManifestation = m;
+    }
+
+    public void configure( Map<String, Object> props )
+    {
+        String mode = (String) props .get( "mode" );
+        if ( mode != null )
+            this.mReplace = Boolean.parseBoolean( mode );
+        this.mManifestation = (Manifestation) props .get( "picked" );
+        if ( this.mManifestation != null )
         {
             // must record the construction for save, because if this gets undone, there's no
             //  guarantee that the manifestation will have any constructions!
-            construction = mManifestation .getConstructions() .next();
+            construction = this.mManifestation .getConstructions() .next();
         }
     }
     

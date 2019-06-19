@@ -417,13 +417,9 @@ public class DocumentController extends DefaultController implements Controller3
                 if ( mRequireShift )
                     shift = shiftKey;
                 if ( target == null )
-                    try {
-                        documentModel .performAndRecord( documentModel .deselectAll() );
-                    } catch ( Exception e ) {
-                        mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
-                    }
+                    documentModel .doEdit( "DeselectAll" );
                 else
-                    documentModel .performAndRecord( documentModel .selectManifestation( target, ! shift ) );
+                    documentModel .doPickEdit( target, "SelectManifestation" );
             }
         } );
         this .cameraController .addViewer( this .imageCaptureViewer );
