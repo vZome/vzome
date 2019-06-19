@@ -129,7 +129,7 @@ public class MirrorToolTest
 	{
 		AlgebraicField field = originPoint .getField();
 		RealizedModel model = new RealizedModel( field, new Projection.Default( field ) );
-		EditorModel editor = new EditorModel( model, selection, originPoint, null, new HashMap<>() );
+		EditorModel editor = new EditorModel( model, selection, originPoint, null, null, new HashMap<>() );
 		ToolsModel tools = new ToolsModel( null, originPoint );
 		tools .setEditorModel( editor );
 		return new MirrorTool.Factory( tools ) .createToolInternal( "1/foo" );
