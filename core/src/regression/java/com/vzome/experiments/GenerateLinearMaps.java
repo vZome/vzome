@@ -213,12 +213,12 @@ public class GenerateLinearMaps
 
 	private void select( Manifestation m )
 	{
-		doc .performAndRecord( doc .selectManifestation( m, false ) );
+		doc .doPickEdit( m, "SelectManifestation" );
 	}
 
 	private void deselect()
 	{
-		doc .performAndRecord( doc .deselectAll() );
+		doc .doEdit( "DeselectAll" );
 	}
 	
 	private Connector lastBall()

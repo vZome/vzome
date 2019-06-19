@@ -21,7 +21,6 @@ import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.UndoableEdit;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
@@ -57,12 +56,7 @@ public class ExporterTest {
         }
 
         public void select( Manifestation man ) {
-            UndoableEdit edit = doc.selectManifestation (man, false);
-            try {
-                edit.perform();
-            } catch (Command.Failure ex) {
-                throw new RuntimeException(ex);
-            }
+            doc .doPickEdit( man, "SelectManifestation" );
         }
 
         public String exportModelAsVEF() {
