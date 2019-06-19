@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -144,43 +143,6 @@ public class EditorModel
         if ( focus != null )
             return focus .getConstructions() .next();
         return null;
-    }
-
-
-    public UndoableEdit setSymmetryCenter( Construction target ) throws Command.Failure
-    {
-        Point newCenter = null;
-        if ( target instanceof Point )
-            newCenter = (Point) target;
-        else if ( target != null )
-            throw new Command.Failure( "Target is not a single ball." );
-        if ( newCenter == null ) {
-            newCenter = (Point) getSelectedConstruction( Point.class );
-            if ( newCenter == null )
-                throw new Command.Failure( "Selection is not a single ball." );
-        }
-        if ( newCenter .getLocation() .equals( mCenterPoint .getLocation() ) )
-            return null;
-        return new SymmetryCenterChange( this, newCenter );
-    }
-
-    public UndoableEdit setSymmetryAxis( Construction target ) throws Command.Failure
-    {
-        Segment newAxis = null;
-        if ( target instanceof Segment )
-            newAxis = (Segment) target;
-        else if ( target != null )
-            throw new Command.Failure( "Target is not a single strut." );
-        if ( newAxis == null ) {
-            newAxis = (Segment) getSelectedConstruction( Segment.class );
-            if ( newAxis == null )
-                throw new Command.Failure( "Selection is not a single strut." );
-        }
-        if ( ( mSymmetryAxis != null )
-                && newAxis .getStart() .equals( mSymmetryAxis .getStart() )
-                && newAxis .getEnd() .equals( mSymmetryAxis .getEnd() ) )
-            return null;
-        return new SymmetryAxisChange( this, newAxis );
     }
 
     private final Set<Manifestation> failedConstructions = new HashSet<>();

@@ -368,8 +368,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu = new JMenu( "Tools" );
 
         if ( oldTools ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Set Center", "setSymmetryCenter" ) ) ); 
-            menu.add( enableIf( isEditor, createMenuItem( "Set Axis", "setSymmetryAxis" ) ) ); 
+            menu.add( enableIf( isEditor, createMenuItem( "Set Center", "SymmetryCenterChange" ) ) ); 
+            menu.add( enableIf( isEditor, createMenuItem( "Set Axis", "SymmetryAxisChange" ) ) ); 
             menu.addSeparator(); 
 
             showToolsMenuItem = enableIf( isEditor, createMenuItem( "Show Tools Panel", "showToolsPanel" ) );

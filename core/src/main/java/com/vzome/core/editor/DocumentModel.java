@@ -466,17 +466,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .changes++;
     }
 
-    public void setParameter( Construction singleConstruction, String paramName ) throws Command.Failure
-    {
-        UndoableEdit edit = null;
-        if ( "ball" .equals( paramName ) )
-            edit = editorModel .setSymmetryCenter( singleConstruction );
-        else if ( "strut" .equals( paramName ) )
-            edit = editorModel .setSymmetryAxis( singleConstruction );
-        if ( edit != null )
-            this .performAndRecord( edit );
-    }
-
     public RealVector getLocation( Construction target )
     {
         if ( target instanceof Point)

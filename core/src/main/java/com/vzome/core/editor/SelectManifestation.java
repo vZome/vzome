@@ -47,8 +47,7 @@ public class SelectManifestation extends ChangeSelection
     public void configure( Map<String, Object> props )
     {
         String mode = (String) props .get( "mode" );
-        if ( mode != null )
-            this.mReplace = Boolean.parseBoolean( mode );
+        this.mReplace = "replace" .equals( mode );
         this.mManifestation = (Manifestation) props .get( "picked" );
         if ( this.mManifestation != null )
         {

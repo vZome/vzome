@@ -42,8 +42,8 @@ public class PickingController extends DefaultController implements Controller
 
         case "undoToManifestation":
         case "symmTool-icosahedral":
-        case "setSymmetryCenter":
-        case "setSymmetryAxis":
+        case "SymmetryAxisChange":
+        case "SymmetryCenterChange":
         case "setWorkingPlaneAxis":
         case "setWorkingPlane":
         case "lookAtThis":
@@ -81,11 +81,11 @@ public class PickingController extends DefaultController implements Controller
                 break;
 
             case "symmTool-icosahedral":
-            case "setSymmetryCenter":
+            case "SymmetryCenterChange":
                 result[ i ] = pickedManifestation instanceof Connector;
                 break;
 
-            case "setSymmetryAxis":
+            case "SymmetryAxisChange":
             case "setWorkingPlaneAxis":
             case "SelectCollinear":
             case "SelectParallelStruts":

@@ -419,7 +419,7 @@ public class DocumentController extends DefaultController implements Controller3
                 if ( target == null )
                     documentModel .doEdit( "DeselectAll" );
                 else
-                    documentModel .doPickEdit( target, "SelectManifestation" );
+                    documentModel .doPickEdit( target, "SelectManifestation" + ( shift? "" : "/replace" ) );
             }
         } );
         this .cameraController .addViewer( this .imageCaptureViewer );
@@ -711,21 +711,9 @@ public class DocumentController extends DefaultController implements Controller3
             }
             else
             {
-                switch ( action ) {
-                
-                case "setSymmetryCenter":
-                    this .documentModel .setParameter( null, "ball" );
-                    break;
-
-                case "setSymmetryAxis":
-                    this .documentModel .setParameter( null, "strut" );
-                    break;
-
-                default:
-                    boolean handled = documentModel .doEdit( action );
-                    if ( ! handled )
-                        super .doAction( action, e );
-                }
+                boolean handled = documentModel .doEdit( action );
+                if ( ! handled )
+                    super .doAction( action, e );
             }
 
  
@@ -1325,12 +1313,9 @@ public class DocumentController extends DefaultController implements Controller3
                 this .documentModel .undoToManifestation( pickedManifestation );
                 break;
 
-            case "setSymmetryCenter":
-                this .documentModel .setParameter( singleConstruction, "ball" );
-                break;
-
-            case "setSymmetryAxis":
-                this .documentModel .setParameter( singleConstruction, "strut" );
+            case "SymmetryCenterChange":
+            case "SymmetryAxisChange":
+                this .documentModel .doPickEdit( pickedManifestation, action );
                 break;
 
             case "setWorkingPlaneAxis":

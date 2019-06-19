@@ -9,54 +9,71 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.AttributeMap;
+import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
+import com.vzome.core.model.Manifestation;
 
 public class SymmetryCenterChange implements UndoableEdit
 {
     private Point mOldCenter, mNewCenter;
-    private final EditorModel mEditor;
+    private final EditorModel editor;
 
     public SymmetryCenterChange( EditorModel editor )
     {
         this( editor, null );
     }
-    
+
+    /**
+     * Used by CommandEdit.
+     * @param editor
+     * @param m
+     */
     public SymmetryCenterChange( EditorModel editor, Point newCenter )
     {
-        mOldCenter = editor .getCenterPoint();
-        mNewCenter = newCenter;
-        mEditor = editor;
+        this.mOldCenter = editor .getCenterPoint();
+        this.mNewCenter = newCenter;
+        this.editor = editor;
+    }
+
+    public void configure( Map<String, Object> props )
+    {
+        Manifestation man = (Manifestation) props .get( "picked" );
+        if ( man != null )
+            this .mNewCenter = (Point) man .getConstructions() .next();
     }
 
     @Override
     public boolean isNoOp()
     {
-        return false;
+        return this.mNewCenter == null || this.mNewCenter .getLocation() .equals( this.mOldCenter .getLocation() ) ;
     }
 
     @Override
     public boolean isVisible()
     {
-    	return false;
+        return false;
     }
 
     @Override
     public void redo()
     {
-        mEditor .setCenterPoint( mNewCenter );
+        if ( this .isNoOp() )
+            return;
+
+        this .editor .setCenterPoint( mNewCenter );
     }
 
     @Override
     public void undo()
     {
-        mEditor .setCenterPoint( mOldCenter );
-    }
+        if ( this .isNoOp() )
+            return;
 
-    @Override
-    public void configure( Map<String,Object> props ) {}
+        this .editor .setCenterPoint( mOldCenter );
+    }
 
     @Override
     public Element getXml( Document doc )
@@ -90,8 +107,14 @@ public class SymmetryCenterChange implements UndoableEdit
     }
 
     @Override
-    public void perform()
+    public void perform() throws Command.Failure
     {
+        if ( this.mNewCenter == null )
+        {
+            this.mNewCenter = (Point) this .editor .getSelectedConstruction( Point.class );
+            if ( this.mNewCenter == null )
+                throw new Command.Failure( "Selection is not a single ball." );
+        }
         redo();
     }
 

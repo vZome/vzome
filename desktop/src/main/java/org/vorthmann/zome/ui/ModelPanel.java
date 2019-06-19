@@ -433,7 +433,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         {
             super();
             this .controller = controller;
-            boolean oldTools = controller .propertyIsTrue( "original.tools" );
+            boolean oldTools = true;// controller .propertyIsTrue( "original.tools" );
             this .setLightWeightPopupEnabled( false );
 
             this .add( setMenuAction( "copyThisView", new JMenuItem( "Copy This View" ) ) );
@@ -447,8 +447,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
             if ( oldTools ) {
                 this .add( setMenuAction( "lookAtSymmetryCenter", new JMenuItem( "Look At Symmetry Center" ) ) );
                 this .addSeparator();
-                this .add( setMenuAction( "setSymmetryCenter", new JMenuItem( "Set Symmetry Center" ) ) );
-                this .add( setMenuAction( "setSymmetryAxis", new JMenuItem( "Set Symmetry Axis" ) ) );
+                this .add( setMenuAction( "SymmetryCenterChange", new JMenuItem( "Set Symmetry Center" ) ) );
+                this .add( setMenuAction( "SymmetryAxisChange", new JMenuItem( "Set Symmetry Axis" ) ) );
             }
 
             this .addSeparator();

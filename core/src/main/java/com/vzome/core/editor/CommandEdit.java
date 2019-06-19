@@ -245,17 +245,11 @@ public class CommandEdit extends ChangeManifestations
                         if ( attrName .equals( CommandTransform .SYMMETRY_CENTER_ATTR_NAME ) )
                         {
                             Point c = new FreePoint( ((Point) value) .getLocation() .projectTo3d( true ) );
-                            UndoableEdit edit = mEditorModel .setSymmetryCenter( c );
-                            if ( edit != null ) {
-                                context .performAndRecord( edit );
-                            }
+                            context .performAndRecord( new SymmetryCenterChange( mEditorModel, c ) );
                         }
                         else if ( attrName .equals( CommandTransform .SYMMETRY_AXIS_ATTR_NAME ) )
                         {
-                            UndoableEdit edit = mEditorModel .setSymmetryAxis( (Construction) value );
-                            if ( edit != null ) {
-                                context .performAndRecord( edit );
-                            }
+                            context .performAndRecord( new SymmetryAxisChange( mEditorModel, (Segment) value ) );
                             if ( ! mCommand .attributeIs3D( attrName ) )
                             {
                                 AlgebraicVector vector = ((Segment) value) .getOffset();
