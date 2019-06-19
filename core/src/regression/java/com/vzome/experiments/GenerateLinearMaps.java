@@ -22,6 +22,7 @@ import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.IcosahedralToolFactory;
 import com.vzome.core.editor.LinearMapTool;
+import com.vzome.core.editor.StrutCreation;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
@@ -229,7 +230,7 @@ public class GenerateLinearMaps
 	private Strut strut( Connector start, Axis zone, AlgebraicNumber length )
 	{
 		Point point = (Point) start .getConstructions() .next();
-		doc .createStrut( point, zone, length );
+        doc .performAndRecord( new StrutCreation( point, zone, length, doc .getRealizedModel() ) );
 		return lastStrut;
 	}
 	

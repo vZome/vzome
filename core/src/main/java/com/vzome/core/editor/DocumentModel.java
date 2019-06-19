@@ -60,8 +60,6 @@ import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.TetrahedralProjection;
-import com.vzome.core.math.symmetry.Axis;
-import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.model.Exporter;
@@ -208,7 +206,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
         // the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
-        this .editorModel = new EditorModel( this .mRealizedModel, this .mSelection, originPoint, symmetrySystem, this .symmetrySystems );
+        this .editorModel = new EditorModel( this .mRealizedModel, this .mSelection, originPoint, kind, symmetrySystem, this .symmetrySystems );
         this .tools .setEditorModel( this .editorModel );
 
         // cannot be done in the constructors
@@ -315,10 +313,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "Branch":
             return new Branch( this );
 
-        case "StrutCreation":
-            return new StrutCreation( null, null, null, this.mRealizedModel );
-        case "Polytope4d":
-            return new Polytope4d( this.mSelection, this.mRealizedModel, this .kind, null, 0, null );
         case "Symmetry4d":
             QuaternionicSymmetry h4symm = this .kind .getQuaternionSymmetry( "H_4" );
             return new Symmetry4d( this.mSelection, this.mRealizedModel, h4symm, h4symm );
@@ -415,7 +409,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         performAndRecord( edit );
     }
 
-    public boolean doEdit( String action )
+    public boolean doEdit( String action, Map<String,Object> props )
     {
         if ( this .editorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
             action = "ShowHidden";
@@ -428,14 +422,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             this .performAndRecord( edit );
             return true;
         }
-
-        // TODO: get rid of this switch, and do it all with reflection and uniform edit constructors
         
         String[] tokens = action .split( "/" );
         action = tokens[ 0 ];
         String mode = ( tokens.length == 2 )? tokens[ 1 ] : null;
         UndoableEdit edit = null;
 
+        // TODO: get rid of this switch, and do it all with reflection and uniform edit constructors
         switch (action) {
         case "group":
             edit = editorModel.groupSelection();
@@ -453,56 +446,24 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             logger .warning( "no DocumentModel action for : " + action );
             return false;
         }
-        Map<String,Object> props = new HashMap<>();
         if ( mode != null )
             props .put( "mode", mode );
         edit .configure( props );
         this .performAndRecord( edit );
         return true;
     }
-    
-    // TODO: combine doEdit, doOrbitEdit, doScriptAction, and doPickEdit by passing Properties from the Controller
 
-    public void doOrbitEdit( Direction orbit, AlgebraicNumber length, String action )
+    public boolean doEdit( String action )
     {
-        String[] tokens = action .split( "/" );
-        action = tokens[ 0 ];
-        String mode = ( tokens.length == 2 )? tokens[ 1 ] : null;
-
-        UndoableEdit edit = this .editorModel .createEdit( action );
-        Map<String,Object> props = new HashMap<>();
-        if ( mode != null )
-            props .put( "mode", mode );
-        props .put( "orbit", orbit );
-        if ( length != null )
-            props .put( "length", length );
-        edit .configure( props );
-        this .performAndRecord( edit );
+        return this .doEdit( action, new HashMap<>() );
     }
 
     public void doPickEdit( Manifestation pickedManifestation, String action )
     {
-        String[] tokens = action .split( "/" );
-        action = tokens[ 0 ];
-        String parameter = ( tokens.length == 2 )? tokens[ 1 ] : null;
-
-        UndoableEdit edit = this .editorModel .createEdit( action );
         Map<String,Object> props = new HashMap<>();
-        if ( parameter != null )
-            props .put( "mode", parameter );
         if ( pickedManifestation != null )
             props .put( "picked", pickedManifestation );
-        edit .configure( props );
-        this .performAndRecord( edit );
-    }
-
-    public void doScriptAction( String command, String script )
-    {
-        UndoableEdit edit = this .editorModel .createEdit( command );
-        Map<String,Object> props = new HashMap<>();
-        props .put( "script", script );
-        edit .configure( props );
-        this .performAndRecord( edit );
+        doEdit( action, props );
     }
 
     @Override
@@ -886,12 +847,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .editorModel .notifyListeners();
     }
 
-    public void createStrut( Point point, Axis zone, AlgebraicNumber length )
-    {
-        UndoableEdit edit = new StrutCreation( point, zone, length, this .mRealizedModel );
-        this .performAndRecord( edit );
-    }
-
     public Exporter3d getNaiveExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel currentSnapshot )
     {
         Exporter3d exporter = null;
@@ -990,12 +945,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     public Camera getCamera()
     {
         return this .defaultCamera;
-    }
-
-    public void generatePolytope( String group, String renderGroup, int index, int edgesToRender, AlgebraicVector quaternion, AlgebraicNumber[] edgeScales )
-    {
-        UndoableEdit edit = new Polytope4d( mSelection, mRealizedModel, this .kind, quaternion, index, group, edgesToRender, edgeScales, renderGroup );
-        this .performAndRecord( edit );
     }
 
     public Segment getSelectedSegment()

@@ -17,10 +17,11 @@ import com.vzome.core.model.Strut;
 
 public class EditorModel
 {
-    public EditorModel( RealizedModel realized, Selection selection, Point originPoint, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
+    public EditorModel( RealizedModel realized, Selection selection, Point originPoint, FieldApplication kind, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
     {
         mRealized = realized;
         mSelection = selection;
+        this.kind = kind;
         this.symmetrySystem = symmetrySystem;
         this.symmetrySystems = symmetrySystems;
         for ( SymmetrySystem symmetrySys : symmetrySystems .values()) {
@@ -123,6 +124,8 @@ public class EditorModel
     private Point mCenterPoint;
 
     private Segment mSymmetryAxis;
+
+    private final FieldApplication kind;
 
     private SymmetrySystem symmetrySystem;
 
@@ -231,5 +234,10 @@ public class EditorModel
     public SymmetrySystem getSymmetrySystem( String name )
     {
         return this .symmetrySystems .get( name );
+    }
+
+    public FieldApplication getKind()
+    {
+        return kind;
     }
 }

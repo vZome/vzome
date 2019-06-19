@@ -696,14 +696,20 @@ public class DocumentController extends DefaultController implements Controller3
                         Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
                         AlgebraicNumber unitScalar = orbit.getLengthInUnits(symmetryController.getSymmetry().getField().one());
                         AlgebraicNumber rawLength = partInfo.strutLength.dividedBy(unitScalar);
-                        documentModel .doOrbitEdit( orbit, rawLength, "AdjustSelectionByOrbitLength/" + cmd + "SimilarStruts" );
+                        Map<String,Object> props = new HashMap<>();
+                        props .put( "orbit", orbit );
+                        if ( rawLength != null )
+                            props .put( "length", rawLength );
+                        documentModel .doEdit( "AdjustSelectionByOrbitLength/" + cmd + "SimilarStruts", props );
                     }
                     break;
 
                     case PANELS:
                     {
                         Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
-                        documentModel .doOrbitEdit( orbit, null, "AdjustSelectionByOrbitLength/" + cmd + "SimilarPanels" );
+                        Map<String,Object> props = new HashMap<>();
+                        props .put( "orbit", orbit );
+                        documentModel .doEdit( "AdjustSelectionByOrbitLength/" + cmd + "SimilarPanels", props );
                     }
                     break;
 
@@ -752,13 +758,12 @@ public class DocumentController extends DefaultController implements Controller3
     @Override
     public void doScriptAction( String command, String script )
     {
-        if ( command.equals( "RunZomicScript" ) 
-                || command.equals( "RunPythonScript" )
-                || command.equals( "import.vef" ) 
-                || command.equals( "import.vef.tetrahedral" ) 
-                //|| command.equals( "import.zomod" ) 
-                )
-            documentModel .doScriptAction( command, script );
+        if ( command.equals( "RunZomicScript" ) || command.equals( "RunPythonScript" ) )
+        {
+            Map<String,Object> props = new HashMap<>();
+            props .put( "script", script );
+            documentModel .doEdit( command, props );
+        }
         else
             super .doScriptAction( command, script );
     }

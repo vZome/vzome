@@ -150,7 +150,7 @@ public class PreviewStrut implements PropertyChangeListener
         strut = null;
         if ( logger .isLoggable( Level.FINE ) )
             logger .fine( "preview finished at  " + zone );
-        document .createStrut( point, zone, length .getValue() );
+        document .performAndRecord( new StrutCreation( point, zone, length .getValue(), document .getRealizedModel() ) );
         point = null;
         zone = null;
         length = null;

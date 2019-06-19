@@ -22,6 +22,11 @@ public class StrutCreation extends ChangeManifestations
     private Axis mAxis;
     private AlgebraicNumber mLength;
     
+    public StrutCreation( EditorModel editor )
+    {
+        this( null, null, null, editor .getRealizedModel() );
+    }
+    
     public StrutCreation( Point anchor, Axis axis, AlgebraicNumber len, RealizedModel realized )
     {
         super( null, realized );

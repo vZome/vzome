@@ -4,6 +4,8 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
@@ -98,7 +100,14 @@ public class PolytopesController extends DefaultController
                     edgesToRender += 1 << i;
             }
             AlgebraicVector quaternion = rotationQuaternion .getVector() .scale( this .defaultScaleFactor );
-            model .generatePolytope( group, group, index, edgesToRender, quaternion, edgeScales );
+            Map<String, Object> params = new HashMap<>();
+            params .put( "groupName", group );
+            params .put( "renderGroupName", group );
+            params .put( "index", index );
+            params .put( "edgesToRender", edgesToRender );
+            params .put( "edgeScales", edgeScales );
+            params .put( "quaternion", quaternion );
+            model .doEdit( "Polytope4d", params );
         }
         else if ( action .startsWith( "setGroup." ) )
         {

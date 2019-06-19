@@ -132,26 +132,26 @@ public class DefaultFieldApplication implements FieldApplication
         CoxeterGroup group = this .groups4d .get( groupName );
         if ( group == null )
         {
-        	// Lazily create these groups... most users will never use them
-        	switch ( groupName ) {
+            // Lazily create these groups... most users will never use them
+            switch ( groupName ) {
 
-        	case "A4":
-				group = new A4Group( this.field );
-				break;
+            case "A4":
+                group = new A4Group( this.field );
+                break;
 
-        	case "D4":
-				group = new D4Group( this.field );
-				break;
+            case "D4":
+                group = new D4Group( this.field );
+                break;
 
-        	case "F4":
-				group = new F4Group( this.field );
-				break;
+            case "F4":
+                group = new F4Group( this.field );
+                break;
 
-			default:
-				group = new B4Group( this.field );
-				break;
-			}
-    		this .groups4d .put( groupName, group );
+            default:
+                group = new B4Group( this.field );
+                break;
+            }
+            this .groups4d .put( groupName, group );
         }
         WythoffConstruction .constructPolytope( group, index, edgesToRender, edgeScales, group, listener );
 	}

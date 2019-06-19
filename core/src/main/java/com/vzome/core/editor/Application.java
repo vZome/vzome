@@ -194,7 +194,9 @@ public class Application
 		// TODO: use fieldName from VEF input
 		FieldApplication kind = this .getDocumentKind( fieldName );
 		DocumentModel result = new DocumentModel( kind, failures, null, this );
-		result .doScriptAction( extension, content );
+        Map<String,Object> props = new HashMap<>();
+        props .put( "script", content );
+		result .doEdit( extension, props );
 		return result;
 	}
 
