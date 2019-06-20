@@ -35,7 +35,6 @@ import org.w3c.dom.NodeList;
 import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
@@ -57,9 +56,7 @@ import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
-import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.math.TetrahedralProjection;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.model.Exporter;
@@ -370,18 +367,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             break;
         }
         return out .toString();
-    }
-
-    public void pasteVEF( String vefContent )
-    {
-        if( vefContent != null && vefContent.startsWith("vZome VEF" )) {
-            // Although older VEF formats don't all include the header and could possibly be successfully pasted here,
-            // we're going to limit it to at least something that includes a valid VEF header.
-            // We won't check the version number so we can still paste formats older than VERSION_W_FIRST
-            // as long as they at least include the minimal header.
-            UndoableEdit edit = new LoadVEF( this.editorModel, vefContent, null, null );
-            performAndRecord( edit );
-        }
     }
 
     public boolean doEdit( String action, Map<String,Object> props )
@@ -760,25 +745,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         vZomeRoot .appendChild( childElement );
 
         DomUtils .serialize( doc, out );
-    }
-
-    public void importVEF( AlgebraicNumber scale, String script )
-    {
-        Segment symmAxis = editorModel .getSymmetrySegment();
-        AlgebraicVector quaternion = ( symmAxis == null ) 
-                ? null 
-                        : symmAxis.getOffset() .scale( scale.reciprocal() );
-        Projection projection = quaternion == null
-                ? null
-                        : new QuaternionProjection(field, null, quaternion);
-        UndoableEdit edit = new LoadVEF( this.editorModel, script, projection, scale );
-        this .performAndRecord( edit );
-    }
-
-    public void importVEFTetrahedralProjection( AlgebraicNumber scale, String script )
-    {
-        UndoableEdit edit = new LoadVEF( this.editorModel, script, new TetrahedralProjection(field), scale );
-        this .performAndRecord( edit );
     }
 
     public AlgebraicField getField()

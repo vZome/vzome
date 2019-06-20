@@ -662,7 +662,9 @@ public class DocumentController extends DefaultController implements Controller3
             else if ( action.equals( "paste" ) )
             {
                 String vefContent = getProperty( "clipboard" );
-                documentModel .pasteVEF( vefContent );
+                Map<String, Object> params = new HashMap<>();
+                params .put( "vef", vefContent );
+                documentModel .doEdit( "LoadVEF/clipboard", params );
             }
             else if ( e != null && PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
             {
@@ -879,12 +881,16 @@ public class DocumentController extends DefaultController implements Controller3
                     // || command.equals( "import.zomod" )
                     ) {
                 String vefData = readFile( file );
-                documentModel .importVEF( this .importScaleController .getValue(), vefData );
+                Map<String, Object> params = new HashMap<>();
+                params .put( "vef", vefData );
+                documentModel .doEdit( "LoadVEF/quaternion", params );
                 return;
             }
             if ( command.equals( "import.vef.tetrahedral" ) ) {
                 String vefData = readFile( file );
-                documentModel .importVEFTetrahedralProjection( this .importScaleController .getValue(), vefData );
+                Map<String, Object> params = new HashMap<>();
+                params .put( "vef", vefData );
+                documentModel .doEdit( "LoadVEF/tetrahedral", params );
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {

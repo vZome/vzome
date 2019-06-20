@@ -4,6 +4,8 @@
 package com.vzome.core.editor;
 
 
+import java.util.Map;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -13,6 +15,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Point;
+import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.VefToModel;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.PerspectiveProjection;
@@ -27,21 +30,52 @@ public class LoadVEF extends ChangeManifestations
     private String vefData;
     private AlgebraicNumber scale;
     private Projection projection;
-
-    public LoadVEF( EditorModel editor, String vefData, Projection projection, AlgebraicNumber scale )
-    {
-        super( editor .getSelection(), editor .getRealizedModel() );
-        this .vefData = vefData;
-        if (scale == null) {
-            scale = mManifestations.getField().one();
-        }
-        this .scale = scale;
-        this.projection = projection;
-    }
+    private final EditorModel editor;
 
     public LoadVEF( EditorModel editor )
     {
-        this( editor, null, null, null );
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this.editor = editor;
+    }
+
+    @Override
+    public void configure( Map<String, Object> params )
+    {
+        AlgebraicField field = editor .getKind() .getField();
+        vefData = (String) params .get( "vef" );
+        projection = (Projection) params .get( "projection" );
+        scale = (AlgebraicNumber) params .get( "scale" );
+        if (scale == null) {
+            scale = field .one();
+        }
+
+        switch ( (String) params .get( "mode" ) ) {
+
+        case "tetrahedral":
+            projection = new TetrahedralProjection( field );
+            break;
+
+        case "clipboard":
+            if( vefData != null && ! vefData.startsWith("vZome VEF" ))
+                // Although older VEF formats don't all include the header and could possibly be successfully pasted here,
+                // we're going to limit it to at least something that includes a valid VEF header.
+                // We won't check the version number so we can still paste formats older than VERSION_W_FIRST
+                // as long as they at least include the minimal header.
+                vefData = null; //disable the edit
+            break;
+        
+        case "quaternion":
+            Segment symmAxis = editor .getSymmetrySegment();
+            AlgebraicVector quaternion = ( symmAxis == null )? null : symmAxis.getOffset() .scale( scale.reciprocal() );
+            projection = quaternion == null? null : new QuaternionProjection( field, null, quaternion );
+            break;
+        }
+    }
+
+    @Override
+    public boolean isNoOp()
+    {
+        return vefData == null;
     }
 
     @Override
@@ -106,6 +140,9 @@ public class LoadVEF extends ChangeManifestations
     @Override
     public void perform() throws Failure
     {
+        if( vefData == null )
+            return;
+
         AlgebraicVector offset = null;
         boolean pointFound = false;
         for (Manifestation man : mSelection) {

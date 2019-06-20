@@ -6,6 +6,8 @@ import static junit.framework.TestCase.assertTrue;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -51,8 +53,12 @@ public class ExporterTest {
             doc = createDocument(fieldName);
         }
     
-        public void importVefData(String vefData) {
-            doc.importVEF( doc .getField() .one(), vefData );
+        public void importVefData(String vefData)
+        {
+            Map<String, Object> params = new HashMap<>();
+            params .put( "vef", vefData );
+            params .put( "scale", doc .getField() .one() );
+            doc .doEdit( "LoadVEF", params );
         }
 
         public void select( Manifestation man ) {
