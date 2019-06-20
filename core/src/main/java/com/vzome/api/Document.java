@@ -26,7 +26,7 @@ public class Document
 	public Document( DocumentModel delegate )
 	{
 		this .delegate = delegate;		
-		for ( Manifestation manifestation : this .delegate .getRealizedModel() )
+		for ( Manifestation manifestation : this .delegate .getEditorModel() .getRealizedModel() )
 			if ( ! manifestation .isHidden() )
 			{
 				if ( manifestation instanceof Connector )

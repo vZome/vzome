@@ -16,10 +16,10 @@ import com.vzome.core.model.Strut;
 
 public class EditorModel
 {
-    public EditorModel( RealizedModel realized, Selection selection, Point originPoint, FieldApplication kind, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
+    public EditorModel( RealizedModel realized, Point originPoint, FieldApplication kind, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
     {
         mRealized = realized;
-        mSelection = selection;
+        mSelection = new Selection();
         this.kind = kind;
         this.symmetrySystem = symmetrySystem;
         this.symmetrySystems = symmetrySystems;

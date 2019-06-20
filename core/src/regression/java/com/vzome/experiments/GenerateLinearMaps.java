@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -22,7 +24,6 @@ import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.IcosahedralToolFactory;
 import com.vzome.core.editor.LinearMapTool;
-import com.vzome.core.editor.StrutCreation;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
@@ -230,7 +231,11 @@ public class GenerateLinearMaps
 	private Strut strut( Connector start, Axis zone, AlgebraicNumber length )
 	{
 		Point point = (Point) start .getConstructions() .next();
-        doc .performAndRecord( new StrutCreation( point, zone, length, doc .getRealizedModel() ) );
+        Map<String, Object> params = new HashMap<>();
+        params .put( "anchor", point );
+        params .put( "zone", zone );
+        params .put( "length", length );
+        doc .doEdit( "StrutCreation", params );
 		return lastStrut;
 	}
 	

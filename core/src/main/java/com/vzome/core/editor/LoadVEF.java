@@ -21,7 +21,6 @@ import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.TetrahedralProjection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class LoadVEF extends ChangeManifestations
 {
@@ -29,9 +28,9 @@ public class LoadVEF extends ChangeManifestations
     private AlgebraicNumber scale;
     private Projection projection;
 
-    public LoadVEF( Selection selection, RealizedModel realized, String vefData, Projection projection, AlgebraicNumber scale )
+    public LoadVEF( EditorModel editor, String vefData, Projection projection, AlgebraicNumber scale )
     {
-        super( selection, realized );
+        super( editor .getSelection(), editor .getRealizedModel() );
         this .vefData = vefData;
         if (scale == null) {
             scale = mManifestations.getField().one();
@@ -40,9 +39,9 @@ public class LoadVEF extends ChangeManifestations
         this.projection = projection;
     }
 
-    public LoadVEF( Selection selection, RealizedModel realized )
+    public LoadVEF( EditorModel editor )
     {
-        this( selection, realized, null, null, null );
+        this( editor, null, null, null );
     }
 
     @Override

@@ -79,8 +79,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     private final Point originPoint;
 
-    private final Selection mSelection;
-
     private final EditorModel editorModel;
 
     private final EditHistory mHistory;
@@ -174,8 +172,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         
         this .mRealizedModel = new RealizedModel( this .field, new Projection.Default( this .field ) );
 
-        this .mSelection = new Selection();
-
         if ( xml != null ) {
             NodeList nl = xml .getElementsByTagName( "SymmetrySystem" );
             if ( nl .getLength() != 0 )
@@ -206,7 +202,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
         // the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
-        this .editorModel = new EditorModel( this .mRealizedModel, this .mSelection, originPoint, kind, symmetrySystem, this .symmetrySystems );
+        this .editorModel = new EditorModel( this .mRealizedModel, originPoint, kind, symmetrySystem, this .symmetrySystems );
         this .tools .setEditorModel( this .editorModel );
 
         // cannot be done in the constructors
@@ -341,7 +337,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     {
         StringWriter out = new StringWriter();
         Exporter exporter = new VefModelExporter( out, field );
-        for (Manifestation man : mSelection) {
+        for ( Manifestation man : editorModel .getSelection() ) {
             exporter .exportManifestation( man );
         }
         exporter .finish();
@@ -383,7 +379,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             // we're going to limit it to at least something that includes a valid VEF header.
             // We won't check the version number so we can still paste formats older than VERSION_W_FIRST
             // as long as they at least include the minimal header.
-            UndoableEdit edit = new LoadVEF( this.mSelection, this.mRealizedModel, vefContent, null, null );
+            UndoableEdit edit = new LoadVEF( this.editorModel, vefContent, null, null );
             performAndRecord( edit );
         }
     }
@@ -507,7 +503,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     public Color getSelectionColor()
     {
         Manifestation last = null;
-        for (Manifestation man : mSelection) {
+        for (Manifestation man : editorModel .getSelection() ) {
             last = man;
         }
         return last == null ? null : last .getRenderedObject() .getColor();
@@ -775,13 +771,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         Projection projection = quaternion == null
                 ? null
                         : new QuaternionProjection(field, null, quaternion);
-        UndoableEdit edit = new LoadVEF( mSelection, mRealizedModel, script, projection, scale );
+        UndoableEdit edit = new LoadVEF( this.editorModel, script, projection, scale );
         this .performAndRecord( edit );
     }
 
     public void importVEFTetrahedralProjection( AlgebraicNumber scale, String script )
     {
-        UndoableEdit edit = new LoadVEF( mSelection, mRealizedModel, script, new TetrahedralProjection(field), scale );
+        UndoableEdit edit = new LoadVEF( this.editorModel, script, new TetrahedralProjection(field), scale );
         this .performAndRecord( edit );
     }
 
@@ -792,7 +788,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void addSelectionListener( ManifestationChanges listener )
     {
-        this .mSelection .addListener( listener );
+        this .editorModel .getSelection() .addListener( listener );
     }
 
     private AbstractToolFactory bookmarkFactory;
@@ -854,7 +850,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel mRenderedModel )
     {
         if ( format.equals( "partgeom" ) )
-            return new PartGeometryExporter( camera, colors, lights, mRenderedModel, mSelection );
+            return new PartGeometryExporter( camera, colors, lights, mRenderedModel, editorModel .getSelection() );
         else
             return null;
     }
@@ -911,11 +907,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     public Segment getSymmetryAxis()
     {
         return editorModel .getSymmetrySegment();
-    }
-
-    public RealizedModel getRealizedModel()
-    {
-        return this .mRealizedModel;
     }
 
     public ToolsModel getToolsModel()

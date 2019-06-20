@@ -5,6 +5,8 @@ package org.vorthmann.zome.app.impl;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -150,7 +152,11 @@ public class PreviewStrut implements PropertyChangeListener
         strut = null;
         if ( logger .isLoggable( Level.FINE ) )
             logger .fine( "preview finished at  " + zone );
-        document .performAndRecord( new StrutCreation( point, zone, length .getValue(), document .getRealizedModel() ) );
+        Map<String, Object> params = new HashMap<>();
+        params .put( "anchor", point );
+        params .put( "zone", zone );
+        params .put( "length", length .getValue() );
+        document .doEdit( "StrutCreation", params );
         point = null;
         zone = null;
         length = null;
