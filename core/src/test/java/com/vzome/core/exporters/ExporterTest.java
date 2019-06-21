@@ -58,7 +58,7 @@ public class ExporterTest {
             Map<String, Object> params = new HashMap<>();
             params .put( "vef", vefData );
             params .put( "scale", doc .getField() .one() );
-            doc .doEdit( "LoadVEF", params );
+            doc .doEdit( "LoadVEF/quaternion", params );
         }
 
         public void select( Manifestation man ) {
