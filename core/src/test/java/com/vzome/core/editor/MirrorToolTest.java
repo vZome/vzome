@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
+import org.python.antlr.PythonParser.name_or_print_return;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -59,19 +60,19 @@ public class MirrorToolTest
 		Panel panel2 = new Panel( vertices );
 		panel2 .addConstruction( polygon2 );
 		
-		Selection selection = new Selection();
-		Tool tool = createTool( selection, originPoint );
+		EditorModel editor = createEditor( originPoint );
+		Tool tool = createTool( editor, originPoint );
 		assertNotNull( "(nothing selected)", tool .checkSelection( false ) );
 
-		selection = new Selection();
-		selection .select( panel1 );
-		tool = createTool( selection, originPoint );
+		editor = createEditor( originPoint );
+		editor .getSelection() .select( panel1 );
+		tool = createTool( editor, originPoint );
 		assertNull( "(just panel selected)", tool .checkSelection( false ) );
 		
-		selection = new Selection();
-		selection .select( panel1 );
-		selection .select( panel2 );
-		tool = createTool( selection, originPoint );
+		editor = createEditor( originPoint );
+		editor .getSelection() .select( panel1 );
+		editor .getSelection() .select( panel2 );
+		tool = createTool( editor, originPoint );
 		assertNotNull( "(two panels selected)", tool .checkSelection( false ) );
 
 		Connector ball1 = new Connector( origin );
@@ -85,51 +86,55 @@ public class MirrorToolTest
 		Strut strut2 = new Strut( origin, y );
 		strut2 .addConstruction( segment2 );
 		
-		selection = new Selection();
-		selection .select( panel1 );
-		selection .select( strut );
-		tool = createTool( selection, originPoint );
+		editor = createEditor( originPoint );
+		editor .getSelection() .select( panel1 );
+		editor .getSelection() .select( strut );
+		tool = createTool( editor, originPoint );
 		assertNotNull( "(panel and strut selected)", tool .checkSelection( false ) );
 		
-		selection = new Selection();
-		selection .select( panel1 );
-		selection .select( ball1 );
-		tool = createTool( selection, originPoint );
+		editor = createEditor( originPoint );
+		editor .getSelection() .select( panel1 );
+		editor .getSelection() .select( ball1 );
+		tool = createTool( editor, originPoint );
 		assertNotNull( "(panel and ball selected)", tool .checkSelection( false ) );
 		
-		selection = new Selection();
-		selection .select( ball1 );
-		selection .select( strut );
-		tool = createTool( selection, originPoint );
+		editor = createEditor( originPoint );
+		editor .getSelection() .select( ball1 );
+		editor .getSelection() .select( strut );
+		tool = createTool( editor, originPoint );
 		assertNull( "(strut and ball selected)", tool .checkSelection( false ) );
 		
-		selection = new Selection();
-		selection .select( ball1 );
-		selection .select( strut );
-		selection .select( strut2 );
-		tool = createTool( selection, originPoint );
+		editor = createEditor( originPoint );
+		editor .getSelection() .select( ball1 );
+		editor .getSelection() .select( strut );
+		editor .getSelection() .select( strut2 );
+		tool = createTool( editor, originPoint );
 		assertNotNull( "(ball and 2 struts selected)", tool .checkSelection( false ) );
 		
-		selection = new Selection();
-		selection .select( ball1 );
-		selection .select( strut );
-		selection .select( ball2 );
-		tool = createTool( selection, originPoint );
+		editor = createEditor( originPoint );
+		editor .getSelection() .select( ball1 );
+		editor .getSelection() .select( strut );
+		editor .getSelection() .select( ball2 );
+		tool = createTool( editor, originPoint );
 		assertNotNull( "(strut and 2 balls selected)", tool .checkSelection( false ) );
 		
-		selection = new Selection();
-		selection .select( ball1 );
-		selection .select( strut );
-		selection .select( panel1 );
-		tool = createTool( selection, originPoint );
+		editor = createEditor( originPoint );
+		editor .getSelection() .select( ball1 );
+		editor .getSelection() .select( strut );
+		editor .getSelection() .select( panel1 );
+		tool = createTool( editor, originPoint );
 		assertNotNull( "(ball, strut, and panel selected)", tool .checkSelection( false ) );
-	}
-	
-	private Tool createTool( Selection selection, Point originPoint )
-	{
-		AlgebraicField field = originPoint .getField();
-		RealizedModel model = new RealizedModel( field, new Projection.Default( field ) );
-		EditorModel editor = new EditorModel( model, originPoint, null, null, new HashMap<>() );
+    }
+    
+    private EditorModel createEditor( Point originPoint )
+    {
+        AlgebraicField field = originPoint .getField();
+        RealizedModel model = new RealizedModel( field, new Projection.Default( field ) );
+        return new EditorModel( model, originPoint, null, null, new HashMap<>() );
+    }
+    
+    private Tool createTool( EditorModel editor, Point originPoint )
+    {
 		ToolsModel tools = new ToolsModel( null, originPoint );
 		tools .setEditorModel( editor );
 		return new MirrorTool.Factory( tools ) .createToolInternal( "1/foo" );
