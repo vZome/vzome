@@ -115,7 +115,7 @@ public abstract class ChangeSelection extends SideEffects
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         String grouping = xml .getAttribute( "grouping" );
-        if ( format .groupingDoneInSelection() || "2.1.1" .equals( grouping ) )
+        if ( this .groupingAware() && ( format .groupingDoneInSelection() || "2.1.1" .equals( grouping ) ) )
             groupingDoneInSelection = true;
         setXmlAttributes( xml, format );
         
@@ -124,6 +124,11 @@ public abstract class ChangeSelection extends SideEffects
 //            System.out.print( " selection: " + mSelection .size() );
     }
     
+    protected boolean groupingAware()
+    {
+        return false;
+    }
+
     public void unselect( Manifestation man )
     {
         unselect( man, false );

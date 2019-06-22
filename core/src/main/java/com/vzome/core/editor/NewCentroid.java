@@ -42,6 +42,12 @@ public class NewCentroid extends ChangeManifestations
     {
         super( selection, realized );
     }
+    
+    @Override
+    protected boolean groupingAware()
+    {
+        return true;
+    }
         
     @Override
     protected String getXmlElementName()

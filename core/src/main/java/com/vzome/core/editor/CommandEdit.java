@@ -56,6 +56,12 @@ public class CommandEdit extends ChangeManifestations
         mEditorModel = editor;  // only needed to set symmetry axis/center
         mCommand = cmd;
     }
+    
+    @Override
+    protected boolean groupingAware()
+    {
+        return true;
+    }
 
     @Override
     protected String getXmlElementName()

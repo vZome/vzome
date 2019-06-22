@@ -35,6 +35,12 @@ public class JoinPoints extends ChangeManifestations {
     {
         super( selection, realized );
     }
+    
+    @Override
+    protected boolean groupingAware()
+    {
+        return true;
+    }
 
     // TODO: Implement a new ToolBehavior class as a parameter, behaving similar to the modes parmeter in the 
     // ApplyTool c'tor. It should effect all the various joinXxx methods consistently, with the default behavior 

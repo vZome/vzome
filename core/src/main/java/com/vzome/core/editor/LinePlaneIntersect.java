@@ -27,6 +27,12 @@ public class LinePlaneIntersect extends ChangeManifestations
     }
     
     @Override
+    protected boolean groupingAware()
+    {
+        return true;
+    }
+    
+    @Override
     public void perform()
     {
         Panel panel = null;

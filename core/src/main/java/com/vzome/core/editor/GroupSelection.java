@@ -20,13 +20,12 @@ public class GroupSelection implements UndoableEdit
     
     private boolean recursiveGroups = true; // 2.1.2 and later, 3.0b1 and later
 
-    private final boolean alreadyGrouped;
+    private boolean unnecessary = false;
 
     public GroupSelection( EditorModel editor )
     {
         super();
         this.mSelection = editor .getSelection();
-        this.alreadyGrouped = this.mSelection .isSelectionAGroup();
     }
 
     @Override
@@ -34,12 +33,15 @@ public class GroupSelection implements UndoableEdit
     {
         String mode = (String) props .get( "mode" );
         mGrouping = ( mode == null ) || mode .isEmpty() || mode .equals( "group" );
+        
+        // emulate the old (external) behavior that checked this before even constructing the edit
+        this.unnecessary = mGrouping == this.mSelection .isSelectionAGroup();
     }
 
     @Override
     public boolean isNoOp()
     {
-        return this.mGrouping == this.alreadyGrouped;
+        return this.unnecessary;
     }
 
     @Override
@@ -83,9 +85,6 @@ public class GroupSelection implements UndoableEdit
     @Override
     public void redo()
     {
-        if ( this .isNoOp() )
-            return;
-
         if ( mGrouping )
             if ( recursiveGroups )
                 mSelection .gatherGroup();
@@ -101,9 +100,6 @@ public class GroupSelection implements UndoableEdit
     @Override
     public void undo()
     {
-        if ( this .isNoOp() )
-            return;
-
         if ( !mGrouping )
             if ( recursiveGroups )
                 mSelection .gatherGroup();
@@ -119,6 +115,9 @@ public class GroupSelection implements UndoableEdit
     @Override
     public void perform()
     {
+        if ( this .unnecessary )
+            return;
+
         redo();
     }
 

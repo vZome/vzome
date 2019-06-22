@@ -17,6 +17,12 @@ public class DeselectAll extends ChangeSelection
             unselect( man, true );
         }
     }
+    
+    @Override
+    protected boolean groupingAware()
+    {
+        return true;
+    }
 
     @Override
     protected String getXmlElementName()

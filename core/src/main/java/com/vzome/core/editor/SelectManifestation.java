@@ -33,6 +33,12 @@ public class SelectManifestation extends ChangeSelection
         this.mRealized = editor .getRealizedModel();
     }
     
+    @Override
+    protected boolean groupingAware()
+    {
+        return true;
+    }
+
     /**
      * Used by CommandEdit.
      * @param editor
