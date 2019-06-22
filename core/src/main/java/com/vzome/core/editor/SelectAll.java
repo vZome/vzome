@@ -20,6 +20,12 @@ public class SelectAll extends ChangeSelection
             }
         }
     }
+    
+    @Override
+    protected boolean groupingAware()
+    {
+        return true;
+    }
 
     @Override
     protected String getXmlElementName()
