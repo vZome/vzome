@@ -400,10 +400,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .addSeparator();
         menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog", KeyEvent.VK_P, COMMAND_OPTION ) ) );
         if ( enable4d ) {
-            menu.add( enableIf( isEditor, createMenuItem( "H_4 Symmetry", "h4symmetry" ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "H_4 Rotations", "h4rotations" ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "I,T Symmetry", "IxTsymmetry" ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "T,T Symmetry", "TxTsymmetry" ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "H_4 Symmetry", "h4symmetry", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "H_4 Rotations", "h4rotations", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "I,T Symmetry", "IxTsymmetry", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "T,T Symmetry", "TxTsymmetry", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
         }
         menu .addSeparator();
         menu .add( enableIf( isEditor, createMenuItem( "Validate Paneled Surface", "Validate2Manifold" ) ) );
