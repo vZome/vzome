@@ -1310,18 +1310,13 @@ public class DocumentController extends DefaultController implements Controller3
     {
         Construction singleConstruction = null;
         if ( pickedManifestation != null )
-            singleConstruction = pickedManifestation .getConstructions().next();
+            singleConstruction = pickedManifestation .toConstruction();
 
         try {
             switch ( action ) {
 
             case "undoToManifestation":
                 this .documentModel .undoToManifestation( pickedManifestation );
-                break;
-
-            case "SymmetryCenterChange":
-            case "SymmetryAxisChange":
-                this .documentModel .doPickEdit( pickedManifestation, action );
                 break;
 
             case "setWorkingPlaneAxis":
@@ -1333,7 +1328,7 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
 
             case "lookAtThis":
-                RealVector loc = documentModel .getCentroid( singleConstruction );
+                RealVector loc = documentModel .getCentroid( pickedManifestation );
                 cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
 

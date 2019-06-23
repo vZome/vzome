@@ -51,7 +51,7 @@ public class ApplyTool extends ChangeManifestations
         if ( tool .needsInput() )
         {
             for (Manifestation man : inputs) {
-                Construction c = man .getConstructions() .next();
+                Construction c = man .toConstruction();
 
                 tool .performEdit( c, this );
             }

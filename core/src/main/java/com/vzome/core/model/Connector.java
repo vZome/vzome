@@ -1,6 +1,9 @@
 package com.vzome.core.model;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Construction;
+import com.vzome.core.construction.FreePoint;
 
 /**
  * @author Scott Vorthmann
@@ -28,6 +31,17 @@ public class Connector extends Manifestation implements Comparable<Connector>
     {
 		return m_center;
 	}
+
+    @Override
+    public Construction toConstruction()
+    {
+        Construction first = this .getFirstConstruction();
+        if ( first .is3d() )
+            return first;
+        
+        AlgebraicField field = m_center .getField();
+        return new FreePoint( field .projectTo3d( m_center, true ) );
+    }
 
 	@Override
 	public int hashCode()

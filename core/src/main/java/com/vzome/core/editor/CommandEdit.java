@@ -88,13 +88,13 @@ public class CommandEdit extends ChangeManifestations
     public void perform() throws Command.Failure
     {
         boolean isHide = mCommand instanceof CommandHide;
-        
+
         if ( logger .isLoggable( Level .FINER ) ) {
             logger .finer( "------------------- CommandEdit" );
         }
-        
+
         if ( mCommand .ordersSelection() )
-        	setOrderedSelection( true ); // so undo will not reorder the selection
+            setOrderedSelection( true ); // so undo will not reorder the selection
 
         ConstructionList constrsBefore = new ConstructionList();
         for (Manifestation man : mSelection) {
@@ -117,7 +117,7 @@ public class CommandEdit extends ChangeManifestations
                 constrsBefore .add( cs .next() );  // yes, just using the first one
             }
         }
-        
+
         // SELECTION BUG: what we want to do here is to redo what we've planned so far, so that the selection state is in sync
         redo();
 
@@ -131,16 +131,16 @@ public class CommandEdit extends ChangeManifestations
             mAttrs .put( CommandTransform .SYMMETRY_AXIS_ATTR_NAME, symmAxis );
         mAttrs .put( CommandTransform .SYMMETRY_CENTER_ATTR_NAME, mEditorModel .getCenterPoint() );
         mAttrs .put( Command.FIELD_ATTR_NAME, this .mManifestations .getField() );
-        
+
         // TODO do we really need to do it this way?  Or can we use the other NewConstructions() class?
         //   That one does the manifestConstruction() and redo() immediately.
         NewConstructions news = new NewConstructions();
-        
+
         ConstructionList selectionAfter = null;  // use params to make selection additive
         Object[][] signature = mCommand .getParameterSignature();
         int actualsLen = constrsBefore .size();
         if ( ( signature.length == actualsLen )
-        || ( signature.length==1 && signature[0][0] .equals( Command.GENERIC_PARAM_NAME ) ) )
+                || ( signature.length==1 && signature[0][0] .equals( Command.GENERIC_PARAM_NAME ) ) )
             try {
                 // command specifically applies to a collection of constructions (like a Transformation)
                 selectionAfter = mCommand .apply( constrsBefore, mAttrs, news );
@@ -168,7 +168,7 @@ public class CommandEdit extends ChangeManifestations
         }
         else
             fail( "Too many objects in the selection." );
-        
+
         for (Construction c : news) {
             manifestConstruction( c );
         }

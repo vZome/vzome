@@ -59,10 +59,13 @@ import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
+import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
@@ -459,16 +462,16 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return new RealVector( 0, 0, 0 );
     }
 
-    public RealVector getCentroid( Construction target )
+    public RealVector getCentroid( Manifestation target )
     {
         AlgebraicVector v;
-        if ( target instanceof Point)
-            v = ( (Point) target ).getLocation();
-        else if ( target instanceof Segment ) {
-            v = ((Segment) target). getCentroid( );
+        if ( target instanceof Connector )
+            v = ( (Connector) target ) .getLocation();
+        else if ( target instanceof Strut ) {
+            v = ((Strut) target) .getCentroid( );
         }
-        else if ( target instanceof Polygon )
-            v = ((Polygon) target). getCentroid( );
+        else if ( target instanceof Panel )
+            v = ((Panel) target) .getCentroid( );
         else
             v = this.getField().origin(3);
 
