@@ -71,8 +71,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         boolean developerExtras = controller .userHasEntitlement( "developer.extras" );
 
-        boolean enable4d = developerExtras || ( fullPower && controller .userHasEntitlement( "4d.symmetries" ) );
-
         boolean canSave = controller .userHasEntitlement( "save.files" );
 
         boolean isGolden = "golden" .equals( fieldName );
@@ -132,18 +130,20 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         JMenu submenu = new JMenu( "Export 3D Rendering..." );
         submenu .add( createMenuItem( "Collada DAE", "export.dae" ) );
         submenu .add( createMenuItem( "POV-Ray", "export.pov" ) );
-        submenu .add( createMenuItem( "WebGL JSON", "export.json" ) );
+        submenu .add( createMenuItem( "Observable shapes JSON", "export.shapes" ) );
         submenu .add( createMenuItem( "VRML", "export.vrml" ) );
         menu.add( submenu );
         submenu .setEnabled( fullPower && canSave );
 
-        submenu = new JMenu( "Export 3D Geometry..." );
+        submenu = new JMenu( "Export 3D Panels..." );
         submenu .add( createMenuItem( "StL", "export.StL" ) );
-        submenu .add( createMenuItem( "PLY", "export.ply" ) );
-        submenu .add( createMenuItem( "vZome VEF", "export.vef" ) );
-        submenu .add( createMenuItem( "STEP", "export.step" ) );
         submenu .add( createMenuItem( "OFF", "export.off" ) );
+        submenu .add( createMenuItem( "PLY", "export.ply" ) );
+        menu.add( submenu );
+        submenu = new JMenu( "Export 3D Struts..." );
         submenu .add( createMenuItem( "AutoCAD DXF", "export.dxf" ) );
+        submenu .add( createMenuItem( "vZome VEF", "export.vef" ) );
+        submenu .add( createMenuItem( "Observable vZome JSON", "export.vson" ) );
         if ( controller .userHasEntitlement( "export.pdb" ) )
         {
             submenu .add( createMenuItem( "PDB", "export.pdb" ) );
@@ -158,25 +158,15 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         if ( developerExtras )
         {
             submenu = new JMenu( "Export Developer Extras..." );
-            submenu .addSeparator();
-            submenu.add( createMenuItem( "Second Life", "export.2life" ) );
-            submenu.add( createMenuItem( "Maximum XYZ", "export.size" ) );
-            submenu.add( createMenuItem( "vZome part geometry", "export.partgeom" ) );
-            submenu.add( createMenuItem( "vZome history detail", "export.history" ) );
-            submenu.add( createMenuItem( "bill of materials", "export.partslist" ) );
+            submenu .add( createMenuItem( "vZome part geometry", "export.partgeom" ) );
+            submenu .add( createMenuItem( "vZome history detail", "export.history" ) );
+            submenu .add( createMenuItem( "bill of materials", "export.partslist" ) );
+            submenu .add( createMenuItem( "STEP", "export.step" ) );
             menu.add( submenu );
             submenu .setEnabled( fullPower && canSave );
         }
 
         menu.addSeparator();
-
-        //        if ( controller .userHasEntitlement( "export.zomespace" ) )
-        //        {
-        //            submenu = new JMenu( "Export Article..." );
-        //            submenu .add( createMenuItem( "Zomespace", "export.zomespace" ) );
-        //            menu.add( submenu );
-        //            submenu .setEnabled( fullPower && canSave );
-        //        }
 
         submenu = new JMenu( "Capture Image..." );
         submenu .add( createMenuItem( "JPEG", "capture.jpg" ) );
@@ -399,12 +389,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .addSeparator();
         menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog", KeyEvent.VK_P, COMMAND_OPTION ) ) );
-        if ( enable4d ) {
-            menu.add( enableIf( isEditor, createMenuItem( "H_4 Symmetry", "h4symmetry", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "H_4 Rotations", "h4rotations", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "I,T Symmetry", "IxTsymmetry", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "T,T Symmetry", "TxTsymmetry", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
-        }
         menu .addSeparator();
         menu .add( enableIf( isEditor, createMenuItem( "Validate Paneled Surface", "Validate2Manifold" ) ) );
 
@@ -545,8 +529,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         // ----------------------------------------- Help menu
         menu = new JMenu( "Help" );
-        if ( "G4G10" .equals( controller .getProperty( "licensed.user" ) ) )
-            menu .add( createMenuItem( "Welcome G4G10 Participant...", "openResource-org/vorthmann/zome/content/welcomeG4G10.vZome" ) );
         menu .add( createMenuItem( "Quick Start...", "openResource-org/vorthmann/zome/content/welcomeDodec.vZome" ) );
         menu .addSeparator(); 
         {
