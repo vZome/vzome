@@ -48,6 +48,12 @@ public class SelectManifestation extends ChangeSelection
     {
         this( editor );
         this .mManifestation = m;
+        if ( this.mManifestation != null )
+        {
+            // must record the construction for save, because if this gets undone, there's no
+            //  guarantee that the manifestation will have any constructions!
+            construction = this.mManifestation .getFirstConstruction();
+        }
     }
 
     public void configure( Map<String, Object> props )
@@ -59,7 +65,7 @@ public class SelectManifestation extends ChangeSelection
         {
             // must record the construction for save, because if this gets undone, there's no
             //  guarantee that the manifestation will have any constructions!
-            construction = this.mManifestation .getConstructions() .next();
+            construction = this.mManifestation .getFirstConstruction();
         }
     }
     
@@ -81,16 +87,16 @@ public class SelectManifestation extends ChangeSelection
 
     @Override
     protected void getXmlAttributes( Element result )
-    {        
+    {
         if ( construction instanceof Point )
             XmlSaveFormat .serializePoint( result, "point", (Point) construction );
         else if ( construction instanceof Segment )
             XmlSaveFormat .serializeSegment( result, "startSegment", "endSegment", (Segment) construction );
         else if ( construction instanceof Polygon )
             XmlSaveFormat .serializePolygon( result, "polygonVertex", (Polygon) construction );
-        
+
         if ( mReplace )
-        	DomUtils .addAttribute( result, "replace", "true" );
+            DomUtils .addAttribute( result, "replace", "true" );
     }
 
     @Override
