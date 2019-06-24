@@ -562,6 +562,8 @@ public class EditHistory implements Iterable<UndoableEdit>
                         // realized is responsible for inserting itself, or any replacements (migration)
                         try {
                             edit .perform();
+                            if ( edit .isNoOp() )
+                                return;
 //                            System.out.println( DomUtils .getXmlString( details ) );
                             if ( logger .isLoggable( Level.FINEST ) ) {
                                 Element details = edit .getDetailXml( xml .getOwnerDocument() );
