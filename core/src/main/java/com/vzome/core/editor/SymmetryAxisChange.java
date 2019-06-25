@@ -3,27 +3,47 @@
 
 package com.vzome.core.editor;
 
-import com.vzome.core.commands.AttributeMap;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.AttributeMap;
+import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.model.Manifestation;
 
 public class SymmetryAxisChange implements UndoableEdit
 {
     private Segment mOldAxis, mNewAxis;
     private final EditorModel mEditor;
 
+    public SymmetryAxisChange( EditorModel editor )
+    {
+        this( editor, null );
+    }
+    
+    /**
+     * Used by CommandEdit.
+     * @param editor
+     * @param m
+     */
     public SymmetryAxisChange( EditorModel editor, Segment newAxis )
     {
         mOldAxis = editor .getSymmetrySegment();
         mNewAxis = newAxis;
         mEditor = editor;
     }
-    
+
+    public void configure( Map<String, Object> props )
+    {
+        Manifestation man = (Manifestation) props .get( "picked" );
+        if ( man != null )
+            this.mNewAxis = (Segment) man .getConstructions() .next();
+    }
+
     @Override
     public boolean isVisible()
     {
@@ -31,14 +51,29 @@ public class SymmetryAxisChange implements UndoableEdit
     }
 
     @Override
+    public boolean isNoOp()
+    {
+        return this.mNewAxis == null ||
+               ( this.mOldAxis != null
+               && this.mNewAxis .getStart() .equals( this.mOldAxis .getStart() )
+               && this.mNewAxis .getEnd() .equals( this.mOldAxis .getEnd() ) ) ;
+    }
+
+    @Override
     public void redo()
     {
+        if ( this .isNoOp() )
+            return;
+
         mEditor .setSymmetrySegment( mNewAxis );
     }
 
     @Override
     public void undo()
     {
+        if ( this .isNoOp() )
+            return;
+
         mEditor .setSymmetrySegment( mOldAxis );
     }
 
@@ -73,8 +108,14 @@ public class SymmetryAxisChange implements UndoableEdit
     }
 
     @Override
-    public void perform()
+    public void perform() throws Command.Failure
     {
+        if ( this.mNewAxis == null )
+        {
+            this.mNewAxis = (Segment) this.mEditor .getSelectedConstruction( Segment.class );
+            if ( this.mNewAxis == null )
+                throw new Command.Failure( "Selection is not a single strut." );
+        }
         redo();
     }
 

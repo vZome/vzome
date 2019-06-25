@@ -15,17 +15,16 @@ import com.vzome.core.construction.TransformedPoint;
 import com.vzome.core.construction.TransformedPolygon;
 import com.vzome.core.construction.TransformedSegment;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class AffineTransformAll extends ChangeManifestations
 {
     private Point center;
     
-    public AffineTransformAll( Selection selection, RealizedModel realized, Point center, boolean groupInSelection )
+    public AffineTransformAll( EditorModel editor )
     {
-        super( selection, realized, groupInSelection );
-        this .center = center;
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this.center = editor .getCenterPoint();
     }
     
     @Override

@@ -3,26 +3,45 @@
 
 package com.vzome.core.editor;
 
+import java.util.Map;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 
 public class GroupSelection implements UndoableEdit
 {
     protected Selection mSelection;
     
-    private boolean mGrouping;
+    private boolean mGrouping = false;
     
-    private boolean recursiveGroups; // 2.1.2 and later, 3.0b1 and later
+    private boolean recursiveGroups = true; // 2.1.2 and later, 3.0b1 and later
 
-    public GroupSelection( Selection selection, boolean groupThem )
+    private boolean unnecessary = false;
+
+    public GroupSelection( EditorModel editor )
     {
-        mSelection = selection;        
-        mGrouping = groupThem;
-        recursiveGroups = true;
+        super();
+        this.mSelection = editor .getSelection();
+    }
+
+    @Override
+    public void configure( Map<String,Object> props )
+    {
+        String mode = (String) props .get( "mode" );
+        mGrouping = ( mode == null ) || mode .isEmpty() || mode .equals( "group" );
+        
+        // emulate the old (external) behavior that checked this before even constructing the edit
+        this.unnecessary = mGrouping == this.mSelection .isSelectionAGroup();
+    }
+
+    @Override
+    public boolean isNoOp()
+    {
+        return this.unnecessary;
     }
 
     @Override
@@ -96,6 +115,9 @@ public class GroupSelection implements UndoableEdit
     @Override
     public void perform()
     {
+        if ( this .unnecessary )
+            return;
+
         redo();
     }
 

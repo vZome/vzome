@@ -4,6 +4,7 @@
 package com.vzome.core.editor;
 
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,19 +23,18 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefToPolyhedron;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedManifestation;
 
 public class ReplaceWithShape extends ChangeManifestations
 {
     public static final String NAME = "ReplaceWithShape";
-        
+
     private String vef;
-    
+
     private Polyhedron shape;
 
-	private Manifestation ballOrStrut;
+    private Manifestation ballOrStrut;
 
     @Override
     public void perform() throws Command.Failure
@@ -46,22 +46,22 @@ public class ReplaceWithShape extends ChangeManifestations
 
         RenderedManifestation rm = this .ballOrStrut .getRenderedObject();
         if (rm != null) {
-        	AlgebraicMatrix orientation = rm .getOrientation();
-        	List<AlgebraicVector> vertexList = this .shape .getVertexList();
-        	for (Polyhedron.Face face : this .shape .getFaceSet()) {
-        		Point[] vertices = new Point[ face .size() ];
-        		for ( int i = 0; i < vertices.length; i++ ) {
-        			int vertexIndex = face .getVertex( i );
-        			AlgebraicVector vertex = vertexList .get( vertexIndex );
-        			vertices[ i ] = transformVertex( vertex, rm .getLocationAV(), orientation );
-        		}
-        		Polygon polygon = new PolygonFromVertices( vertices );
-        		Manifestation panel = manifestConstruction( polygon );
-        		select( panel );
-        	}
+            AlgebraicMatrix orientation = rm .getOrientation();
+            List<AlgebraicVector> vertexList = this .shape .getVertexList();
+            for (Polyhedron.Face face : this .shape .getFaceSet()) {
+                Point[] vertices = new Point[ face .size() ];
+                for ( int i = 0; i < vertices.length; i++ ) {
+                    int vertexIndex = face .getVertex( i );
+                    AlgebraicVector vertex = vertexList .get( vertexIndex );
+                    vertices[ i ] = transformVertex( vertex, rm .getLocationAV(), orientation );
+                }
+                Polygon polygon = new PolygonFromVertices( vertices );
+                Manifestation panel = manifestConstruction( polygon );
+                select( panel );
+            }
         }
 
-    	this .deleteManifestation( this .ballOrStrut );
+        this .deleteManifestation( this .ballOrStrut );
 
         super .perform();
     }
@@ -75,25 +75,30 @@ public class ReplaceWithShape extends ChangeManifestations
         return new FreePoint( vertex );
     }
 
-    public ReplaceWithShape( Selection selection, RealizedModel realized, Manifestation ballOrStrut )
+    public ReplaceWithShape( EditorModel editor )
     {
-        super( selection, realized, false );
-		this .ballOrStrut = ballOrStrut;
-		if ( this .ballOrStrut != null ) // first creation from the editor
-			this .shape = ballOrStrut .getRenderedObject() .getShape();
+        super( editor .getSelection(), editor .getRealizedModel() );
     }
-    
+
+    @Override
+    public void configure( Map<String,Object> props )
+    {
+        this .ballOrStrut = (Manifestation) props .get( "picked" );
+        if ( this .ballOrStrut != null ) // first creation from the editor
+            this .shape = ballOrStrut .getRenderedObject() .getShape();
+    }
+
     @Override
     protected void getXmlAttributes( Element element )
     {
-    	Construction construction = this .ballOrStrut .getConstructions() .next();
+        Construction construction = this .ballOrStrut .getConstructions() .next();
         if ( construction instanceof Point )
             XmlSaveFormat .serializePoint( element, "point", (Point) construction );
         else
             XmlSaveFormat .serializeSegment( element, "startSegment", "endSegment", (Segment) construction );
-    	if ( this .vef == null ) {
+        if ( this .vef == null ) {
             this .vef = VefModelExporter .exportPolyhedron( this .shape );
-    	}
+        }
         Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( this .vef ) );
         element .appendChild( textNode );
     }

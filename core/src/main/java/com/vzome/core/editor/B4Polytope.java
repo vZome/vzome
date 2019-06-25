@@ -35,10 +35,15 @@ public class B4Polytope extends ChangeManifestations
     private Segment symmAxis;
 	private final AlgebraicField field;
 
-    public B4Polytope( Selection selection, RealizedModel realized, AlgebraicField field, Segment symmAxis, int index, boolean groupInSelection )
+    public B4Polytope( Selection selection, RealizedModel realized )
     {
-        super( selection, realized, groupInSelection );
-		this.field = field;
+        this( selection, realized, realized .getField(), null, 0 );
+    }
+
+    public B4Polytope( Selection selection, RealizedModel realized, AlgebraicField field, Segment symmAxis, int index )
+    {
+        super( selection, realized );
+        this.field = field;
 
         this.index = index;
         this.symmAxis = symmAxis;

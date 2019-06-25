@@ -11,9 +11,9 @@ public class InvertSelection extends ChangeSelection
 {
     protected final RealizedModel mManifestations;
 
-    public InvertSelection( Selection selection, RealizedModel model, boolean groupInSelection )
+    public InvertSelection( Selection selection, RealizedModel model )
     {
-        super( selection, groupInSelection );
+        super( selection );
         mManifestations = model;
     }
     

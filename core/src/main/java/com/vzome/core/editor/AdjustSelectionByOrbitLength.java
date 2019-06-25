@@ -1,5 +1,9 @@
 package com.vzome.core.editor;
 
+import java.util.Map;
+
+import org.w3c.dom.Element;
+
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
@@ -9,9 +13,7 @@ import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import org.w3c.dom.Element;
 
 /**
  * @author David Hall
@@ -24,20 +26,57 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
 {
     private Direction orbit;
     private AlgebraicNumber length;
-    private final RealizedModel model;
-    private final SymmetrySystem symmetry;
+    private SymmetrySystem symmetry;
     private ActionEnum strutAction = ActionEnum.IGNORE;
     private ActionEnum panelAction = ActionEnum.IGNORE;
+    private final EditorModel editor;
 
-    public AdjustSelectionByOrbitLength(SymmetrySystem symmetry, Direction orbit, AlgebraicNumber length,
-            Selection selection, RealizedModel model, ActionEnum struts, ActionEnum panels) {
-        super(selection, false);
-        this.symmetry = symmetry;
-        this.model = model;
-        this.orbit = orbit;
-        this.length = length;
-        this.strutAction = struts;
-        this.panelAction = panels;
+    /**
+     * This constructor is only used during deserialization, so it prepares for setXmlAttributes().
+     * @param editor
+     */
+    public AdjustSelectionByOrbitLength( EditorModel editor )
+    {
+        super( editor .getSelection() );
+        this.symmetry = editor .getSymmetrySystem();
+        this.editor = editor;
+    }
+
+    @Override
+    public void configure( Map<String,Object> props )
+    {
+        String mode = (String) props .get( "mode" );
+        Strut strut = (Strut) props .get( "picked" );
+        this.orbit = (Direction) props .get( "orbit" );
+        this.length = (AlgebraicNumber) props .get( "length" );
+
+        if ( mode != null )
+            switch ( mode ) {
+
+            case "selectSimilarStruts":
+                this.strutAction = ActionEnum.SELECT;
+                break;
+
+            case "selectSimilarPanels":
+                this.panelAction = ActionEnum.SELECT;
+                break;
+
+            case "deselectSimilarStruts":
+                this.strutAction = ActionEnum.DESELECT;
+                break;
+
+            case "deselectSimilarPanels":
+                this.panelAction = ActionEnum.DESELECT;
+                break;
+            }
+
+        if ( strut != null ) // first creation from the editor
+        {
+            AlgebraicVector offset = strut .getOffset();
+            Axis zone = this.symmetry .getAxis( offset );
+            this.orbit = zone .getOrbit();
+            this.length = zone .getLength( offset );
+        }
     }
 
     /*
@@ -53,13 +92,14 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
     If the length is null and the action is directed to a strut, then only the orbit will be considered and any length will be a match.
      */
     @Override
-    public void perform() throws Failure {
+    public void perform() throws Failure
+    {
         // if any action is a SELECT, then we have to use model
         // otherwise we will use mSelection because it may be a shorter list
         Iterable<Manifestation> whichManifestationSet = (
                 strutAction == ActionEnum.SELECT ||
                 panelAction == ActionEnum.SELECT)
-                ? model
+                ? this .editor .getRealizedModel()
                 : mSelection;
 
         for (Manifestation man : whichManifestationSet) {
@@ -85,12 +125,14 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
     }
 
     @Override
-    protected String getXmlElementName() {
+    protected String getXmlElementName()
+    {
         return "AdjustSelectionByOrbitLength";
     }
 
     @Override
-    protected void getXmlAttributes(Element element) {
+    protected void getXmlAttributes( Element element )
+    {
         if (symmetry != null) {
             DomUtils.addAttribute(element, "symmetry", symmetry.getName());
         }
@@ -105,9 +147,10 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
     }
 
     @Override
-    protected void setXmlAttributes(Element xml, XmlSaveFormat format)
+    protected void setXmlAttributes( Element xml, XmlSaveFormat format )
             throws Failure
     {
+        this .symmetry = this .editor .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
         length = format.parseNumber(xml, "length");
         orbit = symmetry.getOrbits().getDirection(xml.getAttribute("orbit"));
         if(xml.getLocalName().equals("SelectSimilarSize")) {

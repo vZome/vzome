@@ -20,9 +20,9 @@ public class QuaternionCommandEdit extends CommandEdit
 {
     private final QuaternionicSymmetry left, right;
 
-    public QuaternionCommandEdit( AbstractCommand cmd, EditorModel editor, boolean groupInSelection, QuaternionicSymmetry left, QuaternionicSymmetry right )
+    public QuaternionCommandEdit( AbstractCommand cmd, EditorModel editor, QuaternionicSymmetry left, QuaternionicSymmetry right )
     {
-        super( cmd, editor, groupInSelection );
+        super( cmd, editor );
         this.left = left;
         this.right = right;
     }

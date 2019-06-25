@@ -50,7 +50,11 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  *
  */
 public class GoldenFieldApplication extends DefaultFieldApplication
-{
+{        
+    private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", getField() );
+    private final QuaternionicSymmetry H4_ROT = new QuaternionicSymmetry( "H4_ROT", "com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef", getField() );
+    private final QuaternionicSymmetry T2 = new QuaternionicSymmetry( "2T", "com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef", getField() );
+
     public GoldenFieldApplication()
     {
         super( new PentagonField() );
@@ -232,10 +236,6 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 //            return "org/vorthmann/zome/app/icosahedral-developer.vZome";
         }
     };
-        
-    private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", getField() );
-    private final QuaternionicSymmetry H4_ROT = new QuaternionicSymmetry( "H4_ROT", "com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef", getField() );
-    private final QuaternionicSymmetry T2 = new QuaternionicSymmetry( "2T", "com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef", getField() );
 
     @Override
     public Collection<SymmetryPerspective> getSymmetryPerspectives()

@@ -4,6 +4,8 @@
 package com.vzome.core.editor;
 
 
+import java.util.Map;
+
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -22,9 +24,22 @@ public class StrutCreation extends ChangeManifestations
     private Axis mAxis;
     private AlgebraicNumber mLength;
     
+    public StrutCreation( EditorModel editor )
+    {
+        this( null, null, null, editor .getRealizedModel() );
+    }
+    
+    @Override
+    public void configure( Map<String, Object> params )
+    {
+        this.mAnchor = (Point) params .get( "anchor" );
+        this.mAxis = (Axis) params .get( "zone" );
+        this.mLength = (AlgebraicNumber) params .get( "length" );
+    }
+
     public StrutCreation( Point anchor, Axis axis, AlgebraicNumber len, RealizedModel realized )
     {
-        super( null, realized, false );
+        super( null, realized );
         
         mAnchor = anchor;
         mAxis = axis;

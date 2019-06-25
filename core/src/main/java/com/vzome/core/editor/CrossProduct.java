@@ -64,9 +64,9 @@ public class CrossProduct extends ChangeManifestations
         redo();
     }
 
-    public CrossProduct( Selection selection, RealizedModel realized, boolean groupInSelection )
+    public CrossProduct( Selection selection, RealizedModel realized )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
     }
         
     @Override

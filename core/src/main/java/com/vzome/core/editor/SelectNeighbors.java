@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -15,19 +16,24 @@ import com.vzome.core.model.Strut;
 
 public class SelectNeighbors extends ChangeSelection
 {
-    public SelectNeighbors( Selection selection, RealizedModel model, boolean groupInSelection )
-    {
-        this( selection, model, groupInSelection, false );
-    }
+    private final EditorModel editor;
+    private boolean withPanels = false;
 
-    public SelectNeighbors( Selection selection, RealizedModel model, boolean groupInSelection, boolean withPanels )
+    public SelectNeighbors( EditorModel editor )
     {
-        super( selection, groupInSelection ); 
-        
+        super( editor .getSelection() );
+        this.editor = editor;
+    }
+    
+    // TODO: add configure() to support "SelectNeighbors/withPanels"
+    
+    public void perform() throws Failure
+    {
+        RealizedModel model = this.editor .getRealizedModel();
         Set<Panel> panels = new HashSet<>();
         Set<Strut> struts = new HashSet<>();
         Set<Connector> balls = new HashSet<>();
-        for (Manifestation man : selection) {
+        for (Manifestation man : mSelection) {
             if ( man instanceof Strut )
                 struts .add( (Strut) man );
             else if ( man instanceof Connector )
@@ -87,6 +93,7 @@ public class SelectNeighbors extends ChangeSelection
                 }
             }
         }
+        super .perform();
     }
 
     @Override

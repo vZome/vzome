@@ -10,9 +10,9 @@ import com.vzome.core.model.RealizedModel;
 public class ShowHidden extends ChangeManifestations
 {
 
-    public ShowHidden( Selection selection, RealizedModel realized, boolean groupInSelection )
+    public ShowHidden( Selection selection, RealizedModel realized )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
     }
     
     @Override

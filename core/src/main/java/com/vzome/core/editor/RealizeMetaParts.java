@@ -70,7 +70,7 @@ public class RealizeMetaParts extends ChangeManifestations
 
     public RealizeMetaParts( Selection selection, RealizedModel realized )
     {
-        super( selection, realized, false );
+        super( selection, realized );
     }
         
     @Override

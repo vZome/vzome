@@ -71,8 +71,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         boolean developerExtras = controller .userHasEntitlement( "developer.extras" );
 
-        boolean enable4d = developerExtras || ( fullPower && controller .userHasEntitlement( "4d.symmetries" ) );
-
         boolean canSave = controller .userHasEntitlement( "save.files" );
 
         boolean isGolden = "golden" .equals( fieldName );
@@ -132,18 +130,20 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         JMenu submenu = new JMenu( "Export 3D Rendering..." );
         submenu .add( createMenuItem( "Collada DAE", "export.dae" ) );
         submenu .add( createMenuItem( "POV-Ray", "export.pov" ) );
-        submenu .add( createMenuItem( "WebGL JSON", "export.json" ) );
+        submenu .add( createMenuItem( "Observable shapes JSON", "export.shapes" ) );
         submenu .add( createMenuItem( "VRML", "export.vrml" ) );
         menu.add( submenu );
         submenu .setEnabled( fullPower && canSave );
 
-        submenu = new JMenu( "Export 3D Geometry..." );
+        submenu = new JMenu( "Export 3D Panels..." );
         submenu .add( createMenuItem( "StL", "export.StL" ) );
-        submenu .add( createMenuItem( "PLY", "export.ply" ) );
-        submenu .add( createMenuItem( "vZome VEF", "export.vef" ) );
-        submenu .add( createMenuItem( "STEP", "export.step" ) );
         submenu .add( createMenuItem( "OFF", "export.off" ) );
+        submenu .add( createMenuItem( "PLY", "export.ply" ) );
+        menu.add( submenu );
+        submenu = new JMenu( "Export 3D Struts..." );
         submenu .add( createMenuItem( "AutoCAD DXF", "export.dxf" ) );
+        submenu .add( createMenuItem( "vZome VEF", "export.vef" ) );
+        submenu .add( createMenuItem( "Observable vZome JSON", "export.vson" ) );
         if ( controller .userHasEntitlement( "export.pdb" ) )
         {
             submenu .add( createMenuItem( "PDB", "export.pdb" ) );
@@ -158,25 +158,15 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         if ( developerExtras )
         {
             submenu = new JMenu( "Export Developer Extras..." );
-            submenu .addSeparator();
-            submenu.add( createMenuItem( "Second Life", "export.2life" ) );
-            submenu.add( createMenuItem( "Maximum XYZ", "export.size" ) );
-            submenu.add( createMenuItem( "vZome part geometry", "export.partgeom" ) );
-            submenu.add( createMenuItem( "vZome history detail", "export.history" ) );
-            submenu.add( createMenuItem( "bill of materials", "export.partslist" ) );
+            submenu .add( createMenuItem( "vZome part geometry", "export.partgeom" ) );
+            submenu .add( createMenuItem( "vZome history detail", "export.history" ) );
+            submenu .add( createMenuItem( "bill of materials", "export.partslist" ) );
+            submenu .add( createMenuItem( "STEP", "export.step" ) );
             menu.add( submenu );
             submenu .setEnabled( fullPower && canSave );
         }
 
         menu.addSeparator();
-
-        //        if ( controller .userHasEntitlement( "export.zomespace" ) )
-        //        {
-        //            submenu = new JMenu( "Export Article..." );
-        //            submenu .add( createMenuItem( "Zomespace", "export.zomespace" ) );
-        //            menu.add( submenu );
-        //            submenu .setEnabled( fullPower && canSave );
-        //        }
 
         submenu = new JMenu( "Capture Image..." );
         submenu .add( createMenuItem( "JPEG", "capture.jpg" ) );
@@ -228,39 +218,39 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .add( enableIf( isEditor, createMenuItem( "Cut", ( "cut" ), KeyEvent.VK_X, COMMAND ) ) );
         menu .add( enableIf( isEditor, createMenuItem( "Copy", ( "copy" ), KeyEvent.VK_C, COMMAND ) ) );
         menu .add( enableIf( isEditor, createMenuItem( "Paste", ( "paste" ), KeyEvent.VK_V, COMMAND ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Delete", ( "delete" ), KeyEvent.VK_BACK_SPACE, 0 ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Delete", ( "Delete" ), KeyEvent.VK_BACK_SPACE, 0 ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu .add( enableIf( isEditor, createMenuItem( "Select All", ( "selectAll" ), KeyEvent.VK_A, COMMAND ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Select Neighbors", ( "selectNeighbors" ), KeyEvent.VK_A, COMMAND_OPTION ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Invert Selection", ( "invertSelection" ) ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Select All", ( "SelectAll" ), KeyEvent.VK_A, COMMAND ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Select Neighbors", ( "SelectNeighbors" ), KeyEvent.VK_A, COMMAND_OPTION ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Invert Selection", ( "InvertSelection" ) ) ) );
 
         submenu = new JMenu("Select...");
-        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "selectBalls" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "selectStruts" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "selectPanels" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "AdjustSelectionByClass/selectBalls" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "AdjustSelectionByClass/selectStruts" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "AdjustSelectionByClass/selectPanels" ) ) ) );
         submenu.add( enableIf( isEditor, createMenuItem( "Automatic Struts", ( "SelectAutomaticStruts" ) ) ) );
         //		submenu.add( enableIf( isEditor, createMenuItem( "All Collinear", ( "SelectCollinear" ) ) ) );
         //      submenu.add( enableIf( isEditor, createMenuItem( "Parallel Struts", ( "SelectParallelStruts" ) ) ) );
         menu.add(submenu);
 
         submenu = new JMenu("Deselect...");
-        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "deselectBalls" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "deselectStruts" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "deselectPanels" ) ) ) );
-        submenu.add( enableIf( isEditor, createMenuItem( "All", ( "unselectAll" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Balls", ( "AdjustSelectionByClass/deselectBalls" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "AdjustSelectionByClass/deselectStruts" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "AdjustSelectionByClass/deselectPanels" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "All", ( "DeselectAll" ) ) ) );
         menu.add(submenu);
 
         menu.add( enableIf( isEditor, createMenuItem( "Select by Diameter", ( "SelectByDiameter" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Select by Radius", ( "SelectByRadius" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu .add( enableIf( isEditor, createMenuItem( "Group", ( "group" ), KeyEvent.VK_G, COMMAND ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Ungroup", ( "ungroup" ), KeyEvent.VK_G, COMMAND_OPTION ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Group", ( "GroupSelection/group" ), KeyEvent.VK_G, COMMAND ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Ungroup", ( "GroupSelection/ungroup" ), KeyEvent.VK_G, COMMAND_OPTION ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Hide", ( "hideball" ), KeyEvent.VK_H, CONTROL ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Show All Hidden", ( "showHidden" ), KeyEvent.VK_H, CONTROL_OPTION ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Show All Hidden", ( "ShowHidden" ), KeyEvent.VK_H, CONTROL_OPTION ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -315,49 +305,47 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Construct menu
         menu = new JMenu( "Construct" );
 
-        menu.add( enableIf( isEditor, createMenuItem( "Loop Balls", "joinballs", KeyEvent.VK_J, COMMAND ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Chain Balls", "chainBalls", KeyEvent.VK_J, COMMAND_OPTION ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Join Balls to Last", "joinBallsAllToLast" ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Make All Possible Struts", "joinBallsAllPossible" ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Loop Balls", "JoinPoints/CLOSED_LOOP", KeyEvent.VK_J, COMMAND ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Chain Balls", "JoinPoints/CHAIN_BALLS", KeyEvent.VK_J, COMMAND_OPTION ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Join Balls to Last", "JoinPoints/ALL_TO_LAST" ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Make All Possible Struts", "JoinPoints/ALL_POSSIBLE" ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Panel", ( "panel" ), KeyEvent.VK_P, COMMAND ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Panel/Strut Vertices", ( "showVertices" ) ) ) );
-        menu .add( enableIf( isEditor, createMenuItem( "Panel Normals", ( "showNormals" ) ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Panel/Strut Vertices", ( "ShowVertices" ) ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Panel Normals", ( "ShowNormals" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu.add( enableIf( isEditor, createMenuItem( "Centroid", ( "centroid" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Centroid", ( "NewCentroid" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Strut Midpoint", ( "midpoint" ) ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Line-Line Intersection", ( "lineLineIntersect" ) ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Line-Plane Intersection", ( "linePlaneIntersect" ) ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Cross Product", ( "crossProduct" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Line-Line Intersection", ( "StrutIntersection" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Line-Plane Intersection", ( "LinePlaneIntersect" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Cross Product", ( "CrossProduct" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Normal to Skew Lines", ( "JoinSkewLines" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        menu.add( enableIf( isEditor, createMenuItem( "Ball At Origin", ( "ballAtOrigin" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Ball At Origin", ( "ShowPoint/origin" ) ) ) );
         if ( controller .propertyIsTrue( "original.tools" ) )
-            menu.add( enableIf( isEditor, createMenuItem( "Ball At Symmetry Center", ( "ballAtSymmCenter" ) ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Ball At Symmetry Center", ( "ShowPoint/symmCenter" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( enableIf( isEditor, createMenuItem( "2D Convex Hull", ( "ConvexHull2d" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "3D Convex Hull", ( "ConvexHull3d" ) ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        //        menu.add( enableIf( isEditor, createMenuItem( "Affine Transform All", getExclusiveAction( "affineTransformAll" ) ) );
-        //        menuItem = enableIf( isEditor, createMenuItem( "Conjugate", getExclusiveAction( "conjugate" ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Parallelepiped", "parallelepiped", KeyEvent.VK_P, COMMAND_SHIFT ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Parallelepiped", "Parallelepiped", KeyEvent.VK_P, COMMAND_SHIFT ) ) );
         if ( isGolden ) {
             menu.add( enableIf( isEditor, createMenuItem( "\u03C6 Divide", ( "tauDivide" ) ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "Affine Pentagon", ( "affinePentagon" ) ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Affine Pentagon", ( "AffinePentagon" ) ) ) );
         } else if ( isHeptagon ) {
-            menu.add( enableIf( isEditor, createMenuItem( "1/\u03C3/\u03C1 Subdivisions", ( "heptagonDivide" ) ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "Affine Heptagon", ( "affineHeptagon" ) ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "1/\u03C3/\u03C1 Subdivisions", ( "HeptagonSubdivision" ) ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Affine Heptagon", ( "AffineHeptagon" ) ) ) );
         }
 
         if ( developerExtras ) {
             menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-            menu.add( enableIf( isEditor, createMenuItem( "Assert Selection", ( "assertSelection" ) ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Assert Selection", ( "ValidateSelection" ) ) ) );
 
             //            menu.add( enableIf( isEditor, createMenuItem( "6-Lattice", getExclusiveAction( "sixLattice" ) ) );
         }
@@ -370,8 +358,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu = new JMenu( "Tools" );
 
         if ( oldTools ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Set Center", "setSymmetryCenter" ) ) ); 
-            menu.add( enableIf( isEditor, createMenuItem( "Set Axis", "setSymmetryAxis" ) ) ); 
+            menu.add( enableIf( isEditor, createMenuItem( "Set Center", "SymmetryCenterChange" ) ) ); 
+            menu.add( enableIf( isEditor, createMenuItem( "Set Axis", "SymmetryAxisChange" ) ) ); 
             menu.addSeparator(); 
 
             showToolsMenuItem = enableIf( isEditor, createMenuItem( "Show Tools Panel", "showToolsPanel" ) );
@@ -388,7 +376,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm", symmetryController, KeyEvent.VK_I, COMMAND ) ) );
         }
         if ( developerExtras && isRootThree ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Dodecagonal Symmetry", "dodecagonsymm", symmetryController, KeyEvent.VK_D, COMMAND ) ) );
+            menu.add( enableIf( isEditor, createMenuItem( "Dodecagonal Symmetry", "DodecagonSymmetry", symmetryController, KeyEvent.VK_D, COMMAND ) ) );
         }
         menu.add( enableIf( isEditor, createMenuItem( "Cubic / Octahedral Symmetry", "octasymm", symmetryController, KeyEvent.VK_C, COMMAND_OPTION ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", symmetryController, KeyEvent.VK_T, COMMAND_OPTION ) ) );
@@ -401,14 +389,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .addSeparator();
         menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog", KeyEvent.VK_P, COMMAND_OPTION ) ) );
-        if ( enable4d ) {
-            menu.add( enableIf( isEditor, createMenuItem( "H_4 Symmetry", "h4symmetry" ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "H_4 Rotations", "h4rotations" ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "I,T Symmetry", "IxTsymmetry" ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "T,T Symmetry", "TxTsymmetry" ) ) );
-        }
         menu .addSeparator();
-        menu .add( enableIf( isEditor, createMenuItem( "Validate Paneled Surface", "validate-2-manifold" ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Validate Paneled Surface", "Validate2Manifold" ) ) );
 
         super .add( menu );
 
@@ -547,8 +529,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         // ----------------------------------------- Help menu
         menu = new JMenu( "Help" );
-        if ( "G4G10" .equals( controller .getProperty( "licensed.user" ) ) )
-            menu .add( createMenuItem( "Welcome G4G10 Participant...", "openResource-org/vorthmann/zome/content/welcomeG4G10.vZome" ) );
         menu .add( createMenuItem( "Quick Start...", "openResource-org/vorthmann/zome/content/welcomeDodec.vZome" ) );
         menu .addSeparator(); 
         {

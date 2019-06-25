@@ -29,9 +29,7 @@ public abstract class ChangeSelection extends SideEffects
     }
 
 	protected final Selection mSelection;
-    
-    private boolean mDirty = false;
-    
+        
     private boolean groupingDoneInSelection;
     
     private boolean orderedSelection = false;
@@ -42,16 +40,11 @@ public abstract class ChangeSelection extends SideEffects
 
     ChangeSelection( Selection selection )
     {
-        this(selection, false);
-    }
-
-    ChangeSelection( Selection selection, boolean groupInSelection )
-    {
         mSelection = selection;
-        groupingDoneInSelection = groupInSelection;
+        groupingDoneInSelection = false;
     }
 
-	public void setOrderedSelection( boolean orderedSelection )
+    public void setOrderedSelection( boolean orderedSelection )
 	{
 		this.orderedSelection = orderedSelection;
 	}
@@ -122,7 +115,7 @@ public abstract class ChangeSelection extends SideEffects
     public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Failure
     {
         String grouping = xml .getAttribute( "grouping" );
-        if ( "2.1.1" .equals( grouping ) )
+        if ( this .groupingAware() && ( format .groupingDoneInSelection() || "2.1.1" .equals( grouping ) ) )
             groupingDoneInSelection = true;
         setXmlAttributes( xml, format );
         
@@ -130,17 +123,12 @@ public abstract class ChangeSelection extends SideEffects
 //        if ( mSelection != null )
 //            System.out.print( " selection: " + mSelection .size() );
     }
+    
+    protected boolean groupingAware()
+    {
+        return false;
+    }
 
-    public boolean selectionChanged()
-    {
-        return mDirty;
-    }
-    
-    protected void setDirty()
-    {
-        mDirty = true;
-    }
-    
     public void unselect( Manifestation man )
     {
         unselect( man, false );
@@ -151,7 +139,6 @@ public abstract class ChangeSelection extends SideEffects
         if ( groupingDoneInSelection )  // the legacy form, pre 2.1.2
         {
             plan( new SelectManifestation( man, false ) );
-            mDirty = true;
             return;
         }
         if ( man == null )
@@ -183,7 +170,6 @@ public abstract class ChangeSelection extends SideEffects
             plan( new SelectManifestation( man, false ) );
         else
             unselectGroup( group );
-    	mDirty = true;
     }
     
     public void select( Manifestation man )
@@ -203,7 +189,6 @@ public abstract class ChangeSelection extends SideEffects
         if ( groupingDoneInSelection )  // the legacy form, pre 2.1.2
         {
             plan( new SelectManifestation( man, true ) );
-            mDirty = true;
             return;
         }
         if ( man == null )
@@ -219,7 +204,6 @@ public abstract class ChangeSelection extends SideEffects
             plan( new SelectManifestation( man, true ) );
         else
             selectGroup( group );
-    	mDirty = true;
     }
     
     private void selectGroup( Group group )

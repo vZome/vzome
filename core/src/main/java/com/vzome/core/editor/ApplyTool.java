@@ -51,7 +51,7 @@ public class ApplyTool extends ChangeManifestations
         if ( tool .needsInput() )
         {
             for (Manifestation man : inputs) {
-                Construction c = man .getConstructions() .next();
+                Construction c = man .toConstruction();
 
                 tool .performEdit( c, this );
             }
@@ -77,7 +77,7 @@ public class ApplyTool extends ChangeManifestations
 
     public ApplyTool( ToolsModel tools, Tool tool, EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction, boolean redundantOutputs )
     {
-        super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel(), false );
+        super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel() );
         this.tools = tools;
 
         this .tool = tool;

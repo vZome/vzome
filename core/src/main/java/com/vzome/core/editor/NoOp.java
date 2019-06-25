@@ -3,11 +3,13 @@
 
 package com.vzome.core.editor;
 
+import java.util.Map;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 
 public class NoOp implements UndoableEdit
 {
@@ -18,10 +20,19 @@ public class NoOp implements UndoableEdit
     }
 
     @Override
+    public boolean isNoOp()
+    {
+        return true;
+    }
+
+    @Override
     public void undo()
     {
         throw new IllegalStateException();
     }
+
+    @Override
+    public void configure( Map<String,Object> props ) {}
 
     @Override
     public void redo() throws Failure

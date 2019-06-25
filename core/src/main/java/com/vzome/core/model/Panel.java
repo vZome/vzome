@@ -2,15 +2,20 @@
 
 package com.vzome.core.model;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
+import com.vzome.core.construction.Construction;
+import com.vzome.core.construction.FreePoint;
+import com.vzome.core.construction.Point;
+import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
-
-import java.util.ArrayList;
 
 public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 {
@@ -56,6 +61,20 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
     public AlgebraicVector getCentroid()
     {
         return AlgebraicVectors.calculateCentroid(mVertices);
+    }
+
+    @Override
+    public Construction toConstruction()
+    {
+        Construction first = this .getFirstConstruction();
+        if ( first .is3d() )
+            return first;
+        
+        AlgebraicField field = mVertices.get( 0 ) .getField();
+        List<Point> projected = this .mVertices .stream()
+                .map( pt -> new FreePoint( field .projectTo3d( pt, true ) ) )
+                .collect( Collectors.toList() ); 
+        return new PolygonFromVertices( projected );
     }
 
     /**

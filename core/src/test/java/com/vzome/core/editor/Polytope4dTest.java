@@ -33,7 +33,7 @@ public class Polytope4dTest
 		RealizedModel realized = new RealizedModel( field, new Projection .Default( field ) );
 		assertEquals( 0, realized .size() );
 
-		Polytope4d cmd = new Polytope4d( selection, realized, app, segment, 1, "A4", false );
+		Polytope4d cmd = new Polytope4d( selection, realized, app, segment, 1, "A4" );
 		cmd .perform();
 		assertEquals( 10, realized .size() );
 		// look for ball at (2/5 -4/5φ, 8/5 -6/5φ, -2 +2φ)

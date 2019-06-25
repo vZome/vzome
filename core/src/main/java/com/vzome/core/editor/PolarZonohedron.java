@@ -24,16 +24,18 @@ import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
-public class PolarZonohedron extends ChangeManifestations {
-    private final SymmetrySystem symmetry;
+public class PolarZonohedron extends ChangeManifestations
+{
+    private SymmetrySystem symmetry;
+    private final EditorModel editor;
     
-    public PolarZonohedron( Selection selection, RealizedModel realized, SymmetrySystem symmetry)
+    public PolarZonohedron( EditorModel editor )
     {
-        super( selection, realized );
-        this.symmetry = symmetry;
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this .editor = editor;
+        this .symmetry = editor .getSymmetrySystem();
     }
 
     @Override
@@ -43,7 +45,8 @@ public class PolarZonohedron extends ChangeManifestations {
     }
 
     @Override
-    protected void getXmlAttributes(Element element) {
+    protected void getXmlAttributes(Element element)
+    {
         if (symmetry != null) {
             DomUtils.addAttribute(element, "symmetry", symmetry.getName());
         }
@@ -56,8 +59,11 @@ public class PolarZonohedron extends ChangeManifestations {
     // since there is nothing else to deserialize. but it does serve as a reminder
     // if this code is used as a pattern for another subclass of ChangeSelection.
     @Override
-    protected void setXmlAttributes(Element xml, XmlSaveFormat format) 
-            throws Failure { }
+    protected void setXmlAttributes( Element xml, XmlSaveFormat format ) 
+            throws Failure
+    {
+        this .symmetry = this .editor .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
+    }
     
     @Override
     public void perform() throws Command.Failure

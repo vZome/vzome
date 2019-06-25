@@ -1,13 +1,15 @@
 package com.vzome.core.editor;
 
+import java.util.Map;
+
+import org.w3c.dom.Element;
+
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import org.w3c.dom.Element;
 
 /**
  * @author David Hall
@@ -18,17 +20,55 @@ import org.w3c.dom.Element;
  */
 public class AdjustSelectionByClass extends ChangeSelection
 {
-    private final RealizedModel model;
     private ActionEnum ballAction = ActionEnum.IGNORE;
     private ActionEnum strutAction = ActionEnum.IGNORE;
     private ActionEnum panelAction = ActionEnum.IGNORE;
+    private final EditorModel editor;
+        
+    public AdjustSelectionByClass( EditorModel editor )
+    {
+        super( editor .getSelection() );
+        this.editor = editor;
+    }
+    
+    @Override
+    public void configure( Map<String,Object> props ) 
+    {
+        String mode = (String) props .get( "mode" );
+        if ( mode != null )
+            switch ( mode ) {
 
-    public AdjustSelectionByClass(Selection selection, RealizedModel model, ActionEnum balls, ActionEnum struts, ActionEnum panels) {
-        super(selection, false);
-        this.model  = model;
-        this.ballAction = balls;
-        this.strutAction = struts;
-        this.panelAction = panels;
+            case "selectBalls":
+                this.ballAction = ActionEnum.SELECT;
+                break;
+
+            case "selectStruts":
+                this.strutAction = ActionEnum.SELECT;
+                break;
+
+            case "selectPanels":
+                this.panelAction = ActionEnum.SELECT;
+                break;
+
+            case "deselectBalls":
+            case "unselectBalls":
+                this.ballAction = ActionEnum.DESELECT;
+                break;
+
+            case "deselectStruts":
+                this.strutAction = ActionEnum.DESELECT;
+                break;
+
+            case "deselectPanels":
+                this.panelAction = ActionEnum.DESELECT;
+                break;
+
+            case "unselectStruts":
+            case "unselectStrutsAndPanels":
+                this.strutAction = ActionEnum.DESELECT;
+                this.panelAction = ActionEnum.DESELECT; // legacy
+                break;
+            }
     }
 
     @Override
@@ -39,7 +79,7 @@ public class AdjustSelectionByClass extends ChangeSelection
                 ballAction == ActionEnum.SELECT ||
                 strutAction == ActionEnum.SELECT ||
                 panelAction == ActionEnum.SELECT)
-                ? model
+                ? this .editor .getRealizedModel()
                 : mSelection;
 
         for (Manifestation man : whichManifestationSet) {

@@ -8,7 +8,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class SelectByDiameter extends SelectByBoundary {
     public static final String NAME = "SelectByDiameter";
@@ -21,8 +20,9 @@ public class SelectByDiameter extends SelectByBoundary {
     protected AlgebraicVector center;
     protected AlgebraicNumber maxRadiusSquared;
     
-    public SelectByDiameter(Selection selection, RealizedModel realized) {
-        super(selection, realized);
+    public SelectByDiameter( EditorModel editor )
+    {
+        super( editor .getSelection(), editor .getRealizedModel() );
     }
 
     @Override

@@ -211,7 +211,7 @@ public class ZomicEditorPanel extends JPanel implements Tool {
          button .addActionListener( new ZomicOutputAction() {
             @Override
             public void outputScript( String script ){
-                mController .doScriptAction( "runZomicScript" , script );
+                mController .doScriptAction( "RunZomicScript" , script );
             }
         } );
         button .setToolTipText( "Execute the selection on the model." );

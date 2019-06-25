@@ -38,7 +38,7 @@ public class ReversePanel extends ChangeManifestations
         
     public ReversePanel( Manifestation singlePanel, Selection selection, RealizedModel realized )
     {
-        super( selection, realized, false );
+        super( selection, realized );
         if ( singlePanel != null )
             this .panel = (Panel) singlePanel;
         else

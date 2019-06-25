@@ -8,13 +8,20 @@ import com.vzome.core.model.Manifestation;
 
 public class DeselectAll extends ChangeSelection
 {
-    public DeselectAll( Selection selection, boolean groupInSelection )
+    public DeselectAll( EditorModel editor )
     {
-        super( selection, groupInSelection );
+        super( editor .getSelection() );
         
-        for (Manifestation man : selection) {
+        // TODO: move this to perform()
+        for ( Manifestation man : this .mSelection ) {
             unselect( man, true );
         }
+    }
+    
+    @Override
+    protected boolean groupingAware()
+    {
+        return true;
     }
 
     @Override

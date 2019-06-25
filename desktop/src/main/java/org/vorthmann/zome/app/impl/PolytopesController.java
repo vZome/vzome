@@ -4,6 +4,8 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
@@ -19,10 +21,10 @@ import com.vzome.core.math.symmetry.Direction;
 
 public class PolytopesController extends DefaultController
 {
-	private final DocumentModel model;
-    
+    private final DocumentModel model;
+
     private String group = "H4";
-    
+
     private final String[] groups;
 
     private boolean[] generateEdge = new boolean[]{ false, false, false, true };
@@ -43,11 +45,11 @@ public class PolytopesController extends DefaultController
         }
         // TODO: get the list from the field itself
         if ( null == document .getFieldApplication() .getQuaternionSymmetry( "H_4" ) ) {
-        	groups = new String[]{ "A4", "B4/C4", "D4", "F4" };
-        	group = "F4";
+            groups = new String[]{ "A4", "B4/C4", "D4", "F4" };
+            group = "F4";
         } else {
-        	groups = new String[]{ "A4", "B4/C4", "D4", "F4", "H4" };
-        	group = "H4";
+            groups = new String[]{ "A4", "B4/C4", "D4", "F4", "H4" };
+            group = "H4";
         }
         rotationQuaternion = new VectorController( field .basisVector( 4, AlgebraicVector.W4 ) );
     }
@@ -55,37 +57,37 @@ public class PolytopesController extends DefaultController
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
-    	switch ( action ) {
+        switch ( action ) {
 
-    	case "setQuaternion":
-    		/*
-    		 *   The old way:
-    		 *     With no symmetry axis set, the 120-cell comes out with medium blue struts.
-    		 *     With a short blue symmetry axis set, it comes out with double short blue struts.
-    		 *   We don't need to scale that way now, but we do need to scale in a predictable way.
-    		 *   The new way:
-    		 *     A quaternion value of (1,0,0,0) produces a 120-cell with medium blue struts, as before.
-    		 *     With no quaternion strut selected, the quaternion value defaults to (1,0,0,0).
-    		 *     With a single short blue selected as the quaternion, the quaternion is (0,1,0,0) or similar.
-    		 */
-    		Segment strut = model .getSelectedSegment();
-    		if ( strut != null ) {
-    		    AlgebraicVector vector = strut .getOffset();
-    		    SymmetrySystem symm = model .getSymmetrySystem();
-    		    Axis zone = symm .getAxis( vector );
-    		    AlgebraicNumber len = zone .getLength( vector );
-    		    len = zone .getOrbit() .getLengthInUnits( len );
-    		    vector = zone .normal() .scale( len );
-    		    rotationQuaternion .setVector( vector .inflateTo4d() );
-    		} else {
-    			AlgebraicVector vector = this .field .basisVector( 4, AlgebraicVector.W4 );
-    			rotationQuaternion .setVector( vector );
-    		}
-			return;
+        case "setQuaternion":
+            /*
+             *   The old way:
+             *     With no symmetry axis set, the 120-cell comes out with medium blue struts.
+             *     With a short blue symmetry axis set, it comes out with double short blue struts.
+             *   We don't need to scale that way now, but we do need to scale in a predictable way.
+             *   The new way:
+             *     A quaternion value of (1,0,0,0) produces a 120-cell with medium blue struts, as before.
+             *     With no quaternion strut selected, the quaternion value defaults to (1,0,0,0).
+             *     With a single short blue selected as the quaternion, the quaternion is (0,1,0,0) or similar.
+             */
+            Segment strut = model .getSelectedSegment();
+            if ( strut != null ) {
+                AlgebraicVector vector = strut .getOffset();
+                SymmetrySystem symm = model .getSymmetrySystem();
+                Axis zone = symm .getAxis( vector );
+                AlgebraicNumber len = zone .getLength( vector );
+                len = zone .getOrbit() .getLengthInUnits( len );
+                vector = zone .normal() .scale( len );
+                rotationQuaternion .setVector( vector .inflateTo4d() );
+            } else {
+                AlgebraicVector vector = this .field .basisVector( 4, AlgebraicVector.W4 );
+                rotationQuaternion .setVector( vector );
+            }
+            return;
 
-		default:
-			break;
-		}
+        default:
+            break;
+        }
         if ( "generate".equals( action ) )
         {
             int index = 0;
@@ -98,7 +100,14 @@ public class PolytopesController extends DefaultController
                     edgesToRender += 1 << i;
             }
             AlgebraicVector quaternion = rotationQuaternion .getVector() .scale( this .defaultScaleFactor );
-            model .generatePolytope( group, group, index, edgesToRender, quaternion, edgeScales );
+            Map<String, Object> params = new HashMap<>();
+            params .put( "groupName", group );
+            params .put( "renderGroupName", group );
+            params .put( "index", index );
+            params .put( "edgesToRender", edgesToRender );
+            params .put( "edgeScales", edgeScales );
+            params .put( "quaternion", quaternion );
+            model .doEdit( "Polytope4d", params );
         }
         else if ( action .startsWith( "setGroup." ) )
         {
@@ -125,7 +134,7 @@ public class PolytopesController extends DefaultController
     @Override
     public String[] getCommandList( String listName )
     {
-    	return this .groups;
+        return this .groups;
     }
 
     @Override
@@ -152,15 +161,15 @@ public class PolytopesController extends DefaultController
     }
 
     @Override
-	public Controller getSubController( String name )
+    public Controller getSubController( String name )
     {
-    	switch ( name ) {
+        switch ( name ) {
 
-    	case "rotation":
-			return this .rotationQuaternion;
+        case "rotation":
+            return this .rotationQuaternion;
 
-		default:
-			return super.getSubController( name );
-		}
-	}
+        default:
+            return super.getSubController( name );
+        }
+    }
 }

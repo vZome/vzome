@@ -3,10 +3,11 @@
 
 package com.vzome.core.editor;
 
-import com.vzome.core.commands.AttributeMap;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.commands.AttributeMap;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
@@ -22,23 +23,49 @@ public class SelectManifestation extends ChangeSelection
     
     private Construction construction;  // just for save
     
-    private RealizedModel mRealized;
+    private final RealizedModel mRealized;
     
     private boolean mReplace;
 
-    public SelectManifestation( Manifestation m, boolean replace, Selection selection, RealizedModel realized, boolean groupInSelection )
+    public SelectManifestation( EditorModel editor )
     {
-        super( selection, groupInSelection );
-        
-        mRealized = realized;
-        mManifestation = m;
-        mReplace = replace;
-        setDirty();
-        if ( m != null )
+        super( editor .getSelection() );
+        this.mRealized = editor .getRealizedModel();
+    }
+    
+    @Override
+    protected boolean groupingAware()
+    {
+        return true;
+    }
+
+    /**
+     * Used by CommandEdit.
+     * @param editor
+     * @param m
+     */
+    public SelectManifestation( EditorModel editor, Manifestation m )
+    {
+        this( editor );
+        this .mManifestation = m;
+        if ( this.mManifestation != null )
         {
             // must record the construction for save, because if this gets undone, there's no
             //  guarantee that the manifestation will have any constructions!
-            construction = mManifestation .getConstructions() .next();
+            construction = this.mManifestation .getFirstConstruction();
+        }
+    }
+
+    public void configure( Map<String, Object> props )
+    {
+        String mode = (String) props .get( "mode" );
+        this.mReplace = "replace" .equals( mode );
+        this.mManifestation = (Manifestation) props .get( "picked" );
+        if ( this.mManifestation != null )
+        {
+            // must record the construction for save, because if this gets undone, there's no
+            //  guarantee that the manifestation will have any constructions!
+            construction = this.mManifestation .getFirstConstruction();
         }
     }
     
@@ -60,16 +87,16 @@ public class SelectManifestation extends ChangeSelection
 
     @Override
     protected void getXmlAttributes( Element result )
-    {        
+    {
         if ( construction instanceof Point )
             XmlSaveFormat .serializePoint( result, "point", (Point) construction );
         else if ( construction instanceof Segment )
             XmlSaveFormat .serializeSegment( result, "startSegment", "endSegment", (Segment) construction );
         else if ( construction instanceof Polygon )
             XmlSaveFormat .serializePolygon( result, "polygonVertex", (Polygon) construction );
-        
+
         if ( mReplace )
-        	DomUtils .addAttribute( result, "replace", "true" );
+            DomUtils .addAttribute( result, "replace", "true" );
     }
 
     @Override

@@ -48,7 +48,8 @@ public class CommandPolygon extends AbstractCommand
         String errorMsg = null;
         if ( points.size() < 3 ) {
             errorMsg = "A polygon requires at least three vertices.";
-        } else {
+        } else if ( points.get( 0 ) .is3d() && points.get( 1 ) .is3d() && points.get( 1 ) .is3d() )
+        {
             AlgebraicVector normal = AlgebraicVectors.getNormal(
                     points.get(0).getLocation(), 
                     points.get(1).getLocation(), 

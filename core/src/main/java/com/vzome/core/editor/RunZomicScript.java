@@ -4,17 +4,17 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.ZomicVirtualMachine;
-import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Point;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.zomic.Interpreter;
 import com.vzome.core.zomic.ZomicASTCompiler;
 import com.vzome.core.zomic.ZomicException;
@@ -29,12 +29,17 @@ public class RunZomicScript extends ChangeManifestations
     private final Point origin;
     private IcosahedralSymmetry symm;
 
-    public RunZomicScript( Selection selection, RealizedModel realized, String text, Point origin, IcosahedralSymmetry symmetry )
+    public RunZomicScript( EditorModel editor )
     {
-        super( selection, realized, false );
-        this .programText = text;
-        this .origin = origin;
-		this .symm = symmetry;
+        super( editor .getSelection(), editor .getRealizedModel() );
+        this.origin = editor .getCenterPoint();
+		this.symm = (IcosahedralSymmetry) editor .getSymmetrySystem() .getSymmetry();
+    }
+    
+    @Override
+    public void configure( Map<String,Object> props ) 
+    {
+        this.programText = (String) props .get( "script" );
     }
 
 	@Override

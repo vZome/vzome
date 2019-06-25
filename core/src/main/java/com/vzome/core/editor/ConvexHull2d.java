@@ -10,13 +10,13 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.convexhull.GrahamScan2D;
-import com.vzome.core.model.RealizedModel;
 
 public class ConvexHull2d extends ConvexHull {
     public static final String NAME = "ConvexHull2d";
 
-    public ConvexHull2d(Selection selection, RealizedModel realized) {
-        super(selection, realized);
+    public ConvexHull2d( EditorModel editor )
+    {
+        super( editor .getSelection(), editor .getRealizedModel() );
     }
     
     @Override

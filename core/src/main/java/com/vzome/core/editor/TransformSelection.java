@@ -23,7 +23,7 @@ public class TransformSelection extends ChangeManifestations
     
     public TransformSelection( Selection selection, RealizedModel realized, Transformation transform )
     {
-        super( selection, realized, false );
+        super( selection, realized );
         this .transform = transform;
     }
     

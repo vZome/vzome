@@ -3,6 +3,7 @@
 
 package com.vzome.core.editor;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.python.core.PyException;
@@ -13,17 +14,20 @@ import org.w3c.dom.Element;
 import com.vzome.api.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.construction.Point;
-import com.vzome.core.model.RealizedModel;
 
 public class RunPythonScript extends ApiEdit
 {
 	private String programText;
-	
-    public RunPythonScript( Selection selection, RealizedModel realized, String text, Point origin )
+
+    public RunPythonScript( EditorModel editor )
     {
-        super( selection, realized, origin );
-        this .programText = text;
+        super( editor );
+    }
+    
+    @Override
+    public void configure( Map<String,Object> props ) 
+    {
+        this.programText = (String) props .get( "script" );
     }
 
     @Override
@@ -48,29 +52,31 @@ public class RunPythonScript extends ApiEdit
     @Override
     public void perform() throws Failure
     {
-    	// The delegate interface is carefully designed to keep the API public,
-    	//  but keep the knowledge of ModelRoot, Selection, and ChangeConstructions, etc. here.
-    	
-    	Command.Delegate delegate = this .createDelegate();
-    	
-    	Properties props = new Properties();
-    	props .setProperty( "python.path", "/Library/Python/2.7/site-packages" );
-    	
-    	// TODO this could be done once, when the python console is opened
+        // The delegate interface is carefully designed to keep the API public,
+        //  but keep the knowledge of ModelRoot, Selection, and ChangeConstructions, etc. here.
+
+        Command.Delegate delegate = this .createDelegate();
+
+        Properties props = new Properties();
+        props .setProperty( "python.path", "/Library/Python/2.7/site-packages" );
+
+        // TODO this could be done once, when the python console is opened
         InteractiveConsole.initialize( System.getProperties(), props, new String[0] );
-        
+
         PythonInterpreter interp = new PythonInterpreter();
         interp .setOut( System.out );
         interp .setErr( System.err );
         interp .set( "javaCommand", new Command( delegate ) );
         try {
-			interp .exec( "import vzome" );
-			interp .exec( "command = vzome.Command( cmd=javaCommand )" );
-			interp .exec( this .programText );
-		} catch ( PyException e ) {
-			e.printStackTrace();
-			throw new Failure( e.toString() );
-		}
+            interp .exec( "import vzome" );
+            interp .exec( "command = vzome.Command( cmd=javaCommand )" );
+            interp .exec( this .programText );
+        } catch ( PyException e ) {
+            e.printStackTrace();
+            throw new Failure( e.toString() );
+        } finally {
+            interp .close();
+        }
         redo();
     }
 }

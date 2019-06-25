@@ -69,6 +69,16 @@ public abstract class Polygon extends Construction
             result .appendChild( child );
         }
     }
+    
+    @Override
+    public boolean is3d()
+    {
+        for ( AlgebraicVector algebraicVector : mVertices ) {
+            if ( algebraicVector .dimension() != 3 )
+                return false;
+        }
+        return true;
+    }
 
     public int getVertexCount()
     {

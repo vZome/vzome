@@ -332,7 +332,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         return;
                     int rgb = color .getRGB() & 0xffffff;
                     int alpha = color .getAlpha() & 0xff;
-                    String command = "setItemColor/" + Integer.toHexString( ( rgb << 8 ) | alpha );
+                    String command = "ColorManifestations/" + Integer.toHexString( ( rgb << 8 ) | alpha );
                     mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
                     break;
                     

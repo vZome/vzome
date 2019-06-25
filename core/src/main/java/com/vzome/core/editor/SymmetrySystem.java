@@ -374,7 +374,7 @@ public class SymmetrySystem implements OrbitSource
         Command command = this .symmetryPerspective .getLegacyCommand( action );
         if ( command != null )
         {
-            CommandEdit edit = new CommandEdit( (AbstractCommand) command, this .editor, false );
+            CommandEdit edit = new CommandEdit( (AbstractCommand) command, this .editor );
             this .context .performAndRecord( edit );
             return true;
         }

@@ -15,9 +15,9 @@ import com.vzome.core.model.Strut;
 
 public class StrutIntersection extends ChangeManifestations
 {
-    public StrutIntersection( Selection selection, RealizedModel realized, boolean groupInSelection )
+    public StrutIntersection( Selection selection, RealizedModel realized )
     {
-        super( selection, realized, groupInSelection );
+        super( selection, realized );
     }
     
     @Override
