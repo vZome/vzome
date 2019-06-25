@@ -3,10 +3,10 @@
 
 package com.vzome.core.construction;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
@@ -546,7 +546,7 @@ public class VefToModelTest
         double r = new RootTwoField(). createAlgebraicNumber( terms ).evaluate();
         double p = new PentagonField(). createAlgebraicNumber( terms ).evaluate();
         double d = new SnubDodecField().createAlgebraicNumber( terms ).evaluate();
-        assertEquals(p, d);
+        assertEquals(p, d, 0.0D);
         assertFalse(p == r);
 
         int testsPassed = 0;

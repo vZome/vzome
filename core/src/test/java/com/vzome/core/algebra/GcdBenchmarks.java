@@ -2,8 +2,8 @@ package com.vzome.core.algebra;
 
 import static com.vzome.core.algebra.BigRational.Gcd.LOOKUP_SIZE;
 import static com.vzome.core.generic.Utilities.thisSourceCodeLine;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.function.BinaryOperator;
