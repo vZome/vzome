@@ -1,14 +1,17 @@
 package com.vzome.core.generic;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+
+import org.junit.Test;
+
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import java.util.ArrayList;
-import static junit.framework.TestCase.assertNotNull;
-import org.junit.Test;
 
 /**
  * @author David Hall

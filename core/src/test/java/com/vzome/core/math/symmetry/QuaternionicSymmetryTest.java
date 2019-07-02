@@ -3,16 +3,18 @@
 
 package com.vzome.core.math.symmetry;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.Quaternion;
 
-import junit.framework.TestCase;
-
-public class QuaternionicSymmetryTest extends TestCase
+public class QuaternionicSymmetryTest
 {
-
+    @Test
     public void testH4Symmetry()
     {
         AlgebraicField field = new PentagonField();

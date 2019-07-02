@@ -3,14 +3,17 @@
 
 package com.vzome.core.math;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.RootTwoField;
 
-public class QuaternionProjectionTest extends TestCase
+public class QuaternionProjectionTest
 {
+    @Test
     public void testProjection()
     {
         AlgebraicField field = new RootTwoField();

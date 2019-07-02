@@ -224,6 +224,7 @@ public class AxialStretchTool extends TransformationTool
         this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
     }
 
+    @Override
     protected String checkSelection( boolean prepareTool )
     {
     	Point center = null;

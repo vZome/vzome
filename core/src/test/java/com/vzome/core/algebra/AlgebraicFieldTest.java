@@ -1,9 +1,9 @@
 package com.vzome.core.algebra;
 
 import static com.vzome.core.generic.Utilities.getSourceCodeLine;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.Set;
