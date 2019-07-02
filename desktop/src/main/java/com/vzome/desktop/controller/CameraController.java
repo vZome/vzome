@@ -337,6 +337,8 @@ public class CameraController extends DefaultController implements Controller3d
             // bookmarked views are not "special"... they are stored in recent, too
             saveBaselineView();
         }
+        else
+            super .doAction( action, e );
     }
 
     public MouseTool getTrackball()

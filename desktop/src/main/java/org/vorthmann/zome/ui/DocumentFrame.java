@@ -46,7 +46,6 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
-import com.vzome.desktop.controller.CameraControlPanel;
 import com.vzome.desktop.controller.Controller3d;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions

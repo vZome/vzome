@@ -499,11 +499,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         cbMenuItem .setSelected( setting );
         menu.add( cbMenuItem );
 
-        cbMenuItem = actions .setMenuAction( "toggleOutlines", controller, new JCheckBoxMenuItem( "Render Outlines" ) );
-        setting = "true".equals( controller.getProperty( "drawOutlines" ) );
-        cbMenuItem .setSelected( setting );
-        menu.add( cbMenuItem );
-
         super.add( menu );
 
         // ----------------------------------------- Scripting menu

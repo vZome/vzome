@@ -1,4 +1,4 @@
-package com.vzome.desktop.controller;
+package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -20,6 +20,8 @@ import javax.swing.event.ChangeListener;
 
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.Controller;
+
+import com.vzome.desktop.controller.Controller3d;
 
 /**
  * Description here.
@@ -128,13 +130,12 @@ public class CameraControlPanel extends JPanel {
         snapperCheckbox .setSelected( "true" .equals( controller .getProperty( "snap" ) ) );
         checkboxesPanel .add( snapperCheckbox );
 
-//        final JCheckBox stereoCheckbox = new JCheckBox( "stereo" );
-//        //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
-//        stereoCheckbox .addActionListener( controller );
-//        stereoCheckbox .setActionCommand( "toggleStereo" );
-//        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
-////        stereoCheckbox .setEnabled( false );
-//        checkboxesPanel .add( stereoCheckbox );
+        final JCheckBox outlinesCheckbox = new JCheckBox( "outlines" );
+        //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
+        outlinesCheckbox .addActionListener( controller );
+        outlinesCheckbox .setActionCommand( "toggleOutlines" );
+        outlinesCheckbox .setSelected( "true" .equals( controller .getProperty( "drawOutlines" ) ) );
+        checkboxesPanel .add( outlinesCheckbox );
         
         this .addMouseWheelListener( new MouseWheelListener()
         {
@@ -154,33 +155,33 @@ public class CameraControlPanel extends JPanel {
 //        stereoCheckbox .setSelected( "true" .equals( controller .getProperty( "stereo" ) ) );
 
         controller .addPropertyListener( new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange( PropertyChangeEvent e )
             {
-                @Override
-                public void propertyChange( PropertyChangeEvent e )
-                {
-                	if ( "magnification" .equals(  e .getPropertyName() ) ) {
-                	    float mag = Float .parseFloat( (String) e .getNewValue() );
-                	    zslider .setValue( magToTicks( mag ) );
-                    }
-                    else if ( "perspective" .equals(  e .getPropertyName() ) ) {
-                        boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
-                        perspectiveCheckbox .setSelected( enabling );
-                    }
-                    else if ( "snap" .equals( e .getPropertyName() ) ) {
-                        boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
-                        snapperCheckbox .setSelected( enabling );
-                    }
-//                    else if ( "stereo" .equals( e .getPropertyName() ) ) {
-//                        boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
-//                        stereoCheckbox .setSelected( enabling );
-//                    }
-                    else if ( "editor.mode" .equals( e .getPropertyName() ) )
-                    {
-                        if ( isEditor )
-                            switchToMode( (String) e .getNewValue() );
-                    }
+                if ( "magnification" .equals(  e .getPropertyName() ) ) {
+                    float mag = Float .parseFloat( (String) e .getNewValue() );
+                    zslider .setValue( magToTicks( mag ) );
                 }
-            } );
+                else if ( "perspective" .equals(  e .getPropertyName() ) ) {
+                    boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
+                    perspectiveCheckbox .setSelected( enabling );
+                }
+                else if ( "snap" .equals( e .getPropertyName() ) ) {
+                    boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
+                    snapperCheckbox .setSelected( enabling );
+                }
+                else if ( "drawOutlines" .equals( e .getPropertyName() ) ) {
+                    boolean enabling = ((Boolean) e .getNewValue()) .booleanValue();
+                    outlinesCheckbox .setSelected( enabling );
+                }
+                else if ( "editor.mode" .equals( e .getPropertyName() ) )
+                {
+                    if ( isEditor )
+                        switchToMode( (String) e .getNewValue() );
+                }
+            }
+        } );
     }
 
 	protected void switchToMode( String mode )
