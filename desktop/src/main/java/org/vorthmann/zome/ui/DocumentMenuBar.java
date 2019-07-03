@@ -530,6 +530,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             JMenu submenu3d = new JMenu( "Symmetry Starters..." );
             submenu3d .add( createMenuItem( "Icosahedral / Dodecahedral", "newFromResource-com/vzome/starters/symmetry/icosahedral/starter.vZome" ) );
             submenu3d .add( createMenuItem( "Cubic / Octahedral", "newFromResource-com/vzome/starters/symmetry/octahedral/starter.vZome" ) );
+            submenu3d .add( createMenuItem( "Cubic / Octahedral " + controller .getProperty( "field.label.sqrt2" ), "newFromResource-com/vzome/starters/symmetry/octahedral/sqrt2/starter.vZome" ) );
             submenu3d .add( createMenuItem( "Tetrahedral", "newFromResource-com/vzome/starters/symmetry/tetrahedral/starter.vZome" ) );
             menu.add( submenu3d );
         }

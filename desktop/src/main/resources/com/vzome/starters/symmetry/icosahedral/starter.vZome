@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="6.0" field="golden">
-  <EditHistory editNumber="64" lastStickyEdit="63">
+  <EditHistory editNumber="93" lastStickyEdit="88">
     <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="2" len="1 2"/>
     <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="7" len="1 1"/>
     <StrutCreation anchor="0 0 0 0 0 0" index="2" len="2 4"/>
@@ -107,7 +107,36 @@
     <DeselectAll/>
     <SelectAll/>
     <EndBlock/>
-    <BookmarkTool name="tool-3"/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="lavender" index="1" len="5 8"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="navy" index="8" len="2 3"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="sulfur" index="2" len="5 8"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="rose" index="1" len="3 5"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 1 2 7 11"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 1 2 7 11"/>
+    <EndBlock/>
+    <setItemColor blue="129" green="3" red="225"/>
+    <SelectManifestation point="2 3 0 0 9 15"/>
+    <setItemColor blue="102" green="255" red="255"/>
+    <SelectManifestation point="2 3 1 2 6 10"/>
+    <setItemColor blue="204" green="0" red="51"/>
+    <SelectManifestation point="2 3 2 3 8 13"/>
+    <setItemColor blue="255" green="153" red="153"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="spruce" index="0" len="5 8"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 2 1 2 9 14"/>
+    <DeselectAll/>
+    <SelectManifestation point="1 2 1 2 9 14"/>
+    <EndBlock/>
+    <setItemColor blue="51" green="102" red="0"/>
+    <SelectAll/>
+    <BookmarkTool name="tool-4"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 3 5 8 13"/>
+    <EndBlock/>
     <DeselectAll/>
   </EditHistory>
   <notes xmlns:xml="http://www.w3.org/XML/1998/namespace"/>
@@ -117,10 +146,10 @@
     <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
   </sceneModel>
   <Viewing>
-    <ViewModel distance="104.46785736083984" far="208.93571472167966" near="0.2611696472938306" parallel="false" stereoAngle="0.0" width="47.01053581237793">
+    <ViewModel distance="113.1686782836914" far="226.33735656738244" near="0.28292169992509036" parallel="false" stereoAngle="0.0" width="50.92590522766111">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
-      <UpDirection x="0.13626307905698376" y="0.9833397456123807" z="-0.1203134156479984"/>
-      <LookDirection x="-0.18642884240764857" y="-0.09382365855998573" z="-0.9779782246108356"/>
+      <UpDirection x="-0.04271284653955319" y="0.9912325889336584" z="-0.12503426480918314"/>
+      <LookDirection x="-0.16373854863476" y="-0.13040142872277918" z="-0.9778472043617189"/>
     </ViewModel>
   </Viewing>
   <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
@@ -149,6 +178,6 @@
     <Tool id="tool-0" label="Red mirror" selectInputs="true"/>
     <Tool id="tool-1" label="Yellow mirror" selectInputs="true"/>
     <Tool id="tool-2" label="Blue mirror" selectInputs="true"/>
-    <Tool id="tool-3" label="Starter scaffolding" selectInputs="true"/>
+    <Tool id="tool-4" label="Starter scaffolding" selectInputs="true"/>
   </Tools>
 </vzome:vZome>
