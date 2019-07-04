@@ -71,6 +71,12 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
     }
 
     @Override
+    public boolean isNoOp()
+    {
+        return false;
+    }
+
+    @Override
     public boolean isSticky()
     {
         return true;
