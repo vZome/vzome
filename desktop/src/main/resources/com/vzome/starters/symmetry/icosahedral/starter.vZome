@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="6.0" field="golden">
-  <EditHistory editNumber="93" lastStickyEdit="88">
+  <EditHistory editNumber="129" lastStickyEdit="128">
     <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="2" len="1 2"/>
     <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="7" len="1 1"/>
     <StrutCreation anchor="0 0 0 0 0 0" index="2" len="2 4"/>
@@ -136,20 +136,328 @@
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="0 0 3 5 8 13"/>
+    <DeselectAll/>
     <EndBlock/>
+    <LoadVEF scale="1 0">vZome VEF 6 field golden
+
+9
+(0,0)  (-16,27)  (-21,33)  (-2,4) 
+(0,0)  (5,-7)  (-16,25)  (-13,22) 
+(0,0)  (0,1)  (0,-1)  (0,1) 
+(0,0)  (20,-31)  (26,-43)  (2,-3) 
+(0,0)  (4,-5)  (5,-9)  (0,0) 
+(0,0)  (25,-39)  (10,-17)  (-11,18) 
+(0,0)  (-6,11)  (20,-33)  (16,-25) 
+(0,0)  (-22,37)  (-1,1)  (14,-22) 
+(0,0)  (-1,3)  (4,-7)  (3,-4) 
+
+
+
+0
+
+
+
+4
+3 0 1 2
+3 3 4 5
+6 5 3 0 1 6 7
+3 7 6 8
+
+
+
+0
+
+
+</LoadVEF>
+    <LoadVEF scale="1 0">vZome VEF 6 field golden
+
+62
+(0,0)  (0,0)  (4,-5)  (-5,9) 
+(0,0)  (-4,7)  (3,-4)  (-1,3) 
+(0,0)  (0,1)  (0,1)  (0,1) 
+(0,0)  (-5,9)  (0,0)  (-4,5) 
+(0,0)  (0,0)  (0,0)  (-6,8) 
+(0,0)  (0,0)  (1,-1)  (-1,0) 
+(0,0)  (0,0)  (6,-8)  (0,0) 
+(0,0)  (-1,1)  (1,0)  (0,0) 
+(0,0)  (-4,5)  (-5,9)  (0,0) 
+(0,0)  (-3,4)  (-1,3)  (4,-7) 
+(0,0)  (0,0)  (-4,5)  (-5,9) 
+(0,0)  (-3,4)  (1,-3)  (-4,7) 
+(0,0)  (-1,1)  (-1,0)  (0,0) 
+(0,0)  (-4,7)  (-3,4)  (1,-3) 
+(0,0)  (0,1)  (0,-1)  (0,-1) 
+(0,0)  (0,0)  (4,-5)  (5,-9) 
+(0,0)  (-4,7)  (3,-4)  (1,-3) 
+(0,0)  (4,-5)  (-5,9)  (0,0) 
+(0,0)  (3,-4)  (-1,3)  (-4,7) 
+(0,0)  (1,-1)  (1,0)  (0,0) 
+(0,0)  (5,-9)  (0,0)  (-4,5) 
+(0,0)  (0,0)  (-1,1)  (-1,0) 
+(0,0)  (-4,5)  (5,-9)  (0,0) 
+(0,0)  (-5,9)  (0,0)  (4,-5) 
+(0,0)  (-1,3)  (4,-7)  (3,-4) 
+(0,0)  (1,0)  (0,0)  (1,-1) 
+(0,0)  (3,-4)  (-1,3)  (4,-7) 
+(0,0)  (0,1)  (0,1)  (0,-1) 
+(0,0)  (0,0)  (0,0)  (6,-8) 
+(0,0)  (0,0)  (-1,1)  (1,0) 
+(0,0)  (4,-7)  (-3,4)  (1,-3) 
+(0,0)  (0,0)  (-4,5)  (5,-9) 
+(0,0)  (1,-3)  (-4,7)  (-3,4) 
+(0,0)  (-1,0)  (0,0)  (-1,1) 
+(0,0)  (1,-3)  (-4,7)  (3,-4) 
+(0,0)  (0,-1)  (0,1)  (0,1) 
+(0,0)  (0,0)  (-6,8)  (0,0) 
+(0,0)  (0,0)  (1,-1)  (1,0) 
+(0,0)  (-6,8)  (0,0)  (0,0) 
+(0,0)  (5,-9)  (0,0)  (4,-5) 
+(0,0)  (1,-3)  (4,-7)  (3,-4) 
+(0,0)  (-1,0)  (0,0)  (1,-1) 
+(0,0)  (0,-1)  (0,-1)  (0,-1) 
+(0,0)  (4,-5)  (5,-9)  (0,0) 
+(0,0)  (-1,3)  (4,-7)  (-3,4) 
+(0,0)  (1,0)  (0,0)  (-1,1) 
+(0,0)  (0,1)  (0,-1)  (0,1) 
+(0,0)  (-4,7)  (-3,4)  (-1,3) 
+(0,0)  (-3,4)  (-1,3)  (-4,7) 
+(0,0)  (4,-7)  (-3,4)  (-1,3) 
+(0,0)  (0,-1)  (0,-1)  (0,1) 
+(0,0)  (-1,3)  (-4,7)  (-3,4) 
+(0,0)  (4,-7)  (3,-4)  (1,-3) 
+(0,0)  (0,-1)  (0,1)  (0,-1) 
+(0,0)  (3,-4)  (1,-3)  (4,-7) 
+(0,0)  (1,-1)  (-1,0)  (0,0) 
+(0,0)  (-1,3)  (-4,7)  (3,-4) 
+(0,0)  (1,-3)  (4,-7)  (-3,4) 
+(0,0)  (4,-7)  (3,-4)  (-1,3) 
+(0,0)  (3,-4)  (1,-3)  (-4,7) 
+(0,0)  (6,-8)  (0,0)  (0,0) 
+(0,0)  (-3,4)  (1,-3)  (4,-7) 
+
+
+
+0
+
+
+
+120
+3 0 1 2
+3 3 4 5
+3 0 6 7
+3 8 9 7
+3 10 11 12
+3 3 13 14
+3 15 16 5
+3 17 18 19
+3 20 4 21
+3 22 11 12
+3 23 24 25
+3 15 26 19
+3 17 26 27
+3 23 28 29
+3 0 18 19
+3 20 30 21
+3 31 30 21
+3 20 32 33
+3 3 16 5
+3 8 34 35
+3 3 4 21
+3 31 13 14
+3 31 36 12
+3 0 1 37
+3 8 38 33
+3 39 40 41
+3 31 30 42
+3 43 44 45
+3 39 28 29
+3 23 24 46
+3 23 1 2
+3 10 47 46
+3 8 48 35
+3 10 49 50
+3 22 11 50
+3 3 51 27
+3 23 1 37
+3 15 52 53
+3 3 44 14
+3 39 40 50
+3 31 54 14
+3 10 36 55
+3 3 44 45
+3 17 56 25
+3 23 47 46
+3 15 26 27
+3 20 57 33
+3 23 56 2
+3 8 32 53
+3 0 58 35
+3 20 30 42
+3 43 59 55
+3 20 32 53
+3 0 58 37
+3 20 52 53
+3 8 38 41
+3 3 51 45
+3 8 48 7
+3 15 9 53
+3 15 52 5
+3 15 9 7
+3 8 9 53
+3 22 40 41
+3 43 60 25
+3 15 6 19
+3 22 61 42
+3 15 16 27
+3 15 6 7
+3 31 61 12
+3 23 47 29
+3 22 40 50
+3 8 34 41
+3 39 49 50
+3 17 26 19
+3 22 57 33
+3 22 61 12
+3 17 51 27
+3 10 49 29
+3 17 51 45
+3 0 6 19
+3 43 60 45
+3 20 4 5
+3 10 36 12
+3 3 13 21
+3 31 61 42
+3 39 58 37
+3 43 54 14
+3 20 52 5
+3 10 47 29
+3 23 56 25
+3 10 59 55
+3 39 28 37
+3 39 34 35
+3 39 34 41
+3 10 59 46
+3 31 36 55
+3 10 11 50
+3 31 13 21
+3 39 58 35
+3 17 60 25
+3 43 44 14
+3 20 57 42
+3 39 49 29
+3 0 18 2
+3 22 38 41
+3 3 16 27
+3 23 28 37
+3 0 48 7
+3 0 48 35
+3 43 54 55
+3 22 57 42
+3 17 18 2
+3 43 59 46
+3 17 56 2
+3 22 38 33
+3 17 60 45
+3 43 24 25
+3 43 24 46
+3 8 32 33
+3 31 54 55
+
+
+
+0
+
+
+</LoadVEF>
+    <SelectManifestation>
+      <polygonVertex at="-5 4 9 -5 0 0"/>
+      <polygonVertex at="3 -1 7 -4 -4 3"/>
+      <polygonVertex at="1 0 1 0 1 0"/>
+    </SelectManifestation>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="-5 4 9 -5 0 0"/>
+      <polygonVertex at="3 -1 7 -4 -4 3"/>
+      <polygonVertex at="0 1 0 0 -1 1"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 -5 4 9 -5"/>
+      <polygonVertex at="-4 3 3 -1 7 -4"/>
+      <polygonVertex at="1 0 1 0 1 0"/>
+    </SelectManifestation>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="37 -22 1 -1 -22 14"/>
+      <polygonVertex at="11 -6 -33 20 -25 16"/>
+      <polygonVertex at="3 -1 -7 4 -4 3"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-39 25 -17 10 18 -11"/>
+      <polygonVertex at="-31 20 -43 26 -3 2"/>
+      <polygonVertex at="27 -16 33 -21 4 -2"/>
+      <polygonVertex at="-7 5 25 -16 22 -13"/>
+      <polygonVertex at="11 -6 -33 20 -25 16"/>
+      <polygonVertex at="37 -22 1 -1 -22 14"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-31 20 -43 26 -3 2"/>
+      <polygonVertex at="-5 4 -9 5 0 0"/>
+      <polygonVertex at="-39 25 -17 10 18 -11"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="27 -16 33 -21 4 -2"/>
+      <polygonVertex at="-7 5 25 -16 22 -13"/>
+      <polygonVertex at="1 0 -1 0 1 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="-1 3 4 -1 0 0"/>
+      <polygonVertex at="2 1 3 -1 -1 2"/>
+      <polygonVertex at="1 1 1 1 1 1"/>
+    </SelectManifestation>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="3 2 0 0 2 5"/>
+      <polygonVertex at="0 0 0 0 2 6"/>
+      <polygonVertex at="0 0 1 2 3 5"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="tool-2" selectInputs="true"/>
+    <SelectManifestation>
+      <polygonVertex at="3 2 0 0 2 5"/>
+      <polygonVertex at="0 0 0 0 2 6"/>
+      <polygonVertex at="0 0 1 2 3 5"/>
+    </SelectManifestation>
+    <ApplyTool name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <setItemColor blue="102" green="102" red="102"/>
+    <SelectAll/>
+    <BookmarkTool name="tool-5"/>
     <DeselectAll/>
   </EditHistory>
-  <notes xmlns:xml="http://www.w3.org/XML/1998/namespace"/>
+  <notes/>
   <sceneModel ambientLight="41,41,41" background="175,200,220">
     <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
     <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
     <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
   </sceneModel>
   <Viewing>
-    <ViewModel distance="113.1686782836914" far="226.33735656738244" near="0.28292169992509036" parallel="false" stereoAngle="0.0" width="50.92590522766111">
+    <ViewModel distance="120.16664123535156" far="240.33328247070204" near="0.3004166075649352" parallel="false" stereoAngle="0.0" width="54.07498855590816">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
-      <UpDirection x="-0.04271284653955319" y="0.9912325889336584" z="-0.12503426480918314"/>
-      <LookDirection x="-0.16373854863476" y="-0.13040142872277918" z="-0.9778472043617189"/>
+      <UpDirection x="0.013492250680224917" y="0.9935273046758536" z="-0.11278942341884532"/>
+      <LookDirection x="-0.22206780744290863" y="-0.10700535836633249" z="-0.9691417554611633"/>
     </ViewModel>
   </Viewing>
   <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
@@ -173,11 +481,13 @@
     <Direction color="136,37,0" name="cinnamon"/>
     <Direction color="18,73,48" name="spruce"/>
     <Direction color="107,53,26" name="brown"/>
+    <Direction color="255,255,255" name="897" prototype="19 -11 -17 10 28 -17"/>
   </SymmetrySystem>
   <Tools>
     <Tool id="tool-0" label="Red mirror" selectInputs="true"/>
     <Tool id="tool-1" label="Yellow mirror" selectInputs="true"/>
     <Tool id="tool-2" label="Blue mirror" selectInputs="true"/>
-    <Tool id="tool-4" label="Starter scaffolding" selectInputs="true"/>
+    <Tool hidden="true" id="tool-4" label="Starter scaffolding" selectInputs="true"/>
+    <Tool id="tool-5" label="Starter scaffolding" selectInputs="true"/>
   </Tools>
 </vzome:vZome>
