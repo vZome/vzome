@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="NONE" coreVersion="6.0" edition="vZome" field="rootTwo" version="6.0">
-  <EditHistory editNumber="390" lastStickyEdit="385">
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="6.0" field="rootTwo">
+  <EditHistory editNumber="434" lastStickyEdit="433">
     <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="0" len="0 2" symm="octahedral"/>
     <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="0" len="0 2" symm="octahedral"/>
     <StrutCreation anchor="0 0 0 0 0 0" index="4" len="0 2" symm="octahedral"/>
@@ -42,10 +42,7 @@
     <SelectManifestation point="8 0 0 0 8 0"/>
     <SelectManifestation point="0 0 0 0 0 8"/>
     <DeselectAll/>
-    <SelectManifestation point="0 4 0 4 0 4"/>
-    <SelectNeighbors/>
     <EndBlock/>
-    <Delete/>
     <BeginBlock/>
     <SelectManifestation point="0 0 0 0 0 0"/>
     <SelectManifestation point="1 4 1 4 1 4"/>
@@ -449,20 +446,120 @@
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="0 4 0 4 8 4"/>
+    <DeselectAll/>
+    <SelectManifestation point="6 3 0 3 6 7"/>
+    <SelectManifestation endSegment="0 0 0 0 0 0" startSegment="6 3 0 3 6 7"/>
     <EndBlock/>
+    <Delete/>
+    <LoadVEF scale="1 0">vZome VEF 6 field rootTwo
+
+13
+(0,0) (0,0) (0,0) (0,0)
+(0,0) (0,0) (0,0) (16,0)
+(0,0) (4,0) (4,0) (4,8)
+(0,0) (6,0) (0,0) (12,0)
+(0,0) (4,4) (0,4) (6,6)
+(0,0) (4,4) (0,4) (8,4)
+(0,0) (4,4) (0,6) (6,6)
+(0,0) (3,6) (3,0) (7,6)
+(0,0) (8,0) (8,0) (8,0)
+(0,0) (4,6) (0,6) (6,6)
+(0,0) (8,2) (8,2) (8,2)
+(0,0) (6,6) (0,6) (6,6)
+(0,0) (0,16) (0,0) (0,16)
+
+
+
+11
+0 1
+0 10
+0 12
+2 0
+3 0
+6 4
+7 0
+8 10
+9 6
+11 0
+11 9
+
+
+
+3
+3  1 10 0 
+3  12 0 10 
+3  12 1 0 
+
+
+
+11
+0 1 2 3 4 5 6 9 10 11 
+12 
+
+</LoadVEF>
+    <BeginBlock/>
+    <SelectManifestation point="4 4 4 0 6 6"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation endSegment="0 0 0 0 0 0" startSegment="6 3 0 3 6 7"/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="4 4 4 0 4 8"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <SelectAll/>
+    <BookmarkTool name="tool-4"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 8 2 8 2 8"/>
+    <SelectManifestation point="0 0 0 0 0 16"/>
+    <SelectManifestation point="16 0 0 0 16 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale down"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale down"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale down"/>
+    <ApplyTool name="octahedral.builtin/octahedral around origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="4 1/2 4 1/2 4 1/2"/>
+      <polygonVertex at="0 0 0 0 8 0"/>
+      <polygonVertex at="0 4 0 0 0 4"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="tool-0" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="4 1/2 4 1/2 4 1/2"/>
+      <polygonVertex at="8 0 0 0 0 0"/>
+      <polygonVertex at="0 4 0 0 0 4"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="octahedral.builtin/octahedral around origin" selectInputs="true"/>
+    <setItemColor blue="102" green="102" red="102"/>
+    <SelectAll/>
+    <BookmarkTool name="tool-5"/>
     <DeselectAll/>
   </EditHistory>
-  <notes xmlns:xml="http://www.w3.org/XML/1998/namespace"/>
+  <notes/>
   <sceneModel ambientLight="41,41,41" background="178,205,230">
     <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
     <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
     <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
   </sceneModel>
   <Viewing>
-    <ViewModel distance="90.81999206542969" far="181.63998413085943" near="0.22704998354688227" parallel="false" stereoAngle="0.0" width="40.868996429443314">
+    <ViewModel distance="113.1686782836914" far="226.33735656738304" near="0.2829216999250898" parallel="false" stereoAngle="0.0" width="50.925905227661055">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
-      <UpDirection x="-0.15751622024411804" y="0.9568157462927338" z="-0.24432001147335722"/>
-      <LookDirection x="-0.4907104077073223" y="-0.2905397295981444" z="-0.821456000825819"/>
+      <UpDirection x="-0.1186719194489102" y="0.9668445913999464" z="-0.22611614629438517"/>
+      <LookDirection x="-0.33593251793628026" y="-0.25339094741952944" z="-0.9071617116913738"/>
     </ViewModel>
   </Viewing>
   <SymmetrySystem name="octahedral" renderingStyle="Tesseractix">
@@ -479,11 +576,14 @@
     <Direction color="255,255,255" name="6" prototype="-3/4 0 0 0 -3/2 0"/>
     <Direction color="255,255,255" name="7" prototype="-3/8 -3/8 -3/8 0 -7/8 -3/8"/>
     <Direction color="255,255,255" name="8" prototype="-3/4 -3/8 0 -3/8 -3/4 -3/8"/>
+    <Direction color="255,255,255" name="24" prototype="-1/2 -1/4 0 -1/4 -1 -1/4"/>
   </SymmetrySystem>
   <Tools>
     <Tool id="tool-0" label="Blue mirror" selectInputs="true"/>
     <Tool id="tool-1" label="Yellow mirror" selectInputs="true"/>
     <Tool id="tool-2" label="Green mirror" selectInputs="true"/>
-    <Tool id="tool-3" label="Starter scaffolding" selectInputs="true"/>
+    <Tool hidden="true" id="tool-3" label="Starter scaffolding" selectInputs="true"/>
+    <Tool hidden="true" id="tool-4" label="Starter scaffolding" selectInputs="true"/>
+    <Tool id="tool-5" label="Starter scaffolding" selectInputs="true"/>
   </Tools>
 </vzome:vZome>
