@@ -433,7 +433,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         {
             super();
             this .controller = controller;
-            boolean oldTools = true;// controller .propertyIsTrue( "original.tools" );
+            boolean oldTools = controller .propertyIsTrue( "original.tools" );
             this .setLightWeightPopupEnabled( false );
 
             this .add( setMenuAction( "copyThisView", new JMenuItem( "Copy This View" ) ) );

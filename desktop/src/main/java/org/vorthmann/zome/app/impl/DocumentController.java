@@ -908,6 +908,7 @@ public class DocumentController extends DefaultController implements Controller3
                 String vefData = readFile( file );
                 Map<String, Object> params = new HashMap<>();
                 params .put( "vef", vefData );
+                params .put( "scale", this .importScaleController .getValue() );
                 documentModel .doEdit( "LoadVEF/quaternion", params );
                 return;
             }
@@ -915,6 +916,7 @@ public class DocumentController extends DefaultController implements Controller3
                 String vefData = readFile( file );
                 Map<String, Object> params = new HashMap<>();
                 params .put( "vef", vefData );
+                params .put( "scale", this .importScaleController .getValue() );
                 documentModel .doEdit( "LoadVEF/tetrahedral", params );
                 return;
             }
