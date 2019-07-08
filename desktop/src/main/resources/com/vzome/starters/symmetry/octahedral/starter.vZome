@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="6.0" field="golden">
-  <EditHistory editNumber="324" lastStickyEdit="323">
+  <EditHistory editNumber="351" lastStickyEdit="350">
     <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="0" len="4 6" symm="octahedral"/>
     <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="0" len="2 3" symm="octahedral"/>
     <StrutCreation anchor="0 0 0 0 0 0" index="4" len="6 10" symm="octahedral"/>
@@ -468,6 +468,57 @@
     <SelectAll/>
     <BookmarkTool name="tool-5"/>
     <DeselectAll/>
+    <StrutCreation anchor="2 3 2 3 2 3" dir="yellow" index="9" len="1 1"/>
+    <StrutCreation anchor="3 5 3 5 3 5" dir="yellow" index="5" len="1 1"/>
+    <StrutCreation anchor="3 5 3 5 3 5" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="3 5 3 5 3 5" dir="green" index="16" len="2 2" symm="octahedral"/>
+    <StrutCreation anchor="2 6 2 6 2 6" dir="green" index="16" len="6 0" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation point="2 6 -4 6 8 6"/>
+    <SelectManifestation endSegment="2 6 -4 6 8 6" startSegment="2 6 2 6 2 6"/>
+    <EndBlock/>
+    <setItemColor blue="204" green="204" red="0"/>
+    <StrutCreation anchor="2 4 0 0 2 4" index="4" len="2 4" symm="octahedral"/>
+    <Branch>
+      <BeginBlock/>
+      <SelectManifestation point="2 9 2 3 2 15"/>
+      <SelectNeighbors/>
+      <SelectNeighbors/>
+      <SelectNeighbors/>
+      <EndBlock/>
+      <Delete/>
+      <BeginBlock/>
+      <SelectManifestation point="2 6 2 6 2 6"/>
+      <SelectNeighbors/>
+      <SelectManifestation endSegment="2 3 2 3 2 9" startSegment="2 6 2 6 2 6"/>
+      <SelectManifestation point="2 6 2 6 2 6"/>
+      <SelectManifestation endSegment="2 9 2 3 2 9" startSegment="2 6 2 6 2 6"/>
+      <SelectManifestation endSegment="2 6 -4 6 8 6" startSegment="2 6 2 6 2 6"/>
+      <EndBlock/>
+      <Delete/>
+      <BeginBlock/>
+      <SelectManifestation endSegment="2 9 2 3 2 9" startSegment="2 6 2 6 2 6"/>
+      <SelectManifestation endSegment="2 6 -4 6 8 6" startSegment="2 6 2 6 2 6"/>
+      <EndBlock/>
+      <setItemColor blue="153" green="153" red="0"/>
+      <SelectAll/>
+      <BookmarkTool name="tool-6"/>
+    </Branch>
+    <BeginBlock/>
+    <SelectManifestation point="2 6 -4 6 8 6"/>
+    <SelectManifestation endSegment="2 6 -4 6 8 6" startSegment="2 6 2 6 2 6"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="2 9 2 9 2 9" startSegment="2 6 2 6 2 6"/>
+    <SelectManifestation point="2 9 2 9 2 9"/>
+    <SelectManifestation endSegment="2 9 2 3 2 15" startSegment="2 9 2 9 2 9"/>
+    <SelectManifestation point="2 9 2 3 2 15"/>
+    <EndBlock/>
+    <setItemColor blue="204" green="204" red="0"/>
+    <SelectAll/>
+    <BookmarkTool name="tool-7"/>
+    <DeselectAll/>
   </EditHistory>
   <notes/>
   <sceneModel ambientLight="41,41,41" background="175,200,220">
@@ -476,10 +527,10 @@
     <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
   </sceneModel>
   <Viewing>
-    <ViewModel distance="138.2245330810547" far="276.4490661621082" near="0.34556133785190085" parallel="false" stereoAngle="0.0" width="62.201039886474554">
+    <ViewModel distance="158.99606323242188" far="317.9921264648421" near="0.39749016400411835" parallel="false" stereoAngle="0.0" width="71.54822845458978">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
-      <UpDirection x="-0.1394478282703671" y="0.9154827765802542" z="-0.37741964572018855"/>
-      <LookDirection x="-0.25600841950122705" y="-0.4015162408218022" z="-0.8793431625371477"/>
+      <UpDirection x="-0.1717333357386681" y="0.9494119238103602" z="-0.26291569052230723"/>
+      <LookDirection x="-0.08298576015984202" y="-0.27987368434377824" z="-0.956443455946338"/>
     </ViewModel>
   </Viewing>
   <SymmetrySystem name="octahedral" renderingStyle="trapezoids">
@@ -507,6 +558,8 @@
     <Tool id="tool-2" label="Green mirror" selectInputs="true"/>
     <Tool hidden="true" id="tool-3" label="Starter scaffolding" selectInputs="true"/>
     <Tool hidden="true" id="tool-4" label="Starter scaffolding" selectInputs="true"/>
-    <Tool id="tool-5" label="Starter scaffolding" selectInputs="true"/>
+    <Tool hidden="true" id="tool-5" label="Starter scaffolding" selectInputs="true"/>
+    <Tool hidden="true" id="tool-6" label="Starter scaffolding" selectInputs="true"/>
+    <Tool id="tool-7" label="Starter scaffolding" selectInputs="true"/>
   </Tools>
 </vzome:vZome>
