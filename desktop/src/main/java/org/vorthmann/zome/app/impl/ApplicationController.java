@@ -300,16 +300,22 @@ public class ApplicationController extends DefaultController
                 String title = ( uri.getScheme().equals("file") )
                         ? (new File(uri)).getPath()
                                 : uri.getPath();
-                        docProps .setProperty( "window.title", title );
-//                        if ( path .toLowerCase() .endsWith( vzomeExt ) ) {
-                            URL url = uri .toURL();
-                            HttpURLConnection conn = (HttpURLConnection) url .openConnection();
-                            // See https://stackoverflow.com/questions/1884230/urlconnection-doesnt-follow-redirect
-                            //  This won't switch protocols, but seems to work otherwise.
-                            conn .setInstanceFollowRedirects( true );
-                            InputStream bytes = conn .getInputStream();
-                            loadDocumentController( path, bytes, docProps );
-//                        }
+                docProps .setProperty( "window.title", title );
+//                if ( path .toLowerCase() .endsWith( vzomeExt ) ) {
+                InputStream bytes= null;
+                if( uri.getScheme().equals("file") ) {
+                    // In Windows, double clicking on an associated vZome file uses the file protocol, not http. 
+                    bytes = new FileInputStream(new File(uri));
+                } else {
+                    URL url = uri .toURL();
+                    HttpURLConnection conn = (HttpURLConnection) url .openConnection();
+                    // See https://stackoverflow.com/questions/1884230/urlconnection-doesnt-follow-redirect
+                    //  This won't switch protocols, but seems to work otherwise.
+                    conn .setInstanceFollowRedirects( true );
+                    bytes = conn .getInputStream();
+                }
+                loadDocumentController( path, bytes, docProps );
+//                }
             }
             else 
             {
