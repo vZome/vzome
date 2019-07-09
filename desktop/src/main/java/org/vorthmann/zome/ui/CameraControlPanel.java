@@ -134,7 +134,7 @@ public class CameraControlPanel extends JPanel {
         //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
         outlinesCheckbox .addActionListener( controller );
         outlinesCheckbox .setActionCommand( "toggleOutlines" );
-        outlinesCheckbox .setSelected( "true" .equals( controller .getProperty( "drawOutlines" ) ) );
+        outlinesCheckbox .setSelected( "true" .equals( controller .getProperty( "docDrawOutlines" ) ) );
         checkboxesPanel .add( outlinesCheckbox );
         
         this .addMouseWheelListener( new MouseWheelListener()

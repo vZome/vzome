@@ -452,6 +452,9 @@ public class CameraController extends DefaultController implements Controller3d
         case "drawOutlines": // for the trackball rendering
             return "false";
 
+        case "docDrawOutlines": // for the checkbox
+            return super .getProperty( "drawOutlines" );
+
         case "showIcosahedralLabels":
             // TODO refactor to fix this
             if ( super .propertyIsTrue( "isIcosahedralSymmetry" ) )
