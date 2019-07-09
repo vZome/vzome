@@ -2,9 +2,14 @@ package com.vzome.core.editor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+
+import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
@@ -13,6 +18,10 @@ import com.vzome.core.math.convexhull.QuickHull3D;
 
 public class ConvexHull3d extends ConvexHull {
     public static final String NAME = "ConvexHull3d";
+    
+    private String mode = null;
+    private boolean generateStruts = true; 
+    private boolean generatePanels = true; 
 
     public ConvexHull3d( EditorModel editor )
     {
@@ -22,6 +31,54 @@ public class ConvexHull3d extends ConvexHull {
     @Override
     protected String getXmlElementName() {
         return NAME;
+    }
+
+    @Override
+    public boolean isNoOp()
+    {
+        return (generateStruts || generatePanels) ? super.isNoOp() : true;
+    }
+    
+    @Override
+    public void configure( Map<String,Object> props ) 
+    {
+        setMode( (String) props .get( "mode" ) );
+    }
+    
+    private void setMode(String newMode) 
+    {
+        // initialize to legacy default values in case mode is invalid or not specified
+        this.mode = "";
+        generateStruts = true; 
+        generatePanels = true; 
+
+        if ( newMode != null )
+            switch ( newMode ) {
+
+            case "":
+                this.mode = newMode;
+                this.generateStruts = true;
+                this.generatePanels = true;
+                break;
+
+            case "noPanels":
+                this.mode = newMode;
+                this.generateStruts = true;
+                this.generatePanels = false;
+                break;
+
+            case "onlyPanels":
+                this.mode = newMode;
+                this.generateStruts = false;
+                this.generatePanels = true;
+                break;
+
+            default:
+                if(logger.isLoggable(Level.WARNING) ) {
+                    logger.warning(NAME + ": Ignoring unknown mode: \"" + newMode + "\".");
+                }
+                break;
+            }
     }
 
     @Override
@@ -51,15 +108,31 @@ public class ConvexHull3d extends ConvexHull {
                 Point end = points[i] = pointMap.get(vertices[startIndex]);
                 // each half-edge is shared by two faces
                 // so we only need a new strut for half of them.
-                if(startIndex < endIndex) {
+                if(generateStruts && (startIndex < endIndex)) {
                     select(manifestConstruction(new SegmentJoiningPoints(start, end)));
                 }
                 start = end;
             }
             // panels
-            select( manifestConstruction( new PolygonFromVertices( points ) ) );
+            if(generatePanels) {
+                select( manifestConstruction( new PolygonFromVertices( points ) ) );
+            }
         }
 
         redo(); // commit the changes
+    }
+    
+    @Override
+    protected void getXmlAttributes( Element element )
+    {
+        if(mode != null) {
+            element .setAttribute( "mode", mode );
+        }
+    }
+
+    @Override
+    protected void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Command.Failure
+    {
+        setMode( xml.getAttribute( "mode" ) );
     }
 }
