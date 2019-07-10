@@ -330,7 +330,11 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( enableIf( isEditor, createMenuItem( "2D Convex Hull", ( "ConvexHull2d" ) ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "3D Convex Hull", ( "ConvexHull3d" ) ) ) );
+        submenu = new JMenu("3D Convex Hull...");
+        submenu.add( enableIf( isEditor, createMenuItem( "Complete", ( "ConvexHull3d" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Panels Only", ( "ConvexHull3d/onlyPanels" ) ) ) );
+        submenu.add( enableIf( isEditor, createMenuItem( "Struts Only", ( "ConvexHull3d/noPanels" ) ) ) );
+        menu.add(submenu);
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( enableIf( isEditor, createMenuItem( "Parallelepiped", "Parallelepiped", KeyEvent.VK_P, COMMAND_SHIFT ) ) );
