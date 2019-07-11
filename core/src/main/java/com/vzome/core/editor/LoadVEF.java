@@ -63,7 +63,7 @@ public class LoadVEF extends ChangeManifestations
                 // as long as they at least include the minimal header.
                 vefData = null; //disable the edit
             break;
-        
+
         case "quaternion":
             Segment symmAxis = editor .getSymmetrySegment();
             AlgebraicVector quaternion = ( symmAxis == null )? null : symmAxis.getOffset() .scale( scale.reciprocal() );
@@ -88,9 +88,9 @@ public class LoadVEF extends ChangeManifestations
     protected void getXmlAttributes( Element element )
     {
         if ( scale != null )
-        	DomUtils .addAttribute( element, "scale", scale .toString( AlgebraicField.ZOMIC_FORMAT ) );
+            DomUtils .addAttribute( element, "scale", scale .toString( AlgebraicField.ZOMIC_FORMAT ) );
         if ( projection != null ) {
-        	DomUtils .addAttribute( element, "projection", projection.getProjectionName() );
+            DomUtils .addAttribute( element, "projection", projection.getProjectionName() );
             projection.getXmlAttributes(element);
         }
         Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( vefData ) );
@@ -109,28 +109,28 @@ public class LoadVEF extends ChangeManifestations
         vefData = xml .getTextContent();
         final String projectionName = xml.getAttribute("projection");
         switch( projectionName ) {
-            case "":
-                // legacy support for QuaternionProjection with no projection attribute
-                AlgebraicVector quaternion = format .parseRationalVector( xml, "quaternion" );
-                projection = quaternion == null
-                        ? null
-                        : new QuaternionProjection(field, null, quaternion);
-                        break;
+        case "":
+            // legacy support for QuaternionProjection with no projection attribute
+            AlgebraicVector quaternion = format .parseRationalVector( xml, "quaternion" );
+            projection = quaternion == null
+                    ? null
+                            : new QuaternionProjection(field, null, quaternion);
+            break;
 
-            case "Quaternion":
-                projection = new QuaternionProjection(field, null, null);
-                break;
+        case "Quaternion":
+            projection = new QuaternionProjection(field, null, null);
+            break;
 
-            case "Tetrahedral":
-                projection = new TetrahedralProjection(field);
-                break;
+        case "Tetrahedral":
+            projection = new TetrahedralProjection(field);
+            break;
 
-            case "Perspective":
-                projection = new PerspectiveProjection(field, null);
-                break;
+        case "Perspective":
+            projection = new PerspectiveProjection(field, null);
+            break;
 
-            default:
-                throw new Failure("Unsupported VEF projection: '" + projectionName + "'");
+        default:
+            throw new Failure("Unsupported VEF projection: '" + projectionName + "'");
         }
         if(projection != null) {
             projection.setXmlAttributes(xml, format);
