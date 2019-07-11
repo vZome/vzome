@@ -13,9 +13,9 @@ import com.vzome.core.commands.XmlSaveFormat;
 public class QuaternionProjection implements Projection
 {
     private final Quaternion[][] quaternions = new Quaternion[2][2];
-    
+
     private final AlgebraicField field;
-    
+
     /**
      * @param field
      * @param leftQuat
@@ -47,9 +47,9 @@ public class QuaternionProjection implements Projection
         {
             result = leftQuat .rightMultiply( result ); // s = l * s
         }
-//        StringBuilder buf = new StringBuilder();
-//        field .getVectorExpression( buf, source, AlgebraicField.VEF_FORMAT );
-//        System .out .println( buf );
+        //        StringBuilder buf = new StringBuilder();
+        //        field .getVectorExpression( buf, source, AlgebraicField.VEF_FORMAT );
+        //        System .out .println( buf );
         return field .projectTo3d( result, wFirst );
     }
 
@@ -75,10 +75,10 @@ public class QuaternionProjection implements Projection
         Quaternion leftQuat = getQuaternion( LEFT, true );
         Quaternion rightQuat = getQuaternion( RIGHT, true );
         if ( leftQuat != null ) {
-        	DomUtils .addAttribute( element, LEFT_QUATERNION_ATTRIBUTENAME, leftQuat.getVector() .toString() );
+            DomUtils .addAttribute( element, LEFT_QUATERNION_ATTRIBUTENAME, leftQuat.getVector() .toParsableString() );
         }
         if ( rightQuat != null ) {
-        	DomUtils .addAttribute( element, RIGHT_QUATERNION_ATTRIBUTENAME, rightQuat.getVector() .toString() );
+            DomUtils .addAttribute( element, RIGHT_QUATERNION_ATTRIBUTENAME, rightQuat.getVector() .toParsableString() );
         }
     }
 
