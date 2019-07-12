@@ -173,6 +173,7 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         mLights .addChild( ambientForGlow );
         ambientForOutlines = new AmbientLight( color );
         ambientForOutlines .setInfluencingBounds( mEverywhere );
+        ambientForOutlines .setEnable( controller .propertyIsTrue( "drawOutlines" ) );
         ambientForOutlines .setCapability( Light.ALLOW_STATE_WRITE );
         mLights .addChild( ambientForOutlines );
 
@@ -191,6 +192,7 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         // TODO: model this better in core Lights... no overloading
         // use the last light in the array for the directional light
         directionalForOutlines = light;
+        directionalForOutlines .setEnable( controller .propertyIsTrue( "drawOutlines" ) );
         directionalForOutlines.setCapability(Light.ALLOW_STATE_WRITE);
         // ---------------------------------------------------
 
