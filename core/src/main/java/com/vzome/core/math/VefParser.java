@@ -36,6 +36,8 @@ public abstract class VefParser
     
     private int mVersion = 0;
     
+    private int dimension = 4;
+    
     private boolean isRational = false;
 
     private transient AlgebraicField field;
@@ -148,25 +150,39 @@ public abstract class VefParser
             }
         }
         
-        AlgebraicVector scaleVector = new AlgebraicVector( field, 4 );
+        if ( token .equals( "dimension" ) ) {
+            try {
+                token = tokens .nextToken();
+            } catch ( NoSuchElementException e1 ) {
+                throw new IllegalStateException( "VEF format error: no tokens after \"actual\"" );
+            }
+            try {
+                this.dimension = Integer .parseInt( token );
+            } catch ( NumberFormatException e ) {
+                throw new RuntimeException( "VEF format error: VEF version number (\"" + token + "\") must be an integer", e );
+            }
+            token = tokens .nextToken();
+        }
+        
+        AlgebraicVector scaleVector = new AlgebraicVector( field, this.dimension );
         if ( token .equals( "scale" ) ) {
             try {
                 token = tokens .nextToken();
                 // format >= 8 allows discreet scaling per coordinate with keyword "vector"
                 if ( token.equals("vector") ) {
                     try {
-                        for (int tokNum = 0; tokNum < 4; tokNum++) {
+                        for (int tokNum = 0; tokNum < this.dimension; tokNum++) {
                             token = tokens.nextToken();
                             AlgebraicNumber coord = parseIntegralNumber(token);
                             scaleVector.setComponent(tokNum, coord); // format is W X Y Z
                         }
                     } catch (NoSuchElementException e) {
-                        throw new IllegalStateException("VEF format error: scale vector requires 4 coordinates");
+                        throw new IllegalStateException("VEF format error: scale vector requires " + this.dimension + " coordinates");
                     }
                 }
                 else {
                     AlgebraicNumber scale = parseIntegralNumber( token );
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < this.dimension; i++) {
                         scaleVector.setComponent(i, scale);
                     }
                 }
@@ -176,7 +192,7 @@ public abstract class VefParser
             }
         }
         else {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < this.dimension; i++) {
                 scaleVector.setComponent(i, field.one());
             }
         }
@@ -190,8 +206,8 @@ public abstract class VefParser
         startVertices( numVertices );
         for ( int i = 0 ; i < numVertices; i++ )
         {
-            AlgebraicVector v = field .origin( 4 );
-            for ( int tokNum = 0; tokNum < 4; tokNum ++ ) {
+            AlgebraicVector v = field .origin( this.dimension );
+            for ( int tokNum = 0; tokNum < this.dimension; tokNum ++ ) {
                 try {
                     token = tokens .nextToken();
                 } catch ( NoSuchElementException e1 ) {

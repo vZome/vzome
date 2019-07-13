@@ -272,29 +272,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     tabbedPane .setSelectedIndex( 1 );  // should be "tools" tab
                     break;
 
-                case "importVefWithScale":
-                {
-                    cmd = "import.vef";
-                    Controller importScaleController = mController .getSubController( "importScale" );
-                    if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
-                        importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
-                            new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
-                    }
-                    importScaleDialog .setVisible( true );
-                }
-                    break;
-
-                case "import.vef.tetrahedral":
-                {
-                    Controller importScaleController = mController .getSubController( "importScale" );
-                    if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
-                        importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
-                            new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
-                    }
-                    importScaleDialog .setVisible( true );
-                }
-                    break;
-
                 case "showPolytopesDialog":
                     Controller polytopesController = mController .getSubController( "polytopes" );
                     if ( polytopesDialog == null )
@@ -386,6 +363,15 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
                 default:
+                    if ( cmd .startsWith( "LoadVEF/" ) )
+                    {
+                        Controller importScaleController = mController .getSubController( "importScale" );
+                        if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
+                            importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
+                                new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
+                        }
+                        importScaleDialog .setVisible( true );
+                    }
                     if ( cmd .startsWith( "setSymmetry." ) )
                     {
                         system = cmd .substring( "setSymmetry.".length() );
@@ -790,8 +776,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "configureShapes":
             case "configureDirections":
             case "addBookmark":
-            case "importVefWithScale":
-            case "import.vef.tetrahedral":
                 actionListener = this .localActions;
                 break;
 
@@ -802,6 +786,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             default:
                 if ( command .startsWith( "openResource-" ) ) {
                     actionListener = controller;
+                }
+                else if ( command .startsWith( "LoadVEF/" ) ) {
+                    actionListener = this .localActions;
                 }
                 else if ( command .startsWith( "setSymmetry." ) ) {
                     actionListener = this .localActions;
