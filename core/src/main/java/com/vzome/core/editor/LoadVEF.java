@@ -21,6 +21,7 @@ import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.PerspectiveProjection;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
+import com.vzome.core.math.SixCubeProjection;
 import com.vzome.core.math.TetrahedralProjection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -49,11 +50,8 @@ public class LoadVEF extends ChangeManifestations
             scale = field .one();
         }
 
-        switch ( (String) params .get( "mode" ) ) {
-
-        case "tetrahedral":
-            projection = new TetrahedralProjection( field );
-            break;
+        String projectionName = (String) params .get( "mode" );
+        switch ( projectionName ) {
 
         case "clipboard":
             if( vefData != null && ! vefData.startsWith("vZome VEF" ))
@@ -64,10 +62,14 @@ public class LoadVEF extends ChangeManifestations
                 vefData = null; //disable the edit
             break;
 
-        case "quaternion":
+        case "Quaternion":
             Segment symmAxis = editor .getSymmetrySegment();
             AlgebraicVector quaternion = ( symmAxis == null )? null : symmAxis.getOffset() .scale( scale.reciprocal() );
             projection = quaternion == null? null : new QuaternionProjection( field, null, quaternion );
+            break;
+        
+        default:
+            setProjection( projectionName, field );
             break;
         }
     }
@@ -108,17 +110,31 @@ public class LoadVEF extends ChangeManifestations
         }
         vefData = xml .getTextContent();
         final String projectionName = xml.getAttribute("projection");
-        switch( projectionName ) {
-        case "":
+        if( "" .equals( projectionName ) ) {
             // legacy support for QuaternionProjection with no projection attribute
             AlgebraicVector quaternion = format .parseRationalVector( xml, "quaternion" );
             projection = quaternion == null
                     ? null
                             : new QuaternionProjection(field, null, quaternion);
-            break;
+        } else {
+            setProjection( projectionName, field );
+        }
+        if( projection != null ) {
+            projection.setXmlAttributes(xml, format);
+        }
+    }
+    
+    private void setProjection( String projectionName, AlgebraicField field )
+    {
+        // TODO: decouple the projection classes
+        switch( projectionName ) {
 
         case "Quaternion":
             projection = new QuaternionProjection(field, null, null);
+            break;
+
+        case "SixCube":
+            projection = new SixCubeProjection(field);
             break;
 
         case "Tetrahedral":
@@ -128,12 +144,6 @@ public class LoadVEF extends ChangeManifestations
         case "Perspective":
             projection = new PerspectiveProjection(field, null);
             break;
-
-        default:
-            throw new Failure("Unsupported VEF projection: '" + projectionName + "'");
-        }
-        if(projection != null) {
-            projection.setXmlAttributes(xml, format);
         }
     }
 

@@ -902,22 +902,12 @@ public class DocumentController extends DefaultController implements Controller3
                 this .openApplication( file );
                 return;
             }
-            if ( command.equals( "import.vef" ) 
-                    // || command.equals( "import.zomod" )
-                    ) {
+            if ( command.startsWith( "LoadVEF/" ) ) {
                 String vefData = readFile( file );
                 Map<String, Object> params = new HashMap<>();
                 params .put( "vef", vefData );
                 params .put( "scale", this .importScaleController .getValue() );
-                documentModel .doEdit( "LoadVEF/quaternion", params );
-                return;
-            }
-            if ( command.equals( "import.vef.tetrahedral" ) ) {
-                String vefData = readFile( file );
-                Map<String, Object> params = new HashMap<>();
-                params .put( "vef", vefData );
-                params .put( "scale", this .importScaleController .getValue() );
-                documentModel .doEdit( "LoadVEF/tetrahedral", params );
+                documentModel .doEdit( command, params );
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {

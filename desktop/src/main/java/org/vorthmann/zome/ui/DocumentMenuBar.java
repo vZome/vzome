@@ -124,7 +124,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu.addSeparator();
 
-        importVEFItem = createMenuItem( "Import vZome VEF...", "importVefWithScale" );
+        importVEFItem = createMenuItem( "Import vZome VEF...", "LoadVEF/Quaternion" );
         menu .add( importVEFItem );
 
         JMenu submenu = new JMenu( "Export 3D Rendering..." );

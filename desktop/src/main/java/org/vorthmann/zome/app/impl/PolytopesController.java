@@ -80,8 +80,7 @@ public class PolytopesController extends DefaultController
                 vector = zone .normal() .scale( len );
                 rotationQuaternion .setVector( vector .inflateTo4d() );
             } else {
-                AlgebraicVector vector = this .field .basisVector( 4, AlgebraicVector.W4 );
-                rotationQuaternion .setVector( vector );
+                // use whatever value the quaternion has from before
             }
             return;
 
