@@ -161,7 +161,7 @@ public class PolytopesDialog extends EscapeDialog
         	quaternionPanel .setToolTipText( "To pre-set the i, j, and k values, " +
         									"select a single strut before opening this dialog." );
         	//    			coordinates .add( Box.createRigidArea( new Dimension( 0, 10 ) ) );
-        	Controller quaternionController = controller .getSubController( "rotation" );
+        	Controller quaternionController = controller .getSubController( "quaternion" );
         	String[] coords = new String[]{ "w", "x", "y", "z" };
         	String[] labels = new String[]{ "       ", "+ i * ", "+ j * ", "+ k * " };
         	for ( int j = 0; j < labels.length; j++ ) {
