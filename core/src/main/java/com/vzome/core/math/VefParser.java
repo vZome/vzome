@@ -154,12 +154,12 @@ public abstract class VefParser
             try {
                 token = tokens .nextToken();
             } catch ( NoSuchElementException e1 ) {
-                throw new IllegalStateException( "VEF format error: no tokens after \"actual\"" );
+                throw new IllegalStateException( "VEF format error: no tokens after \"dimension\"" );
             }
             try {
                 this.dimension = Integer .parseInt( token );
             } catch ( NumberFormatException e ) {
-                throw new RuntimeException( "VEF format error: VEF version number (\"" + token + "\") must be an integer", e );
+                throw new RuntimeException( "VEF format error: dimension number (\"" + token + "\") must be an integer", e );
             }
             token = tokens .nextToken();
         }
