@@ -40,6 +40,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
 
+import org.python.antlr.PythonParser.else_clause_return;
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
@@ -372,7 +373,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         }
                         importScaleDialog .setVisible( true );
                     }
-                    if ( cmd .startsWith( "setSymmetry." ) )
+                    else if ( cmd .startsWith( "setSymmetry." ) )
                     {
                         system = cmd .substring( "setSymmetry.".length() );
                         mController .actionPerformed( e ); // TODO getExclusiveAction
@@ -396,13 +397,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     }
                     else if ( cmd .startsWith( "showProperties-" ) )
                     {
-            			String key = cmd .substring( "showProperties-" .length() );
-                    	Controller subc = mController .getSubController( key + "Picking" );
+                        String key = cmd .substring( "showProperties-" .length() );
+                        Controller subc = mController .getSubController( key + "Picking" );
                         JOptionPane .showMessageDialog( DocumentFrame.this, subc .getProperty( "objectProperties" ), "Object Properties",
                                 JOptionPane.PLAIN_MESSAGE );
                     }
                     else
-                    	mController .actionPerformed( e );
+                        mController .actionPerformed( e );
                     break;
                 }
             }

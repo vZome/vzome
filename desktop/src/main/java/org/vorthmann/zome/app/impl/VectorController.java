@@ -19,6 +19,7 @@ public class VectorController extends DefaultController
 		this .coordinates = new NumberController[ initial .dimension() ];
 		for ( int i = 0; i < coordinates.length; i++ ) {
 			coordinates[ i ] = new NumberController( initial .getField() );
+			coordinates[ i ] .setValue( initial .getComponent( i ) );
 		}
 	}
 	

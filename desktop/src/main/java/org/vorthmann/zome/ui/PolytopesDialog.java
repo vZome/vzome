@@ -205,9 +205,9 @@ public class PolytopesDialog extends EscapeDialog
             @Override
             public void actionPerformed( ActionEvent e )
             {
-    			for ( NumberPanel numberPanel : numberPanels ) {
-    				numberPanel .syncToModel();
-    			}
+                for ( NumberPanel numberPanel : numberPanels ) {
+                    numberPanel .syncToModel();
+                }
                 PolytopesDialog.this .setVisible( false );
                 controller .actionPerformed( e );
             }
