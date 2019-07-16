@@ -3,10 +3,8 @@ package com.vzome.core.algebra;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -20,7 +18,6 @@ public class VefVectorExporter {
 
     protected final PrintWriter output;
     protected final AlgebraicField field;
-    protected static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
     protected ArrayList<AlgebraicVector> sortedVertexList = null;
     private SortedSet<AlgebraicVector> vertices = new TreeSet<>();
     private final SortedSet<AlgebraicVector> ballLocations = new TreeSet<>();
@@ -34,8 +31,6 @@ public class VefVectorExporter {
         this .scale = scale;
         this .output = new PrintWriter( writer );
         this .field = field;
-
-        FORMAT .setMaximumFractionDigits( 16 );
 
         ArrayComparator<AlgebraicVector> arrayComparator = new ArrayComparator<>();
         strutEnds = new TreeSet<>( arrayComparator.getContentFirstArrayComparator() );
