@@ -40,7 +40,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
 
-import org.python.antlr.PythonParser.else_clause_return;
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
@@ -368,7 +367,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     {
                         Controller importScaleController = mController .getSubController( "importScale" );
                         if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
-                            importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
+                            importScaleDialog = new VefImportDialog( DocumentFrame.this, importScaleController, "Set Scale and Rotation",
                                 new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
                         }
                         importScaleDialog .setVisible( true );
