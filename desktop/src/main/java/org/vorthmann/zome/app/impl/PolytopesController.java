@@ -4,6 +4,10 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,11 +17,15 @@ import org.vorthmann.ui.DefaultController;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.Quaternion;
+import com.vzome.core.algebra.VefVectorExporter;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.WythoffConstruction;
 
 public class PolytopesController extends DefaultController
 {
@@ -32,11 +40,13 @@ public class PolytopesController extends DefaultController
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private final AlgebraicField field;
     private final AlgebraicNumber defaultScaleFactor;
+    private final FieldApplication fieldApp;
 
     public PolytopesController( DocumentModel document )
     {
         this .model = document;
         this .field = document .getField();
+        this .fieldApp = document .getFieldApplication();
         this .defaultScaleFactor = field .createPower( Direction .USER_SCALE + 2 );
         for (int i = 0; i < edgeScales.length; i++)
         {
@@ -88,15 +98,8 @@ public class PolytopesController extends DefaultController
         }
         if ( "generate".equals( action ) )
         {
-            int index = 0;
-            int edgesToRender = 0;
-            for ( int i = 0; i < 4; i++ )
-            {
-                if ( generateEdge [ i ] )
-                    index += 1 << i;
-                if ( renderEdge[ i ] )
-                    edgesToRender += 1 << i;
-            }
+            int index = encodeBits( this .generateEdge );
+            int edgesToRender = encodeBits( this .renderEdge );
             VectorController vc = (VectorController) super .getSubController( "quaternion" );
             AlgebraicVector quaternion = vc .getVector() .scale( this .defaultScaleFactor );
             Map<String, Object> params = new HashMap<>();
@@ -128,6 +131,63 @@ public class PolytopesController extends DefaultController
         }
         else
             super.doAction( action, e );
+    }
+    
+    private static int encodeBits( boolean[] bits )
+    {
+        int result = 0;
+        for ( int i = 0; i < 4; i++ )
+        {
+            if ( bits[ i ] )
+                result += 1 << i;
+        }
+        return result;
+    }
+
+    @Override
+    public void doFileAction( String command, File file )
+    {
+        try {
+            Writer out = new FileWriter( file );
+            try {
+                int index = encodeBits( this .generateEdge );
+                int edgesToRender = encodeBits( this .renderEdge );
+                VectorController vc = (VectorController) super .getSubController( "quaternion" );
+                AlgebraicVector quaternion = vc .getVector() .scale( this .defaultScaleFactor );
+                quaternion = quaternion .scale( field .createPower( -5 ) );
+                Quaternion rightQuat = new Quaternion( field, quaternion );
+                VefVectorExporter exporter = new VefVectorExporter( out, this .field, null );
+                this .fieldApp .constructPolytope( group, index, edgesToRender, this .edgeScales, new WythoffConstruction.Listener()
+                {
+                    @Override
+                    public Object addVertex( AlgebraicVector v )
+                    {
+                        AlgebraicVector projected = rightQuat .leftMultiply( v );
+                        exporter .exportPoint( projected );
+                        return projected;
+                    }
+                    
+                    @Override
+                    public Object addEdge( Object p1, Object p2 )
+                    {
+                        exporter .exportSegment( (AlgebraicVector) p1, (AlgebraicVector) p2 );
+                        return null;
+                    }
+                    
+                    @Override
+                    public Object addFace( Object[] vertices )
+                    {
+                        return null;
+                    }
+                });
+                exporter .finishExport();
+            } finally {
+                out.close();
+            }
+        }
+        catch ( IOException e ) {
+            mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
+        }
     }
 
     @Override

@@ -272,6 +272,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     tabbedPane .setSelectedIndex( 1 );  // should be "tools" tab
                     break;
 
+                case "export4dPolytope":
+                    {
+                        Controller polytopesController = mController .getSubController( "polytopes" );
+                        ActionListener actionListener = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, cmd, "vef", polytopesController );
+                        actionListener .actionPerformed( e );
+                    }
+                    break;
+
                 case "showPolytopesDialog":
                     Controller polytopesController = mController .getSubController( "polytopes" );
                     if ( polytopesDialog == null )
@@ -546,10 +554,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         Controller saveAsController = new DefaultController()
         {
-    		@Override
-    	    public void doFileAction( String command, final File file )
+            @Override
+            public void doFileAction( String command, final File file )
             {
-    			mController .doFileAction( command, file );
+                mController .doFileAction( command, file );
                 mFile = file;
                 String newTitle = file .getAbsolutePath();
                 mController .setProperty( "name", newTitle );
@@ -776,6 +784,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "configureShapes":
             case "configureDirections":
             case "addBookmark":
+            case "export4dPolytope":
                 actionListener = this .localActions;
                 break;
 
