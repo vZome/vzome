@@ -802,43 +802,43 @@ public class DocumentController extends DefaultController implements Controller3
                 //   the count just because we're writing a copy.  The reset will have to move to the
                 //   context of the save.
                 this .changeCount  = this .documentModel .getChangeCount();
-                
-    			// Sample prefs file entry: save.exports=export.dae capture.png capture.jpg export.vef
-            	String exports = this .getProperty( "save.exports" );
-            	if ( exports != null ) {
-            		for ( String captureOrExport : exports .split( " " ) ) {
-            			// captureOrExport should be "capture.png" or "export.dae" or similar
-            			String extension = "";
-            			String[] cmd = captureOrExport .split("\\.");
-            			if(cmd.length == 2 ) {
-            				switch (cmd[0]) {
-        					case "capture":
-        					case "export2d":
-        					case "export":
-        						extension = cmd[1];
-        						break;
-            				}
-            			}
-            			if(extension == "") {
-            				mErrors.reportError( UNKNOWN_PROPERTY + " save.exports=" + captureOrExport, null );
-            			} else {
-            				File exportFile = new File( dir, file .getName() + "." + extension );
-            				doFileAction( captureOrExport, exportFile );
-            			}
+
+                // Sample prefs file entry: save.exports=export.dae capture.png capture.jpg export.vef
+                String exports = this .getProperty( "save.exports" );
+                if ( exports != null ) {
+                    for ( String captureOrExport : exports .split( " " ) ) {
+                        // captureOrExport should be "capture.png" or "export.dae" or similar
+                        String extension = "";
+                        String[] cmd = captureOrExport .split("\\.");
+                        if(cmd.length == 2 ) {
+                            switch (cmd[0]) {
+                            case "capture":
+                            case "export2d":
+                            case "export":
+                                extension = cmd[1];
+                                break;
+                            }
+                        }
+                        if(extension == "") {
+                            mErrors.reportError( UNKNOWN_PROPERTY + " save.exports=" + captureOrExport, null );
+                        } else {
+                            File exportFile = new File( dir, file .getName() + "." + extension );
+                            doFileAction( captureOrExport, exportFile );
+                        }
                     }
-            	}
-                
-            	String script = this .getProperty( "save.script" );
-            	if ( script != null )
-            	{
-            		try {
-            			Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
-            					null, file .getParentFile() );
-            		} catch ( IOException e ) {
-            			System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
-            			e .printStackTrace();
-            		}
-            	}
+                }
+
+                String script = this .getProperty( "save.script" );
+                if ( script != null )
+                {
+                    try {
+                        Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
+                                null, file .getParentFile() );
+                    } catch ( IOException e ) {
+                        System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+                        e .printStackTrace();
+                    }
+                }
                 return;
             }
             if ( "capture-animation" .equals( command ) )
@@ -864,10 +864,10 @@ public class DocumentController extends DefaultController implements Controller3
                 captureImageFile( file, extension, null );
                 return;
             }
-//            if ( command .equals( "export.zomespace" ) )
-//            {
-//                new ZomespaceExporter( file ) .exportArticle( document, colors, sceneLighting, getSaveXml(), getProperty( "edition" ), getProperty( "version" ) );
-//            } else
+            //            if ( command .equals( "export.zomespace" ) )
+            //            {
+            //                new ZomespaceExporter( file ) .exportArticle( document, colors, sceneLighting, getSaveXml(), getProperty( "edition" ), getProperty( "version" ) );
+            //            } else
             if ( command.startsWith( "export2d." ) )
             {
                 Dimension size = this .modelCanvas .getSize();              
@@ -911,8 +911,8 @@ public class DocumentController extends DefaultController implements Controller3
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {
-//                InputStream bytes = new FileInputStream( file );
-//                new ZomeCADImporter( bytes, events, (PentagonField) mField ) .parseStream();
+                //                InputStream bytes = new FileInputStream( file );
+                //                new ZomeCADImporter( bytes, events, (PentagonField) mField ) .parseStream();
             }
             if ( command.equals( "save.pdf" ) ) {
             }
