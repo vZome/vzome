@@ -529,7 +529,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         // ----------------------------------------- Help menu
         menu = new JMenu( "Help" );
         menu .add( createMenuItem( "Quick Start...", "openResource-org/vorthmann/zome/content/welcomeDodec.vZome" ) );
-        menu .addSeparator(); 
         {
             JMenu submenu3d = new JMenu( "Symmetry Starters..." );
             submenu3d .add( createMenuItem( "Icosahedral / Dodecahedral", "newFromResource-com/vzome/starters/symmetry/icosahedral/starter.vZome" ) );
@@ -538,12 +537,33 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             submenu3d .add( createMenuItem( "Tetrahedral", "newFromResource-com/vzome/starters/symmetry/tetrahedral/starter.vZome" ) );
             menu.add( submenu3d );
         }
-        menu .addSeparator(); 
         {
             JMenu submenu3d = new JMenu( "3D Printing Starters..." );
             submenu3d .add( createMenuItem( "Red-tip Struts", "newFromResource-org/vorthmann/zome/print3d/redStruts/struts-template-enlarged.vZome" ) );
             submenu3d .add( createMenuItem( "Yellow-tip Struts", "newFromResource-org/vorthmann/zome/print3d/yellowStruts/struts-template-enlarged.vZome" ) );
             submenu3d .add( createMenuItem( "Blue-tip Struts", "newFromResource-org/vorthmann/zome/print3d/blueStruts/struts-template-enlarged.vZome" ) );
+            menu.add( submenu3d );
+        }
+        menu .addSeparator(); 
+        menu .add( createMenuItem( "Main Website", "browse-http://vzome.com" ) );
+        menu .add( createMenuItem( "Blog", "browse-http://vzome.com/blog" ) );
+        menu .add( createMenuItem( "Facebook Page", "browse-https://www.facebook.com/vZome" ) );
+        menu .add( createMenuItem( "YouTube Channel", "browse-https://www.youtube.com/channel/UCzTSn23jkvtorewseJk5Uyg" ) );
+        {
+            JMenu submenu3d = new JMenu( "Online Documentation..." );
+            submenu3d .add( createMenuItem( "The Direction (Orbit) Triangle", "browse-http://vzome.com/blog/2019/07/vzome-icosahedral-orbits/" ) );
+            submenu3d .add( createMenuItem( "Capturing Vector Graphics", "browse-http://vzome.com/blog/2018/12/capturing-vector-graphics/" ) );
+            submenu3d .add( createMenuItem( "Toolbars for Diehards", "browse-http://vzome.com/blog/2018/12/toolbars-for-diehards/" ) );
+            submenu3d .add( createMenuItem( "Content Workflows", "browse-http://vzome.com/blog/2018/02/vzome-content-workflows/" ) );
+            menu.add( submenu3d );
+        }
+        {
+            JMenu submenu3d = new JMenu( "Other Links..." );
+            submenu3d .add( createMenuItem( "GitHub Source", "browse-https://github.com/vZome/vzome" ) );
+            submenu3d .add( createMenuItem( "Logo T-Shirt", "browse-http://www.neatoshop.com/product/vZome-tetrahedron" ) );
+            submenu3d .add( createMenuItem( "3D-Printed Parts at Shapeways", "browse-http://www.shapeways.com/shops/vzome" ) );
+            submenu3d .add( createMenuItem( "Models on SketchFab", "browse-https://sketchfab.com/scottvorthmann" ) );
+            submenu3d .add( createMenuItem( "Observable Notebooks", "browse-https://observablehq.com/collection/@vorth/vzome" ) );
             menu.add( submenu3d );
         }
         menu .addSeparator(); 

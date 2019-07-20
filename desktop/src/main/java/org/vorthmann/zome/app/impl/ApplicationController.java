@@ -1,5 +1,6 @@
 package org.vorthmann.zome.app.impl;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -265,6 +266,13 @@ public class ApplicationController extends DefaultController
                     docProps .setProperty( "buildNumber", this .properties .getProperty( "buildNumber" ) );
                     docProps .setProperty( "gitCommit", this .properties .getProperty( "gitCommit" ) );
                     newDocumentController( title, document, docProps );
+                }
+            }
+            else if ( action .startsWith( "browse-" ) )
+            {
+                String url = action .substring( "browse-" .length() );
+                if ( Desktop.isDesktopSupported() && Desktop.getDesktop() .isSupported( Desktop.Action.BROWSE ) ) {
+                    Desktop.getDesktop() .browse( new URI( url ) );
                 }
             }
             else if ( action .startsWith( "openResource-" ) )
