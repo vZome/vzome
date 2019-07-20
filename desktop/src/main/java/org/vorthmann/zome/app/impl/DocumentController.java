@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.io.ObjectInputStream.GetField;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -57,6 +58,7 @@ import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -137,6 +139,7 @@ public class DocumentController extends DefaultController implements Controller3
     private String designClipboard;
     
     private final NumberController importScaleController;
+    private final VectorController quaternionController;
         
    /*
      * See the javadoc to control the logging:
@@ -190,6 +193,9 @@ public class DocumentController extends DefaultController implements Controller3
         importScaleController = new NumberController( this .documentModel .getField() );
         this .addSubController( "importScale", importScaleController );
         
+        quaternionController = new VectorController( this .documentModel .getField() .basisVector( 4, AlgebraicVector.W4 ) );
+        this .addSubController( "quaternion", quaternionController );
+
         mRenderedModel = new RenderedModel( this .documentModel .getField(), true );
         currentSnapshot = mRenderedModel;
 
@@ -907,6 +913,8 @@ public class DocumentController extends DefaultController implements Controller3
                 Map<String, Object> params = new HashMap<>();
                 params .put( "vef", vefData );
                 params .put( "scale", this .importScaleController .getValue() );
+                params .put( "projection", new QuaternionProjection( documentModel .getField(), null,
+                                                this .quaternionController .getVector() ) );
                 documentModel .doEdit( command, params );
                 return;
             }

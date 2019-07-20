@@ -375,7 +375,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     {
                         Controller importScaleController = mController .getSubController( "importScale" );
                         if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
-                            importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
+                            importScaleDialog = new VefImportDialog( DocumentFrame.this, importScaleController, "Set Scale and Rotation",
                                 new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
                         }
                         importScaleDialog .setVisible( true );

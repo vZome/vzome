@@ -15,7 +15,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Point;
-import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.VefToModel;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.PerspectiveProjection;
@@ -63,9 +62,7 @@ public class LoadVEF extends ChangeManifestations
             break;
 
         case "Quaternion":
-            Segment symmAxis = editor .getSymmetrySegment();
-            AlgebraicVector quaternion = ( symmAxis == null )? null : symmAxis.getOffset() .scale( scale.reciprocal() );
-            projection = quaternion == null? null : new QuaternionProjection( field, null, quaternion );
+            // projection should have been set from params
             break;
         
         default:

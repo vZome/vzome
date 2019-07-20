@@ -38,7 +38,6 @@ public class PolytopesController extends DefaultController
     private boolean[] generateEdge = new boolean[]{ false, false, false, true };
     private boolean[] renderEdge = new boolean[]{ true, true, true, true };
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
-    private final VectorController rotationQuaternion;
     private final AlgebraicField field;
     private final AlgebraicNumber defaultScaleFactor;
     private final FieldApplication fieldApp;
@@ -61,7 +60,6 @@ public class PolytopesController extends DefaultController
             groups = new String[]{ "A4", "B4/C4", "D4", "F4", "H4" };
             group = "H4";
         }
-        rotationQuaternion = new VectorController( field .basisVector( 4, AlgebraicVector.W4 ) );
     }
 
     @Override
@@ -88,7 +86,8 @@ public class PolytopesController extends DefaultController
                 AlgebraicNumber len = zone .getLength( vector );
                 len = zone .getOrbit() .getLengthInUnits( len );
                 vector = zone .normal() .scale( len );
-                rotationQuaternion .setVector( vector .inflateTo4d() );
+                VectorController vc = (VectorController) super .getSubController( "quaternion" );
+                vc .setVector( vector .inflateTo4d() );
             } else {
                 // use whatever value the quaternion has from before
             }
@@ -101,7 +100,8 @@ public class PolytopesController extends DefaultController
         {
             int index = encodeBits( this .generateEdge );
             int edgesToRender = encodeBits( this .renderEdge );
-            AlgebraicVector quaternion = rotationQuaternion .getVector() .scale( this .defaultScaleFactor );
+            VectorController vc = (VectorController) super .getSubController( "quaternion" );
+            AlgebraicVector quaternion = vc .getVector() .scale( this .defaultScaleFactor );
             Map<String, Object> params = new HashMap<>();
             params .put( "groupName", group );
             params .put( "renderGroupName", group );
@@ -152,7 +152,8 @@ public class PolytopesController extends DefaultController
             try {
                 int index = encodeBits( this .generateEdge );
                 int edgesToRender = encodeBits( this .renderEdge );
-                AlgebraicVector quaternion = this .rotationQuaternion .getVector() .scale( this .defaultScaleFactor );
+                VectorController vc = (VectorController) super .getSubController( "quaternion" );
+                AlgebraicVector quaternion = vc .getVector() .scale( this .defaultScaleFactor );
                 quaternion = quaternion .scale( field .createPower( -5 ) );
                 Quaternion rightQuat = new Quaternion( field, quaternion );
                 VefVectorExporter exporter = new VefVectorExporter( out, this .field, null );
@@ -222,9 +223,6 @@ public class PolytopesController extends DefaultController
     public Controller getSubController( String name )
     {
         switch ( name ) {
-
-        case "rotation":
-            return this .rotationQuaternion;
 
         default:
             return super.getSubController( name );
