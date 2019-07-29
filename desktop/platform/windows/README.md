@@ -30,7 +30,7 @@ When the file is extracted, the contents will be mostly identical to the directo
 
 The file platform\windows\tools\unzipsfx\unzipsfx.zip contains the sfx header used to generate the self extracting zip. The task that uses it will extract the necessary components from the zip file as needed. There is no need to manually unzip that file.
 
-For example, a completed build 39 will have the following directory structure:
+For example, a completed build 39 will have the following directory structure...
 
     +---build
     |   +---distributions
