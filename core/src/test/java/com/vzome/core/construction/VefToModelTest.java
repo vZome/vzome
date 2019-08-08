@@ -176,6 +176,36 @@ public class VefToModelTest
     }
 
     @Test
+    public void testParseOffset() {
+        final Projection projection = null;
+        final NewConstructions effects = new NewConstructions();
+        final AlgebraicVector offset = null;
+        final AlgebraicField field = new RootThreeField();
+
+        AlgebraicNumber scale = field.one();
+
+        VefToModel parser = new VefToModel(projection, effects, scale, offset);
+
+        String vefData = "vZome VEF 10 field rootThree "
+                + "offset 10 -20 30 -40 "
+                + "3 "
+                + "0 0 0 0 "
+                + "0 1 2 3 "
+                + "4 5 6 7 "
+                ;
+
+        AlgebraicVector expected = field.createVector(new int[][] {
+            {5-20,1, 0,1},
+            {6+30,1, 0,1},
+            {7-40,1, 0,1}
+        });
+        parser.parseVEF(vefData, field);
+        Point p0 = (Point) effects.get(2);
+        AlgebraicVector v0 = p0.getLocation();
+        assertEquals(expected, v0);
+    }
+
+    @Test
     public void testMixedVectorFormat()
     {
         final Projection projection = null;

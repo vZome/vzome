@@ -216,7 +216,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         }
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu .add( enableIf( isEditor, createMenuItem( "Cut", ( "cut" ), KeyEvent.VK_X, COMMAND ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Cut with Offset", ( "cut.withOffset" ), KeyEvent.VK_X, COMMAND_SHIFT ) ) );
         menu .add( enableIf( isEditor, createMenuItem( "Copy", ( "copy" ), KeyEvent.VK_C, COMMAND ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Copy with Offset", ( "copy.withOffset" ), KeyEvent.VK_C, COMMAND_SHIFT ) ) );
         menu .add( enableIf( isEditor, createMenuItem( "Paste", ( "paste" ), KeyEvent.VK_V, COMMAND ) ) );
         menu .add( enableIf( isEditor, createMenuItem( "Delete", ( "Delete" ), KeyEvent.VK_BACK_SPACE, 0 ) ) );
 

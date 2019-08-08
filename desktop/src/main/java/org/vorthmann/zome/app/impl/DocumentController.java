@@ -16,7 +16,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.io.ObjectInputStream.GetField;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -659,14 +658,21 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
     
             case "cut":
-                {
-                    setProperty( "clipboard", documentModel .copySelectionVEF() );
-                    documentModel .doEdit( "Delete" );
-                }
+                setProperty( "clipboard", documentModel .copySelectionVEF(false) );
+                documentModel .doEdit( "Delete" );
+                break;
+    
+            case "cut.withOffset":
+                setProperty( "clipboard", documentModel .copySelectionVEF(true) );
+                documentModel .doEdit( "Delete" );
                 break;
     
             case "copy":
-                setProperty( "clipboard", documentModel .copySelectionVEF() );
+                setProperty( "clipboard", documentModel .copySelectionVEF( false ) );
+                break;
+    
+            case "copy.withOffset":
+                setProperty( "clipboard", documentModel .copySelectionVEF( true ) );
                 break;
     
             case "copy.observable":

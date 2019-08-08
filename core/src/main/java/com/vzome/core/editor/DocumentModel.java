@@ -333,10 +333,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         return new CommandEdit( null, this .editorModel );
     }
 
-    public String copySelectionVEF()
+    public String copySelectionVEF(boolean withOffset)
     {
         StringWriter out = new StringWriter();
-        Exporter exporter = new VefModelExporter( out, field );
+        Exporter exporter = new VefModelExporter( out, field, null, withOffset);
         for ( Manifestation man : editorModel .getSelection() ) {
             exporter .exportManifestation( man );
         }

@@ -25,7 +25,7 @@ public class VefExporter extends Exporter3d
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
 	    AlgebraicField field = mModel .getField();
-        VefModelExporter exporter = new VefModelExporter( writer, field, null );
+        VefModelExporter exporter = new VefModelExporter( writer, field );
 		
         for (RenderedManifestation rm : mModel) {
             Manifestation man = rm .getManifestation();
