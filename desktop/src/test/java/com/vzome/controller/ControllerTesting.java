@@ -44,7 +44,7 @@ public class ControllerTesting
                     controller .setProperty( name, value );
                 }
                 else
-                    controller .actionPerformed( null, actionOrChange );
+                    controller .actionPerformed( controller, actionOrChange );
             }
         } catch (Exception e) {
             fail( e .getMessage() );
