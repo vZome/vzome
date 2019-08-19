@@ -23,11 +23,11 @@ public class UndoRedoController extends DefaultController implements Controller
         switch ( action ) {
 
         case "undo":
-            this .model .undo( ! this .userHasEntitlement( "developer.extras" ) );
+            this .model .undo( true );
             break;
 
         case "redo":
-            this .model .redo( ! this .userHasEntitlement( "developer.extras" ) );
+            this .model .redo( true );
             break;
 
         case "undoToBreakpoint":
