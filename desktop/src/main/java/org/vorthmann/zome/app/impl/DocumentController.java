@@ -445,17 +445,10 @@ public class DocumentController extends DefaultController implements Controller3
             }
     }
 
-    private SymmetryController getSymmetryController( String name )
-    {
-        SymmetryController result = this .symmetries .get( name );
-        return result;
-    }
-
-
     private void setSymmetrySystem( SymmetrySystem symmetrySystem )
     {
         String name =  symmetrySystem .getName();
-        symmetryController = getSymmetryController( name );
+        symmetryController = this .symmetries .get( name );
         if(symmetryController == null) {
             String msg = "Unsupported symmetry: " + name;
             mErrors.reportError(msg, new Object[] {} );
