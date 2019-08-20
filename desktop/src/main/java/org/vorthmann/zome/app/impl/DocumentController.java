@@ -523,6 +523,7 @@ public class DocumentController extends DefaultController implements Controller3
         
         mErrors .clearError();
         try {
+            final boolean vefExportOffset = propertyIsTrue( "copy.vef.include.offset" );
             switch (action) {
 
             case "switchToArticle":
@@ -658,21 +659,12 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
     
             case "cut":
-                setProperty( "clipboard", documentModel .copySelectionVEF(false) );
-                documentModel .doEdit( "Delete" );
-                break;
-    
-            case "cut.withOffset":
-                setProperty( "clipboard", documentModel .copySelectionVEF(true) );
+                setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
                 documentModel .doEdit( "Delete" );
                 break;
     
             case "copy":
-                setProperty( "clipboard", documentModel .copySelectionVEF( false ) );
-                break;
-    
-            case "copy.withOffset":
-                setProperty( "clipboard", documentModel .copySelectionVEF( true ) );
+                setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
                 break;
     
             case "copy.observable":
