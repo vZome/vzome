@@ -177,7 +177,9 @@ public class RotationTool extends SymmetryTool
             {
                 AlgebraicField field = symmetry .getField();
                 center = originPoint;
+                this .addParameter( center );
                 axisStrut = new AnchoredSegment( preferredAxis, field .one(), center );
+                this .addParameter( axisStrut );
             }
             else if ( this .isPredefined() )
             {
@@ -192,10 +194,12 @@ public class RotationTool extends SymmetryTool
             else if ( isAutomatic() )
             {
                 center = originPoint;
+                this .addParameter( center );
                 AlgebraicField field = symmetry .getField();
                 AlgebraicVector zAxis = field .basisVector( 3, AlgebraicVector .Z );
                 AlgebraicNumber len = field .createPower( 2 );  // does not matter
                 axisStrut = new AnchoredSegment( symmetry .getAxis( zAxis ), len, center );
+                this .addParameter( axisStrut );
             }
             else
                 correct = false;

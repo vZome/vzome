@@ -230,6 +230,7 @@ task compileAntlrGrammars(type: JavaExec , dependsOn: makeAntlrOutputDir) {
     // Antlr command line args are at https://theantlrguy.atlassian.net/wiki/display/ANTLR4/ANTLR+Tool+Command+Line+Options
     args = ["-o", target,
             "-lib", target,
+            // "-Dlanguage=JavaScript",  // enabled this just as an experiment
             //"-listener",      //"-listener" is the default
             //"-no-visitor",    //"-no-visitor" is the default
             "-package", antlr4.grammarpackage,
