@@ -11,9 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,16 +65,16 @@ import com.vzome.desktop.controller.Controller3d;
 public final class ApplicationUI implements ActionListener, PropertyChangeListener
 {
     private ApplicationController mController;
-    
+
     private Controller.ErrorChannel errors;
-    
+
     private final Collection<DocumentFrame> windowsToClose = new ArrayList<>();
-    
-	// loggerClassName = "org.vorthmann.zome.ui.ApplicationUI"
-	// Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
-	private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
+
+    // loggerClassName = "org.vorthmann.zome.ui.ApplicationUI"
+    // Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
+    private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
     private static final Logger logger = Logger .getLogger( loggerClassName );
-    
+
     // static class initializer configures global logging before any instance of the class is created.
     static {
         Logger rootLogger = Logger.getLogger("");
@@ -91,9 +95,9 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
         // If no FileHandler was pre-configured, then initialze our own default
         if (fh == null) {
-            File logsFolder = Platform.logsFolder();
-            logsFolder.mkdir();
+            Path logsFolder = Platform.logsFolder();
             try {
+                Files .createDirectory( logsFolder );
                 // If there is a log file naming conflict and no "%u" field has been specified, 
                 //  an incremental unique number will be added at the end of the filename after a dot.
                 // This behavior interferes with file associations based on the .log file extension.
@@ -105,6 +109,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
                 // SV: I've reversed the %u and %g, so that sorting by name puts related logs together, in order.  The Finder / Explorer already
                 //   knows how to sort by date, so we don't need to support that.
                 fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome60_%u_%g.log", 500000, 10);
+            } catch (FileAlreadyExistsException e1) {
             } catch (Exception e1) {
                 rootLogger.log(Level.WARNING, "unable to set up vZome file log handler", e1);
                 try {
@@ -128,16 +133,13 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
     public static void main( String[] args )
     {
         try {
-            String prop = System .getProperty( "user.dir" );
-            File workingDir = new File( prop );
-            URL codebase = workingDir .toURI() .toURL();
-            initialize( args, codebase );
+            initialize( args );
         } catch ( Throwable e ) {
             e .printStackTrace();
             System.out.println( "problem in main(): " + e.getMessage() );
         }
     }
-    
+
     /**
      * A common entry point for main() and com.vzome.platform.mac.Adapter.main().
      * 
@@ -146,7 +148,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
      * @return
      * @throws MalformedURLException
      */
-    public static ApplicationUI initialize( String[] args, URL codebase ) throws MalformedURLException
+    public static ApplicationUI initialize( String[] args ) throws MalformedURLException
     {
         /*
          * First, fail-fast if we can see any environmental issue that will prevent vZome from launching correctly.
@@ -186,217 +188,208 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
          */
 
         // NOW we're ready to spend the cost of further initialization, but on the event thread
-        EventQueue .invokeLater( new InitializationWorker( theUI, args, codebase, splash ) );
+        EventQueue .invokeLater( new InitializationWorker( theUI, args, splash ) );
 
         return theUI;
     }
-    
+
     private static class InitializationWorker implements Runnable
     {
-    	private final ApplicationUI ui;
-		private final String[] args;
-		private final URL codebase;
-		private final SplashScreen splash;
+        private final ApplicationUI ui;
+        private final String[] args;
+        private final SplashScreen splash;
 
-		public InitializationWorker( ApplicationUI ui, String[] args, URL codebase, SplashScreen splash )
-    	{
-			this.ui = ui;
-			this.args = args;
-			this.codebase = codebase;
-			this.splash = splash;
-    	}
+        public InitializationWorker( ApplicationUI ui, String[] args, SplashScreen splash )
+        {
+            this.ui = ui;
+            this.args = args;
+            this.splash = splash;
+        }
 
-		@Override
-		public void run()
-		{
-			String defaultAction = "launch";
-	        Properties configuration = new Properties();
-	        for ( int i = 0; i < args.length; i++ ) {
-	            if ( args[i] .startsWith( "-" ) ) {
-	                String propName = args[i++] .substring( 1 );
-	                String propValue = args[i];
-	                configuration .setProperty( propName, propValue );
-	            } else {
+        @Override
+        public void run()
+        {
+            Properties configuration = new Properties();
+            Path fileArgument = null;
+            for ( int i = 0; i < args.length; i++ ) {
+                if ( args[i] .startsWith( "-" ) ) {
+                    String propName = args[i++] .substring( 1 );
+                    String propValue = args[i];
+                    configuration .setProperty( propName, propValue );
+                } else {
                     String arg = args[i];
-                    URL url = null;
-		            try {
-		                // This works on the MAC, but not on Windows
-                        url = new URL( codebase, arg );
-		            } catch ( MalformedURLException e ) {
-		                try {
-		                    // This allows vZome file association to work in Windows
-		                    // TODO: See if we can use the same File.toURI() logic 
-		                    // for both Windows and MAC instead of using nested try blocks
-	                        url = (new File(arg)).toURI().toURL();
-	                    } catch ( MalformedURLException ex ) {
-	                        url = null; 
-	                    }
-	  	            }
-		            if(url == null) {
-                        logger .severe( "Unable to construct URL from codebase or as a file URI using codebase: " + codebase + " and argument: " + arg );
-		            } else {
-		                defaultAction = "openURL-" + url .toExternalForm();
-		            }
-	            }
-	        }
+                    logger.info( "OS file argument: " + arg );
+                    Path normalizedPath = null;
+                    try {
+                        // standard Java 7 idiom for dealing with file URIs, which is what
+                        //   Windows will pass when opening with double-click or drag-n-drop
+                        normalizedPath = Paths .get( new URL( arg ) .toURI() );
+                    } catch ( MalformedURLException | URISyntaxException e ) {
+                        // probably just on Mac or Linux
+                        normalizedPath = Paths .get( arg );
+                    }
+                    fileArgument = normalizedPath .toAbsolutePath() .normalize();
+                    logger.info( "Normalized file argument: " + fileArgument );
+                }
+            }
 
-	        configuration .putAll( loadBuildProperties() );
+            configuration .putAll( loadBuildProperties() );
 
-	        ui .mController = new ApplicationController( ui, configuration, null );
+            ui .mController = new ApplicationController( ui, configuration, null );
 
-	        if ( ! ui .mController .propertyIsTrue( "vzome.disable.system.laf" ) ) {
-	            String className = UIManager.getSystemLookAndFeelClassName();
-	            try {
-	                // Set System L&F
-	                UIManager .setLookAndFeel( className );
-	            } 
-	            catch (Exception e) {
-	                // live without it
-	                logger.severe( "The look&feel was not set successfully: " + className );
-	            }
-	        }
+            if ( ! ui .mController .propertyIsTrue( "vzome.disable.system.laf" ) ) {
+                String className = UIManager.getSystemLookAndFeelClassName();
+                try {
+                    // Set System L&F
+                    UIManager .setLookAndFeel( className );
+                } 
+                catch (Exception e) {
+                    // live without it
+                    logger.severe( "The look&feel was not set successfully: " + className );
+                }
+            }
 
-	        logConfig( configuration );
+            logConfig( configuration );
 
             ui.errors =  new Controller.ErrorChannel()
-	        {
-				@Override
-	            public void reportError( String errorCode, Object[] arguments )
-	            {
-					// TODO: Refactor this duplicate code into one place
-	            	// code copied from DocumentFrame!
-	            	
-	                if ( Controller.USER_ERROR_CODE.equals( errorCode ) ) {
-	                    errorCode = ( (Exception) arguments[0] ).getMessage();
-	                    // don't want a stack trace for a user error
-	                    logger.log( Level.WARNING, errorCode );
-	                } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
-	                    errorCode = ( (Exception) arguments[0] ).getMessage();
-	                    logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
-	                    errorCode = "internal error has been logged";
-	                } else {
-	                    logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
-	                    // TODO use resources
-	                }
-	                    // TODO use resources
-	                JOptionPane .showMessageDialog( null, errorCode, "Error", JOptionPane.ERROR_MESSAGE );
-	            }
+            {
+                @Override
+                public void reportError( String errorCode, Object[] arguments )
+                {
+                    // TODO: Refactor this duplicate code into one place
+                    // code copied from DocumentFrame!
 
-				@Override
-	            public void clearError()
-	            {}
-	        };
-	        
-	        ui.mController .setErrorChannel( ui.errors );
-	        ui.mController .addPropertyListener( ui );
-	        
-	        ui.mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, defaultAction ) );
+                    if ( Controller.USER_ERROR_CODE.equals( errorCode ) ) {
+                        errorCode = ( (Exception) arguments[0] ).getMessage();
+                        // don't want a stack trace for a user error
+                        logger.log( Level.WARNING, errorCode );
+                    } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
+                        errorCode = ( (Exception) arguments[0] ).getMessage();
+                        logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
+                        errorCode = "internal error has been logged";
+                    } else {
+                        logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
+                        // TODO use resources
+                    }
+                    // TODO use resources
+                    JOptionPane .showMessageDialog( null, errorCode, "Error", JOptionPane.ERROR_MESSAGE );
+                }
 
-        	if ( splash != null )
-        		splash .dispose();
-		}
+                @Override
+                public void clearError()
+                {}
+            };
+
+            ui.mController .setErrorChannel( ui.errors );
+            ui.mController .addPropertyListener( ui );
+
+            if ( fileArgument == null )
+                ui .mController .actionPerformed( this, "launch" );
+            else
+                ui .mController .doFileAction( "open", fileArgument .toFile() );
+
+            if ( splash != null )
+                splash .dispose();
+        }
     }
-    
-	@Override
-	public void propertyChange( PropertyChangeEvent evt )
-	{
-		switch ( evt .getPropertyName() ) {
 
-		case "newDocument":
-		    Controller3d controller = (Controller3d) evt. getNewValue();
-			DocumentFrame window = new DocumentFrame( controller, this .mController .getJ3dFactory() );
-	        window .setVisible( true );
-	        window .setAppUI( new PropertyChangeListener() {
-				
-				@Override
-				public void propertyChange( PropertyChangeEvent evt )
-				{
-					windowsToClose .remove( window );
-				}
-			} );
-	        windowsToClose .add( window );
-			break;
+    @Override
+    public void propertyChange( PropertyChangeEvent evt )
+    {
+        switch ( evt .getPropertyName() ) {
 
-		default:
-			break;
-		}
-	}
+        case "newDocument":
+            Controller3d controller = (Controller3d) evt. getNewValue();
+            DocumentFrame window = new DocumentFrame( controller, this .mController .getJ3dFactory() );
+            window .setVisible( true );
+            window .setAppUI( new PropertyChangeListener() {
 
-	@Override
-	public void actionPerformed( ActionEvent event )
-	{
-		String action = event. getActionCommand();
-
-		if ( "new" .equals( action ) )
-            action = "new-golden";
-
-		switch ( action ) {
-
-		case "showAbout":
-            about();
-			break;
-
-    	case "openURL":
-            String str = JOptionPane .showInputDialog( null, "Enter the URL for an online .vZome file.", "Open URL",
-                    JOptionPane.PLAIN_MESSAGE );
-        	mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "openURL-" + str ) );
+                @Override
+                public void propertyChange( PropertyChangeEvent evt )
+                {
+                    windowsToClose .remove( window );
+                }
+            } );
+            windowsToClose .add( window );
             break;
 
-		case "quit":
-            quit();
-			break;
-			
-		default:
-			JOptionPane .showMessageDialog( null,
-					"No handler for action: \"" + action + "\"",
-					"Error Performing Action", JOptionPane.ERROR_MESSAGE );
-		}
-	}
+        default:
+            break;
+        }
+    }
 
-	public static Properties loadBuildProperties()
-	{
+    @Override
+    public void actionPerformed( ActionEvent event )
+    {
+        String action = event. getActionCommand();
+
+        switch ( action ) {
+
+        case "showAbout":
+            about();
+            break;
+
+        case "openURL":
+            String str = JOptionPane .showInputDialog( null, "Enter the URL for an online .vZome file.", "Open URL",
+                    JOptionPane.PLAIN_MESSAGE );
+            mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "openURL-" + str ) );
+            break;
+
+        case "quit":
+            quit();
+            break;
+
+        default:
+            JOptionPane .showMessageDialog( null,
+                    "No handler for action: \"" + action + "\"",
+                    "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+        }
+    }
+
+    public static Properties loadBuildProperties()
+    {
         String defaultRsrc = "build.properties";
         Properties defaults = new Properties();
         try {
             ClassLoader cl = ApplicationUI.class.getClassLoader();
             InputStream in = cl.getResourceAsStream( defaultRsrc );
             if ( in != null ) 
-            	defaults .load( in );
+                defaults .load( in );
         } catch ( IOException ioe ) {
             logger.warning( "problem reading build properties: " + defaultRsrc );
         }
         return defaults;
-	}
+    }
 
-	// Be sure logConfig is not called until after loadBuildProperties()
-	private static void logConfig( Properties src )
-	{
-		StringBuilder sb = new StringBuilder("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Initializing Application:");
-		appendPropertiesList(sb, null, new String[]
-			{	// use with System.getProperty(propName)
-				"java.version",
-				"java.vendor",
-				"java.home",
-                "java.util.logging.config.file",
-				"user.dir", // current working directory
-				"os.name",
-				"os.arch",
-                "sun.java.command",
-				"file.encoding",
-			}); 
-		appendPropertiesList(sb, loggingProperties(), new String[] 
-        {
-            "default.charset",
-            "logging.properties.filename",
-            "logging.properties.file.exists",
-        });
-		appendPropertiesList(sb, src, new String[]
-			{	// use with src.getProperty(propName)
-				"edition",
-				"version",
-				"buildNumber",
-				"gitCommit",
-			});
+    // Be sure logConfig is not called until after loadBuildProperties()
+    private static void logConfig( Properties src )
+    {
+        StringBuilder sb = new StringBuilder("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Initializing Application:");
+        appendPropertiesList(sb, null, new String[]
+                {	// use with System.getProperty(propName)
+                        "java.version",
+                        "java.vendor",
+                        "java.home",
+                        "java.util.logging.config.file",
+                        "user.dir", // current working directory
+                        "os.name",
+                        "os.arch",
+                        "sun.java.command",
+                        "file.encoding",
+                }); 
+        appendPropertiesList(sb, loggingProperties(), new String[] 
+                {
+                        "default.charset",
+                        "logging.properties.filename",
+                        "logging.properties.file.exists",
+                });
+        appendPropertiesList(sb, src, new String[]
+                {	// use with src.getProperty(propName)
+                        "edition",
+                        "version",
+                        "buildNumber",
+                        "gitCommit",
+                });
         // Use an anonymousLogger to ensure that this is always written to the log file 
         // regardless of the settings in the logging.properties file
         // and without changing the settings of any static loggers including the root logger
@@ -405,9 +398,10 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         anonymousLogger.config(sb.toString());
         logJVMArgs();
         logExtendedCharacters();
-	}
-    
-    private static Properties loggingProperties() {
+    }
+
+    private static Properties loggingProperties()
+    {
         File f = new File(".", "logging.properties");
         // Use same logic to locate the file as LogManager.getLogManager().readConfiguration() uses...
         String fname = System.getProperty("java.util.logging.config.file");
@@ -430,7 +424,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         props.put("logging.properties.file.exists", Boolean.toString(f.exists()));        
         return props;
     }
-	
+
     private static void logJVMArgs() {
         Level level = Level.CONFIG;
         if(logger.isLoggable(level)) {
@@ -465,60 +459,60 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
     }
 
     // appends the whole list sorted by its keys
-	private static void appendPropertiesList(StringBuilder sb, Properties props) {
+    private static void appendPropertiesList(StringBuilder sb, Properties props) {
         String[] keys = props.keySet().toArray(new String[props.keySet().size()]);
         Arrays.sort(keys);
         appendPropertiesList(sb, props, keys);
     }
-    
-	private static void appendPropertiesList(StringBuilder sb, Properties src, String[] propNames) {
-		for (String propName : propNames) {
-			String propValue = (src == null)
-					? System.getProperty(propName)
-					: src.getProperty(propName);
-			propValue = (propValue == null ? "<null>" : propValue);
-			sb.append(System.getProperty("line.separator"))
-					.append("    ")
-					.append(propName)
-					.append(" = ")
-					.append(propValue);
-		}
-	}
+
+    private static void appendPropertiesList(StringBuilder sb, Properties src, String[] propNames) {
+        for (String propName : propNames) {
+            String propValue = (src == null)
+                    ? System.getProperty(propName)
+                            : src.getProperty(propName);
+                    propValue = (propValue == null ? "<null>" : propValue);
+                    sb.append(System.getProperty("line.separator"))
+                    .append("    ")
+                    .append(propName)
+                    .append(" = ")
+                    .append(propValue);
+        }
+    }
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // These next three methods may be invoked by the mac Adapter.
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
     public void openFile( File file )
     {
-    	mController .doFileAction( "open", file );
+        mController .doFileAction( "open", file );
     }
 
     public boolean quit()
     {
-    	for ( DocumentFrame documentFrame : windowsToClose ) {
-			if ( ! documentFrame .closeWindow() )
-				return false;
-		}
-    	return true;
+        for ( DocumentFrame documentFrame : windowsToClose ) {
+            if ( ! documentFrame .closeWindow() )
+                return false;
+        }
+        return true;
     }
 
     public void about()
     {
-    	String version = mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + ", build "
-        		+ mController .getProperty( "buildNumber" );
-    	if ( mController .userHasEntitlement( "developer.extras" ) )
-    		version += "\n\nGit commit: " + mController .getProperty( "gitCommit" )
-    					+ "\n\nvzome-core: " + mController .getProperty( "coreVersion" );
+        String version = mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + ", build "
+                + mController .getProperty( "buildNumber" );
+        if ( mController .userHasEntitlement( "developer.extras" ) )
+            version += "\n\nGit commit: " + mController .getProperty( "gitCommit" )
+            + "\n\nvzome-core: " + mController .getProperty( "coreVersion" );
         JOptionPane.showMessageDialog( null, version + "\n\n"
 
                 + "Contributors:\n\n" + "Scott Vorthmann\n" + "David Hall\n" + "\n"
-                
+
                 + "Acknowledgements:\n\n" + "Paul Hildebrandt\n" + "Marc Pelletier\n"
                 + "David Richter\n" + "Brian Hall\n" + "Dan Duddy\n" + "Fabien Vienne\n" + "George Hart\n"
                 + "Edmund Harriss\n" + "Corrado Falcolini\n" + "Ezra Bradford\n" + "Chris Kling\n" + "Samuel Verbiese\n" + "Walt Venable\n"
                 + "Will Ackel\n" + "Tom Darrow\n" + "Sam Vandervelde\n" + "Henri Picciotto\n" + "Florelia Braschi\n"
-                
+
                 + "\n" + "Dedicated to Everett Vorthmann,\n" + "who made me an engineer\n"
                 + "\n",
                 "About vZome", JOptionPane.PLAIN_MESSAGE );
