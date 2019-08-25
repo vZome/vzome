@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -227,6 +228,10 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
                     } catch ( MalformedURLException | URISyntaxException e ) {
                         // probably just on Mac or Linux
                         normalizedPath = Paths .get( arg );
+                    } catch ( FileSystemNotFoundException e ) {
+                        // Someone passed an HTTP URL, and Paths.get() can't handle it.
+                        logger.warning( "URL command-line arguments are not supported." );
+                        continue; // leave fileArgument as null
                     }
                     fileArgument = normalizedPath .toAbsolutePath() .normalize();
                     logger.info( "Normalized file argument: " + fileArgument );
@@ -332,7 +337,8 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         case "openURL":
             String str = JOptionPane .showInputDialog( null, "Enter the URL for an online .vZome file.", "Open URL",
                     JOptionPane.PLAIN_MESSAGE );
-            mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "openURL-" + str ) );
+            if ( str != null )
+                mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "openURL-" + str ) );
             break;
 
         case "quit":

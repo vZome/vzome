@@ -302,14 +302,20 @@ public class ApplicationController extends DefaultController
                 docProps .setProperty( "as.template", "true" );
                 String path = action .substring( "openURL-" .length() );
                 docProps .setProperty( "window.title", path );
-                URL url = new URL( path );
-                InputStream bytes= null;
-                HttpURLConnection conn = (HttpURLConnection) url .openConnection();
-                // See https://stackoverflow.com/questions/1884230/urlconnection-doesnt-follow-redirect
-                //  This won't switch protocols, but seems to work otherwise.
-                conn .setInstanceFollowRedirects( true );
-                bytes = conn .getInputStream();
-                loadDocumentController( path, bytes, docProps );
+                try {
+                    URL url = new URL( path );
+                    InputStream bytes= null;
+                    HttpURLConnection conn = (HttpURLConnection) url .openConnection();
+                    // See https://stackoverflow.com/questions/1884230/urlconnection-doesnt-follow-redirect
+                    //  This won't switch protocols, but seems to work otherwise.
+                    conn .setInstanceFollowRedirects( true );
+                    bytes = conn .getInputStream();
+                    loadDocumentController( path, bytes, docProps );
+                }
+                catch ( Throwable e ) {
+                    e.printStackTrace();
+                    this .mErrors .reportError( "Unable to open URL: " + e .getMessage(), new Object[]{ e } );
+                }
             }
             else 
             {
@@ -373,10 +379,15 @@ public class ApplicationController extends DefaultController
         }
     }
 
-    private void loadDocumentController( final String name, final InputStream bytes, final Properties properties ) throws Exception
+    private void loadDocumentController( final String name, final InputStream bytes, final Properties properties )
     {
-        DocumentModel document = modelApp .loadDocument( bytes );
-        newDocumentController( name, document, properties );
+        try {
+            DocumentModel document = modelApp .loadDocument( bytes );
+            newDocumentController( name, document, properties );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            this .mErrors .reportError( "Unable to load; this may not be a vZome file.", new Object[]{ e } );
+        }
     }
 
     public J3dComponentFactory getJ3dFactory()
