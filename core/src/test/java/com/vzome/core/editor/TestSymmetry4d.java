@@ -9,6 +9,7 @@ import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
+import com.vzome.core.edits.Symmetry4d;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.model.Manifestation;

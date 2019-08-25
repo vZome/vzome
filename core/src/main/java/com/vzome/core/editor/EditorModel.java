@@ -87,9 +87,23 @@ public class EditorModel
         case "apiProxy":            name = "ApiEdit";
             break;
         }
-        String className = this.getClass() .getPackage() .getName() + "." + name;
         try {
-            Class<?> factoryClass = Class.forName( className );
+            String[] packages = new String[] {
+                    "com.vzome.core.edits",
+                    this.getClass() .getPackage() .getName()
+            };
+            Class<?> factoryClass = null;
+            for ( String pkgName : packages ) {
+                String className = pkgName + "." + name;
+                try {
+                    factoryClass = Class.forName( className );
+                } catch ( ClassNotFoundException e ) {
+                    continue;
+                }
+                break;
+            }
+            if ( factoryClass == null )
+                return null;
 
             Constructor<?>[] constructors = factoryClass .getConstructors();
             Constructor<?> goodConstructor = null, editorConstructor = null;
@@ -108,7 +122,7 @@ public class EditorModel
             } else {
                 return null;
             }
-        } catch ( ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+        } catch ( InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
             return null;
             // TODO should be logging this, as "finer" at least
         }

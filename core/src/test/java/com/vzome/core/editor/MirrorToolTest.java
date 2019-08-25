@@ -24,6 +24,7 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
+import com.vzome.core.tools.MirrorTool;
 
 public class MirrorToolTest
 {

@@ -18,7 +18,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.StrutCreation;
+import com.vzome.core.edits.StrutCreation;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;

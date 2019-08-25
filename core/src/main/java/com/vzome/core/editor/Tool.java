@@ -118,15 +118,15 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
      */
     protected abstract String checkSelection( boolean prepareTool );
 
-    abstract void prepare( ChangeManifestations applyTool );
+    protected abstract void prepare( ChangeManifestations applyTool );
 
-    abstract void performEdit( Construction c, ChangeManifestations edit );
+    protected abstract void performEdit( Construction c, ChangeManifestations edit );
 
-    abstract void performSelect( Manifestation man, ChangeManifestations applyTool );
+    protected abstract void performSelect( Manifestation man, ChangeManifestations applyTool );
 
-    abstract void complete( ChangeManifestations applyTool );
+    protected abstract void complete( ChangeManifestations applyTool );
 
-    abstract boolean needsInput();
+    protected abstract boolean needsInput();
 
 
     //=================  Here begins the set of Tool interface implementations  =================================

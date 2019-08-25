@@ -117,7 +117,7 @@ public class ApplicationController extends DefaultController
         properties .putAll( commandLineArgs );
 
         // This seems to get rid of the "white-out" problem on David's (Windows) computer.
-        // Otherwise it shows up spuratically, but still frequently. 
+        // Otherwise it shows up sporadically, but still frequently. 
         // It is usually, but not always, triggered by such events as context menus,
         // tool tips, or modal dialogs being rendered on top of the main frame.
         // Since the problem has not been reported elsewhere, this fix will be configurable, rather than hard coded.

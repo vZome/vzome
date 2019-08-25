@@ -17,18 +17,8 @@ import com.vzome.core.commands.CommandMirrorSymmetry;
 import com.vzome.core.commands.CommandPolygon;
 import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.commands.CommandTranslate;
-import com.vzome.core.editor.BookmarkTool;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.InversionTool;
-import com.vzome.core.editor.LinearMapTool;
-import com.vzome.core.editor.MirrorTool;
-import com.vzome.core.editor.ModuleTool;
-import com.vzome.core.editor.OctahedralToolFactory;
-import com.vzome.core.editor.PlaneSelectionTool;
-import com.vzome.core.editor.RotationTool;
-import com.vzome.core.editor.ScalingTool;
 import com.vzome.core.editor.ToolsModel;
-import com.vzome.core.editor.TranslationTool;
 import com.vzome.core.math.symmetry.A4Group;
 import com.vzome.core.math.symmetry.B4Group;
 import com.vzome.core.math.symmetry.CoxeterGroup;
@@ -36,6 +26,16 @@ import com.vzome.core.math.symmetry.D4Group;
 import com.vzome.core.math.symmetry.F4Group;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
+import com.vzome.core.tools.BookmarkTool;
+import com.vzome.core.tools.InversionTool;
+import com.vzome.core.tools.LinearMapTool;
+import com.vzome.core.tools.MirrorTool;
+import com.vzome.core.tools.ModuleTool;
+import com.vzome.core.tools.OctahedralToolFactory;
+import com.vzome.core.tools.PlaneSelectionTool;
+import com.vzome.core.tools.RotationTool;
+import com.vzome.core.tools.ScalingTool;
+import com.vzome.core.tools.TranslationTool;
 
 public class DefaultFieldApplication implements FieldApplication
 {
