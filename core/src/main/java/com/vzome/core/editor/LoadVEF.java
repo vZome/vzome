@@ -163,7 +163,9 @@ public class LoadVEF extends ChangeManifestations
                 }
                 else
                 {
+                    // multiple balls are selected. Ignore them all and proceed as if none were selected
                     offset = null;
+                    break; // no need to loop thru any more
                 }
             }
         }

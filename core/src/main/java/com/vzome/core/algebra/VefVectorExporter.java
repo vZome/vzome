@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import com.vzome.core.generic.ArrayComparator;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.VefParser;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.VefModelExporter;
@@ -24,10 +25,17 @@ public class VefVectorExporter {
     protected final SortedSet<AlgebraicVector[]> strutEnds;
     protected final SortedSet<AlgebraicVector[]> panelVertices;
     protected final AlgebraicNumber scale;
+    protected final boolean includeOffset;
+    protected AlgebraicVector exportedOffset = null; // note that this is different from the offset used on import
     protected String strTip = "tip";
 
-    public VefVectorExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale )
+    public VefVectorExporter( Writer writer, AlgebraicField field ) {
+        this( writer, field, null, false );
+    }
+    
+    public VefVectorExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale, boolean withOffset )
     {
+        this.includeOffset = withOffset;
         this .scale = scale;
         this .output = new PrintWriter( writer );
         this .field = field;
@@ -40,6 +48,9 @@ public class VefVectorExporter {
     public void exportPoint(AlgebraicVector pt) {
         vertices .add( pt );
         ballLocations .add( pt );
+        if(this.includeOffset) {
+            this.exportedOffset = pt; // last point selected will ultimately end up as the exported offset 
+        }
     }
 
     public void exportSegment(AlgebraicVector start, AlgebraicVector end) {
@@ -117,17 +128,36 @@ public class VefVectorExporter {
         vertices = null;
     
         // format version 6, with explicit "balls" section, not a ball for every vertex
-        output .println( "vZome VEF 6 field " + field .getName() );
-    
+        // format version 10 includes an explicit offset
+        final int version = (exportedOffset == null) 
+            ? VefParser.VERSION_EXPLICIT_BALLS // 6 
+            : VefParser.VERSION_EXPLICIT_OFFSET; // 10
+        output .println( "vZome VEF " + version + " field " + field .getName() );
+        
+        // offset
+        if (exportedOffset != null) {
+            StringBuffer buf = new StringBuffer();
+            buf.append("\noffset ");
+            // note that we negate exportedOffset before writing it
+            // so that the last selected ball during a copy
+            // will be positioned at a single selected ball (if any) 
+            // when it's subsequently pasted. 
+            appendVector(buf, exportedOffset.negate(), null);
+            buf.append("\n");
+            output.println(buf.toString());
+        }
     
         // vertices
         output .println( "\n" + sortedVertexList .size() );
-        StringBuffer buf = new StringBuffer();
-        for(AlgebraicVector vector : sortedVertexList) {
-            appendVector( buf, vector, this .scale );
+        {
+            StringBuffer buf = new StringBuffer();
+            for(AlgebraicVector vector : sortedVertexList) {
+                appendVector( buf, vector, this .scale );
+                buf.append("\n");
+            }
             buf.append("\n");
+            output .println( buf.toString());
         }
-        output .println( buf.toString() + "\n" );
     
         // strut ends as vertex index pairs
         output .println( "\n" + strutEnds.size() );

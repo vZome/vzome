@@ -35,7 +35,7 @@ public class OrbitDotLocator
         this.symmetry = symmetry;
         this .field = symmetry .getField();
         vefDebugOutput = new StringWriter();
-        debugger = new VefVectorExporter( vefDebugOutput, this .field, null );
+        debugger = new VefVectorExporter( vefDebugOutput, this .field );
 
         AlgebraicMatrix oldMatrix = new AlgebraicMatrix( worldTriangle );
         

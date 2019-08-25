@@ -16,7 +16,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.io.ObjectInputStream.GetField;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -517,6 +516,7 @@ public class DocumentController extends DefaultController implements Controller3
         
         mErrors .clearError();
         try {
+            final boolean vefExportOffset = propertyIsTrue( "copy.vef.include.offset" );
             switch (action) {
 
             case "switchToArticle":
@@ -652,14 +652,12 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
     
             case "cut":
-                {
-                    setProperty( "clipboard", documentModel .copySelectionVEF() );
-                    documentModel .doEdit( "Delete" );
-                }
+                setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
+                documentModel .doEdit( "Delete" );
                 break;
     
             case "copy":
-                setProperty( "clipboard", documentModel .copySelectionVEF() );
+                setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
                 break;
     
             case "copy.observable":

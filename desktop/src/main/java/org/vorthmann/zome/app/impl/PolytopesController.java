@@ -156,7 +156,7 @@ public class PolytopesController extends DefaultController
                 AlgebraicVector quaternion = vc .getVector() .scale( this .defaultScaleFactor );
                 quaternion = quaternion .scale( field .createPower( -5 ) );
                 Quaternion rightQuat = new Quaternion( field, quaternion );
-                VefVectorExporter exporter = new VefVectorExporter( out, this .field, null );
+                VefVectorExporter exporter = new VefVectorExporter( out, this .field );
                 this .fieldApp .constructPolytope( group, index, edgesToRender, this .edgeScales, new WythoffConstruction.Listener()
                 {
                     @Override
