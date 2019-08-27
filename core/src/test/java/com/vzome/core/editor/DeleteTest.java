@@ -12,6 +12,7 @@ import com.vzome.core.edits.Delete;
 import com.vzome.core.math.Projection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.RealizedModelImpl;
 
 public class DeleteTest {
 
@@ -19,8 +20,8 @@ public class DeleteTest {
 	public void testPerform()
 	{
 		AlgebraicField field = new PentagonField();
-		Selection selection = new Selection();
-		RealizedModel realized = new RealizedModel( field, new Projection .Default( field ) );
+		Selection selection = new SelectionImpl();
+		RealizedModel realized = new RealizedModelImpl( field, new Projection .Default( field ) );
 		assertEquals( 0, realized .size() );
 
 		AlgebraicVector loc = field .basisVector( 3, 2 );
@@ -28,7 +29,7 @@ public class DeleteTest {
 		realized .add( ball );
 		selection .select( ball );
 		assertEquals( 1, realized .size() );
-		assertFalse( selection .isEmpty() );
+		assertFalse( selection .size() == 0 );
 		
 		Delete cmd = new Delete( selection, realized );
 		try {
@@ -37,23 +38,23 @@ public class DeleteTest {
 			fail( "Delete perform failed" );
 		}
 		assertEquals( 0, realized .size() );
-		assertTrue( selection .isEmpty() );
+		assertTrue( selection .size() == 0 );
 	}
 	
 	@Test
 	public void testEmpty()
 	{
 		AlgebraicField field = new PentagonField();
-		Selection selection = new Selection();
-		RealizedModel realized = new RealizedModel( field, new Projection .Default( field ) );
+		Selection selection = new SelectionImpl();
+		RealizedModel realized = new RealizedModelImpl( field, new Projection .Default( field ) );
 		assertEquals( 0, realized .size() );
-		assertTrue( selection .isEmpty() );
+		assertTrue( selection .size() == 0 );
 
 		AlgebraicVector loc = field .basisVector( 3, 2 );
 		Connector ball = new Connector( loc );
 		realized .add( ball );
 		assertEquals( 1, realized .size() );
-		assertTrue( selection .isEmpty() );
+		assertTrue( selection .size() == 0 );
 		
 		Delete cmd = new Delete( selection, realized );
 		try {
@@ -62,6 +63,6 @@ public class DeleteTest {
 			fail( "Delete perform failed" );
 		}
 		assertEquals( 1, realized .size() );
-		assertTrue( selection .isEmpty() );
+		assertTrue( selection .size() == 0 );
 	}
 }

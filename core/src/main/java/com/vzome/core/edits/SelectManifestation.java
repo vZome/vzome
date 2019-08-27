@@ -54,7 +54,7 @@ public class SelectManifestation extends ChangeSelection
         {
             // must record the construction for save, because if this gets undone, there's no
             //  guarantee that the manifestation will have any constructions!
-            construction = this.mManifestation .getFirstConstruction();
+            construction = this.mManifestation .toConstruction();
         }
     }
 
@@ -67,7 +67,7 @@ public class SelectManifestation extends ChangeSelection
         {
             // must record the construction for save, because if this gets undone, there's no
             //  guarantee that the manifestation will have any constructions!
-            construction = this.mManifestation .getFirstConstruction();
+            construction = this.mManifestation .toConstruction();
         }
     }
     

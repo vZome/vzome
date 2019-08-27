@@ -23,7 +23,7 @@ public class ManifestationIteratorTest {
     
     @Test
     public void IteratorTest () {
-        Selection selection = new Selection();
+        Selection selection = new SelectionImpl();
         AlgebraicField field = new PentagonField();
         int expC = 0, expS = 0, expP = 0;
         {

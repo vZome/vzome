@@ -41,7 +41,7 @@ public class TransformSelection extends ChangeManifestations
         redo();  // get the unselects out of the way, if anything needs to be re-selected
         // now apply it to the input objects
         for (Manifestation m : inputs) {
-            if ( m .getRenderedObject() == null )
+            if ( ! m .isRendered() )
                 continue;
             Construction c = m .getConstructions() .next();
             Construction result = null;

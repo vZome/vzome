@@ -1,10 +1,6 @@
-
-
 package com.vzome.core.model;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,120 +9,31 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.render.RenderedManifestation;
 
-/**
- * @author Scott Vorthmann
- */
-public abstract class Manifestation implements GroupElement
-{
-    protected final Set<Construction> mManifests = new HashSet<>(5);
+public interface Manifestation extends GroupElement {
 
-    protected RenderedManifestation mRendered = null;
+    AlgebraicVector getLocation();
 
-    private boolean hidden = false;
+    Iterator<Construction> getConstructions();
 
-    private int mId = NO_ID;
+    Element getXml(Document doc);
 
-    private static final int NO_ID = -1;
+    boolean isHidden();
 
-    private static int NEXT_ID = 0;
+    boolean isRendered();
 
-    void resetId()
-    {
-        NEXT_ID = 0;
-        mId = NO_ID;
-    }
+    Construction toConstruction();
 
-    int getId()
-    {
-        if ( mId == NO_ID )
-            mId = NEXT_ID++;
-        return mId;
-    }
+    AlgebraicVector getCentroid();
 
-    public void addConstruction( Construction c )
-    {
-        mManifests .add( c );
-    }
+    RenderedManifestation getRenderedObject();
 
-    public void removeConstruction( Construction c )
-    {
-        mManifests .remove( c );
-    }
+    boolean isUnnecessary();
 
-    public Iterator<Construction> getConstructions()
-    {
-        return mManifests .iterator();
-    }
+    void addConstruction(Construction mConstruction);
 
-    /**
-     * This is different from toConstruction, because we must support
-     * the legacy behavior, which used the iterator.
-     * @return
-     */
-    public Construction getFirstConstruction()
-    {
-        return mManifests .iterator() .next();
-    }
+    void removeConstruction(Construction mConstruction);
 
-    public boolean isUnnecessary()
-    {
-        return mManifests .isEmpty();
-    }
+    void setHidden(boolean b);
 
-    public void setRenderedObject( RenderedManifestation obj )
-    {
-        mRendered = obj;
-    }
-
-    public RenderedManifestation getRenderedObject()
-    {
-        return mRendered;
-    }
-
-    public boolean isHidden()
-    {
-        return this .hidden;
-    }
-
-    public abstract AlgebraicVector getLocation();
-
-    public abstract AlgebraicVector getCentroid();
-
-    /**
-     * This is guaranteed to return a 3D construction,
-     * and will return the same object as getFirstConstruction()
-     * when possible.
-     * @return
-     */
-    public abstract Construction toConstruction();
-
-    private Group mContainer;
-
-    public Group getContainer()
-    {
-        return mContainer;
-    }
-
-    @Override
-    public void setContainer( Group container )
-    {
-        mContainer = container;
-    }
-
-    public void setHidden( boolean hidden )
-    {
-        this.hidden = hidden;
-    }
-
-    public boolean isRendered()
-    {
-        return mRendered != null;
-    }
-
-    public Element getXml( Document doc )
-    {
-        return mManifests .isEmpty()
-                ? doc .createElement( "NoConstructions" )
-                        : mManifests .iterator() .next() .getXml( doc );
-    }
+    Group getContainer();
 }

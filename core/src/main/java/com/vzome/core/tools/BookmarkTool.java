@@ -68,8 +68,8 @@ public class BookmarkTool extends Tool
     public void perform() throws Command.Failure
     {
         Duplicator duper = new Duplicator( null, null );
-        if ( mSelection .isEmpty() )
-        	bookmarkedConstructions .add( new FreePoint( this .mManifestations .getField() .origin( 3 ) ) );
+        if ( mSelection .size() == 0 )
+            bookmarkedConstructions .add( new FreePoint( this .mManifestations .getField() .origin( 3 ) ) );
         else
         	for (Manifestation man : mSelection) {
         		Construction result = duper .duplicateConstruction( man );

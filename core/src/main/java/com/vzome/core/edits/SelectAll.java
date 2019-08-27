@@ -15,7 +15,7 @@ public class SelectAll extends ChangeSelection
         super( editor .getSelection() );
         
         for (Manifestation m : editor .getRealizedModel() ) {
-            if ( m .getRenderedObject() != null )
+            if ( m .isRendered() )
             {
                 if ( ! this .mSelection .manifestationSelected( m ) )
                     select( m, true );

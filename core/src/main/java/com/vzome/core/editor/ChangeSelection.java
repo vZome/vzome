@@ -59,7 +59,7 @@ public abstract class ChangeSelection extends SideEffects
 			// selectionEffects must be set, so that selection-affecting side effects get pushed
 			super.undo();
 						
-			mSelection .clearForOrderedUndo();
+			mSelection .clear();
 			
 			// to let the SideEffects undo correctly, selectionEffects must be cleared
 			this .selectionEffects = null;

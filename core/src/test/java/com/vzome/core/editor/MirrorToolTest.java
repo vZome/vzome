@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
-import org.python.antlr.PythonParser.name_or_print_return;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -22,7 +21,7 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.Projection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 import com.vzome.core.tools.MirrorTool;
 
@@ -130,7 +129,7 @@ public class MirrorToolTest
     private EditorModel createEditor( Point originPoint )
     {
         AlgebraicField field = originPoint .getField();
-        RealizedModel model = new RealizedModel( field, new Projection.Default( field ) );
+        RealizedModelImpl model = new RealizedModelImpl( field, new Projection.Default( field ) );
         return new EditorModel( model, originPoint, null, null, new HashMap<>() );
     }
     

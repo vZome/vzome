@@ -12,14 +12,15 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 
 public class EditorModel
 {
-    public EditorModel( RealizedModel realized, Point originPoint, FieldApplication kind, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
+    public EditorModel( RealizedModelImpl realized, Point originPoint, FieldApplication kind, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
     {
         mRealized = realized;
-        mSelection = new Selection();
+        mSelection = new SelectionImpl();
         this.kind = kind;
         this.symmetrySystem = symmetrySystem;
         this.symmetrySystems = symmetrySystems;
@@ -28,6 +29,7 @@ public class EditorModel
         }
 
         this .selectionSummary = new SelectionSummary( this .mSelection );
+        this .mSelection .addListener( this .selectionSummary );
 
         Manifestation m = realized .manifest( originPoint );
         m .addConstruction( originPoint );
@@ -128,9 +130,9 @@ public class EditorModel
         }
     }
 
-    private final RealizedModel mRealized;
+    private final RealizedModelImpl mRealized;
 
-    protected Selection mSelection;
+    protected SelectionImpl mSelection;
 
     private SelectionSummary selectionSummary;
 

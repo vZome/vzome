@@ -9,11 +9,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.UndoableEdit;
-import com.vzome.core.editor.UndoableEdit.Context;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 
 public class GroupSelection implements UndoableEdit

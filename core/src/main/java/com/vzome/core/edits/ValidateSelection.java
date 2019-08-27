@@ -13,7 +13,7 @@ public class ValidateSelection extends ChangeSelection
     @Override
     public void perform() throws Failure
     {
-        if ( mSelection .isEmpty() )
+        if ( mSelection .size() == 0 )
             throw new Failure( "selection is empty" );
     }
 
