@@ -11,6 +11,7 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
+import com.vzome.core.edits.Polytope4d;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.math.Projection;
 import com.vzome.core.model.RealizedModel;

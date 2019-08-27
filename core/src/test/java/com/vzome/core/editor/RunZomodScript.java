@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.edits.RunZomicScript;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.zomic.parser.ErrorHandler;
 import com.vzome.core.zomic.program.ZomicStatement;

@@ -27,6 +27,12 @@ import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.edits.AffinePentagon;
+import com.vzome.core.edits.DeselectAll;
+import com.vzome.core.edits.SelectAll;
+import com.vzome.core.edits.SelectManifestation;
+import com.vzome.core.edits.SymmetryAxisChange;
+import com.vzome.core.edits.SymmetryCenterChange;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
 

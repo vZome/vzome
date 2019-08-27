@@ -22,8 +22,6 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.IcosahedralToolFactory;
-import com.vzome.core.editor.LinearMapTool;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
@@ -31,6 +29,8 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedModel;
+import com.vzome.core.tools.IcosahedralToolFactory;
+import com.vzome.core.tools.LinearMapTool;
 
 public class GenerateLinearMaps
 {

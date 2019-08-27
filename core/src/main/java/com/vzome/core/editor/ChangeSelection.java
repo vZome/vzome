@@ -38,7 +38,7 @@ public abstract class ChangeSelection extends SideEffects
 
     protected static final Logger logger = Logger.getLogger( "com.vzome.core.editor.ChangeSelection" );
 
-    ChangeSelection( Selection selection )
+    public ChangeSelection( Selection selection )
     {
         mSelection = selection;
         groupingDoneInSelection = false;

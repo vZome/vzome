@@ -520,7 +520,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
 
         // ----------------------------------------- Custom menu
-        menu = getCustomMenu();
+        menu = getCustomMenu( symmetryController );
         if(menu != null) {
             super .add( menu );
         }
@@ -678,7 +678,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
      test.pick.cube = ^8 First Octant
 
      */
-    private JMenu getCustomMenu() {
+    private JMenu getCustomMenu( Controller controller ) {
         File customMenuFile = new File(Platform.getPreferencesFolder(), "vZomeCustomMenu.properties");
         try {
             if (customMenuFile.exists()) {
@@ -711,11 +711,11 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                                 int key = label.charAt(caretPos + 1);
                                 if(key >= KeyEvent.VK_0 && key <= KeyEvent.VK_9) {
                                     label = label.replace("^" + (key - KeyEvent.VK_0), "").trim();
-                                    menuItem = createMenuItem(label, command, key, COMMAND);
+                                    menuItem = createMenuItem(label, command, controller, key, COMMAND);
                                 }                                
                             }
                             if(menuItem == null) {
-                                menuItem = createMenuItem(label, command);
+                                menuItem = createMenuItem(label, command, controller, KeyEvent .CHAR_UNDEFINED, 0 );
                             }
                             menu.add(menuItem);
                         }
