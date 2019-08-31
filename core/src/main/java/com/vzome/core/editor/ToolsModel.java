@@ -180,8 +180,12 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     {
         // update the tool from the maps, deserialized earlier
         String id = tool .getId();
-        tool .setLabel( this .toolLabels .get( id ) );
-        tool .setInputBehaviors( this .toolInputBehaviors .get( id ) );
+        String label = this .toolLabels .get( id );
+        if ( label != null ) // be careful not to override the defaults for legacy commands with no serialized maps
+            tool .setLabel( label );
+        EnumSet<InputBehaviors> behaviors = this .toolInputBehaviors .get( id );
+        if ( behaviors != null ) // be careful not to override the defaults for legacy commands with no serialized maps
+            tool .setInputBehaviors( behaviors );
         tool .setHidden( this .hiddenTools .contains( id ) );
     }
 
