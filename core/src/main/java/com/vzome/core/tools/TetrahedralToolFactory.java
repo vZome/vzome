@@ -35,7 +35,7 @@ public class TetrahedralToolFactory extends OctahedralToolFactory
 	
 	public TetrahedralToolFactory( ToolsModel tools, Symmetry symmetry )
 	{
-		super( tools, symmetry, ID, LABEL, TOOLTIP2 );
+		super( tools, symmetry, ID, LABEL, "icosahedral" == symmetry.getName() ? TOOLTIP1 : TOOLTIP2 );
 	}
 
 	@Override
