@@ -1850,10 +1850,10 @@ export const DEFAULT_MODEL = {
          ]
       }
    ],
-   "segments":[
+   "instances":[
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":4.23606797749979,
             "z":11.090169943749475
@@ -1869,8 +1869,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
             "z":6.854101966249685
@@ -1886,8 +1886,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
             "z":-6.854101966249685
@@ -1903,8 +1903,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-4.23606797749979,
             "y":11.090169943749475,
             "z":0
@@ -1920,8 +1920,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":11.090169943749475,
             "y":0,
             "z":-4.23606797749979
@@ -1937,8 +1937,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":4.23606797749979,
             "z":-11.090169943749475
@@ -1954,8 +1954,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":6.854101966249685,
             "y":6.854101966249685,
             "z":-6.854101966249685
@@ -1971,8 +1971,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
             "z":6.854101966249685
@@ -1988,8 +1988,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-4.23606797749979,
             "y":11.090169943749475,
             "z":0
@@ -2005,8 +2005,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
             "z":-6.854101966249685
@@ -2022,8 +2022,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":-4.23606797749979,
             "z":11.090169943749475
@@ -2039,8 +2039,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
             "z":-6.854101966249685
@@ -2056,8 +2056,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":-4.23606797749979,
             "z":11.090169943749475
@@ -2073,8 +2073,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-4.23606797749979,
             "y":-11.090169943749475,
             "z":0
@@ -2090,8 +2090,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
             "z":-6.854101966249685
@@ -2107,8 +2107,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-11.090169943749475,
             "y":0,
             "z":4.23606797749979
@@ -2124,8 +2124,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":11.090169943749475,
             "y":0,
             "z":4.23606797749979
@@ -2141,8 +2141,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":-4.23606797749979,
             "z":-11.090169943749475
@@ -2158,8 +2158,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":6.854101966249685,
             "y":-6.854101966249685,
             "z":-6.854101966249685
@@ -2175,8 +2175,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-11.090169943749475,
             "y":0,
             "z":4.23606797749979
@@ -2192,8 +2192,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":4.23606797749979,
             "y":11.090169943749475,
             "z":0
@@ -2209,8 +2209,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":4.23606797749979,
             "z":-11.090169943749475
@@ -2226,8 +2226,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":4.23606797749979,
             "y":-11.090169943749475,
             "z":0
@@ -2243,8 +2243,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-11.090169943749475,
             "y":0,
             "z":-4.23606797749979
@@ -2260,8 +2260,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":6.854101966249685,
             "y":6.854101966249685,
             "z":-6.854101966249685
@@ -2277,8 +2277,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-11.090169943749475,
             "y":0,
             "z":-4.23606797749979
@@ -2294,8 +2294,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
             "z":6.854101966249685
@@ -2311,8 +2311,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":4.23606797749979,
             "y":-11.090169943749475,
             "z":0
@@ -2328,8 +2328,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":6.854101966249685,
             "y":-6.854101966249685,
             "z":6.854101966249685
@@ -2345,8 +2345,8 @@ export const DEFAULT_MODEL = {
          "color":"#00A0E4"
       },
       {
-         "render":"segment",
-         "start":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
             "z":-6.854101966249685
@@ -2360,227 +2360,248 @@ export const DEFAULT_MODEL = {
             "w":0.8090169943749475
          },
          "color":"#00A0E4"
-      }
-   ],
-   "balls":[
+      },
+
+
+
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":4.23606797749979,
             "y":-11.090169943749475,
             "z":0
          },
          "id":"9e69b94c-1ad6-45e1-b531-e43ac5532fb1",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":-11.090169943749475,
             "y":0,
             "z":-4.23606797749979
          },
          "id":"4a2d7903-3551-49fd-887e-791bdeddc8bb",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
             "z":6.854101966249685
          },
          "id":"0604a62e-1b32-4545-902b-7f5045f69f14",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
             "z":6.854101966249685
          },
          "id":"b9f2edcb-a8a2-4e4d-9fc6-979a661fa0b5",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":4.23606797749979,
             "z":-11.090169943749475
          },
          "id":"96c266fd-61c4-4ad3-b53c-618cbc052a20",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":6.854101966249685,
             "y":6.854101966249685,
             "z":-6.854101966249685
          },
          "id":"beed23cd-3aa9-44f9-b118-b247da03aeb1",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
             "z":-6.854101966249685
          },
          "id":"a8efe286-322f-451a-87bb-51e835bac422",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":-4.23606797749979,
             "y":11.090169943749475,
             "z":0
          },
          "id":"4a4a56c7-e7b8-4af6-9499-9b278e26ab82",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":4.23606797749979,
             "y":11.090169943749475,
             "z":0
          },
          "id":"688f082c-f7f3-47ae-96c9-090b9aa968c4",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":11.090169943749475,
             "y":0,
             "z":-4.23606797749979
          },
          "id":"4cc42bba-d133-4a69-8d5b-c3b39b925ec2",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":-4.23606797749979,
             "y":-11.090169943749475,
             "z":0
          },
          "id":"8b5fd574-5e24-4dc6-9a95-3da40593384d",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":4.23606797749979,
             "z":11.090169943749475
          },
          "id":"1aa406e8-61dc-4efe-aa8c-674ca917c7a8",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":6.854101966249685,
             "y":6.854101966249685,
             "z":6.854101966249685
          },
          "id":"d89e1e9b-482d-424e-a880-93de55cb6821",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":-4.23606797749979,
             "z":11.090169943749475
          },
          "id":"ed61a487-f724-44cc-8b98-5517201bd540",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":6.854101966249685,
             "y":-6.854101966249685,
             "z":6.854101966249685
          },
          "id":"5f46ba23-0d3b-4d24-b1ae-f4452be4b940",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":11.090169943749475,
             "y":0,
             "z":4.23606797749979
          },
          "id":"4ac9925f-fbd3-4798-a6da-6673acf6a1d5",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":-11.090169943749475,
             "y":0,
             "z":4.23606797749979
          },
          "id":"d2e12ce6-b588-49fd-96c2-fe02487caf6b",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":0,
             "y":-4.23606797749979,
             "z":-11.090169943749475
          },
          "id":"1a0a5ae3-0225-4ff9-b171-bc825773fc86",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":6.854101966249685,
             "y":-6.854101966249685,
             "z":-6.854101966249685
          },
          "id":"278ab2ac-085e-4427-b410-7adf59ebf5ad",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       },
       {
-         "render":"ball",
-         "center":{
+         "render":"instance",
+         "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
             "z":-6.854101966249685
          },
          "id":"3efc2c33-4df1-4b55-bce9-fc27e7012f10",
          "shape":"1f591b29-a875-48c4-8259-aaf2470cc83b",
+         "rotation":{ "x":1, "y":0, "z":0, "w":0 },
          "color":"#FFFFFF"
       }
    ]

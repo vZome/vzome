@@ -24,11 +24,9 @@ let EditButtons = ({ enabled, endpoint, dispatch }) => {
   )
 }
 
-const mapStateToProps = (state) => ({
+const select = (state) => ({
   enabled: state.connectionLive,
   endpoint: state.modelUrl
 })
 
-EditButtons = connect(mapStateToProps)(EditButtons)
-
-export default EditButtons
+export default connect(select)(EditButtons)

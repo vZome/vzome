@@ -8,12 +8,12 @@ export const REMOVE_STRUT = 'REMOVE_STRUT'
 
 export const openUrl = (url) => ({
   type: OPEN_URL,
-  url
+  payload: url
 })
 
 export const setBackground = (color) => ({
   type: SET_BACKGROUND,
-  color
+  payload: color
 })
 
 export const closeView = () => ({
