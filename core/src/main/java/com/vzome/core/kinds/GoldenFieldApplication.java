@@ -20,6 +20,7 @@ import com.vzome.core.commands.CommandVanOss600Cell;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
@@ -118,7 +119,7 @@ public class GoldenFieldApplication extends DefaultFieldApplication
         private final Command IxTsymmetry = new CommandQuaternionSymmetry( H4, T2 );
         private final Command TxTsymmetry = new CommandQuaternionSymmetry( T2, T2 );
         private final Command vanOss600cell = new CommandVanOss600Cell();
-        private final Command octasymm = new CommandSymmetry( icosaSymm );
+        private final Command octasymm = new CommandSymmetry( new OctahedralSymmetry( getField(), "", "" ) );
 
         @Override
         public Symmetry getSymmetry()
