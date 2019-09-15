@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Direction;
@@ -312,4 +313,10 @@ public class RenderedManifestation
 			this .isOffset = false;
 		}
 	}
+
+    public String getSymmetryShapes()
+    {
+        SymmetrySystem symmetrySystem = (SymmetrySystem) this .model .getOrbitSource();
+        return symmetrySystem .getName() + ":" + symmetrySystem .getStyle() .getName();
+    }
 }

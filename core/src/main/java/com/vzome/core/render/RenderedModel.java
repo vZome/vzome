@@ -93,7 +93,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     public interface OrbitSource
     {
-    	Symmetry getSymmetry();
+        Symmetry getSymmetry();
     	    	
         Axis getAxis( AlgebraicVector vector );
         
@@ -154,6 +154,14 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         else
             mListeners .remove( listener );
     }
+    
+    public RenderedManifestation render( Manifestation manifestation )
+    {
+        RenderedManifestation rm = new RenderedManifestation( manifestation );
+        rm .setModel( this );
+        resetAttributes( rm, false );
+        return rm;
+    }
 
     @Override
 	public void manifestationAdded( Manifestation m )
@@ -164,10 +172,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 			return;
 		}
 		
-	    RenderedManifestation rm = new RenderedManifestation( m );
-        rm .setModel( this );
-//	    resetAxis( rm );
-	    resetAttributes( rm, false );
+	    RenderedManifestation rm = render( m );
         Polyhedron poly = rm .getShape();
 	    if ( poly == null )
 	        return; // no direction for this strut
