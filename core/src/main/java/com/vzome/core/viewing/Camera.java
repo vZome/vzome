@@ -12,10 +12,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.math.DomUtils;
-import com.vzome.core.render.Renderable;
 import java.util.Objects;
 
-public class Camera implements Renderable
+public class Camera
 {
     /**
 	 * The original frustum.
@@ -504,28 +503,5 @@ public class Camera implements Renderable
             double z = Double .parseDouble( str );
             mLookDirection = new Vector3d( x, y, z );
         }
-    }
-    
-    private Object renderedObject = null;
-
-
-    @Override
-    public Object getRenderedObject()
-    {
-        // TODO Auto-generated method stub
-        return renderedObject;
-    }
-
-    @Override
-    public void render( Object renderer )
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void setRenderedObject( Object renderedObject )
-    {
-        this.renderedObject = renderedObject;
     }
 }

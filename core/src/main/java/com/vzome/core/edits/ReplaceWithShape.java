@@ -22,35 +22,43 @@ import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefToPolyhedron;
+import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.OrbitSet;
+import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.VefModelExporter;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
+import com.vzome.core.render.RenderedModel;
+import com.vzome.core.render.Shapes;
 
 public class ReplaceWithShape extends ChangeManifestations
 {
     public static final String NAME = "ReplaceWithShape";
 
+    // These three fields are used for pick-based operation
     private String vef;
-
     private Polyhedron shape;
-
     private Manifestation ballOrStrut;
 
-    @Override
-    public void perform() throws Command.Failure
-    {
-        for (Manifestation man : mSelection) {
-            unselect( man );
-        }
-        redo();
+    // This field is used for selection-based operation
+    private String symmetryShapes;
 
-        RenderedManifestation rm = this .ballOrStrut .getRenderedObject();
+    private EditorModel editor;
+
+    private void replace( Manifestation man, RenderedManifestation rm, Polyhedron shape )
+    {
+        if ( man instanceof Panel )
+            return;
         if (rm != null) {
             AlgebraicMatrix orientation = rm .getOrientation();
-            List<AlgebraicVector> vertexList = this .shape .getVertexList();
-            for (Polyhedron.Face face : this .shape .getFaceSet()) {
+            List<AlgebraicVector> vertexList = shape .getVertexList();
+            for (Polyhedron.Face face : shape .getFaceSet()) {
                 Point[] vertices = new Point[ face .size() ];
                 for ( int i = 0; i < vertices.length; i++ ) {
                     int vertexIndex = face .getVertex( i );
@@ -58,17 +66,78 @@ public class ReplaceWithShape extends ChangeManifestations
                     vertices[ i ] = transformVertex( vertex, rm .getLocationAV(), orientation );
                 }
                 Polygon polygon = new PolygonFromVertices( vertices );
-                Manifestation panel = manifestConstruction( polygon );
-                select( panel );
+                Manifestation panel = this .manifestConstruction( polygon );
+                this .select( panel );
             }
         }
-
-        this .deleteManifestation( this .ballOrStrut );
-
+        this .deleteManifestation( man );
+    }
+    
+    @Override
+    public void perform() throws Command.Failure
+    {
+        if ( this .symmetryShapes != null ) {
+            // selection-based
+            String[] tokens = this .symmetryShapes .split( ":" );
+            SymmetrySystem symmetrySystem = this .editor .getSymmetrySystem( tokens[ 0 ] );
+            Shapes shapes = symmetrySystem .getStyle( tokens[1] );
+            RenderedModel model = new RenderedModel( symmetrySystem .getSymmetry() .getField(), new RenderedModel.OrbitSource() {
+                
+                @Override
+                public Symmetry getSymmetry() {
+                    return symmetrySystem .getSymmetry();
+                }
+                
+                @Override
+                public Shapes getShapes() {
+                    return shapes; // THIS is the reason for the OrbitSource.
+                      // We don't want to change the shapes of the current SymmetrySystem,
+                      //  if it happens to be the one named.
+                }
+                
+                @Override
+                public OrbitSet getOrbits() {
+                    return symmetrySystem .getOrbits();
+                }
+                
+                @Override
+                public Color getColor( Direction orbit ) {
+                    return symmetrySystem .getColor( orbit );
+                }
+                
+                @Override
+                public Axis getAxis( AlgebraicVector vector ) {
+                    return symmetrySystem .getAxis( vector );
+                }
+            } );
+            if ( this .ballOrStrut != null ) {
+                // pick-based
+                for (Manifestation man : mSelection) {
+                    unselect( man );
+                }
+                redo();
+                RenderedManifestation rm = model .render( this .ballOrStrut );
+                this .replace( this .ballOrStrut, rm, rm .getShape() );
+            }
+            else
+                // selection-based
+                for (Manifestation man : mSelection) {
+                    unselect( man );
+                    RenderedManifestation rm = model .render( man );
+                    this .replace( man, rm, rm .getShape() );
+                }
+        } else {
+            // legacy pick-based
+            for (Manifestation man : mSelection) {
+                unselect( man );
+            }
+            redo();
+            this .replace( this .ballOrStrut, this .ballOrStrut .getRenderedObject(), this .shape );
+        }
         super .perform();
     }
 
-    private Point transformVertex( AlgebraicVector vertex, AlgebraicVector offset, AlgebraicMatrix orientation )
+    private static Point transformVertex( AlgebraicVector vertex, AlgebraicVector offset, AlgebraicMatrix orientation )
     {
         if ( orientation != null )
             vertex = orientation .timesColumn( vertex );
@@ -80,40 +149,64 @@ public class ReplaceWithShape extends ChangeManifestations
     public ReplaceWithShape( EditorModel editor )
     {
         super( editor .getSelection(), editor .getRealizedModel() );
+        this.editor = editor;
     }
 
     @Override
     public void configure( Map<String,Object> props )
     {
-        this .ballOrStrut = (Manifestation) props .get( "picked" );
-        if ( this .ballOrStrut != null ) // first creation from the editor
-            this .shape = ballOrStrut .getRenderedObject() .getShape();
+        Manifestation m = (Manifestation) props .get( "picked" );
+        if ( m != null ) {
+            // pick-based edit
+            this .symmetryShapes = m .getRenderedObject() .getSymmetryShapes();
+            this .ballOrStrut = m;
+        }
+        else
+            // selection-based edit
+            this .symmetryShapes = (String) props .get( "mode" );
     }
 
     @Override
     protected void getXmlAttributes( Element element )
     {
-        Construction construction = this .ballOrStrut .getConstructions() .next();
-        if ( construction instanceof Point )
-            XmlSaveFormat .serializePoint( element, "point", (Point) construction );
-        else
-            XmlSaveFormat .serializeSegment( element, "startSegment", "endSegment", (Segment) construction );
-        if ( this .vef == null ) {
-            this .vef = VefModelExporter .exportPolyhedron( this .shape );
+        if ( this .ballOrStrut != null ) {
+            // pick-based
+            Construction construction = this .ballOrStrut .getConstructions() .next();
+            if ( construction instanceof Point )
+                XmlSaveFormat .serializePoint( element, "point", (Point) construction );
+            else
+                XmlSaveFormat .serializeSegment( element, "startSegment", "endSegment", (Segment) construction );
         }
-        Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( this .vef ) );
-        element .appendChild( textNode );
+        if ( this .shape != null ) {
+            // legacy format, which fails to use correct orientations after a symmetry change
+            if ( this .vef == null ) {
+                this .vef = VefModelExporter .exportPolyhedron( this .shape );
+            }
+            Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( this .vef ) );
+            element .appendChild( textNode );
+        }
+        else {
+            element .setAttribute( "shapes", this .symmetryShapes );
+        }
     }
 
     @Override
     protected void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Failure
     {
+        String attr = xml.getAttribute( "shapes" );
+        if (attr != null && !attr.isEmpty()) {
+            this .symmetryShapes = attr;
+        }
+        else {
+            // legacy format, which fails to use correct orientations after a symmetry change
+            this .vef = xml .getTextContent();
+            this .shape = VefToPolyhedron .importPolyhedron( format .getField(), this .vef );
+        }
         Construction construction = format .parsePoint( xml, "point" );
         if ( construction == null )
             construction = format .parseSegment( xml, "startSegment", "endSegment" );
-        this .ballOrStrut = this .getManifestation( construction );
-        this .vef = xml .getTextContent();
-        this .shape = VefToPolyhedron .importPolyhedron( format .getField(), this .vef );
+        if ( construction != null )
+            this .ballOrStrut = this .getManifestation( construction );
     }
 
     @Override
