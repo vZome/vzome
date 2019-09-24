@@ -25,51 +25,51 @@ import com.vzome.core.model.Strut;
 
 public class PlaneSelectionTool extends Tool
 {
-	public static class Factory extends AbstractToolFactory
-	{
-		public Factory( ToolsModel tools )
-		{
-			super( tools, null, "plane", "", "" );
-		}
+    public static class Factory extends AbstractToolFactory
+    {
+        public Factory( ToolsModel tools )
+        {
+            super( tools, null, "plane", "", "" );
+        }
 
-		@Override
-		protected boolean countsAreValid( int total, int balls, int struts, int panels )
-		{
-			return ( total == 3 && balls == 3 );
-		}
+        @Override
+        protected boolean countsAreValid( int total, int balls, int struts, int panels )
+        {
+            return ( total == 3 && balls == 3 );
+        }
 
-		@Override
-		public Tool createToolInternal( String id )
-		{
-			return new PlaneSelectionTool( id, getToolsModel() );
-		}
+        @Override
+        public Tool createToolInternal( String id )
+        {
+            return new PlaneSelectionTool( id, getToolsModel() );
+        }
 
-		@Override
-		protected boolean bindParameters( Selection selection )
-		{
-			return true;
-		}
-	}
+        @Override
+        protected boolean bindParameters( Selection selection )
+        {
+            return true;
+        }
+    }
 
     private Bivector3d plane;
-    
+
     private AlgebraicVector anchor;
-    
-	private boolean halfSpace = true;
-	private boolean boundaryOpen = false;
-	private boolean above = true;
-	private boolean includeBalls = true;
-	private boolean includeStruts = true;
-	private boolean includePanels = true;
-	private boolean includePartials = false;
+
+    private boolean halfSpace = true;
+    private boolean boundaryOpen = false;
+    private boolean above = true;
+    private boolean includeBalls = true;
+    private boolean includeStruts = true;
+    private boolean includePanels = true;
+    private boolean includePartials = false;
 
     public PlaneSelectionTool( String id, ToolsModel tools )
     {
         super( id, tools );
     }
 
-	@Override
-	public boolean isSticky()
+    @Override
+    public boolean isSticky()
     {
         return true;
     }
@@ -103,9 +103,9 @@ public class PlaneSelectionTool extends Tool
                 }
             }
         }
-        
+
         if ( p3 == null )
-        	throw new Command.Failure( "half-space selection tool requires exactly three balls" );
+            throw new Command.Failure( "half-space selection tool requires exactly three balls" );
 
         Vector3d v1 = new Vector3d( p2 .minus( p1 ) );
         Vector3d v2 = new Vector3d( p3 .minus( p1 ) );
@@ -118,106 +118,106 @@ public class PlaneSelectionTool extends Tool
     public void prepare( ChangeManifestations applyTool ) {}
 
     @Override
-	public void complete( ChangeManifestations applyTool ) {}
+    public void complete( ChangeManifestations applyTool ) {}
 
     @Override
     public boolean needsInput()
     {
-    	return false;
+        return false;
     }
 
     @Override
     public void performEdit( Construction c, ChangeManifestations applyTool ) {}
 
     @Override
-	public void performSelect( Manifestation man, ChangeManifestations applyTool )
-	{
-	    if ( man .isHidden() )
-	        return;
-	    if ( ! man .isRendered() )
-	        return;
+    public void performSelect( Manifestation man, ChangeManifestations applyTool )
+    {
+        if ( man .isHidden() )
+            return;
+        if ( ! man .isRendered() )
+            return;
         if ( includePanels && man instanceof Panel )
             return;
         if ( includeBalls && man instanceof Connector )
         {
-        	Connector c = (Connector) man;
-        	int orientation = orient( c .getLocation() );
-        	if ( !boundaryOpen && orientation == 0 )
-        		applyTool .select( man );
-        	else if ( halfSpace && above && orientation > 0 )
-        		applyTool .select( man );
-        	else if ( halfSpace && !above && orientation < 0 )
-        		applyTool .select( man );
+            Connector c = (Connector) man;
+            int orientation = orient( c .getLocation() );
+            if ( !boundaryOpen && orientation == 0 )
+                applyTool .select( man );
+            else if ( halfSpace && above && orientation > 0 )
+                applyTool .select( man );
+            else if ( halfSpace && !above && orientation < 0 )
+                applyTool .select( man );
         }
         else if ( includeStruts && man instanceof Strut )
         {
-        	int o1 = orient( ((Strut) man) .getLocation() );
-        	int o2 = orient( ((Strut) man) .getEnd() );
-        	if ( includePartials )
-        	{
-        		if ( !boundaryOpen && ( o1 == 0 || o2 == 0 ) )
-        			applyTool .select( man );
-            	else if ( halfSpace )
-            	{
-            		if ( above && ( o1 > 0 || o2 > 0 ) )
-            			applyTool .select( man );
-            		else if ( !above && ( o1 < 0 || o2 < 0 ) )
-            			applyTool .select( man );
-            	}
-        	}
-        	else
-        	{
-        		if ( !halfSpace && o1 == 0 && o2 == 0 )
-        			applyTool .select( man );
-            	else if ( halfSpace )
-            	{
-            		if ( boundaryOpen )
-            		{
-            			if ( above && ( o1 > 0 && o2 > 0 ) )
-            				applyTool .select( man );
-            			else if ( !above && ( o1 < 0 && o2 < 0 ) )
-            				applyTool .select( man );
-            		}
-            		else
-            		{
-            			if ( above && ( o1 >= 0 && o2 >= 0 ) )
-            				applyTool .select( man );
-            			else if ( !above && ( o1 <= 0 && o2 <= 0 ) )
-            				applyTool .select( man );
-            		}
-            	}
-        	}
+            int o1 = orient( ((Strut) man) .getLocation() );
+            int o2 = orient( ((Strut) man) .getEnd() );
+            if ( includePartials )
+            {
+                if ( !boundaryOpen && ( o1 == 0 || o2 == 0 ) )
+                    applyTool .select( man );
+                else if ( halfSpace )
+                {
+                    if ( above && ( o1 > 0 || o2 > 0 ) )
+                        applyTool .select( man );
+                    else if ( !above && ( o1 < 0 || o2 < 0 ) )
+                        applyTool .select( man );
+                }
+            }
+            else
+            {
+                if ( !halfSpace && o1 == 0 && o2 == 0 )
+                    applyTool .select( man );
+                else if ( halfSpace )
+                {
+                    if ( boundaryOpen )
+                    {
+                        if ( above && ( o1 > 0 && o2 > 0 ) )
+                            applyTool .select( man );
+                        else if ( !above && ( o1 < 0 && o2 < 0 ) )
+                            applyTool .select( man );
+                    }
+                    else
+                    {
+                        if ( above && ( o1 >= 0 && o2 >= 0 ) )
+                            applyTool .select( man );
+                        else if ( !above && ( o1 <= 0 && o2 <= 0 ) )
+                            applyTool .select( man );
+                    }
+                }
+            }
         }
         applyTool .redo();
-	};
-	
-	private int orient( AlgebraicVector point )
-	{
-	    AlgebraicVector diff = point .minus( anchor );
-		Vector3d v = new Vector3d( diff );
-		AlgebraicNumber volume = plane .outer( v );
-		if ( volume .isZero() )
-			return 0;
-		else
-		{
-			double volD = volume .evaluate();
-			return (volD > 0d)? 1 : -1;
-		}
-	}
+    };
+
+    private int orient( AlgebraicVector point )
+    {
+        AlgebraicVector diff = point .minus( anchor );
+        Vector3d v = new Vector3d( diff );
+        AlgebraicNumber volume = plane .outer( v );
+        if ( volume .isZero() )
+            return 0;
+        else
+        {
+            double volD = volume .evaluate();
+            return (volD > 0d)? 1 : -1;
+        }
+    }
 
     @Override
     public void redo()
     {
         // TODO manifest a symmetry construction... that is why this class extends ChangeConstructions
         // this edit is now sticky (not really undoable)
-//        tools .addTool( this );
+        //        tools .addTool( this );
     }
 
     @Override
     public void undo()
     {
         // this edit is now sticky (not really undoable)
-//        tools .removeTool( this );
+        //        tools .removeTool( this );
     }
 
     @Override
@@ -225,7 +225,7 @@ public class PlaneSelectionTool extends Tool
     {
         return "PlaneSelectionTool";
     }
-    
+
     @Override
     protected void getXmlAttributes( Element element )
     {
@@ -236,27 +236,27 @@ public class PlaneSelectionTool extends Tool
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Command.Failure
     {
         super .setXmlAttributes( element, format );
-        
+
         this .includeBalls = ! "false" .equals( element .getAttribute( "balls" ) );
         this .includeStruts = ! "false" .equals( element .getAttribute( "struts" ) );
         this .includePanels = "true" .equals( element .getAttribute( "panels" ) );
-    	this .includePartials = "any" .equals( element .getAttribute( "vertices" ) );
-    	this .boundaryOpen = "true" .equals( element .getAttribute( "open" ) );
+        this .includePartials = "any" .equals( element .getAttribute( "vertices" ) );
+        this .boundaryOpen = "true" .equals( element .getAttribute( "open" ) );
         String halfSpace = element .getAttribute( "halfSpace" );
         if ( "above" .equals( halfSpace ) )
         {
-        	this .halfSpace = true;
-        	this .above = true;
+            this .halfSpace = true;
+            this .above = true;
         }
         else if ( "below" .equals( halfSpace ) )
         {
-        	this .halfSpace = true;
-        	this .above = false;
+            this .halfSpace = true;
+            this .above = false;
         }
         else
         {
-        	this .halfSpace = false;
-        	this .boundaryOpen = false;  // note override of earlier default
+            this .halfSpace = false;
+            this .boundaryOpen = false;  // note override of earlier default
         }
     }
 
@@ -271,10 +271,10 @@ public class PlaneSelectionTool extends Tool
         return "plane";
     }
 
-	@Override
-	protected String checkSelection( boolean prepareTool )
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected String checkSelection( boolean prepareTool )
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
