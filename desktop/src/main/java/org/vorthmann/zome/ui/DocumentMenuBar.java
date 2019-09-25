@@ -321,6 +321,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( enableIf( isEditor, createMenuItem( "Strut Midpoint", ( "midpoint" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Line-Line Intersection", ( "StrutIntersection" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Line-Plane Intersection", ( "LinePlaneIntersect" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Panel-Panel Projection", ( "PanelPanelIntersection" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Cross Product", ( "CrossProduct" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Normal to Skew Lines", ( "JoinSkewLines" ) ) ) );
 
