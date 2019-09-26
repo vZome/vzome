@@ -8,7 +8,6 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.ChangeSelection;
 import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.ChangeSelection.ActionEnum;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;

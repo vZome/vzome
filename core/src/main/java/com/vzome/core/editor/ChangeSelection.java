@@ -28,12 +28,12 @@ public abstract class ChangeSelection extends SideEffects
         DESELECT
     }
 
-	protected final Selection mSelection;
-        
+    protected final Selection mSelection;
+
     private boolean groupingDoneInSelection;
-    
+
     private boolean orderedSelection = false;
-    
+
     private transient Deque<SideEffect> selectionEffects = null;
 
     protected static final Logger logger = Logger.getLogger( "com.vzome.core.editor.ChangeSelection" );
@@ -45,39 +45,44 @@ public abstract class ChangeSelection extends SideEffects
     }
 
     public void setOrderedSelection( boolean orderedSelection )
-	{
-		this.orderedSelection = orderedSelection;
-	}
+    {
+        this.orderedSelection = orderedSelection;
+    }
 
-	@Override
-	public void undo()
-	{
-		if ( this .orderedSelection ) {
+    @Override
+    public void undo()
+    {
+        if ( this .isNoOp() )
+            // When the undo is part of a failure, and there is nothing to undo,
+            //   it is simpler to avoid the ordered selection logic entirely
+            return;
 
-			Deque<SideEffect> stack = new ArrayDeque<SideEffect>();
-			this .selectionEffects = stack;
-			// selectionEffects must be set, so that selection-affecting side effects get pushed
-			super.undo();
-						
-			mSelection .clearForOrderedUndo();
-			
-			// to let the SideEffects undo correctly, selectionEffects must be cleared
-			this .selectionEffects = null;
-			while ( ! stack .isEmpty() ) {
-				SideEffect se = stack .pop();
-				se .undo();
-			}
-		}
-		else
-			super.undo();
-	}
+        if ( this .orderedSelection ) {
+
+            Deque<SideEffect> stack = new ArrayDeque<SideEffect>();
+            this .selectionEffects = stack;
+            // selectionEffects must be set, so that selection-affecting side effects get pushed
+            super.undo();
+
+            mSelection.clearForOrderedUndo();  // This seems unsafe!
+
+            // to let the SideEffects undo correctly, selectionEffects must be cleared
+            this .selectionEffects = null;
+            while ( ! stack .isEmpty() ) {
+                SideEffect se = stack .pop();
+                se .undo();
+            }
+        }
+        else
+            super.undo();
+    }
 
     protected void getXmlAttributes( Element element ) {}
-    
+
     protected void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Failure {}
-    
+
     protected abstract String getXmlElementName();
-    
+
     @Override
     public Element getXml( Document doc )
     {
@@ -90,20 +95,20 @@ public abstract class ChangeSelection extends SideEffects
 
     protected void adjustSelection(Manifestation man, ActionEnum action) {
         switch (action) {
-            case SELECT:
-                select(man);
-                break;
+        case SELECT:
+            select(man);
+            break;
 
-            case DESELECT:
-                unselect(man);
-                break;
+        case DESELECT:
+            unselect(man);
+            break;
 
-            case IGNORE:
-                break;
+        case IGNORE:
+            break;
 
-            default:
-                logger.warning("unexpected action: " + action.toString() );
-                break;
+        default:
+            logger.warning("unexpected action: " + action.toString() );
+            break;
         }
     }
 
@@ -118,12 +123,12 @@ public abstract class ChangeSelection extends SideEffects
         if ( this .groupingAware() && ( format .groupingDoneInSelection() || "2.1.1" .equals( grouping ) ) )
             groupingDoneInSelection = true;
         setXmlAttributes( xml, format );
-        
+
         context .performAndRecord( this );
-//        if ( mSelection != null )
-//            System.out.print( " selection: " + mSelection .size() );
+        //        if ( mSelection != null )
+        //            System.out.print( " selection: " + mSelection .size() );
     }
-    
+
     protected boolean groupingAware()
     {
         return false;
@@ -133,7 +138,7 @@ public abstract class ChangeSelection extends SideEffects
     {
         unselect( man, false );
     }
-    
+
     public void unselect( Manifestation man, boolean ignoreGroups )
     {
         if ( groupingDoneInSelection )  // the legacy form, pre 2.1.2
@@ -162,7 +167,7 @@ public abstract class ChangeSelection extends SideEffects
             logBugAccommodation( "null manifestation" );
             return;
         }
-        
+
         if ( ! mSelection .manifestationSelected( man ) )
             return;
         Group group = ignoreGroups? null : Selection .biggestGroup( man );
@@ -171,19 +176,19 @@ public abstract class ChangeSelection extends SideEffects
         else
             unselectGroup( group );
     }
-    
+
     public void select( Manifestation man )
     {
         select( man, false );
     }
-    
+
     public void recordSelected( Manifestation man )
     {
         if ( ! mSelection .manifestationSelected( man ) )
             return;
         plan( new RecordSelectedManifestation( man ) );
     }
-    
+
     public void select( Manifestation man, boolean ignoreGroups )
     {
         if ( groupingDoneInSelection )  // the legacy form, pre 2.1.2
@@ -196,7 +201,7 @@ public abstract class ChangeSelection extends SideEffects
             logBugAccommodation( "null manifestation" );
             return;
         }
-        
+
         if ( mSelection .manifestationSelected( man ) )
             return;
         Group group = ignoreGroups? null : Selection .biggestGroup( man );
@@ -205,7 +210,7 @@ public abstract class ChangeSelection extends SideEffects
         else
             selectGroup( group );
     }
-    
+
     private void selectGroup( Group group )
     {
         for (GroupElement next : group) {
@@ -215,7 +220,7 @@ public abstract class ChangeSelection extends SideEffects
                 plan( new SelectManifestation( (Manifestation) next, true ) );
         }
     }
-    
+
     private void unselectGroup( Group group )
     {
         for (GroupElement next : group) {
@@ -225,11 +230,11 @@ public abstract class ChangeSelection extends SideEffects
                 plan( new SelectManifestation( (Manifestation) next, false ) );
         }
     }
-    
+
     private class SelectManifestation implements SideEffect
     {
         private final Manifestation mMan;
-        
+
         private final boolean mOn;
 
         public SelectManifestation( Manifestation man, boolean value )
@@ -268,9 +273,9 @@ public abstract class ChangeSelection extends SideEffects
                 if ( mOn )
                     mSelection .unselect( mMan );
                 else if ( selectionEffects != null ) {
-                	// undoing a deselect in an orderedSelection edit;
-                	//  the actual selects will happen at the end, with pops
-                	selectionEffects .push( this );
+                    // undoing a deselect in an orderedSelection edit;
+                    //  the actual selects will happen at the end, with pops
+                    selectionEffects .push( this );
                 }
                 else
                     mSelection .select( mMan );
@@ -292,36 +297,37 @@ public abstract class ChangeSelection extends SideEffects
     /// Support for correctly undoing commands that care about selection order.
     ////////////////////////
 
+    // for an orderedSelection edit
     private class RecordSelectedManifestation implements SideEffect
     {
-    	private final Manifestation mMan;
+        private final Manifestation mMan;
 
         public RecordSelectedManifestation( Manifestation man )
         {
-    		mMan = man;
+            mMan = man;
             logger .finest( "constructing RecordSelectedManifestation" );
         }
 
         @Override
-		public void redo()
+        public void redo()
         {
             logger .finest( "redoing RecordSelectedManifestation" );
-		}
+        }
 
-		@Override
-		public void undo()
-		{
+        @Override
+        public void undo()
+        {
             logger .finest( "undoing RecordSelectedManifestation" );
             if ( selectionEffects == null )
-            	// in the pop phase in CS.undo()
+                // in the pop phase in CS.undo()
                 mSelection .select( mMan );
             else
-            	selectionEffects .push( this );
-		}
+                selectionEffects .push( this );
+        }
 
-		@Override
-		public Element getXml(Document doc)
-		{
+        @Override
+        public Element getXml(Document doc)
+        {
             return doc .createElement( "recordSelected" );
         }
     }
