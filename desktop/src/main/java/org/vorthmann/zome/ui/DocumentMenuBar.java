@@ -294,6 +294,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                 submenu2 .add( enableIf( isEditor, createMenuItem( "To Coordinate Plane", mapToColor + "CoordinatePlaneColorMap" ) ) );
                 submenu2 .add( enableIf( isEditor, createMenuItem( "System Colors", mapToColor + "SystemColorMap" ) ) );
                 submenu2 .add( enableIf( isEditor, createMenuItem( "System by Centroid", mapToColor + "SystemCentroidColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Nearest Predefined Orbit", mapToColor + "NearestPredefinedOrbitColorMap" ) ) );
+                submenu2 .add( enableIf( isEditor, createMenuItem( "Nearest Predefined Orbit by Centroid", mapToColor + "CentroidNearestPredefinedOrbitColorMap" ) ) );
                 submenu2 .add( enableIf( isEditor, createMenuItem( "Nearest Special Orbit", mapToColor + "NearestSpecialOrbitColorMap" ) ) );
                 submenu2 .add( enableIf( isEditor, createMenuItem( "Nearest Special Orbit by Centroid", mapToColor + "CentroidNearestSpecialOrbitColorMap" ) ) );
                 submenu.add(submenu2);
