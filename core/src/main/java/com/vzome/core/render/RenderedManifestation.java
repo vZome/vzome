@@ -26,8 +26,6 @@ public class RenderedManifestation
     private Polyhedron mShape;
     
     private RenderedModel model;
-
-	private String mColorName;
     
     private Color color = null;
     
@@ -258,7 +256,6 @@ public class RenderedManifestation
         RenderedManifestation copy = new RenderedManifestation( null );
         copy .location = this .location;
         copy .fixedLocation = this .fixedLocation;
-        copy .mColorName = this .mColorName;
         copy .color = this .color;
         copy .mGlow = this .mGlow;
         copy .mOrientation = this .mOrientation;
