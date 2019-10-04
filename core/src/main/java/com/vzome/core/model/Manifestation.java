@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 
 /**
@@ -25,6 +26,8 @@ public abstract class Manifestation implements GroupElement
     private boolean hidden = false;
 
     private int mId = NO_ID;
+
+    private Color color;
 
     private static final int NO_ID = -1;
 
@@ -71,6 +74,16 @@ public abstract class Manifestation implements GroupElement
     public boolean isUnnecessary()
     {
         return mManifests .isEmpty();
+    }
+    
+    public Color getColor()
+    {
+        return this.color;
+    }
+
+    public void setColor( Color color )
+    {
+        this.color = color;
     }
 
     public void setRenderedObject( RenderedManifestation obj )
