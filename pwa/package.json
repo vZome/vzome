@@ -17,6 +17,9 @@
     "react-router": "^5.1.0",
     "react-router-dom": "^5.1.0",
     "react-scripts": "3.2.0",
+    "react-three-fiber": "^3.0.7",
+    "redux-bundler": "^26.0.0",
+    "three": "^0.109.0",
     "typescript": "3.6.3"
   },
   "scripts": {
