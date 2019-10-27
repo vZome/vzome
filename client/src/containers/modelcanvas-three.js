@@ -1,234 +1,56 @@
 
-import React from 'react';
-import PureRenderMixin from 'react/lib/ReactComponentWithPureRenderMixin';
+import React, { useRef } from 'react';
 import { connect } from 'react-redux'
-import React3 from 'react-three-renderer';
+import { Canvas, useThree, useRender, extend } from 'react-three-fiber';
 import * as THREE from 'three';
-import TrackballControls from './trackball';
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 
-class Geometry extends React.Component {
-
-  constructor(props, context) {
-    super(props, context);
-
-    // construct these THREE objects here, because if we use 'new' within render,
-    // React will think that things have changed when they have not.
-
-    this.vertices = [];
-		this.props.vertices.map( vertex => ( this.vertices.push( new THREE.Vector3( vertex.x, vertex.y, vertex.z ) ) ) );
-
-		this.faces = [];
-		this.props.faces.map( face => {
-			let normal = new THREE.Vector3( face.normal.x, face.normal.y, face.normal.z );
-			this.faces.push( new THREE.Face3( face.vertices[0], face.vertices[1], face.vertices[2], normal ) );
-			return null;
-		} );
-
-		this.id = this.props.id;
-  }
-
-  shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate;
-  
-  render() {
-    return (
-			<geometry
-				resourceId={this.id}
-				vertices={this.vertices}
-				faces={this.faces}
-			/>
-    )
-  }
+extend({ TrackballControls })
+const Controls = props => {
+  const { gl, camera } = useThree()
+  const ref = useRef()
+  useRender(() => ref.current.update())
+  return <trackballControls ref={ref} args={[camera, gl.domElement]} {...props} />
 }
 
-class Strut extends React.Component {
+const Shape = ( { vertices, faces } ) => (
+  <geometry attach="geometry"
+    vertices={ vertices.map( v => new THREE.Vector3( v.x, v.y, v.z ) ) }
+    faces={ faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], new THREE.Vector3( f.normal.x, f.normal.y, f.normal.z ) ) ) }
+    onUpdate={self => (self.verticesNeedUpdate = true)}
+  />
+)
 
-  constructor(props, context) {
-    super(props, context);
-
-    this.position = new THREE.Vector3( this.props.position.x, this.props.position.y, this.props.position.z );
-
-    // construct these vectors here, because if we use 'new' within render,
-    // React will think that things have changed when they have not.
-  }
-
-  shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate;
-  
-  render() {
-    return (<group
-      position={this.position}
-      quaternion={this.props.rotation}
-    >
-      <mesh ref={this._ref} >
-        <geometryResource
-          resourceId={this.props.shape}
-        />
-        <meshLambertMaterial
-          color={this.props.color}
-        />
+const Instance = ( { position, rotation, shape, color } ) => {
+  const quaternion = rotation? [ rotation.x, rotation.y, rotation.z, rotation.w ] : [1,0,0,0];
+  return (
+    <group position={ [ position.x, position.y, position.z ] } quaternion={ quaternion }>
+      <mesh>
+        <Shape vertices={shape.vertices} faces={shape.faces} />
+        <meshLambertMaterial attach="material" color={color} />
       </mesh>
-    </group>);
-  }
+    </group>
+  )
 }
 
-class Ball extends React.Component {
-
-  constructor(props, context) {
-    super(props, context);
-
-    this.center = new THREE.Vector3( this.props.center.x, this.props.center.y, this.props.center.z );
-
-    // construct these vectors here, because if we use 'new' within render,
-    // React will think that things have changed when they have not.
-  }
-
-  shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate;
-  
-  render() {
-    return (<group
-      position={this.center}
-    >
-      <mesh ref={this._ref} >
-        <geometryResource
-          resourceId={this.props.shape}
-        />
-        <meshLambertMaterial
-          color={this.props.color}
-        />
-      </mesh>
-    </group>);
-  }
+const ModelCanvas = ( { instances, shapes } ) => {
+  return(
+    <Canvas
+        gl={{ antialias: true, alpha: false }}
+        camera={{ position: [0, 0, 50], fov: 45 }}
+        onCreated={({ scene }) => { scene.background = new THREE.Color('#99ccff') }}>
+      <ambientLight intensity={0.4} />
+      <directionalLight color={0xffffff} intensity={0.5} position={[0,0,20]} lookAt={[0,0,0]} />
+      <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
+      { instances.map( ( { id, position, color, rotation, shape } ) => 
+          <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
+    </Canvas>
+  )
 }
 
-class ModelCanvasThree extends React.Component {
-  
-  constructor(props, context) {
-    super(props, context);
-
-    this.state = {
-      cameraPosition: new THREE.Vector3(0, 0, 65),
-      cameraRotation: new THREE.Euler()
-    };
-
-    this.lightPosition = new THREE.Vector3(0, 500, 2000);
-    this.lightTarget = new THREE.Vector3(0, 0, 0);
-  }
-
-  componentDidMount() {
-    const {
-      camera,
-    } = this.refs;
-    
-    const controls = new TrackballControls(camera);
-
-    controls.rotateSpeed = 7.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.3;
-
-    this.controls = controls;
-
-    this.controls.addEventListener('change', this._onTrackballChange);
-  }
-
-  _onTrackballChange = () => {
-    this.setState({
-      cameraPosition: this.refs.camera.position.clone(),
-      cameraRotation: this.refs.camera.rotation.clone(),
-    });
-  };
-
-  _onAnimate = () => {
-    this._onAnimateInternal();
-  };
-
-  _onAnimateInternal() {
-    const {
-      camera,
-    } = this.refs;
-
-    if (this.state.camera !== camera) {
-      this.setState({
-        camera,
-      });
-    }
-
-    this.controls.update();
-  }
-
-  componentWillUnmount() {
-    this.controls.removeEventListener('change', this._onTrackballChange);
-
-    this.controls.dispose();
-    delete this.controls;
-  }
-
-  render() {
-
-    const {
-      cameraPosition,
-      cameraRotation,
-    } = this.state;
-
-//     console.log( JSON.stringify(this.props) );
-		return (
-			<React3
-				mainCamera="mainCamera" // this points to the perspectiveCamera below
-				antialias
-				onAnimate={this._onAnimate}
-				width={this.props.width}
-				height={this.props.height} >
-        <resources>
-					{
-						this.props.shapes.map( shape =>
-							<Geometry key={shape.id} id={shape.id} vertices={shape.vertices} faces={shape.faces} />
-						)
-					}
-        </resources>
-				<scene>
-					<perspectiveCamera
-						name="mainCamera"
-						ref="camera"
-						fov={45}
-						aspect={this.props.width / this.props.height}
-						near={0.1}
-						far={1000}
-						position={cameraPosition}
-						rotation={cameraRotation}
-					/>
-          <ambientLight
-            color={0x808080}
-          />
-          <directionalLight
-            color={0xffffff}
-            intensity={0.5}
-            position={cameraPosition}
-            lookAt={this.lightTarget}
-          />
-					{
-						this.props.segments.map( segment =>
-							<Strut key={segment.id} position={segment.start} color={segment.color} rotation={segment.rotation} shape={segment.shape} />
-						)
-					}
-					{
-						this.props.balls.map( ball =>
-							<Ball key={ball.id} center={ball.center} color={ball.color} shape={ball.shape} />
-						)
-					}
-				</scene>
-			</React3>
-		)
-  }
-}
-
-const mapStateToProps = (state) => ({
-  shapes: state.shapes,
-  segments: state.segments,
-  balls: state.balls
+const select = (state) => ({
+  shapes: state.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
+  instances: state.instances
 })
 
-const ModelCanvas = connect(mapStateToProps)(ModelCanvasThree)
-
-export default ModelCanvas
+export default connect(select)(ModelCanvas)

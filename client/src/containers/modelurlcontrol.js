@@ -4,8 +4,9 @@ import { connect } from 'react-redux'
 import { openUrl, closeView } from '../actions'
 import { connectWebSocketAction, closeWebSocketAction } from "redux-simple-websocket"
 
-const ws_port = 8532  // TODO: allow override for dev case
-const SERVER_URL = 'ws://' + window.location.hostname + ':' + ws_port + '/vZome?'
+const BASE_URL = 'wss://vzome-websocket.herokuapp.com'
+// const BASE_URL = 'ws://' + window.location.hostname + ':8532'
+const SERVER_URL = BASE_URL + '/vZome?'
 
 const encodeUrl = url => {
 	 return SERVER_URL + encodeURIComponent( url )
@@ -41,10 +42,8 @@ let ModelUrlControl = ({ enabled, dispatch }) => {
   )
 }
 
-const mapStateToProps = (state) => ({
+const select = (state) => ({
   enabled: !state.connectionLive
 })
 
-ModelUrlControl = connect(mapStateToProps)(ModelUrlControl)
-
-export default ModelUrlControl
+export default connect(select)(ModelUrlControl)
