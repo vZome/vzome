@@ -10,7 +10,7 @@ function Thing() {
       onClick={e => console.log('click')}
       onPointerOver={e => console.log('hover')}
       onPointerOut={e => console.log('unhover')}>
-      <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
+      <boxBufferGeometry attach="geometry" args={[1, 1, 2]} />
       <meshNormalMaterial attach="material" />
     </mesh>
   )
