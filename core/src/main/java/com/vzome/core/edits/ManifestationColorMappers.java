@@ -248,13 +248,14 @@ public class ManifestationColorMappers {
         public void initialize(ManifestationIterator selection)
         throws Failure {
             if(color == null) { // if not already set by XML
+                Manifestation last = null;
                 for(Manifestation man : selection) {
                     if(man != null && man.isRendered()) {
-                        Color c = man.getRenderedObject().getColor();
-                        if(c != null) {
-                            this.color = c;
-                        }
+                        last = man;
                     }
+                }
+                if(last != null) {
+                    this.color = last.getColor();
                 }
             }
             if(color == null) {
