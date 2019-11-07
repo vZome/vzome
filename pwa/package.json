@@ -19,6 +19,7 @@
     "react-scripts": "3.2.0",
     "react-three-fiber": "^3.0.7",
     "redux-bundler": "^26.0.0",
+    "redux-bundler-react": "^1.2.0",
     "three": "^0.109.0",
     "typescript": "3.6.3"
   },
