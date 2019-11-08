@@ -270,9 +270,9 @@ public class DocumentController extends DefaultController implements Controller3
         else
             this .documentModel .addPropertyChangeListener( this .articleChanges );
 
-        sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
+        sceneLighting = this .documentModel .getSceneLighting();
 
-        cameraController = new CameraController( document .getCamera() );
+        cameraController = new CameraController( document .getCamera(), sceneLighting );
         this .addSubController( "camera", cameraController );
         this .articleModeZoom = this .cameraController .getZoomScroller();
 
@@ -292,7 +292,7 @@ public class DocumentController extends DefaultController implements Controller3
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
-        thumbnails = new ThumbnailRendererImpl( app .getJ3dFactory() );
+        thumbnails = new ThumbnailRendererImpl( app .getJ3dFactory(), sceneLighting );
 
         mApp = app;
         
@@ -1145,6 +1145,9 @@ public class DocumentController extends DefaultController implements Controller3
         case "clipboard":
             return systemClipboard != null ? systemClipboard.getClipboardContents() : designClipboard;
 
+        case "backgroundColor":
+            return this .sceneLighting .getBackgroundColor() .toWebString() ;
+
         case "showFrameLabels":
             return Boolean .toString( showFrameLabels );
 
@@ -1558,5 +1561,11 @@ public class DocumentController extends DefaultController implements Controller3
     public SymmetryController getSymmetryController()
     {
         return this .symmetryController;
+    }
+
+    @Override
+    public Lights getSceneLighting()
+    {
+        return this .sceneLighting;
     }
 }

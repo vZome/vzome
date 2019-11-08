@@ -122,7 +122,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         mController .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
         
-        int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
         // Keep the tool tip showing
         ToolTipManager.sharedInstance().setDismissDelay( 20000 );
 
@@ -321,9 +320,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
                     
                 case "setBackgroundColor":
-                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Background Color", null );
+                    color = Color.decode( mController .getProperty( "backgroundColor" ) );
+                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Background Color", color );
                     if ( color != null )
-                    	mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
+                        mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
                     break;
                 
                 case "usedOrbits":
