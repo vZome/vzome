@@ -40,7 +40,6 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 
@@ -93,11 +92,8 @@ public class Java3dFactory implements J3dComponentFactory
 
     private static Logger logger = Logger .getLogger( "org.vorthmann.zome.render.java3d.Java3dFactory" );
 
-	private final Lights lights;
-
-    public Java3dFactory( Lights lights, Colors colors, Boolean useEmissiveColor )
+    public Java3dFactory( Colors colors, Boolean useEmissiveColor )
     {
-        this .lights = lights;
 		mHasEmissiveColor = useEmissiveColor .booleanValue();
         mAppearances = new Appearances( colors, mHasEmissiveColor );
         outlines = new Appearance();
@@ -355,7 +351,7 @@ public class Java3dFactory implements J3dComponentFactory
     public Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller )
     {
         CapturingCanvas3D canvas = new CapturingCanvas3D( GraphicsConfigurationFactory.getGraphicsConfiguration(), isOffScreen );
-        Java3dSceneGraph scene = new Java3dSceneGraph( this, this .lights, isSticky, controller );
+        Java3dSceneGraph scene = new Java3dSceneGraph( this, controller .getSceneLighting(), isSticky, controller );
         RenderingViewer viewer = new Java3dRenderingViewer( scene, canvas );
         controller .attachViewer( viewer, scene, canvas );
         return canvas;

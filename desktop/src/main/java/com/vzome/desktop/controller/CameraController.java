@@ -27,6 +27,7 @@ import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 /**
  * In this camera model, the view frustum shape is generally held constant
@@ -55,6 +56,8 @@ public class CameraController extends DefaultController implements Controller3d
 
     private RenderingChanges scene;
     private RenderedModel symmetryModel;
+
+    private final Lights sceneLighting;
 
     public interface Snapper
     {
@@ -102,9 +105,10 @@ public class CameraController extends DefaultController implements Controller3d
         mViewers .remove( viewer );
     }
 
-    public CameraController( Camera init )
+    public CameraController( Camera init, Lights sceneLighting )
     {
         model = init;
+        this.sceneLighting = sceneLighting;
         initialCamera = new Camera( model );
     }
 
@@ -538,5 +542,11 @@ public class CameraController extends DefaultController implements Controller3d
             snapView();
             saveBaselineView();
         }
+    }
+
+    @Override
+    public Lights getSceneLighting()
+    {
+        return this.sceneLighting;
     }
 }
