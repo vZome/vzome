@@ -270,7 +270,7 @@ public class DocumentController extends DefaultController implements Controller3
         else
             this .documentModel .addPropertyChangeListener( this .articleChanges );
 
-        sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
+        sceneLighting = this .documentModel .getSceneLighting();
 
         cameraController = new CameraController( document .getCamera(), sceneLighting );
         this .addSubController( "camera", cameraController );

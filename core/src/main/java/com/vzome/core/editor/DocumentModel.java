@@ -734,7 +734,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         childElement = lesson .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
-        childElement = sceneLighting .getXml( doc );
+        childElement = getSceneLighting() .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
         childElement = doc .createElement( "Viewing" );
@@ -936,5 +936,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         try ( Writer out = new FileWriter( file ) ) {
             exporter .export( snapshot, out, doOutlines, monochrome );
         }
+    }
+
+    public Lights getSceneLighting()
+    {
+        return this.sceneLighting;
     }
 }
