@@ -139,6 +139,7 @@ public class DocumentController extends DefaultController implements Controller3
     
     private final NumberController importScaleController;
     private final VectorController quaternionController;
+    private String lastObjectColor = "#ffffffff";
         
    /*
      * See the javadoc to control the logging:
@@ -1146,7 +1147,10 @@ public class DocumentController extends DefaultController implements Controller3
             return systemClipboard != null ? systemClipboard.getClipboardContents() : designClipboard;
 
         case "backgroundColor":
-            return this .sceneLighting .getBackgroundColor() .toWebString() ;
+            return this .sceneLighting .getBackgroundColor() .toWebString();
+            
+        case "lastObjectColor":
+            return this .lastObjectColor;
 
         case "showFrameLabels":
             return Boolean .toString( showFrameLabels );
@@ -1266,6 +1270,8 @@ public class DocumentController extends DefaultController implements Controller3
             firePropertyChange( "name", null, value );
         } else if ( "backgroundColor".equals( cmd ) ) {
             sceneLighting .setProperty( cmd, value );
+        } else if ( "lastObjectColor".equals( cmd ) ) {
+            this .lastObjectColor = (String) value;
         } else if ( "terminating".equals( cmd ) ) {
             firePropertyChange( cmd, null, value );
         }
