@@ -78,6 +78,14 @@ public abstract class Manifestation implements GroupElement
     
     public Color getColor()
     {
+        if(this.color == null && mRendered != null) {
+            // TODO: The underlying color should really be a property 
+            // of either Manifestation or RenderedManifestation, not both, 
+            // although both classes could have getter and setter methods
+            // acting on which ever class contains the actual color value.
+            // In the mean time, this hack improves the situation.
+            this.color = mRendered.getColor(); 
+        }
         return this.color;
     }
 
