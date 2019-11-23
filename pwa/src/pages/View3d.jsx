@@ -1,5 +1,6 @@
 import React, { useRef } from 'react'
 import { IonHeader, IonToolbar, IonPage, IonTitle, IonContent } from '@ionic/react'
+import { connect } from 'redux-bundler-react'
 
 import Ball from '../components/ball'
 import Plane from '../components/plane'
@@ -16,7 +17,7 @@ function Controls( props ) {
   return <trackballControls ref={ref} args={[camera, gl.domElement]} {...props} />
 }
 
-const View3dPage = () => {
+function View3dPage( {workingPlaneEnabled, doToggleWorkingPlane} ) {
   const [geometryRef, geometry] = useResource()
   const [materialRef, material] = useResource()
   return (
@@ -29,12 +30,12 @@ const View3dPage = () => {
       <IonContent>
         <Canvas camera={{ fov: 30 }}>
           <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
-          <Plane/>
+          {workingPlaneEnabled && <Plane/>}
           <dodecahedronBufferGeometry ref={geometryRef} args={[0.4, 0]} />
           <meshNormalMaterial ref={materialRef} />
 
           {geometry && (
-            <Ball geom={geometry} material={material} position={[0,0,-0.2]} />)}
+            <Ball geom={geometry} material={material} position={[0,0,-0.2]} onClick={doToggleWorkingPlane} />)}
             <Ball geom={geometry} material={material} position={[0,1,-0.2]} />)}
             <Ball geom={geometry} material={material} position={[1,0,-0.2]} />)}
             <Ball geom={geometry} material={material} position={[1,2,-0.2]} />)}
@@ -45,4 +46,4 @@ const View3dPage = () => {
   );
 };
 
-export default View3dPage;
+export default connect( 'selectWorkingPlaneEnabled', 'doToggleWorkingPlane', View3dPage )

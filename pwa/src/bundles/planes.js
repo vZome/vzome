@@ -1,6 +1,6 @@
 
 
-const doToggleWorkingPlane = (dispatch) => {
+const doToggleWorkingPlane = () => ({dispatch}) => {
   dispatch( { type: 'WORKING_PLANE_TOGGLED' } )
 }
 
