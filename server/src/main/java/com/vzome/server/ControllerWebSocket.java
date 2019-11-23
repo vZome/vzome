@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vzome.core.render.Color;
 import com.vzome.desktop.controller.Controller3d;
 
 public class ControllerWebSocket implements WebSocketListener
@@ -112,8 +111,7 @@ public class ControllerWebSocket implements WebSocketListener
             if ( bkgdColor != null ) {
                 ObjectNode wrapper = this .objectMapper .createObjectNode();
                 wrapper .put( "render", "background" );
-                int rgb =  Integer .parseInt( bkgdColor, 16 );
-                wrapper .put( "color", new Color( rgb ) .toWebString() );
+                wrapper .put( "color", bkgdColor );
                 publish( wrapper );
             }
             consumer.start();

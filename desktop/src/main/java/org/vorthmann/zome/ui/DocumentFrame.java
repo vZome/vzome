@@ -122,7 +122,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         mController .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
         
-        int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
         // Keep the tool tip showing
         ToolTipManager.sharedInstance().setDismissDelay( 20000 );
 
@@ -311,19 +310,25 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
                 
                 case "setItemColor":
-                    Color color = JColorChooser.showDialog( DocumentFrame.this, "Choose Object Color", null );
+                    Long intval = Long.decode( mController .getProperty( "lastObjectColor" ) );
+                    int i = intval.intValue();
+                    Color color = new Color((i >> 24) & 0xFF, (i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF);
+                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Object Color", color );
                     if ( color == null )
                         return;
                     int rgb = color .getRGB() & 0xffffff;
                     int alpha = color .getAlpha() & 0xff;
-                    String command = "ColorManifestations/" + Integer.toHexString( ( rgb << 8 ) | alpha );
+                    String colorString = Integer.toHexString( ( rgb << 8 ) | alpha );
+                    mController .setProperty( "lastObjectColor", "#"+colorString );
+                    String command = "ColorManifestations/" + colorString;
                     mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
                     break;
                     
                 case "setBackgroundColor":
-                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Background Color", null );
+                    color = Color.decode( mController .getProperty( "backgroundColor" ) );
+                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Background Color", color );
                     if ( color != null )
-                    	mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
+                        mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
                     break;
                 
                 case "usedOrbits":

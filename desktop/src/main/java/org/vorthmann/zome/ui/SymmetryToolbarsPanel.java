@@ -81,7 +81,9 @@ public class SymmetryToolbarsPanel extends JPanel
         secondToolbar .add( button );
         button = makeEditButton( enabler, "hideball", "Hide selected objects" );
         secondToolbar .add( button );
-        
+        button = makeEditButton( enabler, "setItemColor", "Set color of selected objects" );
+        secondToolbar .add( button );
+  
         secondToolbar .addSeparator();
 
         button = makeEditButton( enabler, "JoinPoints/CLOSED_LOOP", "Connect balls in a loop" );
