@@ -4,6 +4,7 @@ import * as THREE from 'three'
 function Plane() {
   return (
     <mesh
+      position={[0,0,0.1]}
       onClick={e => console.log('click')}
       onPointerOver={e => console.log('plane hover')}
       onPointerOut={e => console.log('plane unhover')}>

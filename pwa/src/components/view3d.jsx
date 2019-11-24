@@ -16,7 +16,7 @@ function Controls( props ) {
   return <trackballControls ref={ref} args={[camera, gl.domElement]} {...props} />
 }
 
-function View3dPage( {workingPlaneEnabled, doToggleWorkingPlane} ) {
+function View3dPage( {points, workingPlaneEnabled, doToggleWorkingPlane} ) {
   const [geometryRef, geometry] = useResource()
   const [materialRef, material] = useResource()
   return (
@@ -26,13 +26,16 @@ function View3dPage( {workingPlaneEnabled, doToggleWorkingPlane} ) {
       <dodecahedronBufferGeometry ref={geometryRef} args={[0.4, 0]} />
       <meshNormalMaterial ref={materialRef} />
 
-      <Ball geom={geometry} material={material} position={[0,0,-0.2]} onClick={doToggleWorkingPlane} />
-      <Ball geom={geometry} material={material} position={[0,1,-0.2]} />
-      <Ball geom={geometry} material={material} position={[1,0,-0.2]} />
-      <Ball geom={geometry} material={material} position={[1,2,-0.2]} />
-      <Ball geom={geometry} material={material} position={[-1,-1,-0.2]} />
+      { points.map( point => (
+        <Ball geom={geometry} material={material} position={point} onClick={doToggleWorkingPlane} />
+      ))}
     </Canvas>
   );
 };
 
-export default connect( 'selectWorkingPlaneEnabled', 'doToggleWorkingPlane', View3dPage )
+export default connect(
+  'selectPoints',
+  'selectWorkingPlaneEnabled',
+  'doToggleWorkingPlane',
+  View3dPage
+)
