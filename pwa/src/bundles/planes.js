@@ -4,7 +4,7 @@ const doToggleWorkingPlane = () => ({dispatch}) => {
   dispatch( { type: 'WORKING_PLANE_TOGGLED' } )
 }
 
-const reducer = ( state=false, action ) => {
+const reducer = ( state=true, action ) => {
   if ( action.type === 'WORKING_PLANE_TOGGLED' ) {
     state = ! state
   }
