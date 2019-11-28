@@ -1,14 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
-import App from './App'
 import * as serviceWorker from './serviceWorker'
 import { Provider } from 'redux-bundler-react'
 import getStore from './bundles'
+import App from './App'
 
 ReactDOM.render(
   <Provider store={getStore()}>
-    <App />
+    <App/>
   </Provider>,
   document.getElementById('root'))
 
