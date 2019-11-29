@@ -10,7 +10,7 @@ function Ball( { onClick, geom, material, position=[0,0,0] } ) {
       position={position}
       geometry={geom}
       material={material}
-      // onClick={onClick}
+      onClick={onClick}
       onPointerOver={e => console.log('hover')}
       onPointerOut={e => console.log('unhover')}>
     </mesh>

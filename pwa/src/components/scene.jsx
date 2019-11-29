@@ -1,32 +1,21 @@
 import React from 'react'
-import { connect } from 'redux-bundler-react'
-
-import { useResource } from 'react-three-fiber';
+import { useResource } from 'react-three-fiber'
 
 import Ball from './ball'
-import Plane from './plane'
 
-function Scene( {points} ) {
+function Scene( {points, ballClick} ) {
   const [geometryRef, geometry] = useResource()
   const [materialRef, material] = useResource()
   return (
-    <>
-      <Plane/>
-
+    <group>
       <dodecahedronBufferGeometry ref={geometryRef} args={[0.4, 0]} />
       <meshNormalMaterial ref={materialRef} />
 
       { points.map( point => (
-        <Ball geom={geometry} material={material} position={point} />
+        <Ball geom={geometry} material={material} position={point} onClick={ballClick}/>
       ))}
-    </>
-  );
-};
+    </group>
+  )
+}
 
-// export default connect(
-//   'selectPoints',
-//   // 'selectWorkingPlaneEnabled',
-//   // 'doToggleWorkingPlane',
-//   Scene
-// )
 export default Scene

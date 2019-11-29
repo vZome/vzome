@@ -2,7 +2,7 @@ const initialPoints = [
   [0,0,0], [0,1,0], [1,0,-1]
 ]
 
-const doAddPoint = point => ({dispatch}) => {
+const doAddPoint = (point) => ({dispatch}) => {
   dispatch( { type: 'POINT_ADDED', payload: point } )
 }
 
