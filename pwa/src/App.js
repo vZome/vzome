@@ -16,14 +16,14 @@ function Controls( props ) {
   return <trackballControls ref={ref} args={[camera, gl.domElement]} {...props} />
 }
 
-function App( {points, workingPlanePosition, doMoveWorkingPlane} ) {
+function App( {points, workingPlane, doMoveWorkingPlane} ) {
   return (
     <Canvas camera={{ fov: 50 }}>
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
       <Scene points={points} ballClick={doMoveWorkingPlane}/>
-      {workingPlanePosition && <Plane position={workingPlanePosition}/>}
+      <Plane config={workingPlane}/>
     </Canvas>
   )
 }
 
-export default connect( 'doMoveWorkingPlane', 'selectWorkingPlanePosition', 'selectPoints', App );
+export default connect( 'doMoveWorkingPlane', 'selectWorkingPlane', 'selectPoints', App );
