@@ -8,11 +8,11 @@ function Scene( {points, ballClick} ) {
   const [materialRef, material] = useResource()
   return (
     <group>
-      <dodecahedronBufferGeometry ref={geometryRef} args={[0.4, 0]} />
+      <boxBufferGeometry ref={geometryRef} args={[0.5,0.5,0.5]} />
       <meshNormalMaterial ref={materialRef} />
 
-      { points.map( point => (
-        <Ball geom={geometry} material={material} position={point} onClick={e=>ballClick(point)}/>
+      { Object.keys(points).map( key => (
+        <Ball key={key} geom={geometry} material={material} position={points[key]} onClick={ballClick}/>
       ))}
     </group>
   )

@@ -1,14 +1,15 @@
-const initialPoints = [
-  [0,0,0], [0,1,0], [1,0,-1]
-]
+
+const ORIGIN = [0,0,0]
+const INITIAL_POINTS = { [JSON.stringify(ORIGIN)]: ORIGIN }
 
 const doAddPoint = (point) => ({dispatch}) => {
   dispatch( { type: 'POINT_ADDED', payload: point } )
 }
 
-const reducer = ( state=initialPoints, action ) => {
+const reducer = ( state=INITIAL_POINTS, action ) => {
   if ( action.type === 'POINT_ADDED' ) {
-    state = [ ...state, action.payload ]
+    const point = action.payload
+    state = Object.assign( {}, state, { [JSON.stringify(point)]: point } )
   }
   return state
 }
