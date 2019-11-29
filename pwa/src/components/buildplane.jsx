@@ -16,7 +16,6 @@ for (const x of [-2,-1,0,1,2]) {
   }
 }
 
-
 function BuildPlane( {config, buildFn} ) {
 
   const {position,orientation} = config

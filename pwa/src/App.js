@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 import { Canvas, useThree, useRender, extend } from 'react-three-fiber';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 import { connect } from 'redux-bundler-react'
+import polyfill from '@juggle/resize-observer'
 
 import './App.css';
 import BuildPlane from './components/buildplane'
@@ -18,7 +19,7 @@ function Controls( props ) {
 
 function App( {points, workingPlane, doMoveWorkingPlane, doAddPoint} ) {
   return (
-    <Canvas camera={{ fov: 50 }}>
+    <Canvas camera={{ fov: 50 }} resize={{polyfill}}>
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
       <Scene points={points} ballClick={doMoveWorkingPlane}/>
       <BuildPlane config={workingPlane} buildFn={doAddPoint}/>
