@@ -1,12 +1,12 @@
 
 
-const doToggleWorkingPlane = () => ({dispatch}) => {
-  dispatch( { type: 'WORKING_PLANE_TOGGLED' } )
+const doMoveWorkingPlane = (position) => ({dispatch}) => {
+  dispatch( { type: 'WORKING_PLANE_MOVED', payload: position } )
 }
 
-const reducer = ( state=true, action ) => {
-  if ( action.type === 'WORKING_PLANE_TOGGLED' ) {
-    state = ! state
+const reducer = ( state=null, action ) => {
+  if ( action.type === 'WORKING_PLANE_MOVED' ) {
+    state = action.payload
   }
   return state
 }
@@ -14,6 +14,6 @@ const reducer = ( state=true, action ) => {
 export default {
   name: 'workingPlane',
   reducer,
-  doToggleWorkingPlane,
-  selectWorkingPlaneEnabled: state => state.workingPlane
+  doMoveWorkingPlane,
+  selectWorkingPlanePosition: state => state.workingPlane
 }

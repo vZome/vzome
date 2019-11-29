@@ -12,7 +12,7 @@ function Scene( {points, ballClick} ) {
       <meshNormalMaterial ref={materialRef} />
 
       { points.map( point => (
-        <Ball geom={geometry} material={material} position={point} onClick={ballClick}/>
+        <Ball geom={geometry} material={material} position={point} onClick={e=>ballClick(point)}/>
       ))}
     </group>
   )
