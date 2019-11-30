@@ -27,7 +27,7 @@ function BuildPlane( {config, buildFn} ) {
     console.log(ptXY)
     const vector = new THREE.Vector3().fromArray(ptXY).applyQuaternion( QUATERNIONS[orientation] ).toArray()
     const newPoint = position.map( ( xi, i ) => xi + ( vector[i] ) )
-    buildFn(newPoint)
+    buildFn(position,newPoint)
   }
 
   return (

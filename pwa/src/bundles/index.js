@@ -1,5 +1,5 @@
 import { composeBundles } from 'redux-bundler'
 import planes from './planes'
-import points from './points'
+import structure from './structure'
 
-export default composeBundles( points, planes )
+export default composeBundles( structure, planes )
