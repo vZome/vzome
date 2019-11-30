@@ -17,14 +17,14 @@ function Controls( props ) {
   return <trackballControls ref={ref} args={[camera, gl.domElement]} {...props} />
 }
 
-function App( {structure, workingPlane, doMoveWorkingPlane, doAddSegment} ) {
+function App( {structure, workingPlane, doMoveWorkingPlane, doToggleWorkingPlane, doAddSegment} ) {
   return (
     <Canvas camera={{ fov: 50 }} resize={{polyfill}}>
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
       <Scene points={structure.points} segments={structure.segments} ballClick={doMoveWorkingPlane}/>
-      <BuildPlane config={workingPlane} buildFn={doAddSegment}/>
+      {workingPlane.enabled && <BuildPlane config={workingPlane} buildFn={doAddSegment}/>}
     </Canvas>
   )
 }
 
-export default connect( 'doAddSegment', 'doMoveWorkingPlane', 'selectWorkingPlane', 'selectStructure', App );
+export default connect( 'doAddSegment', 'doMoveWorkingPlane', 'doToggleWorkingPlane', 'selectWorkingPlane', 'selectStructure', App );
