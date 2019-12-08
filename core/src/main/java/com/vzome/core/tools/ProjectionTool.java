@@ -111,9 +111,11 @@ public class ProjectionTool extends TransformationTool
         this .transforms = new Transformation[ 1 ];
         transforms[ 0 ] = new PlaneProjection( plane, line );
         
-        AlgebraicVector test = transforms[ 0 ] .transform( line .getDirection() );
-        if ( test == null )
-            throw new Command.Failure( "Selected strut and plane must not be parallel" );
+        if ( line != null ) {
+            AlgebraicVector test = transforms[ 0 ] .transform( line .getDirection() );
+            if ( test == null )
+                throw new Command.Failure( "Selected strut and plane must not be parallel" );
+        }
 
         super .perform();
     }
