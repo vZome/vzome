@@ -4,6 +4,9 @@
 package com.vzome.core.tools;
 
 
+import java.util.EnumSet;
+
+import com.vzome.api.Tool.InputBehaviors;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Line;
 import com.vzome.core.construction.LineExtensionOfSegment;
@@ -62,6 +65,7 @@ public class ProjectionTool extends TransformationTool
 	public ProjectionTool( String id, ToolsModel tools )
     {
         super( id, tools );
+        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
     }
 
     @Override
