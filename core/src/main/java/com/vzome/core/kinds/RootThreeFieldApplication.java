@@ -18,6 +18,7 @@ import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.InversionTool;
 import com.vzome.core.tools.LinearMapTool;
 import com.vzome.core.tools.MirrorTool;
+import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
 import com.vzome.core.tools.SymmetryTool;
@@ -104,6 +105,7 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
                 result .add( new ScalingTool.Factory( tools, this .symmetry ) );
                 result .add( new RotationTool.Factory( tools, this .symmetry ) );
                 result .add( new TranslationTool.Factory( tools ) );
+                result .add( new ProjectionTool.Factory( tools ) );
                 break;
 
             case LINEAR_MAP:
