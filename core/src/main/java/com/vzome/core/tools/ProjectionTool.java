@@ -6,7 +6,7 @@ package com.vzome.core.tools;
 
 import java.util.EnumSet;
 
-import com.vzome.api.Tool.InputBehaviors;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Line;
 import com.vzome.core.construction.LineExtensionOfSegment;
@@ -110,6 +110,11 @@ public class ProjectionTool extends TransformationTool
 
         this .transforms = new Transformation[ 1 ];
         transforms[ 0 ] = new PlaneProjection( plane, line );
+        
+        AlgebraicVector test = transforms[ 0 ] .transform( line .getDirection() );
+        if ( test == null )
+            throw new Command.Failure( "Selected strut and plane must not be parallel" );
+
         super .perform();
     }
 
