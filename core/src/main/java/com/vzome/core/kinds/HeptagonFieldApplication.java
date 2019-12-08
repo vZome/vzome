@@ -23,6 +23,7 @@ import com.vzome.core.tools.MirrorTool;
 import com.vzome.core.tools.ModuleTool;
 import com.vzome.core.tools.OctahedralToolFactory;
 import com.vzome.core.tools.PlaneSelectionTool;
+import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
 import com.vzome.core.tools.SymmetryTool;
@@ -267,6 +268,7 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
         toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
         toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
         toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
+        toolFactories .put( "ProjectionTool", new ProjectionTool.Factory( tools ) );
         toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
 	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
 		
