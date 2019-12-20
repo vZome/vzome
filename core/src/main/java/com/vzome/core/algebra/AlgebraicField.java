@@ -55,6 +55,9 @@ public abstract class AlgebraicField
      */
     private final ArrayList<AlgebraicNumber>[] negativePowers;
 
+    // Eclipse says that rawtypes is unnecessary here, but without it,
+    // Netbeans and the gradle command line both generate the rawtypes warning 
+    @SuppressWarnings({"unchecked", "rawtypes"}) 
     public AlgebraicField( String name, int order )
     {
         this.name = name;
