@@ -3,16 +3,20 @@
 
 package com.vzome.core.math.symmetry;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.RealVector;
 
-public class SymmetryTest extends TestCase
+public class SymmetryTest
 {
+    @Test
     public void testAxisIncidence()
     {
         IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField(), null );
@@ -21,6 +25,7 @@ public class SymmetryTest extends TestCase
         assertTrue( Arrays.equals( new int[]{ 20, 52, 17 }, symm .getIncidentOrientations( 44 ) ) );
     }
     
+    @Test
     public void testGetAxis()
     {
         RealVector vector = new RealVector( 0.1, 0.1, 3.0 ); // should be orientation -47
@@ -127,6 +132,7 @@ public class SymmetryTest extends TestCase
         assertEquals( expected, axis );
     }
     
+    @Test
     public void testGetAxis2()
     {
         IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField(), null );
@@ -139,6 +145,7 @@ public class SymmetryTest extends TestCase
         assertEquals( expected, actual );
     }
     
+    @Test
     public void testTetrahedral()
     {
         IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField(), null );

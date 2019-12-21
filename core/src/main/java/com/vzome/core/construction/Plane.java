@@ -22,6 +22,12 @@ public abstract class Plane extends Construction
         super( field );
     }
 
+    @Override
+    public boolean is3d()
+    {
+        return true;
+    }
+
     protected final boolean setStateVariables( AlgebraicVector base, AlgebraicVector normal, boolean impossible )
     {
         if ( impossible ) {

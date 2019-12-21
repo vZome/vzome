@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Direction;
@@ -25,8 +26,6 @@ public class RenderedManifestation
     private Polyhedron mShape;
     
     private RenderedModel model;
-
-	private String mColorName;
     
     private Color color = null;
     
@@ -257,7 +256,6 @@ public class RenderedManifestation
         RenderedManifestation copy = new RenderedManifestation( null );
         copy .location = this .location;
         copy .fixedLocation = this .fixedLocation;
-        copy .mColorName = this .mColorName;
         copy .color = this .color;
         copy .mGlow = this .mGlow;
         copy .mOrientation = this .mOrientation;
@@ -312,4 +310,10 @@ public class RenderedManifestation
 			this .isOffset = false;
 		}
 	}
+
+    public String getSymmetryShapes()
+    {
+        SymmetrySystem symmetrySystem = (SymmetrySystem) this .model .getOrbitSource();
+        return symmetrySystem .getName() + ":" + symmetrySystem .getStyle() .getName();
+    }
 }

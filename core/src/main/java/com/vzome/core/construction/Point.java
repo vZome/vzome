@@ -19,6 +19,12 @@ public abstract class Point extends Construction
         super( field );
     }
     
+    @Override
+    public boolean is3d()
+    {
+        return mLocation .dimension() == 3;
+    }
+
     protected boolean setStateVariable( AlgebraicVector loc, boolean impossible )
     {
         if ( impossible ) {

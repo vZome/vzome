@@ -5,6 +5,8 @@ package org.vorthmann.zome.app.impl;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +18,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.StrutCreation;
+import com.vzome.core.edits.StrutCreation;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -150,7 +152,11 @@ public class PreviewStrut implements PropertyChangeListener
         strut = null;
         if ( logger .isLoggable( Level.FINE ) )
             logger .fine( "preview finished at  " + zone );
-        document .createStrut( point, zone, length .getValue() );
+        Map<String, Object> params = new HashMap<>();
+        params .put( "anchor", point );
+        params .put( "zone", zone );
+        params .put( "length", length .getValue() );
+        document .doEdit( "StrutCreation", params );
         point = null;
         zone = null;
         length = null;

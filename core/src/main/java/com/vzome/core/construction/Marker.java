@@ -34,4 +34,10 @@ public class Marker extends Construction
         return result;
     }
 
+    @Override
+    public boolean is3d()
+    {
+        return mTarget .is3d();
+    }
+
 }

@@ -31,11 +31,7 @@ public class Adapter
     public static void main( String[] args )
     {
         try {
-            // These four lines duplicate ApplicationUI.main()
-            String prop = System .getProperty( "user.dir" );
-            File workingDir = new File( prop );
-            URL codebase = workingDir .toURI() .toURL();
-            final ApplicationUI ui = ApplicationUI .initialize( args, codebase );
+            final ApplicationUI ui = ApplicationUI .initialize( args );
             
             // Now hook it up to the Finder events
             Application appl = Application .getApplication();

@@ -57,6 +57,7 @@ import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -137,6 +138,8 @@ public class DocumentController extends DefaultController implements Controller3
     private String designClipboard;
     
     private final NumberController importScaleController;
+    private final VectorController quaternionController;
+    private String lastObjectColor = "#ffffffff";
         
    /*
      * See the javadoc to control the logging:
@@ -190,6 +193,9 @@ public class DocumentController extends DefaultController implements Controller3
         importScaleController = new NumberController( this .documentModel .getField() );
         this .addSubController( "importScale", importScaleController );
         
+        quaternionController = new VectorController( this .documentModel .getField() .basisVector( 4, AlgebraicVector.W4 ) );
+        this .addSubController( "quaternion", quaternionController );
+
         mRenderedModel = new RenderedModel( this .documentModel .getField(), true );
         currentSnapshot = mRenderedModel;
 
@@ -265,9 +271,9 @@ public class DocumentController extends DefaultController implements Controller3
         else
             this .documentModel .addPropertyChangeListener( this .articleChanges );
 
-        sceneLighting = new Lights( app .getLights() );  // TODO: restore the ability for the document to override
+        sceneLighting = this .documentModel .getSceneLighting();
 
-        cameraController = new CameraController( document .getCamera() );
+        cameraController = new CameraController( document .getCamera(), sceneLighting );
         this .addSubController( "camera", cameraController );
         this .articleModeZoom = this .cameraController .getZoomScroller();
 
@@ -287,7 +293,7 @@ public class DocumentController extends DefaultController implements Controller3
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
-        thumbnails = new ThumbnailRendererImpl( app .getJ3dFactory() );
+        thumbnails = new ThumbnailRendererImpl( app .getJ3dFactory(), sceneLighting );
 
         mApp = app;
         
@@ -417,13 +423,9 @@ public class DocumentController extends DefaultController implements Controller3
                 if ( mRequireShift )
                     shift = shiftKey;
                 if ( target == null )
-                    try {
-                        documentModel .performAndRecord( documentModel .deselectAll() );
-                    } catch ( Exception e ) {
-                        mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
-                    }
+                    documentModel .doEdit( "DeselectAll" );
                 else
-                    documentModel .performAndRecord( documentModel .selectManifestation( target, ! shift ) );
+                    documentModel .doPickEdit( target, "SelectManifestation" + ( shift? "" : "/replace" ) );
             }
         } );
         this .cameraController .addViewer( this .imageCaptureViewer );
@@ -443,17 +445,10 @@ public class DocumentController extends DefaultController implements Controller3
             }
     }
 
-    private SymmetryController getSymmetryController( String name )
-    {
-        SymmetryController result = this .symmetries .get( name );
-        return result;
-    }
-
-
     private void setSymmetrySystem( SymmetrySystem symmetrySystem )
     {
         String name =  symmetrySystem .getName();
-        symmetryController = getSymmetryController( name );
+        symmetryController = this .symmetries .get( name );
         if(symmetryController == null) {
             String msg = "Unsupported symmetry: " + name;
             mErrors.reportError(msg, new Object[] {} );
@@ -522,226 +517,224 @@ public class DocumentController extends DefaultController implements Controller3
         
         mErrors .clearError();
         try {
-            if ( action .equals( "switchToArticle" ) )
-            {
-                this .currentView = this .cameraController .getView();
-                
-                this .selectionClick .detach( this .modelCanvas );
-                this .strutBuilder .detach( this .modelCanvas );
-                this .modelModeMainTrackball .detach( this .modelCanvas );
-                
-                this .lessonPageClick .attach( this .modelCanvas );
-                this .articleModeMainTrackball .attach( this .modelCanvas );
-                this .articleModeZoom .attach( this .modelCanvas );
+            final boolean vefExportOffset = propertyIsTrue( "copy.vef.include.offset" );
+            switch (action) {
 
-                this .documentModel .addPropertyChangeListener( this .articleChanges );
-                this .documentModel .removePropertyChangeListener( this .modelChanges );
-                this .lessonController .doAction( "restoreSnapshot", e );
+            case "switchToArticle":
+                {
+                    this .currentView = this .cameraController .getView();
+                    
+                    this .selectionClick .detach( this .modelCanvas );
+                    this .strutBuilder .detach( this .modelCanvas );
+                    this .modelModeMainTrackball .detach( this .modelCanvas );
+                    
+                    this .lessonPageClick .attach( this .modelCanvas );
+                    this .articleModeMainTrackball .attach( this .modelCanvas );
+                    this .articleModeZoom .attach( this .modelCanvas );
+    
+                    this .documentModel .addPropertyChangeListener( this .articleChanges );
+                    this .documentModel .removePropertyChangeListener( this .modelChanges );
+                    this .lessonController .doAction( "restoreSnapshot", e );
+    
+                    this .editingModel = false;
+                    firePropertyChange( "editor.mode", "model", "article" );
+                }
+                break;
 
-                this .editingModel = false;
-                firePropertyChange( "editor.mode", "model", "article" );
-            }
-            else if ( action .equals( "switchToModel" ) )
-            {
-                this .documentModel .removePropertyChangeListener( this .articleChanges );
-                this .documentModel .addPropertyChangeListener( this .modelChanges );
-                this .cameraController .restoreView( this .currentView );
-
-                RenderedModel .renderChange( this .currentSnapshot, this .mRenderedModel, this .mainScene );
-                this .currentSnapshot = this .mRenderedModel;
-
-                this .lessonPageClick .detach( this .modelCanvas );
-                this .articleModeMainTrackball .detach( this .modelCanvas );
-                this .articleModeZoom .detach( this .modelCanvas );
-                
-                this .selectionClick .attach( this .modelCanvas );
-                this .modelModeMainTrackball .attach( this .modelCanvas );
-                this .strutBuilder .attach( this .modelCanvas );
-
-                this .editingModel = true;
-                firePropertyChange( "editor.mode", "article", "model" );
-            }
-            else if ( action .equals( "takeSnapshot" ) )
-            {
+            case "takeSnapshot":
                 documentModel .addSnapshotPage( cameraController .getView() );
-            }
+                break;
 
-            else if ( "nextPage" .equals( action ) )
-                lessonController .doAction( action, e );
+            case "test.pick.cube":
+//              // just a test of Bounds picking
+//          {
+//              Collection rms = imageCaptureViewer.pickCube();
+//              for ( Iterator it = rms.iterator(); it.hasNext(); ) {
+//                  RenderedManifestation rm = (RenderedManifestation) it.next();
+//                  Manifestation targetManifestation = null;
+//                  if ( rm != null && rm.isPickable() )
+//                      targetManifestation = rm.getManifestation();
+//                  else
+//                      continue;
+//                  document .selectManifestation( targetManifestation, true ); // NOT UNDOABLE!
+//              }
+//          }
+                break;
 
-//            else if ( action .equals( "test.pick.cube" ) ) // just a test of
-//            // Bounds picking
-//            {
-//                Collection rms = imageCaptureViewer.pickCube();
-//                for ( Iterator it = rms.iterator(); it.hasNext(); ) {
-//                    RenderedManifestation rm = (RenderedManifestation) it.next();
-//                    Manifestation targetManifestation = null;
-//                    if ( rm != null && rm.isPickable() )
-//                        targetManifestation = rm.getManifestation();
-//                    else
-//                        continue;
-//                    document .selectManifestation( targetManifestation, true ); // NOT UNDOABLE!
-//                }
-//            }
-
-            else if ( action.equals( "refresh.2d" ) )
-            {
+            case "refresh.2d":
                 this .java2dController .setScene( cameraController.getView(), this.sceneLighting, this.currentSnapshot, this.drawOutlines );
-            }
+                break;
 
-            else if ( action.startsWith( "setStyle." ) )
-                setRenderingStyle();
+            case "nextPage":
+                lessonController .doAction( action, e );
+                break;
 
-            else if ( action.equals( "toggleFrameLabels" ) )
-            {
-                showFrameLabels = ! showFrameLabels;
-                firePropertyChange( "showFrameLabels", !showFrameLabels, showFrameLabels );
-            }
+            case "switchToModel":
+                {
+                    this .documentModel .removePropertyChangeListener( this .articleChanges );
+                    this .documentModel .addPropertyChangeListener( this .modelChanges );
+                    this .cameraController .restoreView( this .currentView );
+    
+                    RenderedModel .renderChange( this .currentSnapshot, this .mRenderedModel, this .mainScene );
+                    this .currentSnapshot = this .mRenderedModel;
+    
+                    this .lessonPageClick .detach( this .modelCanvas );
+                    this .articleModeMainTrackball .detach( this .modelCanvas );
+                    this .articleModeZoom .detach( this .modelCanvas );
+                    
+                    this .selectionClick .attach( this .modelCanvas );
+                    this .modelModeMainTrackball .attach( this .modelCanvas );
+                    this .strutBuilder .attach( this .modelCanvas );
+    
+                    this .editingModel = true;
+                    firePropertyChange( "editor.mode", "article", "model" );
+                }
+                break;
 
-            else if ( action.equals( "toggleNormals" ) )
-            {
-                drawNormals = ! drawNormals;
-                firePropertyChange( "drawNormals", !drawNormals, drawNormals );
-            }
-
-            else if ( action.equals( "toggleOutlines" ) )
-            {
-                drawOutlines = ! drawOutlines;
-                firePropertyChange( "drawOutlines", !drawOutlines, drawOutlines );
-            }
-
-            else if ( action.startsWith( "setSymmetry." ) ) {
-                String system = action.substring( "setSymmetry.".length() );
-                this .documentModel .setSymmetrySystem( system );
-                setSymmetrySystem( this .documentModel .getSymmetrySystem() );
-            }
-
-            else if ( action.equals( "copyThisView" ) )
-            {
+            case "toggleFrameLabels":
+                {
+                    showFrameLabels = ! showFrameLabels;
+                    firePropertyChange( "showFrameLabels", !showFrameLabels, showFrameLabels );
+                }
+                break;
+    
+            case "toggleNormals":
+                {
+                    drawNormals = ! drawNormals;
+                    firePropertyChange( "drawNormals", !drawNormals, drawNormals );
+                }
+                break;
+    
+            case "toggleOutlines":
+                {
+                    drawOutlines = ! drawOutlines;
+                    firePropertyChange( "drawOutlines", !drawOutlines, drawOutlines );
+                }
+                break;
+    
+            case "copyThisView":
                 copyThisView();
-            }
-            else if ( action.equals( "useCopiedView" ) )
-            {
+                break;
+    
+            case "useCopiedView":
                 cameraController .useCopiedView();
-            }
-            else if ( action.equals( "lookAtOrigin" ) )
+                break;
+    
+            case "lookAtOrigin":
                 cameraController.setLookAtPoint( new Point3d( 0, 0, 0 ) );
-            
-            else if ( action.equals( "lookAtSymmetryCenter" ) )
-            {
-                RealVector loc = documentModel .getParamLocation( "ball" );
-                cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
-            }
-
-            else if ( action .equals( "usedOrbits" ) )
-            {
-                Set<Direction> usedOrbits = new HashSet<>();
-                for ( RenderedManifestation rm : mRenderedModel ) {
-                    Polyhedron shape = rm .getShape();
-                    Direction orbit = shape .getOrbit();
-                    if ( orbit != null )
-                        usedOrbits .add( orbit );
+                break;
+    
+            case "lookAtSymmetryCenter":
+                {
+                    RealVector loc = documentModel .getParamLocation( "ball" );
+                    cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 }
-                symmetryController .availableController .doAction( "setNoDirections", null );
-                for ( Direction orbit : usedOrbits ) {
-                    symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
-                }
-            }
-            
-// This was an experiment, to see if the applyQuaternionSymmetry() approach was workable.
-//  It seems it is too restrictive to insist upon all W=0 inputs.
-//            else if ( action.equals( "h4symmetry" ) )
-//            {
-//                QuaternionicSymmetry qsymm = document .getField() .getQuaternionSymmetry( "H_4" ); 
-//                document .applyQuaternionSymmetry( qsymm, qsymm );
-//            }
-//            
-            else if ( action .equals( "delete" ) )
-            {
-                documentModel .doEdit( action );
-            }
-            else if ( action .equals( "cut" ) )
-            {
-                setProperty( "clipboard", documentModel .copySelectionVEF() );
-                documentModel .doEdit( "delete" );
-            }
-            else if ( action .equals( "copy" ) )
-                setProperty( "clipboard", documentModel .copySelectionVEF() );
-            else if ( action .equals( "copy.observable" ) )
-                setProperty( "clipboard", documentModel .copyRenderedModel( "observable" ) );
-            else if ( action .equals( "copy.vson" ) )
-                setProperty( "clipboard", documentModel .copyRenderedModel( "vson" ) );
-            else if ( action.equals( "paste" ) )
-            {
-                String vefContent = getProperty( "clipboard" );
-                documentModel .pasteVEF( vefContent );
-            }
-            else if ( e != null && PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
-            {
-                // this is a select or deselect command from the PartsPanel context menu
-                PartsPanelActionEvent ppae = PartsPanelActionEvent.class.cast(e);
-                PartInfo partInfo = ppae.row.partInfo;
-                String cmd = action.toLowerCase();
-                switch(ppae.row.partClassGroupingOrder) {
-                    case BALLS_TOTAL:
-                        documentModel.doEdit(cmd+"Balls");
-                        break;
-
-                    case STRUTS_TOTAL:
-                        documentModel.doEdit(cmd+"Struts");
-                        break;
-
-                    case PANELS_TOTAL:
-                        documentModel.doEdit(cmd+"Panels");
-                        break;
-
-                    case STRUTS:
-                    {
-                        Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
-                        AlgebraicNumber unitScalar = orbit.getLengthInUnits(symmetryController.getSymmetry().getField().one());
-                        AlgebraicNumber rawLength = partInfo.strutLength.dividedBy(unitScalar);
-                        switch(cmd) {
-                            case "select":
-                                documentModel .selectSimilarStruts( orbit, rawLength ); // does performAndRecord
-                                break;
-                            case "deselect":
-                                documentModel .deselectSimilarStruts( orbit, rawLength ); // does performAndRecord
-                                break;
-                        }
+                break;
+    
+            case "usedOrbits":
+                {
+                    Set<Direction> usedOrbits = new HashSet<>();
+                    for ( RenderedManifestation rm : mRenderedModel ) {
+                        Polyhedron shape = rm .getShape();
+                        Direction orbit = shape .getOrbit();
+                        if ( orbit != null )
+                            usedOrbits .add( orbit );
                     }
-                    break;
-
-                    case PANELS:
-                    {
-                        Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
-                        switch(cmd) {
-                            case "select":
-                                documentModel .selectSimilarPanels( orbit ); // does performAndRecord
-                                break;
-                            case "deselect":
-                                documentModel .deselectSimilarPanels( orbit ); // does performAndRecord
-                                break;
-                        }
+                    symmetryController .availableController .doAction( "setNoDirections", null );
+                    for ( Direction orbit : usedOrbits ) {
+                        symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
                     }
-                    break;
-
-                    default:
-                        break;
                 }
-            }
-            else
-            {
-                switch ( action ) {
+                break;
                 
-                case "setSymmetryCenter":
-                    this .documentModel .setParameter( null, "ball" );
-                    break;
-
-                case "setSymmetryAxis":
-                    this .documentModel .setParameter( null, "strut" );
-                    break;
-
-                default:
+            case "delete":
+            case "Delete":
+                documentModel .doEdit( "Delete" );
+                break;
+    
+            case "cut":
+                setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
+                documentModel .doEdit( "Delete" );
+                break;
+    
+            case "copy":
+                setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
+                break;
+    
+            case "copy.observable":
+                setProperty( "clipboard", documentModel .copyRenderedModel( "observable" ) );
+                break;
+    
+            case "copy.vson":
+                setProperty( "clipboard", documentModel .copyRenderedModel( "vson" ) );
+                break;
+    
+            case "paste":
+                {
+                    String vefContent = getProperty( "clipboard" );
+                    Map<String, Object> params = new HashMap<>();
+                    params .put( "vef", vefContent );
+                    documentModel .doEdit( "LoadVEF/clipboard", params );
+                }
+                break;
+    
+            default:
+                if ( action.startsWith( "setStyle." ) )
+                    setRenderingStyle();
+    
+                else if ( action.startsWith( "setSymmetry." ) ) {
+                    String system = action.substring( "setSymmetry.".length() );
+                    this .documentModel .setSymmetrySystem( system );
+                    setSymmetrySystem( this .documentModel .getSymmetrySystem() );
+                }
+    
+                else if ( e != null && PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
+                {
+                    // this is a select or deselect command from the PartsPanel context menu
+                    PartsPanelActionEvent ppae = PartsPanelActionEvent.class.cast(e);
+                    PartInfo partInfo = ppae.row.partInfo;
+                    String cmd = action.toLowerCase();
+                    switch(ppae.row.partClassGroupingOrder) {
+                        case BALLS_TOTAL:
+                            documentModel .doEdit( "AdjustSelectionByClass/" + cmd + "Balls" );
+                            break;
+    
+                        case STRUTS_TOTAL:
+                            documentModel .doEdit( "AdjustSelectionByClass/" + cmd + "Struts" );
+                            break;
+    
+                        case PANELS_TOTAL:
+                            documentModel .doEdit( "AdjustSelectionByClass/" + cmd + "Panels" );
+                            break;
+    
+                        case STRUTS:
+                        {
+                            Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
+                            AlgebraicNumber unitScalar = orbit.getLengthInUnits(symmetryController.getSymmetry().getField().one());
+                            AlgebraicNumber rawLength = partInfo.strutLength.dividedBy(unitScalar);
+                            Map<String,Object> props = new HashMap<>();
+                            props .put( "orbit", orbit );
+                            if ( rawLength != null )
+                                props .put( "length", rawLength );
+                            documentModel .doEdit( "AdjustSelectionByOrbitLength/" + cmd + "SimilarStruts", props );
+                        }
+                        break;
+    
+                        case PANELS:
+                        {
+                            Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
+                            Map<String,Object> props = new HashMap<>();
+                            props .put( "orbit", orbit );
+                            documentModel .doEdit( "AdjustSelectionByOrbitLength/" + cmd + "SimilarPanels", props );
+                        }
+                        break;
+    
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
                     boolean handled = documentModel .doEdit( action );
                     if ( ! handled )
                         super .doAction( action, e );
@@ -770,13 +763,12 @@ public class DocumentController extends DefaultController implements Controller3
     @Override
     public void doScriptAction( String command, String script )
     {
-        if ( command.equals( "runZomicScript" ) 
-                || command.equals( "runPythonScript" )
-                || command.equals( "import.vef" ) 
-                || command.equals( "import.vef.tetrahedral" ) 
-                //|| command.equals( "import.zomod" ) 
-                )
-            documentModel .doScriptAction( command, script );
+        if ( command.equals( "RunZomicScript" ) || command.equals( "RunPythonScript" ) )
+        {
+            Map<String,Object> props = new HashMap<>();
+            props .put( "script", script );
+            documentModel .doEdit( command, props );
+        }
         else
             super .doScriptAction( command, script );
     }
@@ -808,43 +800,43 @@ public class DocumentController extends DefaultController implements Controller3
                 //   the count just because we're writing a copy.  The reset will have to move to the
                 //   context of the save.
                 this .changeCount  = this .documentModel .getChangeCount();
-                
-    			// Sample prefs file entry: save.exports=export.dae capture.png capture.jpg export.vef
-            	String exports = this .getProperty( "save.exports" );
-            	if ( exports != null ) {
-            		for ( String captureOrExport : exports .split( " " ) ) {
-            			// captureOrExport should be "capture.png" or "export.dae" or similar
-            			String extension = "";
-            			String[] cmd = captureOrExport .split("\\.");
-            			if(cmd.length == 2 ) {
-            				switch (cmd[0]) {
-        					case "capture":
-        					case "export2d":
-        					case "export":
-        						extension = cmd[1];
-        						break;
-            				}
-            			}
-            			if(extension == "") {
-            				mErrors.reportError( UNKNOWN_PROPERTY + " save.exports=" + captureOrExport, null );
-            			} else {
-            				File exportFile = new File( dir, file .getName() + "." + extension );
-            				doFileAction( captureOrExport, exportFile );
-            			}
+
+                // Sample prefs file entry: save.exports=export.dae capture.png capture.jpg export.vef
+                String exports = this .getProperty( "save.exports" );
+                if ( exports != null ) {
+                    for ( String captureOrExport : exports .split( " " ) ) {
+                        // captureOrExport should be "capture.png" or "export.dae" or similar
+                        String extension = "";
+                        String[] cmd = captureOrExport .split("\\.");
+                        if(cmd.length == 2 ) {
+                            switch (cmd[0]) {
+                            case "capture":
+                            case "export2d":
+                            case "export":
+                                extension = cmd[1];
+                                break;
+                            }
+                        }
+                        if(extension == "") {
+                            mErrors.reportError( UNKNOWN_PROPERTY + " save.exports=" + captureOrExport, null );
+                        } else {
+                            File exportFile = new File( dir, file .getName() + "." + extension );
+                            doFileAction( captureOrExport, exportFile );
+                        }
                     }
-            	}
-                
-            	String script = this .getProperty( "save.script" );
-            	if ( script != null )
-            	{
-            		try {
-            			Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
-            					null, file .getParentFile() );
-            		} catch ( IOException e ) {
-            			System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
-            			e .printStackTrace();
-            		}
-            	}
+                }
+
+                String script = this .getProperty( "save.script" );
+                if ( script != null )
+                {
+                    try {
+                        Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
+                                null, file .getParentFile() );
+                    } catch ( IOException e ) {
+                        System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+                        e .printStackTrace();
+                    }
+                }
                 return;
             }
             if ( "capture-animation" .equals( command ) )
@@ -870,10 +862,10 @@ public class DocumentController extends DefaultController implements Controller3
                 captureImageFile( file, extension, null );
                 return;
             }
-//            if ( command .equals( "export.zomespace" ) )
-//            {
-//                new ZomespaceExporter( file ) .exportArticle( document, colors, sceneLighting, getSaveXml(), getProperty( "edition" ), getProperty( "version" ) );
-//            } else
+            //            if ( command .equals( "export.zomespace" ) )
+            //            {
+            //                new ZomespaceExporter( file ) .exportArticle( document, colors, sceneLighting, getSaveXml(), getProperty( "edition" ), getProperty( "version" ) );
+            //            } else
             if ( command.startsWith( "export2d." ) )
             {
                 Dimension size = this .modelCanvas .getSize();              
@@ -908,21 +900,19 @@ public class DocumentController extends DefaultController implements Controller3
                 this .openApplication( file );
                 return;
             }
-            if ( command.equals( "import.vef" ) 
-                    // || command.equals( "import.zomod" )
-                    ) {
+            if ( command.startsWith( "LoadVEF/" ) ) {
                 String vefData = readFile( file );
-                documentModel .importVEF( this .importScaleController .getValue(), vefData );
-                return;
-            }
-            if ( command.equals( "import.vef.tetrahedral" ) ) {
-                String vefData = readFile( file );
-                documentModel .importVEFTetrahedralProjection( this .importScaleController .getValue(), vefData );
+                Map<String, Object> params = new HashMap<>();
+                params .put( "vef", vefData );
+                params .put( "scale", this .importScaleController .getValue() );
+                params .put( "projection", new QuaternionProjection( documentModel .getField(), null,
+                                                this .quaternionController .getVector() ) );
+                documentModel .doEdit( command, params );
                 return;
             }
             if ( command.equals( "import.zomecad.binary" ) ) {
-//                InputStream bytes = new FileInputStream( file );
-//                new ZomeCADImporter( bytes, events, (PentagonField) mField ) .parseStream();
+                //                InputStream bytes = new FileInputStream( file );
+                //                new ZomeCADImporter( bytes, events, (PentagonField) mField ) .parseStream();
             }
             if ( command.equals( "save.pdf" ) ) {
             }
@@ -1156,6 +1146,12 @@ public class DocumentController extends DefaultController implements Controller3
         case "clipboard":
             return systemClipboard != null ? systemClipboard.getClipboardContents() : designClipboard;
 
+        case "backgroundColor":
+            return this .sceneLighting .getBackgroundColor() .toWebString();
+            
+        case "lastObjectColor":
+            return this .lastObjectColor;
+
         case "showFrameLabels":
             return Boolean .toString( showFrameLabels );
 
@@ -1274,6 +1270,8 @@ public class DocumentController extends DefaultController implements Controller3
             firePropertyChange( "name", null, value );
         } else if ( "backgroundColor".equals( cmd ) ) {
             sceneLighting .setProperty( cmd, value );
+        } else if ( "lastObjectColor".equals( cmd ) ) {
+            this .lastObjectColor = (String) value;
         } else if ( "terminating".equals( cmd ) ) {
             firePropertyChange( cmd, null, value );
         }
@@ -1337,21 +1335,13 @@ public class DocumentController extends DefaultController implements Controller3
     {
         Construction singleConstruction = null;
         if ( pickedManifestation != null )
-            singleConstruction = pickedManifestation .getConstructions().next();
+            singleConstruction = pickedManifestation .toConstruction();
 
         try {
             switch ( action ) {
 
             case "undoToManifestation":
                 this .documentModel .undoToManifestation( pickedManifestation );
-                break;
-
-            case "setSymmetryCenter":
-                this .documentModel .setParameter( singleConstruction, "ball" );
-                break;
-
-            case "setSymmetryAxis":
-                this .documentModel .setParameter( singleConstruction, "strut" );
                 break;
 
             case "setWorkingPlaneAxis":
@@ -1363,14 +1353,10 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
 
             case "lookAtThis":
-                RealVector loc = documentModel .getCentroid( singleConstruction );
+                RealVector loc = documentModel .getCentroid( pickedManifestation );
                 cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
                 break;
-                
-            case "replaceWithShape":
-            	documentModel .replaceWithShape( pickedManifestation );
-                break;
-                
+
             case "setBuildOrbitAndLength": {
                 AlgebraicVector offset = ((Strut) pickedManifestation) .getOffset();
                 Axis zone = symmetryController .getZone( offset );
@@ -1380,26 +1366,11 @@ public class DocumentController extends DefaultController implements Controller3
                 symmetryController .buildController .doAction( "setSingleDirection." + orbit .getName(), null );
                 LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
                 lmodel .setActualLength( length );
-                }
                 break;
-                
-            case "selectCollinear": 
-                documentModel .selectCollinear( (Strut) pickedManifestation );
-                break;
+            }
 
-            case "selectParallelStruts":
-                documentModel.selectParallelStruts( (Strut) pickedManifestation );
-                break;
-                
-            case "selectSimilarSize": {
-                Strut strut = (Strut) pickedManifestation;
-                AlgebraicVector offset = strut .getOffset();
-                Axis zone = symmetryController .getZone( offset );
-                Direction orbit = zone .getOrbit();
-                AlgebraicNumber length = zone .getLength( offset );
-                documentModel .selectSimilarStruts( orbit, length ); // does performAndRecord
-                }
-                break;
+            default:
+                documentModel .doPickEdit( pickedManifestation, action );
             }
         } catch ( Command.Failure failure ) {
             // signal an error to the user
@@ -1596,5 +1567,11 @@ public class DocumentController extends DefaultController implements Controller3
     public SymmetryController getSymmetryController()
     {
         return this .symmetryController;
+    }
+
+    @Override
+    public Lights getSceneLighting()
+    {
+        return this .sceneLighting;
     }
 }

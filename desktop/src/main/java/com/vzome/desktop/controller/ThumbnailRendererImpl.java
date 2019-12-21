@@ -13,6 +13,7 @@ import org.vorthmann.j3d.J3dComponentFactory;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.ThumbnailRenderer;
 
 
@@ -23,9 +24,9 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
     
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
 
-    public ThumbnailRendererImpl( J3dComponentFactory rvFactory )
+    public ThumbnailRendererImpl( J3dComponentFactory rvFactory, Lights sceneLighting )
     {
-        super( new Camera() );
+        super( new Camera(), sceneLighting );
         // We must create a "non-sticky" rendering component here, or we will mess up
         //   picking in the main rendering component; we don't want the RenderedManifestations
         //   to record these scene graph objects, which are transient, after all.

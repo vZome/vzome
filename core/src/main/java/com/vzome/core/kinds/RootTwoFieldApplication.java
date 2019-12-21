@@ -13,21 +13,22 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.commands.CommandTetrahedralSymmetry;
-import com.vzome.core.editor.AxialSymmetryToolFactory;
-import com.vzome.core.editor.InversionTool;
-import com.vzome.core.editor.LinearMapTool;
-import com.vzome.core.editor.MirrorTool;
-import com.vzome.core.editor.OctahedralToolFactory;
-import com.vzome.core.editor.RotationTool;
-import com.vzome.core.editor.ScalingTool;
-import com.vzome.core.editor.TetrahedralToolFactory;
 import com.vzome.core.editor.ToolsModel;
-import com.vzome.core.editor.TranslationTool;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Shapes;
+import com.vzome.core.tools.AxialSymmetryToolFactory;
+import com.vzome.core.tools.InversionTool;
+import com.vzome.core.tools.LinearMapTool;
+import com.vzome.core.tools.MirrorTool;
+import com.vzome.core.tools.OctahedralToolFactory;
+import com.vzome.core.tools.ProjectionTool;
+import com.vzome.core.tools.RotationTool;
+import com.vzome.core.tools.ScalingTool;
+import com.vzome.core.tools.TetrahedralToolFactory;
+import com.vzome.core.tools.TranslationTool;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
 
@@ -179,6 +180,7 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
                 result .add( new ScalingTool.Factory( tools, this .symmetry ) );
                 result .add( new RotationTool.Factory( tools, this .symmetry ) );
                 result .add( new TranslationTool.Factory( tools ) );
+                result .add( new ProjectionTool.Factory( tools ) );
                 break;
 
             case LINEAR_MAP:

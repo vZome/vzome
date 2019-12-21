@@ -25,6 +25,12 @@ public abstract class Segment extends Construction
         super( field );
     }
     
+    @Override
+    public boolean is3d()
+    {
+        return mStart .dimension() == 3 && mOffset .dimension() == 3;
+    }
+
     protected final boolean setStateVariables( AlgebraicVector start, AlgebraicVector offset, boolean impossible )
     {
         if ( impossible ) {

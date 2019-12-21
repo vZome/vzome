@@ -1,6 +1,11 @@
 package com.vzome.core.zomic;
 
-import static javatests.TestSupport.assertNotEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,14 +22,13 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import junit.framework.TestCase;
-
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.atn.ATN;
 import org.antlr.v4.runtime.misc.IntervalSet;
+import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.PentagonField;
@@ -45,21 +49,15 @@ import com.vzome.core.zomic.program.PrintVisitor;
 import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
 
-public class ZomicASTTest extends TestCase
+public class ZomicASTTest
 {
     // Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
     private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
     private static final Logger logger = Logger.getLogger(loggerClassName);
     
-	public void testNoOpAlwaysPasses() { 
-		// This is here just so the test framework always finds 
-		// at least one test to run, 
-		// even when I skip over all others by renaming them.
-	}
-
-	private final IcosahedralSymmetry symmetry;
+    private final IcosahedralSymmetry symmetry;
 	private final ZomicNamingConvention namingConvention;
-			
+	
 	public ZomicASTTest() {
 		symmetry = new IcosahedralSymmetry( new PentagonField(), "default" );
 		namingConvention = new ZomicNamingConvention(symmetry);
@@ -381,20 +379,9 @@ public class ZomicASTTest extends TestCase
 	////////////////////////////////////////
 	// BEGIN test definitions
 	////////////////////////////////////////
-	// All public void methods 
-	//	having names that start with "test" 
-	//	and having no parameters 
-	//	will be run by the test framework.
-	// By convention, I add a leading underscore or two
-	//	to the ones I don't want to run. 
-	//	e.g. __test_DisableThisTest()
-	//  and I append OK to the word test 
-	//  for the ones that have passed but which I don't want 
-	//  to execute while I work on another one.
-	//	e.g. __testOK___DisableThisTestKnowingThatItPasses()
-	////////////////////////////////////////
 
-	public void testOK_ListAllZomicAxes() {
+	@Test 
+	public void testListAllZomicAxes() {
 		for (String color : symmetry.getDirectionNames()) {
 			Direction direction = symmetry.getDirection(color);
 			ArrayList<String> list = new ArrayList<>();
@@ -436,7 +423,8 @@ public class ZomicASTTest extends TestCase
 		}
 	}
 
-	public void testOK_ZomicNamingConvention() {
+	@Test 
+	public void testZomicNamingConvention() {
 		for (String color : symmetry.getDirectionNames()) {
 			Direction direction = symmetry.getDirection(color);
 			for (Iterator<Axis> axes = direction.getAxes(); axes.hasNext();) {
@@ -474,7 +462,8 @@ public class ZomicASTTest extends TestCase
 		}
 	}
 
-	public void testOK_ZomicLexer() {
+	@Test 
+	public void testZomicLexer() {
 		try {
 			CharStream inputStream = new ANTLRInputStream("red -7");
 			ZomicLexer lexer = new ZomicLexer(inputStream);
@@ -489,13 +478,15 @@ public class ZomicASTTest extends TestCase
 		}
 	}
 	
-	public void testOK_ZomicParser() {
+	@Test 
+	public void testZomicParser() {
 		String input = "size valid_sizeref.123 red 2";
 		ProgramContext programContext = parse( input );
 		assertNotNull("programContext should not be null", programContext);
 	}
 	
-	public void testOK_EmptyProgram() {
+	@Test 
+	public void testEmptyProgram() {
 		// For now, only use compileAndCompareContent for empty programs
 		// not compileAndCompare or compileAndCompareStructure
 		Walk program = compileAndCompareContent("");
@@ -545,13 +536,15 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 
-	public void testOK_LabelStatement() {
+	@Test 
+	public void testLabelStatement() {
 		String label = "valid_lowercase_label.234_whatever";
 		Walk program = compileAndCompare("label " + label);
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_StrutDefaultValues() {
+	@Test 
+	public void testStrutDefaultValues() {
 		Walk program = compileAndCompare("red 0 /* test StrutDefaultValues */");
 		assertProgramSize(1, program);
 		Iterator<ZomicStatement> it = program .getStatements(); 
@@ -569,7 +562,8 @@ public class ZomicASTTest extends TestCase
 //				program.getStatements());
 	}
 		
-	public void testOK_RedAliases() {
+	@Test 
+	public void testRedAliases() {
 		Walk program = compileAndCompare("red 0");
 		assertProgramSize(1, program);
 
@@ -580,7 +574,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_BlueAliases() {
+	@Test
+	public void testBlueAliases() {
 		Walk program = compileAndCompare("blue 0");
 		assertProgramSize(1, program);
 
@@ -591,7 +586,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_YellowAliases() {
+	@Test
+	public void testYellowAliases() {
 		Walk program = compileAndCompare("yellow 0");
 		assertProgramSize(1, program);
 
@@ -602,7 +598,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_StrutExplicitSizes() {
+	@Test
+	public void testStrutExplicitSizes() {
 		// zero
 		Walk program = compileAndCompare("size 0 red 2");
 		assertProgramSize(1, program);
@@ -634,7 +631,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_StrutFullyExplicitSizes() {
+	@Test 
+	public void testStrutFullyExplicitSizes() {
 		// zero
 		Walk program = compileAndCompare("size 0 0 0 red 2");
 		assertProgramSize(1, program);
@@ -664,7 +662,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_StrutVariableSize() {
+	@Test 
+	public void testStrutVariableSize() {
 		// -99 is the old undocumented indicator for variable size.
 		Walk program = compileAndCompare("size -99 red 0");
 		assertProgramSize(1, program);
@@ -677,7 +676,8 @@ public class ZomicASTTest extends TestCase
 	}
 	
 	// remove unsupported sizeRef feature from the grammar although supporting code is partially in place
-//	public void testOK_StrutSizeRef() {
+//	@Test 
+//	public void testStrutSizeRef() {
 //		String input = "size any_valid_lowercase_sizeref_even_with_digits...0123456789 red +0";
 //
 //		// sizeRef was undocumented and seems to be unused by the old code, although it was valid in the old grammar.
@@ -685,7 +685,8 @@ public class ZomicASTTest extends TestCase
 //		assertProgramSize(1, program);
 //	}
 	
-	public void testOK_StrutNamedSizes() {
+	@Test 
+	public void testStrutNamedSizes() {
 		Walk program = compileAndCompare("long red 0");
 		assertProgramSize(1, program);
 		
@@ -700,7 +701,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_ZomicStrutColors() {
+	@Test 
+	public void testZomicStrutColors() {
 		int tests = 0;
 		for ( String color : zomicColors ) {
 			Walk program = compileAndCompare(color + " 0");
@@ -711,7 +713,8 @@ public class ZomicASTTest extends TestCase
 				(tests > 0) && (tests == zomicColors.size()) );
 	}
 	
-	public void testOK_NotYetZomicStrutColors() {
+	@Test 
+	public void testNotYetZomicStrutColors() {
 		int tests = 0;
 		for ( String color : notYetZomicColors ) {
 			compileAndCompare(color + " 0", true, true);
@@ -721,7 +724,8 @@ public class ZomicASTTest extends TestCase
 				(tests > 0) && (tests == notYetZomicColors.size()) );
 	}
 	
-	public void testOK_UnsupportedStrutColors() {
+	@Test 
+	public void testUnsupportedStrutColors() {
 		int tests = 0;
 		for ( String color : unsupportedColors ) {
 			compileAndCompare(color + " 0", true, true);
@@ -734,7 +738,8 @@ public class ZomicASTTest extends TestCase
 	// axis indices can be invalid in two different ways:
 	// 1) Any axis index can be too large and throw an ArrayIndexOutOfBoundsException
 	// 2) Any color except red, yellow and blue can have an index that is in range, but not valid since they are not all sequential.
-	public void testOK_AxisIndexOutOfBounds() {
+	@Test
+	public void testAxisIndexOutOfBounds() {
 		HashMap<String, Integer> axisIndexMap = new HashMap<>();
 		axisIndexMap.put("red", 6);
 		axisIndexMap.put("yellow", 10);
@@ -769,7 +774,8 @@ public class ZomicASTTest extends TestCase
 				(tests > 0) && (tests == axisIndexMap.size()) );
 	}
 	
-	public void testOK_StrutExplicitHalfLengths() {
+	@Test 
+	public void testStrutExplicitHalfLengths() {
 			// negative axis
 			Walk program = compileAndCompare("size -1 -2 -3 half blue -4");
 			assertProgramSize(1, program);
@@ -781,7 +787,8 @@ public class ZomicASTTest extends TestCase
 			assertProgramSize(1, program);
 	}
 	
-	public void testOK_StrutHandedness() {			
+	@Test 
+	public void testStrutHandedness() {			
 		String[] signs = { "", "+", "-" };	
 		for (String sign1 : signs) {
 			int tests = 0;
@@ -797,7 +804,8 @@ public class ZomicASTTest extends TestCase
 		}
 	}
 	
-	public void testOK_StrutInvalidHandedness() {			
+	@Test 
+	public void testStrutInvalidHandedness() {			
 		String[] signs = { "", "+", "-" };	
 		for (String sign1 : signs) {
 			int tests = 0;
@@ -827,7 +835,8 @@ public class ZomicASTTest extends TestCase
 		}
 	}
 	
-	public void testOK_StrutValidHalfLengths() {
+	@Test 
+	public void testStrutValidHalfLengths() {
 		Walk program = compileAndCompare("half blue 2");
 		assertProgramSize(1, program);
 		
@@ -835,7 +844,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_StrutInvalidHalfLengths() {
+	@Test 
+	public void testStrutInvalidHalfLengths() {
 		int tests = 0;
 		for ( String color : zomicColors ) {
 			switch(color) {
@@ -865,7 +875,8 @@ public class ZomicASTTest extends TestCase
 				(tests > 0) && (tests == zomicColors.size() - 2) );
 	}
 	
-	public void testOK_MultipleStruts() {
+	@Test 
+	public void testMultipleStruts() {
 		String allColors = "";
 		int n = 0;
 		for ( String color : zomicColors ) {
@@ -876,7 +887,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_BuildModes() {
+	@Test 
+	public void testBuildModes() {
 		Walk program = compileAndCompare("build");
 		assertProgramSize(1, program);
 
@@ -888,7 +900,8 @@ public class ZomicASTTest extends TestCase
 //		assertProgramSize(1, program);
 	}
 	
-	public void testOK_ScaleStatement() {
+	@Test 
+	public void testScaleStatement() {
 		Walk program = compileAndCompare("scale 5 red 0");
 		assertProgramSize(1, program);
 
@@ -914,7 +927,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_EmptyBranchStatement() {
+	@Test
+	public void testEmptyBranchStatement() {
 		// TODO: These aren't necessarily even valid tests except that I want to understand why the lexer balks.
 		// This one generates a lexer or parser error message saying:
 		// "line 1:6 no viable alternative at input '<EOF>'"
@@ -929,7 +943,8 @@ public class ZomicASTTest extends TestCase
 		System.out.println( printTreeStructure (program) );
 	}
 	
-	public void testOK_SimpleBranchStatement() {
+	@Test 
+	public void testSimpleBranchStatement() {
 		Walk program = compileAndCompare("branch { yellow 1 blue -2} black 3");
 		assertProgramSize(1, program);
 		
@@ -940,7 +955,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 
-	public void testOK_BranchStatement() {
+	@Test 
+	public void testBranchStatement() {
 		Walk program = compileAndCompare("branch { yellow 1 blue -2} black 1 red 0");
 		assertProgramSize(1, program);
 
@@ -948,7 +964,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 
-	public void testOK_BranchNesting() {
+	@Test 
+	public void testBranchNesting() {
 		Walk program = compileAndCompare("branch { red 1 branch { blue 1 branch { yellow 0 } blue -1 } red -1 }");
 		assertProgramSize(1, program);
 		
@@ -956,7 +973,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 
-	public void testOK_FromStatement() {
+	@Test 
+	public void testFromStatement() {
 		Walk program = compileAndCompare("from yellow 1 blue 2 black 3 red 4");
 		assertProgramSize(1, program);
 
@@ -964,7 +982,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 
-	public void testOK_RepeatStatement() {
+	@Test 
+	public void testRepeatStatement() {
 		Walk 
 		// TODO: This isn't necessarily even a valid test except that I want to understand why the lexer balks.
 		// This one generates a lexer or parser error message saying:
@@ -995,7 +1014,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 		
-	public void testOK_SaveStatement() {
+	@Test 
+	public void testSaveStatement() {
 		ArrayList<String> states = new ArrayList<>();
 		states.add("location");
 		states.add("scale");
@@ -1021,7 +1041,8 @@ public class ZomicASTTest extends TestCase
 				(tests > 0) && (tests == states.size()) );
 	}
 
-	public void testOK_RotateStatement() {
+	@Test 
+	public void testRotateStatement() {
 		Walk 
 		program = compileAndCompare("rotate 2 around yellow +0 red -2");
 		assertProgramSize(1, program);
@@ -1039,7 +1060,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(1, program);
 	}
 	
-	public void testOK_ReflectStatement() {
+	@Test 
+	public void testReflectStatement() {
 		Walk 
 		program = compileAndCompare("reflect through center green 0");
 		assertProgramSize(1, program);
@@ -1072,7 +1094,8 @@ public class ZomicASTTest extends TestCase
 		assertProgramSize(0, program);		
 	}
 
-	public void testOK_SymmetryStatement() {
+	@Test 
+	public void testSymmetryStatement() {
 		Walk 
 		// old version will compile this, but can't walk it
 		// new version omits empty nested branches so don't compare them
@@ -1125,7 +1148,8 @@ public class ZomicASTTest extends TestCase
 
 	}
 
-	public void testOK_MisplacedIntegerPolarity() {
+	@Test 
+	public void testMisplacedIntegerPolarity() {
 		// These should not parse without errors. 
 		// Be sure we catch the errors in the new version.
 		// old version silently ignored the error.
@@ -1153,7 +1177,8 @@ public class ZomicASTTest extends TestCase
 	}
 	
 	// Begin File Regression Tests
-	public void testOK_RegressionFiles() {
+	@Test 
+	public void testRegressionFiles() {
 		regressionTestCount = 0;
 		
 		int expected = 92;
@@ -1248,7 +1273,7 @@ public class ZomicASTTest extends TestCase
 	private final int resourceFileCount = 39;
 	private int regressionTestCount = 0;
 
-	public void testOK_RegressionResources() {
+	@Test public void testRegressionResources() {
 		regressionTestCount = 0;
 		File resourceFolderRoot = new File(resourceFolderName + ZomicStrutGeometry.SCRIPT_PREFIX);
 		assertTrue(resourceFolderRoot.getName() + " must be a directory.", resourceFolderRoot.isDirectory());

@@ -6,6 +6,7 @@ package com.vzome.core.editor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -326,22 +327,6 @@ public class EditHistory implements Iterable<UndoableEdit>
         DomUtils .addAttribute( result, "editNumber", Integer.toString( this .mEditNumber ) );
         return result;
         // edits are now serialized in calling EditorController
-
-        //        for ( Iterator<UndoableEdit> it = mEdits .iterator(); it .hasNext(); )
-        //        {
-        //            UndoableEdit undoable = it .next();
-        //            
-        //            Context newContext = undoable .getContext();
-        //            if ( context != undoable .getContext() )
-        //            {
-        //            	context = newContext;
-        //            	UndoableEdit switchContext = masterContext .createEdit( type, format );
-        //                Element switchContext = new Element( "switchContext" );
-        //                switchContext .addAttribute( new Attribute( "to", getContextId( context ) ) );
-        //            	result .appendChild( switchContext );
-        //            }
-        //            result .appendChild( undoable .getXml() );
-        //        }
     }
 
     public void mergeSelectionChanges()
@@ -372,9 +357,9 @@ public class EditHistory implements Iterable<UndoableEdit>
         if ( below instanceof ChangeSelection )
         {
             // two in a row, wrap with begin/end pair
-            UndoableEdit bracket = new BeginBlock();
+            UndoableEdit bracket = new BeginBlock( null );
             mEdits .add( cursor, bracket );
-            bracket = new EndBlock();
+            bracket = new EndBlock( null );
             mEdits .add( bracket );
             mEditNumber += 2;
         }
@@ -427,6 +412,12 @@ public class EditHistory implements Iterable<UndoableEdit>
         }
 
         @Override
+        public boolean isNoOp()
+        {
+            return false;
+        }
+
+        @Override
         public boolean isVisible()
         {
             return true;
@@ -455,6 +446,9 @@ public class EditHistory implements Iterable<UndoableEdit>
         @Override
         public void undo()
         {}
+
+        @Override
+        public void configure( Map<String,Object> props ) {}
 
         @Override
         public boolean isSticky()
@@ -488,6 +482,12 @@ public class EditHistory implements Iterable<UndoableEdit>
             this.format = format;
             this.xml = editElem;
             this.context = context;
+        }
+
+        @Override
+        public boolean isNoOp()
+        {
+            return false;
         }
 
         @Override
@@ -544,16 +544,12 @@ public class EditHistory implements Iterable<UndoableEdit>
             UndoableEdit realized = null;
             String cmdName = xml.getLocalName();
 
-            //                if ( format.actionHistory() ) // never happens, yet
-            //                    realized = design .createActionEdit( cmdName, null, groupInSelection );
-            //                else
-            // opening a file from vZome 2.1 - 4.0 or ...?
             if ( cmdName .equals( "Breakpoint" ) )
             {
                 realized = new Breakpoint();
             }
             else
-                realized = context .createEdit( xml, format .groupingDoneInSelection() );
+                realized = context .createEdit( xml );
             //            System.out.println( "edit: " + num + " " + cmdName );
 
             try {
@@ -566,6 +562,9 @@ public class EditHistory implements Iterable<UndoableEdit>
                         // realized is responsible for inserting itself, or any replacements (migration)
                         try {
                             edit .perform();
+                            if ( edit .isNoOp() )
+                                return;
+//                            System.out.println( DomUtils .getXmlString( details ) );
                             if ( logger .isLoggable( Level.FINEST ) ) {
                                 Element details = edit .getDetailXml( xml .getOwnerDocument() );
                                 logger .finest( "side-effect: " + DomUtils .getXmlString( details ) );
@@ -578,9 +577,9 @@ public class EditHistory implements Iterable<UndoableEdit>
                     }
 
                     @Override
-                    public UndoableEdit createEdit( Element xml, boolean groupInSelection )
+                    public UndoableEdit createEdit( Element xml )
                     {
-                        return context .createEdit( xml, groupInSelection );
+                        return context .createEdit( xml );
                     }
                 } ); // this method needs to have the history, since it may migrate
                 //        		System.out.println();
@@ -606,6 +605,9 @@ public class EditHistory implements Iterable<UndoableEdit>
         {
             // called, but must be a no-op
         }
+
+        @Override
+        public void configure( Map<String,Object> props ) {}
 
         @Override
         public void perform()

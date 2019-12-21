@@ -15,12 +15,12 @@ public class VefModelExporter extends VefVectorExporter implements Exporter
 {
     public VefModelExporter( Writer writer, AlgebraicField field )
     {
-    		this( writer, field, null );
+    		this( writer, field, null, false );
     }
 
-    public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale )
+    public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale, boolean withOffset )
     {
-        super( writer, field, scale );
+        super( writer, field, scale, withOffset );
     }
     
     @Override

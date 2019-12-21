@@ -93,7 +93,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     public interface OrbitSource
     {
-    	Symmetry getSymmetry();
+        Symmetry getSymmetry();
     	    	
         Axis getAxis( AlgebraicVector vector );
         
@@ -154,6 +154,14 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         else
             mListeners .remove( listener );
     }
+    
+    public RenderedManifestation render( Manifestation manifestation )
+    {
+        RenderedManifestation rm = new RenderedManifestation( manifestation );
+        rm .setModel( this );
+        resetAttributes( rm, false );
+        return rm;
+    }
 
     @Override
 	public void manifestationAdded( Manifestation m )
@@ -164,10 +172,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 			return;
 		}
 		
-	    RenderedManifestation rm = new RenderedManifestation( m );
-        rm .setModel( this );
-//	    resetAxis( rm );
-	    resetAttributes( rm, false );
+	    RenderedManifestation rm = render( m );
         Polyhedron poly = rm .getShape();
 	    if ( poly == null )
 	        return; // no direction for this strut
@@ -356,7 +361,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     private void resetAttributes( RenderedManifestation rm, boolean justShape )
 	{
-        Color oldColor = rm .getColor();
 	    Manifestation m = rm .getManifestation();
         if ( m instanceof Connector ) {
             resetAttributes( rm, justShape, (Connector) m );
@@ -390,7 +394,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         		
                 Direction orbit = axis .getDirection();
 
-                Color color = orbitSource .getColor( orbit ) .getPastel();
+                Color color = m .getColor();
+                if ( color == null )
+                    color = orbitSource .getColor( orbit ) .getPastel();
                 rm .setColor( color );
             } catch ( IllegalStateException e ) {
             	if ( logger .isLoggable( Level.WARNING ) )
@@ -399,8 +405,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         }
         else
             throw new UnsupportedOperationException( "only strut, ball, and panel shapes currently supported" );
-	    if ( oldColor != null )
-	        rm .setColor( oldColor );
 	}
 
 	protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
@@ -459,7 +463,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		if ( justShape )
 		    return;
 		
-		Color color = mPolyhedra .getColor( orbit );
+        Color color = rm .getManifestation() .getColor();
+        if ( color == null )
+            color = mPolyhedra .getColor( orbit );
 		if ( color == null )
 			color = orbitSource .getColor( orbit );
 		rm .setColor( color );
@@ -470,9 +476,11 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 		rm .setShape( mPolyhedra .getConnectorShape() );
 		if ( justShape )
 		    return;
-		Color color = mPolyhedra .getColor( null );
-		if ( color == null )
-			color = orbitSource .getColor( null );
+		Color color = rm .getManifestation() .getColor();
+        if ( color == null )
+            color = mPolyhedra .getColor( null );
+        if ( color == null )
+            color = orbitSource .getColor( null );
 		rm .setColor( color );
 		rm .setOrientation( field .identityMatrix( 3 ) );
 	}

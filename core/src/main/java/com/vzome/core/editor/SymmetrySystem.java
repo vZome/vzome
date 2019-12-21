@@ -305,8 +305,8 @@ public class SymmetrySystem implements OrbitSource
         }
         return result;
     }
-
-    public void setStyle( String styleName )
+    
+    public Shapes getStyle( String styleName )
     {
         Optional<Shapes> found = this .symmetryPerspective .getGeometries() .stream()
                 .filter( e -> styleName .equals( e .getName() )
@@ -314,7 +314,16 @@ public class SymmetrySystem implements OrbitSource
                         || styleName .equals( e .getPackage() ) )
                 .findFirst();
         if ( found .isPresent() )
-            this .shapes = found .get();
+            return found .get();
+        else
+            return null;
+    }
+
+    public void setStyle( String styleName )
+    {
+        Shapes result = this .getStyle( styleName );
+        if ( result != null )
+            this .shapes = result;
         else {
             logger .warning( "UNKNOWN STYLE NAME: " + styleName );
             this .shapes = this .symmetryPerspective .getDefaultGeometry();
@@ -341,8 +350,13 @@ public class SymmetrySystem implements OrbitSource
 
     public Polyhedron getShape( AlgebraicVector offset )
     {
+        return this .getShape( offset, this.shapes );
+    }
+
+    public Polyhedron getShape( AlgebraicVector offset, Shapes shapes )
+    {
         if ( offset == null )
-            return this .shapes .getConnectorShape();
+            return shapes .getConnectorShape();
         else {
             if ( offset .isOrigin() )
                 return null;
@@ -355,7 +369,7 @@ public class SymmetrySystem implements OrbitSource
 
             AlgebraicNumber len = axis .getLength( offset );
 
-            return this .shapes .getStrutShape( orbit, len );
+            return shapes .getStrutShape( orbit, len );
         }
     }
 
@@ -374,7 +388,7 @@ public class SymmetrySystem implements OrbitSource
         Command command = this .symmetryPerspective .getLegacyCommand( action );
         if ( command != null )
         {
-            CommandEdit edit = new CommandEdit( (AbstractCommand) command, this .editor, false );
+            CommandEdit edit = new CommandEdit( (AbstractCommand) command, this .editor );
             this .context .performAndRecord( edit );
             return true;
         }

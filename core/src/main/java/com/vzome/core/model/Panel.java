@@ -2,20 +2,25 @@
 
 package com.vzome.core.model;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
+import com.vzome.core.construction.Construction;
+import com.vzome.core.construction.FreePoint;
+import com.vzome.core.construction.Point;
+import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
-
-import java.util.ArrayList;
 
 public class Panel extends Manifestation implements Iterable<AlgebraicVector>
 {
     private final List<AlgebraicVector> mVertices;
-	private AlgebraicVector zoneVector;
+    private AlgebraicVector zoneVector;
 
     /**
      * Create a panel from a list of AlgebraicVectors
@@ -27,18 +32,18 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         // copy the list in case the caller modifies it later.
         mVertices = new ArrayList<>(vertices);
     }
-    
+
     public AlgebraicVector getZoneVector()
     {
-    	if ( this .zoneVector != null )
-    		return this .zoneVector;
-    	else
-    		return this .getNormal();
+        if ( this .zoneVector != null )
+            return this .zoneVector;
+        else
+            return this .getNormal();
     }
-    
+
     public void setZoneVector( AlgebraicVector vector )
     {
-    	this .zoneVector = vector;
+        this .zoneVector = vector;
     }
 
     @Override
@@ -52,15 +57,29 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         return this .mVertices .get( 0 );
     }
 
-	@Override
+    @Override
     public AlgebraicVector getCentroid()
     {
         return AlgebraicVectors.calculateCentroid(mVertices);
     }
 
+    @Override
+    public Construction toConstruction()
+    {
+        Construction first = this .getFirstConstruction();
+        if ( first .is3d() )
+            return first;
+
+        AlgebraicField field = mVertices.get( 0 ) .getField();
+        List<Point> projected = this .mVertices .stream()
+                .map( pt -> new FreePoint( field .projectTo3d( pt, true ) ) )
+                .collect( Collectors.toList() ); 
+        return new PolygonFromVertices( projected );
+    }
+
     /**
-    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-    */
+     * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
+     */
     @Deprecated
     public Iterator<AlgebraicVector> getVertices()
     {
@@ -68,29 +87,29 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
     }
 
     @Override
-	public Iterator<AlgebraicVector> iterator()
-	{
-		return mVertices.iterator();
-	}
+    public Iterator<AlgebraicVector> iterator()
+    {
+        return mVertices.iterator();
+    }
 
-	public int getVertexCount()
-	{
-		return mVertices.size();
-	}
+    public int getVertexCount()
+    {
+        return mVertices.size();
+    }
 
     @Override
     public int hashCode()
     {
         int len = mVertices.size();
         if ( len == 0 )
-        	return 0;
+            return 0;
         int val = ( mVertices.get( 0 ) ) .hashCode();
         for ( int i = 1; i < len; i++ )
             val ^= ( mVertices.get( i ) ) .hashCode();
         return val;
     }
 
-	@Override
+    @Override
     public boolean equals( Object other )
     {
         if ( other == null )
@@ -113,21 +132,21 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
          * Therefore I'm switching it back, and I will provide a way to render panels in an oriented
          * fashion, plus a command to reorient a panel.
          */
-        
+
         // equal only if the same cycle of vertices, modulo any offset, but no reordering or reversal
-//        int offset = -1;
-//        for ( int i = 0; i < size; i++ )
-//            if ( Arrays.equals( (int[]) mVertices.get( 0 ), (int[]) panel.mVertices.get( i ) ) ) {
-//                offset = i;
-//                break;
-//            }            
-//        if ( offset == -1 )
-//            return false;
-//        for ( int j = 1; j < size; j++ )
-//            if ( ! Arrays.equals( (int[]) mVertices.get( j ), (int[]) panel.mVertices.get( (j+offset) % size ) ) )
-//                return false;
-//        return true;
-        
+        //        int offset = -1;
+        //        for ( int i = 0; i < size; i++ )
+        //            if ( Arrays.equals( (int[]) mVertices.get( 0 ), (int[]) panel.mVertices.get( i ) ) ) {
+        //                offset = i;
+        //                break;
+        //            }            
+        //        if ( offset == -1 )
+        //            return false;
+        //        for ( int j = 1; j < size; j++ )
+        //            if ( ! Arrays.equals( (int[]) mVertices.get( j ), (int[]) panel.mVertices.get( (j+offset) % size ) ) )
+        //                return false;
+        //        return true;
+
         // the old way... equal whenever the vertex sets are the same, regardless of order
         boolean[] found = new boolean[ size ];
         for ( int i = 0; i < size; i++ ) {
@@ -168,11 +187,11 @@ public class Panel extends Manifestation implements Iterable<AlgebraicVector>
         return rv1 .cross( rv2 );
     }
 
-	@Override
+    @Override
     public String toString()
     {
         StringBuilder buf = new StringBuilder( "panel: " );
-		String delim = "";
+        String delim = "";
         for ( AlgebraicVector vertex: mVertices ) {
             buf.append( delim ).append( vertex .toString() );
             delim = ", ";

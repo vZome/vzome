@@ -3,11 +3,13 @@
 
 package com.vzome.core.editor;
 
+import java.util.Map;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 
 /**
  * Just a marker in the history.
@@ -16,6 +18,17 @@ import com.vzome.core.commands.Command.Failure;
  */
 public class BeginBlock implements UndoableEdit
 {
+    public BeginBlock( EditorModel editor )
+    {
+        super();
+    }
+
+    @Override
+    public boolean isNoOp()
+    {
+        return false;
+    }
+
     @Override
 	public Element getXml( Document doc )
     {
@@ -63,4 +76,7 @@ public class BeginBlock implements UndoableEdit
     {
         return false;
     }
+
+    @Override
+    public void configure( Map<String,Object> props ) {}
 }

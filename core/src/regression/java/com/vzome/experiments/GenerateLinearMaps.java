@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -20,8 +22,6 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.IcosahedralToolFactory;
-import com.vzome.core.editor.LinearMapTool;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
@@ -29,6 +29,8 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedModel;
+import com.vzome.core.tools.IcosahedralToolFactory;
+import com.vzome.core.tools.LinearMapTool;
 
 public class GenerateLinearMaps
 {
@@ -213,12 +215,12 @@ public class GenerateLinearMaps
 
 	private void select( Manifestation m )
 	{
-		doc .performAndRecord( doc .selectManifestation( m, false ) );
+		doc .doPickEdit( m, "SelectManifestation" );
 	}
 
 	private void deselect()
 	{
-		doc .performAndRecord( doc .deselectAll() );
+		doc .doEdit( "DeselectAll" );
 	}
 	
 	private Connector lastBall()
@@ -229,7 +231,11 @@ public class GenerateLinearMaps
 	private Strut strut( Connector start, Axis zone, AlgebraicNumber length )
 	{
 		Point point = (Point) start .getConstructions() .next();
-		doc .createStrut( point, zone, length );
+        Map<String, Object> params = new HashMap<>();
+        params .put( "anchor", point );
+        params .put( "zone", zone );
+        params .put( "length", length );
+        doc .doEdit( "StrutCreation", params );
 		return lastStrut;
 	}
 	

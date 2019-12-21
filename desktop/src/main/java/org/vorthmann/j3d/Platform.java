@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.AccessControlException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,9 +45,9 @@ public class Platform
         return isWindows? "vZomeLogs" : isMac? "Library/Logs/vZome" : "vZomeLogs";
     }
     
-    public static File logsFolder()
+    public static Path logsFolder()
     {
-        return new File( System.getProperty( "user.home" ), logsPath() );
+        return Paths .get( System.getProperty( "user.home" ), logsPath() );
     }
 	
 	public static void openApplication( File file )

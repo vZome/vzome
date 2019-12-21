@@ -43,7 +43,7 @@ public class PartGeometryExporter extends VefExporter
     {
         AlgebraicField field = mModel .getField();
         
-        VefModelExporter exporter = new VefModelExporter( writer, field, null );
+        VefModelExporter exporter = new VefModelExporter( writer, field );
         
         for (RenderedManifestation rm : mModel) {
             exporter .exportManifestation( rm .getManifestation() );

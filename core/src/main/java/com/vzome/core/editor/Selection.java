@@ -260,10 +260,14 @@ public class Selection implements Iterable<Manifestation>
         
         for (Manifestation m : mManifestations) {
             Group group = biggestGroup( m );
-            if ( group == null )
+            if ( group == null ) {
                 mSelectedGroup .add( m );
-            else
+//                System.out.println( "GROUP add:" + m .toString() );
+            }
+            else {
                 mSelectedGroup .add( group );
+//                System.out.println( "GROUP add: nested group of " + m .toString() );
+            }
         }
         for (GroupElement next : mSelectedGroup) {
             next .setContainer( mSelectedGroup );
@@ -279,6 +283,10 @@ public class Selection implements Iterable<Manifestation>
         {
             GroupElement next = ms .next();
             ms .remove();
+//            if ( next instanceof Manifestation )
+//                System.out.println( "GROUP remove:" + next .toString() );
+//            else
+//                System.out.println( "GROUP remove: nested group" );
             next .setContainer( null );
         }
     }

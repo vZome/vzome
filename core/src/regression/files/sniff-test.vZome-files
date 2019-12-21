@@ -137,3 +137,12 @@ format-2.1.0-models.vZome-files
 
 # replace with panels
 2018/12-Dec/15-Scott-replaceWithPanels
+
+#3D Convex Hull modes
+2019/07-Jul/09-David-3DConvexHullModes/3DConvexHullModes.vZome
+
+# Copy and Paste with Offset
+2019/08-Aug/08-David-VefCopyAndPasteWithOffset/CopyAndPasteWithOffset.vZome
+
+# Panel-Panel Intersection
+2019/09-Sep/24-David-PanelPanelIntersection/PanelPanelIntersection.vZome

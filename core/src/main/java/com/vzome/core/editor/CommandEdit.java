@@ -27,6 +27,12 @@ import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.edits.AffinePentagon;
+import com.vzome.core.edits.DeselectAll;
+import com.vzome.core.edits.SelectAll;
+import com.vzome.core.edits.SelectManifestation;
+import com.vzome.core.edits.SymmetryAxisChange;
+import com.vzome.core.edits.SymmetryCenterChange;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
 
@@ -50,11 +56,17 @@ public class CommandEdit extends ChangeManifestations
     private static final Logger logger = Logger .getLogger( "com.vzome.core.editor.CommandEdit" );
     private static final Logger loadAndPerformLgger = Logger .getLogger( "com.vzome.core.editor.CommandEdit.loadAndPerform" );
 
-	public CommandEdit( AbstractCommand cmd, EditorModel editor, boolean groupInSelection )
+	public CommandEdit( AbstractCommand cmd, EditorModel editor )
     {
-        super( editor .mSelection, editor .getRealizedModel(), groupInSelection );
+        super( editor .mSelection, editor .getRealizedModel() );
         mEditorModel = editor;  // only needed to set symmetry axis/center
         mCommand = cmd;
+    }
+    
+    @Override
+    protected boolean groupingAware()
+    {
+        return true;
     }
 
     @Override
@@ -82,13 +94,13 @@ public class CommandEdit extends ChangeManifestations
     public void perform() throws Command.Failure
     {
         boolean isHide = mCommand instanceof CommandHide;
-        
+
         if ( logger .isLoggable( Level .FINER ) ) {
             logger .finer( "------------------- CommandEdit" );
         }
-        
+
         if ( mCommand .ordersSelection() )
-        	setOrderedSelection( true ); // so undo will not reorder the selection
+            setOrderedSelection( true ); // so undo will not reorder the selection
 
         ConstructionList constrsBefore = new ConstructionList();
         for (Manifestation man : mSelection) {
@@ -111,7 +123,7 @@ public class CommandEdit extends ChangeManifestations
                 constrsBefore .add( cs .next() );  // yes, just using the first one
             }
         }
-        
+
         // SELECTION BUG: what we want to do here is to redo what we've planned so far, so that the selection state is in sync
         redo();
 
@@ -125,16 +137,16 @@ public class CommandEdit extends ChangeManifestations
             mAttrs .put( CommandTransform .SYMMETRY_AXIS_ATTR_NAME, symmAxis );
         mAttrs .put( CommandTransform .SYMMETRY_CENTER_ATTR_NAME, mEditorModel .getCenterPoint() );
         mAttrs .put( Command.FIELD_ATTR_NAME, this .mManifestations .getField() );
-        
+
         // TODO do we really need to do it this way?  Or can we use the other NewConstructions() class?
         //   That one does the manifestConstruction() and redo() immediately.
         NewConstructions news = new NewConstructions();
-        
+
         ConstructionList selectionAfter = null;  // use params to make selection additive
         Object[][] signature = mCommand .getParameterSignature();
         int actualsLen = constrsBefore .size();
         if ( ( signature.length == actualsLen )
-        || ( signature.length==1 && signature[0][0] .equals( Command.GENERIC_PARAM_NAME ) ) )
+                || ( signature.length==1 && signature[0][0] .equals( Command.GENERIC_PARAM_NAME ) ) )
             try {
                 // command specifically applies to a collection of constructions (like a Transformation)
                 selectionAfter = mCommand .apply( constrsBefore, mAttrs, news );
@@ -162,7 +174,7 @@ public class CommandEdit extends ChangeManifestations
         }
         else
             fail( "Too many objects in the selection." );
-        
+
         for (Construction c : news) {
             manifestConstruction( c );
         }
@@ -209,7 +221,7 @@ public class CommandEdit extends ChangeManifestations
         {
             // this edit needs to be migrated
             Set<Manifestation> selectedBefore = new LinkedHashSet<>();
-            context .performAndRecord( new BeginBlock() );
+            context .performAndRecord( new BeginBlock( null ) );
 
             mAttrs = new AttributeMap();
 
@@ -245,17 +257,11 @@ public class CommandEdit extends ChangeManifestations
                         if ( attrName .equals( CommandTransform .SYMMETRY_CENTER_ATTR_NAME ) )
                         {
                             Point c = new FreePoint( ((Point) value) .getLocation() .projectTo3d( true ) );
-                            UndoableEdit edit = mEditorModel .setSymmetryCenter( c );
-                            if ( edit != null ) {
-                                context .performAndRecord( edit );
-                            }
+                            context .performAndRecord( new SymmetryCenterChange( mEditorModel, c ) );
                         }
                         else if ( attrName .equals( CommandTransform .SYMMETRY_AXIS_ATTR_NAME ) )
                         {
-                            UndoableEdit edit = mEditorModel .setSymmetryAxis( (Construction) value );
-                            if ( edit != null ) {
-                                context .performAndRecord( edit );
-                            }
+                            context .performAndRecord( new SymmetryAxisChange( mEditorModel, (Segment) value ) );
                             if ( ! mCommand .attributeIs3D( attrName ) )
                             {
                                 AlgebraicVector vector = ((Segment) value) .getOffset();
@@ -309,22 +315,22 @@ public class CommandEdit extends ChangeManifestations
                     if ( ! selectedBefore .contains( m ) )
                         toUnselect .add( m );
                 }
-                ChangeSelection edit = new SelectAll( mSelection, mManifestations, false );
+                ChangeSelection edit = new SelectAll( mEditorModel );
                 context .performAndRecord( edit );
                 for (Manifestation m : toUnselect) {
-                    edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
+                    edit = new SelectManifestation( mEditorModel, m );
                     context .performAndRecord( edit );
                 }
             }
             else {
-                ChangeSelection edit = new DeselectAll( mSelection, false );
+                ChangeSelection edit = new DeselectAll( mEditorModel );
                 context .performAndRecord( edit );
                 for (Manifestation m : selectedBefore) {
-                    edit = new SelectManifestation( m, false, mSelection, mManifestations, false );
+                    edit = new SelectManifestation( mEditorModel, m );
                     context .performAndRecord( edit );
                 }
             }
-            context .performAndRecord( new EndBlock() );
+            context .performAndRecord( new EndBlock( null ) );
             this .redo(); // sync the selection state
             
             // TODO work out a more generic migration technique
@@ -345,6 +351,7 @@ public class CommandEdit extends ChangeManifestations
             super.loadAndPerform( xml, format, context );
     }
 
+    @SuppressWarnings("serial")
     private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
     {
         @Override

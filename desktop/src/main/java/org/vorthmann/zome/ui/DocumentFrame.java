@@ -46,7 +46,6 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
-import com.vzome.desktop.controller.CameraControlPanel;
 import com.vzome.desktop.controller.Controller3d;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
@@ -123,7 +122,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         mController .addPropertyListener( this );
         toolsController = mController .getSubController( "tools" );
         
-        int dismissDelay = ToolTipManager.sharedInstance().getDismissDelay();
         // Keep the tool tip showing
         ToolTipManager.sharedInstance().setDismissDelay( 20000 );
 
@@ -273,27 +271,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     tabbedPane .setSelectedIndex( 1 );  // should be "tools" tab
                     break;
 
-                case "importVefWithScale":
-                {
-                    cmd = "import.vef";
-                    Controller importScaleController = mController .getSubController( "importScale" );
-                    if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
-                        importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
-                            new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
+                case "export4dPolytope":
+                    {
+                        Controller polytopesController = mController .getSubController( "polytopes" );
+                        ActionListener actionListener = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, cmd, "vef", polytopesController );
+                        actionListener .actionPerformed( e );
                     }
-                    importScaleDialog .setVisible( true );
-                }
-                    break;
-
-                case "import.vef.tetrahedral":
-                {
-                    Controller importScaleController = mController .getSubController( "importScale" );
-                    if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
-                        importScaleDialog = new LengthDialog( DocumentFrame.this, importScaleController, "Set Import Scale Factor",
-                            new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
-                    }
-                    importScaleDialog .setVisible( true );
-                }
                     break;
 
                 case "showPolytopesDialog":
@@ -327,19 +310,25 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
                 
                 case "setItemColor":
-                    Color color = JColorChooser.showDialog( DocumentFrame.this, "Choose Object Color", null );
+                    Long intval = Long.decode( mController .getProperty( "lastObjectColor" ) );
+                    int i = intval.intValue();
+                    Color color = new Color((i >> 24) & 0xFF, (i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF);
+                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Object Color", color );
                     if ( color == null )
                         return;
                     int rgb = color .getRGB() & 0xffffff;
                     int alpha = color .getAlpha() & 0xff;
-                    String command = "setItemColor/" + Integer.toHexString( ( rgb << 8 ) | alpha );
+                    String colorString = Integer.toHexString( ( rgb << 8 ) | alpha );
+                    mController .setProperty( "lastObjectColor", "#"+colorString );
+                    String command = "ColorManifestations/" + colorString;
                     mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
                     break;
                     
                 case "setBackgroundColor":
-                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Background Color", null );
+                    color = Color.decode( mController .getProperty( "backgroundColor" ) );
+                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Background Color", color );
                     if ( color != null )
-                    	mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
+                        mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
                     break;
                 
                 case "usedOrbits":
@@ -387,7 +376,16 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
                 default:
-                    if ( cmd .startsWith( "setSymmetry." ) )
+                    if ( cmd .startsWith( "LoadVEF/" ) )
+                    {
+                        Controller importScaleController = mController .getSubController( "importScale" );
+                        if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
+                            importScaleDialog = new VefImportDialog( DocumentFrame.this, importScaleController, "Set Scale and Rotation",
+                                new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
+                        }
+                        importScaleDialog .setVisible( true );
+                    }
+                    else if ( cmd .startsWith( "setSymmetry." ) )
                     {
                         system = cmd .substring( "setSymmetry.".length() );
                         mController .actionPerformed( e ); // TODO getExclusiveAction
@@ -411,13 +409,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     }
                     else if ( cmd .startsWith( "showProperties-" ) )
                     {
-            			String key = cmd .substring( "showProperties-" .length() );
-                    	Controller subc = mController .getSubController( key + "Picking" );
+                        String key = cmd .substring( "showProperties-" .length() );
+                        Controller subc = mController .getSubController( key + "Picking" );
                         JOptionPane .showMessageDialog( DocumentFrame.this, subc .getProperty( "objectProperties" ), "Object Properties",
                                 JOptionPane.PLAIN_MESSAGE );
                     }
                     else
-                    	mController .actionPerformed( e );
+                        mController .actionPerformed( e );
                     break;
                 }
             }
@@ -561,10 +559,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         Controller saveAsController = new DefaultController()
         {
-    		@Override
-    	    public void doFileAction( String command, final File file )
+            @Override
+            public void doFileAction( String command, final File file )
             {
-    			mController .doFileAction( command, file );
+                mController .doFileAction( command, file );
                 mFile = file;
                 String newTitle = file .getAbsolutePath();
                 mController .setProperty( "name", newTitle );
@@ -791,8 +789,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "configureShapes":
             case "configureDirections":
             case "addBookmark":
-            case "importVefWithScale":
-            case "import.vef.tetrahedral":
+            case "export4dPolytope":
                 actionListener = this .localActions;
                 break;
 
@@ -803,6 +800,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             default:
                 if ( command .startsWith( "openResource-" ) ) {
                     actionListener = controller;
+                }
+                else if ( command .startsWith( "LoadVEF/" ) ) {
+                    actionListener = this .localActions;
                 }
                 else if ( command .startsWith( "setSymmetry." ) ) {
                     actionListener = this .localActions;

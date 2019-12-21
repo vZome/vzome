@@ -27,6 +27,7 @@ import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
 
 /**
  * In this camera model, the view frustum shape is generally held constant
@@ -55,6 +56,8 @@ public class CameraController extends DefaultController implements Controller3d
 
     private RenderingChanges scene;
     private RenderedModel symmetryModel;
+
+    private final Lights sceneLighting;
 
     public interface Snapper
     {
@@ -102,9 +105,10 @@ public class CameraController extends DefaultController implements Controller3d
         mViewers .remove( viewer );
     }
 
-    public CameraController( Camera init )
+    public CameraController( Camera init, Lights sceneLighting )
     {
         model = init;
+        this.sceneLighting = sceneLighting;
         initialCamera = new Camera( model );
     }
 
@@ -337,6 +341,8 @@ public class CameraController extends DefaultController implements Controller3d
             // bookmarked views are not "special"... they are stored in recent, too
             saveBaselineView();
         }
+        else
+            super .doAction( action, e );
     }
 
     public MouseTool getTrackball()
@@ -450,6 +456,9 @@ public class CameraController extends DefaultController implements Controller3d
         case "drawOutlines": // for the trackball rendering
             return "false";
 
+        case "docDrawOutlines": // for the checkbox
+            return super .getProperty( "drawOutlines" );
+
         case "showIcosahedralLabels":
             // TODO refactor to fix this
             if ( super .propertyIsTrue( "isIcosahedralSymmetry" ) )
@@ -533,5 +542,11 @@ public class CameraController extends DefaultController implements Controller3d
             snapView();
             saveBaselineView();
         }
+    }
+
+    @Override
+    public Lights getSceneLighting()
+    {
+        return this.sceneLighting;
     }
 }

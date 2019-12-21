@@ -237,22 +237,32 @@ public class SymmetryController extends DefaultController// implements RenderedM
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
-        if ( action .equals( "rZomeOrbits" )
-                || action .equals( "predefinedOrbits" )
-                || action .equals( "setAllDirections" ) )
-        {
+        switch (action) {
+
+        case "rZomeOrbits":
+        case "predefinedOrbits":
+        case "setAllDirections":
             availableController .doAction( action, e );
-        }
-        else if ( action .startsWith( "setStyle." ) )
-        {
-            String styleName =  action .substring( "setStyle." .length() );
-            this .symmetrySystem .setStyle( styleName );
-            super .doAction( action, e ); // falling through so that rendering gets adjusted
-        }
-        else {
-            boolean handled = this .symmetrySystem .doAction( action );
-            if ( ! handled )
-                super .doAction( action, e );
+            break;
+
+        case "ReplaceWithShape":
+            action += "/" + this .symmetrySystem .getName() + ":" + this .symmetrySystem .getStyle() .getName();
+            super .doAction( action, e );
+            break;
+
+        default:
+            if ( action .startsWith( "setStyle." ) )
+            {
+                String styleName =  action .substring( "setStyle." .length() );
+                this .symmetrySystem .setStyle( styleName );
+                super .doAction( action, e ); // falling through so that rendering gets adjusted
+            }
+            else {
+                boolean handled = this .symmetrySystem .doAction( action );
+                if ( ! handled )
+                    super .doAction( action, e );
+            }
+            break;
         }
     }
 

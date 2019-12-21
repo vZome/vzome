@@ -1,7 +1,10 @@
 package com.vzome.core.generic;
 
 import static java.lang.Integer.signum;
-import static junit.framework.TestCase.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author David Hall

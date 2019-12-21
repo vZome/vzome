@@ -17,18 +17,8 @@ import com.vzome.core.commands.CommandMirrorSymmetry;
 import com.vzome.core.commands.CommandPolygon;
 import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.commands.CommandTranslate;
-import com.vzome.core.editor.BookmarkTool;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.InversionTool;
-import com.vzome.core.editor.LinearMapTool;
-import com.vzome.core.editor.MirrorTool;
-import com.vzome.core.editor.ModuleTool;
-import com.vzome.core.editor.OctahedralToolFactory;
-import com.vzome.core.editor.PlaneSelectionTool;
-import com.vzome.core.editor.RotationTool;
-import com.vzome.core.editor.ScalingTool;
 import com.vzome.core.editor.ToolsModel;
-import com.vzome.core.editor.TranslationTool;
 import com.vzome.core.math.symmetry.A4Group;
 import com.vzome.core.math.symmetry.B4Group;
 import com.vzome.core.math.symmetry.CoxeterGroup;
@@ -36,6 +26,17 @@ import com.vzome.core.math.symmetry.D4Group;
 import com.vzome.core.math.symmetry.F4Group;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
+import com.vzome.core.tools.BookmarkTool;
+import com.vzome.core.tools.InversionTool;
+import com.vzome.core.tools.LinearMapTool;
+import com.vzome.core.tools.MirrorTool;
+import com.vzome.core.tools.ModuleTool;
+import com.vzome.core.tools.OctahedralToolFactory;
+import com.vzome.core.tools.PlaneSelectionTool;
+import com.vzome.core.tools.ProjectionTool;
+import com.vzome.core.tools.RotationTool;
+import com.vzome.core.tools.ScalingTool;
+import com.vzome.core.tools.TranslationTool;
 
 public class DefaultFieldApplication implements FieldApplication
 {
@@ -115,7 +116,8 @@ public class DefaultFieldApplication implements FieldApplication
 	    toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, null ) );
 	    toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
 	    toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
-	    toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
+        toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
+        toolFactories .put( "ProjectionTool", new ProjectionTool.Factory( tools ) );
 	    toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
 	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
 	
@@ -132,26 +134,26 @@ public class DefaultFieldApplication implements FieldApplication
         CoxeterGroup group = this .groups4d .get( groupName );
         if ( group == null )
         {
-        	// Lazily create these groups... most users will never use them
-        	switch ( groupName ) {
+            // Lazily create these groups... most users will never use them
+            switch ( groupName ) {
 
-        	case "A4":
-				group = new A4Group( this.field );
-				break;
+            case "A4":
+                group = new A4Group( this.field );
+                break;
 
-        	case "D4":
-				group = new D4Group( this.field );
-				break;
+            case "D4":
+                group = new D4Group( this.field );
+                break;
 
-        	case "F4":
-				group = new F4Group( this.field );
-				break;
+            case "F4":
+                group = new F4Group( this.field );
+                break;
 
-			default:
-				group = new B4Group( this.field );
-				break;
-			}
-    		this .groups4d .put( groupName, group );
+            default:
+                group = new B4Group( this.field );
+                break;
+            }
+            this .groups4d .put( groupName, group );
         }
         WythoffConstruction .constructPolytope( group, index, edgesToRender, edgeScales, group, listener );
 	}

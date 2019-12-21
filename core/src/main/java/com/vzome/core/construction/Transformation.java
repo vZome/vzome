@@ -14,6 +14,12 @@ import com.vzome.core.algebra.AlgebraicVector;
  */
 public abstract class Transformation extends Construction
 {
+    @Override
+    public boolean is3d()
+    {
+        return true;
+    }
+
     public static class Identity extends Transformation
     {
         public int[] transform( int[] arg )

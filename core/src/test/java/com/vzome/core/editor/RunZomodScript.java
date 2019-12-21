@@ -9,9 +9,8 @@ import java.util.List;
 
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.construction.Point;
+import com.vzome.core.edits.RunZomicScript;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.zomic.parser.ErrorHandler;
 import com.vzome.core.zomic.program.ZomicStatement;
 import com.vzome.core.zomod.parser.Parser;
@@ -37,9 +36,9 @@ public class RunZomodScript extends RunZomicScript
         return program;
     }
 
-    public RunZomodScript( Selection selection, RealizedModel realized, String text, Point origin, IcosahedralSymmetry symmetry )
+    public RunZomodScript( EditorModel editor )
     {
-        super( selection, realized, text, origin, symmetry );
+        super( editor );
     }
 
 }

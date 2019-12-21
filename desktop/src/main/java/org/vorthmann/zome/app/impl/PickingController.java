@@ -42,16 +42,16 @@ public class PickingController extends DefaultController implements Controller
 
         case "undoToManifestation":
         case "symmTool-icosahedral":
-        case "setSymmetryCenter":
-        case "setSymmetryAxis":
+        case "SymmetryAxisChange":
+        case "SymmetryCenterChange":
         case "setWorkingPlaneAxis":
         case "setWorkingPlane":
         case "lookAtThis":
         case "setBuildOrbitAndLength":
-        case "selectCollinear":
-        case "selectParallelStruts":
-        case "selectSimilarSize":
-		case "replaceWithShape":
+        case "SelectCollinear":
+        case "SelectParallelStruts":
+        case "AdjustSelectionByOrbitLength/selectSimilarStruts":
+		case "ReplaceWithShape":
         	this .delegate .doManifestationAction( this .pickedManifestation, action );
         	break;
             
@@ -75,45 +75,45 @@ public class PickingController extends DefaultController implements Controller
             String menuItem = menu[i];
             switch ( menuItem ) {
 
-			case "undoToManifestation":
+            case "undoToManifestation":
             case "lookAtThis":
-            	result[ i ] = pickedManifestation != null;
-				break;
+                result[ i ] = pickedManifestation != null;
+                break;
 
-	        case "symmTool-icosahedral":
-	        case "setSymmetryCenter":
-            	result[ i ] = pickedManifestation instanceof Connector;
-				break;
+            case "symmTool-icosahedral":
+            case "SymmetryCenterChange":
+                result[ i ] = pickedManifestation instanceof Connector;
+                break;
 
-			case "setSymmetryAxis":
-			case "setWorkingPlaneAxis":
-			case "selectCollinear":
-			case "selectParallelStruts":
-			case "selectSimilarSize":
-			case "setBuildOrbitAndLength":
-            	result[ i ] = pickedManifestation instanceof Strut;
-				break;
+            case "SymmetryAxisChange":
+            case "setWorkingPlaneAxis":
+            case "SelectCollinear":
+            case "SelectParallelStruts":
+            case "AdjustSelectionByOrbitLength/selectSimilarStruts":
+            case "setBuildOrbitAndLength":
+                result[ i ] = pickedManifestation instanceof Strut;
+                break;
 
-			case "replaceWithShape":
-            	result[ i ] = pickedManifestation instanceof Strut || pickedManifestation instanceof Connector;
-				break;
+            case "ReplaceWithShape":
+                result[ i ] = pickedManifestation instanceof Strut || pickedManifestation instanceof Connector;
+                break;
 
-			case "setWorkingPlane":
-			case "showPanelVertices":
-            	result[ i ] = pickedManifestation instanceof Panel;
-				break;
+            case "setWorkingPlane":
+            case "showPanelVertices":
+                result[ i ] = pickedManifestation instanceof Panel;
+                break;
 
             case "showProperties-monocular":
             case "showProperties-leftEye":
             case "showProperties-rightEye":
-			    result[ i ] = true;
+                result[ i ] = true;
                 break;
-                
-			default:
-				if ( menuItem .startsWith( "showProperties-" ) )
-					result[i] = pickedManifestation != null;
+
+            default:
+                if ( menuItem .startsWith( "showProperties-" ) )
+                    result[i] = pickedManifestation != null;
                 break;
-			}
+            }
         }
         return result;
     }

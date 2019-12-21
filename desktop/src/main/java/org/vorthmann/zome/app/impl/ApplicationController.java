@@ -1,5 +1,6 @@
 package org.vorthmann.zome.app.impl;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -13,6 +14,8 @@ import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -114,7 +117,7 @@ public class ApplicationController extends DefaultController
         properties .putAll( commandLineArgs );
 
         // This seems to get rid of the "white-out" problem on David's (Windows) computer.
-        // Otherwise it shows up spuratically, but still frequently. 
+        // Otherwise it shows up sporadically, but still frequently. 
         // It is usually, but not always, triggered by such events as context menus,
         // tool tips, or modal dialogs being rendered on top of the main frame.
         // Since the problem has not been reported elsewhere, this fix will be configurable, rather than hard coded.
@@ -135,7 +138,6 @@ public class ApplicationController extends DefaultController
         modelApp = new com.vzome.core.editor.Application( true, failures, properties );
 
         Colors colors = modelApp .getColors();
-        Lights lights = modelApp .getLights();
 
         if ( rvFactory != null ) {
             this .rvFactory = rvFactory;
@@ -149,8 +151,8 @@ public class ApplicationController extends DefaultController
                 factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
             try {
                 Class<?> factoryClass = Class.forName( factoryName );
-                Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Lights.class, Colors.class, Boolean.class } );
-                this .rvFactory = (J3dComponentFactory) constructor.newInstance( new Object[] { lights, colors, useEmissiveColor } );
+                Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Colors.class, Boolean.class } );
+                this .rvFactory = (J3dComponentFactory) constructor.newInstance( new Object[] { colors, useEmissiveColor } );
             } catch ( Exception e ) {
                 mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
                 System.exit( 0 );
@@ -267,6 +269,13 @@ public class ApplicationController extends DefaultController
                     newDocumentController( title, document, docProps );
                 }
             }
+            else if ( action .startsWith( "browse-" ) )
+            {
+                String url = action .substring( "browse-" .length() );
+                if ( Desktop.isDesktopSupported() && Desktop.getDesktop() .isSupported( Desktop.Action.BROWSE ) ) {
+                    Desktop.getDesktop() .browse( new URI( url ) );
+                }
+            }
             else if ( action .startsWith( "openResource-" ) )
             {
                 Properties docProps = new Properties();
@@ -291,25 +300,21 @@ public class ApplicationController extends DefaultController
                 Properties docProps = new Properties();
                 docProps .setProperty( "as.template", "true" );
                 String path = action .substring( "openURL-" .length() );
-                final String vzomeExt = ".vzome";
-                path = removeProxyFileExtension( path, vzomeExt);
-                URI uri = new URI( path );
-                // In case path is an encoded file URI (e.g. whitespace encoded as %20),
-                // show the decoded local file name and path in the title bar.
-                // This occurs when an associated vZome file is opened in Windows by double clicking on it.
-                String title = ( uri.getScheme().equals("file") )
-                        ? (new File(uri)).getPath()
-                                : uri.getPath();
-                        docProps .setProperty( "window.title", title );
-//                        if ( path .toLowerCase() .endsWith( vzomeExt ) ) {
-                            URL url = uri .toURL();
-                            HttpURLConnection conn = (HttpURLConnection) url .openConnection();
-                            // See https://stackoverflow.com/questions/1884230/urlconnection-doesnt-follow-redirect
-                            //  This won't switch protocols, but seems to work otherwise.
-                            conn .setInstanceFollowRedirects( true );
-                            InputStream bytes = conn .getInputStream();
-                            loadDocumentController( path, bytes, docProps );
-//                        }
+                docProps .setProperty( "window.title", path );
+                try {
+                    URL url = new URL( path );
+                    InputStream bytes= null;
+                    HttpURLConnection conn = (HttpURLConnection) url .openConnection();
+                    // See https://stackoverflow.com/questions/1884230/urlconnection-doesnt-follow-redirect
+                    //  This won't switch protocols, but seems to work otherwise.
+                    conn .setInstanceFollowRedirects( true );
+                    bytes = conn .getInputStream();
+                    loadDocumentController( path, bytes, docProps );
+                }
+                catch ( Throwable e ) {
+                    e.printStackTrace();
+                    this .mErrors .reportError( "Unable to open URL: " + e .getMessage(), new Object[]{ e } );
+                }
             }
             else 
             {
@@ -320,45 +325,28 @@ public class ApplicationController extends DefaultController
         }
     }
 
-    /**
-     * 
-     * @param path is the file name of the original file specified to be opened
-     * @param desiredExt expected file extension (e.g. ".vzome")
-     * @return If {@code desiredExt} is found in the path, but with an additional extension appended
-     * then the extra extension will be removed, leaving the correct extension. 
-     * Otherwise, {@code path} will be returned unchanged.
-     * 
-     * A typical use case is when the user selects a file named "foo.vzome.png" as a "proxy" for the file foo.vzome.
-     * In this case, assumong that ".vzome" is specified as the {@code desiredExt},
-     * then "foo.vzome" would be returned by this method. This allows the user to select an image file 
-     * which they can preview, as a "proxy" which will actually attempt to open the corresponding vzome file.
-     * 
-     * This method specifically does NOT replace a file's extension with a diffferent one, 
-     * but simply removes any additional extension from the end of the path 
-     * to reveal the emedded {@code desiredExt} if it exists.
-     * 
-     * Note that such a "proxy" image file with a ".vome.png" extension is generated automatically 
-     * upon saving a vZome file by adding "save.exports=capture.png" to .vZome.prefs.
-     */
-    private String removeProxyFileExtension(String path, String desiredExt) {
-        if(!desiredExt.startsWith(".")) {
-            desiredExt = "." + desiredExt;
-        }
-        int pos = path.toLowerCase().lastIndexOf(desiredExt.toLowerCase() + ".");
-        if(pos > 0) {
-            return path.substring(0, pos += desiredExt.length() );
-        }
-        return path;
-    }
-
     @Override
     public void doFileAction( String command, File file )
     {
         if ( file != null )
         {
             Properties docProps = new Properties();
-            file = new File(removeProxyFileExtension( file.getAbsolutePath(), ".vzome"));
-            String path = file .getAbsolutePath();
+            Path filePath = file .toPath();
+            String path = filePath .toAbsolutePath() .toString();
+
+            int pos = path .toLowerCase() .lastIndexOf( ".vzome." );
+            if( pos > 0 ) {
+                /*
+                 * This allows the user to select a file named "foo.vzome.png" that they can preview,
+                 * as a "proxy" that will actually attempt to open the corresponding vzome file.
+                 * 
+                 * Note that such a "proxy" image file with a ".vome.png" extension is generated automatically 
+                 * upon saving a vZome file by adding "save.exports=capture.png" to .vZome.prefs.
+                 */
+                path = path.substring( 0, pos += 6 );
+                file = Paths .get( path ) .toFile();
+            }
+
             docProps .setProperty( "window.title", path );
             switch ( command ) {
 
@@ -390,10 +378,15 @@ public class ApplicationController extends DefaultController
         }
     }
 
-    private void loadDocumentController( final String name, final InputStream bytes, final Properties properties ) throws Exception
+    private void loadDocumentController( final String name, final InputStream bytes, final Properties properties )
     {
-        DocumentModel document = modelApp .loadDocument( bytes );
-        newDocumentController( name, document, properties );
+        try {
+            DocumentModel document = modelApp .loadDocument( bytes );
+            newDocumentController( name, document, properties );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            this .mErrors .reportError( "Unable to load; this may not be a vZome file.", new Object[]{ e } );
+        }
     }
 
     public J3dComponentFactory getJ3dFactory()
