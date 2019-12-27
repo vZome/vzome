@@ -3,32 +3,45 @@
 
 package org.vorthmann.zome.render.jogl;
 
+import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-
+import com.jogamp.opengl.math.FloatUtil;
+import com.vzome.core.render.Colors;
+import com.vzome.core.render.OpenGlSceneLoader;
 import com.vzome.core.render.RenderedManifestation;
+import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
+import com.vzome.opengl.InstancedRenderer;
+import com.vzome.opengl.OpenGlShim;
+import com.vzome.opengl.Renderer;
+import com.vzome.opengl.Scene;
 
 public class JoglScene implements RenderingChanges
 {
-	JoglScene( Lights lights, boolean isSticky )
+	private RenderedModel model;
+    private final Colors colors;
+
+    JoglScene( Lights lights, Colors colors, boolean isSticky )
 	{
-		// TODO Auto-generated constructor stub
+        this.colors = colors;
 	}
 
-    void render( GL2 gl2 )
+    void render( OpenGlShim glShim )
     {
-        gl2.glClear( GL.GL_COLOR_BUFFER_BIT );
-
-        gl2.glBegin( GL.GL_TRIANGLES );
-        gl2.glColor3f( 1, 0, 0 );
-        gl2.glVertex3f( 0, 0, 0 );
-        gl2.glColor3f( 0, 1, 0 );
-        gl2.glVertex3f( 1, 0, 0 );
-        gl2.glColor3f( 0, 0, 1 );
-        gl2.glVertex3f( 0, 1, 0 );
-        gl2.glEnd();
+        Scene scene = OpenGlSceneLoader .getOpenGlScene( this .model, this .colors );
+        Renderer renderer = new InstancedRenderer( glShim );
+        renderer .bindBuffers( glShim, scene );
+        
+        float[] perspective = new float[16];
+        FloatUtil .makePerspective( perspective, 0, true, 1.0f, 1.0f, 0.2f, 1000f );
+        float[] identity = new float[16];
+        FloatUtil .makeIdentity( identity );
+        float[] camera = new float[16];
+        float[] temp = new float[16];
+        FloatUtil .makeLookAt( camera, 0, new float[]{0,0,0}, 0, new float[]{0,0,-50}, 0, new float[]{0,1,0}, 0, temp );
+        renderer .renderScene( glShim, identity, camera, identity, perspective, scene );
     }
 
 	@Override
@@ -41,8 +54,7 @@ public class JoglScene implements RenderingChanges
 	@Override
 	public void manifestationAdded( RenderedManifestation manifestation )
 	{
-		// TODO Auto-generated method stub
-
+		this .model = manifestation .getModel();
 	}
 
 	@Override

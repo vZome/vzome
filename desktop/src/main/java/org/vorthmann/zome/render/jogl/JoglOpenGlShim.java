@@ -52,7 +52,9 @@ public class JoglOpenGlShim implements OpenGlShim
 
     @Override
     public void glShaderSource( int i, String s ) {
-//        gl2.glShaderSource( i, s );
+        String[] vlines = new String[] { s };
+        int[] vlengths = new int[] { vlines[0].length() };
+        gl2 .glShaderSource( i, vlines.length, vlines, vlengths, 0 );
     }
 
     @Override
@@ -66,8 +68,14 @@ public class JoglOpenGlShim implements OpenGlShim
     }
 
     @Override
-    public String glGetShaderInfoLog(int i) {
-        return null; // gl2.glGetShaderInfoLog( i );
+    public String glGetShaderInfoLog(int i)
+    {
+        int[] logLength = new int[1];
+        gl2 .glGetShaderiv( i, GL2ES2.GL_INFO_LOG_LENGTH, logLength, 0 );
+
+        byte[] log = new byte[logLength[0]];
+        gl2 .glGetShaderInfoLog( i, logLength[0], (int[])null, 0, log, 0 );
+        return new String( log );
     }
 
     @Override

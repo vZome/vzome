@@ -26,7 +26,7 @@ public class RenderedManifestation
     private Polyhedron mShape;
     
     private RenderedModel model;
-    
+
     private Color color = null;
     
     private AlgebraicMatrix mOrientation;
@@ -78,6 +78,11 @@ public class RenderedManifestation
 	{
 		this .model = model;
 	}
+    
+    public RenderedModel getModel()
+    {
+        return this .model;
+    }
 
     public void setGraphicsObject( Object go )
     {

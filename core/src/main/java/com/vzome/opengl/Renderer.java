@@ -130,6 +130,10 @@ public class Renderer
         // First, generate as many buffers as we need.
         // This will give us the OpenGL handles for these buffers.
         int numBuffers = 3 * scene .numShapeClasses();
+        
+        if ( numBuffers == 0 )
+            return; // must have had only panels?
+        
         final int buffers[] = new int[ numBuffers ];
         gl.glGenBuffers( numBuffers, buffers, 0 );
 

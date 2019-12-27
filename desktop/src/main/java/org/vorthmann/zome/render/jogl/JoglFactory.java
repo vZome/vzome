@@ -16,7 +16,12 @@ import com.vzome.desktop.controller.RenderingViewer;
 
 public class JoglFactory implements J3dComponentFactory
 {
-    public JoglFactory( Colors colors, Boolean useEmissiveColor ) {}
+    private final Colors colors;
+
+    public JoglFactory( Colors colors, Boolean useEmissiveColor )
+    {
+        this.colors = colors; // need this only while JoglScene needs it
+    }
 
     @Override
     public Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller )
@@ -25,7 +30,7 @@ public class JoglFactory implements J3dComponentFactory
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
         final GLCanvas glcanvas = new GLCanvas( glcapabilities );
 
-        JoglScene scene = new JoglScene( controller .getSceneLighting(), isSticky );
+        JoglScene scene = new JoglScene( controller .getSceneLighting(), this .colors, isSticky );
         RenderingViewer viewer = new JoglRenderingViewer( scene, glcanvas );
         controller .attachViewer( viewer, scene, glcanvas );
         return glcanvas;

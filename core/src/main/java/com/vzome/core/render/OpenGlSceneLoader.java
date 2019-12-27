@@ -51,6 +51,8 @@ public class OpenGlSceneLoader
         Set<ShapeClass> shapes = new HashSet<ShapeClass>();
         for (RenderedManifestation rman : rmodel) {            
             Polyhedron shape = rman .getShape();
+            if ( shape .isPanel() )
+                continue; // looks like panels don't work; see create() below
             Config scc = shapeClassConfigs .get( shape );
             if ( scc == null ) {
                 scc = new Config();
@@ -115,7 +117,7 @@ public class OpenGlSceneLoader
         float[] offsets = new float[4 * parts.size()];
         int i = 0;
         for( RenderedManifestation part : parts ) {
-            AlgebraicVector vector = part .getManifestation() .getLocation();
+            AlgebraicVector vector = part .getLocationAV(); // this would be null for a panel!
             int zone = part .getStrutZone();
             offsets[i * 4 + 0] = MODEL_SCALE_FACTOR * (float) vector .getComponent( AlgebraicVector.X ) .evaluate();
             offsets[i * 4 + 1] = MODEL_SCALE_FACTOR * (float) vector .getComponent( AlgebraicVector.Y ) .evaluate();

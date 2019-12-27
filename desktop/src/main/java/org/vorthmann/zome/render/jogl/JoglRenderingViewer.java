@@ -18,7 +18,22 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.opengl.OpenGlShim;
 
+/**
+ * A lower-level, and hopefully more performant alternative to Java3dRenderingViewer.
+ * 
+ * Note that even JOGL is behind the times, still supporting immediate mode:
+ * 
+ *   https://www.khronos.org/opengl/wiki/Legacy_OpenGL
+ *   
+ * I have not found any modern tutorials for JOGL, so I'm working from
+ * 
+ *   http://www.opengl-tutorial.org/
+ * 
+ * @author vorth
+ *
+ */
 public class JoglRenderingViewer implements RenderingViewer
 {
     private final JoglScene scene;
@@ -35,11 +50,14 @@ public class JoglRenderingViewer implements RenderingViewer
             return;
 
         canvas .addGLEventListener( new GLEventListener()
-        {    
+        {
+            OpenGlShim glShim;
+            
             @Override
             public void reshape( GLAutoDrawable glautodrawable, int x, int y, int width, int height )
             {
-                JoglRenderingViewer.this .updateView( glautodrawable .getGL() .getGL2(), width, height );
+                this .glShim = new JoglOpenGlShim( glautodrawable .getGL() .getGL2() );
+                JoglRenderingViewer.this .updateView( this .glShim, width, height );
             }
 
             @Override
@@ -54,9 +72,9 @@ public class JoglRenderingViewer implements RenderingViewer
             @Override
             public void display( GLAutoDrawable glautodrawable )
             {
-                JoglRenderingViewer.this .updateView( glautodrawable .getGL() .getGL2(), glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
+                JoglRenderingViewer.this .updateView( this .glShim, glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
                 // GL commands to render the scene here
-                JoglRenderingViewer.this .scene .render( glautodrawable .getGL() .getGL2() );
+                JoglRenderingViewer.this .scene .render( this .glShim );
             }
         });
 
@@ -65,22 +83,22 @@ public class JoglRenderingViewer implements RenderingViewer
         this .animator .start();
     }
 
-    private void updateView( GL2 gl2, int width, int height )
+    private void updateView( OpenGlShim glShim, int width, int height )
     {
-        gl2 .glMatrixMode( GL2.GL_PROJECTION );
-        gl2 .glLoadIdentity();
-
-        // coordinate system origin at lower left with width and height same as the window
-        if ( this .fov == 0 )
-            this .glu .gluOrtho2D( 0.0f, width, 0.0f, height );
-        else
-            this .glu .gluPerspective( this .fov, width / height, this .near, this .far );
-        glu .gluLookAt( 0, 0, (this .far - this .near) / 2f, 0, 0, 0, 0, 1, 0 );
-
-        gl2 .glMatrixMode( GL2.GL_MODELVIEW );
-        gl2 .glLoadMatrixd( this .matrix, 0 );
-
-        gl2 .glViewport( 0, 0, width, height );
+//        gl2 .glMatrixMode( GL2.GL_PROJECTION );
+//        gl2 .glLoadIdentity();
+//
+//        // coordinate system origin at lower left with width and height same as the window
+//        if ( this .fov == 0 )
+//            this .glu .gluOrtho2D( 0.0f, width, 0.0f, height );
+//        else
+//            this .glu .gluPerspective( this .fov, width / height, this .near, this .far );
+//        glu .gluLookAt( 0, 0, (this .far - this .near) / 2f, 0, 0, 0, 0, 1, 0 );
+//
+//        gl2 .glMatrixMode( GL2.GL_MODELVIEW );
+//        gl2 .glLoadMatrixd( this .matrix, 0 );
+//
+//        gl2 .glViewport( 0, 0, width, height );
     }
 
     @Override
