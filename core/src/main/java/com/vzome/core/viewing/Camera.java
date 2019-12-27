@@ -1,5 +1,7 @@
 package com.vzome.core.viewing;
 
+import java.util.Objects;
+
 import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
@@ -12,7 +14,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.math.DomUtils;
-import java.util.Objects;
 
 public class Camera
 {

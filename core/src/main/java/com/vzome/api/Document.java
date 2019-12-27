@@ -6,16 +6,13 @@ package com.vzome.api;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicMatrix;
-import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.math.RealVector;
-import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.render.RenderedModel;
+import com.vzome.core.render.Colors;
+import com.vzome.core.render.OpenGlSceneLoader;
 import com.vzome.core.viewing.Camera;
+import com.vzome.opengl.Scene;
 
 public class Document
 {
@@ -52,43 +49,14 @@ public class Document
 //		return new Command( edit .createDelegate() );
 //	}
 	
-	public RenderedModel getRenderedModel()
-	{
-	    return this .delegate .getRenderedModel();
-	}
-	
-	public Camera getViewModel()
+	public Camera getCamera()
 	{
 	    return this .delegate .getCamera();
 	}
 	
-	public float[][] getOrientations()
+	public Scene getOpenGlScene( Colors colors )
 	{
-		AlgebraicField field = this .delegate .getField();
-		Symmetry symmetry = this .delegate .getSymmetrySystem() .getSymmetry();
-		int order = symmetry .getChiralOrder();
-		float[][] result = new float[order][];
-		for ( int orientation = 0; orientation < order; orientation++ )
-		{
-			float[] asFloats = new float[ 16 ];
-			AlgebraicMatrix transform = symmetry .getMatrix( orientation );
-	        for ( int i = 0; i < 3; i++ )
-	        {
-	            AlgebraicVector columnSelect = field .basisVector( 3, i );
-	            AlgebraicVector columnI = transform .timesColumn( columnSelect );
-	            RealVector colRV = columnI .toRealVector();
-	            asFloats[ i*4+0 ] = (float) colRV.x;
-	            asFloats[ i*4+1 ] = (float) colRV.y;
-	            asFloats[ i*4+2 ] = (float) colRV.z;
-	            asFloats[ i*4+3 ] = 0f;
-	        }
-	        asFloats[ 12 ] = 0f;
-	        asFloats[ 13 ] = 0f;
-	        asFloats[ 14 ] = 0f;
-	        asFloats[ 15 ] = 1f;
-	        result[ orientation ] = asFloats;
-		}
-		return result;
+		return OpenGlSceneLoader .getOpenGlScene( this .delegate .getRenderedModel(), colors );
 	}
 
 	public DocumentModel getDocumentModel()
