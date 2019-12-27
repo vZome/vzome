@@ -3,8 +3,8 @@
 
 package org.vorthmann.zome.render.jogl;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
@@ -21,15 +21,13 @@ public class JoglScene implements RenderingChanges
     {
         gl2.glClear( GL.GL_COLOR_BUFFER_BIT );
 
-        // draw a triangle filling the window
-        gl2.glLoadIdentity();
         gl2.glBegin( GL.GL_TRIANGLES );
         gl2.glColor3f( 1, 0, 0 );
         gl2.glVertex3f( 0, 0, 0 );
         gl2.glColor3f( 0, 1, 0 );
-        gl2.glVertex3f( 5, 0, 2 );
+        gl2.glVertex3f( 1, 0, 0 );
         gl2.glColor3f( 0, 0, 1 );
-        gl2.glVertex3f( 2, 5, 3 );
+        gl2.glVertex3f( 0, 1, 0 );
         gl2.glEnd();
     }
 

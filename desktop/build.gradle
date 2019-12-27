@@ -70,9 +70,6 @@ dependencies {
 
 sourceSets {
     main {
-        java {
-            exclude 'org/vorthmann/zome/render/jogl/**'  // initial framework for a pure JOGL renderer is not ready for use
-        }
         resources {
             // The convention-based default built-in srcDir is 'src/main/resources' 
             // Append any additional SrcDir entries here...

@@ -148,7 +148,7 @@ public class ApplicationController extends DefaultController
             // need this set up before we do any loadModel
             String factoryName = getProperty( "RenderingViewer.Factory.class" );
             if ( factoryName == null )
-                factoryName = "org.vorthmann.zome.render.java3d.Java3dFactory";
+                factoryName = "org.vorthmann.zome.render.jogl.JoglFactory";
             try {
                 Class<?> factoryClass = Class.forName( factoryName );
                 Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Colors.class, Boolean.class } );
