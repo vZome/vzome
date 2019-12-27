@@ -7,18 +7,18 @@ public class LightingRenderer extends Renderer
     private int mModelViewParam;
     private int mModelParam;
 
-	public LightingRenderer( OpenGlShim gl )
-	{
-		super( gl );
-	}
+    public LightingRenderer( OpenGlShim gl )
+    {
+        super( gl );
+    }
 
-	protected String getVertexShaderSource()
-	{
-		return  "uniform mat4 " + MODEL_VIEW_PROJECTION + ";\n" + 
-				"uniform mat4 u_MVMatrix;\n" + 
-				"uniform mat4 u_Model;\n" + 
-				"uniform vec3 u_LightPos;\n" + 
-				"uniform vec4 " + COLOR + ";\n" + 
+    protected String getVertexShaderSource()
+    {
+        return  "uniform mat4 " + MODEL_VIEW_PROJECTION + ";\n" + 
+                "uniform mat4 u_MVMatrix;\n" + 
+                "uniform mat4 u_Model;\n" + 
+                "uniform vec3 u_LightPos;\n" + 
+                "uniform vec4 " + COLOR + ";\n" + 
 
 				"attribute vec4 " + A_POSITION + ";\n" + 
 				"attribute vec3 a_Normal;\n" + 
@@ -40,13 +40,13 @@ public class LightingRenderer extends Renderer
 				"   v_Color = " + COLOR + " * diffuse;\n" + 
 				"   gl_Position = " + MODEL_VIEW_PROJECTION + " * " + A_POSITION + ";\n" + 
 				"}";
-	}
+    }
 
-	protected String getFragmentShaderSource()
+    protected String getFragmentShaderSource()
     {
-		return  "precision mediump float;\n" + 
-				"varying vec4 v_Color;\n" + 
-				"varying vec3 v_Grid;\n" + 
+        return  "precision mediump float;\n" + 
+                "varying vec4 v_Color;\n" + 
+                "varying vec3 v_Grid;\n" + 
 
 				"void main() {\n" + 
 				"    float depth = gl_FragCoord.z / gl_FragCoord.w; // calculate world-space distance\n" + 
@@ -58,15 +58,15 @@ public class LightingRenderer extends Renderer
 				"        gl_FragColor = v_Color;\n" + 
 				"    }\n" + 
 				"}";
-	}
+    }
 
     protected void getUniforms( OpenGlShim gl )
     {
-    	super .getUniforms( gl );
+        super .getUniforms( gl );
 
-    	mLightPosParam = gl.glGetUniformLocation(mGlProgram, "u_LightPos");
-    	mModelViewParam = gl.glGetUniformLocation( mGlProgram, "u_MVMatrix" );
-    	mModelParam = gl.glGetUniformLocation( mGlProgram, "u_Model" );
+        mLightPosParam = gl.glGetUniformLocation(mGlProgram, "u_LightPos");
+        mModelViewParam = gl.glGetUniformLocation( mGlProgram, "u_MVMatrix" );
+        mModelParam = gl.glGetUniformLocation( mGlProgram, "u_Model" );
 
         normalParam = gl.glGetAttribLocation( mGlProgram, "a_Normal" );
         checkGLError( gl, "a_Normal");
@@ -74,7 +74,7 @@ public class LightingRenderer extends Renderer
 
     public void setUniforms( OpenGlShim gl, float[] model, float[] camera, float[] eyeTransform, float[] eyePerspective, float[][] fixedOrientations )
     {
-    	super .setUniforms( gl, model, camera, eyeTransform, eyePerspective, fixedOrientations );
+        super .setUniforms( gl, model, camera, eyeTransform, eyePerspective, fixedOrientations );
 
         // Apply the eye transformation to the camera.
         float[] view = new float[16];
@@ -89,29 +89,29 @@ public class LightingRenderer extends Renderer
         float[] modelView = new float[16];
         gl .multiplyMM( modelView, view, model);
 
-    	gl.glUniform3f( mLightPosParam, lightPosInEyeSpace[0], lightPosInEyeSpace[1], lightPosInEyeSpace[2] );
-    	gl.glUniformMatrix4fv( mModelParam, 1, false, model, 0);
-    	gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
+        gl.glUniform3f( mLightPosParam, lightPosInEyeSpace[0], lightPosInEyeSpace[1], lightPosInEyeSpace[2] );
+        gl.glUniformMatrix4fv( mModelParam, 1, false, model, 0);
+        gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
     }
 
     protected void drawArrays( OpenGlShim gl, ShapeClass shape )
     {
-    	gl.glDrawTriangles( 0, shape .getVertexCount() );
-	}
-    
+        gl.glDrawTriangles( 0, shape .getVertexCount() );
+    }
+
     protected void renderShape( OpenGlShim gl, ShapeClass shape )
     {
-    	int vbo = shape .getNormalsVBO();
+        int vbo = shape .getNormalsVBO();
         if ( shape .usesVBOs() )
-        	gl.glBindBuffer( vbo );
+            gl.glBindBuffer( vbo );
         gl.glEnableVertexAttribArray( normalParam );
         gl.glVertexAttribDivisor( normalParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
         if ( shape .usesVBOs() ) {
-        	gl.glVertexAttribPointer( normalParam , COORDS_PER_VERTEX, false, 0, 0 );
-        	gl.glBindBuffer( 0);
+            gl.glVertexAttribPointer( normalParam , COORDS_PER_VERTEX, false, 0, 0 );
+            gl.glBindBuffer( 0);
         }
         else
-        	gl.glVertexAttribPointer( normalParam, COORDS_PER_VERTEX, false, 0, shape .getNormals() );
+            gl.glVertexAttribPointer( normalParam, COORDS_PER_VERTEX, false, 0, shape .getNormals() );
         checkGLError( gl, "normalParam");
 
         this .drawArrays( gl, shape );

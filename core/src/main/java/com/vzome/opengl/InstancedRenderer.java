@@ -5,20 +5,20 @@ public class InstancedRenderer extends LightingRenderer
     private int instanceData;
     private int[] mOrientationsParam;
 
-	public InstancedRenderer( OpenGlShim gl )
-	{
-		super( gl );
-		this .mOrientationsParam = new int[60];
-	}
+    public InstancedRenderer( OpenGlShim gl )
+    {
+        super( gl );
+        this .mOrientationsParam = new int[60];
+    }
 
-	protected String getVertexShaderSource()
-	{
-		return  "uniform mat4 " + MODEL_VIEW_PROJECTION + ";\n" + 
-				"uniform mat4 u_MVMatrix;\n" + 
-				"uniform mat4 u_Model;\n" + 
-				"uniform vec3 u_LightPos;\n" + 
-				"uniform vec4 " + COLOR + ";\n" + 
-				"uniform mat4 u_Orientations[60];\n" + 
+    protected String getVertexShaderSource()
+    {
+        return  "uniform mat4 " + MODEL_VIEW_PROJECTION + ";\n" + 
+                "uniform mat4 u_MVMatrix;\n" + 
+                "uniform mat4 u_Model;\n" + 
+                "uniform vec3 u_LightPos;\n" + 
+                "uniform vec4 " + COLOR + ";\n" + 
+                "uniform mat4 u_Orientations[60];\n" + 
 
 				"attribute vec4 " + A_POSITION + ";\n" + 
 				"attribute vec3 a_Normal;\n" + 
@@ -48,23 +48,23 @@ public class InstancedRenderer extends LightingRenderer
 				"   diffuse = 0.3;\n" +
 				"   v_Color = " + COLOR + " * diffuse;\n" + 
 				"}";
-	}
+    }
 
-	protected String getFragmentShaderSource()
+    protected String getFragmentShaderSource()
     {
-		return  "varying vec4 v_Color;\n" + 
+        return  "varying vec4 v_Color;\n" + 
 
 	    		"void main() {\n" + 
 	    		"  gl_FragColor = v_Color;\n" + 
 	    		"  gl_FragColor = vec4 (0.0, 1.0, 0.0, 1.0);\n" + 
 	    		"}";
-	}
+    }
 
     protected void getUniforms( OpenGlShim gl )
     {
-    	super .getUniforms( gl );
+        super .getUniforms( gl );
 
-		this .mOrientationsParam = new int[60];
+        this .mOrientationsParam = new int[60];
         for ( int i = 0; i < 60; i++ ) {
             mOrientationsParam[ i ] = gl.glGetUniformLocation( mGlProgram, "u_Orientations[" + i + "]" );
         }
@@ -74,11 +74,11 @@ public class InstancedRenderer extends LightingRenderer
 
     public void setUniforms( OpenGlShim gl, float[] model, float[] camera, float[] eyeTransform, float[] eyePerspective, float[][] fixedOrientations )
     {
-    	super .setUniforms( gl, model, camera, eyeTransform, eyePerspective, fixedOrientations );
+        super .setUniforms( gl, model, camera, eyeTransform, eyePerspective, fixedOrientations );
 
-    	for ( int i = 0; i < fixedOrientations.length; i++ )
-    		gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, fixedOrientations[ i ], 0 );
-    	checkGLError( gl, "mOrientationsParam");
+        for ( int i = 0; i < fixedOrientations.length; i++ )
+            gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, fixedOrientations[ i ], 0 );
+        checkGLError( gl, "mOrientationsParam");
     }
 
     protected void drawArrays( OpenGlShim gl, ShapeClass shape )
@@ -86,15 +86,15 @@ public class InstancedRenderer extends LightingRenderer
         // Set the positions of the shapes
         int vbo = shape .getPositionsVBO();
         if ( shape .usesVBOs() )
-        	gl.glBindBuffer( vbo );
+            gl.glBindBuffer( vbo );
         gl.glEnableVertexAttribArray( instanceData );
         gl.glVertexAttribDivisor( instanceData, 1);  // SV: this one is instanced
         if ( shape .usesVBOs() ) {
-        	gl.glVertexAttribPointer( instanceData , 4, false, 0, 0 );
-        	gl.glBindBuffer( 0);
+            gl.glVertexAttribPointer( instanceData , 4, false, 0, 0 );
+            gl.glBindBuffer( 0);
         }
         else
-        	gl.glVertexAttribPointer( instanceData, 4, false, 0, shape .getPositions() );
+            gl.glVertexAttribPointer( instanceData, 4, false, 0, shape .getPositions() );
 
         gl.glDrawArraysInstanced( 0, shape .getVertexCount(), shape .getInstanceCount() );
     }

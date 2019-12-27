@@ -11,7 +11,7 @@ public class Renderer
     protected static final String MODEL_VIEW_PROJECTION = "u_MVP";
     protected static final String COLOR = "u_Color";
     protected static final String A_POSITION = "a_Position";
-        
+
     protected int mGlProgram;
 
     private int mPositionParam;
@@ -25,11 +25,11 @@ public class Renderer
 
     public Renderer( OpenGlShim gl )
     {
-    	this .loadShaders( gl );
+        this .loadShaders( gl );
 
         this .getUniforms( gl );
     }
-    
+
     protected void getUniforms( OpenGlShim gl )
     {
         mModelViewProjectionParam = gl.glGetUniformLocation( mGlProgram, MODEL_VIEW_PROJECTION );
@@ -40,7 +40,7 @@ public class Renderer
         checkGLError( gl, COLOR );
     }
 
-	protected void loadShaders( OpenGlShim gl )
+    protected void loadShaders( OpenGlShim gl )
     {
         int vertexShader = loadGLShader( gl, this .getVertexShaderSource(), true );
         int fragmentShader = loadGLShader( gl, this .getFragmentShaderSource(), false );
@@ -57,19 +57,19 @@ public class Renderer
 
     protected String getFragmentShaderSource()
     {
-		return  "precision mediump float;\n" + 
-	    		"varying vec4 v_Color;\n" + 
+        return  "precision mediump float;\n" + 
+                "varying vec4 v_Color;\n" + 
 
 	    		"void main() {\n" + 
 	    		"  gl_FragColor = v_Color;\n" + 
 	    		"}";
-	}
+    }
 
     protected String getVertexShaderSource()
-	{
-		return  "attribute vec4 " + A_POSITION + ";\n" + 
-	    		"uniform mat4 " + MODEL_VIEW_PROJECTION + ";\n" + 
-	    		"uniform vec4 " + COLOR + ";\n" +
+    {
+        return  "attribute vec4 " + A_POSITION + ";\n" + 
+                "uniform mat4 " + MODEL_VIEW_PROJECTION + ";\n" + 
+                "uniform vec4 " + COLOR + ";\n" +
 
 	    		"varying vec4 v_Color;\n" + 
 
@@ -77,9 +77,9 @@ public class Renderer
 	    		"  v_Color = " + COLOR + ";\n" + 
 	    		"  gl_Position = " + MODEL_VIEW_PROJECTION + " * " + A_POSITION + ";\n" + 
 	    		"}";
-	}
+    }
 
-	/**
+    /**
      * Converts a raw text file, saved as a resource, into an OpenGL ES shader
      * @param type The type of shader we will be creating.
      * @return
@@ -99,9 +99,9 @@ public class Renderer
 
         // If the compilation failed, delete the shader.
         if (compileStatus[0] == 0) {
-        	String problem = gl.glGetShaderInfoLog(shader);
-        	System .out.println( problem );
-//            Log.e( TAG, "Error compiling shader: " + gl.glGetShaderInfoLog(shader));
+            String problem = gl.glGetShaderInfoLog(shader);
+            System .out.println( problem );
+            //            Log.e( TAG, "Error compiling shader: " + gl.glGetShaderInfoLog(shader));
             gl.glDeleteShader(shader);
             shader = 0;
         }
@@ -120,11 +120,11 @@ public class Renderer
     public static void checkGLError( OpenGlShim gl, String func ) {
         int error;
         while ((error = gl.glGetError()) != 0 /*should be GL.GL_NO_ERROR */) {
-//            Log.e(TAG, func + ": glError " + error);
+            //            Log.e(TAG, func + ": glError " + error);
             throw new RuntimeException(func + ": glError " + error);
         }
     }
-    
+
     public void bindBuffers( OpenGlShim gl, Scene scene )
     {
         // First, generate as many buffers as we need.
@@ -137,7 +137,7 @@ public class Renderer
         for( ShapeClass shape : scene )
         {
             // Bind to the buffer. glBufferData will affect this buffer specifically.
-        	gl.glBindBuffer( buffers[ bufferTriple + 0 ] );
+            gl.glBindBuffer( buffers[ bufferTriple + 0 ] );
             // Transfer data from client memory to the buffer.
             // We can release the client memory after this call.
             FloatBuffer clientBuffer = shape .getVertices();
@@ -165,15 +165,15 @@ public class Renderer
 
             shape .setBuffers( buffers[ bufferTriple + 0 ], buffers[ bufferTriple + 1 ], buffers[ bufferTriple + 2 ] );
             bufferTriple += 3;
-//            Log.i( TAG, "another buffer triple loaded into GPU" );
+            //            Log.i( TAG, "another buffer triple loaded into GPU" );
         }
         checkGLError( gl, "loadVBOs" );
     }
 
     public void setUniforms( OpenGlShim gl, float[] model, float[] camera, float[] eyeTransform, float[] eyePerspective, float[][] fixedOrientations )
     {
-    	gl.glUseProgram( mGlProgram );
-    	checkGLError( gl, "glUseProgram");  // a compile / link problem seems to fail only now!
+        gl.glUseProgram( mGlProgram );
+        checkGLError( gl, "glUseProgram");  // a compile / link problem seems to fail only now!
 
         // Apply the eye transformation to the camera.
         float[] view = new float[16];
@@ -193,7 +193,7 @@ public class Renderer
         // Set the ModelViewProjection matrix in the shader.
         gl.glUniformMatrix4fv( mModelViewProjectionParam, 1, false, modelViewProjection, 0 );
     }
-    
+
     public void renderScene( OpenGlShim gl, float[] mModelCube, float[] mCamera, float[] eyeTransform, float[] eyePerspective, Scene scene )
     {
         this.setUniforms( gl, mModelCube, mCamera, eyeTransform, eyePerspective, scene .getOrientations() );
@@ -205,15 +205,15 @@ public class Renderer
             // Set the vertices of the shape
             int vbo = shape .getVerticesVBO();
             if ( shape .usesVBOs() )
-            	gl.glBindBuffer( vbo );
+                gl.glBindBuffer( vbo );
             gl.glEnableVertexAttribArray( mPositionParam );
             gl.glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
             if ( shape .usesVBOs() ) {
-            	gl.glVertexAttribPointer( mPositionParam , COORDS_PER_VERTEX, false, 0, 0 );
-            	gl.glBindBuffer( 0);
+                gl.glVertexAttribPointer( mPositionParam , COORDS_PER_VERTEX, false, 0, 0 );
+                gl.glBindBuffer( 0);
             }
             else
-            	gl.glVertexAttribPointer( mPositionParam , COORDS_PER_VERTEX, false, 0, shape .getVertices() );
+                gl.glVertexAttribPointer( mPositionParam , COORDS_PER_VERTEX, false, 0, shape .getVertices() );
             checkGLError( gl, "mPositionParam");
 
             this .renderShape( gl, shape );
@@ -221,9 +221,9 @@ public class Renderer
             checkGLError( gl, "Drawing a shape");
         }
     }
-    
+
     protected void renderShape( OpenGlShim gl, ShapeClass shape )
     {
-    	gl.glDrawLines( 0, shape .getVertexCount() );
+        gl.glDrawLines( 0, shape .getVertexCount() );
     }
 }
