@@ -56,7 +56,7 @@ public class View3dActivity
 {
     private static final float CAMERA_Z = 0.01f;
 
-    private RenderingProgram instancedRenderer, floorRenderer, lineRenderer;
+    private RenderingProgram instancedRenderer, lightingRenderer, lineRenderer;
     private Set<ShapeClass> shapes = new HashSet<ShapeClass>();
     private boolean loading = true;
     private boolean failedLoad = false;
@@ -105,7 +105,7 @@ public class View3dActivity
     {
         this .lineRenderer = new RenderingProgram( gl, false, false );
 
-        this .floorRenderer = new RenderingProgram( gl, true, false );
+        this .lightingRenderer = new RenderingProgram( gl, true, false );
 
 //        this .instancedRenderer = new RenderingProgram( gl, true, true );
 
@@ -146,9 +146,9 @@ public class View3dActivity
 
         if ( ! loading )
         {
-            this.instancedRenderer.setUniforms( gl, mModelCube, mCamera, projection, orientations );
+            this.lightingRenderer.setUniforms( gl, mModelCube, mCamera, projection, orientations );
             for( ShapeClass shapeClass : shapes )
-                this.instancedRenderer.renderShape( gl, shapeClass );
+                this.lightingRenderer.renderShape( gl, shapeClass );
         }
         else
         {
@@ -217,7 +217,7 @@ public class View3dActivity
             {
                 View3dActivity.this.addShapeClass( entry .getKey(), entry .getValue() );
             }
-//            View3dActivity.this.loading = false;
+            View3dActivity.this.loading = false;
         }
         catch (Exception e) {
             View3dActivity.this.failedLoad = true;
