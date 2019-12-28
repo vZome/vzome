@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.vzome.api.Strut;
+import com.vzome.api.Vector;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -126,6 +128,23 @@ public class OpenGlSceneLoader
             ++i;
         }
         return new ShapeClass( verticesArray, normalsArray, offsets, color );
+    }
+
+    public static ShapeClass createStrutsWireframe( Strut[] struts, float[] color )
+    {
+        float[] verticesArray = new float[ShapeClass.COORDS_PER_VERTEX * 2 * struts.length];
+        for (int i = 0; i < struts.length; i++) {
+            Vector vector = struts[i] .location();
+            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 0] = (float) vector.getX().value()/2;  // TODO: figure out why we need "/2"
+            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 1] = (float) vector.getY().value()/2;
+            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 2] = (float) vector.getZ().value()/2;
+            Vector offset = struts[i] .offset();
+            vector = vector .plus( offset );
+            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 3] = (float) vector.getX().value()/2;
+            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 4] = (float) vector.getY().value()/2;
+            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 5] = (float) vector.getZ().value()/2;
+        }
+        return new ShapeClass( verticesArray, null, null, color );
     }
 
     private static float[][] getOrientations( OrbitSource orbits )

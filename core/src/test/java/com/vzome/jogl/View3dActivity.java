@@ -21,10 +21,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.Properties;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -34,15 +31,13 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.math.FloatUtil;
 import com.vzome.api.Application;
-import com.vzome.api.Ball;
 import com.vzome.api.Document;
 import com.vzome.api.Strut;
-import com.vzome.core.math.Polyhedron;
-import com.vzome.core.model.Connector;
-import com.vzome.core.model.Manifestation;
-import com.vzome.core.render.Color;
-import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
+import com.vzome.core.render.Colors;
+import com.vzome.core.render.OpenGlSceneLoader;
+import com.vzome.opengl.RenderingProgram;
+import com.vzome.opengl.Scene;
+import com.vzome.opengl.ShapeClass;
 
 /**
  * This is a stripped-down version of the vzome-cardboard View3dActivity,
@@ -57,16 +52,8 @@ public class View3dActivity
     private static final float CAMERA_Z = 0.01f;
 
     private RenderingProgram instancedRenderer, lightingRenderer, lineRenderer;
-    private Set<ShapeClass> shapes = new HashSet<ShapeClass>();
-    private boolean loading = true;
+    private Scene scene = null;
     private boolean failedLoad = false;
-    private float[][] orientations;
-
-    private void addShapeClass( Polyhedron shape, ShapeClass.Config config )
-    {
-        ShapeClass shapeClass = ShapeClass .create( shape, config.instances, config.color );
-        shapes .add( shapeClass );
-    }
 
     private ShapeClass mFloor, struts;
 
@@ -138,7 +125,7 @@ public class View3dActivity
     {
         if ( failedLoad )
             gl.glClearColor( 0.5f, 0f, 0f, 1f );
-        else if ( loading )
+        else if ( this .scene == null )
             gl.glClearColor( 0.2f, 0.3f, 0.4f, 0.5f );
         else
             gl.glClearColor( 0.5f, 0.6f, 0.7f, 0.5f );
@@ -146,25 +133,25 @@ public class View3dActivity
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         RenderingProgram .checkGLError( gl, "glClear" );
 
-        if ( ! loading )
+        if ( this .scene != null )
         {
-            this.instancedRenderer.setUniforms( gl, mModelCube, mCamera, projection, orientations );
-            for( ShapeClass shapeClass : shapes )
+            this.instancedRenderer.setUniforms( gl, mModelCube, mCamera, projection, this.scene.getOrientations() );
+            for( ShapeClass shapeClass : scene )
                 this.instancedRenderer.renderShape( gl, shapeClass );
         }
         else
         {
             if (struts != null) {
-                this.lineRenderer.setUniforms( gl, mModelCube, mCamera, projection, orientations );
+                this.lineRenderer.setUniforms( gl, mModelCube, mCamera, projection, this.scene.getOrientations() );
                 this.lineRenderer.renderShape( gl, struts );
             }
         }
 
-        this .lightingRenderer .setUniforms( gl, mModelFloor, mCamera, projection, orientations );
+        this .lightingRenderer .setUniforms( gl, mModelFloor, mCamera, projection, this.scene.getOrientations() );
         this .lightingRenderer .renderShape( gl, mFloor );
     }
 
-    protected String doInBackground(String... urls) {{
+    protected String doInBackground(String... urls) {
 
         // params comes from the execute() call: params[0] is the url.
         try {
@@ -175,59 +162,17 @@ public class View3dActivity
             instream.close();
             System.out.println( "%%%%%%%%%%%%%%%% finished: " + url );
 
-            View3dActivity.this.orientations = doc .getOrientations();
-
-            //                float[] white = new float[] { 1f, 1f, 1f, 1f };
-            //                View3dActivity.this.balls = ShapeClass .create( vZome .getBallShape(), doc .getBalls(), white );
-
             float[] black = new float[] { 0f, 0f, 0f, 1f };
-            View3dActivity.this.struts = ShapeClass .create( doc .getStruts().toArray(), black );
-
-            Map<Polyhedron,ShapeClass.Config> shapeClasses = new HashMap<Polyhedron,ShapeClass.Config>();
-            RenderedModel rmodel = doc .getRenderedModel();
-            for ( RenderedManifestation rman : rmodel ) {
-
-                Polyhedron shape = rman .getShape();
-                ShapeClass.Config scc = shapeClasses .get( shape );
-                if ( scc == null ) {
-                    System.out.println( "%%%%%%%%%%%%%%%% new shape" );
-                    scc = new ShapeClass.Config();
-                    shapeClasses .put( shape, scc );
-                    Color color = rman .getColor();
-                    float[] rgb = new float[3];
-                    color .getRGBColorComponents( rgb );
-                    scc .color = new float[]{ rgb[0], rgb[1], rgb[2], 1f };
-                }
-
-                Manifestation man = rman.getManifestation();
-                Object instance = null;
-                if ( man instanceof Connector) {
-                    instance = new Ball( (Connector) man );
-                }
-                else if ( man instanceof com.vzome.core.model.Strut ) {
-                    int zone = rman .getStrutZone();
-
-                    instance = new Strut( (com.vzome.core.model.Strut) man, zone );
-                }
-                else {
-                    System.out.println( "%%%%%%%%%%%%%%%% missing panel!" );
-                    continue;
-                }
-                scc .instances .add( instance );
-            }
-            for( Map.Entry<Polyhedron, ShapeClass.Config> entry : shapeClasses.entrySet() )
-            {
-                View3dActivity.this.addShapeClass( entry .getKey(), entry .getValue() );
-            }
-            View3dActivity.this.loading = false;
+            this.struts = OpenGlSceneLoader .createStrutsWireframe( doc .getStruts().toArray( new Strut[] {}), black );
+            this .scene = doc .getOpenGlScene( new Colors( new Properties() ) );
         }
         catch (Exception e) {
-            View3dActivity.this.failedLoad = true;
+            this.failedLoad = true;
             System.out.println( "%%%%%%%%%%%%%%%% FAILED: " + urls[ 0 ] );
             e .printStackTrace();
         }
         return "OK";
-    }}
+    }
 
     // Lifted from https://jogamp.org/wiki/index.php?title=Using_JOGL_in_AWT_SWT_and_Swing#JOGL_in_AWT
     //

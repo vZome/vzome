@@ -1,4 +1,4 @@
-package com.vzome.jogl;
+package com.vzome.opengl;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.math.FloatUtil;
@@ -6,7 +6,7 @@ import com.jogamp.opengl.math.FloatUtil;
 /**
 * Created by vorth on 7/28/14.
 */
-class RenderingProgram
+public class RenderingProgram
 {
     private int mGlProgram;
     private boolean isInstanced;
