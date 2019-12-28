@@ -103,6 +103,8 @@ public class View3dActivity
      */
     public void onSurfaceCreated( GL2 gl )
     {
+        this .mFloor = new ShapeClass( WorldLayoutData.FLOOR_COORDS, WorldLayoutData.FLOOR_NORMALS, null, WorldLayoutData.FLOOR_COLOR );
+
         this .lineRenderer = new RenderingProgram( gl, false, false );
 
         this .lightingRenderer = new RenderingProgram( gl, true, false );
@@ -158,8 +160,8 @@ public class View3dActivity
             }
         }
 
-//        this .floorRenderer .setUniforms( gl, mModelFloor, mCamera, projection, orientations );
-//        this .floorRenderer .renderShape( gl, mFloor );
+        this .lightingRenderer .setUniforms( gl, mModelFloor, mCamera, projection, orientations );
+        this .lightingRenderer .renderShape( gl, mFloor );
     }
 
     protected String doInBackground(String... urls) {{
