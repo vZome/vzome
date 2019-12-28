@@ -44,8 +44,7 @@ public class LightingRenderer extends Renderer
 
     protected String getFragmentShaderSource()
     {
-        return  "precision mediump float;\n" + 
-                "varying vec4 v_Color;\n" + 
+        return  "varying vec4 v_Color;\n" + 
                 "varying vec3 v_Grid;\n" + 
 
 				"void main() {\n" + 

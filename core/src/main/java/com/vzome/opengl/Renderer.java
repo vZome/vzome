@@ -57,8 +57,7 @@ public class Renderer
 
     protected String getFragmentShaderSource()
     {
-        return  "precision mediump float;\n" + 
-                "varying vec4 v_Color;\n" + 
+        return  "varying vec4 v_Color;\n" + 
 
 	    		"void main() {\n" + 
 	    		"  gl_FragColor = v_Color;\n" + 
@@ -200,7 +199,7 @@ public class Renderer
 
     public void renderScene( OpenGlShim gl, float[] mModelCube, float[] mCamera, float[] eyeTransform, float[] eyePerspective, Scene scene )
     {
-        this.setUniforms( gl, mModelCube, mCamera, eyeTransform, eyePerspective, scene .getOrientations() );
+//        this.setUniforms( gl, mModelCube, mCamera, eyeTransform, eyePerspective, scene .getOrientations() );
         for( ShapeClass shape : scene )
         {
             float[] color = shape .getColor();
