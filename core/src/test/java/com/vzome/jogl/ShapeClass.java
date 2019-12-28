@@ -1,15 +1,5 @@
 package com.vzome.jogl;
 
-import android.util.Log;
-
-import com.vzome.api.Ball;
-import com.vzome.api.Strut;
-import com.vzome.api.Vector;
-
-import org.vorthmann.zome.algebra.AlgebraicField;
-import org.vorthmann.zome.math.Polyhedron;
-import org.vorthmann.zome.math.RealVector;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -17,6 +7,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.vzome.api.Ball;
+import com.vzome.api.Strut;
+import com.vzome.api.Vector;
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.RealVector;
 
 /**
 * Created by vorth on 7/28/14.
@@ -32,34 +29,31 @@ class ShapeClass
     private int instanceCount = 0;
     private int vertexCount;
 
-    private static final String TAG = "ShapeClass";
-
     private static final int COORDS_PER_VERTEX = 3;
 
     public static class Config
     {
-        public Set instances = new HashSet();
+        public Set<Object> instances = new HashSet<Object>();
         public float[] color;
     }
 
-    public static ShapeClass create( Polyhedron shape, Set parts, float[] color )
+    public static ShapeClass create( Polyhedron shape, Set<?> parts, float[] color )
     {
-        List vertices = new ArrayList();
-        List normals = new ArrayList();
-        AlgebraicField field = shape.getField();
-        List vertexList = shape.getVertexList();
+        List<RealVector> vertices = new ArrayList<>();
+        List<RealVector> normals = new ArrayList<>();
+        List<AlgebraicVector> vertexList = shape.getVertexList();
         Set<Polyhedron.Face> faces = shape.getFaceSet();
         for (Polyhedron.Face face : faces) {
-            int[] normal = face.getNormal();
-            RealVector rn = field.getRealVector(field.negate(normal)).normalize();
+            AlgebraicVector normal = face.getNormal();
+            RealVector rn = normal.negate().toRealVector().normalize();
             int count = face.size();
-            int[] vertex = (int[]) vertexList.get(face.getVertex(0));
-            RealVector rv0 = field.getRealVector(vertex);
-            vertex = (int[]) vertexList.get(face.getVertex(1));
-            RealVector rvPrev = field.getRealVector(vertex);
+            AlgebraicVector vertex = vertexList.get(face.getVertex(0));
+            RealVector rv0 = vertex.toRealVector();
+            vertex = vertexList.get(face.getVertex(1));
+            RealVector rvPrev = vertex.toRealVector();
             for (int i = 2; i < count; i++) {
-                vertex = (int[]) vertexList.get(face.getVertex(i));
-                RealVector rv = field.getRealVector(vertex);
+                vertex = vertexList.get(face.getVertex(i));
+                RealVector rv = vertex.toRealVector();
                 vertices.add(rv0);
                 normals.add(rn);
                 vertices.add(rvPrev);
@@ -73,12 +67,12 @@ class ShapeClass
         float[] verticesArray = new float[COORDS_PER_VERTEX * vertices.size()];
         float[] normalsArray = new float[COORDS_PER_VERTEX * normals.size()];  // same size!
         for (int i = 0; i < vertices.size(); i++) {
-            RealVector vector = (RealVector) vertices.get(i);
+            RealVector vector = vertices.get(i);
             vector = vector .scale( MODEL_SCALE_FACTOR );
             verticesArray[i * COORDS_PER_VERTEX] = (float) vector.x;
             verticesArray[i * COORDS_PER_VERTEX + 1] = (float) vector.y;
             verticesArray[i * COORDS_PER_VERTEX + 2] = (float) vector.z;
-            vector = (RealVector) normals.get(i);
+            vector = normals.get(i);
             normalsArray[i * COORDS_PER_VERTEX] = (float) vector.x;
             normalsArray[i * COORDS_PER_VERTEX + 1] = (float) vector.y;
             normalsArray[i * COORDS_PER_VERTEX + 2] = (float) vector.z;
@@ -91,12 +85,10 @@ class ShapeClass
             int zone = 0;
             if ( part instanceof Ball) {
                 vector = ((Ball) part).location();
-                Log.v(TAG, "  ball center  : " + vector);
             }
             else {
                 vector = ((Strut) part).location();
                 zone = ((Strut) part).getZone();
-                Log.v( TAG, "  strut center  : " + vector + ", zone : " + zone );
             }
             offsets[i * 4 + 0] = MODEL_SCALE_FACTOR * (float) vector.getX().value();
             offsets[i * 4 + 1] = MODEL_SCALE_FACTOR * (float) vector.getY().value();
@@ -152,8 +144,6 @@ class ShapeClass
             mInstancePositions.put( offsets );
             mInstancePositions.position(0);
             instanceCount = offsets.length / 4;
-
-            Log.i( TAG, instanceCount + " instances! %%%%%%%%%%%%%%%%%%        %%%%%%%%%%%%     %%%%%%%%" );
         }
     }
 

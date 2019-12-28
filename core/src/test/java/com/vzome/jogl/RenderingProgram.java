@@ -1,23 +1,16 @@
 package com.vzome.jogl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.math.FloatUtil;
 
 /**
 * Created by vorth on 7/28/14.
 */
 class RenderingProgram
 {
-    private static final String TAG = "RenderingProgram";
-
     private int mGlProgram;
     private boolean isInstanced;
     private boolean doLighting;
-    private boolean isNiceLighting;
     private int instanceData;
     private int mPositionParam;
     private int normalParam;
@@ -26,8 +19,6 @@ class RenderingProgram
     private int mLightPosParam;
     private int mModelViewParam;
     private int mModelParam;
-    private int worldInverseTranspose;
-    private int viewInverse;
     private int[] mOrientationsParam = new int[60];
 
     // We keep the light always position just above the user.
@@ -35,71 +26,152 @@ class RenderingProgram
 
     private static final int COORDS_PER_VERTEX = 3;
 
-    public RenderingProgram( boolean lighting, boolean instanced, boolean fancy )
+    public RenderingProgram( GL2 gl, boolean lighting, boolean instanced )
     {
+        String version = gl .getContext() .getGLSLVersionString();
         this .doLighting = lighting;
         this .isInstanced = lighting && instanced;
-        this .isNiceLighting = lighting && instanced && fancy;
 
-        int vertexShaderRsrc = R.raw.simple_vertex;
-        if ( this .isNiceLighting )
-            vertexShaderRsrc = R.raw.nice_lighting_vertex_instanced;
-        else if ( this .isInstanced )
-            vertexShaderRsrc = R.raw.light_vertex_instanced;
+//      int vertexShaderRsrc = R.raw.simple_vertex;
+        String vertexShaderSrc = version + "\n" +
+                "attribute vec4 a_Position;\n" + 
+                "uniform mat4 u_MVP;\n" + 
+                "uniform vec4 u_Color;\n" + 
+                "varying vec4 v_Color;\n" + 
+                "\n" + 
+                "void main() {\n" + 
+                "  v_Color = u_Color;\n" + 
+                "  gl_Position = u_MVP * a_Position;\n" + 
+                "}";
+        if ( this .isInstanced )
+//            vertexShaderRsrc = R.raw.light_vertex_instanced;
+            vertexShaderSrc = version + "\n" + 
+                    "uniform mat4 u_MVP;\n" + 
+                    "uniform mat4 u_MVMatrix;\n" + 
+                    "uniform mat4 u_Model;\n" + 
+                    "uniform vec3 u_LightPos;\n" + 
+                    "uniform vec4 u_Color;\n" + 
+                    "uniform mat4 u_Orientations[60];\n" + 
+                    "\n" + 
+                    "attribute vec4 a_Position;\n" + 
+                    "attribute vec3 a_Normal;\n" + 
+                    "attribute vec4 a_InstanceData;\n" + 
+                    "\n" + 
+                    "varying vec4 v_Color;\n" + 
+                    "\n" + 
+                    "void main()\n" + 
+                    "{\n" + 
+                    "   // unpack a_InstanceData\n" + 
+                    "   float orientationAsFloat = a_InstanceData.w;\n" + 
+                    "   vec4 location = vec4( a_InstanceData.xyz, 1.0 );\n" + 
+                    "\n" + 
+                    "   int orientation = max( 0, min( 59, orientationAsFloat ) );\n" + 
+                    "   vec4 oriented = ( u_Orientations[ orientation ] * a_Position );\n" + 
+                    "   vec4 normal = ( u_Orientations[ orientation ] * vec4( a_Normal, 0.0 ) );\n" + 
+                    "   vec4 pos = oriented + location;\n" + 
+                    "   gl_Position = u_MVP * pos;\n" + 
+                    "\n" + 
+                    "   // original lighting, using a point source\n" + 
+                    "   vec3 modelViewVertex = vec3(u_MVMatrix * pos);\n" + 
+                    "   vec3 modelViewNormal = vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) );\n" + 
+                    "   float distance = length( u_LightPos - modelViewVertex );\n" + 
+                    "   vec3 lightVector = normalize( u_LightPos - modelViewVertex );\n" + 
+                    "   float diffuse = max(dot(modelViewNormal, lightVector), 0.5 );\n" + 
+                    "   diffuse = diffuse * (1.0 / (1.0 + (0.0001 * distance * distance)));\n" + 
+                    "   v_Color = u_Color * diffuse;\n" + 
+                    "}";
         else if ( this .doLighting )
-            vertexShaderRsrc = R.raw.light_vertex;
-        int vertexShader = loadGLShader( resources, GLES30.GL_VERTEX_SHADER, vertexShaderRsrc );
+//            vertexShaderRsrc = R.raw.light_vertex;
+            vertexShaderSrc = version + "\n" +
+                    "uniform mat4 u_MVP;\n" + 
+                    "uniform mat4 u_MVMatrix;\n" + 
+                    "uniform mat4 u_Model;\n" + 
+                    "uniform vec3 u_LightPos;\n" + 
+                    "uniform vec4 u_Color;\n" + 
+                    "\n" + 
+                    "attribute vec4 a_Position;\n" + 
+                    "attribute vec3 a_Normal;\n" + 
+                    "\n" + 
+                    "varying vec4 v_Color;\n" + 
+                    "varying vec3 v_Grid;\n" + 
+                    "\n" + 
+                    "void main()\n" + 
+                    "{\n" + 
+                    "   vec3 modelVertex = vec3(u_Model * a_Position);\n" + 
+                    "   v_Grid = modelVertex;\n" + 
+                    "\n" + 
+                    "   vec3 modelViewVertex = vec3(u_MVMatrix * a_Position);\n" + 
+                    "   vec3 modelViewNormal = vec3(u_MVMatrix * vec4(a_Normal, 0.0));\n" + 
+                    "   float distance = length(u_LightPos - modelViewVertex);\n" + 
+                    "   vec3 lightVector = normalize(u_LightPos - modelViewVertex);\n" + 
+                    "   float diffuse = max(dot(modelViewNormal, lightVector), 0.5   );\n" + 
+                    "   diffuse = diffuse * (1.0 / (1.0 + (0.00001 * distance * distance)));\n" + 
+                    "   v_Color = u_Color * diffuse;\n" + 
+                    "   gl_Position = u_MVP * a_Position;\n" + 
+                    "}";
+        int vertexShader = loadGLShader( gl, GL2.GL_VERTEX_SHADER, vertexShaderSrc );
 
-        int fragmentShaderRsrc = R.raw.simple_fragment;
-        if ( this .isNiceLighting )
-            fragmentShaderRsrc = R.raw.nice_lighting_fragment;
-        else if ( this .isInstanced )
-            fragmentShaderRsrc = R.raw.simple_fragment;
+//        int fragmentShaderRsrc = R.raw.simple_fragment;
+        String fragmentShaderSrc = version + "\n" +
+                "varying vec4 v_Color;\n" + 
+                "\n" + 
+                "void main() {\n" + 
+                "  gl_FragColor = v_Color;\n" + 
+                "}";
+        if ( this .isInstanced )
+//            fragmentShaderRsrc = R.raw.simple_fragment;
+            ;
         else if ( this .doLighting )
-            fragmentShaderRsrc = R.raw.grid_fragment;
-        int fragmentShader = loadGLShader( resources, GLES30.GL_FRAGMENT_SHADER, fragmentShaderRsrc );
+//            fragmentShaderRsrc = R.raw.grid_fragment;
+            fragmentShaderSrc = version + "\n" +
+                    "varying vec4 v_Color;\n" + 
+                    "varying vec3 v_Grid;\n" + 
+                    "\n" + 
+                    "void main() {\n" + 
+                    "    float depth = gl_FragCoord.z / gl_FragCoord.w; // calculate world-space distance\n" + 
+                    "\n" + 
+                    "    if ((mod(abs(v_Grid[0]), 10.0) < 0.1) || (mod(abs(v_Grid[2]), 10.0) < 0.1)) {\n" + 
+                    "        gl_FragColor = max(0.0, (90.0-depth) / 90.0) * vec4(1.0, 1.0, 1.0, 1.0)\n" + 
+                    "                + min(1.0, depth / 90.0) * v_Color;\n" + 
+                    "    } else {\n" + 
+                    "        gl_FragColor = v_Color;\n" + 
+                    "    }\n" + 
+                    "}";
+        int fragmentShader = loadGLShader( gl, GL2.GL_FRAGMENT_SHADER, fragmentShaderSrc );
 
-        mGlProgram = GL2.glCreateProgram();
-        checkGLError("glCreateProgram");
-        GLES30.glAttachShader(mGlProgram, vertexShader);
-        checkGLError("glAttachShader vertexShader");
-        GLES30.glAttachShader(mGlProgram, fragmentShader);
-        checkGLError("glAttachShader fragmentShader");
-        GLES30.glLinkProgram(mGlProgram);
-        checkGLError("glLinkProgram");
+        mGlProgram = gl.glCreateProgram();
+        checkGLError( gl, "glCreateProgram");
+        gl.glAttachShader(mGlProgram, vertexShader);
+        checkGLError( gl, "glAttachShader vertexShader");
+        gl.glAttachShader(mGlProgram, fragmentShader);
+        checkGLError( gl, "glAttachShader fragmentShader");
+        gl.glLinkProgram(mGlProgram);
+        checkGLError( gl, "glLinkProgram");
 
-        if ( this .isNiceLighting )
-            mModelViewProjectionParam = GLES30.glGetUniformLocation( mGlProgram, "worldViewProjection" );
-        else
-            mModelViewProjectionParam = GLES30.glGetUniformLocation( mGlProgram, "u_MVP" );
-        checkGLError("worldViewProjection");
+        mModelViewProjectionParam = gl.glGetUniformLocation( mGlProgram, "u_MVP" );
+        checkGLError( gl, "worldViewProjection");
 
-        mPositionParam = GLES30.glGetAttribLocation(mGlProgram, "a_Position");
-        mColorParam = GLES30.glGetUniformLocation(mGlProgram, "u_Color");
-        checkGLError("u_Color");
+        mPositionParam = gl.glGetAttribLocation(mGlProgram, "a_Position");
+        mColorParam = gl.glGetUniformLocation(mGlProgram, "u_Color");
+        checkGLError( gl, "u_Color");
 
         if ( this .doLighting )
         {
-            if ( this .isNiceLighting ) {
-                mLightPosParam = GLES30.glGetUniformLocation(mGlProgram, "lightWorldPos");
-                worldInverseTranspose = GLES30.glGetUniformLocation( mGlProgram, "worldInverseTranspose" );
-                viewInverse = GLES30.glGetUniformLocation( mGlProgram, "viewInverse" );
-            }
-            else {
-                mLightPosParam = GLES30.glGetUniformLocation(mGlProgram, "u_LightPos");
-                mModelViewParam = GLES30.glGetUniformLocation( mGlProgram, "u_MVMatrix" );
-                mModelParam = GLES30.glGetUniformLocation( mGlProgram, "u_Model" );
+            {
+                mLightPosParam = gl.glGetUniformLocation(mGlProgram, "u_LightPos");
+                mModelViewParam = gl.glGetUniformLocation( mGlProgram, "u_MVMatrix" );
+                mModelParam = gl.glGetUniformLocation( mGlProgram, "u_Model" );
             }
 
-            normalParam = GLES30.glGetAttribLocation( mGlProgram, "a_Normal" );
-            checkGLError("a_Normal");
+            normalParam = gl.glGetAttribLocation( mGlProgram, "a_Normal" );
+            checkGLError( gl, "a_Normal");
 
             if ( this .isInstanced ) {
 
                 for ( int i = 0; i < 60; i++ )
-                    mOrientationsParam[ i ] = GLES30.glGetUniformLocation( mGlProgram, "u_Orientations[" + i + "]" );
+                    mOrientationsParam[ i ] = gl.glGetUniformLocation( mGlProgram, "u_Orientations[" + i + "]" );
 
-                instanceData = GLES30.glGetAttribLocation( mGlProgram, "a_InstanceData" ); // a_InstanceData will actually store (x,y,z,orientation)
+                instanceData = gl.glGetAttribLocation( mGlProgram, "a_InstanceData" ); // a_InstanceData will actually store (x,y,z,orientation)
             }
         }
     }
@@ -110,24 +182,33 @@ class RenderingProgram
      * @param resId The resource ID of the raw text file about to be turned into a shader.
      * @return
      */
-    private static int loadGLShader( Resources resources, int type, int resId )
+    private static int loadGLShader( GL2 gl, int type, String code )
     {
-        String code = readRawTextFile( resources, resId );
-        int shader = GLES30.glCreateShader(type);
-        GLES30.glShaderSource(shader, code);
-        checkGLError( "glShaderSource" );
-        GLES30.glCompileShader(shader);
-        checkGLError( "glCompileShader" );
+        int shader = gl.glCreateShader(type);
+
+//        gl.glShaderSource(shader, code);
+        String[] vlines = new String[] { code };
+        int[] vlengths = new int[] { vlines[0].length() };
+        gl .glShaderSource( shader, vlines.length, vlines, vlengths, 0 );
+        
+        checkGLError( gl,  "glShaderSource" );
+        gl.glCompileShader(shader);
+        checkGLError( gl,  "glCompileShader" );
 
         // Get the compilation status.
         final int[] compileStatus = new int[1];
-        GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compileStatus, 0);
-        checkGLError( "glGetShaderiv" );
+        gl.glGetShaderiv(shader, GL2.GL_COMPILE_STATUS, compileStatus, 0);
+        checkGLError( gl,  "glGetShaderiv" );
 
         // If the compilation failed, delete the shader.
         if (compileStatus[0] == 0) {
-            Log.e( TAG, "Error compiling shader: " + GLES30.glGetShaderInfoLog(shader));
-            GLES30.glDeleteShader(shader);
+//            Log.e( TAG, "Error compiling shader: " + gl.glGetShaderInfoLog(shader));
+            int[] logLength = new int[1];
+            gl .glGetShaderiv( shader, GL2.GL_INFO_LOG_LENGTH, logLength, 0 );
+            byte[] log = new byte[logLength[0]];
+            gl .glGetShaderInfoLog( shader, logLength[0], (int[])null, 0, log, 0 );
+            System.out.println( "Error compiling shader: " + new String( log ) );
+            gl.glDeleteShader(shader);
             shader = 0;
         }
 
@@ -142,120 +223,90 @@ class RenderingProgram
      * Checks if we've had an error inside of OpenGL ES, and if so what that error is.
      * @param func
      */
-    public static void checkGLError(String func) {
+    public static void checkGLError( GL2 gl, String func )
+    {
         int error;
-        while ((error = GLES30.glGetError()) != GLES30.GL_NO_ERROR) {
-            Log.e(TAG, func + ": glError " + error);
+        while ((error = gl.glGetError()) != GL2.GL_NO_ERROR) {
+            System.out.println( func + ": glError " + error);
             throw new RuntimeException(func + ": glError " + error);
         }
     }
 
-    /**
-     * Converts a raw text file into a string.
-     * @param resId The resource ID of the raw text file about to be turned into a shader.
-     * @return
-     */
-    private static String readRawTextFile( Resources resources, int resId )
+    public void setUniforms( GL2 gl, float[] model, float[] camera, float[] projection, float[][] icosahedralOrientations )
     {
-        InputStream inputStream = resources .openRawResource(resId);
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-            reader.close();
-            return sb.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    public void setUniforms( float[] model, float[] camera, EyeTransform transform, float[][] icosahedralOrientations )
-    {
-        GLES30.glUseProgram( mGlProgram );
-        checkGLError("glUseProgram");  // a compile / link problem seems to fail only now!
+        gl.glUseProgram( mGlProgram );
+        checkGLError( gl, "glUseProgram");  // a compile / link problem seems to fail only now!
 
         float[] modelViewProjection = new float[16];
         float[] worldInverse = new float[16];
-        float[] worldInverseTranspose = new float[16];
         float[] modelView = new float[16];
-        float[] view = new float[16];
-        float[] viewInverse = new float[16];
         float[] lightPosInEyeSpace = new float[4];
 
-        // Apply the eye transformation to the camera.
-        Matrix.multiplyMM( view, 0, transform.getEyeView(), 0, camera, 0 );
-        Matrix.invertM( viewInverse, 0, view, 0 );
         // Build the ModelView and ModelViewProjection matrices
         // for calculating cube position and light.
-        Matrix.multiplyMM( modelView, 0, view, 0, model, 0);
-        Matrix.multiplyMM( modelViewProjection, 0, transform.getPerspective(), 0, modelView, 0);
-        Matrix.invertM( worldInverse, 0, model, 0 );
-        Matrix.transposeM( worldInverseTranspose, 0, worldInverse, 0 );
+        //  ASSUME ALL MATRICES ARE IN COLUMN-MAJOR ORDER!
+//        Matrix.multiplyMM( modelView, 0, camera, 0, model, 0);
+        FloatUtil.multMatrix( camera, model, modelView );
+//        Matrix.multiplyMM( modelViewProjection, 0, projection, 0, modelView, 0);
+        FloatUtil.multMatrix( projection, modelView, modelViewProjection );
+//        Matrix.invertM( worldInverse, 0, model, 0 );
+        FloatUtil.invertMatrix( model, worldInverse );
 
         // Set the position of the light
-        Matrix.multiplyMV( lightPosInEyeSpace, 0, view, 0, mLightPosInWorldSpace, 0 );
+        FloatUtil.multMatrixVec( camera, mLightPosInWorldSpace, lightPosInEyeSpace );
 
         // Set the ModelViewProjection matrix in the shader.
-        GLES30.glUniformMatrix4fv( mModelViewProjectionParam, 1, false, modelViewProjection, 0 );
+        gl.glUniformMatrix4fv( mModelViewProjectionParam, 1, false, modelViewProjection, 0 );
 
         if ( doLighting ) {
-            GLES30.glUniform3f( mLightPosParam, lightPosInEyeSpace[0], lightPosInEyeSpace[1], lightPosInEyeSpace[2] );
-            if ( this .isNiceLighting )
+            gl.glUniform3f( mLightPosParam, lightPosInEyeSpace[0], lightPosInEyeSpace[1], lightPosInEyeSpace[2] );
             {
-                GLES30.glUniformMatrix4fv( this.viewInverse, 1, false, model, 0);
-                GLES30.glUniformMatrix4fv( this.worldInverseTranspose, 1, false, worldInverseTranspose, 0);
-            }
-            else {
-                GLES30.glUniformMatrix4fv( mModelParam, 1, false, model, 0);
-                GLES30.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
+                gl.glUniformMatrix4fv( mModelParam, 1, false, model, 0);
+                gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
             }
             if ( this .isInstanced ) {
                 for ( int i = 0; i < 60; i++ )
-                    GLES30.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, icosahedralOrientations[ i ], 0 );
-                checkGLError("mOrientationsParam");
+                    gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, icosahedralOrientations[ i ], 0 );
+                checkGLError( gl, "mOrientationsParam");
             }
         }
     }
 
-    public void renderShape( ShapeClass shape )
+    public void renderShape( GL2 gl, ShapeClass shape )
     {
 
         float[] color = shape .getColor();
-        GLES30.glUniform4f( mColorParam, color[0], color[1], color[2], color[3] );
+        gl.glUniform4f( mColorParam, color[0], color[1], color[2], color[3] );
 
         // Set the vertices of the shape
-        GLES30.glEnableVertexAttribArray(mPositionParam);
-        GLES30.glVertexAttribDivisor(mPositionParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-        GLES30.glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, GLES30.GL_FLOAT,
+        gl.glEnableVertexAttribArray(mPositionParam);
+        gl.glVertexAttribDivisor(mPositionParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+        gl.glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, GL2.GL_FLOAT,
                 false, 0, shape .getVertices() );
-        checkGLError("mPositionParam");
+        checkGLError( gl, "mPositionParam");
 
         if ( doLighting ) {
-            GLES30.glEnableVertexAttribArray(normalParam);
-            GLES30.glVertexAttribDivisor(normalParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            GLES30.glVertexAttribPointer(normalParam, COORDS_PER_VERTEX, GLES30.GL_FLOAT,
+            gl.glEnableVertexAttribArray(normalParam);
+            gl.glVertexAttribDivisor(normalParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+            gl.glVertexAttribPointer(normalParam, COORDS_PER_VERTEX, GL2.GL_FLOAT,
                     false, 0, shape .getNormals() );
-            checkGLError("normalParam");
+            checkGLError( gl, "normalParam");
 
             if ( this .isInstanced ) {
                 // Set the positions of the shapes
-                GLES30.glEnableVertexAttribArray( instanceData );
-                GLES30.glVertexAttribDivisor( instanceData, 1);  // SV: this one is instanced
-                GLES30.glVertexAttribPointer( instanceData, 4, GLES30.GL_FLOAT, false, 0, shape .getPositions() );
+                gl.glEnableVertexAttribArray( instanceData );
+                gl.glVertexAttribDivisor( instanceData, 1);  // SV: this one is instanced
+                gl.glVertexAttribPointer( instanceData, 4, GL2.GL_FLOAT, false, 0, shape .getPositions() );
 
-                GLES30.glDrawArraysInstanced( GLES30.GL_TRIANGLES, 0, shape .getVertexCount(), shape .getInstanceCount() );
+                gl.glDrawArraysInstanced( GL2.GL_TRIANGLES, 0, shape .getVertexCount(), shape .getInstanceCount() );
             }
             else {
-                GLES30.glDrawArrays( GLES30.GL_TRIANGLES, 0, shape .getVertexCount() );
+                gl.glDrawArrays( GL2.GL_TRIANGLES, 0, shape .getVertexCount() );
             }
         }
         else {
-            GLES30.glDrawArrays( GLES30.GL_LINES, 0, shape .getVertexCount() );
+            gl.glDrawArrays( GL2.GL_LINES, 0, shape .getVertexCount() );
         }
-        checkGLError("Drawing a shape");
+        checkGLError( gl, "Drawing a shape");
     }
 }
