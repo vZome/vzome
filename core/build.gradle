@@ -57,6 +57,7 @@ processResources {
 dependencies {
     compile     group: 'org.antlr',         name: 'antlr4',            version:'4.7.1'
     compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
+    compile     group: 'org.jogamp.jogl',   name: 'jogl-all-main',     version:'2.3.2'
     compile     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
     compile     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
 
