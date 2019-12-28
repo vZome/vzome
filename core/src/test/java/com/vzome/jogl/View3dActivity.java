@@ -284,6 +284,7 @@ public class View3dActivity
             @Override
             public void run() {
                 view3dActivity .doInBackground( args );
+                glcanvas .display();
             }
         } .run();
     }
