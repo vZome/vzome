@@ -65,7 +65,8 @@ class RenderingProgram
                     "   float orientationAsFloat = a_InstanceData.w;\n" + 
                     "   vec4 location = vec4( a_InstanceData.xyz, 1.0 );\n" + 
                     "\n" + 
-                    "   int orientation = max( 0, min( 59, orientationAsFloat ) );\n" + 
+                    "\n" + 
+                    "   int orientation = int( max( 0, min( 59, orientationAsFloat ) ) );\n" + 
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Position );\n" + 
                     "   vec4 normal = ( u_Orientations[ orientation ] * vec4( a_Normal, 0.0 ) );\n" + 
                     "   vec4 pos = oriented + location;\n" + 

@@ -109,7 +109,7 @@ public class View3dActivity
 
         this .lightingRenderer = new RenderingProgram( gl, true, false );
 
-//        this .instancedRenderer = new RenderingProgram( gl, true, true );
+        this .instancedRenderer = new RenderingProgram( gl, true, true );
 
         gl.glEnable(GL2.GL_DEPTH_TEST);
 
@@ -148,9 +148,9 @@ public class View3dActivity
 
         if ( ! loading )
         {
-            this.lightingRenderer.setUniforms( gl, mModelCube, mCamera, projection, orientations );
+            this.instancedRenderer.setUniforms( gl, mModelCube, mCamera, projection, orientations );
             for( ShapeClass shapeClass : shapes )
-                this.lightingRenderer.renderShape( gl, shapeClass );
+                this.instancedRenderer.renderShape( gl, shapeClass );
         }
         else
         {
