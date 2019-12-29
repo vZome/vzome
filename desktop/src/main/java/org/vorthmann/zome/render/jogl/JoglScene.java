@@ -6,7 +6,6 @@ package org.vorthmann.zome.render.jogl;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import com.jogamp.opengl.math.FloatUtil;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.OpenGlSceneLoader;
@@ -41,7 +40,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
             }} );
 	}
 
-    void render( RenderingProgram renderer, float[] camera, int width, int height )
+    void render( RenderingProgram renderer )
     {
         Scene scene = OpenGlSceneLoader .getOpenGlScene( this .model, this .colors );
         float[] rgba = new float[4];
@@ -50,20 +49,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 
         //        renderer .bindBuffers( gl, scene );
         
-        float[] projection = new float[16];
-        float[] objectTrans = new float[16];
-
-        // Object first appears directly in front of user
-        FloatUtil.makeIdentity( objectTrans );
-
-        // Build the camera matrix and apply it to the ModelView.
-//        FloatUtil.makeLookAt( camera, 0, new float[]{0f, 0f, 4f}, 0, new float[]{0f, 0f, 0f}, 0, new float[]{0f, 1f, 0f}, 0, new float[16] );
-        
-        float aspectRatio = (float) width / (float) height;
-        FloatUtil.makePerspective( projection, 0, true, 0.4f, aspectRatio, 0.1f, 1000f );
-
         renderer .setOrientations( scene .getOrientations() );
-        renderer .setUniforms( objectTrans, camera, projection );
         renderer .renderScene( scene );
     }
 

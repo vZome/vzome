@@ -13,6 +13,7 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
@@ -33,13 +34,17 @@ import com.vzome.opengl.RenderingProgram;
  * @author vorth
  *
  */
-public class JoglRenderingViewer implements RenderingViewer
+public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 {
     private final JoglScene scene;
+    private JoglOpenGlShim glShim;
+    private RenderingProgram renderer = null;
     private FPSAnimator animator;
     private final GLU glu = new GLU();
-    private double near = 100, far = 2000, fov = 0;
+
+    private float near = 100, far = 2000, fov = 0.4f;
     private float[] matrix = new float[16]; // stored in column-major order, for JOGL-friendliness
+    private float aspectRatio = 1f;
 
     public JoglRenderingViewer( JoglScene scene, GLCanvas canvas )
     {
@@ -48,45 +53,67 @@ public class JoglRenderingViewer implements RenderingViewer
         if ( canvas == null )
             return;
 
-        canvas .addGLEventListener( new GLEventListener()
-        {
-            JoglOpenGlShim glShim;
-            RenderingProgram renderer = null;
-            
-            @Override
-            public void reshape( GLAutoDrawable glautodrawable, int x, int y, int width, int height )
-            {
-                if ( this .renderer == null ) {
-                    this .glShim = new JoglOpenGlShim( glautodrawable .getGL() .getGL2() );
-                    this .renderer = new RenderingProgram( this .glShim, true, true );
-                }
-                // TODO: update the stored width and height
-            }
-
-            @Override
-            public void init( GLAutoDrawable glautodrawable ) {}
-
-            @Override
-            public void dispose( GLAutoDrawable glautodrawable )
-            {
-                animator .stop();
-            }
-
-            @Override
-            public void display( GLAutoDrawable glautodrawable )
-            {
-                if ( this .glShim .isSameContext( glautodrawable .getGL() .getGL2() ) )
-                    JoglRenderingViewer.this .scene .render( this .renderer, matrix, glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
-                else
-                    System.out.println( "Different GL2!" );
-            }
-        });
+        canvas .addGLEventListener( this );
 
         // Start animator (which should be a field).
         this .animator = new FPSAnimator( canvas, 60 );
         this .animator .start();
     }
+    
+    // These are GLEventListener methods
 
+    @Override
+    public void init( GLAutoDrawable drawable )
+    {
+        this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
+        this .renderer = new RenderingProgram( this .glShim, true, true );
+        // store the scene geometry
+    }
+
+    @Override
+    public void dispose( GLAutoDrawable drawable )
+    {
+        this .animator .stop();
+    }
+
+    @Override
+    public void display( GLAutoDrawable drawable )
+    {
+        if ( this .glShim .isSameContext( drawable .getGL() .getGL2() ) ) {
+            this .render();
+        }
+        else
+            System.out.println( "Different GL2!" );
+    }
+
+    @Override
+    public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
+    {
+        this .aspectRatio = (float) width / (float) height;
+        this .render();
+    }
+
+    // Private methods
+    
+    private void render()
+    {
+        if ( this .renderer == null )
+            return; // still initializing
+        
+        float[] projection = new float[16];
+        float[] objectTrans = new float[16];
+
+        // Object first appears directly in front of user
+        FloatUtil.makeIdentity( objectTrans );
+        
+        FloatUtil.makePerspective( projection, 0, true, this .fov, this .aspectRatio, this .near, this .far );
+        renderer .setUniforms( objectTrans, this.matrix, projection );
+
+        this .scene .render( this .renderer );
+    }
+
+    // These are RenderingViewer methods
+    
     @Override
     public void setEye( int eye ) {}
 
@@ -103,22 +130,25 @@ public class JoglRenderingViewer implements RenderingViewer
                 this .matrix[ i ] = (float) copy .getElement( row, column );
                 ++i;
             }
+        this .render();
     }
 
     @Override
     public void setPerspective( double fov, double aspectRatio, double near, double far )
     {
-        this .fov = fov;
-        this .near = near;
-        this .far = far;
+        this .fov = (float) fov;
+        this .near = (float) near;
+        this .far = (float) far;
+
+        this .render();
     }
 
     @Override
     public void setOrthographic( double halfEdge, double near, double far )
     {
-        this .fov = 0;
-        this .near = near;
-        this .far = far;
+//        this .fov = 0;
+//        this .near = near;
+//        this .far = far;
     }
 
     @Override
@@ -153,5 +183,4 @@ public class JoglRenderingViewer implements RenderingViewer
     {
         // TODO Auto-generated method stub
     }
-
 }
