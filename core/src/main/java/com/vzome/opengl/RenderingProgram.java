@@ -268,7 +268,6 @@ public class RenderingProgram
 
     public void renderShape( OpenGlShim gl, ShapeClass shape )
     {
-
         float[] color = shape .getColor();
         gl.glUniform4f( mColorParam, color[0], color[1], color[2], color[3] );
 
