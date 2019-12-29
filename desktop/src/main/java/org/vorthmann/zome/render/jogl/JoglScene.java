@@ -51,10 +51,10 @@ public class JoglScene implements RenderingChanges
         //        renderer .bindBuffers( gl, scene );
         
         float[] projection = new float[16];
-        float[] objectTranslate = new float[16];
+        float[] objectTrans = new float[16];
 
         // Object first appears directly in front of user
-        FloatUtil.makeIdentity(objectTranslate );
+        FloatUtil.makeIdentity( objectTrans );
 
         // Build the camera matrix and apply it to the ModelView.
 //        FloatUtil.makeLookAt( camera, 0, new float[]{0f, 0f, 4f}, 0, new float[]{0f, 0f, 0f}, 0, new float[]{0f, 1f, 0f}, 0, new float[16] );
@@ -63,7 +63,7 @@ public class JoglScene implements RenderingChanges
         FloatUtil.makePerspective( projection, 0, true, 0.4f, aspectRatio, 0.1f, 1000f );
 
         renderer .setOrientations( scene .getOrientations() );
-        renderer .setUniforms( objectTranslate, camera, projection );
+        renderer .setUniforms( objectTrans, camera, projection );
         renderer .renderScene( scene );
     }
 
