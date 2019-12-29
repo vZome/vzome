@@ -26,9 +26,9 @@ public class RenderingProgram
 
     private static final int COORDS_PER_VERTEX = 3;
 
-    public RenderingProgram( GL2 gl, boolean lighting, boolean instanced )
+    public RenderingProgram( OpenGlShim gl, boolean lighting, boolean instanced )
     {
-        String version = gl .getContext() .getGLSLVersionString();
+        String version = gl .getGLSLVersionString();
         this .doLighting = lighting;
         this .isInstanced = lighting && instanced;
 
@@ -110,7 +110,7 @@ public class RenderingProgram
                     "   v_Color = u_Color * diffuse;\n" + 
                     "   gl_Position = u_MVP * a_Position;\n" + 
                     "}";
-        int vertexShader = loadGLShader( gl, GL2.GL_VERTEX_SHADER, vertexShaderSrc );
+        int vertexShader = loadGLShader( gl, true, vertexShaderSrc );
 
 //        int fragmentShaderRsrc = R.raw.simple_fragment;
         String fragmentShaderSrc = version + "\n" +
@@ -138,7 +138,7 @@ public class RenderingProgram
                     "        gl_FragColor = v_Color;\n" + 
                     "    }\n" + 
                     "}";
-        int fragmentShader = loadGLShader( gl, GL2.GL_FRAGMENT_SHADER, fragmentShaderSrc );
+        int fragmentShader = loadGLShader( gl, false, fragmentShaderSrc );
 
         mGlProgram = gl.glCreateProgram();
         checkGLError( gl, "glCreateProgram");
@@ -183,14 +183,11 @@ public class RenderingProgram
      * @param resId The resource ID of the raw text file about to be turned into a shader.
      * @return
      */
-    private static int loadGLShader( GL2 gl, int type, String code )
+    private static int loadGLShader( OpenGlShim gl, boolean isVertexShader, String code )
     {
-        int shader = gl.glCreateShader(type);
+        int shader = isVertexShader? gl.glCreateVertexShader() : gl.glCreateFragmentShader();
 
-//        gl.glShaderSource(shader, code);
-        String[] vlines = new String[] { code };
-        int[] vlengths = new int[] { vlines[0].length() };
-        gl .glShaderSource( shader, vlines.length, vlines, vlengths, 0 );
+        gl.glShaderSource( shader, code );
         
         checkGLError( gl,  "glShaderSource" );
         gl.glCompileShader(shader);
@@ -198,17 +195,13 @@ public class RenderingProgram
 
         // Get the compilation status.
         final int[] compileStatus = new int[1];
-        gl.glGetShaderiv(shader, GL2.GL_COMPILE_STATUS, compileStatus, 0);
+        gl.glGetShaderStatus(shader, compileStatus, 0);
         checkGLError( gl,  "glGetShaderiv" );
 
         // If the compilation failed, delete the shader.
         if (compileStatus[0] == 0) {
-//            Log.e( TAG, "Error compiling shader: " + gl.glGetShaderInfoLog(shader));
-            int[] logLength = new int[1];
-            gl .glGetShaderiv( shader, GL2.GL_INFO_LOG_LENGTH, logLength, 0 );
-            byte[] log = new byte[logLength[0]];
-            gl .glGetShaderInfoLog( shader, logLength[0], (int[])null, 0, log, 0 );
-            System.out.println( "Error compiling shader: " + new String( log ) );
+            String problem = gl.glGetShaderInfoLog(shader);
+            System .out.println(  "Error compiling shader: " + problem );
             gl.glDeleteShader(shader);
             shader = 0;
         }
@@ -224,7 +217,7 @@ public class RenderingProgram
      * Checks if we've had an error inside of OpenGL ES, and if so what that error is.
      * @param func
      */
-    public static void checkGLError( GL2 gl, String func )
+    public static void checkGLError( OpenGlShim gl, String func )
     {
         int error;
         while ((error = gl.glGetError()) != GL2.GL_NO_ERROR) {
@@ -233,7 +226,7 @@ public class RenderingProgram
         }
     }
 
-    public void setUniforms( GL2 gl, float[] model, float[] camera, float[] projection, float[][] icosahedralOrientations )
+    public void setUniforms( OpenGlShim gl, float[] model, float[] camera, float[] projection, float[][] icosahedralOrientations )
     {
         gl.glUseProgram( mGlProgram );
         checkGLError( gl, "glUseProgram");  // a compile / link problem seems to fail only now!
@@ -273,7 +266,7 @@ public class RenderingProgram
         }
     }
 
-    public void renderShape( GL2 gl, ShapeClass shape )
+    public void renderShape( OpenGlShim gl, ShapeClass shape )
     {
 
         float[] color = shape .getColor();
@@ -282,14 +275,14 @@ public class RenderingProgram
         // Set the vertices of the shape
         gl.glEnableVertexAttribArray(mPositionParam);
         gl.glVertexAttribDivisor(mPositionParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-        gl.glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, GL2.GL_FLOAT,
+        gl.glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX,
                 false, 0, shape .getVertices() );
         checkGLError( gl, "mPositionParam");
 
         if ( doLighting ) {
             gl.glEnableVertexAttribArray(normalParam);
             gl.glVertexAttribDivisor(normalParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            gl.glVertexAttribPointer(normalParam, COORDS_PER_VERTEX, GL2.GL_FLOAT,
+            gl.glVertexAttribPointer(normalParam, COORDS_PER_VERTEX,
                     false, 0, shape .getNormals() );
             checkGLError( gl, "normalParam");
 
@@ -297,16 +290,16 @@ public class RenderingProgram
                 // Set the positions of the shapes
                 gl.glEnableVertexAttribArray( instanceData );
                 gl.glVertexAttribDivisor( instanceData, 1);  // SV: this one is instanced
-                gl.glVertexAttribPointer( instanceData, 4, GL2.GL_FLOAT, false, 0, shape .getPositions() );
+                gl.glVertexAttribPointer( instanceData, 4, false, 0, shape .getPositions() );
 
-                gl.glDrawArraysInstanced( GL2.GL_TRIANGLES, 0, shape .getVertexCount(), shape .getInstanceCount() );
+                gl.glDrawArraysInstanced( 0, shape .getVertexCount(), shape .getInstanceCount() );
             }
             else {
-                gl.glDrawArrays( GL2.GL_TRIANGLES, 0, shape .getVertexCount() );
+                gl.glDrawTriangles( 0, shape .getVertexCount() );
             }
         }
         else {
-            gl.glDrawArrays( GL2.GL_LINES, 0, shape .getVertexCount() );
+            gl.glDrawLines( 0, shape .getVertexCount() );
         }
         checkGLError( gl, "Drawing a shape");
     }

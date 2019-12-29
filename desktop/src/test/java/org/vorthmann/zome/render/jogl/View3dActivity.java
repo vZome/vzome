@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.vzome.jogl;
+package org.vorthmann.zome.render.jogl;
 
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
@@ -35,6 +34,7 @@ import com.vzome.api.Document;
 import com.vzome.api.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.OpenGlSceneLoader;
+import com.vzome.opengl.OpenGlShim;
 import com.vzome.opengl.RenderingProgram;
 import com.vzome.opengl.Scene;
 import com.vzome.opengl.ShapeClass;
@@ -88,7 +88,7 @@ public class View3dActivity
      * arrays, but rather needs data in a format it can understand. Hence we use ByteBuffers.
      * @param config The EGL configuration used when creating the surface.
      */
-    public void onSurfaceCreated( GL2 gl )
+    public void onSurfaceCreated( OpenGlShim gl )
     {
         this .mFloor = new ShapeClass( WorldLayoutData.FLOOR_COORDS, WorldLayoutData.FLOOR_NORMALS, null, WorldLayoutData.FLOOR_COLOR );
 
@@ -98,19 +98,14 @@ public class View3dActivity
 
         this .instancedRenderer = new RenderingProgram( gl, true, true );
 
-        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glEnableDepth();
 
         // Object first appears directly in front of user
-//        Matrix.setIdentityM(mModelCube, 0);
-//        Matrix.translateM(mModelCube, 0, 0, 0, -mObjectDistance);
         FloatUtil.makeTranslation( mModelCube, true, 0, 0, -mObjectDistance );
 
-//        Matrix.setIdentityM(mModelFloor, 0);
-//        Matrix.translateM(mModelFloor, 0, 0, -mFloorDepth, 0); // Floor appears below user
         FloatUtil.makeTranslation( mModelFloor, true, 0, -mFloorDepth, 0 );
 
         // Build the camera matrix and apply it to the ModelView.
-//        Matrix.setLookAtM( mCamera, 0, 0.0f, 0.0f, CAMERA_Z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f );
         FloatUtil.makeLookAt( mCamera, 0, new float[]{0.0f, 0.0f, CAMERA_Z}, 0, new float[]{0.0f, 0.0f, 0.0f}, 0, new float[]{0.0f, 1.0f, 0.0f}, 0, new float[16] );
         
         FloatUtil.makePerspective( projection, 0, true, 0.6f, 1.0f, 0.1f, 1000f );
@@ -121,16 +116,15 @@ public class View3dActivity
      * a parameter.
      * @param transform The transformations to apply to render this eye.
      */
-    public void onDrawEye( GL2 gl )
+    public void onDrawEye( OpenGlShim gl )
     {
         if ( failedLoad )
-            gl.glClearColor( 0.5f, 0f, 0f, 1f );
+            gl.glClear( 0.5f, 0f, 0f, 1f );
         else if ( this .scene == null )
-            gl.glClearColor( 0.2f, 0.3f, 0.4f, 0.5f );
+            gl.glClear( 0.2f, 0.3f, 0.4f, 0.5f );
         else
-            gl.glClearColor( 0.5f, 0.6f, 0.7f, 0.5f );
+            gl.glClear( 0.5f, 0.6f, 0.7f, 0.5f );
 
-        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         RenderingProgram .checkGLError( gl, "glClear" );
 
         if ( this .scene != null )
@@ -138,6 +132,9 @@ public class View3dActivity
             this.instancedRenderer.setUniforms( gl, mModelCube, mCamera, projection, this.scene.getOrientations() );
             for( ShapeClass shapeClass : scene )
                 this.instancedRenderer.renderShape( gl, shapeClass );
+
+            this .lightingRenderer .setUniforms( gl, mModelFloor, mCamera, projection, this.scene.getOrientations() );
+            this .lightingRenderer .renderShape( gl, mFloor );
         }
         else
         {
@@ -146,9 +143,6 @@ public class View3dActivity
                 this.lineRenderer.renderShape( gl, struts );
             }
         }
-
-        this .lightingRenderer .setUniforms( gl, mModelFloor, mCamera, projection, this.scene.getOrientations() );
-        this .lightingRenderer .renderShape( gl, mFloor );
     }
 
     protected String doInBackground(String... urls) {
@@ -188,11 +182,12 @@ public class View3dActivity
 
         glcanvas.addGLEventListener( new GLEventListener() {
             
+            private OpenGlShim gl;
+            
             @Override
             public void reshape( GLAutoDrawable glautodrawable, int x, int y, int width, int height )
             {
-//                OneTriangle.setup( glautodrawable.getGL().getGL2(), width, height );
-                GL2 gl = glautodrawable.getGL().getGL2();
+                this.gl = new JoglOpenGlShim( glautodrawable.getGL().getGL2() );
                 view3dActivity .onSurfaceCreated( gl );
             }
             
@@ -205,9 +200,7 @@ public class View3dActivity
             @Override
             public void display( GLAutoDrawable glautodrawable )
             {
-//                OneTriangle.render( glautodrawable.getGL().getGL2(), glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
-                GL2 gl = glautodrawable.getGL().getGL2();
-                view3dActivity .onDrawEye( gl );
+                view3dActivity .onDrawEye( this.gl );
             }
         });
 

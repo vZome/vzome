@@ -9,7 +9,6 @@ import java.util.Collection;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 
-import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;

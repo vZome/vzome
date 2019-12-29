@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.vzome.jogl;
+package org.vorthmann.zome.render.jogl;
 
 /**
  * Created by cjr on 6/18/14.

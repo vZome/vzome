@@ -3,6 +3,8 @@ package com.vzome.opengl;
 import java.nio.FloatBuffer;
 
 public interface OpenGlShim {
+    
+    String getGLSLVersionString();
 
 	int glCreateProgram();
 
@@ -41,6 +43,10 @@ public interface OpenGlShim {
 	void glEnableVertexAttribArray(int mPositionParam);
 
 	void glBindBuffer( int vbo);
+	
+	void glEnableDepth();
+	
+	void glClear( float r, float g, float b, float alpha );
 
 	void glVertexAttribDivisor(int mPositionParam, int i);
 
@@ -65,5 +71,4 @@ public interface OpenGlShim {
 	void transposeM(float[] worldInverseTranspose, float[] worldInverse);
 
 	void multiplyMV(float[] lightPosInEyeSpace, float[] view, float[] mlightposinworldspace );
-
 }

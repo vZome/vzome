@@ -187,4 +187,23 @@ public class JoglOpenGlShim implements OpenGlShim
     public void multiplyMV(float[] floats, float[] floats2, float[] floats3 ) {
 //        Matrix.multiplyMV( floats, 0, floats2, 0, floats3, 0 );
     }
+
+    @Override
+    public String getGLSLVersionString()
+    {
+        return gl2 .getContext() .getGLSLVersionString();
+    }
+
+    @Override
+    public void glEnableDepth()
+    {
+        gl2 .glEnable( GL2.GL_DEPTH_TEST );
+    }
+
+    @Override
+    public void glClear( float r, float g, float b, float alpha )
+    {
+        gl2 .glClearColor( r, g, b, alpha );
+        gl2 .glClear( GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT );
+    }
 }

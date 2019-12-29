@@ -3,9 +3,6 @@
 
 package org.vorthmann.zome.render.jogl;
 
-import com.jogamp.common.nio.Buffers;
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.math.FloatUtil;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.OpenGlSceneLoader;
@@ -13,10 +10,10 @@ import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
-import com.vzome.opengl.InstancedRenderer;
 import com.vzome.opengl.OpenGlShim;
-import com.vzome.opengl.Renderer;
+import com.vzome.opengl.RenderingProgram;
 import com.vzome.opengl.Scene;
+import com.vzome.opengl.ShapeClass;
 
 public class JoglScene implements RenderingChanges
 {
@@ -28,20 +25,30 @@ public class JoglScene implements RenderingChanges
         this.colors = colors;
 	}
 
-    void render( OpenGlShim glShim )
+    void render( OpenGlShim gl )
     {
-        Scene scene = OpenGlSceneLoader .getOpenGlScene( this .model, this .colors );
-        Renderer renderer = new InstancedRenderer( glShim );
-        renderer .bindBuffers( glShim, scene );
+        gl .glEnableDepth();
+        gl .glClear( 0.4f, 0.7f, 1.0f, 1.0f );
         
-        float[] perspective = new float[16];
-        FloatUtil .makePerspective( perspective, 0, true, 1.0f, 1.0f, 0.2f, 1000f );
-        float[] identity = new float[16];
-        FloatUtil .makeIdentity( identity );
+        Scene scene = OpenGlSceneLoader .getOpenGlScene( this .model, this .colors );
+        RenderingProgram renderer = new RenderingProgram( gl, true, true );
+//        renderer .bindBuffers( gl, scene );
+        
+        float[] projection = new float[16];
+        float[] objectTranslate = new float[16];
         float[] camera = new float[16];
-        float[] temp = new float[16];
-        FloatUtil .makeLookAt( camera, 0, new float[]{0,0,0}, 0, new float[]{0,0,-50}, 0, new float[]{0,1,0}, 0, temp );
-        renderer .renderScene( glShim, identity, camera, identity, perspective, scene );
+
+        // Object first appears directly in front of user
+        FloatUtil.makeTranslation( objectTranslate, true, 0, 0, -1f );
+
+        // Build the camera matrix and apply it to the ModelView.
+        FloatUtil.makeLookAt( camera, 0, new float[]{0.0f, 0.0f, 0.01f}, 0, new float[]{0.0f, 0.0f, 0.0f}, 0, new float[]{0.0f, 1.0f, 0.0f}, 0, new float[16] );
+        
+        FloatUtil.makePerspective( projection, 0, true, 0.6f, 1.0f, 0.1f, 1000f );
+
+        renderer .setUniforms( gl, objectTranslate, camera, projection, scene .getOrientations() );
+        for( ShapeClass shapeClass : scene )
+            renderer .renderShape( gl, shapeClass );
     }
 
 	@Override
