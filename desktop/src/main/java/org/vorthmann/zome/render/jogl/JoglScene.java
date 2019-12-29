@@ -17,7 +17,7 @@ import com.vzome.core.viewing.Lights;
 import com.vzome.opengl.RenderingProgram;
 import com.vzome.opengl.Scene;
 
-public class JoglScene implements RenderingChanges
+public class JoglScene implements RenderingChanges, PropertyChangeListener
 {
 	private RenderedModel model;
     private final Colors colors;
@@ -128,5 +128,27 @@ public class JoglScene implements RenderingChanges
 		// TODO Auto-generated method stub
 
 	}
+
+    @Override
+    public void propertyChange( PropertyChangeEvent evt )
+    {
+        switch ( evt .getPropertyName() ) {
+
+        case "drawNormals":
+            break;
+
+        case "drawOutlines":
+            break;
+
+        case "showFrameLabels":
+            break;
+
+        case "showIcosahedralLabels":
+            break;
+
+        default:
+            break;
+        }
+    }
 
 }
