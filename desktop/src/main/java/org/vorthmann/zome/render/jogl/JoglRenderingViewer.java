@@ -39,7 +39,7 @@ public class JoglRenderingViewer implements RenderingViewer
     private FPSAnimator animator;
     private final GLU glu = new GLU();
     private double near = 100, far = 2000, fov = 0;
-    private double[] matrix = new double[16]; // stored in column-major order, for JOGL-friendliness
+    private float[] matrix = new float[16]; // stored in column-major order, for JOGL-friendliness
 
     public JoglRenderingViewer( JoglScene scene, GLCanvas canvas )
     {
@@ -76,7 +76,7 @@ public class JoglRenderingViewer implements RenderingViewer
             public void display( GLAutoDrawable glautodrawable )
             {
                 if ( this .glShim .isSameContext( glautodrawable .getGL() .getGL2() ) )
-                    JoglRenderingViewer.this .scene .render( this .renderer, glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
+                    JoglRenderingViewer.this .scene .render( this .renderer, matrix, glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
                 else
                     System.out.println( "Different GL2!" );
             }
@@ -100,7 +100,7 @@ public class JoglRenderingViewer implements RenderingViewer
         for ( int column = 0; column < 4; column++ )
             for ( int row = 0; row < 4; row++ )
             {
-                this .matrix[ i ] = copy .getElement( row, column );
+                this .matrix[ i ] = (float) copy .getElement( row, column );
                 ++i;
             }
     }
