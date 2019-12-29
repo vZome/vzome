@@ -22,7 +22,7 @@ public class RenderingProgram
     private int[] mOrientationsParam = new int[60];
 
     // We keep the light always position just above the user.
-    private static final float[] mLightPosInWorldSpace = new float[] {0.0f, 2.0f, 0.0f, 1.0f};
+    private static final float[] mLightPosInWorldSpace = new float[] {2.0f, 5.0f, -30.0f, 1.0f};
 
     private static final int COORDS_PER_VERTEX = 3;
 

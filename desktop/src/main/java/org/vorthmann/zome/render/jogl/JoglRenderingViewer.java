@@ -73,7 +73,7 @@ public class JoglRenderingViewer implements RenderingViewer
             {
                 JoglRenderingViewer.this .updateView( this .glShim, glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
                 // GL commands to render the scene here
-                JoglRenderingViewer.this .scene .render( this .glShim );
+                JoglRenderingViewer.this .scene .render( this .glShim, glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
             }
         });
 

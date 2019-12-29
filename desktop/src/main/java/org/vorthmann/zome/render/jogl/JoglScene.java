@@ -25,10 +25,10 @@ public class JoglScene implements RenderingChanges
         this.colors = colors;
 	}
 
-    void render( OpenGlShim gl )
+    void render( OpenGlShim gl, int width, int height )
     {
         gl .glEnableDepth();
-        gl .glClear( 0.4f, 0.7f, 1.0f, 1.0f );
+        gl .glClear( 154/255f, 217/255f, 240/255f, 1.0f );
         
         Scene scene = OpenGlSceneLoader .getOpenGlScene( this .model, this .colors );
         RenderingProgram renderer = new RenderingProgram( gl, true, true );
@@ -42,9 +42,10 @@ public class JoglScene implements RenderingChanges
         FloatUtil.makeTranslation( objectTranslate, true, 0, 0, -1f );
 
         // Build the camera matrix and apply it to the ModelView.
-        FloatUtil.makeLookAt( camera, 0, new float[]{0.0f, 0.0f, 0.01f}, 0, new float[]{0.0f, 0.0f, 0.0f}, 0, new float[]{0.0f, 1.0f, 0.0f}, 0, new float[16] );
+        FloatUtil.makeLookAt( camera, 0, new float[]{0f, 0f, 4f}, 0, new float[]{0f, 0f, 0f}, 0, new float[]{0f, 1f, 0f}, 0, new float[16] );
         
-        FloatUtil.makePerspective( projection, 0, true, 0.6f, 1.0f, 0.1f, 1000f );
+        float aspectRatio = (float) width / (float) height;
+        FloatUtil.makePerspective( projection, 0, true, 0.4f, aspectRatio, 0.1f, 1000f );
 
         renderer .setUniforms( gl, objectTranslate, camera, projection, scene .getOrientations() );
         for( ShapeClass shapeClass : scene )
