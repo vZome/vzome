@@ -21,16 +21,13 @@ import com.vzome.opengl.ShapeClass;
 
 public class OpenGlSceneLoader
 {
-    private static final float MODEL_SCALE_FACTOR = 0.05f;
-
-
     public static class Config
     {
         public Set<RenderedManifestation> instances = new HashSet<>();
         public float[] color;
     }
 
-    public static Scene getOpenGlScene( RenderedModel rmodel, Colors colors )
+    public static Scene getOpenGlScene( RenderedModel rmodel, Colors colors, float globalScale )
     {
         // wireframe of struts, just for quick rendering feedback
         //    	float[] black = new float[] { 0f, 0f, 0f, 1f };
@@ -69,13 +66,13 @@ public class OpenGlSceneLoader
         for( Map.Entry<Polyhedron, Config> entry : shapeClassConfigs.entrySet() )
         {
             Config config = entry .getValue();
-            ShapeClass shapeClass = create( entry .getKey(), config.instances, config.color );
+            ShapeClass shapeClass = create( entry .getKey(), config.instances, config.color, globalScale );
             shapes .add( shapeClass );
         }
         return new Scene( shapes, getOrientations( rmodel .getOrbitSource() ) );
     }
 
-    private static ShapeClass create( Polyhedron shape, Set<RenderedManifestation> parts, float[] color )
+    private static ShapeClass create( Polyhedron shape, Set<RenderedManifestation> parts, float[] color, float globalScale )
     {
         List<RealVector> vertices = new ArrayList<>();
         List<RealVector> normals = new ArrayList<>();
@@ -106,7 +103,7 @@ public class OpenGlSceneLoader
         float[] normalsArray = new float[ShapeClass.COORDS_PER_VERTEX * normals.size()];  // same size!
         for (int i = 0; i < vertices.size(); i++) {
             RealVector vector = vertices.get(i);
-            vector = vector .scale( MODEL_SCALE_FACTOR );
+            vector = vector .scale( globalScale );
             verticesArray[i * ShapeClass.COORDS_PER_VERTEX] = (float) vector.x;
             verticesArray[i * ShapeClass.COORDS_PER_VERTEX + 1] = (float) vector.y;
             verticesArray[i * ShapeClass.COORDS_PER_VERTEX + 2] = (float) vector.z;
@@ -121,9 +118,9 @@ public class OpenGlSceneLoader
         for( RenderedManifestation part : parts ) {
             AlgebraicVector vector = part .getLocationAV(); // this would be null for a panel!
             int zone = part .getStrutZone();
-            offsets[i * 4 + 0] = MODEL_SCALE_FACTOR * (float) vector .getComponent( AlgebraicVector.X ) .evaluate();
-            offsets[i * 4 + 1] = MODEL_SCALE_FACTOR * (float) vector .getComponent( AlgebraicVector.Y ) .evaluate();
-            offsets[i * 4 + 2] = MODEL_SCALE_FACTOR * (float) vector .getComponent( AlgebraicVector.Z ) .evaluate();
+            offsets[i * 4 + 0] = globalScale * (float) vector .getComponent( AlgebraicVector.X ) .evaluate();
+            offsets[i * 4 + 1] = globalScale * (float) vector .getComponent( AlgebraicVector.Y ) .evaluate();
+            offsets[i * 4 + 2] = globalScale * (float) vector .getComponent( AlgebraicVector.Z ) .evaluate();
             offsets[i * 4 + 3] = (float) zone;
             ++i;
         }
