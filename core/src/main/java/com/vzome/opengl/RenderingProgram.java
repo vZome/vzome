@@ -8,6 +8,8 @@ import com.jogamp.opengl.math.FloatUtil;
 */
 public class RenderingProgram
 {
+    private final OpenGlShim gl;
+
     private int mGlProgram;
     private boolean isInstanced;
     private boolean doLighting;
@@ -28,6 +30,7 @@ public class RenderingProgram
 
     public RenderingProgram( OpenGlShim gl, boolean lighting, boolean instanced )
     {
+        this.gl = gl;
         String version = gl .getGLSLVersionString();
         this .doLighting = lighting;
         this .isInstanced = lighting && instanced;
@@ -110,7 +113,7 @@ public class RenderingProgram
                     "   v_Color = u_Color * diffuse;\n" + 
                     "   gl_Position = u_MVP * a_Position;\n" + 
                     "}";
-        int vertexShader = loadGLShader( gl, true, vertexShaderSrc );
+        int vertexShader = loadGLShader( true, vertexShaderSrc );
 
 //        int fragmentShaderRsrc = R.raw.simple_fragment;
         String fragmentShaderSrc = version + "\n" +
@@ -138,23 +141,23 @@ public class RenderingProgram
                     "        gl_FragColor = v_Color;\n" + 
                     "    }\n" + 
                     "}";
-        int fragmentShader = loadGLShader( gl, false, fragmentShaderSrc );
+        int fragmentShader = loadGLShader( false, fragmentShaderSrc );
 
         mGlProgram = gl.glCreateProgram();
-        checkGLError( gl, "glCreateProgram");
+        checkGLError( "glCreateProgram");
         gl.glAttachShader(mGlProgram, vertexShader);
-        checkGLError( gl, "glAttachShader vertexShader");
+        checkGLError( "glAttachShader vertexShader");
         gl.glAttachShader(mGlProgram, fragmentShader);
-        checkGLError( gl, "glAttachShader fragmentShader");
+        checkGLError( "glAttachShader fragmentShader");
         gl.glLinkProgram(mGlProgram);
-        checkGLError( gl, "glLinkProgram");
+        checkGLError( "glLinkProgram");
 
         mModelViewProjectionParam = gl.glGetUniformLocation( mGlProgram, "u_MVP" );
-        checkGLError( gl, "worldViewProjection");
+        checkGLError( "worldViewProjection");
 
         mPositionParam = gl.glGetAttribLocation(mGlProgram, "a_Position");
         mColorParam = gl.glGetUniformLocation(mGlProgram, "u_Color");
-        checkGLError( gl, "u_Color");
+        checkGLError( "u_Color");
 
         if ( this .doLighting )
         {
@@ -165,7 +168,7 @@ public class RenderingProgram
             }
 
             normalParam = gl.glGetAttribLocation( mGlProgram, "a_Normal" );
-            checkGLError( gl, "a_Normal");
+            checkGLError( "a_Normal");
 
             if ( this .isInstanced ) {
 
@@ -183,20 +186,20 @@ public class RenderingProgram
      * @param resId The resource ID of the raw text file about to be turned into a shader.
      * @return
      */
-    private static int loadGLShader( OpenGlShim gl, boolean isVertexShader, String code )
+    private int loadGLShader( boolean isVertexShader, String code )
     {
         int shader = isVertexShader? gl.glCreateVertexShader() : gl.glCreateFragmentShader();
 
         gl.glShaderSource( shader, code );
         
-        checkGLError( gl,  "glShaderSource" );
+        checkGLError( "glShaderSource" );
         gl.glCompileShader(shader);
-        checkGLError( gl,  "glCompileShader" );
+        checkGLError( "glCompileShader" );
 
         // Get the compilation status.
         final int[] compileStatus = new int[1];
         gl.glGetShaderStatus(shader, compileStatus, 0);
-        checkGLError( gl,  "glGetShaderiv" );
+        checkGLError( "glGetShaderiv" );
 
         // If the compilation failed, delete the shader.
         if (compileStatus[0] == 0) {
@@ -217,7 +220,7 @@ public class RenderingProgram
      * Checks if we've had an error inside of OpenGL ES, and if so what that error is.
      * @param func
      */
-    public static void checkGLError( OpenGlShim gl, String func )
+    public void checkGLError( String func )
     {
         int error;
         while ((error = gl.glGetError()) != GL2.GL_NO_ERROR) {
@@ -226,25 +229,30 @@ public class RenderingProgram
         }
     }
 
-    public void setUniforms( OpenGlShim gl, float[] model, float[] camera, float[] projection, float[][] icosahedralOrientations )
+    public void setOrientations( float[][] icosahedralOrientations )
     {
         gl.glUseProgram( mGlProgram );
-        checkGLError( gl, "glUseProgram");  // a compile / link problem seems to fail only now!
+        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
+        if ( this .isInstanced ) {
+            for ( int i = 0; i < 60; i++ )
+                gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, icosahedralOrientations[ i ], 0 );
+            checkGLError( "mOrientationsParam");
+        }
+    }
+
+    public void setUniforms( float[] model, float[] camera, float[] projection )
+    {
+        gl.glUseProgram( mGlProgram );
+        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         float[] modelViewProjection = new float[16];
-        float[] worldInverse = new float[16];
         float[] modelView = new float[16];
         float[] lightPosInEyeSpace = new float[4];
 
         // Build the ModelView and ModelViewProjection matrices
-        // for calculating cube position and light.
         //  ASSUME ALL MATRICES ARE IN COLUMN-MAJOR ORDER!
-//        Matrix.multiplyMM( modelView, 0, camera, 0, model, 0);
         FloatUtil.multMatrix( camera, model, modelView );
-//        Matrix.multiplyMM( modelViewProjection, 0, projection, 0, modelView, 0);
         FloatUtil.multMatrix( projection, modelView, modelViewProjection );
-//        Matrix.invertM( worldInverse, 0, model, 0 );
-        FloatUtil.invertMatrix( model, worldInverse );
 
         // Set the position of the light
         FloatUtil.multMatrixVec( camera, mLightPosInWorldSpace, lightPosInEyeSpace );
@@ -258,15 +266,23 @@ public class RenderingProgram
                 gl.glUniformMatrix4fv( mModelParam, 1, false, model, 0);
                 gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
             }
-            if ( this .isInstanced ) {
-                for ( int i = 0; i < 60; i++ )
-                    gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, icosahedralOrientations[ i ], 0 );
-                checkGLError( gl, "mOrientationsParam");
-            }
         }
     }
+    
+    public void renderScene( Scene scene )
+    {
+        gl.glUseProgram( mGlProgram );
+        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-    public void renderShape( OpenGlShim gl, ShapeClass shape )
+        gl .glEnableDepth();
+        float[] rgba = scene .getBackground();
+        gl .glClear( rgba[0], rgba[1], rgba[2], rgba[3] );
+        
+        for( ShapeClass shapeClass : scene )
+            this .renderShape( shapeClass );
+    }
+
+    public void renderShape( ShapeClass shape )
     {
         float[] color = shape .getColor();
         gl.glUniform4f( mColorParam, color[0], color[1], color[2], color[3] );
@@ -276,14 +292,14 @@ public class RenderingProgram
         gl.glVertexAttribDivisor(mPositionParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
         gl.glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX,
                 false, 0, shape .getVertices() );
-        checkGLError( gl, "mPositionParam");
+        checkGLError( "mPositionParam");
 
         if ( doLighting ) {
             gl.glEnableVertexAttribArray(normalParam);
             gl.glVertexAttribDivisor(normalParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
             gl.glVertexAttribPointer(normalParam, COORDS_PER_VERTEX,
                     false, 0, shape .getNormals() );
-            checkGLError( gl, "normalParam");
+            checkGLError( "normalParam");
 
             if ( this .isInstanced ) {
                 // Set the positions of the shapes
@@ -300,6 +316,6 @@ public class RenderingProgram
         else {
             gl.glDrawLines( 0, shape .getVertexCount() );
         }
-        checkGLError( gl, "Drawing a shape");
+        checkGLError( "Drawing a shape");
     }
 }

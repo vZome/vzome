@@ -3,36 +3,52 @@
 
 package org.vorthmann.zome.render.jogl;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.jogamp.opengl.math.FloatUtil;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.OpenGlSceneLoader;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
-import com.vzome.opengl.OpenGlShim;
 import com.vzome.opengl.RenderingProgram;
 import com.vzome.opengl.Scene;
-import com.vzome.opengl.ShapeClass;
 
 public class JoglScene implements RenderingChanges
 {
 	private RenderedModel model;
     private final Colors colors;
+    private Color bkgdColor;
 
     JoglScene( Lights lights, Colors colors, boolean isSticky )
 	{
         this.colors = colors;
+        this.bkgdColor = lights .getBackgroundColor();
+        
+        lights .addPropertyListener( new PropertyChangeListener(){
+
+            @Override
+            public void propertyChange( PropertyChangeEvent chg )
+            {
+                if ( "backgroundColor" .equals( chg .getPropertyName() ) )
+                {
+                    int rgb =  Integer .parseInt( (String) chg .getNewValue(), 16 );
+                    bkgdColor = new Color( rgb );
+                }
+            }} );
 	}
 
-    void render( OpenGlShim gl, int width, int height )
+    void render( RenderingProgram renderer, int width, int height )
     {
-        gl .glEnableDepth();
-        gl .glClear( 154/255f, 217/255f, 240/255f, 1.0f );
-        
         Scene scene = OpenGlSceneLoader .getOpenGlScene( this .model, this .colors );
-        RenderingProgram renderer = new RenderingProgram( gl, true, true );
-//        renderer .bindBuffers( gl, scene );
+        float[] rgba = new float[4];
+        this .bkgdColor .getRGBColorComponents( rgba );
+        scene .setBackground( rgba );
+
+        //        renderer .bindBuffers( gl, scene );
         
         float[] projection = new float[16];
         float[] objectTranslate = new float[16];
@@ -47,9 +63,9 @@ public class JoglScene implements RenderingChanges
         float aspectRatio = (float) width / (float) height;
         FloatUtil.makePerspective( projection, 0, true, 0.4f, aspectRatio, 0.1f, 1000f );
 
-        renderer .setUniforms( gl, objectTranslate, camera, projection, scene .getOrientations() );
-        for( ShapeClass shapeClass : scene )
-            renderer .renderShape( gl, shapeClass );
+        renderer .setOrientations( scene .getOrientations() );
+        renderer .setUniforms( objectTranslate, camera, projection );
+        renderer .renderScene( scene );
     }
 
 	@Override

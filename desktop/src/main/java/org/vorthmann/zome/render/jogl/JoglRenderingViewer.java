@@ -17,7 +17,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.desktop.controller.RenderingViewer;
-import com.vzome.opengl.OpenGlShim;
+import com.vzome.opengl.RenderingProgram;
 
 /**
  * A lower-level, and hopefully more performant alternative to Java3dRenderingViewer.
@@ -50,13 +50,17 @@ public class JoglRenderingViewer implements RenderingViewer
 
         canvas .addGLEventListener( new GLEventListener()
         {
-            OpenGlShim glShim;
+            JoglOpenGlShim glShim;
+            RenderingProgram renderer = null;
             
             @Override
             public void reshape( GLAutoDrawable glautodrawable, int x, int y, int width, int height )
             {
-                this .glShim = new JoglOpenGlShim( glautodrawable .getGL() .getGL2() );
-                JoglRenderingViewer.this .updateView( this .glShim, width, height );
+                if ( this .renderer == null ) {
+                    this .glShim = new JoglOpenGlShim( glautodrawable .getGL() .getGL2() );
+                    this .renderer = new RenderingProgram( this .glShim, true, true );
+                }
+                // TODO: update the stored width and height
             }
 
             @Override
@@ -71,9 +75,10 @@ public class JoglRenderingViewer implements RenderingViewer
             @Override
             public void display( GLAutoDrawable glautodrawable )
             {
-                JoglRenderingViewer.this .updateView( this .glShim, glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
-                // GL commands to render the scene here
-                JoglRenderingViewer.this .scene .render( this .glShim, glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
+                if ( this .glShim .isSameContext( glautodrawable .getGL() .getGL2() ) )
+                    JoglRenderingViewer.this .scene .render( this .renderer, glautodrawable.getSurfaceWidth(), glautodrawable.getSurfaceHeight() );
+                else
+                    System.out.println( "Different GL2!" );
             }
         });
 
@@ -82,30 +87,8 @@ public class JoglRenderingViewer implements RenderingViewer
         this .animator .start();
     }
 
-    private void updateView( OpenGlShim glShim, int width, int height )
-    {
-//        gl2 .glMatrixMode( GL2.GL_PROJECTION );
-//        gl2 .glLoadIdentity();
-//
-//        // coordinate system origin at lower left with width and height same as the window
-//        if ( this .fov == 0 )
-//            this .glu .gluOrtho2D( 0.0f, width, 0.0f, height );
-//        else
-//            this .glu .gluPerspective( this .fov, width / height, this .near, this .far );
-//        glu .gluLookAt( 0, 0, (this .far - this .near) / 2f, 0, 0, 0, 0, 1, 0 );
-//
-//        gl2 .glMatrixMode( GL2.GL_MODELVIEW );
-//        gl2 .glLoadMatrixd( this .matrix, 0 );
-//
-//        gl2 .glViewport( 0, 0, width, height );
-    }
-
     @Override
-    public void setEye( int eye )
-    {
-        // TODO Auto-generated method stub
-
-    }
+    public void setEye( int eye ) {}
 
     @Override
     public void setViewTransformation( Matrix4d trans, int eye )

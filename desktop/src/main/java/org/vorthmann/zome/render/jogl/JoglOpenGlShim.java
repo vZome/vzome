@@ -19,6 +19,11 @@ import java.nio.FloatBuffer;
 public class JoglOpenGlShim implements OpenGlShim
 {
     private final GL2 gl2;
+    
+    public boolean isSameContext( GL2 gl2 )
+    {
+        return this.gl2 == gl2;
+    }
 
     public JoglOpenGlShim( GL2 gl2 )
     {

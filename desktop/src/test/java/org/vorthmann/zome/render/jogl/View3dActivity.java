@@ -116,31 +116,29 @@ public class View3dActivity
      * a parameter.
      * @param transform The transformations to apply to render this eye.
      */
-    public void onDrawEye( OpenGlShim gl )
+    public void onDrawEye()
     {
         if ( failedLoad )
-            gl.glClear( 0.5f, 0f, 0f, 1f );
-        else if ( this .scene == null )
-            gl.glClear( 0.2f, 0.3f, 0.4f, 0.5f );
-        else
-            gl.glClear( 0.5f, 0.6f, 0.7f, 0.5f );
-
-        RenderingProgram .checkGLError( gl, "glClear" );
+            scene .setBackground( new float[] { 0.5f, 0f, 0f, 1f } );  // won't work, scene is null
+//        else if ( this .scene == null )
+//            gl.glClear( 0.2f, 0.3f, 0.4f, 0.5f );
+//        else
+//            gl.glClear( 0.5f, 0.6f, 0.7f, 0.5f );
 
         if ( this .scene != null )
         {
-            this.instancedRenderer.setUniforms( gl, mModelCube, mCamera, projection, this.scene.getOrientations() );
-            for( ShapeClass shapeClass : scene )
-                this.instancedRenderer.renderShape( gl, shapeClass );
+            this.instancedRenderer .setOrientations( this.scene.getOrientations() );
+            this.instancedRenderer .setUniforms( mModelCube, mCamera, projection );
+            this.instancedRenderer .renderScene( scene );
 
-            this .lightingRenderer .setUniforms( gl, mModelFloor, mCamera, projection, this.scene.getOrientations() );
-            this .lightingRenderer .renderShape( gl, mFloor );
+            this .lightingRenderer .setUniforms( mModelFloor, mCamera, projection );
+            this .lightingRenderer .renderShape( mFloor );
         }
         else
         {
             if (struts != null) {
-                this.lineRenderer.setUniforms( gl, mModelCube, mCamera, projection, this.scene.getOrientations() );
-                this.lineRenderer.renderShape( gl, struts );
+                this.lineRenderer .setUniforms( mModelCube, mCamera, projection );
+                this.lineRenderer .renderShape( struts );
             }
         }
     }
@@ -182,13 +180,15 @@ public class View3dActivity
 
         glcanvas.addGLEventListener( new GLEventListener() {
             
-            private OpenGlShim gl;
+            JoglOpenGlShim glShim;
             
             @Override
             public void reshape( GLAutoDrawable glautodrawable, int x, int y, int width, int height )
             {
-                this.gl = new JoglOpenGlShim( glautodrawable.getGL().getGL2() );
-                view3dActivity .onSurfaceCreated( gl );
+                if ( this .glShim == null ) {
+                    this .glShim = new JoglOpenGlShim( glautodrawable .getGL() .getGL2() );
+                }
+                view3dActivity .onSurfaceCreated( glShim );
             }
             
             @Override
@@ -200,7 +200,10 @@ public class View3dActivity
             @Override
             public void display( GLAutoDrawable glautodrawable )
             {
-                view3dActivity .onDrawEye( this.gl );
+                if ( this .glShim .isSameContext( glautodrawable .getGL() .getGL2() ) )
+                    view3dActivity .onDrawEye();
+                else
+                    System.out.println( "Different GL2!" );
             }
         });
 
