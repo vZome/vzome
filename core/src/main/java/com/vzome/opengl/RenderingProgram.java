@@ -192,7 +192,7 @@ public class RenderingProgram
         gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
     }
     
-    public void renderScene( float[] background, Collection<ShapeClass> shapeClasses )
+    public void renderScene( float[] background, Iterable<ShapeClass> shapeClasses )
     {
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!

@@ -109,7 +109,7 @@ public class View3dActivity
             this.instancedRenderer .setOrientations( this.scene.getOrientations() );
             this.instancedRenderer .setUniforms( mModelCube, mCamera, projection );
             scene .setBackground( new float[] { 0.5f, 0.6f, 0.7f, 1f } );
-            this.instancedRenderer .renderScene( scene );
+            this.instancedRenderer .renderScene( scene .getBackground(), scene );
         }
     }
 
@@ -185,7 +185,7 @@ public class View3dActivity
             }
         });
 
-        frame.setSize( 640, 480 );
+        frame.setSize( 20+987, 610 );
         frame.setVisible( true );
 
         new Runnable() {
