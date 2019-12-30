@@ -32,7 +32,7 @@ public class ShapeClass
         this .usesVBOs = true;
     }
 
-    public ShapeClass(float[] verticesArray, float[] normalsArray, float[] offsets, float[] color)
+    public void setShapeData( float[] verticesArray, float[] normalsArray, float[] offsets, float[] color )
     {
         mColor = color;
         vertexCount = verticesArray.length / COORDS_PER_VERTEX;
@@ -52,14 +52,7 @@ public class ShapeClass
         }
 
         if ( offsets != null )
-        {
-            ByteBuffer bbOffsets = ByteBuffer.allocateDirect( offsets.length * 4 );
-            bbOffsets.order(ByteOrder.nativeOrder());
-            mInstancePositions = bbOffsets.asFloatBuffer();
-            mInstancePositions.put( offsets );
-            mInstancePositions.position(0);
-            instanceCount = offsets.length / 4;
-        }
+            replacePositions( offsets );
     }
 
     public FloatBuffer getVertices()
@@ -99,4 +92,14 @@ public class ShapeClass
     public int getNormalsVBO() { return this .normalsVBO; }
 
     public int getPositionsVBO() { return this .positionsVBO; }
+
+    public void replacePositions( float[] offsets )
+    {
+        ByteBuffer bbOffsets = ByteBuffer.allocateDirect( offsets.length * 4 );
+        bbOffsets.order(ByteOrder.nativeOrder());
+        mInstancePositions = bbOffsets.asFloatBuffer();
+        mInstancePositions.put( offsets );
+        mInstancePositions.position(0);
+        instanceCount = offsets.length / 4;
+    }
 }

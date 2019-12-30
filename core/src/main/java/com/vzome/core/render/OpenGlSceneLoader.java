@@ -24,7 +24,7 @@ public class OpenGlSceneLoader
     public static class Config
     {
         public Set<RenderedManifestation> instances = new HashSet<>();
-        public float[] color;
+        public Color color;
     }
 
     public static Scene getOpenGlScene( RenderedModel rmodel, Colors colors, float globalScale )
@@ -56,23 +56,22 @@ public class OpenGlSceneLoader
             if ( scc == null ) {
                 scc = new Config();
                 shapeClassConfigs .put( shape, scc );
-                Color color = rman .getColor();
-                float[] rgb = new float[3];
-                color .getRGBColorComponents( rgb );
-                scc .color = new float[]{ rgb[0], rgb[1], rgb[2], 1f };
+                scc .color = rman .getColor();
             }
             scc .instances .add( rman );
         }
         for( Map.Entry<Polyhedron, Config> entry : shapeClassConfigs.entrySet() )
         {
             Config config = entry .getValue();
-            ShapeClass shapeClass = create( entry .getKey(), config.instances, config.color, globalScale );
+            ShapeClass shapeClass = new ShapeClass();
+            setShapeData( shapeClass, entry .getKey(), config.color, globalScale );
+            shapeClass .replacePositions( createPositionsArray( config .instances, globalScale ) );
             shapes .add( shapeClass );
         }
-        return new Scene( shapes, getOrientations( rmodel .getOrbitSource() ) );
+        return new Scene( shapes, createOrientationsArray( rmodel .getOrbitSource() ) );
     }
 
-    private static ShapeClass create( Polyhedron shape, Set<RenderedManifestation> parts, float[] color, float globalScale )
+    public static ShapeClass setShapeData( ShapeClass shapeClass, Polyhedron shape, Color color, float globalScale )
     {
         List<RealVector> vertices = new ArrayList<>();
         List<RealVector> normals = new ArrayList<>();
@@ -113,6 +112,15 @@ public class OpenGlSceneLoader
             normalsArray[i * ShapeClass.COORDS_PER_VERTEX + 2] = (float) vector.z;
         }
 
+        float[] rgb = new float[3];
+        color .getRGBColorComponents( rgb );
+
+        shapeClass .setShapeData( verticesArray, normalsArray, null, new float[]{ rgb[0], rgb[1], rgb[2], 1f } );
+        return shapeClass;
+    }
+
+    public static float[] createPositionsArray( Set<RenderedManifestation> parts, float globalScale )
+    {
         float[] offsets = new float[4 * parts.size()];
         int i = 0;
         for( RenderedManifestation part : parts ) {
@@ -124,7 +132,7 @@ public class OpenGlSceneLoader
             offsets[i * 4 + 3] = (float) zone;
             ++i;
         }
-        return new ShapeClass( verticesArray, normalsArray, offsets, color );
+        return offsets;
     }
 
     public static ShapeClass createStrutsWireframe( Strut[] struts, float[] color )
@@ -141,10 +149,12 @@ public class OpenGlSceneLoader
             verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 4] = (float) vector.getY().value()/2;
             verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 5] = (float) vector.getZ().value()/2;
         }
-        return new ShapeClass( verticesArray, null, null, color );
+        ShapeClass shapeClass = new ShapeClass();
+        shapeClass .setShapeData( verticesArray, null, null, color );
+        return shapeClass;
     }
 
-    private static float[][] getOrientations( OrbitSource orbits )
+    public static float[][] createOrientationsArray( OrbitSource orbits )
     {
         Symmetry symmetry = orbits .getSymmetry();
         AlgebraicField field = symmetry .getField();

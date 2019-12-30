@@ -1,5 +1,7 @@
 package com.vzome.opengl;
 
+import java.util.Collection;
+
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.math.FloatUtil;
 
@@ -190,21 +192,24 @@ public class RenderingProgram
         gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
     }
     
-    public void renderScene( Scene scene )
+    public void renderScene( float[] background, Collection<ShapeClass> shapeClasses )
     {
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         gl .glEnableDepth();
-        float[] rgba = scene .getBackground();
-        gl .glClear( rgba[0], rgba[1], rgba[2], rgba[3] );
+        gl .glClear( background[0], background[1], background[2], background[3] );
         
-        for( ShapeClass shapeClass : scene )
+        for( ShapeClass shapeClass : shapeClasses )
             this .renderShape( shapeClass );
     }
 
     public void renderShape( ShapeClass shape )
     {
+        int count = shape .getInstanceCount();
+        if ( count == 0 )
+            return;
+        
         float[] color = shape .getColor();
         gl.glUniform4f( mColorParam, color[0], color[1], color[2], color[3] );
 
@@ -224,7 +229,7 @@ public class RenderingProgram
         gl.glVertexAttribDivisor( instanceData, 1);  // SV: this one is instanced
         gl.glVertexAttribPointer( instanceData, 4, false, 0, shape .getPositions() );
 
-        gl.glDrawArraysInstanced( 0, shape .getVertexCount(), shape .getInstanceCount() );
+        gl.glDrawArraysInstanced( 0, shape .getVertexCount(), count );
         checkGLError( "Drawing a shape");
     }
 }
