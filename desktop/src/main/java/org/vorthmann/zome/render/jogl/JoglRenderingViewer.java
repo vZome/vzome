@@ -12,7 +12,6 @@ import javax.vecmath.Point3d;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.core.render.RenderedManifestation;
@@ -40,7 +39,6 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private JoglOpenGlShim glShim;
     private RenderingProgram renderer = null;
     private FPSAnimator animator;
-    private final GLU glu = new GLU();
 
     private float near = 100, far = 2000, fov = 0.4f;
     private float[] matrix = new float[16]; // stored in column-major order, for JOGL-friendliness
@@ -66,7 +64,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     public void init( GLAutoDrawable drawable )
     {
         this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
-        this .renderer = new RenderingProgram( this .glShim, true, true );
+        this .renderer = new RenderingProgram( this .glShim );
         // store the scene geometry
     }
 
