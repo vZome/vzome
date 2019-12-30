@@ -21,7 +21,8 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	private RenderedModel model;
     private final Colors colors;
     private Color bkgdColor;
-
+    private static final float MODEL_SCALE_FACTOR = 3.5f; // this seems to align with the way Java3d rendering came out
+    
     JoglScene( Lights lights, Colors colors, boolean isSticky )
 	{
         this.colors = colors;
@@ -42,7 +43,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 
     void render( RenderingProgram renderer )
     {
-        Scene scene = OpenGlSceneLoader .getOpenGlScene( this .model, this .colors );
+        Scene scene = OpenGlSceneLoader .getOpenGlScene( this .model, this .colors, MODEL_SCALE_FACTOR );
         float[] rgba = new float[4];
         this .bkgdColor .getRGBColorComponents( rgba );
         scene .setBackground( rgba );
