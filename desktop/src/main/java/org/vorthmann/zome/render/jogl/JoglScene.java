@@ -10,7 +10,6 @@ import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.OpenGlSceneLoader;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
 import com.vzome.opengl.RenderingProgram;
@@ -18,10 +17,11 @@ import com.vzome.opengl.Scene;
 
 public class JoglScene implements RenderingChanges, PropertyChangeListener
 {
-	private RenderedModel model;
     private final Colors colors;
     private Color bkgdColor;
     private static final float MODEL_SCALE_FACTOR = 3.5f; // this seems to align with the way Java3d rendering came out
+    private Scene scene;
+    private float[][] orientations;
     
     JoglScene( Lights lights, Colors colors, boolean isSticky )
 	{
@@ -43,15 +43,18 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 
     void render( RenderingProgram renderer )
     {
-        Scene scene = OpenGlSceneLoader .getOpenGlScene( this .model, this .colors, MODEL_SCALE_FACTOR );
-        float[] rgba = new float[4];
-        this .bkgdColor .getRGBColorComponents( rgba );
-        scene .setBackground( rgba );
-
-        //        renderer .bindBuffers( gl, scene );
-        
-        renderer .setOrientations( scene .getOrientations() );
-        renderer .renderScene( scene );
+        if ( scene != null ) {
+            //        renderer .bindBuffers( gl, scene );
+            
+            if ( this.orientations == null ) {
+                this .orientations = scene .getOrientations();
+                renderer .setOrientations( this .orientations );
+            }
+            float[] rgba = new float[4];
+            this .bkgdColor .getRGBColorComponents( rgba );
+            scene .setBackground( rgba );
+            renderer .renderScene( scene );
+        }
     }
 
 	@Override
@@ -64,21 +67,19 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void manifestationAdded( RenderedManifestation manifestation )
 	{
-		this .model = manifestation .getModel();
+        scene = OpenGlSceneLoader .getOpenGlScene( manifestation .getModel(), this .colors, MODEL_SCALE_FACTOR );
 	}
 
 	@Override
 	public void manifestationRemoved( RenderedManifestation manifestation )
 	{
-		// TODO Auto-generated method stub
-
+        scene = OpenGlSceneLoader .getOpenGlScene( manifestation .getModel(), this .colors, MODEL_SCALE_FACTOR );
 	}
 
 	@Override
 	public void manifestationSwitched( RenderedManifestation from, RenderedManifestation to )
 	{
-		// TODO Auto-generated method stub
-
+        scene = OpenGlSceneLoader .getOpenGlScene( to .getModel(), this .colors, MODEL_SCALE_FACTOR );
 	}
 
 	@Override
@@ -98,22 +99,19 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void locationChanged( RenderedManifestation manifestation )
 	{
-		// TODO Auto-generated method stub
-
+        scene = OpenGlSceneLoader .getOpenGlScene( manifestation .getModel(), this .colors, MODEL_SCALE_FACTOR );
 	}
 
 	@Override
 	public void orientationChanged( RenderedManifestation manifestation )
 	{
-		// TODO Auto-generated method stub
-
+        scene = OpenGlSceneLoader .getOpenGlScene( manifestation .getModel(), this .colors, MODEL_SCALE_FACTOR );
 	}
 
 	@Override
 	public void shapeChanged( RenderedManifestation manifestation )
 	{
-		// TODO Auto-generated method stub
-
+        scene = OpenGlSceneLoader .getOpenGlScene( manifestation .getModel(), this .colors, MODEL_SCALE_FACTOR );
 	}
 
     @Override
