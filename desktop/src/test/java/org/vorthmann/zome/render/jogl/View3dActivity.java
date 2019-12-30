@@ -92,11 +92,11 @@ public class View3dActivity
     {
         this .mFloor = new ShapeClass( WorldLayoutData.FLOOR_COORDS, WorldLayoutData.FLOOR_NORMALS, null, WorldLayoutData.FLOOR_COLOR );
 
-        this .lineRenderer = new RenderingProgram( gl, false, false );
+        this .lineRenderer = new RenderingProgram( gl );
 
-        this .lightingRenderer = new RenderingProgram( gl, true, false );
+        this .lightingRenderer = new RenderingProgram( gl );
 
-        this .instancedRenderer = new RenderingProgram( gl, true, true );
+        this .instancedRenderer = new RenderingProgram( gl );
 
         gl.glEnableDepth();
 
@@ -131,8 +131,8 @@ public class View3dActivity
             this.instancedRenderer .setUniforms( mModelCube, mCamera, projection );
             this.instancedRenderer .renderScene( scene );
 
-            this .lightingRenderer .setUniforms( mModelFloor, mCamera, projection );
-            this .lightingRenderer .renderShape( mFloor );
+//            this .lightingRenderer .setUniforms( mModelFloor, mCamera, projection );
+//            this .lightingRenderer .renderShape( mFloor );
         }
         else
         {

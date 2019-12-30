@@ -56,7 +56,7 @@ public class Document
 	
 	public Scene getOpenGlScene( Colors colors )
 	{
-		return OpenGlSceneLoader .getOpenGlScene( this .delegate .getRenderedModel(), colors );
+		return OpenGlSceneLoader .getOpenGlScene( this .delegate .getRenderedModel(), colors, 0.05f );
 	}
 
 	public DocumentModel getDocumentModel()
