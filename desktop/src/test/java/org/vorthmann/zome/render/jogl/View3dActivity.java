@@ -31,13 +31,10 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.math.FloatUtil;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
-import com.vzome.api.Strut;
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.OpenGlSceneLoader;
 import com.vzome.opengl.OpenGlShim;
 import com.vzome.opengl.RenderingProgram;
 import com.vzome.opengl.Scene;
-import com.vzome.opengl.ShapeClass;
 
 /**
  * This is a stripped-down version of the vzome-cardboard View3dActivity,
@@ -49,22 +46,15 @@ import com.vzome.opengl.ShapeClass;
  */
 public class View3dActivity
 {
-    private static final float CAMERA_Z = 0.01f;
-
-    private RenderingProgram instancedRenderer, lightingRenderer, lineRenderer;
+    private RenderingProgram instancedRenderer;
     private Scene scene = null;
     private boolean failedLoad = false;
-
-    private ShapeClass mFloor, struts;
 
     private float[] mModelCube;
     private float[] mCamera;
     private float[] projection;
 
-    private float[] mModelFloor;
-
-    private float mObjectDistance = 1f;
-    private float mFloorDepth = 20f;
+    private float mObjectDistance = 0f;
 
     private Application vZome;
 
@@ -77,7 +67,6 @@ public class View3dActivity
     {
         mModelCube = new float[16];
         mCamera = new float[16];
-        mModelFloor = new float[16];
         projection = new float[16];
 
         vZome = new Application();
@@ -90,12 +79,6 @@ public class View3dActivity
      */
     public void onSurfaceCreated( OpenGlShim gl, int width, int height )
     {
-        this .mFloor = new ShapeClass( WorldLayoutData.FLOOR_COORDS, WorldLayoutData.FLOOR_NORMALS, null, WorldLayoutData.FLOOR_COLOR );
-
-        this .lineRenderer = new RenderingProgram( gl );
-
-        this .lightingRenderer = new RenderingProgram( gl );
-
         this .instancedRenderer = new RenderingProgram( gl );
 
         gl.glEnableDepth();
@@ -103,12 +86,10 @@ public class View3dActivity
         // Object first appears directly in front of user
         FloatUtil.makeTranslation( mModelCube, true, 0, 0, -mObjectDistance );
 
-        FloatUtil.makeTranslation( mModelFloor, true, 0, -mFloorDepth, 0 );
-
         // Build the camera matrix and apply it to the ModelView.
-        FloatUtil.makeLookAt( mCamera, 0, new float[]{0.0f, 0.0f, CAMERA_Z}, 0, new float[]{0.0f, 0.0f, 0.0f}, 0, new float[]{0.0f, 1.0f, 0.0f}, 0, new float[16] );
+        FloatUtil.makeLookAt( mCamera, 0, new float[]{0.0f, 0.0f, 2f}, 0, new float[]{0.0f, 0.0f, 0.0f}, 0, new float[]{0.0f, 1.0f, 0.0f}, 0, new float[16] );
         
-        FloatUtil.makePerspective( projection, 0, true, 0.6f, (float)width/(float)height, 0.1f, 1000f );
+        FloatUtil.makePerspective( projection, 0, true, 0.3f, (float)width/(float)height, 0.1f, 1000f );
     }
 
     /**
@@ -129,13 +110,6 @@ public class View3dActivity
             this.instancedRenderer .setUniforms( mModelCube, mCamera, projection );
             scene .setBackground( new float[] { 0.5f, 0.6f, 0.7f, 1f } );
             this.instancedRenderer .renderScene( scene );
-
-//            this .lightingRenderer .setUniforms( mModelFloor, mCamera, projection );
-//            this .lightingRenderer .renderShape( mFloor );
-        }
-        else if (struts != null) {
-            this.lineRenderer .setUniforms( mModelCube, mCamera, projection );
-            this.lineRenderer .renderShape( struts );
         }
     }
 
@@ -150,8 +124,6 @@ public class View3dActivity
             instream.close();
             System.out.println( "%%%%%%%%%%%%%%%% finished: " + url );
 
-            float[] black = new float[] { 0f, 0f, 0f, 1f };
-            this.struts = OpenGlSceneLoader .createStrutsWireframe( doc .getStruts().toArray( new Strut[] {}), black );
             this .scene = doc .getOpenGlScene( new Colors( new Properties() ) );
         }
         catch (Exception e) {
