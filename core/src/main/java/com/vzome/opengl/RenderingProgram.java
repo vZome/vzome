@@ -23,8 +23,7 @@ public class RenderingProgram
     private int mModelParam;
     private int[] mOrientationsParam = new int[60];
 
-    // We keep the light always position just above the user.
-    private static final float[] mLightPosInWorldSpace = new float[] {8.0f, 25.0f, -120.0f, 1.0f};
+    private static final float[] HEADLIGHT = new float[] {0f, 0f, 1f, 1f};
 
     private static final int COORDS_PER_VERTEX = 3;
 
@@ -48,6 +47,7 @@ public class RenderingProgram
                 "}";
         if ( this .isInstanced )
 //            vertexShaderRsrc = R.raw.light_vertex_instanced;
+            // This shader has been modified to use just directional lighting
             vertexShaderSrc = version + "\n" + 
                     "uniform mat4 u_MVP;\n" + 
                     "uniform mat4 u_MVMatrix;\n" + 
@@ -75,13 +75,9 @@ public class RenderingProgram
                     "   vec4 pos = oriented + location;\n" + 
                     "   gl_Position = u_MVP * pos;\n" + 
                     "\n" + 
-                    "   // original lighting, using a point source\n" + 
-                    "   vec3 modelViewVertex = vec3(u_MVMatrix * pos);\n" + 
                     "   vec3 modelViewNormal = vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) );\n" + 
-                    "   float distance = length( u_LightPos - modelViewVertex );\n" + 
-                    "   vec3 lightVector = normalize( u_LightPos - modelViewVertex );\n" + 
+                    "   vec3 lightVector = normalize( u_LightPos );\n" + 
                     "   float diffuse = max(dot(modelViewNormal, lightVector), 0.5 );\n" + 
-                    "   diffuse = diffuse * (1.0 / (1.0 + (0.0001 * distance * distance)));\n" + 
                     "   v_Color = u_Color * diffuse;\n" + 
                     "}";
         else if ( this .doLighting )
@@ -255,7 +251,7 @@ public class RenderingProgram
         FloatUtil.multMatrix( projection, modelView, modelViewProjection );
 
         // Set the position of the light
-        FloatUtil.multMatrixVec( camera, mLightPosInWorldSpace, lightPosInEyeSpace );
+        FloatUtil.multMatrixVec( camera, HEADLIGHT, lightPosInEyeSpace );
 
         // Set the ModelViewProjection matrix in the shader.
         gl.glUniformMatrix4fv( mModelViewProjectionParam, 1, false, modelViewProjection, 0 );
