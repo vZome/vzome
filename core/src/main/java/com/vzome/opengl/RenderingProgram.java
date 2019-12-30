@@ -16,8 +16,9 @@ public class RenderingProgram
     private int normalParam;
     private int mColorParam;
     private int mModelViewProjectionParam;
-    private int mLightPosParam;
     private int mModelViewParam;
+    private int mNumLightsParam;
+    private int[] mLightDirectionsParam = new int[1];
     private int[] mOrientationsParam = new int[60];
 
     private static final float[] HEADLIGHT = new float[] {0f, 0f, 1f, 1f};
@@ -32,9 +33,12 @@ public class RenderingProgram
         String vertexShaderSrc = version + "\n" + 
                     "uniform mat4 u_MVP;\n" + 
                     "uniform mat4 u_MVMatrix;\n" + 
-                    "uniform vec3 u_LightPos;\n" + 
                     "uniform vec4 u_Color;\n" + 
                     "uniform mat4 u_Orientations[60];\n" + 
+                    "\n" + 
+                    "#define MAX_LIGHTS 10\n" + 
+                    "uniform int  u_NumLights;\n" + 
+                    "uniform vec3 u_LightDirections[MAX_LIGHTS];\n" + 
                     "\n" + 
                     "attribute vec4 a_Position;\n" + 
                     "attribute vec3 a_Normal;\n" + 
@@ -56,9 +60,13 @@ public class RenderingProgram
                     "   gl_Position = u_MVP * pos;\n" + 
                     "\n" + 
                     "   vec3 modelViewNormal = vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) );\n" + 
-                    "   vec3 lightVector = normalize( u_LightPos );\n" + 
-                    "   float diffuse = max(dot(modelViewNormal, lightVector), 0.5 );\n" + 
-                    "   v_Color = u_Color * diffuse;\n" + 
+                    "   vec4 linearColor = vec4(0);\n" + 
+                    "   for( int i = 0; i < u_NumLights; ++i ){\n" + 
+                    "       vec3 lightVector = normalize( u_LightDirections[i] );\n" + 
+                    "       float diffuse = max(dot(modelViewNormal, lightVector), 0.5 );\n" + 
+                    "       linearColor += u_Color * diffuse;\n" + 
+                    "   }" +
+                    "   v_Color = linearColor;\n" + 
                     "}";
         int vertexShader = loadGLShader( true, vertexShaderSrc );
 
@@ -86,7 +94,8 @@ public class RenderingProgram
         mColorParam = gl.glGetUniformLocation(mGlProgram, "u_Color");
         checkGLError( "u_Color");
 
-        mLightPosParam = gl.glGetUniformLocation(mGlProgram, "u_LightPos");
+        mNumLightsParam = gl.glGetUniformLocation( mGlProgram, "u_NumLights" );
+        mLightDirectionsParam[0] = gl.glGetUniformLocation(mGlProgram, "u_LightDirections[0]");
         mModelViewParam = gl.glGetUniformLocation( mGlProgram, "u_MVMatrix" );
 
         normalParam = gl.glGetAttribLocation( mGlProgram, "a_Normal" );
@@ -176,7 +185,8 @@ public class RenderingProgram
         // Set the ModelViewProjection matrix in the shader.
         gl.glUniformMatrix4fv( mModelViewProjectionParam, 1, false, modelViewProjection, 0 );
 
-        gl.glUniform3f( mLightPosParam, lightPosInEyeSpace[0], lightPosInEyeSpace[1], lightPosInEyeSpace[2] );
+        gl.glUniform1i( mNumLightsParam, 1 );
+        gl.glUniform3f( mLightDirectionsParam[0], lightPosInEyeSpace[0], lightPosInEyeSpace[1], lightPosInEyeSpace[2] );
         gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
     }
     

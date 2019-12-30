@@ -40,6 +40,8 @@ public interface OpenGlShim {
 
 	void glUniform4f(int mColorParam, float f, float g, float h, float i);
 
+    void glUniform1i(int i, int v);
+
 	void glEnableVertexAttribArray(int mPositionParam);
 
 	void glBindBuffer( int vbo);

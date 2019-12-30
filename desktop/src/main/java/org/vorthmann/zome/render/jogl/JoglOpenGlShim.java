@@ -119,6 +119,11 @@ public class JoglOpenGlShim implements OpenGlShim
     }
 
     @Override
+    public void glUniform1i( int i, int v ) {
+        gl2.glUniform1i( i, v );
+    }
+
+    @Override
     public void glUniform4f(int i, float v, float v2, float v3, float v4) {
         gl2.glUniform4f( i, v, v2, v3, v4 );
     }
