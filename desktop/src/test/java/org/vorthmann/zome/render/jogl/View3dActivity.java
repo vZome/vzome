@@ -88,7 +88,7 @@ public class View3dActivity
      * arrays, but rather needs data in a format it can understand. Hence we use ByteBuffers.
      * @param config The EGL configuration used when creating the surface.
      */
-    public void onSurfaceCreated( OpenGlShim gl )
+    public void onSurfaceCreated( OpenGlShim gl, int width, int height )
     {
         this .mFloor = new ShapeClass( WorldLayoutData.FLOOR_COORDS, WorldLayoutData.FLOOR_NORMALS, null, WorldLayoutData.FLOOR_COLOR );
 
@@ -108,38 +108,34 @@ public class View3dActivity
         // Build the camera matrix and apply it to the ModelView.
         FloatUtil.makeLookAt( mCamera, 0, new float[]{0.0f, 0.0f, CAMERA_Z}, 0, new float[]{0.0f, 0.0f, 0.0f}, 0, new float[]{0.0f, 1.0f, 0.0f}, 0, new float[16] );
         
-        FloatUtil.makePerspective( projection, 0, true, 0.6f, 1.0f, 0.1f, 1000f );
+        FloatUtil.makePerspective( projection, 0, true, 0.6f, (float)width/(float)height, 0.1f, 1000f );
     }
 
     /**
      * Draws a frame for an eye. The transformation for that eye (from the camera) is passed in as
      * a parameter.
+     * @param glShim  
      * @param transform The transformations to apply to render this eye.
      */
-    public void onDrawEye()
+    public void onDrawEye( OpenGlShim gl )
     {
         if ( failedLoad )
-            scene .setBackground( new float[] { 0.5f, 0f, 0f, 1f } );  // won't work, scene is null
-//        else if ( this .scene == null )
-//            gl.glClear( 0.2f, 0.3f, 0.4f, 0.5f );
-//        else
-//            gl.glClear( 0.5f, 0.6f, 0.7f, 0.5f );
-
-        if ( this .scene != null )
+        {
+            gl .glClear( 0.5f, 0f, 0f, 1f );
+        }
+        else if ( this .scene != null )
         {
             this.instancedRenderer .setOrientations( this.scene.getOrientations() );
             this.instancedRenderer .setUniforms( mModelCube, mCamera, projection );
+            scene .setBackground( new float[] { 0.5f, 0.6f, 0.7f, 1f } );
             this.instancedRenderer .renderScene( scene );
 
 //            this .lightingRenderer .setUniforms( mModelFloor, mCamera, projection );
 //            this .lightingRenderer .renderShape( mFloor );
         }
-        else
-        {
-            if (struts != null) {
-                this.lineRenderer .setUniforms( mModelCube, mCamera, projection );
-                this.lineRenderer .renderShape( struts );
-            }
+        else if (struts != null) {
+            this.lineRenderer .setUniforms( mModelCube, mCamera, projection );
+            this.lineRenderer .renderShape( struts );
         }
     }
 
@@ -188,7 +184,7 @@ public class View3dActivity
                 if ( this .glShim == null ) {
                     this .glShim = new JoglOpenGlShim( glautodrawable .getGL() .getGL2() );
                 }
-                view3dActivity .onSurfaceCreated( glShim );
+                view3dActivity .onSurfaceCreated( glShim, width, height );
             }
             
             @Override
@@ -201,7 +197,7 @@ public class View3dActivity
             public void display( GLAutoDrawable glautodrawable )
             {
                 if ( this .glShim .isSameContext( glautodrawable .getGL() .getGL2() ) )
-                    view3dActivity .onDrawEye();
+                    view3dActivity .onDrawEye( glShim );
                 else
                     System.out.println( "Different GL2!" );
             }
