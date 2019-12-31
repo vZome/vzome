@@ -43,6 +43,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private float near = 100, far = 2000, fovX = 0.5f;
     private float[] matrix = new float[16]; // stored in column-major order, for JOGL-friendliness
     private float aspectRatio = 1f;
+    private float halfEdgeX;
 
     public JoglRenderingViewer( JoglScene scene, GLCanvas canvas )
     {
@@ -104,9 +105,14 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         // Object first appears directly in front of user
         FloatUtil.makeIdentity( objectTrans );
         
-        // The Camera model is set up for fovX, but FloatUtil.makePerspective wants fovY
-        float fovY = this .fovX / this .aspectRatio;
-        FloatUtil.makePerspective( projection, 0, true, fovY, this .aspectRatio, this .near, this .far );
+        if ( this .fovX == 0f ) {
+            float halfEdgeY = this .halfEdgeX / this .aspectRatio;
+            FloatUtil .makeOrtho( projection, 0, true, -halfEdgeX, halfEdgeX, -halfEdgeY, halfEdgeY, this .near, this .far );
+        } else {
+            // The Camera model is set up for fovX, but FloatUtil.makePerspective wants fovY
+            float fovY = this .fovX / this .aspectRatio;
+            FloatUtil .makePerspective( projection, 0, true, fovY, this .aspectRatio, this .near, this .far );
+        }
         renderer .setUniforms( objectTrans, this.matrix, projection );
 
         this .scene .render( this .renderer );
@@ -144,11 +150,12 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     }
 
     @Override
-    public void setOrthographic( double halfEdge, double near, double far )
+    public void setOrthographic( double halfEdgeX, double near, double far )
     {
-//        this .fov = 0;
-//        this .near = near;
-//        this .far = far;
+        this .halfEdgeX = (float) halfEdgeX;
+        this .fovX = 0;
+        this .near = (float) near;
+        this .far = (float) far;
     }
 
     @Override
