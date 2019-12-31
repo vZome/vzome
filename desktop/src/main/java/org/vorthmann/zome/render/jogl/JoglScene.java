@@ -62,8 +62,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void reset()
 	{
-		// TODO Auto-generated method stub
-
+		this .shapeClasses .clear();
 	}
 
 	@Override
