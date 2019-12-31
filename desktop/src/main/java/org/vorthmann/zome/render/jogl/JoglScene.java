@@ -102,11 +102,12 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	}
 
 	@Override
-	public void glowChanged( RenderedManifestation manifestation )
+	public void glowChanged( RenderedManifestation rm )
 	{
-		// TODO Auto-generated method stub
-
-	}
+        Polyhedron shape = rm .getShape();
+        MutableShapeClass shapeSet = (MutableShapeClass) this .shapeClasses .get( shape );
+        shapeSet .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeSet .instances, MODEL_SCALE_FACTOR ) );
+    }
 
 	@Override
 	public void colorChanged( RenderedManifestation manifestation )

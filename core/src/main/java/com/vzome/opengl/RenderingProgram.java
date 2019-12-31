@@ -51,18 +51,18 @@ public class RenderingProgram
                     "void main()\n" + 
                     "{\n" + 
                     "   // unpack a_InstanceData\n" + 
-                    "   float orientationAsFloat = a_InstanceData.w;\n" + 
+                    "   float orientationAndGlow = a_InstanceData.w;\n" + 
                     "   vec4 location = vec4( a_InstanceData.xyz, 1.0 );\n" + 
                     "\n" + 
                     "\n" + 
-                    "   int orientation = int( max( 0, min( 59, orientationAsFloat ) ) );\n" + 
+                    "   int orientation = int( max( 0, min( 59, floor(orientationAndGlow) ) ) );\n" + 
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Position );\n" + 
                     "   vec4 normal = ( u_Orientations[ orientation ] * vec4( a_Normal, 0.0 ) );\n" + 
                     "   vec4 pos = oriented + location;\n" + 
                     "   gl_Position = u_MVP * pos;\n" + 
                     "\n" + 
                     "   vec3 modelViewNormal = vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) );\n" + 
-                    "   vec4 linearColor = vec4(0);\n" + 
+                    "   vec4 linearColor = vec4( fract(orientationAndGlow) );\n" + 
                     "   for( int i = 0; i < u_NumLights; ++i ){\n" + 
                     "       vec3 lightVector = normalize( u_LightDirections[i] );\n" + 
                     "       float diffuse = max(dot(modelViewNormal, lightVector), 0.5 );\n" + 
