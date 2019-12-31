@@ -156,6 +156,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         this .fovX = 0;
         this .near = (float) near;
         this .far = (float) far;
+
+        this .render();
     }
 
     @Override

@@ -28,6 +28,7 @@ public class JoglFactory implements J3dComponentFactory
     {
         GLProfile glprofile = GLProfile .getDefault();
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
+        glcapabilities .setDepthBits( 32 );
         final GLCanvas glcanvas = new GLCanvas( glcapabilities );
 
         JoglScene scene = new JoglScene( controller .getSceneLighting(), this .colors, isSticky );
