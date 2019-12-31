@@ -18,32 +18,32 @@ import com.vzome.core.math.DomUtils;
 public class Camera
 {
     /**
-	 * The original frustum.
-	 */
-	public static final double ORIG_WIDTH = 18f, ORIG_DISTANCE = 40f;
-	
-	protected static final double ORIG_NEAR = 0.1f, ORIG_FAR = 2 * ORIG_DISTANCE;
-    
-	protected static final Vector3d ORIG_LOOK = new Vector3d(0,0,-1);
-	
-	protected static final Vector3d ORIG_UP = new Vector3d(0,1,0);
+     * The original frustum.
+     */
+    public static final double ORIG_WIDTH = 18f, ORIG_DISTANCE = 40f;
 
-	
-	private Point3d mLookAtPoint = new Point3d();
-	
-	private double mNear = ORIG_NEAR;
-	
-	private double mFar = ORIG_FAR;
+    protected static final double ORIG_NEAR = 0.1f, ORIG_FAR = 2 * ORIG_DISTANCE;
 
-	private double mWidth = ORIG_WIDTH;
-	
-	private double mDistance = ORIG_DISTANCE;
+    protected static final Vector3d ORIG_LOOK = new Vector3d(0,0,-1);
 
-	private Vector3d mUpDirection = new Vector3d( ORIG_UP ), mLookDirection = new Vector3d( ORIG_LOOK );
+    protected static final Vector3d ORIG_UP = new Vector3d(0,1,0);
 
-	private boolean mOrthographic = false;
-    
-	private double mStereoAngle = 0d;
+
+    private Point3d mLookAtPoint = new Point3d();
+
+    private double mNear = ORIG_NEAR;
+
+    private double mFar = ORIG_FAR;
+
+    private double mWidth = ORIG_WIDTH;
+
+    private double mDistance = ORIG_DISTANCE;
+
+    private Vector3d mUpDirection = new Vector3d( ORIG_UP ), mLookDirection = new Vector3d( ORIG_LOOK );
+
+    private boolean mOrthographic = false;
+
+    private double mStereoAngle = 0d;
 
     @Override
     public boolean equals( Object object )
@@ -54,7 +54,7 @@ public class Camera
             return true;
         if ( ! ( object instanceof Camera ) )
             return false;
-        
+
         Camera that = (Camera) object;
 
         if ( this.mNear != that.mNear )
@@ -93,13 +93,13 @@ public class Camera
 
     public Camera()
     {
-    	this .setMagnification( 1f );
+        this .setMagnification( 1f );
     }
-    
+
     public Camera( Camera prototype )
     {
-    	this();
-    	
+        this();
+
         this .mLookAtPoint = new Point3d( prototype .mLookAtPoint );
         this .mNear = prototype .mNear;
         this .mFar = prototype .mFar;
@@ -112,20 +112,20 @@ public class Camera
     }
 
     public boolean isPerspective()
-	{
-		return ! mOrthographic;
-	}
-	
-	/**
-	 * The width of the frustum at the look-at point is held
-	 * constant, as well as the other dimensions of the frustum.
-	 * @param value
-	 */
-	public void setPerspective( boolean value )
-	{
-		mOrthographic = ! value;
-	}
-    
+    {
+        return ! mOrthographic;
+    }
+
+    /**
+     * The width of the frustum at the look-at point is held
+     * constant, as well as the other dimensions of the frustum.
+     * @param value
+     */
+    public void setPerspective( boolean value )
+    {
+        mOrthographic = ! value;
+    }
+
     public void setStereoAngle( double value )
     {
         mStereoAngle = value;
@@ -135,33 +135,33 @@ public class Camera
         else
             mWidth = mWidth / 2d;
     }
-	
-	public float getFieldOfView()
-	{
-		return (float) ( 2 * Math .atan( (mWidth/2) / mDistance ) );
-	}
 
-	public float getViewDistance()
-	{
-		return (float) mDistance;
-	}
-	
-	public void getViewOrientation( Vector3d lookDir, Vector3d upDir )
-	{
-		lookDir .set( mLookDirection );
-		upDir .set( mUpDirection );
-	}
-    
-	public float getMagnification()
-	{
-		return (float) Math .log( mDistance / ORIG_DISTANCE );
-	}
-	
-   static final double EPSILON_ABSOLUTE = 1.0e-5;
+    public float getFieldOfView()
+    {
+        return (float) ( 2 * Math .atan( (mWidth/2) / mDistance ) );
+    }
+
+    public float getViewDistance()
+    {
+        return (float) mDistance;
+    }
+
+    public void getViewOrientation( Vector3d lookDir, Vector3d upDir )
+    {
+        lookDir .set( mLookDirection );
+        upDir .set( mUpDirection );
+    }
+
+    public float getMagnification()
+    {
+        return (float) Math .log( mDistance / ORIG_DISTANCE );
+    }
+
+    static final double EPSILON_ABSOLUTE = 1.0e-5;
 
     private static final boolean almostZero(double a)
     {
-    	return ((a < EPSILON_ABSOLUTE) && (a > -EPSILON_ABSOLUTE));
+        return ((a < EPSILON_ABSOLUTE) && (a > -EPSILON_ABSOLUTE));
     }
 
     /**
@@ -169,10 +169,10 @@ public class Camera
      */
     private static void setIdentity( double[] mat )
     {
-    	mat[0] = 1.0;  mat[1] = 0.0;  mat[2] = 0.0;  mat[3] = 0.0;
-    	mat[4] = 0.0;  mat[5] = 1.0;  mat[6] = 0.0;  mat[7] = 0.0;
-    	mat[8] = 0.0;  mat[9] = 0.0;  mat[10] = 1.0; mat[11] = 0.0;
-    	mat[12] = 0.0; mat[13] = 0.0; mat[14] = 0.0; mat[15] = 1.0;
+        mat[0] = 1.0;  mat[1] = 0.0;  mat[2] = 0.0;  mat[3] = 0.0;
+        mat[4] = 0.0;  mat[5] = 1.0;  mat[6] = 0.0;  mat[7] = 0.0;
+        mat[8] = 0.0;  mat[9] = 0.0;  mat[10] = 1.0; mat[11] = 0.0;
+        mat[12] = 0.0; mat[13] = 0.0; mat[14] = 0.0; mat[15] = 1.0;
     }
 
     /**
@@ -183,44 +183,44 @@ public class Camera
      */
     private static void set( AxisAngle4d a1, double[] mat )
     {
-    	double mag = Math.sqrt( a1.x*a1.x + a1.y*a1.y + a1.z*a1.z);
+        double mag = Math.sqrt( a1.x*a1.x + a1.y*a1.y + a1.z*a1.z);
 
-    	if (almostZero(mag)) {
-    		setIdentity( mat );
-    	} else {
-    		mag = 1.0/mag;
-    		double ax = a1.x*mag;
-    		double ay = a1.y*mag;
-    		double az = a1.z*mag;
+        if (almostZero(mag)) {
+            setIdentity( mat );
+        } else {
+            mag = 1.0/mag;
+            double ax = a1.x*mag;
+            double ay = a1.y*mag;
+            double az = a1.z*mag;
 
-    		double sinTheta = Math.sin(a1.angle);
-    		double cosTheta = Math.cos(a1.angle);
-    		double t = 1.0 - cosTheta;
+            double sinTheta = Math.sin(a1.angle);
+            double cosTheta = Math.cos(a1.angle);
+            double t = 1.0 - cosTheta;
 
-    		double xz = ax * az;
-    		double xy = ax * ay;
-    		double yz = ay * az;
+            double xz = ax * az;
+            double xy = ax * ay;
+            double yz = ay * az;
 
-    		mat[0] = t * ax * ax + cosTheta;
-    		mat[1] = t * xy - sinTheta * az;
-    		mat[2] = t * xz + sinTheta * ay;
-    		mat[3] = 0.0;
+            mat[0] = t * ax * ax + cosTheta;
+            mat[1] = t * xy - sinTheta * az;
+            mat[2] = t * xz + sinTheta * ay;
+            mat[3] = 0.0;
 
-    		mat[4] = t * xy + sinTheta * az;
-    		mat[5] = t * ay * ay + cosTheta;
-    		mat[6] = t * yz - sinTheta * ax;
-    		mat[7] = 0.0;
+            mat[4] = t * xy + sinTheta * az;
+            mat[5] = t * ay * ay + cosTheta;
+            mat[6] = t * yz - sinTheta * ax;
+            mat[7] = 0.0;
 
-    		mat[8] = t * xz - sinTheta * ay;
-    		mat[9] = t * yz + sinTheta * ax;
-    		mat[10] = t * az * az + cosTheta;
-    		mat[11] = 0.0;
+            mat[8] = t * xz - sinTheta * ay;
+            mat[9] = t * yz + sinTheta * ax;
+            mat[10] = t * az * az + cosTheta;
+            mat[11] = 0.0;
 
-    		mat[12] = 0.0;
-    		mat[13] = 0.0;
-    		mat[14] = 0.0;
-    		mat[15] = 1.0;
-    	}
+            mat[12] = 0.0;
+            mat[13] = 0.0;
+            mat[14] = 0.0;
+            mat[15] = 1.0;
+        }
     }
 
     /**
@@ -247,60 +247,60 @@ public class Camera
      */
     private static void lookAt( double[] mat, Point3d eye, Point3d center, Vector3d up)
     {
-    	double forwardx,forwardy,forwardz,invMag;
-    	double upx,upy,upz;
-    	double sidex,sidey,sidez;
+        double forwardx,forwardy,forwardz,invMag;
+        double upx,upy,upz;
+        double sidex,sidey,sidez;
 
-    	forwardx =  eye.x - center.x;
-    	forwardy =  eye.y - center.y;
-    	forwardz =  eye.z - center.z;
+        forwardx =  eye.x - center.x;
+        forwardy =  eye.y - center.y;
+        forwardz =  eye.z - center.z;
 
-    	invMag = 1.0/Math.sqrt( forwardx*forwardx + forwardy*forwardy + forwardz*forwardz);
-    	forwardx = forwardx*invMag;
-    	forwardy = forwardy*invMag;
-    	forwardz = forwardz*invMag;
+        invMag = 1.0/Math.sqrt( forwardx*forwardx + forwardy*forwardy + forwardz*forwardz);
+        forwardx = forwardx*invMag;
+        forwardy = forwardy*invMag;
+        forwardz = forwardz*invMag;
 
 
-    	invMag = 1.0/Math.sqrt( up.x*up.x + up.y*up.y + up.z*up.z);
-    	upx = up.x*invMag;
-    	upy = up.y*invMag;
-    	upz = up.z*invMag;
+        invMag = 1.0/Math.sqrt( up.x*up.x + up.y*up.y + up.z*up.z);
+        upx = up.x*invMag;
+        upy = up.y*invMag;
+        upz = up.z*invMag;
 
-    	// side = Up cross forward
-    	sidex = upy*forwardz-forwardy*upz;
-    	sidey = upz*forwardx-upx*forwardz;
-    	sidez = upx*forwardy-upy*forwardx;
+        // side = Up cross forward
+        sidex = upy*forwardz-forwardy*upz;
+        sidey = upz*forwardx-upx*forwardz;
+        sidez = upx*forwardy-upy*forwardx;
 
-    	invMag = 1.0/Math.sqrt( sidex*sidex + sidey*sidey + sidez*sidez);
-    	sidex *= invMag;
-    	sidey *= invMag;
-    	sidez *= invMag;
+        invMag = 1.0/Math.sqrt( sidex*sidex + sidey*sidey + sidez*sidez);
+        sidex *= invMag;
+        sidey *= invMag;
+        sidez *= invMag;
 
-    	// recompute up = forward cross side
+        // recompute up = forward cross side
 
-    	upx = forwardy*sidez-sidey*forwardz;
-    	upy = forwardz*sidex-forwardx*sidez;
-    	upz = forwardx*sidey-forwardy*sidex;
+        upx = forwardy*sidez-sidey*forwardz;
+        upy = forwardz*sidex-forwardx*sidez;
+        upz = forwardx*sidey-forwardy*sidex;
 
-    	// transpose because we calculated the inverse of what we want
-    	mat[0] = sidex;
-    	mat[1] = sidey;
-    	mat[2] = sidez;
+        // transpose because we calculated the inverse of what we want
+        mat[0] = sidex;
+        mat[1] = sidey;
+        mat[2] = sidez;
 
-    	mat[4] = upx;
-    	mat[5] = upy;
-    	mat[6] = upz;
+        mat[4] = upx;
+        mat[5] = upy;
+        mat[6] = upz;
 
-    	mat[8] =  forwardx;
-    	mat[9] =  forwardy;
-    	mat[10] = forwardz;
+        mat[8] =  forwardx;
+        mat[9] =  forwardy;
+        mat[10] = forwardz;
 
-    	mat[3] = -eye.x*mat[0] + -eye.y*mat[1] + -eye.z*mat[2];
-    	mat[7] = -eye.x*mat[4] + -eye.y*mat[5] + -eye.z*mat[6];
-    	mat[11] = -eye.x*mat[8] + -eye.y*mat[9] + -eye.z*mat[10];
+        mat[3] = -eye.x*mat[0] + -eye.y*mat[1] + -eye.z*mat[2];
+        mat[7] = -eye.x*mat[4] + -eye.y*mat[5] + -eye.z*mat[6];
+        mat[11] = -eye.x*mat[8] + -eye.y*mat[9] + -eye.z*mat[10];
 
-    	mat[12] = mat[13] = mat[14] = 0;
-    	mat[15] = 1;
+        mat[12] = mat[13] = mat[14] = 0;
+        mat[15] = 1;
     }
 
 
@@ -320,31 +320,31 @@ public class Camera
         }
         dir .scale( -mDistance );
         eyePoint .add( dir );
-        
+
         double[] mat = new double[16];
         lookAt( mat, eyePoint, mLookAtPoint, mUpDirection );
         matrix .set( mat );
     }
 
-    
-//	public void getWorldRotation( Quat4d q )
-//	{
-//		Vector3d axis = new Vector3d( q.x, q.y, q.z );
-//
-//		Transform3D viewTrans = new Transform3D();
-//		getViewTransform( viewTrans, 0d );
-//        viewTrans .invert();
-//
-//		// now map the axis back to world coordinates
-//		viewTrans .transform( axis );
-//		q.x = axis.x; q.y = axis.y; q.z = axis.z;
-//	}
-	
 
-	public Point3d getLookAtPoint()
-	{
-		return mLookAtPoint;
-	}
+    //	public void getWorldRotation( Quat4d q )
+    //	{
+    //		Vector3d axis = new Vector3d( q.x, q.y, q.z );
+    //
+    //		Transform3D viewTrans = new Transform3D();
+    //		getViewTransform( viewTrans, 0d );
+    //        viewTrans .invert();
+    //
+    //		// now map the axis back to world coordinates
+    //		viewTrans .transform( axis );
+    //		q.x = axis.x; q.y = axis.y; q.z = axis.z;
+    //	}
+
+
+    public Point3d getLookAtPoint()
+    {
+        return mLookAtPoint;
+    }
 
 
     public void setViewDirection( Vector3f lookDir )
@@ -362,67 +362,67 @@ public class Camera
         mUpDirection .set( upDir );
         mUpDirection .normalize();
     }
-	
-	
-	public void setLookAtPoint( Point3d lookAt )
-	{
-		mLookAtPoint = lookAt;
-	}
-    
 
-	public void addViewpointRotation( Quat4d rotation )
-	{
-		Matrix3d m = new Matrix3d();
-		m .set( rotation );
-		m .invert();
-		m .transform( mLookDirection );
-		m .transform( mUpDirection );
-	}
 
-	
-	/**
-	 * All view parameters will scale with distance, to keep the frustum
-	 * shape fixed.
-	 * @param distance
-	 */
-	public void setViewpointDistance( float distance )
-	{
-		double ratio = distance / mDistance;
-		mDistance = distance;
-		mNear = mNear * ratio;
-		mFar = mFar * ratio;
-		mWidth = mWidth * ratio;
-	}
+    public void setLookAtPoint( Point3d lookAt )
+    {
+        mLookAtPoint = lookAt;
+    }
 
-	public final void setMagnification( float exp )
-	{
-		setViewpointDistance( (float) ( ORIG_DISTANCE * Math .pow( Math.E, exp ) ) );
-	}
+
+    public void addViewpointRotation( Quat4d rotation )
+    {
+        Matrix3d m = new Matrix3d();
+        m .set( rotation );
+        m .invert();
+        m .transform( mLookDirection );
+        m .transform( mUpDirection );
+    }
+
+
+    /**
+     * All view parameters will scale with distance, to keep the frustum
+     * shape fixed.
+     * @param distance
+     */
+    public void setViewpointDistance( float distance )
+    {
+        double ratio = distance / mDistance;
+        mDistance = distance;
+        mNear = mNear * ratio;
+        mFar = mFar * ratio;
+        mWidth = mWidth * ratio;
+    }
+
+    public final void setMagnification( float exp )
+    {
+        setViewpointDistance( (float) ( ORIG_DISTANCE * Math .pow( Math.E, exp ) ) );
+    }
 
     public boolean isStereo()
     {
         return mStereoAngle != 0d;
     }
 
-	public void getStereoViewTransform( Matrix4d trans, int eye )
-	{
-		getViewTransform( trans, (eye==1)? -mStereoAngle : mStereoAngle );
-	}
+    public void getStereoViewTransform( Matrix4d trans, int eye )
+    {
+        getViewTransform( trans, (eye==1)? -mStereoAngle : mStereoAngle );
+    }
 
-	public double getNearClipDistance()
-	{
-		return mNear;
-	}
+    public double getNearClipDistance()
+    {
+        return mNear;
+    }
 
-	public double getFarClipDistance()
-	{
-		return mFar;
-	}
+    public double getFarClipDistance()
+    {
+        return mFar;
+    }
 
-	public double getWidth()
-	{
-		return mWidth;
-	}
+    public double getWidth()
+    {
+        return mWidth;
+    }
 
     public Element getXML( Document doc )
     {
@@ -460,8 +460,8 @@ public class Camera
 
     public Camera( Element viewElem )
     {
-    	this();
-    	
+        this();
+
         String str = viewElem .getAttribute( "near" );
         this .mNear = Double .parseDouble( str );
         str = viewElem .getAttribute( "far" );
