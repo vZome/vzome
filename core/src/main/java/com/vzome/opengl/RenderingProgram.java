@@ -1,7 +1,5 @@
 package com.vzome.opengl;
 
-import java.util.Collection;
-
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.math.FloatUtil;
 
@@ -32,20 +30,20 @@ public class RenderingProgram
         this.gl = gl;
         String version = gl .getGLSLVersionString();
 
-        String vertexShaderSrc = version + "\n" + 
-                    "uniform mat4 u_MVP;\n" + 
-                    "uniform mat4 u_MVMatrix;\n" + 
-                    "uniform vec4 u_Color;\n" + 
-                    "uniform mat4 u_Orientations[60];\n" + 
-                    "\n" + 
+        String vertexShaderSrc = version + "\n" +
+                    "uniform mat4 u_MVP;\n" +
+                    "uniform mat4 u_MVMatrix;\n" +
+                    "uniform vec4 u_Color;\n" +
+                    "uniform mat4 u_Orientations[60];\n" +
+                    "\n" +
                     "#define MAX_LIGHTS 10\n" + 
                     "uniform int  u_NumLights;\n" + 
                     "uniform vec3 u_LightDirections[MAX_LIGHTS];\n" + 
-                    "\n" + 
+                    "\n" +
                     "attribute vec4 a_Position;\n" + 
                     "attribute vec3 a_Normal;\n" + 
                     "attribute vec4 a_InstanceData;\n" + 
-                    "\n" + 
+                    "\n" +
                     "varying vec4 v_Color;\n" + 
                     "\n" + 
                     "void main()\n" + 

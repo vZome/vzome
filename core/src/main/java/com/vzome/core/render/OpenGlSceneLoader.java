@@ -124,7 +124,11 @@ public class OpenGlSceneLoader
         float[] offsets = new float[4 * parts.size()];
         int i = 0;
         for( RenderedManifestation part : parts ) {
-            AlgebraicVector vector = part .getLocationAV(); // this would be null for a panel!
+            AlgebraicVector vector = part .getLocationAV();
+            if ( vector == null ) {
+                // must be a panel
+                vector = part .getModel() .getField() .origin( 3 );
+            }
             int zone = part .getStrutZone();
             float orientationAndGlow = part .getGlow() + (float) zone;
             offsets[i * 4 + 0] = globalScale * (float) vector .getComponent( AlgebraicVector.X ) .evaluate();

@@ -23,7 +23,7 @@ import com.vzome.opengl.ShapeClass;
 public class JoglScene implements RenderingChanges, PropertyChangeListener
 {
     private Color bkgdColor;
-    private static final float MODEL_SCALE_FACTOR = 3.5f; // this seems to align with the way Java3d rendering came out
+    private static final float MODEL_SCALE_FACTOR = 2f; // this seems to align with the way Java3d rendering came out
     private float[][] orientations;
     private final Map<Polyhedron, ShapeClass> shapeClasses = new HashMap<>();
     
@@ -70,8 +70,6 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	public void manifestationAdded( RenderedManifestation rm )
 	{
 	    Polyhedron shape = rm .getShape();
-        if ( shape .isPanel() )
-            return; // panels are not supported yet by OpenGlSceneLoader
 	    MutableShapeClass shapeClass = (MutableShapeClass) this .shapeClasses .get( shape );
 	    if ( shapeClass == null ) {
 	        shapeClass = new MutableShapeClass();

@@ -40,7 +40,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private RenderingProgram renderer = null;
     private FPSAnimator animator;
 
-    private float near = 100, far = 2000, fov = 0.4f;
+    private float near = 100, far = 2000, fovX = 0.5f;
     private float[] matrix = new float[16]; // stored in column-major order, for JOGL-friendliness
     private float aspectRatio = 1f;
 
@@ -104,7 +104,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         // Object first appears directly in front of user
         FloatUtil.makeIdentity( objectTrans );
         
-        FloatUtil.makePerspective( projection, 0, true, this .fov, this .aspectRatio, this .near, this .far );
+        // The Camera model is set up for fovX, but FloatUtil.makePerspective wants fovY
+        float fovY = this .fovX / this .aspectRatio;
+        FloatUtil.makePerspective( projection, 0, true, fovY, this .aspectRatio, this .near, this .far );
         renderer .setUniforms( objectTrans, this.matrix, projection );
 
         this .scene .render( this .renderer );
@@ -132,9 +134,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     }
 
     @Override
-    public void setPerspective( double fov, double aspectRatio, double near, double far )
+    public void setPerspective( double fovX, double aspectRatio, double near, double far )
     {
-        this .fov = (float) fov;
+        this .fovX = (float) fovX;
         this .near = (float) near;
         this .far = (float) far;
 
