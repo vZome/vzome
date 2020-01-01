@@ -10,7 +10,7 @@ public interface InstancedGeometry {
 
     FloatBuffer getPositions();
 
-    float[] getColor();
+    FloatBuffer getColors();
 
     int getVertexCount();
 
@@ -24,5 +24,7 @@ public interface InstancedGeometry {
 
     int getPositionsVBO();
 
-    void setBuffers( int i, int j, int k );
+    int getColorsVBO();
+
+    void setBuffers( int verticesId, int normalsId, int positionsId, int colorsId );
 }

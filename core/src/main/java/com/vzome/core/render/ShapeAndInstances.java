@@ -21,11 +21,11 @@ import com.vzome.opengl.InstancedGeometry;
 public class ShapeAndInstances implements InstancedGeometry
 {
     private FloatBuffer mInstancePositions;
+    private FloatBuffer mInstanceColors;
     private FloatBuffer mVertices;
     private FloatBuffer mNormals = null;
-    int positionsVBO = -1, normalsVBO = -1, verticesVBO = -1;
+    int positionsVBO = -1, normalsVBO = -1, verticesVBO = -1, colorsVBO = -1;
     private boolean usesVBOs = false;
-    private float[] mColor = new float[4];
     private int instanceCount = 0;
     private int vertexCount;
     private final float globalScale;
@@ -34,10 +34,9 @@ public class ShapeAndInstances implements InstancedGeometry
 
     public static final int COORDS_PER_VERTEX = 3;
 
-    public ShapeAndInstances( Polyhedron shape, Color color, float globalScale )
+    public ShapeAndInstances( Polyhedron shape, float globalScale )
     {
         this.globalScale = globalScale;
-        color .getRGBColorComponents( this .mColor );
 
         List<RealVector> vertices = new ArrayList<>();
         List<RealVector> normals = new ArrayList<>();
@@ -95,102 +94,74 @@ public class ShapeAndInstances implements InstancedGeometry
         }
     }
 
-    public void setBuffers( int buffer, int buffer1, int buffer2 )
+    public void setBuffers( int verticesId, int normalsId, int positionsId, int colorsId )
     {
-        this .verticesVBO = buffer;
-        this .normalsVBO = buffer1;
-        this .positionsVBO = buffer2;
+        this .verticesVBO = verticesId;
+        this .normalsVBO = normalsId;
+        this .positionsVBO = positionsId;
+        this .colorsVBO = colorsId;
         this .mVertices = null;
         this .mInstancePositions = null;
+        this .mInstanceColors = null;
         this .mNormals = null;
         this .usesVBOs = true;
     }
 
-    public void setShapeData( float[] verticesArray, float[] normalsArray, float[] color )
-    {
-    }
-
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#getVertices()
-     */
     @Override
     public FloatBuffer getVertices()
     {
         return this .mVertices;
     }
 
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#getNormals()
-     */
     @Override
     public FloatBuffer getNormals()
     {
         return this .mNormals;
     }
 
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#getPositions()
-     */
     @Override
     public FloatBuffer getPositions()
     {
         return this .mInstancePositions;
     }
 
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#getColor()
-     */
     @Override
-    public float[] getColor()
+    public FloatBuffer getColors()
     {
-        return mColor;
+        return this .mInstanceColors;
     }
 
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#getVertexCount()
-     */
     @Override
     public int getVertexCount()
     {
         return this .vertexCount;
     }
 
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#getInstanceCount()
-     */
     @Override
     public int getInstanceCount()
     {
         return this .instanceCount;
     }
 
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#usesVBOs()
-     */
     @Override
     public boolean usesVBOs() { return this .usesVBOs; }
 
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#getVerticesVBO()
-     */
     @Override
     public int getVerticesVBO() { return this .verticesVBO; }
 
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#getNormalsVBO()
-     */
     @Override
     public int getNormalsVBO() { return this .normalsVBO; }
 
-    /* (non-Javadoc)
-     * @see com.vzome.opengl.InstancedGeometry#getPositionsVBO()
-     */
     @Override
     public int getPositionsVBO() { return this .positionsVBO; }
+
+    @Override
+    public int getColorsVBO() {  return this .colorsVBO;  }
 
     public void rebuildInstanceData()
     {
         float[] offsets = new float[4 * instances.size()];
+        float[] colors = new float[4 * instances.size()];
         int i = 0;
         for( RenderedManifestation part : instances ) {
             AlgebraicVector vector = part .getLocationAV();
@@ -204,6 +175,14 @@ public class ShapeAndInstances implements InstancedGeometry
             offsets[i * 4 + 1] = globalScale * (float) vector .getComponent( AlgebraicVector.Y ) .evaluate();
             offsets[i * 4 + 2] = globalScale * (float) vector .getComponent( AlgebraicVector.Z ) .evaluate();
             offsets[i * 4 + 3] = orientationAndGlow;
+            
+            float[] rgba = new float[4];
+            part .getColor() .getRGBColorComponents( rgba );
+            colors[i * 4 + 0] = rgba[ 0 ];
+            colors[i * 4 + 1] = rgba[ 1 ];
+            colors[i * 4 + 2] = rgba[ 2 ];
+            colors[i * 4 + 3] = rgba[ 3 ];
+   
             ++i;
         }
 
@@ -212,6 +191,13 @@ public class ShapeAndInstances implements InstancedGeometry
         mInstancePositions = bbOffsets.asFloatBuffer();
         mInstancePositions.put( offsets );
         mInstancePositions.position(0);
+
+        ByteBuffer bbColors = ByteBuffer.allocateDirect( colors.length * 4 );
+        bbColors.order(ByteOrder.nativeOrder());
+        mInstanceColors = bbColors.asFloatBuffer();
+        mInstanceColors.put( colors );
+        mInstanceColors.position(0);
+
         instanceCount = offsets.length / 4;
     }
 

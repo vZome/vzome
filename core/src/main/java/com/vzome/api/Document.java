@@ -54,7 +54,7 @@ public class Document
 	
 	public SymmetryRendering getSymmetryRendering( float globalScale )
 	{
-		return new SymmetryRendering( this .delegate .getRenderedModel(), globalScale, true );
+		return new SymmetryRendering( this .delegate .getRenderedModel(), globalScale );
 	}
 
 	public DocumentModel getDocumentModel()

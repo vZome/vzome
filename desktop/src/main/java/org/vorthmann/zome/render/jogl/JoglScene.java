@@ -19,13 +19,11 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 {
     private Color bkgdColor;
     private final Map<String, SymmetryRendering> symmetries = new HashMap<>();
-    private final boolean useOrbitColors;
 
     private static final float MODEL_SCALE_FACTOR = 2f; // this seems to align with the way Java3d rendering came out
 
-    JoglScene( Lights lights, boolean isSticky, boolean useOrbitColors )
+    JoglScene( Lights lights, boolean isSticky )
 	{
-        this.useOrbitColors = useOrbitColors;
         this.bkgdColor = lights .getBackgroundColor();
         
         lights .addPropertyListener( new PropertyChangeListener(){
@@ -67,7 +65,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	    String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
 	    SymmetryRendering symmetryRendering = this .symmetries .get( symmetryName );
 	    if ( symmetryRendering == null ) {
-	        symmetryRendering = new SymmetryRendering( rm .getModel() .getOrbitSource(), MODEL_SCALE_FACTOR, this .useOrbitColors );
+	        symmetryRendering = new SymmetryRendering( rm .getModel() .getOrbitSource(), MODEL_SCALE_FACTOR );
 	        this .symmetries .put( symmetryName, symmetryRendering );
 	    }
 	    this .symmetries .get( symmetryName ) .manifestationAdded( rm );

@@ -168,7 +168,7 @@ public class Renderer
             // IMPORTANT: Unbind from the buffer when we're done with it.
             gl.glBindBuffer( 0 );
 
-            shape .setBuffers( buffers[ bufferTriple + 0 ], buffers[ bufferTriple + 1 ], buffers[ bufferTriple + 2 ] );
+            shape .setBuffers( buffers[ bufferTriple + 0 ], buffers[ bufferTriple + 1 ], buffers[ bufferTriple + 2 ], -1 ); // TODO implement colors buffer
             bufferTriple += 3;
             //            Log.i( TAG, "another buffer triple loaded into GPU" );
         }
@@ -204,9 +204,6 @@ public class Renderer
 //        this.setUniforms( gl, mModelCube, mCamera, eyeTransform, eyePerspective, scene .getOrientations() );
         for( InstancedGeometry shape : symmetryRendering .getGeometries() )
         {
-            float[] color = shape .getColor();
-            gl.glUniform4f( mColorParam, color[0], color[1], color[2], color[3] );
-
             // Set the vertices of the shape
             int vbo = shape .getVerticesVBO();
             if ( shape .usesVBOs() )

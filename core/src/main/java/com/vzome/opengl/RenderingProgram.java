@@ -34,7 +34,6 @@ public class RenderingProgram
         String vertexShaderSrc = version + "\n" +
                     "uniform mat4 u_MVP;\n" +
                     "uniform mat4 u_MVMatrix;\n" +
-                    "uniform vec4 u_Color;\n" +
                     "uniform mat4 u_Orientations[60];\n" +
                     "\n" +
                     "#define MAX_LIGHTS 10\n" + 
@@ -44,6 +43,7 @@ public class RenderingProgram
                     "attribute vec4 a_Position;\n" + 
                     "attribute vec3 a_Normal;\n" + 
                     "attribute vec4 a_InstanceData;\n" + 
+                    "attribute vec4 a_Color;\n" +
                     "\n" +
                     "varying vec4 v_Color;\n" + 
                     "\n" + 
@@ -65,7 +65,7 @@ public class RenderingProgram
                     "   for( int i = 0; i < u_NumLights; ++i ){\n" + 
                     "       vec3 lightVector = normalize( u_LightDirections[i] );\n" + 
                     "       float diffuse = max(dot(modelViewNormal, lightVector), 0.5 );\n" + 
-                    "       linearColor += u_Color * diffuse;\n" + 
+                    "       linearColor += a_Color * diffuse;\n" + 
                     "   }" +
                     "   v_Color = linearColor;\n" + 
                     "}";
@@ -91,21 +91,19 @@ public class RenderingProgram
         mModelViewProjectionParam = gl.glGetUniformLocation( mGlProgram, "u_MVP" );
         checkGLError( "worldViewProjection");
 
-        mPositionParam = gl.glGetAttribLocation(mGlProgram, "a_Position");
-        mColorParam = gl.glGetUniformLocation(mGlProgram, "u_Color");
-        checkGLError( "u_Color");
-
         mNumLightsParam = gl.glGetUniformLocation( mGlProgram, "u_NumLights" );
         mLightDirectionsParam[0] = gl.glGetUniformLocation(mGlProgram, "u_LightDirections[0]");
         mModelViewParam = gl.glGetUniformLocation( mGlProgram, "u_MVMatrix" );
 
-        normalParam = gl.glGetAttribLocation( mGlProgram, "a_Normal" );
-        checkGLError( "a_Normal");
-
         for ( int i = 0; i < 60; i++ )
             mOrientationsParam[ i ] = gl.glGetUniformLocation( mGlProgram, "u_Orientations[" + i + "]" );
 
-        instanceData = gl.glGetAttribLocation( mGlProgram, "a_InstanceData" ); // a_InstanceData will actually store (x,y,z,orientation)
+        mPositionParam = gl .glGetAttribLocation( mGlProgram, "a_Position" );
+        mColorParam = gl .glGetAttribLocation( mGlProgram, "a_Color" );
+        normalParam = gl .glGetAttribLocation( mGlProgram, "a_Normal" );
+        checkGLError( "a_Normal");
+
+        instanceData = gl.glGetAttribLocation( mGlProgram, "a_InstanceData" ); // a_InstanceData will actually store (x,y,z,orientation+glow)
     }
 
     /**
@@ -206,9 +204,6 @@ public class RenderingProgram
         if ( count == 0 )
             return;
         
-        float[] color = shape .getColor();
-        gl.glUniform4f( mColorParam, color[0], color[1], color[2], color[3] );
-
         // Set the vertices of the shape
         gl.glEnableVertexAttribArray(mPositionParam);
         gl.glVertexAttribDivisor(mPositionParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
@@ -224,6 +219,11 @@ public class RenderingProgram
         gl.glEnableVertexAttribArray( instanceData );
         gl.glVertexAttribDivisor( instanceData, 1);  // SV: this one is instanced
         gl.glVertexAttribPointer( instanceData, 4, false, 0, shape .getPositions() );
+
+        // Set the colors of the shapes
+        gl.glEnableVertexAttribArray( mColorParam );
+        gl.glVertexAttribDivisor( mColorParam, 1);  // SV: this one is instanced
+        gl.glVertexAttribPointer( mColorParam, 4, false, 0, shape .getColors() );
 
         gl.glDrawArraysInstanced( 0, shape .getVertexCount(), count );
         checkGLError( "Drawing a shape");

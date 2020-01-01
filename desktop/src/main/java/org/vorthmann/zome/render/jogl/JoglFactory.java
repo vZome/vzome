@@ -26,9 +26,7 @@ public class JoglFactory implements J3dComponentFactory
         glcapabilities .setDepthBits( 32 );
         final GLCanvas glcanvas = new GLCanvas( glcapabilities );
         
-        boolean useOrbitColors = ! controller .propertyIsTrue( "useObjectColors" );
-
-        JoglScene scene = new JoglScene( controller .getSceneLighting(), isSticky, useOrbitColors );
+        JoglScene scene = new JoglScene( controller .getSceneLighting(), isSticky );
         RenderingViewer viewer = new JoglRenderingViewer( scene, glcanvas );
         controller .attachViewer( viewer, scene, glcanvas );
         return glcanvas;

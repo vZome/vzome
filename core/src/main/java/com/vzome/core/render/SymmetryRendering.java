@@ -17,15 +17,10 @@ public class SymmetryRendering implements RenderingChanges
     private final float[][] orientations;
     private final Map<Polyhedron, InstancedGeometry> geometries = new HashMap<Polyhedron, InstancedGeometry>();
     private float globalScale;
-    private final OrbitSource orbits;
-    private final boolean useOrbitColors;
 
-
-    public SymmetryRendering( OrbitSource orbits, float globalScale, boolean useOrbitColors )
+    public SymmetryRendering( OrbitSource orbits, float globalScale )
     {
-        this .orbits = orbits;
         this .globalScale = globalScale;
-        this.useOrbitColors = useOrbitColors;
         
         Symmetry symmetry = orbits .getSymmetry();
         AlgebraicField field = symmetry .getField();
@@ -54,9 +49,9 @@ public class SymmetryRendering implements RenderingChanges
 
     }
 
-    public SymmetryRendering( RenderedModel renderedModel, float globalScale, boolean useOrbitColors )
+    public SymmetryRendering( RenderedModel renderedModel, float globalScale )
     {
-        this( renderedModel .getOrbitSource(), globalScale, useOrbitColors );
+        this( renderedModel .getOrbitSource(), globalScale );
         
         for ( RenderedManifestation rm : renderedModel ) {
             this .manifestationAdded( rm );
@@ -79,10 +74,7 @@ public class SymmetryRendering implements RenderingChanges
         Polyhedron shape = rm .getShape();
         ShapeAndInstances shapesAndInstances = (ShapeAndInstances) this .geometries .get( shape );
         if ( shapesAndInstances == null ) {
-            Color orbitColor = this .orbits .getColor( rm .getStrutOrbit() );
-            if ( orbitColor == null || ! this .useOrbitColors )
-                orbitColor = rm .getColor();
-            shapesAndInstances = new ShapeAndInstances( shape, orbitColor, this .globalScale );
+            shapesAndInstances = new ShapeAndInstances( shape, this .globalScale );
             this .geometries .put( shape, shapesAndInstances );
         }
         shapesAndInstances .addInstance( rm );
