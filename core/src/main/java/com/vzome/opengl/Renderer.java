@@ -128,7 +128,7 @@ public class Renderer
     {
         // First, generate as many buffers as we need.
         // This will give us the OpenGL handles for these buffers.
-        int numBuffers = 3 * scene .numShapeClasses();
+        int numBuffers = 3 * scene .numGeometries();
         
         if ( numBuffers == 0 )
             return; // must have had only panels?
@@ -137,7 +137,7 @@ public class Renderer
         gl.glGenBuffers( numBuffers, buffers, 0 );
 
         int bufferTriple = 0;
-        for( ShapeClass shape : scene )
+        for( InstancedGeometry shape : scene )
         {
             // Bind to the buffer. glBufferData will affect this buffer specifically.
             gl.glBindBuffer( buffers[ bufferTriple + 0 ] );
@@ -200,7 +200,7 @@ public class Renderer
     public void renderScene( OpenGlShim gl, float[] mModelCube, float[] mCamera, float[] eyeTransform, float[] eyePerspective, Scene scene )
     {
 //        this.setUniforms( gl, mModelCube, mCamera, eyeTransform, eyePerspective, scene .getOrientations() );
-        for( ShapeClass shape : scene )
+        for( InstancedGeometry shape : scene )
         {
             float[] color = shape .getColor();
             gl.glUniform4f( mColorParam, color[0], color[1], color[2], color[3] );
@@ -225,7 +225,7 @@ public class Renderer
         }
     }
 
-    protected void renderShape( OpenGlShim gl, ShapeClass shape )
+    protected void renderShape( OpenGlShim gl, InstancedGeometry shape )
     {
         gl.glDrawLines( 0, shape .getVertexCount() );
     }

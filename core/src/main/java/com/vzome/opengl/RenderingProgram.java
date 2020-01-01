@@ -188,7 +188,7 @@ public class RenderingProgram
         gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
     }
     
-    public void renderScene( float[] background, Iterable<ShapeClass> shapeClasses )
+    public void renderScene( float[] background, Iterable<InstancedGeometry> shapeClasses )
     {
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
@@ -196,11 +196,11 @@ public class RenderingProgram
         gl .glEnableDepth();
         gl .glClear( background[0], background[1], background[2], background[3] );
         
-        for( ShapeClass shapeClass : shapeClasses )
+        for( InstancedGeometry shapeClass : shapeClasses )
             this .renderShape( shapeClass );
     }
 
-    public void renderShape( ShapeClass shape )
+    public void renderShape( InstancedGeometry shape )
     {
         int count = shape .getInstanceCount();
         if ( count == 0 )

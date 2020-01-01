@@ -93,12 +93,12 @@ public class LightingRenderer extends Renderer
         gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
     }
 
-    protected void drawArrays( OpenGlShim gl, ShapeClass shape )
+    protected void drawArrays( OpenGlShim gl, InstancedGeometry shape )
     {
         gl.glDrawTriangles( 0, shape .getVertexCount() );
     }
 
-    protected void renderShape( OpenGlShim gl, ShapeClass shape )
+    protected void renderShape( OpenGlShim gl, InstancedGeometry shape )
     {
         int vbo = shape .getNormalsVBO();
         if ( shape .usesVBOs() )

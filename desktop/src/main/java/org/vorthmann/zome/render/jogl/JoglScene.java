@@ -6,9 +6,7 @@ package org.vorthmann.zome.render.jogl;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.render.Color;
@@ -16,22 +14,18 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.OpenGlSceneLoader;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.ShapeAndInstances;
 import com.vzome.core.viewing.Lights;
+import com.vzome.opengl.InstancedGeometry;
 import com.vzome.opengl.RenderingProgram;
-import com.vzome.opengl.ShapeClass;
 
 public class JoglScene implements RenderingChanges, PropertyChangeListener
 {
     private Color bkgdColor;
     private static final float MODEL_SCALE_FACTOR = 2f; // this seems to align with the way Java3d rendering came out
     private float[][] orientations;
-    private final Map<Polyhedron, ShapeClass> shapeClasses = new HashMap<>();
+    private final Map<Polyhedron, InstancedGeometry> shapeClasses = new HashMap<>();
     
-    private static class MutableShapeClass extends ShapeClass
-    {
-        public Set<RenderedManifestation> instances = new HashSet<>();  // needed when we remove something
-    }
-
     JoglScene( Lights lights, Colors colors, boolean isSticky )
 	{
         this.bkgdColor = lights .getBackgroundColor();
@@ -69,9 +63,9 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	public void manifestationAdded( RenderedManifestation rm )
 	{
 	    Polyhedron shape = rm .getShape();
-	    MutableShapeClass shapeClass = (MutableShapeClass) this .shapeClasses .get( shape );
+	    ShapeAndInstances shapeClass = (ShapeAndInstances) this .shapeClasses .get( shape );
 	    if ( shapeClass == null ) {
-	        shapeClass = new MutableShapeClass();
+	        shapeClass = new ShapeAndInstances();
 	        OpenGlSceneLoader .setShapeData( shapeClass, shape, rm.getColor(), MODEL_SCALE_FACTOR );
 	        this .shapeClasses .put( shape, shapeClass );
 
@@ -80,17 +74,17 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
                 this .orientations = OpenGlSceneLoader .createOrientationsArray( rm .getModel() .getOrbitSource() );
             }
 	    }
-	    shapeClass .instances .add( rm );
-	    shapeClass .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeClass .instances, MODEL_SCALE_FACTOR ) );
+	    shapeClass .addInstance( rm );
+	    shapeClass .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeClass .getInstances(), MODEL_SCALE_FACTOR ) );
 	}
 
 	@Override
 	public void manifestationRemoved( RenderedManifestation rm )
 	{
         Polyhedron shape = rm .getShape();
-        MutableShapeClass shapeSet = (MutableShapeClass) this .shapeClasses .get( shape );
-        shapeSet .instances .remove( rm );
-        shapeSet .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeSet .instances, MODEL_SCALE_FACTOR ) );
+        ShapeAndInstances shapeSet = (ShapeAndInstances) this .shapeClasses .get( shape );
+        shapeSet .removeInstance( rm );
+        shapeSet .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeSet .getInstances(), MODEL_SCALE_FACTOR ) );
     }
 
 	@Override
@@ -102,8 +96,8 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	public void glowChanged( RenderedManifestation rm )
 	{
         Polyhedron shape = rm .getShape();
-        MutableShapeClass shapeSet = (MutableShapeClass) this .shapeClasses .get( shape );
-        shapeSet .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeSet .instances, MODEL_SCALE_FACTOR ) );
+        ShapeAndInstances shapeSet = (ShapeAndInstances) this .shapeClasses .get( shape );
+        shapeSet .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeSet .getInstances(), MODEL_SCALE_FACTOR ) );
     }
 
 	@Override

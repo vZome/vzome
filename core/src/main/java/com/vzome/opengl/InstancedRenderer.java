@@ -81,7 +81,7 @@ public class InstancedRenderer extends LightingRenderer
         checkGLError( gl, "mOrientationsParam");
     }
 
-    protected void drawArrays( OpenGlShim gl, ShapeClass shape )
+    protected void drawArrays( OpenGlShim gl, InstancedGeometry shape )
     {
         // Set the positions of the shapes
         int vbo = shape .getPositionsVBO();

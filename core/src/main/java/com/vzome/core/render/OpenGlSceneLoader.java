@@ -1,6 +1,7 @@
 package com.vzome.core.render;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,8 +17,8 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.RenderedModel.OrbitSource;
+import com.vzome.opengl.InstancedGeometry;
 import com.vzome.opengl.Scene;
-import com.vzome.opengl.ShapeClass;
 
 public class OpenGlSceneLoader
 {
@@ -47,7 +48,7 @@ public class OpenGlSceneLoader
         //        this.struts = new ShapeClass( verticesArray, null, null, black );
 
         Map<Polyhedron,Config> shapeClassConfigs = new HashMap<Polyhedron,Config>();
-        Set<ShapeClass> shapes = new HashSet<ShapeClass>();
+        Set<InstancedGeometry> shapes = new HashSet<InstancedGeometry>();
         for (RenderedManifestation rman : rmodel) {            
             Polyhedron shape = rman .getShape();
             if ( shape .isPanel() )
@@ -63,7 +64,7 @@ public class OpenGlSceneLoader
         for( Map.Entry<Polyhedron, Config> entry : shapeClassConfigs.entrySet() )
         {
             Config config = entry .getValue();
-            ShapeClass shapeClass = new ShapeClass();
+            ShapeAndInstances shapeClass = new ShapeAndInstances();
             setShapeData( shapeClass, entry .getKey(), config.color, globalScale );
             shapeClass .replacePositions( createPositionsArray( config .instances, globalScale ) );
             shapes .add( shapeClass );
@@ -71,7 +72,7 @@ public class OpenGlSceneLoader
         return new Scene( shapes, createOrientationsArray( rmodel .getOrbitSource() ) );
     }
 
-    public static ShapeClass setShapeData( ShapeClass shapeClass, Polyhedron shape, Color color, float globalScale )
+    public static InstancedGeometry setShapeData( ShapeAndInstances shapeClass, Polyhedron shape, Color color, float globalScale )
     {
         List<RealVector> vertices = new ArrayList<>();
         List<RealVector> normals = new ArrayList<>();
@@ -98,18 +99,18 @@ public class OpenGlSceneLoader
             }
         }
 
-        float[] verticesArray = new float[ShapeClass.COORDS_PER_VERTEX * vertices.size()];
-        float[] normalsArray = new float[ShapeClass.COORDS_PER_VERTEX * normals.size()];  // same size!
+        float[] verticesArray = new float[ShapeAndInstances.COORDS_PER_VERTEX * vertices.size()];
+        float[] normalsArray = new float[ShapeAndInstances.COORDS_PER_VERTEX * normals.size()];  // same size!
         for (int i = 0; i < vertices.size(); i++) {
             RealVector vector = vertices.get(i);
             vector = vector .scale( globalScale );
-            verticesArray[i * ShapeClass.COORDS_PER_VERTEX] = (float) vector.x;
-            verticesArray[i * ShapeClass.COORDS_PER_VERTEX + 1] = (float) vector.y;
-            verticesArray[i * ShapeClass.COORDS_PER_VERTEX + 2] = (float) vector.z;
+            verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
+            verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
+            verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
             vector = normals.get(i);
-            normalsArray[i * ShapeClass.COORDS_PER_VERTEX] = (float) vector.x;
-            normalsArray[i * ShapeClass.COORDS_PER_VERTEX + 1] = (float) vector.y;
-            normalsArray[i * ShapeClass.COORDS_PER_VERTEX + 2] = (float) vector.z;
+            normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
+            normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
+            normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
         }
 
         float[] rgb = new float[3];
@@ -119,7 +120,7 @@ public class OpenGlSceneLoader
         return shapeClass;
     }
 
-    public static float[] createPositionsArray( Set<RenderedManifestation> parts, float globalScale )
+    public static float[] createPositionsArray( Collection<RenderedManifestation> parts, float globalScale )
     {
         float[] offsets = new float[4 * parts.size()];
         int i = 0;
@@ -140,21 +141,21 @@ public class OpenGlSceneLoader
         return offsets;
     }
 
-    public static ShapeClass createStrutsWireframe( Strut[] struts, float[] color )
+    public static InstancedGeometry createStrutsWireframe( Strut[] struts, float[] color )
     {
-        float[] verticesArray = new float[ShapeClass.COORDS_PER_VERTEX * 2 * struts.length];
+        float[] verticesArray = new float[ShapeAndInstances.COORDS_PER_VERTEX * 2 * struts.length];
         for (int i = 0; i < struts.length; i++) {
             Vector vector = struts[i] .location();
-            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 0] = (float) vector.getX().value()/2;  // TODO: figure out why we need "/2"
-            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 1] = (float) vector.getY().value()/2;
-            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 2] = (float) vector.getZ().value()/2;
+            verticesArray[i * 2 * ShapeAndInstances.COORDS_PER_VERTEX + 0] = (float) vector.getX().value()/2;  // TODO: figure out why we need "/2"
+            verticesArray[i * 2 * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.getY().value()/2;
+            verticesArray[i * 2 * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.getZ().value()/2;
             Vector offset = struts[i] .offset();
             vector = vector .plus( offset );
-            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 3] = (float) vector.getX().value()/2;
-            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 4] = (float) vector.getY().value()/2;
-            verticesArray[i * 2 * ShapeClass.COORDS_PER_VERTEX + 5] = (float) vector.getZ().value()/2;
+            verticesArray[i * 2 * ShapeAndInstances.COORDS_PER_VERTEX + 3] = (float) vector.getX().value()/2;
+            verticesArray[i * 2 * ShapeAndInstances.COORDS_PER_VERTEX + 4] = (float) vector.getY().value()/2;
+            verticesArray[i * 2 * ShapeAndInstances.COORDS_PER_VERTEX + 5] = (float) vector.getZ().value()/2;
         }
-        ShapeClass shapeClass = new ShapeClass();
+        ShapeAndInstances shapeClass = new ShapeAndInstances();
         shapeClass .setShapeData( verticesArray, null, null, color );
         return shapeClass;
     }
