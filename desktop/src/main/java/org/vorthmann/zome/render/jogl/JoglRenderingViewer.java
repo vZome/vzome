@@ -100,10 +100,6 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             return; // still initializing
         
         float[] projection = new float[16];
-        float[] objectTrans = new float[16];
-
-        // Object first appears directly in front of user
-        FloatUtil.makeIdentity( objectTrans );
         
         if ( this .fovX == 0f ) {
             float halfEdgeY = this .halfEdgeX / this .aspectRatio;
@@ -113,7 +109,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             float fovY = this .fovX / this .aspectRatio;
             FloatUtil .makePerspective( projection, 0, true, fovY, this .aspectRatio, this .near, this .far );
         }
-        renderer .setUniforms( objectTrans, this.matrix, projection );
+        renderer .setView( this.matrix, projection );
 
         this .scene .render( this .renderer );
     }

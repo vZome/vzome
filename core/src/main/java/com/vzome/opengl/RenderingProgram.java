@@ -156,31 +156,29 @@ public class RenderingProgram
         }
     }
 
-    public void setOrientations( float[][] icosahedralOrientations )
+    public void setOrientations( float[][] orientations )
     {
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
-        for ( int i = 0; i < 60; i++ )
-            gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, icosahedralOrientations[ i ], 0 );
+        for ( int i = 0; i < orientations.length; i++ )
+            gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, orientations[ i ], 0 );
         checkGLError( "mOrientationsParam");
     }
 
-    public void setUniforms( float[] model, float[] camera, float[] projection )
+    public void setView( float[] modelView, float[] projection )
     {
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         float[] modelViewProjection = new float[16];
-        float[] modelView = new float[16];
         float[] lightPosInEyeSpace = new float[4];
 
         // Build the ModelView and ModelViewProjection matrices
         //  ASSUME ALL MATRICES ARE IN COLUMN-MAJOR ORDER!
-        FloatUtil.multMatrix( camera, model, modelView );
         FloatUtil.multMatrix( projection, modelView, modelViewProjection );
 
         // Set the position of the light
-        FloatUtil.multMatrixVec( camera, HEADLIGHT, lightPosInEyeSpace );
+        FloatUtil.multMatrixVec( modelView, HEADLIGHT, lightPosInEyeSpace );
 
         // Set the ModelViewProjection matrix in the shader.
         gl.glUniformMatrix4fv( mModelViewProjectionParam, 1, false, modelViewProjection, 0 );

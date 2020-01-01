@@ -50,11 +50,8 @@ public class View3dActivity
     private Scene scene = null;
     private boolean failedLoad = false;
 
-    private float[] mModelCube;
     private float[] mCamera;
     private float[] projection;
-
-    private float mObjectDistance = 0f;
 
     private Application vZome;
 
@@ -65,7 +62,6 @@ public class View3dActivity
      */
     public void onCreate()
     {
-        mModelCube = new float[16];
         mCamera = new float[16];
         projection = new float[16];
 
@@ -82,9 +78,6 @@ public class View3dActivity
         this .instancedRenderer = new RenderingProgram( gl );
 
         gl.glEnableDepth();
-
-        // Object first appears directly in front of user
-        FloatUtil.makeTranslation( mModelCube, true, 0, 0, -mObjectDistance );
 
         // Build the camera matrix and apply it to the ModelView.
         FloatUtil.makeLookAt( mCamera, 0, new float[]{0.0f, 0.0f, 2f}, 0, new float[]{0.0f, 0.0f, 0.0f}, 0, new float[]{0.0f, 1.0f, 0.0f}, 0, new float[16] );
@@ -107,7 +100,7 @@ public class View3dActivity
         else if ( this .scene != null )
         {
             this.instancedRenderer .setOrientations( this.scene.getOrientations() );
-            this.instancedRenderer .setUniforms( mModelCube, mCamera, projection );
+            this.instancedRenderer .setView( mCamera, projection );
             scene .setBackground( new float[] { 0.5f, 0.6f, 0.7f, 1f } );
             this.instancedRenderer .renderScene( scene .getBackground(), scene );
         }
