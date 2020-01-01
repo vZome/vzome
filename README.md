@@ -10,7 +10,7 @@ Set it to Download from the given URL: http://services.gradle.org/distributions/
 It would not work when set to "Autodetect from the Gradle Wrapper" or "Download selected version [5.2.1] from Gradleware".
 The "Prefer Wrapper" checkbox must also be unchecked.
 
-The windows project works with launch4J as long as a zipped Java 11 is present in vzome\desktop\platform\windows\jre\x64\jre11.0.2.zip.
+The windows project works with launch4J as long as a zipped Java 11 is present in vzome\desktop\platform\windows\jre\x64\jre11.0.5.zip.
 
 Either Java version requires a local installation of the appropriate jdk with the JAVA_HOME environment variable set appropriately.
 
@@ -31,7 +31,7 @@ Java 11
 =======
 * Set the JAVA_HOME environment variable to a valid path:
 	For example, in Windows, from the command line: 
-		set JAVA_HOME=C:\Program Files\Java\jdk-11.0.2
+		set JAVA_HOME=C:\Program Files\Java\jdk-11.0.5
 * Edit these two lines in build.gradle:
     sourceCompatibility = 11
     targetCompatibility = 11

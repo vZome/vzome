@@ -21,10 +21,10 @@ subprojects {
   apply plugin: 'eclipse'
 
   compileJava {
-	// set these to 12 for Java 12
+	// set these to 11 for Java 11
 	// set them to 1.8 for Java 8
-    sourceCompatibility = 12
-    targetCompatibility = 12
+    sourceCompatibility = 11
+    targetCompatibility = 11
     options.encoding = 'UTF-8'
   }
 

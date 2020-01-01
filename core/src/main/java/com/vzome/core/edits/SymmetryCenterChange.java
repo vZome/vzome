@@ -16,7 +16,6 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.UndoableEdit;
-import com.vzome.core.editor.UndoableEdit.Context;
 import com.vzome.core.model.Manifestation;
 
 public class SymmetryCenterChange implements UndoableEdit

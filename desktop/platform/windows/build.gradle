@@ -35,11 +35,11 @@ def folderName = "${l4jOutputBaseFileName}"
 ext.l4jOutputDir = "launch4j/${folderName}"  // path is relative to buildDir
 ext.bundledJrePath = './jre/'               // path is relative to launch4j.outputDir and must start with '.'
 
-// JRE version naming convention based on Oracle's Java version naming convention (e.g. 11.0.2 for Java 11)
+// JRE version naming convention based on Oracle's Java version naming convention (e.g. 11.0.5 for Java 11)
 ext.jreRevision = 0
 
 // *** THIS IS WHERE THE DEFAULT BUNDLED JRE TARGET VERSION IS CONTROLLED ***
-ext.jreBuildNumber = 2 // Default to Java 11.0.2
+ext.jreBuildNumber = 5 // Default to Java 11.0.5
 
 // allow ext.jreBuildNumber to be overridden by the gradle command line 
 // e.g. gradle createExe -PjreBuildOverride=3
@@ -49,8 +49,8 @@ if( project.hasProperty( 'jreBuildOverride' ) ) {
     project.jreBuildNumber = Integer.parseInt( jreBuildOverride )
 }
 
-ext.jreTargetVersion = "${targetCompatibility}.${jreRevision}.${jreBuildNumber}"   // target JRE version   (e.g. 11.0.2)
-ext.jrePriorVersion  = "${targetCompatibility}.${jreRevision}.${jreBuildNumber-1}" // target JRE version-1 (e.g. 11.0.2)
+ext.jreTargetVersion = "${targetCompatibility}.${jreRevision}.${jreBuildNumber}"   // target JRE version   (e.g. 11.0.5)
+ext.jrePriorVersion  = "${targetCompatibility}.${jreRevision}.${jreBuildNumber-1}" // target JRE version-1 (e.g. 11.0.5)
 // these are used by the zip and distribution tasks after launch4j has run
 ext.jreArchiveSourcePath = project.hasProperty( 'jreZips' ) ? project.getProperty( 'jreZips' ) : 'jre/x64' // path is relative to the root of this subproject
 ext.jreDistributionPath = "$l4jOutputDir/$bundledJrePath"
@@ -132,7 +132,7 @@ task cleanDistributions {
 clean.dependsOn cleanDistributions
 
 task extractWin64Jre(type: Sync) {
-    def src = "${jreArchiveSourcePath}/jre${jreTargetVersion}.zip"
+    def src = "${jreArchiveSourcePath}/jdk-${jreTargetVersion}.zip"
     def dst = "${buildDir}/${jreDistributionPath}"
     from zipTree(src)
     into dst
