@@ -9,10 +9,8 @@ import java.util.Set;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.render.Colors;
-import com.vzome.core.render.OpenGlSceneLoader;
+import com.vzome.core.render.SymmetryRendering;
 import com.vzome.core.viewing.Camera;
-import com.vzome.opengl.Scene;
 
 public class Document
 {
@@ -54,9 +52,9 @@ public class Document
 	    return this .delegate .getCamera();
 	}
 	
-	public Scene getOpenGlScene( Colors colors )
+	public SymmetryRendering getSymmetryRendering( float globalScale )
 	{
-		return OpenGlSceneLoader .getOpenGlScene( this .delegate .getRenderedModel(), colors, 0.05f );
+		return new SymmetryRendering( this .delegate .getRenderedModel(), globalScale, true );
 	}
 
 	public DocumentModel getDocumentModel()

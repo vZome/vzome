@@ -8,26 +8,24 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.vzome.core.math.Polyhedron;
 import com.vzome.core.render.Color;
-import com.vzome.core.render.Colors;
-import com.vzome.core.render.OpenGlSceneLoader;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
-import com.vzome.core.render.ShapeAndInstances;
+import com.vzome.core.render.SymmetryRendering;
 import com.vzome.core.viewing.Lights;
-import com.vzome.opengl.InstancedGeometry;
 import com.vzome.opengl.RenderingProgram;
 
 public class JoglScene implements RenderingChanges, PropertyChangeListener
 {
     private Color bkgdColor;
+    private final Map<String, SymmetryRendering> symmetries = new HashMap<>();
+    private final boolean useOrbitColors;
+
     private static final float MODEL_SCALE_FACTOR = 2f; // this seems to align with the way Java3d rendering came out
-    private float[][] orientations;
-    private final Map<Polyhedron, InstancedGeometry> shapeClasses = new HashMap<>();
-    
-    JoglScene( Lights lights, Colors colors, boolean isSticky )
+
+    JoglScene( Lights lights, boolean isSticky, boolean useOrbitColors )
 	{
+        this.useOrbitColors = useOrbitColors;
         this.bkgdColor = lights .getBackgroundColor();
         
         lights .addPropertyListener( new PropertyChangeListener(){
@@ -45,46 +43,42 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 
     void render( RenderingProgram renderer )
     {
-        if ( this .orientations != null ) {
-            float[] rgba = new float[4];
-            this .bkgdColor .getRGBColorComponents( rgba );
-            renderer .setOrientations( this .orientations );
-            renderer .renderScene( rgba, shapeClasses .values() );
+        float[] rgba = new float[4];
+        this .bkgdColor .getRGBColorComponents( rgba );
+        renderer .clear( rgba );
+
+        for ( SymmetryRendering symmetry : this .symmetries .values() ) {
+            // Just render them all; no harm in mixing, and little cost for empty ones
+            renderer .renderSymmetry( symmetry );
         }
     }
 
 	@Override
 	public void reset()
 	{
-		this .shapeClasses .clear();
+        for ( SymmetryRendering symmetryRendering : this .symmetries .values() ) {
+            symmetryRendering .reset();
+        }
 	}
 
 	@Override
 	public void manifestationAdded( RenderedManifestation rm )
 	{
-	    Polyhedron shape = rm .getShape();
-	    ShapeAndInstances shapeClass = (ShapeAndInstances) this .shapeClasses .get( shape );
-	    if ( shapeClass == null ) {
-	        shapeClass = new ShapeAndInstances();
-	        OpenGlSceneLoader .setShapeData( shapeClass, shape, rm.getColor(), MODEL_SCALE_FACTOR );
-	        this .shapeClasses .put( shape, shapeClass );
-
-	        // This will happen only once, until we switch symmetry systems
-	        if ( this.orientations == null ) {
-                this .orientations = OpenGlSceneLoader .createOrientationsArray( rm .getModel() .getOrbitSource() );
-            }
+	    String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+	    SymmetryRendering symmetryRendering = this .symmetries .get( symmetryName );
+	    if ( symmetryRendering == null ) {
+	        symmetryRendering = new SymmetryRendering( rm .getModel() .getOrbitSource(), MODEL_SCALE_FACTOR, this .useOrbitColors );
+	        this .symmetries .put( symmetryName, symmetryRendering );
 	    }
-	    shapeClass .addInstance( rm );
-	    shapeClass .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeClass .getInstances(), MODEL_SCALE_FACTOR ) );
+	    this .symmetries .get( symmetryName ) .manifestationAdded( rm );
 	}
 
 	@Override
 	public void manifestationRemoved( RenderedManifestation rm )
 	{
-        Polyhedron shape = rm .getShape();
-        ShapeAndInstances shapeSet = (ShapeAndInstances) this .shapeClasses .get( shape );
-        shapeSet .removeInstance( rm );
-        shapeSet .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeSet .getInstances(), MODEL_SCALE_FACTOR ) );
+        for ( SymmetryRendering symmetryRendering : this .symmetries .values() ) {
+            symmetryRendering .manifestationRemoved( rm ); // this will be a no-op in all but one
+        }
     }
 
 	@Override
@@ -95,32 +89,37 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void glowChanged( RenderedManifestation rm )
 	{
-        Polyhedron shape = rm .getShape();
-        ShapeAndInstances shapeSet = (ShapeAndInstances) this .shapeClasses .get( shape );
-        shapeSet .replacePositions( OpenGlSceneLoader .createPositionsArray( shapeSet .getInstances(), MODEL_SCALE_FACTOR ) );
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .glowChanged( rm );
     }
 
 	@Override
-	public void colorChanged( RenderedManifestation manifestation )
+	public void colorChanged( RenderedManifestation rm )
 	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void locationChanged( RenderedManifestation manifestation )
-	{
-	}
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .colorChanged( rm );
+    }
 
 	@Override
-	public void orientationChanged( RenderedManifestation manifestation )
+	public void locationChanged( RenderedManifestation rm )
 	{
-	}
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .locationChanged( rm );
+    }
 
 	@Override
-	public void shapeChanged( RenderedManifestation manifestation )
+	public void orientationChanged( RenderedManifestation rm )
 	{
-	}
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .orientationChanged( rm );
+    }
+
+	@Override
+	public void shapeChanged( RenderedManifestation rm )
+	{
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .shapeChanged( rm );
+    }
 
     @Override
     public void propertyChange( PropertyChangeEvent evt )

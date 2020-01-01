@@ -2,6 +2,7 @@ package com.vzome.opengl;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.math.FloatUtil;
+import com.vzome.core.render.SymmetryRendering;
 
 /**
 * Created by vorth on 7/28/14.
@@ -156,15 +157,6 @@ public class RenderingProgram
         }
     }
 
-    public void setOrientations( float[][] orientations )
-    {
-        gl.glUseProgram( mGlProgram );
-        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
-        for ( int i = 0; i < orientations.length; i++ )
-            gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, orientations[ i ], 0 );
-        checkGLError( "mOrientationsParam");
-    }
-
     public void setView( float[] modelView, float[] projection )
     {
         gl.glUseProgram( mGlProgram );
@@ -188,15 +180,23 @@ public class RenderingProgram
         gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
     }
     
-    public void renderScene( float[] background, Iterable<InstancedGeometry> shapeClasses )
+    public void clear( float[] background )
+    {
+        gl .glEnableDepth();
+        gl .glClear( background[0], background[1], background[2], background[3] );
+    }
+    
+    public void renderSymmetry( SymmetryRendering symmetryRendering )
     {
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-        gl .glEnableDepth();
-        gl .glClear( background[0], background[1], background[2], background[3] );
+        float[][] orientations = symmetryRendering .getOrientations();
+        for ( int i = 0; i < orientations.length; i++ )
+            gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, orientations[ i ], 0 );
+        checkGLError( "mOrientationsParam");
         
-        for( InstancedGeometry shapeClass : shapeClasses )
+        for( InstancedGeometry shapeClass : symmetryRendering .getGeometries() )
             this .renderShape( shapeClass );
     }
 

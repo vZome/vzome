@@ -45,7 +45,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private float aspectRatio = 1f;
     private float halfEdgeX;
 
-    public JoglRenderingViewer( JoglScene scene, GLCanvas canvas )
+    JoglRenderingViewer( JoglScene scene, GLCanvas canvas )
     {
         this .scene = scene;
 

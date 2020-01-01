@@ -3,6 +3,8 @@ package com.vzome.opengl;
 
 import java.nio.FloatBuffer;
 
+import com.vzome.core.render.SymmetryRendering;
+
 /**
 * Created by vorth on 7/28/14.
 */
@@ -124,11 +126,11 @@ public class Renderer
         }
     }
 
-    public void bindBuffers( OpenGlShim gl, Scene scene )
+    public void bindBuffers( OpenGlShim gl, SymmetryRendering symmetryRendering )
     {
         // First, generate as many buffers as we need.
         // This will give us the OpenGL handles for these buffers.
-        int numBuffers = 3 * scene .numGeometries();
+        int numBuffers = 3 * symmetryRendering .numGeometries();
         
         if ( numBuffers == 0 )
             return; // must have had only panels?
@@ -137,7 +139,7 @@ public class Renderer
         gl.glGenBuffers( numBuffers, buffers, 0 );
 
         int bufferTriple = 0;
-        for( InstancedGeometry shape : scene )
+        for( InstancedGeometry shape : symmetryRendering .getGeometries() )
         {
             // Bind to the buffer. glBufferData will affect this buffer specifically.
             gl.glBindBuffer( buffers[ bufferTriple + 0 ] );
@@ -197,10 +199,10 @@ public class Renderer
         gl.glUniformMatrix4fv( mModelViewProjectionParam, 1, false, modelViewProjection, 0 );
     }
 
-    public void renderScene( OpenGlShim gl, float[] mModelCube, float[] mCamera, float[] eyeTransform, float[] eyePerspective, Scene scene )
+    public void renderScene( OpenGlShim gl, float[] mModelCube, float[] mCamera, float[] eyeTransform, float[] eyePerspective, SymmetryRendering symmetryRendering )
     {
 //        this.setUniforms( gl, mModelCube, mCamera, eyeTransform, eyePerspective, scene .getOrientations() );
-        for( InstancedGeometry shape : scene )
+        for( InstancedGeometry shape : symmetryRendering .getGeometries() )
         {
             float[] color = shape .getColor();
             gl.glUniform4f( mColorParam, color[0], color[1], color[2], color[3] );

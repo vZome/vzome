@@ -449,6 +449,9 @@ public class CameraController extends DefaultController implements Controller3d
             model .getViewOrientation(lookDir, upDir);
             return upDir.toString();
         }
+        
+        case "useObjectColors":
+            return "true"; // for the trackball rendering
 
         case "drawNormals": // for the trackball rendering
             return "false";

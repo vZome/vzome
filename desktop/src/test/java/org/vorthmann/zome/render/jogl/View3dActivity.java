@@ -21,7 +21,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Properties;
 
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
@@ -31,10 +30,9 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.math.FloatUtil;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
-import com.vzome.core.render.Colors;
+import com.vzome.core.render.SymmetryRendering;
 import com.vzome.opengl.OpenGlShim;
 import com.vzome.opengl.RenderingProgram;
-import com.vzome.opengl.Scene;
 
 /**
  * This is a stripped-down version of the vzome-cardboard View3dActivity,
@@ -46,8 +44,8 @@ import com.vzome.opengl.Scene;
  */
 public class View3dActivity
 {
-    private RenderingProgram instancedRenderer;
-    private Scene scene = null;
+    private RenderingProgram renderer;
+    private SymmetryRendering scene = null;
     private boolean failedLoad = false;
 
     private float[] mCamera;
@@ -75,7 +73,7 @@ public class View3dActivity
      */
     public void onSurfaceCreated( OpenGlShim gl, int width, int height )
     {
-        this .instancedRenderer = new RenderingProgram( gl );
+        this .renderer = new RenderingProgram( gl );
 
         gl.glEnableDepth();
 
@@ -99,10 +97,9 @@ public class View3dActivity
         }
         else if ( this .scene != null )
         {
-            this.instancedRenderer .setOrientations( this.scene.getOrientations() );
-            this.instancedRenderer .setView( mCamera, projection );
-            scene .setBackground( new float[] { 0.5f, 0.6f, 0.7f, 1f } );
-            this.instancedRenderer .renderScene( scene .getBackground(), scene );
+            this .renderer .setView( mCamera, projection );
+            this .renderer .clear( new float[] { 0.5f, 0.6f, 0.7f, 1f } );
+            this .renderer .renderSymmetry( scene );
         }
     }
 
@@ -117,7 +114,7 @@ public class View3dActivity
             instream.close();
             System.out.println( "%%%%%%%%%%%%%%%% finished: " + url );
 
-            this .scene = doc .getOpenGlScene( new Colors( new Properties() ) );
+            this .scene = doc .getSymmetryRendering( 0.05f );
         }
         catch (Exception e) {
             this.failedLoad = true;
