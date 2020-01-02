@@ -3,6 +3,7 @@ package org.vorthmann.zome.render.jogl;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL2ES2;
+import com.jogamp.opengl.math.FloatUtil;
 import com.vzome.opengl.OpenGlShim;
 
 import java.nio.FloatBuffer;
@@ -184,7 +185,7 @@ public class JoglOpenGlShim implements OpenGlShim
 
     @Override
     public void multiplyMM(float[] floats, float[] floats2, float[] floats3) {
-//        Matrix.multiplyMM( floats, 0, floats2, 0, floats3, 0 );
+        FloatUtil.multMatrix( floats, floats2, floats3 );
     }
 
     @Override
@@ -199,7 +200,7 @@ public class JoglOpenGlShim implements OpenGlShim
 
     @Override
     public void multiplyMV(float[] floats, float[] floats2, float[] floats3 ) {
-//        Matrix.multiplyMV( floats, 0, floats2, 0, floats3, 0 );
+        FloatUtil.multMatrixVec( floats, floats2, floats3 );
     }
 
     @Override

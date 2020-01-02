@@ -1,6 +1,5 @@
 package com.vzome.opengl;
 
-import com.jogamp.opengl.GL2;
 import com.vzome.core.render.SymmetryRendering;
 
 /**
@@ -18,10 +17,9 @@ public class RenderingProgram
     private int mProjectionParam;
     private int mModelViewParam;
     private int mNumLightsParam;
-    private int[] mLightDirectionsParam = new int[1];
+    private int[] mLightDirectionsParam = new int[10];
+    private int[] mLightColorsParam = new int[10];
     private int[] mOrientationsParam = new int[60];
-
-    private static final float[] HEADLIGHT = new float[] {0f, 0f, 1f, 1f};
 
     private static final int COORDS_PER_VERTEX = 3;
 
@@ -38,6 +36,7 @@ public class RenderingProgram
                     "#define MAX_LIGHTS 10\n" + 
                     "uniform int  u_NumLights;\n" + 
                     "uniform vec3 u_LightDirections[MAX_LIGHTS];\n" + 
+                    "uniform vec3 u_LightColors[MAX_LIGHTS];\n" + 
                     "\n" +
                     "attribute vec4 a_Position;\n" + 
                     "attribute vec3 a_Normal;\n" + 
@@ -59,15 +58,14 @@ public class RenderingProgram
                     "   vec4 pos = oriented + location;\n" + 
                     "   gl_Position = (u_ProjMatrix * u_MVMatrix) * pos;\n" + 
                     "\n" + 
-                    "   vec3 modelViewNormal = vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) );\n" + 
-                    "   vec4 linearColor = vec4( fract(orientationAndGlow) );\n" + 
+                    "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) ) );\n" + 
+                    "   vec3 linearColor = vec3( fract(orientationAndGlow) );\n" + 
                     "   for( int i = 0; i < u_NumLights; ++i ){\n" + 
-                    "       vec4 light4 = u_MVMatrix * vec4( u_LightDirections[i], 1.0 );\n" +
-                    "       vec3 lightVector = normalize( vec3( light4 ) );\n" + 
-                    "       float diffuse = max(dot(modelViewNormal, lightVector), 0.5 );\n" + 
-                    "       linearColor += a_Color * diffuse;\n" + 
+                    "       vec3 lightVector = normalize( u_LightDirections[i] );\n" + 
+                    "       float diffuse = max(dot(modelViewNormal, lightVector), 0.0 );\n" + 
+                    "       linearColor += diffuse * a_Color.rgb * u_LightColors[i];\n" + 
                     "   }" +
-                    "   v_Color = linearColor;\n" + 
+                    "   v_Color = vec4( linearColor, 1.0 );\n" + 
                     "}";
         int vertexShader = loadGLShader( true, vertexShaderSrc );
 
@@ -88,14 +86,18 @@ public class RenderingProgram
         gl.glLinkProgram(mGlProgram);
         checkGLError( "glLinkProgram");
 
+        mModelViewParam = gl.glGetUniformLocation( mGlProgram, "u_MVMatrix" );
         mProjectionParam = gl.glGetUniformLocation( mGlProgram, "u_ProjMatrix" );
-        checkGLError( "projection");
+        checkGLError( "projection modelview");
 
         mNumLightsParam = gl.glGetUniformLocation( mGlProgram, "u_NumLights" );
-        mLightDirectionsParam[0] = gl.glGetUniformLocation(mGlProgram, "u_LightDirections[0]");
-        mModelViewParam = gl.glGetUniformLocation( mGlProgram, "u_MVMatrix" );
+        for ( int i = 0; i < mLightDirectionsParam.length; i++ ) {
+            mLightDirectionsParam[i] = gl.glGetUniformLocation(mGlProgram, "u_LightDirections[" + i + "]");
+            mLightColorsParam[i] = gl.glGetUniformLocation(mGlProgram, "u_LightColors[" + i + "]");
+        }
+        checkGLError( "light params");
 
-        for ( int i = 0; i < 60; i++ )
+        for ( int i = 0; i < mOrientationsParam.length; i++ )
             mOrientationsParam[ i ] = gl.glGetUniformLocation( mGlProgram, "u_Orientations[" + i + "]" );
 
         mPositionParam = gl .glGetAttribLocation( mGlProgram, "a_Position" );
@@ -149,9 +151,22 @@ public class RenderingProgram
     public void checkGLError( String func )
     {
         int error;
-        while ((error = gl.glGetError()) != GL2.GL_NO_ERROR) {
+        while ((error = gl.glGetError()) != 0) {
             System.out.println( func + ": glError " + error);
             throw new RuntimeException(func + ": glError " + error);
+        }
+    }
+
+    public void setLights( float[][] lightDirections, float[][] lightColors )
+    {
+        gl.glUseProgram( mGlProgram );
+        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
+
+        gl.glUniform1i( mNumLightsParam, lightDirections.length );
+        for (int i = 0; i < lightDirections.length; i++) {
+            gl.glUniform3f( mLightDirectionsParam[i], lightDirections[i][0], lightDirections[i][1], lightDirections[i][2] );
+            gl.glUniform3f( mLightColorsParam[i], lightColors[i][0], lightColors[i][1], lightColors[i][2] );
+            checkGLError( "light " + i );
         }
     }
 
@@ -160,15 +175,15 @@ public class RenderingProgram
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-        gl.glUniform1i( mNumLightsParam, 1 );
-        gl.glUniform3f( mLightDirectionsParam[0], HEADLIGHT[0], HEADLIGHT[1], HEADLIGHT[2] );
-
         gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
         gl.glUniformMatrix4fv( mProjectionParam, 1, false, projection, 0 );
     }
     
     public void clear( float[] background )
     {
+        gl.glUseProgram( mGlProgram );
+        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
+
         gl .glEnableDepth();
         gl .glClear( background[0], background[1], background[2], background[3] );
     }
@@ -189,6 +204,9 @@ public class RenderingProgram
 
     public void renderShape( InstancedGeometry shape )
     {
+        gl.glUseProgram( mGlProgram );
+        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
+
         int count = shape .getInstanceCount();
         if ( count == 0 )
             return;

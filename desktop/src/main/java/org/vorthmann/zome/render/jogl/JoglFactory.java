@@ -11,6 +11,7 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.vzome.core.render.Colors;
+import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 
@@ -26,8 +27,10 @@ public class JoglFactory implements J3dComponentFactory
         glcapabilities .setDepthBits( 32 );
         final GLCanvas glcanvas = new GLCanvas( glcapabilities );
         
-        JoglScene scene = new JoglScene( controller .getSceneLighting(), isSticky );
-        RenderingViewer viewer = new JoglRenderingViewer( scene, glcanvas );
+        Lights lights = controller .getSceneLighting();
+        JoglScene scene = new JoglScene( lights, isSticky );
+        RenderingViewer viewer = new JoglRenderingViewer( lights, scene, glcanvas );
+
         controller .attachViewer( viewer, scene, glcanvas );
         return glcanvas;
     }

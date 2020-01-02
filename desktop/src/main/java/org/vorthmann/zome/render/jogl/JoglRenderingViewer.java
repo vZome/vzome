@@ -9,6 +9,7 @@ import java.util.Collection;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector3f;
 
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -17,8 +18,10 @@ import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
 import com.jogamp.opengl.math.geom.AABBox;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.opengl.RenderingProgram;
 
@@ -48,13 +51,29 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private float[] modelView = new float[16]; // stored in column-major order, for JOGL-friendliness
     private float aspectRatio = 1f;
     private float halfEdgeX;
+    private float[][] lightDirections;
+    private float[][] lightColors;
 
-    JoglRenderingViewer( JoglScene scene, GLCanvas canvas )
+    public JoglRenderingViewer( Lights lights, JoglScene scene, GLCanvas canvas )
     {
         this .scene = scene;
 
         if ( canvas == null )
             return;
+
+        int num = lights .size();
+        this .lightDirections = new float[num][];
+        this .lightColors = new float[num][];
+        for ( int i = 0; i < num; i++ ) {
+            Vector3f direction = new Vector3f();
+            Color color = lights.getDirectionalLight( i, direction ); // sets direction as a side-effect
+            this .lightColors[i] = new float[4];
+            color .getRGBColorComponents( this .lightColors[i] );
+            this .lightDirections[i] = new float[3];
+            this .lightDirections[i][0] = direction .x;
+            this .lightDirections[i][1] = direction .y;
+            this .lightDirections[i][2] = direction .z;
+        }
 
         canvas .addGLEventListener( this );
 
@@ -70,6 +89,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         if ( this .renderer == null )
             return; // still initializing
         
+        this .renderer .setLights( this .lightDirections, this .lightColors );
         this .renderer .setView( this.modelView, projection );
         this .scene .render( this .renderer );
     }

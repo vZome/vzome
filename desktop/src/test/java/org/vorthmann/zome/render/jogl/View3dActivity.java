@@ -32,7 +32,6 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
-import com.jogamp.opengl.math.VectorUtil;
 import com.jogamp.opengl.math.geom.AABBox;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.api.Application;
@@ -59,6 +58,8 @@ public class View3dActivity implements GLEventListener
 
     private float[] mCamera;
     private float[] projection;
+    private float[][] lightDirections;
+    private float[][] lightColors;
 
     private Application vZome;
     
@@ -73,6 +74,8 @@ public class View3dActivity implements GLEventListener
     {
         mCamera = new float[16];
         projection = new float[16];
+        lightDirections = new float[][] { new float[] {0f, 0f, -1f}, new float[] {-1f, -1f, -1f} };
+        lightColors = new float[][] { new float[] {0.8f, 0.8f, 0.8f}, new float[] {0.5f, 0.5f, 0.5f} };
 
         vZome = new Application();
     }
@@ -112,6 +115,7 @@ public class View3dActivity implements GLEventListener
         else if ( this .scene != null )
         {
             this .renderer .setView( mCamera, projection );
+            this .renderer .setLights( this .lightDirections, this .lightColors );
             this .renderer .clear( new float[] { 0.5f, 0.6f, 0.7f, 1f } );
             this .renderer .renderSymmetry( scene );
         }
@@ -127,6 +131,9 @@ public class View3dActivity implements GLEventListener
         int mouseY = e .getY();
         Component canvas = e .getComponent();
         
+        // This code was done following https://www.youtube.com/watch?v=DLK
+        //  It is probably perfectly functional, but it doesn't help me use AABBox.getRayIntersection.
+        //
 //        float x = (2f*mouseX) / canvas .getWidth() - 1f;
 //        float y = -( (2f*mouseY) / canvas .getHeight() - 1f );
 ////        System .out .println( "normalized dev:   x = " + x + "   y = " + y );
