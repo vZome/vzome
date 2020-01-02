@@ -30,6 +30,10 @@ public class JoglOpenGlShim implements OpenGlShim
         this.gl2 = gl2;
     }
 
+    public void glViewport( int x, int y, int width, int height ) {
+        gl2.glViewport( x, y, width, height );
+    }
+
     @Override
     public int glCreateProgram() {
         return gl2.glCreateProgram();

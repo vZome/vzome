@@ -164,16 +164,12 @@ public class ShapeAndInstances implements InstancedGeometry
         float[] colors = new float[4 * instances.size()];
         int i = 0;
         for( RenderedManifestation part : instances ) {
-            AlgebraicVector vector = part .getLocationAV();
-            if ( vector == null ) {
-                // must be a panel
-                vector = part .getModel() .getField() .origin( 3 );
-            }
+            RealVector vector = part .getLocation();
             int zone = part .getStrutZone();
             float orientationAndGlow = part .getGlow() + (float) zone;
-            offsets[i * 4 + 0] = globalScale * (float) vector .getComponent( AlgebraicVector.X ) .evaluate();
-            offsets[i * 4 + 1] = globalScale * (float) vector .getComponent( AlgebraicVector.Y ) .evaluate();
-            offsets[i * 4 + 2] = globalScale * (float) vector .getComponent( AlgebraicVector.Z ) .evaluate();
+            offsets[i * 4 + 0] = globalScale * (float) vector .x;
+            offsets[i * 4 + 1] = globalScale * (float) vector .y;
+            offsets[i * 4 + 2] = globalScale * (float) vector .z;
             offsets[i * 4 + 3] = orientationAndGlow;
             
             float[] rgba = new float[4];
@@ -222,5 +218,14 @@ public class ShapeAndInstances implements InstancedGeometry
     {
         this .instances .clear();
         this .rebuildInstanceData();
+    }
+
+    public RenderedManifestation pick( RenderedManifestation.Intersector intersector )
+    {
+        for ( RenderedManifestation rm : instances ) {
+            if ( rm .isHit( intersector ) )
+                return rm;
+        }
+        return null;
     }
 }

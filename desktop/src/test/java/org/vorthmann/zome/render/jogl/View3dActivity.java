@@ -16,7 +16,10 @@
 
 package org.vorthmann.zome.render.jogl;
 
+import java.awt.Component;
 import java.awt.Frame;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.InputStream;
@@ -28,8 +31,13 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.math.FloatUtil;
+import com.jogamp.opengl.math.Ray;
+import com.jogamp.opengl.math.VectorUtil;
+import com.jogamp.opengl.math.geom.AABBox;
+import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
+import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.SymmetryRendering;
 import com.vzome.opengl.OpenGlShim;
 import com.vzome.opengl.RenderingProgram;
@@ -42,16 +50,19 @@ import com.vzome.opengl.RenderingProgram;
  * My intention is to get this working as a standalone JOGL AWT example,
  * since I know the rendering was correct in vzome-cardboard.
  */
-public class View3dActivity
+public class View3dActivity implements GLEventListener
 {
     private RenderingProgram renderer;
     private SymmetryRendering scene = null;
     private boolean failedLoad = false;
+    private JoglOpenGlShim glShim;
 
     private float[] mCamera;
     private float[] projection;
 
     private Application vZome;
+    
+    private static final float SCALE = 1f;
 
     /**
      * Sets the view to our CardboardView and initializes the transformation matrices we will use
@@ -78,9 +89,12 @@ public class View3dActivity
         gl.glEnableDepth();
 
         // Build the camera matrix and apply it to the ModelView.
-        FloatUtil.makeLookAt( mCamera, 0, new float[]{0.0f, 0.0f, 2f}, 0, new float[]{0.0f, 0.0f, 0.0f}, 0, new float[]{0.0f, 1.0f, 0.0f}, 0, new float[16] );
+        FloatUtil.makeLookAt( mCamera, 0, new float[]{0.0f, 0.0f, 60f}, 0, new float[]{0.0f, 0.0f, 0.0f}, 0, new float[]{0.0f, 1.0f, 0.0f}, 0, new float[16] );
         
-        FloatUtil.makePerspective( projection, 0, true, 0.3f, (float)width/(float)height, 0.1f, 1000f );
+        float aspectRatio = (float)width/(float)height;
+        FloatUtil.makePerspective( projection, 0, true, 0.44f / aspectRatio, aspectRatio, 0.1f, 200f );
+        
+        ((JoglOpenGlShim) gl) .glViewport( 0, 0, width, height );
     }
 
     /**
@@ -102,6 +116,78 @@ public class View3dActivity
             this .renderer .renderSymmetry( scene );
         }
     }
+    
+    private final float[] dpyTmp1V3 = new float[3];
+    private final float[] dpyTmp2V3 = new float[3];
+    private final float[] dpyTmp3V3 = new float[3];
+
+    protected void mouseClicked( MouseEvent e )
+    {
+        int mouseX = e .getX();
+        int mouseY = e .getY();
+        Component canvas = e .getComponent();
+        
+//        float x = (2f*mouseX) / canvas .getWidth() - 1f;
+//        float y = -( (2f*mouseY) / canvas .getHeight() - 1f );
+////        System .out .println( "normalized dev:   x = " + x + "   y = " + y );
+//        
+//        float[] clipCoords = new float[] { x, y, -1, 1 }; // ray straight out means no need to invert perspective
+//        
+//        float[] inverseProjection = new float[16];
+//        FloatUtil .invertMatrix( projection, inverseProjection );
+//        float[] eyeCoords = new float[4];
+//        FloatUtil .multMatrixVec( inverseProjection, clipCoords, eyeCoords );
+//        eyeCoords[2] = -1f;
+//        eyeCoords[3] = 0;
+////        System.out.println( "eyeCoords = " + eyeCoords[0] + " " + eyeCoords[1] + " " + eyeCoords[2] + " " + eyeCoords[3] );
+//        
+//        float[] inverseCamera = new float[16];
+//        FloatUtil .invertMatrix( mCamera, inverseCamera );
+//        float[] rayWorld = new float[4];
+//        FloatUtil .multMatrixVec( inverseCamera, eyeCoords, rayWorld );
+//        VectorUtil .normalizeVec3( rayWorld );
+//        System.out.println( "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" );
+//        System.out.println( "rayWorld = " + rayWorld[0] + " " + rayWorld[1] + " " + rayWorld[2]  );
+
+        Ray ray = new Ray();
+        FloatUtil .mapWinToRay(
+                (float) mouseX, (float) (canvas .getHeight() - mouseY - 1), 0.1f, 0.3f,
+                mCamera, 0,
+                projection, 0,
+                new int[] { 0, 0, canvas .getWidth(), canvas .getHeight() }, 0,
+                ray,
+                new float[16], new float[16], new float[4] );
+        System.out.println( "ray.orig = " + ray.orig[0] + " " + ray.orig[1] + " " + ray.orig[2]  );
+        System.out.println( "ray.dir = " + ray.dir[0] + " " + ray.dir[1] + " " + ray.dir[2]  );
+
+        RenderedManifestation result = this .scene .pick( new RenderedManifestation.Intersector()
+        {
+            @Override
+            public boolean intersectAABBox( float[] min, float[] max )
+            {
+//                VectorUtil .scaleVec3( min, min, SCALE );
+//                VectorUtil .scaleVec3( max, max, SCALE );
+                AABBox sbox = new AABBox( min, max );
+                float[] result = new float[3];
+                if( sbox.intersectsRay(ray) ) {
+                    if( null == sbox .getRayIntersection( result, ray, FloatUtil.EPSILON, true, dpyTmp1V3, dpyTmp2V3, dpyTmp3V3 ) ) {
+                        System.out.println( "Failure to getRayIntersection" );
+                    } else
+                        return true;
+                }
+                return false;
+            }
+        });
+        if ( result != null ) {
+            System.out.println( "PICKED: " + result .toString() );
+            float glow = result .getGlow();
+            if ( glow == 0.0f )
+                result .setGlow( 0.8f );
+            else
+                result .setGlow( 0.0f );
+            this .scene .refresh();
+        }
+    }
 
     protected String doInBackground(String... urls) {
 
@@ -114,7 +200,7 @@ public class View3dActivity
             instream.close();
             System.out.println( "%%%%%%%%%%%%%%%% finished: " + url );
 
-            this .scene = doc .getSymmetryRendering( 0.05f );
+            this .scene = doc .getSymmetryRendering( SCALE );
         }
         catch (Exception e) {
             this.failedLoad = true;
@@ -130,38 +216,23 @@ public class View3dActivity
     {
         GLProfile glprofile = GLProfile.getDefault();
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
+        glcapabilities .setDepthBits( 32 );
         final GLCanvas glcanvas = new GLCanvas( glcapabilities );
         
         // new code for this vZome example
         View3dActivity view3dActivity = new View3dActivity();
         view3dActivity .onCreate();
 
-        glcanvas.addGLEventListener( new GLEventListener() {
-            
-            JoglOpenGlShim glShim;
+        glcanvas .addGLEventListener( view3dActivity );
+        FPSAnimator animator = new FPSAnimator( glcanvas, 60 );
+        animator .start();
+        
+        glcanvas .addMouseListener( new MouseAdapter() {
             
             @Override
-            public void reshape( GLAutoDrawable glautodrawable, int x, int y, int width, int height )
+            public void mouseClicked( MouseEvent e )
             {
-                if ( this .glShim == null ) {
-                    this .glShim = new JoglOpenGlShim( glautodrawable .getGL() .getGL2() );
-                }
-                view3dActivity .onSurfaceCreated( glShim, width, height );
-            }
-            
-            @Override
-            public void init( GLAutoDrawable glautodrawable ) {}
-            
-            @Override
-            public void dispose( GLAutoDrawable glautodrawable ) {}
-            
-            @Override
-            public void display( GLAutoDrawable glautodrawable )
-            {
-                if ( this .glShim .isSameContext( glautodrawable .getGL() .getGL2() ) )
-                    view3dActivity .onDrawEye( glShim );
-                else
-                    System.out.println( "Different GL2!" );
+                view3dActivity .mouseClicked( e );
             }
         });
 
@@ -186,5 +257,31 @@ public class View3dActivity
                 glcanvas .display();
             }
         } .run();
+    }
+
+    @Override
+    public void init( GLAutoDrawable drawable )
+    {}
+
+    @Override
+    public void dispose( GLAutoDrawable drawable )
+    {}
+
+    @Override
+    public void display( GLAutoDrawable drawable )
+    {
+        if ( this .glShim .isSameContext( drawable .getGL() .getGL2() ) )
+            this .onDrawEye( glShim );
+        else
+            System.out.println( "Different GL2!" );
+    }
+
+    @Override
+    public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
+    {
+        if ( this .glShim == null ) {
+            this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
+        }
+        this .onSurfaceCreated( glShim, width, height );
     }
 }

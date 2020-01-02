@@ -57,6 +57,17 @@ public class SymmetryRendering implements RenderingChanges
             this .manifestationAdded( rm );
         }
     }
+    
+    public RenderedManifestation pick( RenderedManifestation.Intersector intersector )
+    {
+        for ( InstancedGeometry geometry : this .geometries .values()) {
+            ShapeAndInstances shapeAndInstances = (ShapeAndInstances) geometry;
+            RenderedManifestation rm = shapeAndInstances .pick( intersector );
+            if ( rm != null )
+                return rm;
+        }
+        return null;
+    }
 
     public float[][] getOrientations()
     {
@@ -88,6 +99,13 @@ public class SymmetryRendering implements RenderingChanges
         }
     }
 
+    public void refresh()
+    {
+        for ( InstancedGeometry geometry : this .geometries .values() ) {
+            ((ShapeAndInstances) geometry) .rebuildInstanceData();
+        }
+    }
+
     @Override
     public void manifestationRemoved( RenderedManifestation rm )
     {
@@ -113,27 +131,27 @@ public class SymmetryRendering implements RenderingChanges
     }
 
     @Override
-    public void colorChanged( RenderedManifestation rm ) {
+    public void colorChanged( RenderedManifestation rm )
+    {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
-    public void locationChanged( RenderedManifestation rm ) {
+    public void locationChanged( RenderedManifestation rm )
+    {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
-    public void orientationChanged( RenderedManifestation rm ) {
+    public void orientationChanged( RenderedManifestation rm )
+    {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
-    public void shapeChanged( RenderedManifestation rm ) {
+    public void shapeChanged( RenderedManifestation rm )
+    {
         // TODO Auto-generated method stub
-        
     }
 
     public int numGeometries()

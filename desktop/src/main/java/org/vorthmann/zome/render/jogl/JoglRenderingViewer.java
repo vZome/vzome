@@ -3,6 +3,7 @@
 
 package org.vorthmann.zome.render.jogl;
 
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 
@@ -13,6 +14,8 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.math.FloatUtil;
+import com.jogamp.opengl.math.Ray;
+import com.jogamp.opengl.math.geom.AABBox;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
@@ -41,7 +44,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private FPSAnimator animator;
 
     private float near = 100, far = 2000, fovX = 0.5f;
-    private float[] matrix = new float[16]; // stored in column-major order, for JOGL-friendliness
+    private float[] projection = new float[16];
+    private float[] modelView = new float[16]; // stored in column-major order, for JOGL-friendliness
     private float aspectRatio = 1f;
     private float halfEdgeX;
 
@@ -58,7 +62,31 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         this .animator = new FPSAnimator( canvas, 60 );
         this .animator .start();
     }
+
+    // Private methods
     
+    private void render()
+    {
+        if ( this .renderer == null )
+            return; // still initializing
+        
+        this .renderer .setView( this.modelView, projection );
+        this .scene .render( this .renderer );
+    }
+    
+    private void setProjection()
+    {
+        if ( this .fovX == 0f ) {
+            float halfEdgeY = this .halfEdgeX / this .aspectRatio;
+            FloatUtil .makeOrtho( projection, 0, true, -halfEdgeX, halfEdgeX, -halfEdgeY, halfEdgeY, this .near, this .far );
+        } else {
+            // The Camera model is set up for fovX, but FloatUtil.makePerspective wants fovY
+            float fovY = this .fovX / this .aspectRatio;
+            FloatUtil .makePerspective( projection, 0, true, fovY, this .aspectRatio, this .near, this .far );
+        }
+        this .render();
+    }
+
     // These are GLEventListener methods
 
     @Override
@@ -85,35 +113,6 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             System.out.println( "Different GL2!" );
     }
 
-    @Override
-    public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
-    {
-        this .aspectRatio = (float) width / (float) height;
-        this .render();
-    }
-
-    // Private methods
-    
-    private void render()
-    {
-        if ( this .renderer == null )
-            return; // still initializing
-        
-        float[] projection = new float[16];
-        
-        if ( this .fovX == 0f ) {
-            float halfEdgeY = this .halfEdgeX / this .aspectRatio;
-            FloatUtil .makeOrtho( projection, 0, true, -halfEdgeX, halfEdgeX, -halfEdgeY, halfEdgeY, this .near, this .far );
-        } else {
-            // The Camera model is set up for fovX, but FloatUtil.makePerspective wants fovY
-            float fovY = this .fovX / this .aspectRatio;
-            FloatUtil .makePerspective( projection, 0, true, fovY, this .aspectRatio, this .near, this .far );
-        }
-        renderer .setView( this.matrix, projection );
-
-        this .scene .render( this .renderer );
-    }
-
     // These are RenderingViewer methods
     
     @Override
@@ -129,10 +128,17 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         for ( int column = 0; column < 4; column++ )
             for ( int row = 0; row < 4; row++ )
             {
-                this .matrix[ i ] = (float) copy .getElement( row, column );
+                this .modelView[ i ] = (float) copy .getElement( row, column );
                 ++i;
             }
         this .render();
+    }
+
+    @Override
+    public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
+    {
+        this .aspectRatio = (float) width / (float) height;
+        this .setProjection();
     }
 
     @Override
@@ -141,8 +147,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         this .fovX = (float) fovX;
         this .near = (float) near;
         this .far = (float) far;
-
-        this .render();
+        this .setProjection();
     }
 
     @Override
@@ -152,15 +157,51 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         this .fovX = 0;
         this .near = (float) near;
         this .far = (float) far;
-
-        this .render();
+        this .setProjection();
     }
 
     @Override
     public RenderedManifestation pickManifestation( MouseEvent e )
     {
-        // TODO Auto-generated method stub
-        return null;
+        int mouseX = e .getX();
+        int mouseY = e .getY();
+        Component canvas = e .getComponent();
+        
+        Ray ray = new Ray();
+        FloatUtil .mapWinToRay(
+                (float) mouseX, (float) (canvas .getHeight() - mouseY - 1), 0.1f, 0.3f,
+                this.modelView, 0,
+                this.projection, 0,
+                new int[] { 0, 0, canvas .getWidth(), canvas .getHeight() }, 0,
+                ray,
+                new float[16], new float[16], new float[4] );
+        System.out.println( "ray.orig = " + ray.orig[0] + " " + ray.orig[1] + " " + ray.orig[2]  );
+        System.out.println( "ray.dir = " + ray.dir[0] + " " + ray.dir[1] + " " + ray.dir[2]  );
+
+        // The scene will loop over all RMs.  Rendered balls will support the RM.isHit(intersector)
+        //   method.  We return the first one hit, for now.
+        return this .scene .pick( new RenderedManifestation.Intersector()
+        {
+            private final float[] dpyTmp1V3 = new float[3];
+            private final float[] dpyTmp2V3 = new float[3];
+            private final float[] dpyTmp3V3 = new float[3];
+
+            @Override
+            public boolean intersectAABBox( float[] min, float[] max )
+            {
+//                VectorUtil .scaleVec3( min, min, SCALE );
+//                VectorUtil .scaleVec3( max, max, SCALE );
+                AABBox sbox = new AABBox( min, max );
+                float[] result = new float[3];
+                if( sbox.intersectsRay(ray) ) {
+                    if( null == sbox .getRayIntersection( result, ray, FloatUtil.EPSILON, true, dpyTmp1V3, dpyTmp2V3, dpyTmp3V3 ) ) {
+                        System.out.println( "Failure to getRayIntersection" );
+                    } else
+                        return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Override
