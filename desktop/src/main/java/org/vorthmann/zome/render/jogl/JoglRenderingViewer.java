@@ -53,6 +53,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private float halfEdgeX;
     private float[][] lightDirections;
     private float[][] lightColors;
+    private float[] ambientLight;
 
     public JoglRenderingViewer( Lights lights, JoglScene scene, GLCanvas canvas )
     {
@@ -74,6 +75,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             this .lightDirections[i][1] = direction .y;
             this .lightDirections[i][2] = direction .z;
         }
+        Color color = lights .getAmbientColor();
+        this .ambientLight = new float[4];
+        color .getRGBColorComponents( this .ambientLight );
 
         canvas .addGLEventListener( this );
 
@@ -89,7 +93,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         if ( this .renderer == null )
             return; // still initializing
         
-        this .renderer .setLights( this .lightDirections, this .lightColors );
+        this .renderer .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         this .renderer .setView( this.modelView, projection );
         this .scene .render( this .renderer );
     }

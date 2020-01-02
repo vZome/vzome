@@ -16,6 +16,7 @@ public class RenderingProgram
     private int mColorParam;
     private int mProjectionParam;
     private int mModelViewParam;
+    private int ambientLightParam;
     private int mNumLightsParam;
     private int[] mLightDirectionsParam = new int[10];
     private int[] mLightColorsParam = new int[10];
@@ -35,6 +36,7 @@ public class RenderingProgram
                     "\n" +
                     "#define MAX_LIGHTS 10\n" + 
                     "uniform int  u_NumLights;\n" + 
+                    "uniform vec3 u_AmbientLight;\n" + 
                     "uniform vec3 u_LightDirections[MAX_LIGHTS];\n" + 
                     "uniform vec3 u_LightColors[MAX_LIGHTS];\n" + 
                     "\n" +
@@ -60,6 +62,7 @@ public class RenderingProgram
                     "\n" + 
                     "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) ) );\n" + 
                     "   vec3 linearColor = vec3( fract(orientationAndGlow) );\n" + 
+                    "   linearColor += u_AmbientLight * 0.9;\n" + 
                     "   for( int i = 0; i < u_NumLights; ++i ){\n" + 
                     "       vec3 lightVector = normalize( u_LightDirections[i] );\n" + 
                     "       float diffuse = max(dot(modelViewNormal, lightVector), 0.0 );\n" + 
@@ -90,6 +93,7 @@ public class RenderingProgram
         mProjectionParam = gl.glGetUniformLocation( mGlProgram, "u_ProjMatrix" );
         checkGLError( "projection modelview");
 
+        ambientLightParam = gl.glGetUniformLocation( mGlProgram, "u_AmbientLight" );
         mNumLightsParam = gl.glGetUniformLocation( mGlProgram, "u_NumLights" );
         for ( int i = 0; i < mLightDirectionsParam.length; i++ ) {
             mLightDirectionsParam[i] = gl.glGetUniformLocation(mGlProgram, "u_LightDirections[" + i + "]");
@@ -157,11 +161,12 @@ public class RenderingProgram
         }
     }
 
-    public void setLights( float[][] lightDirections, float[][] lightColors )
+    public void setLights( float[][] lightDirections, float[][] lightColors, float[] ambientLight )
     {
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
+        gl.glUniform3f( ambientLightParam, ambientLight[0], ambientLight[1], ambientLight[2] );
         gl.glUniform1i( mNumLightsParam, lightDirections.length );
         for (int i = 0; i < lightDirections.length; i++) {
             gl.glUniform3f( mLightDirectionsParam[i], lightDirections[i][0], lightDirections[i][1], lightDirections[i][2] );
