@@ -16,7 +16,7 @@ public class RenderingProgram
     private int mPositionParam;
     private int normalParam;
     private int mColorParam;
-    private int mModelViewProjectionParam;
+    private int mProjectionParam;
     private int mModelViewParam;
     private int mNumLightsParam;
     private int[] mLightDirectionsParam = new int[1];
@@ -32,7 +32,7 @@ public class RenderingProgram
         String version = gl .getGLSLVersionString();
 
         String vertexShaderSrc = version + "\n" +
-                    "uniform mat4 u_MVP;\n" +
+                    "uniform mat4 u_ProjMatrix;\n" +
                     "uniform mat4 u_MVMatrix;\n" +
                     "uniform mat4 u_Orientations[60];\n" +
                     "\n" +
@@ -58,7 +58,7 @@ public class RenderingProgram
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Position );\n" + 
                     "   vec4 normal = ( u_Orientations[ orientation ] * vec4( a_Normal, 0.0 ) );\n" + 
                     "   vec4 pos = oriented + location;\n" + 
-                    "   gl_Position = u_MVP * pos;\n" + 
+                    "   gl_Position = (u_ProjMatrix * u_MVMatrix) * pos;\n" + 
                     "\n" + 
                     "   vec3 modelViewNormal = vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) );\n" + 
                     "   vec4 linearColor = vec4( fract(orientationAndGlow) );\n" + 
@@ -88,8 +88,8 @@ public class RenderingProgram
         gl.glLinkProgram(mGlProgram);
         checkGLError( "glLinkProgram");
 
-        mModelViewProjectionParam = gl.glGetUniformLocation( mGlProgram, "u_MVP" );
-        checkGLError( "worldViewProjection");
+        mProjectionParam = gl.glGetUniformLocation( mGlProgram, "u_ProjMatrix" );
+        checkGLError( "projection");
 
         mNumLightsParam = gl.glGetUniformLocation( mGlProgram, "u_NumLights" );
         mLightDirectionsParam[0] = gl.glGetUniformLocation(mGlProgram, "u_LightDirections[0]");
@@ -160,18 +160,13 @@ public class RenderingProgram
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-        float[] modelViewProjection = new float[16];
         float[] lightPosInEyeSpace = new float[4];
-
-        // Build the ModelView and ModelViewProjection matrices
-        //  ASSUME ALL MATRICES ARE IN COLUMN-MAJOR ORDER!
-        FloatUtil.multMatrix( projection, modelView, modelViewProjection );
 
         // Set the position of the light
         FloatUtil.multMatrixVec( modelView, HEADLIGHT, lightPosInEyeSpace );
 
-        // Set the ModelViewProjection matrix in the shader.
-        gl.glUniformMatrix4fv( mModelViewProjectionParam, 1, false, modelViewProjection, 0 );
+        // Set the projection matrix in the shader.
+        gl.glUniformMatrix4fv( mProjectionParam, 1, false, projection, 0 );
 
         gl.glUniform1i( mNumLightsParam, 1 );
         gl.glUniform3f( mLightDirectionsParam[0], lightPosInEyeSpace[0], lightPosInEyeSpace[1], lightPosInEyeSpace[2] );
