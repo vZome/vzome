@@ -1,7 +1,6 @@
 package com.vzome.opengl;
 
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.math.FloatUtil;
 import com.vzome.core.render.SymmetryRendering;
 
 /**
@@ -63,7 +62,8 @@ public class RenderingProgram
                     "   vec3 modelViewNormal = vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) );\n" + 
                     "   vec4 linearColor = vec4( fract(orientationAndGlow) );\n" + 
                     "   for( int i = 0; i < u_NumLights; ++i ){\n" + 
-                    "       vec3 lightVector = normalize( u_LightDirections[i] );\n" + 
+                    "       vec4 light4 = u_MVMatrix * vec4( u_LightDirections[i], 1.0 );\n" +
+                    "       vec3 lightVector = normalize( vec3( light4 ) );\n" + 
                     "       float diffuse = max(dot(modelViewNormal, lightVector), 0.5 );\n" + 
                     "       linearColor += a_Color * diffuse;\n" + 
                     "   }" +
@@ -160,17 +160,11 @@ public class RenderingProgram
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-        float[] lightPosInEyeSpace = new float[4];
-
-        // Set the position of the light
-        FloatUtil.multMatrixVec( modelView, HEADLIGHT, lightPosInEyeSpace );
-
-        // Set the projection matrix in the shader.
-        gl.glUniformMatrix4fv( mProjectionParam, 1, false, projection, 0 );
-
         gl.glUniform1i( mNumLightsParam, 1 );
-        gl.glUniform3f( mLightDirectionsParam[0], lightPosInEyeSpace[0], lightPosInEyeSpace[1], lightPosInEyeSpace[2] );
+        gl.glUniform3f( mLightDirectionsParam[0], HEADLIGHT[0], HEADLIGHT[1], HEADLIGHT[2] );
+
         gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
+        gl.glUniformMatrix4fv( mProjectionParam, 1, false, projection, 0 );
     }
     
     public void clear( float[] background )
