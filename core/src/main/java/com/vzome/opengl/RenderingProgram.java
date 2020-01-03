@@ -60,7 +60,7 @@ public class RenderingProgram
                     "   vec4 pos = oriented + location;\n" + 
                     "   gl_Position = (u_ProjMatrix * u_MVMatrix) * pos;\n" + 
                     "\n" + 
-                    "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * vec4( a_Normal, 0.0 ) ) );\n" + 
+                    "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * normal ) );\n" + 
                     "   vec3 linearColor = vec3( fract(orientationAndGlow) );\n" + 
                     "   linearColor += u_AmbientLight * 0.9;\n" + 
                     "   for( int i = 0; i < u_NumLights; ++i ){\n" + 
@@ -68,7 +68,7 @@ public class RenderingProgram
                     "       float diffuse = max(dot(modelViewNormal, lightVector), 0.0 );\n" + 
                     "       linearColor += diffuse * a_Color.rgb * u_LightColors[i];\n" + 
                     "   }" +
-                    "   v_Color = vec4( linearColor, 1.0 );\n" + 
+                    "   v_Color = vec4( linearColor, a_Color.a );\n" + 
                     "}";
         int vertexShader = loadGLShader( true, vertexShaderSrc );
 
