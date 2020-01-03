@@ -5,19 +5,26 @@ package org.vorthmann.zome.render.jogl;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
+import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
 import com.jogamp.opengl.math.geom.AABBox;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
@@ -54,12 +61,14 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private float[][] lightDirections;
     private float[][] lightColors;
     private float[] ambientLight;
+    private int width;
+    private int height;
 
-    public JoglRenderingViewer( Lights lights, JoglScene scene, GLCanvas canvas )
+    public JoglRenderingViewer( Lights lights, JoglScene scene, GLAutoDrawable drawable )
     {
         this .scene = scene;
 
-        if ( canvas == null )
+        if ( drawable == null )
             return;
 
         int num = lights .size();
@@ -79,10 +88,10 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         this .ambientLight = new float[4];
         color .getRGBColorComponents( this .ambientLight );
 
-        canvas .addGLEventListener( this );
+        drawable .addGLEventListener( this );
 
         // Start animator (which should be a field).
-        this .animator = new FPSAnimator( canvas, 60 );
+        this .animator = new FPSAnimator( drawable, 60 );
         this .animator .start();
     }
 
@@ -161,6 +170,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
     {
+        this.width = width;
+        this.height = height;
         this .aspectRatio = (float) width / (float) height;
         this .setProjection();
     }
@@ -251,6 +262,35 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public void captureImage( int maxSize, ImageCapture capture )
     {
-        // TODO Auto-generated method stub
+        // Key parts of this copied from TestGLOffscreenAutoDrawableBug1044AWT in the Github jogl repo
+        
+        GLProfile glprofile = GLProfile .getDefault();
+        final GLDrawableFactory fac = GLDrawableFactory .getFactory( glprofile );
+        final GLCapabilities glcapabilities = new GLCapabilities( glprofile );
+        glcapabilities .setDepthBits( 32 );
+        // Without line below, there is an error on Windows.
+        glcapabilities .setDoubleBuffered( false );
+        final GLDrawable drawable = fac .createOffscreenDrawable( null, glcapabilities, null, this.width, this.height );
+        drawable .setRealized(true);
+        final GLContext context = drawable .createContext(null);
+        context .makeCurrent();
+
+        System.err.println( "Chosen: " + drawable .getChosenGLCapabilities() );
+
+        final GL2 gl2 = context .getGL() .getGL2();
+
+        RenderingProgram renderer = new RenderingProgram( new JoglOpenGlShim( gl2 ) );
+        renderer .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        renderer .setView( this.modelView, projection );
+        this .scene .render( renderer );
+
+        final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, true );
+        final BufferedImage image = agb .readPixelsToBufferedImage( gl2, true );
+        
+        capture .captureImage( image );
+
+        context .destroy();
+        drawable .setRealized( false );
+        System.out.println( "Done!" );
     }
 }
