@@ -63,6 +63,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private float[] ambientLight;
     private int width;
     private int height;
+    private boolean forceRender = true;
 
     public JoglRenderingViewer( Lights lights, JoglScene scene, GLAutoDrawable drawable )
     {
@@ -104,7 +105,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         
         this .renderer .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         this .renderer .setView( this.modelView, projection );
-        this .scene .render( this .renderer );
+        this .scene .render( this .renderer, this .forceRender );
+        this .forceRender = false;
     }
     
     private void setProjection()
@@ -117,7 +119,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             float fovY = this .fovX / this .aspectRatio;
             FloatUtil .makePerspective( projection, 0, true, fovY, this .aspectRatio, this .near, this .far );
         }
-        this .render();
+        this .forceRender  = true;
     }
 
     // These are GLEventListener methods
@@ -164,7 +166,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
                 this .modelView[ i ] = (float) copy .getElement( row, column );
                 ++i;
             }
-        this .render();
+        this .forceRender  = true;
     }
 
     @Override
@@ -282,7 +284,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         RenderingProgram renderer = new RenderingProgram( new JoglOpenGlShim( gl2 ) );
         renderer .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         renderer .setView( this.modelView, projection );
-        this .scene .render( renderer );
+        this .scene .render( renderer, true );
 
         final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, true );
         final BufferedImage image = agb .readPixelsToBufferedImage( gl2, true );
