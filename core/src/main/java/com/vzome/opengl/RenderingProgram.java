@@ -212,6 +212,8 @@ public class RenderingProgram
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
+        shape .prepareToRender();
+        
         int count = shape .getInstanceCount();
         if ( count == 0 )
             return;

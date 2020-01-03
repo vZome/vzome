@@ -29,6 +29,7 @@ public class ShapeAndInstances implements InstancedGeometry
     private int instanceCount = 0;
     private int vertexCount;
     private final float globalScale;
+    private boolean hasChanges;
     
     private Set<RenderedManifestation> instances = new HashSet<>();  // needed when we remove something
 
@@ -160,6 +161,14 @@ public class ShapeAndInstances implements InstancedGeometry
 
     public void rebuildInstanceData()
     {
+        this .hasChanges = true;
+    }
+
+    public void prepareToRender()
+    {
+        if ( ! this .hasChanges )
+            return;
+
         float[] offsets = new float[4 * instances.size()];
         float[] colors = new float[4 * instances.size()];
         int i = 0;
@@ -195,18 +204,19 @@ public class ShapeAndInstances implements InstancedGeometry
         mInstanceColors.position(0);
 
         instanceCount = offsets.length / 4;
+        this .hasChanges = false;
     }
 
     public void addInstance( RenderedManifestation rm )
     {
         this .instances .add( rm );
-        this .rebuildInstanceData();
+        this .hasChanges = true;
     }
 
     public void removeInstance( RenderedManifestation rm )
     {
         this .instances .remove( rm );
-        this .rebuildInstanceData();
+        this .hasChanges = true;
     }
 
     public Collection<RenderedManifestation> getInstances()
@@ -217,7 +227,7 @@ public class ShapeAndInstances implements InstancedGeometry
     public void removeInstances()
     {
         this .instances .clear();
-        this .rebuildInstanceData();
+        this .hasChanges = true;
     }
 
     public RenderedManifestation pick( RenderedManifestation.Intersector intersector )

@@ -27,4 +27,6 @@ public interface InstancedGeometry {
     int getColorsVBO();
 
     void setBuffers( int verticesId, int normalsId, int positionsId, int colorsId );
+
+    void prepareToRender();
 }
