@@ -344,7 +344,7 @@ public class DocumentController extends DefaultController implements Controller3
             }
         };
 
-        articleModeMainTrackball = cameraController .getTrackball();
+        articleModeMainTrackball = cameraController .getTrackball( 0.1d );
         // will not be attached, initially; gets attached on switchToArticle
         if ( propertyIsTrue( "presenter.mode" ) )
             ((Trackball) articleModeMainTrackball) .setModal( false );
