@@ -17,6 +17,8 @@ import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Shapes;
+
 import java.util.StringTokenizer;
 
 public class PartsController extends DefaultController implements RenderingChanges
@@ -199,5 +201,11 @@ public class PartsController extends DefaultController implements RenderingChang
     @Override
     public void shapeChanged( RenderedManifestation manifestation )
     {}
+
+    @Override
+    public boolean shapesChanged( Shapes shapes )
+    {
+        return false;
+    }
 
 }
