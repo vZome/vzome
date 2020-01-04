@@ -256,15 +256,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    return mRendered .iterator();
 	}
 
-    /**
-    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-    */
-    @Deprecated
-	public Iterator<RenderedManifestation> getRenderedManifestations()
-	{
-	    return mRendered .iterator();
-	}
-
 	public OrbitSource getOrbitSource()
 	{
 	    return this .orbitSource;
@@ -272,46 +263,24 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     // TODO add changeScale( int increment )
 
+    public void setShapes( Shapes shapes )
+    {
+        boolean supported = this .mainListener .shapesChanged( shapes );
+        if ( ! supported )
+            // Oddity: this assumes that the orbitSource has already been updated
+            this .setOrbitSource( orbitSource ); // gets the job done, but overkill
+    }
+
 	public void setOrbitSource( OrbitSource orbitSource )
 	{
-        this.orbitSource = orbitSource;
+        this .orbitSource = orbitSource;
         this .enabled = true;
 
-        if ( mPolyhedra == null ) {
-            mPolyhedra = orbitSource .getShapes();
+        mPolyhedra = orbitSource .getShapes();        
+        if ( mPolyhedra == null )
             return;
-        }
-        Symmetry oldSymm = mPolyhedra .getSymmetry();
-        boolean hadShapeColors = mPolyhedra .hasColors();
-        mPolyhedra = orbitSource .getShapes();
-        boolean hasShapeColors = mPolyhedra .hasColors();
-        
-        if ( false && oldSymm == orbitSource .getSymmetry() && !hadShapeColors && !hasShapeColors ) {
-            
-//            boolean didOneBall = false;
-            
-            HashSet<RenderedManifestation> newSet = new HashSet<>();
-            for ( Iterator<RenderedManifestation> polys = mRendered .iterator(); polys .hasNext(); )
-            {
-                RenderedManifestation rendered = polys .next();
-                polys .remove();
-//                if ( rendered .getManifestation() instanceof Connector ) {
-//                    if ( didOneBall )
-//                        continue;
-//                    else
-//                        didOneBall = true;
-//                }
-                resetAttributes( rendered, false );
-                newSet .add( rendered );  // must re-hash, since shape has changed
-                if ( mainListener != null ) {
-                    mainListener .shapeChanged( rendered );
-                }
-                for (RenderingChanges listener : mListeners) {
-                    listener .shapeChanged( rendered );
-                }
-            }
-            mRendered .addAll( newSet );
-        } else {
+
+        {
 //            int yieldFreq = mRendered .size() / 20;
             int yieldCount = 0;
             HashSet<RenderedManifestation> newSet = new HashSet<>();

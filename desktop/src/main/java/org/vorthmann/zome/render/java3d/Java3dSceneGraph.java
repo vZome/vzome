@@ -52,6 +52,7 @@ import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Shapes;
 import com.vzome.core.viewing.Lights;
 
 /**
@@ -692,5 +693,11 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     private void hideIcosahedralLabels() {
         mRoot.removeChild(icosahedralLabels);
+    }
+
+    @Override
+    public boolean shapesChanged( Shapes shapes )
+    {
+        return false;  // I have no desire to support this, since I'm switching to JOGL which can do it easily
     }
 }

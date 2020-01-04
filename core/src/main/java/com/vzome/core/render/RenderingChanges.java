@@ -29,4 +29,11 @@ public interface RenderingChanges {
     void orientationChanged( RenderedManifestation manifestation );
 
     void shapeChanged( RenderedManifestation manifestation );
+
+    /**
+     * Change shapes all at once, if supported.
+     * @param shapes
+     * @return true if the rendering mechanism can support this
+     */
+    boolean shapesChanged( Shapes shapes );
 }
