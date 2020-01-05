@@ -8,4 +8,19 @@ public interface Embedding
 	RealVector embedInR3( AlgebraicVector v );
 	
 	boolean isTrivial();
+	
+	public class Trivial implements Embedding
+	{
+        @Override
+        public RealVector embedInR3( AlgebraicVector v )
+        {
+            return v .toRealVector();
+        }
+
+        @Override
+        public boolean isTrivial()
+        {
+            return true;
+        }
+	}
 }

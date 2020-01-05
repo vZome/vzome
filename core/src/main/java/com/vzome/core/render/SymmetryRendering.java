@@ -9,6 +9,7 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.opengl.InstancedGeometry;
@@ -19,12 +20,15 @@ public class SymmetryRendering implements RenderingChanges
     private final Map<Polyhedron, InstancedGeometry> geometries = new HashMap<Polyhedron, InstancedGeometry>();
     private final float globalScale;
     private final OrbitSource orbits;
+    
+    private static final Embedding TRIVIAL_EMBEDDING = new Embedding.Trivial();
 
     public SymmetryRendering( OrbitSource orbits, float globalScale )
     {
         this .orbits = orbits;
         this .globalScale = globalScale;
-        
+        Embedding embedding = orbits .getSymmetry();
+
         Symmetry symmetry = orbits .getSymmetry();
         AlgebraicField field = symmetry .getField();
         int order = symmetry .getChiralOrder();
@@ -37,7 +41,7 @@ public class SymmetryRendering implements RenderingChanges
             {
                 AlgebraicVector columnSelect = field .basisVector( 3, i );
                 AlgebraicVector columnI = transform .timesColumn( columnSelect );
-                RealVector colRV = columnI .toRealVector();
+                RealVector colRV = embedding .embedInR3( columnI );
                 asFloats[ i*4+0 ] = (float) colRV.x;
                 asFloats[ i*4+1 ] = (float) colRV.y;
                 asFloats[ i*4+2 ] = (float) colRV.z;
@@ -90,11 +94,13 @@ public class SymmetryRendering implements RenderingChanges
                 continue; // no change necessary
             Collection<RenderedManifestation> instances = shapesAndInstances .getInstances();
             Polyhedron shape = null;
+            boolean needsOrientation = false;
             for ( RenderedManifestation rm : instances ) {
                 rm .resetAttributes( this .orbits, shapes, false, true );
                 shape = rm .getShape(); // they are all the same shape!
+                needsOrientation = rm .getStrutOrbit() != null;
             }
-            ShapeAndInstances newShapesAndInstances = this .getShapeAndInstances( shape );
+            ShapeAndInstances newShapesAndInstances = this .getShapeAndInstances( shape, needsOrientation );
             for ( RenderedManifestation rm : instances ) {
                 newShapesAndInstances .addInstance( rm );
             }
@@ -104,11 +110,13 @@ public class SymmetryRendering implements RenderingChanges
         return true;
     }
     
-    private ShapeAndInstances getShapeAndInstances( Polyhedron shape )
+    private ShapeAndInstances getShapeAndInstances( Polyhedron shape, boolean needsOrientation )
     {
         ShapeAndInstances shapesAndInstances = (ShapeAndInstances) this .geometries .get( shape );
         if ( shapesAndInstances == null ) {
-            shapesAndInstances = new ShapeAndInstances( shape, this .globalScale );
+            Symmetry symmetry = this .orbits .getSymmetry();
+            Embedding embedding = needsOrientation? symmetry : TRIVIAL_EMBEDDING;
+            shapesAndInstances = new ShapeAndInstances( shape, embedding, this .globalScale );
             this .geometries .put( shape, shapesAndInstances );
         }
         return shapesAndInstances;
@@ -118,7 +126,8 @@ public class SymmetryRendering implements RenderingChanges
     public void manifestationAdded( RenderedManifestation rm )
     {
         Polyhedron shape = rm .getShape();
-        ShapeAndInstances shapesAndInstances = this .getShapeAndInstances( shape );
+        boolean needsOrientation = rm .getStrutOrbit() != null;
+        ShapeAndInstances shapesAndInstances = this .getShapeAndInstances( shape, needsOrientation );
         shapesAndInstances .addInstance( rm );
     }
 

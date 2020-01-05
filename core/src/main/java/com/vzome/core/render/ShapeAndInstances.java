@@ -12,6 +12,7 @@ import java.util.Set;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.opengl.InstancedGeometry;
 
 /**
@@ -38,32 +39,32 @@ public class ShapeAndInstances implements InstancedGeometry
 
     public static final int COORDS_PER_VERTEX = 3;
 
-    public ShapeAndInstances( Polyhedron shape, float globalScale )
+    public ShapeAndInstances( Polyhedron shape, Embedding embedding, float globalScale )
     {
         this .shape = shape;
         this .globalScale = globalScale;
 
         List<RealVector> vertices = new ArrayList<>();
         List<RealVector> normals = new ArrayList<>();
-        List<AlgebraicVector> vertexList = shape.getVertexList();
-        Set<Polyhedron.Face> faces = shape.getFaceSet();
-        for (Polyhedron.Face face : faces) {
-            AlgebraicVector normal = face.getNormal();
-            RealVector rn = normal.negate().toRealVector().normalize();
+        List<AlgebraicVector> vertexList = shape .getVertexList();
+        Set<Polyhedron.Face> faces = shape .getFaceSet();
+        for ( Polyhedron.Face face : faces ) {
             int count = face.size();
-            AlgebraicVector vertex = vertexList.get(face.getVertex(0));
-            RealVector rv0 = vertex.toRealVector();
-            vertex = vertexList.get(face.getVertex(1));
-            RealVector rvPrev = vertex.toRealVector();
+            AlgebraicVector vertex = vertexList .get( face .getVertex(0) );
+            RealVector rv0 = embedding .embedInR3( vertex );
+            vertex = vertexList.get( face .getVertex(1) );
+            RealVector rvPrev = embedding .embedInR3( vertex );
             for (int i = 2; i < count; i++) {
-                vertex = vertexList.get(face.getVertex(i));
-                RealVector rv = vertex.toRealVector();
+                vertex = vertexList .get( face .getVertex(i) );
+                RealVector rv = embedding .embedInR3( vertex );
                 vertices.add(rv0);
-                normals.add(rn);
                 vertices.add(rvPrev);
-                normals.add(rn);
                 vertices.add(rv);
-                normals.add(rn);
+                
+                RealVector normal = rv0.minus(rvPrev) .cross( rv.minus(rvPrev) ) .normalize();
+                normals .add( normal );
+                normals .add( normal );
+                normals .add( normal );
                 rvPrev = rv;
             }
         }
@@ -99,9 +100,9 @@ public class ShapeAndInstances implements InstancedGeometry
         }
     }
 
-    public ShapeAndInstances( Polyhedron shape, Collection<RenderedManifestation> instances, float globalScale )
+    public ShapeAndInstances( Polyhedron shape, Embedding embedding, Collection<RenderedManifestation> instances, float globalScale )
     {
-        this( shape, globalScale );
+        this( shape, embedding, globalScale );
         this .instances .addAll( instances );  // we are changing shapes
     }
 
