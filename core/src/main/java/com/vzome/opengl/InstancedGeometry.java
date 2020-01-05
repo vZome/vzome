@@ -4,19 +4,7 @@ import java.nio.FloatBuffer;
 
 public interface InstancedGeometry {
 
-    FloatBuffer getVertices();
-
-    FloatBuffer getNormals();
-
-    FloatBuffer getPositions();
-
-    FloatBuffer getColors();
-
     int getVertexCount();
-
-    int getInstanceCount();
-
-    boolean usesVBOs();
 
     int getVerticesVBO();
 
@@ -26,7 +14,10 @@ public interface InstancedGeometry {
 
     int getColorsVBO();
 
-    void setBuffers( int verticesId, int normalsId, int positionsId, int colorsId );
+    int prepareToRender( BufferStorage storage );
 
-    void prepareToRender();
+    public interface BufferStorage
+    {
+        int storeBuffer( FloatBuffer buffer );
+    }
 }

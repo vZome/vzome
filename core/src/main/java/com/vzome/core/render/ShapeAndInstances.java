@@ -20,13 +20,9 @@ import com.vzome.opengl.InstancedGeometry;
 */
 public class ShapeAndInstances implements InstancedGeometry
 {
-    private FloatBuffer mInstancePositions;
-    private FloatBuffer mInstanceColors;
     private FloatBuffer mVertices;
     private FloatBuffer mNormals = null;
-    int positionsVBO = -1, normalsVBO = -1, verticesVBO = -1, colorsVBO = -1;
-    private boolean usesVBOs = false;
-    private int instanceCount = 0;
+    int verticesVBO = -1, normalsVBO = -1, positionsVBO = -1, colorsVBO = -1;
     private int vertexCount;
     private final float globalScale;
     private final Polyhedron shape;
@@ -106,62 +102,17 @@ public class ShapeAndInstances implements InstancedGeometry
         this .instances .addAll( instances );  // we are changing shapes
     }
 
-    public void setBuffers( int verticesId, int normalsId, int positionsId, int colorsId )
+    protected Polyhedron getShape()
     {
-        this .verticesVBO = verticesId;
-        this .normalsVBO = normalsId;
-        this .positionsVBO = positionsId;
-        this .colorsVBO = colorsId;
-        this .mVertices = null;
-        this .mInstancePositions = null;
-        this .mInstanceColors = null;
-        this .mNormals = null;
-        this .usesVBOs = true;
-    }
-
-    protected Polyhedron getShape() {
         return shape;
     }
-
-    @Override
-    public FloatBuffer getVertices()
-    {
-        return this .mVertices;
-    }
-
-    @Override
-    public FloatBuffer getNormals()
-    {
-        return this .mNormals;
-    }
-
-    @Override
-    public FloatBuffer getPositions()
-    {
-        return this .mInstancePositions;
-    }
-
-    @Override
-    public FloatBuffer getColors()
-    {
-        return this .mInstanceColors;
-    }
-
+    
     @Override
     public int getVertexCount()
     {
         return this .vertexCount;
     }
-
-    @Override
-    public int getInstanceCount()
-    {
-        return this .instanceCount;
-    }
-
-    @Override
-    public boolean usesVBOs() { return this .usesVBOs; }
-
+    
     @Override
     public int getVerticesVBO() { return this .verticesVBO; }
 
@@ -179,50 +130,58 @@ public class ShapeAndInstances implements InstancedGeometry
         this .hasChanges = true;
     }
 
-    public void prepareToRender()
+    public int prepareToRender( BufferStorage storage )
     {
-        if ( ! this .hasChanges )
-            return;
-
-        float[] offsets = new float[4 * instances.size()];
-        float[] colors = new float[4 * instances.size()];
-        int i = 0;
-        for( RenderedManifestation part : instances ) {
-            RealVector vector = part .getLocation();
-            int zone = part .getStrutZone();
-            float orientationAndGlow = part .getGlow() + (float) zone;
-            offsets[i * 4 + 0] = globalScale * (float) vector .x;
-            offsets[i * 4 + 1] = globalScale * (float) vector .y;
-            offsets[i * 4 + 2] = globalScale * (float) vector .z;
-            offsets[i * 4 + 3] = orientationAndGlow;
-            
-            float[] rgba = new float[4];
-            Color color = part .getColor();
-            if ( color == null )
-                color = Color.WHITE;
-            color .getRGBColorComponents( rgba );
-            colors[i * 4 + 0] = rgba[ 0 ];
-            colors[i * 4 + 1] = rgba[ 1 ];
-            colors[i * 4 + 2] = rgba[ 2 ];
-            colors[i * 4 + 3] = rgba[ 3 ];
-   
-            ++i;
+        if ( this .verticesVBO == -1 ) {
+            this .verticesVBO = storage .storeBuffer( this .mVertices );
+            this .normalsVBO = storage .storeBuffer( this .mNormals );
         }
+        if ( this .hasChanges ) {
 
-        ByteBuffer bbOffsets = ByteBuffer.allocateDirect( offsets.length * 4 );
-        bbOffsets.order(ByteOrder.nativeOrder());
-        mInstancePositions = bbOffsets.asFloatBuffer();
-        mInstancePositions.put( offsets );
-        mInstancePositions.position(0);
+            float[] offsets = new float[4 * instances.size()];
+            float[] colors = new float[4 * instances.size()];
+            int i = 0;
+            for( RenderedManifestation part : instances ) {
+                RealVector vector = part .getLocation();
+                int zone = part .getStrutZone();
+                float orientationAndGlow = part .getGlow() + (float) zone;
+                offsets[i * 4 + 0] = globalScale * (float) vector .x;
+                offsets[i * 4 + 1] = globalScale * (float) vector .y;
+                offsets[i * 4 + 2] = globalScale * (float) vector .z;
+                offsets[i * 4 + 3] = orientationAndGlow;
 
-        ByteBuffer bbColors = ByteBuffer.allocateDirect( colors.length * 4 );
-        bbColors.order(ByteOrder.nativeOrder());
-        mInstanceColors = bbColors.asFloatBuffer();
-        mInstanceColors.put( colors );
-        mInstanceColors.position(0);
+                float[] rgba = new float[4];
+                Color color = part .getColor();
+                if ( color == null )
+                    color = Color.WHITE;
+                color .getRGBColorComponents( rgba );
+                colors[i * 4 + 0] = rgba[ 0 ];
+                colors[i * 4 + 1] = rgba[ 1 ];
+                colors[i * 4 + 2] = rgba[ 2 ];
+                colors[i * 4 + 3] = rgba[ 3 ];
 
-        instanceCount = offsets.length / 4;
-        this .hasChanges = false;
+                ++i;
+            }
+
+            ByteBuffer bytes = ByteBuffer .allocateDirect( offsets.length * 4 );
+            bytes .order( ByteOrder.nativeOrder() );
+            FloatBuffer buffer = bytes .asFloatBuffer();
+            buffer .put( offsets );
+            buffer .position( 0 );
+            //        this .mInstancePositions = buffer;
+            this .positionsVBO = storage .storeBuffer( buffer );
+
+            bytes = ByteBuffer .allocateDirect( colors.length * 4 );
+            bytes .order( ByteOrder.nativeOrder() );
+            buffer = bytes .asFloatBuffer();
+            buffer .put( colors );
+            buffer .position( 0 );
+            //        this .mInstanceColors = buffer;
+            this .colorsVBO = storage .storeBuffer( buffer );
+
+            this .hasChanges = false;
+        }
+        return this .instances .size();
     }
 
     public void addInstance( RenderedManifestation rm )

@@ -1,11 +1,13 @@
 package com.vzome.opengl;
 
+import java.nio.FloatBuffer;
+
 import com.vzome.core.render.SymmetryRendering;
 
 /**
 * Created by vorth on 7/28/14.
 */
-public class RenderingProgram
+public class RenderingProgram implements InstancedGeometry.BufferStorage
 {
     private final OpenGlShim gl;
 
@@ -212,34 +214,58 @@ public class RenderingProgram
         gl.glUseProgram( mGlProgram );
         checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-        shape .prepareToRender();
-        
-        int count = shape .getInstanceCount();
-        if ( count == 0 )
+        int instanceCount = shape .prepareToRender( this ); // will call back to storeBuffer()
+        if ( instanceCount == 0 )
             return;
         
-        // Set the vertices of the shape
-        gl.glEnableVertexAttribArray(mPositionParam);
-        gl.glVertexAttribDivisor(mPositionParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-        gl.glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, shape .getVertices() );
+        gl .glBindBuffer( shape .getVerticesVBO() );
+        gl .glEnableVertexAttribArray( mPositionParam );
+        gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+        gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, 0 );
+        gl .glBindBuffer( 0 );
         checkGLError( "mPositionParam");
 
-        gl.glEnableVertexAttribArray(normalParam);
-        gl.glVertexAttribDivisor(normalParam, 0);  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-        gl.glVertexAttribPointer(normalParam, COORDS_PER_VERTEX, false, 0, shape .getNormals() );
+        gl .glBindBuffer( shape .getNormalsVBO() );
+        gl .glEnableVertexAttribArray( normalParam );
+        gl .glVertexAttribDivisor( normalParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+        gl .glVertexAttribPointer( normalParam, COORDS_PER_VERTEX, false, 0, 0 );
+        gl .glBindBuffer( 0 );
         checkGLError( "normalParam");
 
-        // Set the positions of the shapes
-        gl.glEnableVertexAttribArray( instanceData );
-        gl.glVertexAttribDivisor( instanceData, 1);  // SV: this one is instanced
-        gl.glVertexAttribPointer( instanceData, 4, false, 0, shape .getPositions() );
+        gl .glBindBuffer( shape .getPositionsVBO() );
+        gl .glEnableVertexAttribArray( instanceData );
+        gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
+        gl .glVertexAttribPointer( instanceData, 4, false, 0, 0 );
+        gl .glBindBuffer( 0 );
+        checkGLError( "instanceData");
 
-        // Set the colors of the shapes
-        gl.glEnableVertexAttribArray( mColorParam );
-        gl.glVertexAttribDivisor( mColorParam, 1);  // SV: this one is instanced
-        gl.glVertexAttribPointer( mColorParam, 4, false, 0, shape .getColors() );
+        gl .glBindBuffer( shape .getColorsVBO() );
+        gl .glEnableVertexAttribArray( mColorParam );
+        gl .glVertexAttribDivisor( mColorParam, 1 );  // SV: this one is instanced
+        gl .glVertexAttribPointer( mColorParam, 4, false, 0, 0 );
+        gl .glBindBuffer( 0 );
+        checkGLError( "mColorParam");
 
-        gl.glDrawArraysInstanced( 0, shape .getVertexCount(), count );
+        gl.glDrawArraysInstanced( 0, shape .getVertexCount(), instanceCount );
         checkGLError( "Drawing a shape");
+    }
+
+    @Override
+    public int storeBuffer( FloatBuffer clientBuffer )
+    {
+        final int buffers[] = new int[1];
+        gl .glGenBuffers( 1, buffers, 0 );
+        checkGLError( "glGenBuffers");
+
+        // Bind to the buffer. glBufferData will affect this buffer specifically.
+        gl .glBindBuffer( buffers[ 0 ] );
+        // Transfer data from client memory to the buffer.
+        // We can release the client memory after this call.
+        gl .glBufferData( clientBuffer .capacity() * 4, clientBuffer );
+        checkGLError( "glBufferData");
+        // IMPORTANT: Unbind from the buffer when we're done with it.
+        gl .glBindBuffer( 0 );
+
+        return buffers[ 0 ];
     }
 }

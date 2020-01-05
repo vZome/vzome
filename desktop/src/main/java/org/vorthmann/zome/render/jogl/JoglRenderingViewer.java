@@ -212,8 +212,6 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
                 new int[] { 0, 0, canvas .getWidth(), canvas .getHeight() }, 0,
                 ray,
                 new float[16], new float[16], new float[4] );
-        System.out.println( "ray.orig = " + ray.orig[0] + " " + ray.orig[1] + " " + ray.orig[2]  );
-        System.out.println( "ray.dir = " + ray.dir[0] + " " + ray.dir[1] + " " + ray.dir[2]  );
 
         // The scene will loop over all RMs.  Rendered balls will support the RM.isHit(intersector)
         //   method.  We return the first one hit, for now.
