@@ -6,7 +6,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,15 +28,20 @@ public class ShapeAndInstances implements InstancedGeometry
     private int instanceCount = 0;
     private int vertexCount;
     private final float globalScale;
+    private final Polyhedron shape;
+
     private boolean hasChanges;
     
-    private Set<RenderedManifestation> instances = new HashSet<>();  // needed when we remove something
+    // I was using a Set here, but then the preview strut removal was eating
+    //  real struts.
+    private Collection<RenderedManifestation> instances = new ArrayList<>();
 
     public static final int COORDS_PER_VERTEX = 3;
 
     public ShapeAndInstances( Polyhedron shape, float globalScale )
     {
-        this.globalScale = globalScale;
+        this .shape = shape;
+        this .globalScale = globalScale;
 
         List<RealVector> vertices = new ArrayList<>();
         List<RealVector> normals = new ArrayList<>();
@@ -95,6 +99,12 @@ public class ShapeAndInstances implements InstancedGeometry
         }
     }
 
+    public ShapeAndInstances( Polyhedron shape, Collection<RenderedManifestation> instances, float globalScale )
+    {
+        this( shape, globalScale );
+        this .instances .addAll( instances );  // we are changing shapes
+    }
+
     public void setBuffers( int verticesId, int normalsId, int positionsId, int colorsId )
     {
         this .verticesVBO = verticesId;
@@ -106,6 +116,10 @@ public class ShapeAndInstances implements InstancedGeometry
         this .mInstanceColors = null;
         this .mNormals = null;
         this .usesVBOs = true;
+    }
+
+    protected Polyhedron getShape() {
+        return shape;
     }
 
     @Override
@@ -182,7 +196,10 @@ public class ShapeAndInstances implements InstancedGeometry
             offsets[i * 4 + 3] = orientationAndGlow;
             
             float[] rgba = new float[4];
-            part .getColor() .getRGBColorComponents( rgba );
+            Color color = part .getColor();
+            if ( color == null )
+                color = Color.WHITE;
+            color .getRGBColorComponents( rgba );
             colors[i * 4 + 0] = rgba[ 0 ];
             colors[i * 4 + 1] = rgba[ 1 ];
             colors[i * 4 + 2] = rgba[ 2 ];

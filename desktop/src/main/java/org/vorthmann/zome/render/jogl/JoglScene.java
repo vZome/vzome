@@ -12,6 +12,7 @@ import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedManifestation.Intersector;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Shapes;
 import com.vzome.core.render.SymmetryRendering;
 import com.vzome.core.viewing.Lights;
 import com.vzome.opengl.RenderingProgram;
@@ -91,6 +92,14 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
         this .forceRender = 2;
     }
 
+    @Override
+    public boolean shapesChanged( Shapes shapes )
+    {
+        String symmetryName = shapes .getSymmetry() .getName();
+        SymmetryRendering symmetryRendering = this .symmetries .get( symmetryName );
+        return symmetryRendering .shapesChanged( shapes );
+    }
+
 	@Override
 	public void manifestationSwitched( RenderedManifestation from, RenderedManifestation to )
 	{
@@ -167,5 +176,4 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
         }
         return null;
     }
-
 }

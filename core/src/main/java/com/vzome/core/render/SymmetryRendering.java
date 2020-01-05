@@ -1,5 +1,6 @@
 package com.vzome.core.render;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,10 +17,12 @@ public class SymmetryRendering implements RenderingChanges
 {
     private final float[][] orientations;
     private final Map<Polyhedron, InstancedGeometry> geometries = new HashMap<Polyhedron, InstancedGeometry>();
-    private float globalScale;
+    private final float globalScale;
+    private final OrbitSource orbits;
 
     public SymmetryRendering( OrbitSource orbits, float globalScale )
     {
+        this .orbits = orbits;
         this .globalScale = globalScale;
         
         Symmetry symmetry = orbits .getSymmetry();
@@ -46,7 +49,6 @@ public class SymmetryRendering implements RenderingChanges
             asFloats[ 15 ] = 1f;
             this .orientations[ orientation ] = asFloats;
         }
-
     }
 
     public SymmetryRendering( RenderedModel renderedModel, float globalScale )
@@ -80,14 +82,43 @@ public class SymmetryRendering implements RenderingChanges
     }
 
     @Override
-    public void manifestationAdded( RenderedManifestation rm )
+    public boolean shapesChanged( Shapes shapes )
     {
-        Polyhedron shape = rm .getShape();
+        for ( InstancedGeometry geometry : this .geometries .values() ) {
+            ShapeAndInstances shapesAndInstances = ((ShapeAndInstances) geometry);
+            if ( shapesAndInstances .getShape() .isPanel() )
+                continue; // no change necessary
+            Collection<RenderedManifestation> instances = shapesAndInstances .getInstances();
+            Polyhedron shape = null;
+            for ( RenderedManifestation rm : instances ) {
+                rm .resetAttributes( this .orbits, shapes, false, true );
+                shape = rm .getShape(); // they are all the same shape!
+            }
+            ShapeAndInstances newShapesAndInstances = this .getShapeAndInstances( shape );
+            for ( RenderedManifestation rm : instances ) {
+                newShapesAndInstances .addInstance( rm );
+            }
+            shapesAndInstances .removeInstances();
+            shapesAndInstances = newShapesAndInstances;
+        }
+        return true;
+    }
+    
+    private ShapeAndInstances getShapeAndInstances( Polyhedron shape )
+    {
         ShapeAndInstances shapesAndInstances = (ShapeAndInstances) this .geometries .get( shape );
         if ( shapesAndInstances == null ) {
             shapesAndInstances = new ShapeAndInstances( shape, this .globalScale );
             this .geometries .put( shape, shapesAndInstances );
         }
+        return shapesAndInstances;
+    }
+
+    @Override
+    public void manifestationAdded( RenderedManifestation rm )
+    {
+        Polyhedron shape = rm .getShape();
+        ShapeAndInstances shapesAndInstances = this .getShapeAndInstances( shape );
         shapesAndInstances .addInstance( rm );
     }
 

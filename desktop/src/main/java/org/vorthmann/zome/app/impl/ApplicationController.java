@@ -31,17 +31,12 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.zome.ui.ApplicationUI;
 
-import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.exporters.Exporter3d;
-import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.Connector;
-import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
 
@@ -177,28 +172,7 @@ public class ApplicationController extends DefaultController
         try {
             DocumentModel document = this .modelApp .loadDocument( bytes );
             // a RenderedModel that only creates panels
-            document .setRenderedModel( new RenderedModel( symmetry ) 	 	 
-            {
-                @Override
-                protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
-                {
-                    // For struts, we still want to find the zone, since we may need it to do
-                    //   a well-behaved line-line intersection
-                    AlgebraicVector offset = strut .getOffset();
-                    if ( offset .isOrigin() )
-                        return; // should catch this earlier
-                    Axis axis = getOrbitSource() .getAxis( offset );
-                    if ( axis == null )
-                        return; // this should only happen when using the bare Symmetry-based OrbitSource
-
-                    // This lets the Strut represent Lines better.
-                    strut .setZoneVector( axis .normal() );
-                } 	 	 
-
-                @Override
-                protected void resetAttributes(RenderedManifestation rm, 	 	 
-                        boolean justShape, Connector m) {} 	 	 
-            } .withColorPanels( false ) ); 
+            document .setRenderedModel( new RenderedModel( symmetry ) .withColorPanels( false ) ); 
             document .finishLoading( false, false );
             result = document .getRenderedModel();
             this .symmetryModels .put( path, result );
