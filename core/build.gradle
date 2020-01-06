@@ -248,7 +248,7 @@ compileJava {
     source antlr4.destinationDir
 }
 
-task cleanAntlr {
+task cleanAntlr(type: Delete) {
 	doLast() {
 		// Be sure to wrap this inside doLast(). 
 		// Otherwise it will run during the initialization or configuration phase, even when an unrelated task is is run.
