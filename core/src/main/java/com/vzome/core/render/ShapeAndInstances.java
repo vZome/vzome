@@ -6,6 +6,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,9 +30,9 @@ public class ShapeAndInstances implements InstancedGeometry
 
     private boolean hasChanges;
     
-    // I was using a Set here, but then the preview strut removal was eating
-    //  real struts.
-    private Collection<RenderedManifestation> instances = new ArrayList<>();
+    // Must use a Set here, or the performance is awful.  However, RM.hashCode()
+    //   must use a GUID, or else the preview strut removal eats real struts.
+    private Collection<RenderedManifestation> instances = new HashSet<>();
 
     public static final int COORDS_PER_VERTEX = 3;
 

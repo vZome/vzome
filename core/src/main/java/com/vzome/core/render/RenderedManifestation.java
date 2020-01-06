@@ -196,17 +196,9 @@ public class RenderedManifestation
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((fixedLocation == null) ? 0 : fixedLocation.hashCode());
-        result = prime * result + (isOffset ? 1231 : 1237);
-        result = prime * result
-                + ((mOrientation == null) ? 0 : mOrientation.hashCode());
-        result = prime * result + ((mShape == null) ? 0 : mShape.hashCode());
-        result = prime * result + strutSense;
-        return result;
+    public int hashCode()
+    {
+        return this .guid .hashCode();
     }
 
     @Override
