@@ -66,9 +66,10 @@ public class ShapeAndInstances implements InstancedGeometry
             }
         }
 
-        float[] verticesArray = new float[ShapeAndInstances.COORDS_PER_VERTEX * vertices.size()];
-        float[] normalsArray = new float[ShapeAndInstances.COORDS_PER_VERTEX * normals.size()];  // same size!
-        for (int i = 0; i < vertices.size(); i++) {
+        this .vertexCount = vertices.size();
+        float[] verticesArray = new float[ ShapeAndInstances.COORDS_PER_VERTEX * this .vertexCount ];
+        float[] normalsArray = new float[ ShapeAndInstances.COORDS_PER_VERTEX * this .vertexCount ];  // same size!
+        for (int i = 0; i < this .vertexCount; i++) {
             RealVector vector = vertices.get(i);
             vector = vector .scale( globalScale );
             verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
@@ -79,8 +80,6 @@ public class ShapeAndInstances implements InstancedGeometry
             normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
             normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
         }
-
-        this .vertexCount = verticesArray.length / COORDS_PER_VERTEX;
 
         ByteBuffer bbVertices = ByteBuffer.allocateDirect( verticesArray.length * 4 );
         bbVertices.order(ByteOrder.nativeOrder());

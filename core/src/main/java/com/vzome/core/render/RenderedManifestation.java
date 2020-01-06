@@ -474,7 +474,7 @@ public class RenderedManifestation
             back .add( 0, j );
         }
         poly .addFace( front );
-        if ( oneSided )
+        if ( ! oneSided )
             poly .addFace( back );
         return poly;
     }
