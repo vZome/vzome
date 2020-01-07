@@ -28,7 +28,7 @@ public class JoglFactory implements J3dComponentFactory
         final GLCanvas glcanvas = new GLCanvas( glcapabilities );
         
         Lights lights = controller .getSceneLighting();
-        JoglScene scene = new JoglScene( lights, isSticky );
+        JoglScene scene = new JoglScene( controller, lights, isSticky );
         RenderingViewer viewer = new JoglRenderingViewer( lights, scene, glcanvas );
 
         controller .attachViewer( viewer, scene, glcanvas );

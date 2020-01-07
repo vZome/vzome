@@ -56,7 +56,11 @@ public interface OpenGlShim {
 
 	void glVertexAttribPointer(int mPositionParam, int coordsPerVertex, boolean b, int i, FloatBuffer vertices);
 
-	void glDrawArraysInstanced( int i, int vertexCount, int instanceCount);
+    void glDrawTrianglesInstanced( int i, int vertexCount, int instanceCount);
+
+    void glLineWidth( float width );
+
+    void glDrawLinesInstanced( int i, int vertexCount, int instanceCount);
 
 	void glDrawLines( int i, int vertexCount);
 

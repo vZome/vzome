@@ -6,6 +6,8 @@ public interface InstancedGeometry {
 
     int getVertexCount();
 
+    int getLineVertexCount();
+
     int getVerticesVBO();
 
     int getNormalsVBO();
@@ -13,6 +15,8 @@ public interface InstancedGeometry {
     int getPositionsVBO();
 
     int getColorsVBO();
+    
+    int getLineVerticesVBO();
 
     int prepareToRender( BufferStorage storage );
 

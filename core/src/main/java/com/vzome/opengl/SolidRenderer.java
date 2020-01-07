@@ -7,7 +7,7 @@ import com.vzome.core.render.SymmetryRendering;
 /**
 * Created by vorth on 7/28/14.
 */
-public class RenderingProgram implements InstancedGeometry.BufferStorage
+public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
 {
     private final OpenGlShim gl;
 
@@ -26,7 +26,7 @@ public class RenderingProgram implements InstancedGeometry.BufferStorage
 
     private static final int COORDS_PER_VERTEX = 3;
 
-    public RenderingProgram( OpenGlShim gl )
+    public SolidRenderer( OpenGlShim gl )
     {
         this.gl = gl;
         String version = gl .getGLSLVersionString();
@@ -72,7 +72,7 @@ public class RenderingProgram implements InstancedGeometry.BufferStorage
                     "   }" +
                     "   v_Color = vec4( linearColor, a_Color.a );\n" + 
                     "}";
-        int vertexShader = loadGLShader( true, vertexShaderSrc );
+        int vertexShader = OpenGlUtilities.loadGLShader( gl, true, vertexShaderSrc );
 
         String fragmentShaderSrc = version + "\n" +
                 "varying vec4 v_Color;\n" + 
@@ -80,20 +80,20 @@ public class RenderingProgram implements InstancedGeometry.BufferStorage
                 "void main() {\n" + 
                 "  gl_FragColor = v_Color;\n" + 
                 "}";
-        int fragmentShader = loadGLShader( false, fragmentShaderSrc );
+        int fragmentShader = OpenGlUtilities.loadGLShader( gl, false, fragmentShaderSrc );
 
         mGlProgram = gl.glCreateProgram();
-        checkGLError( "glCreateProgram");
+        OpenGlUtilities.checkGLError( gl, "glCreateProgram");
         gl.glAttachShader(mGlProgram, vertexShader);
-        checkGLError( "glAttachShader vertexShader");
+        OpenGlUtilities.checkGLError( gl, "glAttachShader vertexShader");
         gl.glAttachShader(mGlProgram, fragmentShader);
-        checkGLError( "glAttachShader fragmentShader");
+        OpenGlUtilities.checkGLError( gl, "glAttachShader fragmentShader");
         gl.glLinkProgram(mGlProgram);
-        checkGLError( "glLinkProgram");
+        OpenGlUtilities.checkGLError( gl, "glLinkProgram");
 
         mModelViewParam = gl.glGetUniformLocation( mGlProgram, "u_MVMatrix" );
         mProjectionParam = gl.glGetUniformLocation( mGlProgram, "u_ProjMatrix" );
-        checkGLError( "projection modelview");
+        OpenGlUtilities.checkGLError( gl, "projection modelview");
 
         ambientLightParam = gl.glGetUniformLocation( mGlProgram, "u_AmbientLight" );
         mNumLightsParam = gl.glGetUniformLocation( mGlProgram, "u_NumLights" );
@@ -101,7 +101,7 @@ public class RenderingProgram implements InstancedGeometry.BufferStorage
             mLightDirectionsParam[i] = gl.glGetUniformLocation(mGlProgram, "u_LightDirections[" + i + "]");
             mLightColorsParam[i] = gl.glGetUniformLocation(mGlProgram, "u_LightColors[" + i + "]");
         }
-        checkGLError( "light params");
+        OpenGlUtilities.checkGLError( gl, "light params");
 
         for ( int i = 0; i < mOrientationsParam.length; i++ )
             mOrientationsParam[ i ] = gl.glGetUniformLocation( mGlProgram, "u_Orientations[" + i + "]" );
@@ -109,78 +109,29 @@ public class RenderingProgram implements InstancedGeometry.BufferStorage
         mPositionParam = gl .glGetAttribLocation( mGlProgram, "a_Position" );
         mColorParam = gl .glGetAttribLocation( mGlProgram, "a_Color" );
         normalParam = gl .glGetAttribLocation( mGlProgram, "a_Normal" );
-        checkGLError( "a_Normal");
+        OpenGlUtilities.checkGLError( gl, "a_Normal");
 
         instanceData = gl.glGetAttribLocation( mGlProgram, "a_InstanceData" ); // a_InstanceData will actually store (x,y,z,orientation+glow)
-    }
-
-    /**
-     * Converts a raw text file, saved as a resource, into an OpenGL ES shader
-     * @param type The type of shader we will be creating.
-     * @param resId The resource ID of the raw text file about to be turned into a shader.
-     * @return
-     */
-    private int loadGLShader( boolean isVertexShader, String code )
-    {
-        int shader = isVertexShader? gl.glCreateVertexShader() : gl.glCreateFragmentShader();
-
-        gl.glShaderSource( shader, code );
-        
-        checkGLError( "glShaderSource" );
-        gl.glCompileShader(shader);
-        checkGLError( "glCompileShader" );
-
-        // Get the compilation status.
-        final int[] compileStatus = new int[1];
-        gl.glGetShaderStatus(shader, compileStatus, 0);
-        checkGLError( "glGetShaderiv" );
-
-        // If the compilation failed, delete the shader.
-        if (compileStatus[0] == 0) {
-            String problem = gl.glGetShaderInfoLog(shader);
-            System .out.println(  "Error compiling shader: " + problem );
-            gl.glDeleteShader(shader);
-            shader = 0;
-        }
-
-        if (shader == 0) {
-            throw new RuntimeException("Error creating shader.");
-        }
-
-        return shader;
-    }
-
-    /**
-     * Checks if we've had an error inside of OpenGL ES, and if so what that error is.
-     * @param func
-     */
-    public void checkGLError( String func )
-    {
-        int error;
-        while ((error = gl.glGetError()) != 0) {
-            System.out.println( func + ": glError " + error);
-            throw new RuntimeException(func + ": glError " + error);
-        }
     }
 
     public void setLights( float[][] lightDirections, float[][] lightColors, float[] ambientLight )
     {
         gl.glUseProgram( mGlProgram );
-        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
+        OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         gl.glUniform3f( ambientLightParam, ambientLight[0], ambientLight[1], ambientLight[2] );
         gl.glUniform1i( mNumLightsParam, lightDirections.length );
         for (int i = 0; i < lightDirections.length; i++) {
             gl.glUniform3f( mLightDirectionsParam[i], lightDirections[i][0], lightDirections[i][1], lightDirections[i][2] );
             gl.glUniform3f( mLightColorsParam[i], lightColors[i][0], lightColors[i][1], lightColors[i][2] );
-            checkGLError( "light " + i );
+            OpenGlUtilities.checkGLError( gl, "light " + i );
         }
     }
 
     public void setView( float[] modelView, float[] projection )
     {
         gl.glUseProgram( mGlProgram );
-        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
+        OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
         gl.glUniformMatrix4fv( mProjectionParam, 1, false, projection, 0 );
@@ -189,7 +140,7 @@ public class RenderingProgram implements InstancedGeometry.BufferStorage
     public void clear( float[] background )
     {
         gl.glUseProgram( mGlProgram );
-        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
+        OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         gl .glEnableDepth();
         gl .glClear( background[0], background[1], background[2], background[3] );
@@ -198,12 +149,12 @@ public class RenderingProgram implements InstancedGeometry.BufferStorage
     public void renderSymmetry( SymmetryRendering symmetryRendering )
     {
         gl.glUseProgram( mGlProgram );
-        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
+        OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         float[][] orientations = symmetryRendering .getOrientations();
         for ( int i = 0; i < orientations.length; i++ )
             gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, orientations[ i ], 0 );
-        checkGLError( "mOrientationsParam");
+        OpenGlUtilities.checkGLError( gl, "mOrientationsParam");
         
         for( InstancedGeometry shapeClass : symmetryRendering .getGeometries() )
             this .renderShape( shapeClass );
@@ -212,7 +163,7 @@ public class RenderingProgram implements InstancedGeometry.BufferStorage
     public void renderShape( InstancedGeometry shape )
     {
         gl.glUseProgram( mGlProgram );
-        checkGLError( "glUseProgram" );  // a compile / link problem seems to fail only now!
+        OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         int instanceCount = shape .prepareToRender( this ); // will call back to storeBuffer()
         if ( instanceCount == 0 )
@@ -223,49 +174,36 @@ public class RenderingProgram implements InstancedGeometry.BufferStorage
         gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
         gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, 0 );
         gl .glBindBuffer( 0 );
-        checkGLError( "mPositionParam");
+        OpenGlUtilities.checkGLError( gl, "mPositionParam");
 
         gl .glBindBuffer( shape .getNormalsVBO() );
         gl .glEnableVertexAttribArray( normalParam );
         gl .glVertexAttribDivisor( normalParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
         gl .glVertexAttribPointer( normalParam, COORDS_PER_VERTEX, false, 0, 0 );
         gl .glBindBuffer( 0 );
-        checkGLError( "normalParam");
+        OpenGlUtilities.checkGLError( gl, "normalParam");
 
         gl .glBindBuffer( shape .getPositionsVBO() );
         gl .glEnableVertexAttribArray( instanceData );
         gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
         gl .glVertexAttribPointer( instanceData, 4, false, 0, 0 );
         gl .glBindBuffer( 0 );
-        checkGLError( "instanceData");
+        OpenGlUtilities.checkGLError( gl, "instanceData");
 
         gl .glBindBuffer( shape .getColorsVBO() );
         gl .glEnableVertexAttribArray( mColorParam );
         gl .glVertexAttribDivisor( mColorParam, 1 );  // SV: this one is instanced
         gl .glVertexAttribPointer( mColorParam, 4, false, 0, 0 );
         gl .glBindBuffer( 0 );
-        checkGLError( "mColorParam");
+        OpenGlUtilities.checkGLError( gl, "mColorParam");
 
-        gl.glDrawArraysInstanced( 0, shape .getVertexCount(), instanceCount );
-        checkGLError( "Drawing a shape");
+        gl.glDrawTrianglesInstanced( 0, shape .getVertexCount(), instanceCount );
+        OpenGlUtilities.checkGLError( gl, "Drawing a shape");
     }
 
     @Override
     public int storeBuffer( FloatBuffer clientBuffer )
     {
-        final int buffers[] = new int[1];
-        gl .glGenBuffers( 1, buffers, 0 );
-        checkGLError( "glGenBuffers");
-
-        // Bind to the buffer. glBufferData will affect this buffer specifically.
-        gl .glBindBuffer( buffers[ 0 ] );
-        // Transfer data from client memory to the buffer.
-        // We can release the client memory after this call.
-        gl .glBufferData( clientBuffer .capacity() * 4, clientBuffer );
-        checkGLError( "glBufferData");
-        // IMPORTANT: Unbind from the buffer when we're done with it.
-        gl .glBindBuffer( 0 );
-
-        return buffers[ 0 ];
+        return OpenGlUtilities .storeBuffer( this .gl, clientBuffer );
     }
 }

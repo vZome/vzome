@@ -39,7 +39,7 @@ import com.vzome.api.Document;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.SymmetryRendering;
 import com.vzome.opengl.OpenGlShim;
-import com.vzome.opengl.RenderingProgram;
+import com.vzome.opengl.SolidRenderer;
 
 /**
  * This is a stripped-down version of the vzome-cardboard View3dActivity,
@@ -51,7 +51,7 @@ import com.vzome.opengl.RenderingProgram;
  */
 public class View3dActivity implements GLEventListener
 {
-    private RenderingProgram renderer;
+    private SolidRenderer renderer;
     private SymmetryRendering scene = null;
     private boolean failedLoad = false;
     private JoglOpenGlShim glShim;
@@ -87,7 +87,7 @@ public class View3dActivity implements GLEventListener
      */
     public void onSurfaceCreated( OpenGlShim gl, int width, int height )
     {
-        this .renderer = new RenderingProgram( gl );
+        this .renderer = new SolidRenderer( gl );
 
         gl.glEnableDepth();
 

@@ -21,10 +21,9 @@ import com.vzome.opengl.InstancedGeometry;
 */
 public class ShapeAndInstances implements InstancedGeometry
 {
-    private FloatBuffer mVertices;
-    private FloatBuffer mNormals = null;
-    int verticesVBO = -1, normalsVBO = -1, positionsVBO = -1, colorsVBO = -1;
-    private int vertexCount;
+    private FloatBuffer mVertices, mNormals, lineVertexBuffer;
+    int lineVerticesVBO = -1, verticesVBO = -1, normalsVBO = -1, positionsVBO = -1, colorsVBO = -1;
+    private int vertexCount, lineVertexCount;
     private final float globalScale;
     private final Polyhedron shape;
 
@@ -43,6 +42,7 @@ public class ShapeAndInstances implements InstancedGeometry
 
         List<RealVector> vertices = new ArrayList<>();
         List<RealVector> normals = new ArrayList<>();
+        List<RealVector> lineVertices = new ArrayList<>();
         List<AlgebraicVector> vertexList = shape .getVertexList();
         Set<Polyhedron.Face> faces = shape .getFaceSet();
         for ( Polyhedron.Face face : faces ) {
@@ -50,23 +50,38 @@ public class ShapeAndInstances implements InstancedGeometry
             AlgebraicVector vertex = vertexList .get( face .getVertex(0) );
             RealVector rv0 = embedding .embedInR3( vertex );
             vertex = vertexList.get( face .getVertex(1) );
-            RealVector rvPrev = embedding .embedInR3( vertex );
-            for (int i = 2; i < count; i++) {
+            RealVector rv1 = embedding .embedInR3( vertex );
+            vertex = vertexList.get( face .getVertex(2) );
+            RealVector rvLast = embedding .embedInR3( vertex );
+            RealVector normal = rv0.minus(rv1) .cross( rvLast.minus(rv0) ) .normalize();
+            vertices .add( rv0 );
+            normals .add( normal );
+            vertices .add( rv1 );
+            normals .add( normal );
+            vertices .add( rvLast );
+            normals .add( normal );
+            lineVertices .add( rv0 );
+            lineVertices .add( rv1 );
+            lineVertices .add( rv1 );
+            lineVertices .add( rvLast );
+            for (int i = 3; i < count; i++) {
                 vertex = vertexList .get( face .getVertex(i) );
                 RealVector rv = embedding .embedInR3( vertex );
-                vertices.add(rv0);
-                vertices.add(rvPrev);
-                vertices.add(rv);
-                
-                RealVector normal = rv0.minus(rvPrev) .cross( rv.minus(rvPrev) ) .normalize();
+                vertices .add( rv0 );
+                vertices .add( rvLast );
+                vertices .add( rv );
                 normals .add( normal );
                 normals .add( normal );
                 normals .add( normal );
-                rvPrev = rv;
+                lineVertices .add( rvLast );
+                lineVertices .add( rv );
+                rvLast = rv;
             }
+            lineVertices .add( rvLast );
+            lineVertices .add( rv0 );
         }
 
-        this .vertexCount = vertices.size();
+        this .vertexCount = vertices .size();
         float[] verticesArray = new float[ ShapeAndInstances.COORDS_PER_VERTEX * this .vertexCount ];
         float[] normalsArray = new float[ ShapeAndInstances.COORDS_PER_VERTEX * this .vertexCount ];  // same size!
         for (int i = 0; i < this .vertexCount; i++) {
@@ -81,19 +96,27 @@ public class ShapeAndInstances implements InstancedGeometry
             normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
         }
 
-        ByteBuffer bbVertices = ByteBuffer.allocateDirect( verticesArray.length * 4 );
-        bbVertices.order(ByteOrder.nativeOrder());
-        this .mVertices = bbVertices.asFloatBuffer();
-        this .mVertices.put( verticesArray );
-        this .mVertices.position(0);
-
-        if ( normalsArray != null ) {
-            ByteBuffer bbNormals = ByteBuffer.allocateDirect( normalsArray.length * 4 );
-            bbNormals.order(ByteOrder.nativeOrder());
-            this .mNormals = bbNormals.asFloatBuffer();
-            this .mNormals .put(normalsArray);
-            this .mNormals .position(0);
+        this .lineVertexCount = lineVertices .size();
+        float[] lineVerticesArray = new float[ ShapeAndInstances.COORDS_PER_VERTEX * this .lineVertexCount ];
+        for (int i = 0; i < this .lineVertexCount; i++) {
+            RealVector vector = lineVertices .get(i);
+            vector = vector .scale( globalScale );
+            lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
+            lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
+            lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
         }
+
+        this .mVertices = ByteBuffer.allocateDirect( verticesArray.length * 4 ) .order(ByteOrder.nativeOrder())
+                .asFloatBuffer() .put( verticesArray );
+        this .mVertices .position(0);
+
+        this .mNormals = ByteBuffer.allocateDirect( normalsArray.length * 4 ) .order(ByteOrder.nativeOrder())
+                .asFloatBuffer() .put( normalsArray );
+        this .mNormals .position(0);
+
+        this .lineVertexBuffer = ByteBuffer.allocateDirect( lineVerticesArray.length * 4 ) .order(ByteOrder.nativeOrder())
+                .asFloatBuffer() .put( lineVerticesArray );
+        this .lineVertexBuffer .position(0);
     }
 
     public ShapeAndInstances( Polyhedron shape, Embedding embedding, Collection<RenderedManifestation> instances, float globalScale )
@@ -112,6 +135,15 @@ public class ShapeAndInstances implements InstancedGeometry
     {
         return this .vertexCount;
     }
+    
+    @Override
+    public int getLineVertexCount()
+    {
+        return this .lineVertexCount;
+    }
+    
+    @Override
+    public int getLineVerticesVBO() { return this .lineVerticesVBO; }
     
     @Override
     public int getVerticesVBO() { return this .verticesVBO; }
@@ -135,6 +167,7 @@ public class ShapeAndInstances implements InstancedGeometry
         if ( this .verticesVBO == -1 ) {
             this .verticesVBO = storage .storeBuffer( this .mVertices );
             this .normalsVBO = storage .storeBuffer( this .mNormals );
+            this .lineVerticesVBO = storage .storeBuffer( this .lineVertexBuffer );
         }
         if ( this .hasChanges ) {
 

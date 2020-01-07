@@ -30,7 +30,9 @@ import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
-import com.vzome.opengl.RenderingProgram;
+import com.vzome.opengl.OutlineRenderer;
+import com.vzome.opengl.Renderer;
+import com.vzome.opengl.SolidRenderer;
 
 /**
  * A lower-level, and hopefully more performant alternative to Java3dRenderingViewer.
@@ -50,7 +52,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 {
     private final JoglScene scene;
     private JoglOpenGlShim glShim;
-    private RenderingProgram renderer = null;
+    private Renderer outlines = null;
+    private Renderer solids = null;
     private FPSAnimator animator;
 
     private float near = 100, far = 2000, fovX = 0.5f;
@@ -100,12 +103,13 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     
     private void render()
     {
-        if ( this .renderer == null )
+        if ( this .solids == null )
             return; // still initializing
         
-        this .renderer .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        this .renderer .setView( this.modelView, projection );
-        this .scene .render( this .renderer, this .forceRender );
+        this .solids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        this .solids .setView( this.modelView, projection );
+        this .outlines .setView( this.modelView, projection );
+        this .scene .render( this .solids, this .outlines, this .forceRender );
         this .forceRender = false;
     }
     
@@ -128,7 +132,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     public void init( GLAutoDrawable drawable )
     {
         this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
-        this .renderer = new RenderingProgram( this .glShim );
+        this .solids = new SolidRenderer( this .glShim );
+        this .outlines = new OutlineRenderer( this .glShim );
         // store the scene geometry
     }
 
@@ -279,10 +284,13 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 
         final GL2 gl2 = context .getGL() .getGL2();
 
-        RenderingProgram renderer = new RenderingProgram( new JoglOpenGlShim( gl2 ) );
-        renderer .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        renderer .setView( this.modelView, projection );
-        this .scene .render( renderer, true );
+        Renderer solids = new SolidRenderer( new JoglOpenGlShim( gl2 ) );
+        solids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        solids .setView( this.modelView, projection );
+        Renderer outlines = new OutlineRenderer( new JoglOpenGlShim( gl2 ) );
+        outlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        outlines .setView( this.modelView, projection );
+        this .scene .render( solids, outlines, true );
 
         final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, true );
         final BufferedImage image = agb .readPixelsToBufferedImage( gl2, true );

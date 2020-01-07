@@ -159,8 +159,18 @@ public class JoglOpenGlShim implements OpenGlShim
     }
 
     @Override
-    public void glDrawArraysInstanced( int i, int i2, int i3) {
+    public void glDrawTrianglesInstanced( int i, int i2, int i3) {
         gl2.glDrawArraysInstanced( GL.GL_TRIANGLES, i, i2, i3 );
+    }
+
+    @Override
+    public void glLineWidth( float width ) {
+        gl2.glLineWidth( width );
+    }
+
+    @Override
+    public void glDrawLinesInstanced( int i, int i2, int i3) {
+        gl2.glDrawArraysInstanced( GL.GL_LINES, i, i2, i3 );
     }
 
     @Override

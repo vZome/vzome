@@ -8,6 +8,8 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.vorthmann.ui.Controller;
+
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedManifestation.Intersector;
@@ -15,19 +17,22 @@ import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.render.Shapes;
 import com.vzome.core.render.SymmetryRendering;
 import com.vzome.core.viewing.Lights;
-import com.vzome.opengl.RenderingProgram;
+import com.vzome.opengl.Renderer;
 
 public class JoglScene implements RenderingChanges, PropertyChangeListener
 {
     private Color bkgdColor;
     private final Map<String, SymmetryRendering> symmetries = new HashMap<>();
-    private int forceRender = 2; // double-buffering means we cannot simply use a boolean
+    private int forceRender = 3; // double-buffering means we cannot simply use a boolean
+    private boolean drawOutlines;
 
     private static final float MODEL_SCALE_FACTOR = 2f; // this seems to align with the way Java3d rendering came out
 
-    JoglScene( Lights lights, boolean isSticky )
+    JoglScene( Controller controller, Lights lights, boolean isSticky )
 	{
         this.bkgdColor = lights .getBackgroundColor();
+        
+        this .drawOutlines = controller .propertyIsTrue( "drawOutlines" );
         
         lights .addPropertyListener( new PropertyChangeListener(){
 
@@ -43,19 +48,21 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
         });
 	}
 
-    void render( RenderingProgram renderer, boolean viewChanged )
+    void render( Renderer solids, Renderer outlines, boolean viewChanged )
     {
         if ( viewChanged )
-            this .forceRender = 2;
+            this .forceRender();
 
         if ( this .forceRender > 0 ) {
             float[] rgba = new float[4];
             this .bkgdColor .getRGBColorComponents( rgba );
-            renderer .clear( rgba );
+            solids .clear( rgba );
 
             for ( SymmetryRendering symmetry : this .symmetries .values() ) {
                 // Just render them all; no harm in mixing, and little cost for empty ones
-                renderer .renderSymmetry( symmetry );
+                solids .renderSymmetry( symmetry );
+                if ( this .drawOutlines )
+                    outlines .renderSymmetry( symmetry );
             }
             -- this .forceRender;
         }
@@ -67,7 +74,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
         for ( SymmetryRendering symmetryRendering : this .symmetries .values() ) {
             symmetryRendering .reset();
         }
-        this .forceRender = 2;
+        this .forceRender();
 	}
 
 	@Override
@@ -80,7 +87,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	        this .symmetries .put( symmetryName, symmetryRendering );
 	    }
 	    this .symmetries .get( symmetryName ) .manifestationAdded( rm );
-        this .forceRender = 2;
+        this .forceRender();
 	}
 
 	@Override
@@ -89,7 +96,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
         for ( SymmetryRendering symmetryRendering : this .symmetries .values() ) {
             symmetryRendering .manifestationRemoved( rm ); // this will be a no-op in all but one
         }
-        this .forceRender = 2;
+        this .forceRender();
     }
 
     @Override
@@ -97,7 +104,10 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
     {
         String symmetryName = shapes .getSymmetry() .getName();
         SymmetryRendering symmetryRendering = this .symmetries .get( symmetryName );
-        return symmetryRendering .shapesChanged( shapes );
+        boolean success = symmetryRendering .shapesChanged( shapes );
+        if ( success )
+            this .forceRender();
+        return success;
     }
 
 	@Override
@@ -110,7 +120,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	{
         String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .glowChanged( rm );
-        this .forceRender = 2;
+        this .forceRender();
     }
 
 	@Override
@@ -118,7 +128,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	{
         String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .colorChanged( rm );
-        this .forceRender = 2;
+        this .forceRender();
     }
 
 	@Override
@@ -126,7 +136,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	{
         String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .locationChanged( rm );
-        this .forceRender = 2;
+        this .forceRender();
     }
 
 	@Override
@@ -134,7 +144,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	{
         String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .orientationChanged( rm );
-        this .forceRender = 2;
+        this .forceRender();
     }
 
 	@Override
@@ -142,7 +152,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 	{
         String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .shapeChanged( rm );
-        this .forceRender = 2;
+        this .forceRender();
     }
 
     @Override
@@ -154,6 +164,8 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
             break;
 
         case "drawOutlines":
+            drawOutlines = (Boolean) evt .getNewValue();
+            this .forceRender();
             break;
 
         case "showFrameLabels":
@@ -165,6 +177,11 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
         default:
             break;
         }
+    }
+
+    private void forceRender()
+    {
+        this .forceRender = 3;  // 2 should suffice, but we do get flicker
     }
 
     public RenderedManifestation pick( Intersector intersector )
