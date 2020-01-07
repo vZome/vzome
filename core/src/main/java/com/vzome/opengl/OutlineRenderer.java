@@ -47,7 +47,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
                     "   int orientation = int( max( 0, min( 59, floor(orientationAndGlow) ) ) );\n" + 
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Position );\n" + 
                     "   vec4 pos = oriented + location;\n" + 
-                    "   vec4 devicePos = ((u_ProjMatrix * u_MVMatrix) * pos) + vec4(0,0,0,-10);\n" + 
+                    "   vec4 devicePos = (u_ProjMatrix * u_MVMatrix) * pos;\n" + 
                     "   gl_Position = (u_ProjMatrix * u_MVMatrix) * pos;\n" + 
                     "\n" + 
                     "   v_Color = u_Color;\n" + 
@@ -90,7 +90,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         gl .glUniform4f( mColorParam, 0f, 0f, 0f, 0f ); // only support black lines for now
-        gl .glLineWidth( 4f );
+        gl .glLineWidth( 2f );
     }
 
     @Override

@@ -77,4 +77,6 @@ public interface OpenGlShim {
 	void transposeM(float[] worldInverseTranspose, float[] worldInverse);
 
 	void multiplyMV(float[] lightPosInEyeSpace, float[] view, float[] mlightposinworldspace );
+
+    void glPolygonOffset(float f, float g);
 }

@@ -119,6 +119,9 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         gl.glUseProgram( mGlProgram );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
+        // offset the solid polygons back, so that outlines will appear in front
+        gl .glPolygonOffset( 1f, -1f );
+
         gl.glUniform3f( ambientLightParam, ambientLight[0], ambientLight[1], ambientLight[2] );
         gl.glUniform1i( mNumLightsParam, lightDirections.length );
         for (int i = 0; i < lightDirections.length; i++) {
