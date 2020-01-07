@@ -22,6 +22,6 @@ public interface InstancedGeometry {
 
     public interface BufferStorage
     {
-        int storeBuffer( FloatBuffer buffer );
+        int storeBuffer( FloatBuffer buffer, int oldId );
     }
 }

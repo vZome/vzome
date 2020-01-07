@@ -4,8 +4,12 @@ import java.nio.FloatBuffer;
 
 public class OpenGlUtilities
 {
-    static int storeBuffer( OpenGlShim gl, FloatBuffer clientBuffer )
+    static int storeBuffer( OpenGlShim gl, FloatBuffer clientBuffer, int oldId )
     {
+        if ( oldId != -1 ) {
+            gl .glDeleteBuffer( oldId );
+            OpenGlUtilities.checkGLError( gl, "glDeleteBuffer");
+        }
         final int buffers[] = new int[1];
         gl .glGenBuffers( 1, buffers, 0 );
         OpenGlUtilities.checkGLError( gl, "glGenBuffers");

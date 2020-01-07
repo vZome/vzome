@@ -70,6 +70,8 @@ public interface OpenGlShim {
 
 	void glBufferData( int i, FloatBuffer clientBuffer );
 
+    void glDeleteBuffer( int oldId );
+
 	void multiplyMM( float[] view, float[] eyeTransform, float[] camera );
 
 	void invertM(float[] viewInverse, float[] view);

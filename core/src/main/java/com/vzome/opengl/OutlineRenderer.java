@@ -149,8 +149,8 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
     }
 
     @Override
-    public int storeBuffer( FloatBuffer clientBuffer )
+    public int storeBuffer( FloatBuffer clientBuffer, int oldId )
     {
-        return OpenGlUtilities .storeBuffer( this .gl, clientBuffer );
+        return OpenGlUtilities .storeBuffer( this .gl, clientBuffer, oldId );
     }
 }

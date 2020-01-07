@@ -205,8 +205,8 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
     }
 
     @Override
-    public int storeBuffer( FloatBuffer clientBuffer )
+    public int storeBuffer( FloatBuffer clientBuffer, int oldId )
     {
-        return OpenGlUtilities .storeBuffer( this .gl, clientBuffer );
+        return OpenGlUtilities .storeBuffer( this .gl, clientBuffer, oldId );
     }
 }

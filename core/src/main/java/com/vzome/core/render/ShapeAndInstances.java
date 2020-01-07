@@ -165,9 +165,9 @@ public class ShapeAndInstances implements InstancedGeometry
     public int prepareToRender( BufferStorage storage )
     {
         if ( this .verticesVBO == -1 ) {
-            this .verticesVBO = storage .storeBuffer( this .mVertices );
-            this .normalsVBO = storage .storeBuffer( this .mNormals );
-            this .lineVerticesVBO = storage .storeBuffer( this .lineVertexBuffer );
+            this .verticesVBO = storage .storeBuffer( this .mVertices, -1 );
+            this .normalsVBO = storage .storeBuffer( this .mNormals, -1 );
+            this .lineVerticesVBO = storage .storeBuffer( this .lineVertexBuffer, -1 );
         }
         if ( this .hasChanges ) {
 
@@ -202,7 +202,7 @@ public class ShapeAndInstances implements InstancedGeometry
             buffer .put( offsets );
             buffer .position( 0 );
             //        this .mInstancePositions = buffer;
-            this .positionsVBO = storage .storeBuffer( buffer );
+            this .positionsVBO = storage .storeBuffer( buffer, this .positionsVBO );
 
             bytes = ByteBuffer .allocateDirect( colors.length * 4 );
             bytes .order( ByteOrder.nativeOrder() );
@@ -210,7 +210,7 @@ public class ShapeAndInstances implements InstancedGeometry
             buffer .put( colors );
             buffer .position( 0 );
             //        this .mInstanceColors = buffer;
-            this .colorsVBO = storage .storeBuffer( buffer );
+            this .colorsVBO = storage .storeBuffer( buffer, this .colorsVBO );
 
             this .hasChanges = false;
         }

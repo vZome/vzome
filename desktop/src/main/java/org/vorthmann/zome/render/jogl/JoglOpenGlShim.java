@@ -238,4 +238,10 @@ public class JoglOpenGlShim implements OpenGlShim
         gl2 .glEnable( GL2 .GL_POLYGON_OFFSET_FILL );
         gl2 .glPolygonOffset( f, g );
     }
+
+    @Override
+    public void glDeleteBuffer( int oldId )
+    {
+        gl2 .glDeleteBuffers( 1, new int[] { oldId }, 0 );
+    }
 }
