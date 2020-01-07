@@ -24,14 +24,15 @@ public class JoglFactory implements J3dComponentFactory
     {
         GLProfile glprofile = GLProfile .getDefault();
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
-        glcapabilities .setDepthBits( 32 );
-        final GLCanvas glcanvas = new GLCanvas( glcapabilities );
+        glcapabilities .setDepthBits( 24 );
+        GLCanvas glcanvas = new GLCanvas( glcapabilities );
         
         Lights lights = controller .getSceneLighting();
         JoglScene scene = new JoglScene( controller, lights, isSticky );
         RenderingViewer viewer = new JoglRenderingViewer( lights, scene, glcanvas );
 
         controller .attachViewer( viewer, scene, glcanvas );
+
         return glcanvas;
     }
 }
