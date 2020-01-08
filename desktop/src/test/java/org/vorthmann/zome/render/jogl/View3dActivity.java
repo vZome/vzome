@@ -167,10 +167,10 @@ public class View3dActivity implements GLEventListener
         System.out.println( "ray.orig = " + ray.orig[0] + " " + ray.orig[1] + " " + ray.orig[2]  );
         System.out.println( "ray.dir = " + ray.dir[0] + " " + ray.dir[1] + " " + ray.dir[2]  );
 
-        RenderedManifestation result = this .scene .pick( new RenderedManifestation.Intersector()
+        this .scene .pick( new RenderedManifestation.Intersector()
         {
             @Override
-            public boolean intersectAABBox( float[] min, float[] max )
+            public void intersectAABBox( float[] min, float[] max, RenderedManifestation rm )
             {
 //                VectorUtil .scaleVec3( min, min, SCALE );
 //                VectorUtil .scaleVec3( max, max, SCALE );
@@ -179,21 +179,18 @@ public class View3dActivity implements GLEventListener
                 if( sbox.intersectsRay(ray) ) {
                     if( null == sbox .getRayIntersection( result, ray, FloatUtil.EPSILON, true, dpyTmp1V3, dpyTmp2V3, dpyTmp3V3 ) ) {
                         System.out.println( "Failure to getRayIntersection" );
-                    } else
-                        return true;
+                    } else {
+                        System.out.println( "PICKED: " + rm .toString() );
+                        float glow = rm .getGlow();
+                        if ( glow == 0.0f )
+                            rm .setGlow( 0.8f );
+                        else
+                            rm .setGlow( 0.0f );
+                    }
                 }
-                return false;
             }
         });
-        if ( result != null ) {
-            System.out.println( "PICKED: " + result .toString() );
-            float glow = result .getGlow();
-            if ( glow == 0.0f )
-                result .setGlow( 0.8f );
-            else
-                result .setGlow( 0.0f );
-            this .scene .refresh();
-        }
+        this .scene .refresh();
     }
 
     protected String doInBackground(String... urls) {

@@ -166,7 +166,10 @@ public class StrutBuilderController extends DefaultController implements CanvasT
         // drag events to render or realize the preview strut;
         //   only works when drag starts over a ball
         this .previewStrutStart = new LeftMouseDragAdapter( new ManifestationPicker( viewer )
-        {                
+        {
+            @Override
+            public void mouseClicked( MouseEvent e ) {} // avoid the duplicate pick!
+
             @Override
             protected void dragStarted( Manifestation target, boolean b )
             {

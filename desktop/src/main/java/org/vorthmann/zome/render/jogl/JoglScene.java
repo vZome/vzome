@@ -184,13 +184,9 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
         this .forceRender = 3;  // 2 should suffice, but we do get flicker
     }
 
-    public RenderedManifestation pick( Intersector intersector )
+    public void pick( Intersector intersector )
     {
-        for ( SymmetryRendering symmetryRendering : this .symmetries .values() ) {
-            RenderedManifestation rm = symmetryRendering .pick( intersector ); // this will be a no-op in all but one
-            if ( rm != null )
-                return rm;
-        }
-        return null;
+        for ( SymmetryRendering symmetryRendering : this .symmetries .values() )
+            symmetryRendering .pick( intersector ); // this will be a no-op in all but one
     }
 }

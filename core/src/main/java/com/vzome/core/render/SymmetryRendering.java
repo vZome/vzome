@@ -64,15 +64,12 @@ public class SymmetryRendering implements RenderingChanges
         }
     }
     
-    public RenderedManifestation pick( RenderedManifestation.Intersector intersector )
+    public void pick( RenderedManifestation.Intersector intersector )
     {
         for ( InstancedGeometry geometry : this .geometries .values()) {
             ShapeAndInstances shapeAndInstances = (ShapeAndInstances) geometry;
-            RenderedManifestation rm = shapeAndInstances .pick( intersector );
-            if ( rm != null )
-                return rm;
+            shapeAndInstances .pick( intersector );
         }
-        return null;
     }
 
     public float[][] getOrientations()

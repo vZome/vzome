@@ -219,29 +219,47 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
                 new float[16], new float[16], new float[4] );
 
         // The scene will loop over all RMs.  Rendered balls will support the RM.isHit(intersector)
-        //   method.  We return the first one hit, for now.
-        return this .scene .pick( new RenderedManifestation.Intersector()
+        //   method.  We try to sort the hits as we go.
+        NearestPicker picker = new NearestPicker( ray );
+        this .scene .pick( picker );
+        return picker .getNearest();
+    }
+    
+    private static class NearestPicker implements RenderedManifestation.Intersector
+    {
+        NearestPicker( Ray ray )
         {
-            private final float[] dpyTmp1V3 = new float[3];
-            private final float[] dpyTmp2V3 = new float[3];
-            private final float[] dpyTmp3V3 = new float[3];
+            super();
+            this.ray = ray;
+        }
 
-            @Override
-            public boolean intersectAABBox( float[] min, float[] max )
-            {
-//                VectorUtil .scaleVec3( min, min, SCALE );
-//                VectorUtil .scaleVec3( max, max, SCALE );
-                AABBox sbox = new AABBox( min, max );
-                float[] result = new float[3];
-                if( sbox.intersectsRay(ray) ) {
-                    if( null == sbox .getRayIntersection( result, ray, FloatUtil.EPSILON, true, dpyTmp1V3, dpyTmp2V3, dpyTmp3V3 ) ) {
-                        System.out.println( "Failure to getRayIntersection" );
-                    } else
-                        return true;
+        private final float[] dpyTmp1V3 = new float[3];
+        private final float[] dpyTmp2V3 = new float[3];
+        private final float[] dpyTmp3V3 = new float[3];
+        
+        private RenderedManifestation nearest = null;
+        private Ray ray;
+
+        @Override
+        public void intersectAABBox( float[] min, float[] max, RenderedManifestation rm )
+        {
+            AABBox sbox = new AABBox( min, max );
+            float[] result = new float[3];
+            if( sbox.intersectsRay(ray) ) {
+                float[] intersection = sbox .getRayIntersection( result, ray, FloatUtil.EPSILON, true, dpyTmp1V3, dpyTmp2V3, dpyTmp3V3 );
+                if( null == intersection ) {
+                    System.out.println( "Failure to getRayIntersection" );
+                } else {
+                    System.out.println( "intersection at " + rm );
+                    nearest = rm; // actually just returning the last one, not the nearest one
                 }
-                return false;
             }
-        });
+        }
+        
+        RenderedManifestation getNearest()
+        {
+            return this .nearest;
+        }
     }
 
     @Override

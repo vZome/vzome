@@ -311,20 +311,20 @@ public class RenderedManifestation
 
     public interface Intersector
     {
-        boolean intersectAABBox( float[] min, float[] max );
+        void intersectAABBox( float[] min, float[] max, RenderedManifestation rm );
     }
     
     private static final double HW = 0.5d;
 
-    public boolean isHit( Intersector intersector )
+    public void checkIntersection( Intersector intersector )
     {
         if ( this .strutZone != -1 )
-            return false;
+            return;
         RealVector minRV = new RealVector( -HW, -HW, -HW ) .plus( this .getLocation() );
         float[] min = new float[] { (float) minRV.x, (float) minRV.y, (float) minRV.z };
         RealVector maxRV = new RealVector( HW, HW, HW ) .plus( this .getLocation() );
         float[] max = new float[] { (float) maxRV.x, (float) maxRV.y, (float) maxRV.z };
-        return intersector .intersectAABBox( min, max );
+        intersector .intersectAABBox( min, max, this );
     }
 
     public void resetAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )

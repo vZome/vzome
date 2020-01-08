@@ -240,12 +240,10 @@ public class ShapeAndInstances implements InstancedGeometry
         this .hasChanges = true;
     }
 
-    public RenderedManifestation pick( RenderedManifestation.Intersector intersector )
+    public void pick( RenderedManifestation.Intersector intersector )
     {
         for ( RenderedManifestation rm : instances ) {
-            if ( rm .isHit( intersector ) )
-                return rm;
+            rm .checkIntersection( intersector );
         }
-        return null;
     }
 }
