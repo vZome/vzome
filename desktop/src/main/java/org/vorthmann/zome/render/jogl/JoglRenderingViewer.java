@@ -225,7 +225,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         return picker .getNearest();
     }
     
-    private static class NearestPicker implements RenderedManifestation.Intersector
+    private class NearestPicker implements RenderedManifestation.Intersector
     {
         NearestPicker( Ray ray )
         {
@@ -237,8 +237,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         private final float[] dpyTmp2V3 = new float[3];
         private final float[] dpyTmp3V3 = new float[3];
         
-        private RenderedManifestation nearest = null;
         private Ray ray;
+        private RenderedManifestation nearest = null;
+        private float nearestZ = Float .MAX_VALUE;
 
         @Override
         public void intersectAABBox( float[] min, float[] max, RenderedManifestation rm )
@@ -250,8 +251,15 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
                 if( null == intersection ) {
                     System.out.println( "Failure to getRayIntersection" );
                 } else {
-                    System.out.println( "intersection at " + rm );
-                    nearest = rm; // actually just returning the last one, not the nearest one
+                    float[] intInWorldCoords = new float[] { intersection[0], intersection[1], intersection[0], 1 };
+                    float[] intInViewCoords = new float[4];
+                    FloatUtil .multMatrixVec( modelView, intInWorldCoords, intInViewCoords );
+                    float[] intInDeviceCoords = new float[4];
+                    FloatUtil .multMatrixVec( projection, intInViewCoords, intInDeviceCoords );
+                    if ( intInDeviceCoords[2] < nearestZ ) {
+                        nearest = rm;
+                        nearestZ = intInDeviceCoords[2];
+                    }
                 }
             }
         }
