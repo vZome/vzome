@@ -11,13 +11,13 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
 {
     private final OpenGlShim gl;
 
-    private int mGlProgram;
-    private int instanceData;
-    private int mPositionParam;
-    private int mColorParam;
-    private int mProjectionParam;
-    private int mModelViewParam;
-    private int[] mOrientationsParam = new int[60];
+    private int programId;
+    private int a_InstanceData;
+    private int a_Position;
+    private int u_Color;
+    private int u_ProjMatrix;
+    private int u_MVMatrix;
+    private int[] u_Orientations = new int[60];
 
     private static final int COORDS_PER_VERTEX = 3;
 
@@ -65,45 +65,45 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
                 "}";
         int fragmentShader = OpenGlUtilities.loadGLShader( gl, false, fragmentShaderSrc );
 
-        mGlProgram = gl.glCreateProgram();
+        programId = gl.glCreateProgram();
         OpenGlUtilities.checkGLError( gl, "glCreateProgram");
-        gl.glAttachShader(mGlProgram, vertexShader);
+        gl.glAttachShader(programId, vertexShader);
         OpenGlUtilities.checkGLError( gl, "glAttachShader vertexShader");
-        gl.glAttachShader(mGlProgram, fragmentShader);
+        gl.glAttachShader(programId, fragmentShader);
         OpenGlUtilities.checkGLError( gl, "glAttachShader fragmentShader");
-        gl.glLinkProgram(mGlProgram);
+        gl.glLinkProgram(programId);
         OpenGlUtilities.checkGLError( gl, "glLinkProgram");
 
-        mModelViewParam = gl .glGetUniformLocation( mGlProgram, "u_MVMatrix" );
-        mProjectionParam = gl .glGetUniformLocation( mGlProgram, "u_ProjMatrix" );
-        mColorParam = gl .glGetUniformLocation( mGlProgram, "u_Color" );
-        for ( int i = 0; i < mOrientationsParam.length; i++ )
-            mOrientationsParam[ i ] = gl.glGetUniformLocation( mGlProgram, "u_Orientations[" + i + "]" );
+        u_MVMatrix = gl .glGetUniformLocation( programId, "u_MVMatrix" );
+        u_ProjMatrix = gl .glGetUniformLocation( programId, "u_ProjMatrix" );
+        u_Color = gl .glGetUniformLocation( programId, "u_Color" );
+        for ( int i = 0; i < u_Orientations.length; i++ )
+            u_Orientations[ i ] = gl.glGetUniformLocation( programId, "u_Orientations[" + i + "]" );
         OpenGlUtilities.checkGLError( gl, "glGetUniformLocation");
 
-        mPositionParam = gl .glGetAttribLocation( mGlProgram, "a_Position" );
-        instanceData = gl .glGetAttribLocation( mGlProgram, "a_InstanceData" ); // a_InstanceData will actually store (x,y,z,orientation+glow)
+        a_Position = gl .glGetAttribLocation( programId, "a_Position" );
+        a_InstanceData = gl .glGetAttribLocation( programId, "a_InstanceData" ); // a_InstanceData will actually store (x,y,z,orientation+glow)
         OpenGlUtilities.checkGLError( gl, "glGetAttribLocation");
     }
 
     @Override
     public void setLights( float[][] lightDirections, float[][] lightColors, float[] ambientLight )
     {
-        gl.glUseProgram( mGlProgram );
+        gl.glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-        gl .glUniform4f( mColorParam, 0f, 0f, 0f, 0f ); // only support black lines for now
+        gl .glUniform4f( u_Color, 0f, 0f, 0f, 0f ); // only support black lines for now
         gl .glLineWidth( 2f );
     }
 
     @Override
     public void setView( float[] modelView, float[] projection )
     {
-        gl.glUseProgram( mGlProgram );
+        gl.glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-        gl.glUniformMatrix4fv( mModelViewParam, 1, false, modelView, 0);
-        gl.glUniformMatrix4fv( mProjectionParam, 1, false, projection, 0 );
+        gl.glUniformMatrix4fv( u_MVMatrix, 1, false, modelView, 0);
+        gl.glUniformMatrix4fv( u_ProjMatrix, 1, false, projection, 0 );
     }
     
     @Override
@@ -112,12 +112,12 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
     @Override
     public void renderSymmetry( SymmetryRendering symmetryRendering )
     {
-        gl.glUseProgram( mGlProgram );
+        gl.glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         float[][] orientations = symmetryRendering .getOrientations();
         for ( int i = 0; i < orientations.length; i++ )
-            gl.glUniformMatrix4fv( mOrientationsParam[ i ], 1, false, orientations[ i ], 0 );
+            gl.glUniformMatrix4fv( u_Orientations[ i ], 1, false, orientations[ i ], 0 );
         OpenGlUtilities.checkGLError( gl, "mOrientationsParam");
         
         for( InstancedGeometry shapeClass : symmetryRendering .getGeometries() )
@@ -126,7 +126,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
 
     public void renderShape( InstancedGeometry shape )
     {
-        gl.glUseProgram( mGlProgram );
+        gl.glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         int instanceCount = shape .prepareToRender( this .useVBOs ? this : null ); // will call back to storeBuffer()
@@ -135,28 +135,28 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
         
         if ( this .useVBOs ) {
             gl .glBindBuffer( shape .getLineVerticesVBO() );
-            gl .glEnableVertexAttribArray( mPositionParam );
-            gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, 0 );
+            gl .glEnableVertexAttribArray( a_Position );
+            gl .glVertexAttribDivisor( a_Position, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+            gl .glVertexAttribPointer( a_Position, COORDS_PER_VERTEX, false, 0, 0 );
             gl .glBindBuffer( 0 );
             OpenGlUtilities.checkGLError( gl, "mPositionParam");
 
-            gl .glBindBuffer( shape .getPositionsVBO() );
-            gl .glEnableVertexAttribArray( instanceData );
-            gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
-            gl .glVertexAttribPointer( instanceData, 4, false, 0, 0 );
+            gl .glBindBuffer( shape .getInstancesVBO() );
+            gl .glEnableVertexAttribArray( a_InstanceData );
+            gl .glVertexAttribDivisor( a_InstanceData, 1 );  // SV: this one is instanced
+            gl .glVertexAttribPointer( a_InstanceData, 4, false, 0, 0 );
             gl .glBindBuffer( 0 );
             OpenGlUtilities.checkGLError( gl, "instanceData");
         }
         else {
-            gl .glEnableVertexAttribArray( mPositionParam );
-            gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, shape .getLineVertices() );
+            gl .glEnableVertexAttribArray( a_Position );
+            gl .glVertexAttribDivisor( a_Position, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+            gl .glVertexAttribPointer( a_Position, COORDS_PER_VERTEX, false, 0, shape .getLineVerticesBuffer() );
             OpenGlUtilities.checkGLError( gl, "mPositionParam");
 
-            gl .glEnableVertexAttribArray( instanceData );
-            gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
-            gl .glVertexAttribPointer( instanceData, 4, false, 0, shape .getPositions() );
+            gl .glEnableVertexAttribArray( a_InstanceData );
+            gl .glVertexAttribDivisor( a_InstanceData, 1 );  // SV: this one is instanced
+            gl .glVertexAttribPointer( a_InstanceData, 4, false, 0, shape .getInstancesBuffer() );
             OpenGlUtilities.checkGLError( gl, "instanceData");
         }
 

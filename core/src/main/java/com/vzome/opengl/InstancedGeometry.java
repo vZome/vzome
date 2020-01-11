@@ -7,16 +7,16 @@ public interface InstancedGeometry {
     int getVertexCount();
 
     int getLineVertexCount();
+    
+    int getLineVerticesVBO();
 
     int getVerticesVBO();
 
     int getNormalsVBO();
 
-    int getPositionsVBO();
+    int getInstancesVBO();
 
     int getColorsVBO();
-    
-    int getLineVerticesVBO();
 
     int prepareToRender( BufferStorage storage );
 
@@ -25,13 +25,13 @@ public interface InstancedGeometry {
         int storeBuffer( FloatBuffer buffer, int oldId );
     }
 
-    FloatBuffer getLineVertices();
+    FloatBuffer getLineVerticesBuffer();
 
-    FloatBuffer getPositions();
+    FloatBuffer getVerticesBuffer();
 
-    FloatBuffer getVertices();
+    FloatBuffer getNormalsBuffer();
 
-    FloatBuffer getNormals();
+    FloatBuffer getInstancesBuffer();
 
-    FloatBuffer getColors();
+    FloatBuffer getColorsBuffer();
 }
