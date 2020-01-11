@@ -26,9 +26,12 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
 
     private static final int COORDS_PER_VERTEX = 3;
 
-    public SolidRenderer( OpenGlShim gl )
+    private final boolean useVBOs;
+
+    public SolidRenderer( OpenGlShim gl, boolean useVBOs )
     {
-        this.gl = gl;
+        this .gl = gl;
+        this .useVBOs = useVBOs;
         String version = gl .getGLSLVersionString();
 
         String vertexShaderSrc = version + "\n" +
@@ -168,37 +171,60 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         gl.glUseProgram( mGlProgram );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-        int instanceCount = shape .prepareToRender( this ); // will call back to storeBuffer()
+        int instanceCount = shape .prepareToRender( this .useVBOs ? this : null ); // will call back to storeBuffer()
         if ( instanceCount == 0 )
             return;
-        
-        gl .glBindBuffer( shape .getVerticesVBO() );
-        gl .glEnableVertexAttribArray( mPositionParam );
-        gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-        gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, 0 );
-        gl .glBindBuffer( 0 );
-        OpenGlUtilities.checkGLError( gl, "mPositionParam");
 
-        gl .glBindBuffer( shape .getNormalsVBO() );
-        gl .glEnableVertexAttribArray( normalParam );
-        gl .glVertexAttribDivisor( normalParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-        gl .glVertexAttribPointer( normalParam, COORDS_PER_VERTEX, false, 0, 0 );
-        gl .glBindBuffer( 0 );
-        OpenGlUtilities.checkGLError( gl, "normalParam");
+        if ( this .useVBOs ) {
+            gl .glBindBuffer( shape .getVerticesVBO() );
+            gl .glEnableVertexAttribArray( mPositionParam );
+            gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+            gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, 0 );
+            gl .glBindBuffer( 0 );
+            OpenGlUtilities.checkGLError( gl, "mPositionParam");
 
-        gl .glBindBuffer( shape .getPositionsVBO() );
-        gl .glEnableVertexAttribArray( instanceData );
-        gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
-        gl .glVertexAttribPointer( instanceData, 4, false, 0, 0 );
-        gl .glBindBuffer( 0 );
-        OpenGlUtilities.checkGLError( gl, "instanceData");
+            gl .glBindBuffer( shape .getNormalsVBO() );
+            gl .glEnableVertexAttribArray( normalParam );
+            gl .glVertexAttribDivisor( normalParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+            gl .glVertexAttribPointer( normalParam, COORDS_PER_VERTEX, false, 0, 0 );
+            gl .glBindBuffer( 0 );
+            OpenGlUtilities.checkGLError( gl, "normalParam");
 
-        gl .glBindBuffer( shape .getColorsVBO() );
-        gl .glEnableVertexAttribArray( mColorParam );
-        gl .glVertexAttribDivisor( mColorParam, 1 );  // SV: this one is instanced
-        gl .glVertexAttribPointer( mColorParam, 4, false, 0, 0 );
-        gl .glBindBuffer( 0 );
-        OpenGlUtilities.checkGLError( gl, "mColorParam");
+            gl .glBindBuffer( shape .getPositionsVBO() );
+            gl .glEnableVertexAttribArray( instanceData );
+            gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
+            gl .glVertexAttribPointer( instanceData, 4, false, 0, 0 );
+            gl .glBindBuffer( 0 );
+            OpenGlUtilities.checkGLError( gl, "instanceData");
+
+            gl .glBindBuffer( shape .getColorsVBO() );
+            gl .glEnableVertexAttribArray( mColorParam );
+            gl .glVertexAttribDivisor( mColorParam, 1 );  // SV: this one is instanced
+            gl .glVertexAttribPointer( mColorParam, 4, false, 0, 0 );
+            gl .glBindBuffer( 0 );
+            OpenGlUtilities.checkGLError( gl, "mColorParam");
+        }
+        else {
+            gl .glEnableVertexAttribArray( mPositionParam );
+            gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+            gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, shape .getVertices() );
+            OpenGlUtilities.checkGLError( gl, "mPositionParam");
+
+            gl .glEnableVertexAttribArray( normalParam );
+            gl .glVertexAttribDivisor( normalParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+            gl .glVertexAttribPointer( normalParam, COORDS_PER_VERTEX, false, 0, shape .getNormals() );
+            OpenGlUtilities.checkGLError( gl, "normalParam");
+
+            gl .glEnableVertexAttribArray( instanceData );
+            gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
+            gl .glVertexAttribPointer( instanceData, 4, false, 0, shape .getPositions() );
+            OpenGlUtilities.checkGLError( gl, "instanceData");
+
+            gl .glEnableVertexAttribArray( mColorParam );
+            gl .glVertexAttribDivisor( mColorParam, 1 );  // SV: this one is instanced
+            gl .glVertexAttribPointer( mColorParam, 4, false, 0, shape .getColors() );
+            OpenGlUtilities.checkGLError( gl, "mColorParam");
+        }
 
         gl.glDrawTrianglesInstanced( 0, shape .getVertexCount(), instanceCount );
         OpenGlUtilities.checkGLError( gl, "Drawing a shape");

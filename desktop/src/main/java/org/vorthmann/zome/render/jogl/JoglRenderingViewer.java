@@ -132,8 +132,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     public void init( GLAutoDrawable drawable )
     {
         this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
-        this .solids = new SolidRenderer( this .glShim );
-        this .outlines = new OutlineRenderer( this .glShim );
+        boolean useVBOs = true;  // this context will rendered many, many times
+        this .solids = new SolidRenderer( this .glShim, useVBOs );
+        this .outlines = new OutlineRenderer( this .glShim, useVBOs );
         // store the scene geometry
     }
 
@@ -309,11 +310,13 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         System.err.println( "Chosen: " + drawable .getChosenGLCapabilities() );
 
         final GL2 gl2 = context .getGL() .getGL2();
-
-        Renderer solids = new SolidRenderer( new JoglOpenGlShim( gl2 ) );
+        JoglOpenGlShim shim = new JoglOpenGlShim( gl2 );
+        boolean useVBOs = false;  // this context will be discarded after a single rendering
+        
+        Renderer solids = new SolidRenderer( shim, useVBOs  );
         solids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         solids .setView( this.modelView, projection );
-        Renderer outlines = new OutlineRenderer( new JoglOpenGlShim( gl2 ) );
+        Renderer outlines = new OutlineRenderer( shim, useVBOs );
         outlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         outlines .setView( this.modelView, projection );
         this .scene .render( solids, outlines, true );

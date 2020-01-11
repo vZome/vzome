@@ -24,4 +24,14 @@ public interface InstancedGeometry {
     {
         int storeBuffer( FloatBuffer buffer, int oldId );
     }
+
+    FloatBuffer getLineVertices();
+
+    FloatBuffer getPositions();
+
+    FloatBuffer getVertices();
+
+    FloatBuffer getNormals();
+
+    FloatBuffer getColors();
 }

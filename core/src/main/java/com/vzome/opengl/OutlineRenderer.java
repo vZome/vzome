@@ -21,9 +21,12 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
 
     private static final int COORDS_PER_VERTEX = 3;
 
-    public OutlineRenderer( OpenGlShim gl )
+    private final boolean useVBOs;
+
+    public OutlineRenderer( OpenGlShim gl, boolean useVBOs )
     {
-        this.gl = gl;
+        this .gl = gl;
+        this .useVBOs = useVBOs;
         String version = gl .getGLSLVersionString();
 
         String vertexShaderSrc = version + "\n" +
@@ -126,23 +129,36 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
         gl.glUseProgram( mGlProgram );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
-        int instanceCount = shape .prepareToRender( this ); // will call back to storeBuffer()
+        int instanceCount = shape .prepareToRender( this .useVBOs ? this : null ); // will call back to storeBuffer()
         if ( instanceCount == 0 )
             return;
         
-        gl .glBindBuffer( shape .getLineVerticesVBO() );
-        gl .glEnableVertexAttribArray( mPositionParam );
-        gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-        gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, 0 );
-        gl .glBindBuffer( 0 );
-        OpenGlUtilities.checkGLError( gl, "mPositionParam");
+        if ( this .useVBOs ) {
+            gl .glBindBuffer( shape .getLineVerticesVBO() );
+            gl .glEnableVertexAttribArray( mPositionParam );
+            gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+            gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, 0 );
+            gl .glBindBuffer( 0 );
+            OpenGlUtilities.checkGLError( gl, "mPositionParam");
 
-        gl .glBindBuffer( shape .getPositionsVBO() );
-        gl .glEnableVertexAttribArray( instanceData );
-        gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
-        gl .glVertexAttribPointer( instanceData, 4, false, 0, 0 );
-        gl .glBindBuffer( 0 );
-        OpenGlUtilities.checkGLError( gl, "instanceData");
+            gl .glBindBuffer( shape .getPositionsVBO() );
+            gl .glEnableVertexAttribArray( instanceData );
+            gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
+            gl .glVertexAttribPointer( instanceData, 4, false, 0, 0 );
+            gl .glBindBuffer( 0 );
+            OpenGlUtilities.checkGLError( gl, "instanceData");
+        }
+        else {
+            gl .glEnableVertexAttribArray( mPositionParam );
+            gl .glVertexAttribDivisor( mPositionParam, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
+            gl .glVertexAttribPointer( mPositionParam, COORDS_PER_VERTEX, false, 0, shape .getLineVertices() );
+            OpenGlUtilities.checkGLError( gl, "mPositionParam");
+
+            gl .glEnableVertexAttribArray( instanceData );
+            gl .glVertexAttribDivisor( instanceData, 1 );  // SV: this one is instanced
+            gl .glVertexAttribPointer( instanceData, 4, false, 0, shape .getPositions() );
+            OpenGlUtilities.checkGLError( gl, "instanceData");
+        }
 
         gl.glDrawLinesInstanced( 0, shape .getLineVertexCount(), instanceCount );
         OpenGlUtilities.checkGLError( gl, "Drawing a shape");

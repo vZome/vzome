@@ -21,7 +21,7 @@ import com.vzome.opengl.InstancedGeometry;
 */
 public class ShapeAndInstances implements InstancedGeometry
 {
-    private FloatBuffer mVertices, mNormals, lineVertexBuffer;
+    private FloatBuffer mVertices, mNormals, lineVertexBuffer, positionsBuffer, colorsBuffer;
     int lineVerticesVBO = -1, verticesVBO = -1, normalsVBO = -1, positionsVBO = -1, colorsVBO = -1;
     private int vertexCount, lineVertexCount;
     private final float globalScale;
@@ -164,7 +164,7 @@ public class ShapeAndInstances implements InstancedGeometry
 
     public int prepareToRender( BufferStorage storage )
     {
-        if ( this .verticesVBO == -1 ) {
+        if ( storage != null && this .verticesVBO == -1 ) {
             this .verticesVBO = storage .storeBuffer( this .mVertices, -1 );
             this .normalsVBO = storage .storeBuffer( this .mNormals, -1 );
             this .lineVerticesVBO = storage .storeBuffer( this .lineVertexBuffer, -1 );
@@ -196,21 +196,17 @@ public class ShapeAndInstances implements InstancedGeometry
                 ++i;
             }
 
-            ByteBuffer bytes = ByteBuffer .allocateDirect( offsets.length * 4 );
-            bytes .order( ByteOrder.nativeOrder() );
-            FloatBuffer buffer = bytes .asFloatBuffer();
-            buffer .put( offsets );
-            buffer .position( 0 );
-            //        this .mInstancePositions = buffer;
-            this .positionsVBO = storage .storeBuffer( buffer, this .positionsVBO );
+            this .positionsBuffer = ByteBuffer.allocateDirect( offsets.length * 4 ) .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer() .put( offsets );
+            this .positionsBuffer .position( 0 );
+            if ( storage != null )
+                this .positionsVBO = storage .storeBuffer( this .positionsBuffer, this .positionsVBO );
 
-            bytes = ByteBuffer .allocateDirect( colors.length * 4 );
-            bytes .order( ByteOrder.nativeOrder() );
-            buffer = bytes .asFloatBuffer();
-            buffer .put( colors );
-            buffer .position( 0 );
-            //        this .mInstanceColors = buffer;
-            this .colorsVBO = storage .storeBuffer( buffer, this .colorsVBO );
+            this .colorsBuffer = ByteBuffer.allocateDirect( colors.length * 4 ) .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer() .put( colors );
+            this .colorsBuffer .position( 0 );
+            if ( storage != null )
+                this .colorsVBO = storage .storeBuffer( this .colorsBuffer, this .colorsVBO );
 
             this .hasChanges = false;
         }
@@ -245,5 +241,35 @@ public class ShapeAndInstances implements InstancedGeometry
         for ( RenderedManifestation rm : instances ) {
             rm .checkIntersection( intersector );
         }
+    }
+
+    @Override
+    public FloatBuffer getLineVertices()
+    {
+        return this .lineVertexBuffer;
+    }
+
+    @Override
+    public FloatBuffer getPositions()
+    {
+        return this .positionsBuffer;
+    }
+
+    @Override
+    public FloatBuffer getVertices()
+    {
+        return this .mVertices;
+    }
+
+    @Override
+    public FloatBuffer getNormals()
+    {
+        return this .mNormals;
+    }
+
+    @Override
+    public FloatBuffer getColors()
+    {
+        return this .colorsBuffer;
     }
 }
