@@ -87,7 +87,7 @@ public class View3dActivity implements GLEventListener
      */
     public void onSurfaceCreated( OpenGlShim gl, int width, int height )
     {
-        this .renderer = new SolidRenderer( gl );
+        this .renderer = new SolidRenderer( gl, true );
 
         gl.glEnableDepth();
 

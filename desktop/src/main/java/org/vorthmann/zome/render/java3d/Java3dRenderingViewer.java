@@ -194,7 +194,7 @@ public class Java3dRenderingViewer implements RenderingViewer
     }
 
     @Override
-    public void captureImage( int maxSize, RenderingViewer.ImageCapture capture )
+    public void captureImage( int maxSize, boolean withAlpha, RenderingViewer.ImageCapture capture )
     {
         if ( mCanvas .isOffScreen() )
         {

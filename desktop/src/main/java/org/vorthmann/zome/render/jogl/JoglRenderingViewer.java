@@ -292,7 +292,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     }
 
     @Override
-    public void captureImage( int maxSize, ImageCapture capture )
+    public void captureImage( int maxSize, boolean withAlpha, ImageCapture capture )
     {
         // Key parts of this copied from TestGLOffscreenAutoDrawableBug1044AWT in the Github jogl repo
         
@@ -321,7 +321,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         outlines .setView( this.modelView, projection );
         this .scene .render( solids, outlines, true );
 
-        final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, true );
+        final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, withAlpha );
         final BufferedImage image = agb .readPixelsToBufferedImage( gl2, true );
         
         capture .captureImage( image );

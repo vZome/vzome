@@ -928,7 +928,9 @@ public class DocumentController extends DefaultController implements Controller3
         if ( animation != null ) {
             animation .rotate();
         }
-        imageCaptureViewer .captureImage( maxSize, new RenderingViewer.ImageCapture()
+        boolean withAlpha = ! extension.toUpperCase() .equals( "BMP" );
+
+        imageCaptureViewer .captureImage( maxSize, withAlpha, new RenderingViewer.ImageCapture()
         {
             private void setImageCompression(String format, ImageWriteParam iwParam)
             {
