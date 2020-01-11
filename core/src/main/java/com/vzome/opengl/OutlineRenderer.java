@@ -13,7 +13,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
 
     private int programId;
     private int a_InstanceData;
-    private int a_Position;
+    private int a_Vertex;
     private int u_Color;
     private int u_ProjMatrix;
     private int u_MVMatrix;
@@ -35,7 +35,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
                     "uniform mat4 u_Orientations[60];\n" +
                     "uniform vec4 u_Color;\n" +
                     "\n" +
-                    "attribute vec4 a_Position;\n" + 
+                    "attribute vec4 a_Vertex;\n" + 
                     "attribute vec4 a_InstanceData;\n" + 
                     "\n" +
                     "varying vec4 v_Color;\n" + 
@@ -48,7 +48,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
                     "\n" + 
                     "\n" + 
                     "   int orientation = int( max( 0, min( 59, floor(orientationAndGlow) ) ) );\n" + 
-                    "   vec4 oriented = ( u_Orientations[ orientation ] * a_Position );\n" + 
+                    "   vec4 oriented = ( u_Orientations[ orientation ] * a_Vertex );\n" + 
                     "   vec4 pos = oriented + location;\n" + 
                     "   vec4 devicePos = (u_ProjMatrix * u_MVMatrix) * pos;\n" + 
                     "   gl_Position = (u_ProjMatrix * u_MVMatrix) * pos;\n" + 
@@ -81,7 +81,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
             u_Orientations[ i ] = gl.glGetUniformLocation( programId, "u_Orientations[" + i + "]" );
         OpenGlUtilities.checkGLError( gl, "glGetUniformLocation");
 
-        a_Position = gl .glGetAttribLocation( programId, "a_Position" );
+        a_Vertex = gl .glGetAttribLocation( programId, "a_Vertex" );
         a_InstanceData = gl .glGetAttribLocation( programId, "a_InstanceData" ); // a_InstanceData will actually store (x,y,z,orientation+glow)
         OpenGlUtilities.checkGLError( gl, "glGetAttribLocation");
     }
@@ -134,30 +134,12 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
             return;
         
         if ( this .useVBOs ) {
-            gl .glBindBuffer( shape .getLineVerticesVBO() );
-            gl .glEnableVertexAttribArray( a_Position );
-            gl .glVertexAttribDivisor( a_Position, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            gl .glVertexAttribPointer( a_Position, COORDS_PER_VERTEX, false, 0, 0 );
-            gl .glBindBuffer( 0 );
-            OpenGlUtilities.checkGLError( gl, "mPositionParam");
-
-            gl .glBindBuffer( shape .getInstancesVBO() );
-            gl .glEnableVertexAttribArray( a_InstanceData );
-            gl .glVertexAttribDivisor( a_InstanceData, 1 );  // SV: this one is instanced
-            gl .glVertexAttribPointer( a_InstanceData, 4, false, 0, 0 );
-            gl .glBindBuffer( 0 );
-            OpenGlUtilities.checkGLError( gl, "instanceData");
+            OpenGlUtilities .setVBO( gl, a_Vertex,       shape .getLineVerticesVBO(),  false, COORDS_PER_VERTEX );
+            OpenGlUtilities .setVBO( gl, a_InstanceData, shape .getInstancesVBO(), true, 4 );
         }
         else {
-            gl .glEnableVertexAttribArray( a_Position );
-            gl .glVertexAttribDivisor( a_Position, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            gl .glVertexAttribPointer( a_Position, COORDS_PER_VERTEX, false, 0, shape .getLineVerticesBuffer() );
-            OpenGlUtilities.checkGLError( gl, "mPositionParam");
-
-            gl .glEnableVertexAttribArray( a_InstanceData );
-            gl .glVertexAttribDivisor( a_InstanceData, 1 );  // SV: this one is instanced
-            gl .glVertexAttribPointer( a_InstanceData, 4, false, 0, shape .getInstancesBuffer() );
-            OpenGlUtilities.checkGLError( gl, "instanceData");
+            OpenGlUtilities .setBuffer( gl, a_Vertex,       shape .getLineVerticesBuffer(),  false, COORDS_PER_VERTEX );
+            OpenGlUtilities .setBuffer( gl, a_InstanceData, shape .getInstancesBuffer(), true, 4 );
         }
 
         gl.glDrawLinesInstanced( 0, shape .getLineVertexCount(), instanceCount );

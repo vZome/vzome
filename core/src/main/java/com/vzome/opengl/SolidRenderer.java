@@ -178,54 +178,16 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
             return;
 
         if ( this .useVBOs ) {
-            gl .glBindBuffer( shape .getVerticesVBO() );
-            gl .glEnableVertexAttribArray( a_Vertex );
-            gl .glVertexAttribDivisor( a_Vertex, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            gl .glVertexAttribPointer( a_Vertex, COORDS_PER_VERTEX, false, 0, 0 );
-            gl .glBindBuffer( 0 );
-            OpenGlUtilities.checkGLError( gl, "mPositionParam");
-
-            gl .glBindBuffer( shape .getNormalsVBO() );
-            gl .glEnableVertexAttribArray( a_Normal );
-            gl .glVertexAttribDivisor( a_Normal, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            gl .glVertexAttribPointer( a_Normal, COORDS_PER_VERTEX, false, 0, 0 );
-            gl .glBindBuffer( 0 );
-            OpenGlUtilities.checkGLError( gl, "normalParam");
-
-            gl .glBindBuffer( shape .getInstancesVBO() );
-            gl .glEnableVertexAttribArray( a_InstanceData );
-            gl .glVertexAttribDivisor( a_InstanceData, 1 );  // SV: this one is instanced
-            gl .glVertexAttribPointer( a_InstanceData, 4, false, 0, 0 );
-            gl .glBindBuffer( 0 );
-            OpenGlUtilities.checkGLError( gl, "instanceData");
-
-            gl .glBindBuffer( shape .getColorsVBO() );
-            gl .glEnableVertexAttribArray( a_Color );
-            gl .glVertexAttribDivisor( a_Color, 1 );  // SV: this one is instanced
-            gl .glVertexAttribPointer( a_Color, 4, false, 0, 0 );
-            gl .glBindBuffer( 0 );
-            OpenGlUtilities.checkGLError( gl, "mColorParam");
+            OpenGlUtilities .setVBO( gl, a_Vertex,       shape .getVerticesVBO(),  false, COORDS_PER_VERTEX );
+            OpenGlUtilities .setVBO( gl, a_Normal,       shape .getNormalsVBO(),   false, COORDS_PER_VERTEX );
+            OpenGlUtilities .setVBO( gl, a_InstanceData, shape .getInstancesVBO(), true, 4 );
+            OpenGlUtilities .setVBO( gl, a_Color,        shape .getColorsVBO(),    true, 4 );
         }
         else {
-            gl .glEnableVertexAttribArray( a_Vertex );
-            gl .glVertexAttribDivisor( a_Vertex, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            gl .glVertexAttribPointer( a_Vertex, COORDS_PER_VERTEX, false, 0, shape .getVerticesBuffer() );
-            OpenGlUtilities.checkGLError( gl, "mPositionParam");
-
-            gl .glEnableVertexAttribArray( a_Normal );
-            gl .glVertexAttribDivisor( a_Normal, 0 );  // SV: this one is not instanced BUT WE HAVE TO SAY SO EXPLICITLY, OR NOTHING WORKS!
-            gl .glVertexAttribPointer( a_Normal, COORDS_PER_VERTEX, false, 0, shape .getNormalsBuffer() );
-            OpenGlUtilities.checkGLError( gl, "normalParam");
-
-            gl .glEnableVertexAttribArray( a_InstanceData );
-            gl .glVertexAttribDivisor( a_InstanceData, 1 );  // SV: this one is instanced
-            gl .glVertexAttribPointer( a_InstanceData, 4, false, 0, shape .getInstancesBuffer() );
-            OpenGlUtilities.checkGLError( gl, "instanceData");
-
-            gl .glEnableVertexAttribArray( a_Color );
-            gl .glVertexAttribDivisor( a_Color, 1 );  // SV: this one is instanced
-            gl .glVertexAttribPointer( a_Color, 4, false, 0, shape .getColorsBuffer() );
-            OpenGlUtilities.checkGLError( gl, "mColorParam");
+            OpenGlUtilities .setBuffer( gl, a_Vertex,       shape .getVerticesBuffer(),  false, COORDS_PER_VERTEX );
+            OpenGlUtilities .setBuffer( gl, a_Normal,       shape .getNormalsBuffer(),   false, COORDS_PER_VERTEX );
+            OpenGlUtilities .setBuffer( gl, a_InstanceData, shape .getInstancesBuffer(), true, 4 );
+            OpenGlUtilities .setBuffer( gl, a_Color,        shape .getColorsBuffer(),    true, 4 );
         }
 
         gl.glDrawTrianglesInstanced( 0, shape .getVertexCount(), instanceCount );

@@ -74,4 +74,22 @@ public class OpenGlUtilities
     
         return shader;
     }
+
+    public static void setVBO( OpenGlShim gl, int param, int vbo, boolean instanced, int coordsPerVertex )
+    {
+        gl .glBindBuffer( vbo );
+        gl .glEnableVertexAttribArray( param );
+        gl .glVertexAttribDivisor( param, instanced? 1 : 0 );
+        gl .glVertexAttribPointer( param, coordsPerVertex, false, 0, 0 );
+        gl .glBindBuffer( 0 );
+        OpenGlUtilities.checkGLError( gl, "setVBO");
+    }
+
+    public static void setBuffer( OpenGlShim gl, int param, FloatBuffer buffer, boolean instanced, int coordsPerVertex )
+    {
+        gl .glEnableVertexAttribArray( param );
+        gl .glVertexAttribDivisor( param, instanced? 1 : 0 );
+        gl .glVertexAttribPointer( param, coordsPerVertex, false, 0, buffer );
+        OpenGlUtilities.checkGLError( gl, "setBuffer");
+    }
 }
