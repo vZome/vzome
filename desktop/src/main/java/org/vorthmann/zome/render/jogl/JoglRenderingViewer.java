@@ -22,7 +22,6 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
-import com.jogamp.opengl.math.geom.AABBox;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 import com.vzome.core.render.Color;
@@ -221,56 +220,11 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 
         // The scene will loop over all RMs.  Rendered balls will support the RM.isHit(intersector)
         //   method.  We try to sort the hits as we go.
-        NearestPicker picker = new NearestPicker( ray );
+        NearestPicker picker = new NearestPicker( ray, this .modelView, this .projection );
         this .scene .pick( picker );
         return picker .getNearest();
     }
     
-    private class NearestPicker implements RenderedManifestation.Intersector
-    {
-        NearestPicker( Ray ray )
-        {
-            super();
-            this.ray = ray;
-        }
-
-        private final float[] dpyTmp1V3 = new float[3];
-        private final float[] dpyTmp2V3 = new float[3];
-        private final float[] dpyTmp3V3 = new float[3];
-        
-        private Ray ray;
-        private RenderedManifestation nearest = null;
-        private float nearestZ = Float .MAX_VALUE;
-
-        @Override
-        public void intersectAABBox( float[] min, float[] max, RenderedManifestation rm )
-        {
-            AABBox sbox = new AABBox( min, max );
-            float[] result = new float[3];
-            if( sbox.intersectsRay(ray) ) {
-                float[] intersection = sbox .getRayIntersection( result, ray, FloatUtil.EPSILON, true, dpyTmp1V3, dpyTmp2V3, dpyTmp3V3 );
-                if( null == intersection ) {
-                    System.out.println( "Failure to getRayIntersection" );
-                } else {
-                    float[] intInWorldCoords = new float[] { intersection[0], intersection[1], intersection[0], 1 };
-                    float[] intInViewCoords = new float[4];
-                    FloatUtil .multMatrixVec( modelView, intInWorldCoords, intInViewCoords );
-                    float[] intInDeviceCoords = new float[4];
-                    FloatUtil .multMatrixVec( projection, intInViewCoords, intInDeviceCoords );
-                    if ( intInDeviceCoords[2] < nearestZ ) {
-                        nearest = rm;
-                        nearestZ = intInDeviceCoords[2];
-                    }
-                }
-            }
-        }
-        
-        RenderedManifestation getNearest()
-        {
-            return this .nearest;
-        }
-    }
-
     @Override
     public Collection<RenderedManifestation> pickCube()
     {

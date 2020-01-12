@@ -64,7 +64,7 @@ public class SymmetryRendering implements RenderingChanges
         }
     }
     
-    public void pick( RenderedManifestation.Intersector intersector )
+    public void pick( ShapeAndInstances.Intersector intersector )
     {
         for ( InstancedGeometry geometry : this .geometries .values()) {
             ShapeAndInstances shapeAndInstances = (ShapeAndInstances) geometry;

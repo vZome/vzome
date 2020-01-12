@@ -21,12 +21,21 @@ import com.vzome.opengl.InstancedGeometry;
 */
 public class ShapeAndInstances implements InstancedGeometry
 {
+    public interface Intersector
+    {
+        void intersectAABBox( float[] min, float[] max, RenderedManifestation rm );
+    
+        void intersectTriangle(float[] verticesArray, int i, RenderedManifestation rm);
+    }
+
     private FloatBuffer verticesBuffer, normalsBuffer, lineVerticesBuffer, positionsBuffer, colorsBuffer;
     int lineVerticesVBO = -1, verticesVBO = -1, normalsVBO = -1, positionsVBO = -1, colorsVBO = -1;
     private int vertexCount, lineVertexCount;
     private final float globalScale;
     private final Polyhedron shape;
-
+    
+    private final float[] verticesArray; // used for panel picking
+    
     private boolean hasChanges;
     
     // Must use a Set here, or the performance is awful.  However, RM.hashCode()
@@ -82,14 +91,14 @@ public class ShapeAndInstances implements InstancedGeometry
         }
 
         this .vertexCount = vertices .size();
-        float[] verticesArray = new float[ ShapeAndInstances.COORDS_PER_VERTEX * this .vertexCount ];
+        this .verticesArray = new float[ ShapeAndInstances.COORDS_PER_VERTEX * this .vertexCount ]; // we'll use this later for panel picking
         float[] normalsArray = new float[ ShapeAndInstances.COORDS_PER_VERTEX * this .vertexCount ];  // same size!
         for (int i = 0; i < this .vertexCount; i++) {
             RealVector vector = vertices.get(i);
             vector = vector .scale( globalScale );
-            verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
-            verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
-            verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
+            this .verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
+            this .verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
+            this .verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
             vector = normals.get(i);
             normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
             normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
@@ -106,8 +115,8 @@ public class ShapeAndInstances implements InstancedGeometry
             lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
         }
 
-        this .verticesBuffer = ByteBuffer.allocateDirect( verticesArray.length * 4 ) .order(ByteOrder.nativeOrder())
-                .asFloatBuffer() .put( verticesArray );
+        this .verticesBuffer = ByteBuffer.allocateDirect( this .verticesArray .length * 4 ) .order(ByteOrder.nativeOrder())
+                .asFloatBuffer() .put( this .verticesArray );
         this .verticesBuffer .position(0);
 
         this .normalsBuffer = ByteBuffer.allocateDirect( normalsArray.length * 4 ) .order(ByteOrder.nativeOrder())
@@ -235,11 +244,38 @@ public class ShapeAndInstances implements InstancedGeometry
         this .instances .clear();
         this .hasChanges = true;
     }
+    
+    private static final float HW = 0.5f;
+    private static final float[] MIN = new float[] { -HW, -HW, -HW };
+    private static final float[] MAX = new float[] { HW, HW, HW };
 
-    public void pick( RenderedManifestation.Intersector intersector )
+    public void pick( Intersector intersector )
     {
-        for ( RenderedManifestation rm : instances ) {
-            rm .checkIntersection( intersector );
+        if ( this .shape .isPanel() && ! this .instances .isEmpty() ) {
+            // A panel shape has only a single instance, for now
+            RenderedManifestation rm = this .instances .iterator() .next();
+            
+            // We know that we'll have 3 vertices per triangle, and a full set of triangles for both polygons.
+            // We just intersect the triangles of one of the two polygons.
+            int triangles = this .vertexCount / 6;
+            for ( int i = 0; i < triangles; i++ ) {
+                intersector .intersectTriangle( this .verticesArray, i * 9, rm );
+            }
+        }
+        else if ( this .shape .getOrbit() != null ) {
+            // a strut
+        }
+        else {
+            // a ball; an AABBox works OK
+            float[] min = new float[3];
+            float[] max = new float[3];
+            for ( RenderedManifestation rm : instances ) {
+                // use AABBox to intersect, for a connector
+                RealVector loc = rm .getLocation();
+                loc .addTo( MIN, min ); // avoid RealVector creation, for speed
+                loc .addTo( MAX, max );
+                intersector .intersectAABBox( min, max, rm );
+            }
         }
     }
 

@@ -12,8 +12,8 @@ import org.vorthmann.ui.Controller;
 
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedManifestation.Intersector;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.ShapeAndInstances;
 import com.vzome.core.render.Shapes;
 import com.vzome.core.render.SymmetryRendering;
 import com.vzome.core.viewing.Lights;
@@ -184,7 +184,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
         this .forceRender = 3;  // 2 should suffice, but we do get flicker
     }
 
-    public void pick( Intersector intersector )
+    public void pick( ShapeAndInstances.Intersector intersector )
     {
         for ( SymmetryRendering symmetryRendering : this .symmetries .values() )
             symmetryRendering .pick( intersector ); // this will be a no-op in all but one

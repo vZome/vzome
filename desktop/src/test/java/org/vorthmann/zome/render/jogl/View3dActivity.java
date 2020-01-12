@@ -37,6 +37,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
 import com.vzome.core.render.RenderedManifestation;
+import com.vzome.core.render.ShapeAndInstances;
 import com.vzome.core.render.SymmetryRendering;
 import com.vzome.opengl.OpenGlShim;
 import com.vzome.opengl.SolidRenderer;
@@ -167,7 +168,7 @@ public class View3dActivity implements GLEventListener
         System.out.println( "ray.orig = " + ray.orig[0] + " " + ray.orig[1] + " " + ray.orig[2]  );
         System.out.println( "ray.dir = " + ray.dir[0] + " " + ray.dir[1] + " " + ray.dir[2]  );
 
-        this .scene .pick( new RenderedManifestation.Intersector()
+        this .scene .pick( new ShapeAndInstances.Intersector()
         {
             @Override
             public void intersectAABBox( float[] min, float[] max, RenderedManifestation rm )
@@ -189,6 +190,9 @@ public class View3dActivity implements GLEventListener
                     }
                 }
             }
+
+            @Override
+            public void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm ) {} // only matters for panels
         });
         this .scene .refresh();
     }
