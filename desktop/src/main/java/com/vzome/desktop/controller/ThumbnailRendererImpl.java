@@ -55,7 +55,7 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
         {
             logger .finer( "%%%%%%%%%%%%%%%%%%%%%%%%%%    END THUMBNAIL" );
         }
-        viewer .captureImage( 80, new RenderingViewer.ImageCapture()
+        viewer .captureImage( 80, true, new RenderingViewer.ImageCapture()
         {
             @Override
             public void captureImage( RenderedImage image )
