@@ -67,9 +67,12 @@ class NearestPicker implements ShapeAndInstances.Intersector
         
         boolean hits = this .rayTriangleIntersection .intersectTriangle( rayPoint, rayDirection, v0, v1, v2, tuv );
         if ( hits ) {
-            v1 .scale( tuv.y() );
-            v1 .addScaled( v1, tuv.z(), v2 );
-            setNearest( v0.x(), v0.y(), v0.z(), rm );
+            float u = tuv.y();
+            float v = tuv.z();
+            v1 .scale( u );
+            v1 .addScaled( v1, v, v2 );
+            v1 .addScaled( v1, 1f - u - v, v0 );
+            setNearest( v1.x(), v1.y(), v1.z(), rm );
         }
     }
     
