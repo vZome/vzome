@@ -267,13 +267,13 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         JoglOpenGlShim shim = new JoglOpenGlShim( gl2 );
         boolean useVBOs = false;  // this context will be discarded after a single rendering
         
-        Renderer solids = new SolidRenderer( shim, useVBOs  );
-        solids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        solids .setView( this.modelView, projection );
-        Renderer outlines = new OutlineRenderer( shim, useVBOs );
-        outlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        outlines .setView( this.modelView, projection );
-        this .scene .render( solids, outlines, true );
+        Renderer tempSolids = new SolidRenderer( shim, useVBOs  );
+        tempSolids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        tempSolids .setView( this.modelView, projection );
+        Renderer tempOutlines = new OutlineRenderer( shim, useVBOs );
+        tempOutlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        tempOutlines .setView( this.modelView, projection );
+        this .scene .render( tempSolids, tempOutlines, true );
 
         final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, withAlpha );
         final BufferedImage image = agb .readPixelsToBufferedImage( gl2, true );
