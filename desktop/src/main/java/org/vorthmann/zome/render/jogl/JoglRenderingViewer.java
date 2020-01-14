@@ -16,9 +16,9 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
-import com.jogamp.opengl.GLDrawable;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLOffscreenAutoDrawable;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
@@ -107,6 +107,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         
         this .solids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         this .solids .setView( this.modelView, projection );
+        // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt and is consistent with captureImage()
+        this .outlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         this .outlines .setView( this.modelView, projection );
         this .scene .render( this .solids, this .outlines, this .forceRender );
         this .forceRender = false;
@@ -211,7 +213,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         
         Ray ray = new Ray();
         FloatUtil .mapWinToRay(
-                (float) mouseX, (float) (canvas .getHeight() - mouseY - 1), 0.1f, 0.3f,
+                mouseX, canvas .getHeight() - mouseY - 1, 0.1f, 0.3f,
                 this.modelView, 0,
                 this.projection, 0,
                 new int[] { 0, 0, canvas .getWidth(), canvas .getHeight() }, 0,
@@ -256,9 +258,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         glcapabilities .setDepthBits( 32 );
         // Without line below, there is an error on Windows.
         glcapabilities .setDoubleBuffered( false );
-        final GLDrawable drawable = fac .createOffscreenDrawable( null, glcapabilities, null, this.width, this.height );
-        drawable .setRealized(true);
-        final GLContext context = drawable .createContext(null);
+        final GLOffscreenAutoDrawable drawable = fac.createOffscreenAutoDrawable( null, glcapabilities, null, this.width, this.height );
+        drawable.display();
+        final GLContext context = drawable .getContext();
         context .makeCurrent();
 
         System.err.println( "Chosen: " + drawable .getChosenGLCapabilities() );
@@ -271,6 +273,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         tempSolids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         tempSolids .setView( this.modelView, projection );
         Renderer tempOutlines = new OutlineRenderer( shim, useVBOs );
+        // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt anything
         tempOutlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         tempOutlines .setView( this.modelView, projection );
         this .scene .render( tempSolids, tempOutlines, true );
