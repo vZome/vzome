@@ -928,7 +928,13 @@ public class DocumentController extends DefaultController implements Controller3
         if ( animation != null ) {
             animation .rotate();
         }
-        boolean withAlpha = ! extension.toUpperCase() .equals( "BMP" );
+        String format = extension.toUpperCase();
+        // According to https://stackoverflow.com/a/3432532/4568099, regarding the "pinkish orange tint", 
+        // Java saves the JPEG as ARGB (still with transparency information). 
+        // Most viewers, when opening, assume the four channels must correspond to a CMYK (not ARGB) and thus the red tint.
+        // In Windows 10, this results in a pinkish orange tint. On Scott's Mac, it's solid black.
+        // the solution is to exclude the alpha data when exporting JPEG.
+        boolean withAlpha = ! (format.equals( "BMP" ) || format.equals( "JPG" ));
 
         imageCaptureViewer .captureImage( maxSize, withAlpha, new RenderingViewer.ImageCapture()
         {
