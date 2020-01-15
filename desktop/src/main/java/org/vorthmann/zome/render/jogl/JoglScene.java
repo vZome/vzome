@@ -43,6 +43,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
                 {
                     int rgb =  Integer .parseInt( (String) chg .getNewValue(), 16 );
                     bkgdColor = new Color( rgb );
+                    forceRender();
                 }
             }
         });
