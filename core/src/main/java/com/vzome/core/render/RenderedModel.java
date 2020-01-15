@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicMatrix;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
@@ -47,8 +43,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     private boolean colorPanels = true;
     
-    private static final Logger logger = Logger.getLogger( "com.vzome.core.render.RenderedModel" );
-
     private static final class SymmetryOrbitSource implements OrbitSource
     {
         private final Symmetry symmetry;
@@ -159,7 +153,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     {
         RenderedManifestation rm = new RenderedManifestation( manifestation );
         rm .setModel( this );
-        resetAttributes( rm, false );
+        rm .resetAttributes( this .orbitSource, this .mPolyhedra, this .oneSidedPanels, this .colorPanels );
         return rm;
     }
 
@@ -303,7 +297,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                     }
                 }
               
-                resetAttributes( rendered, false );
+                rendered .resetAttributes( orbitSource, mPolyhedra, this .oneSidedPanels, this .colorPanels );
                 newSet .add( rendered );  // must re-hash, since shape has changed
 
                 float glow = rendered .getGlow();
@@ -327,156 +321,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    
 	}
 
-
-    private void resetAttributes( RenderedManifestation rm, boolean justShape )
-	{
-	    Manifestation m = rm .getManifestation();
-        if ( m instanceof Connector ) {
-            resetAttributes( rm, justShape, (Connector) m );
-        }
-        else if ( m instanceof Strut ) {
-            Strut strut = (Strut) m;
-            resetAttributes( rm, justShape, strut );
-        }
-        else if ( m instanceof Panel ) {
-            Panel panel = (Panel) m;
-            Polyhedron shape = makePanelPolyhedron( panel );
-            if ( shape == null )
-                return;
-            AlgebraicVector normal = panel .getNormal();
-            if ( normal .isOrigin() )
-                return;
-            rm .setShape( shape );  
-            if ( justShape || ! this .colorPanels )
-                return;
-
-            rm .setOrientation( field .identityMatrix( 3 ) );
-            rm .setColor( Color.WHITE );
-
-            try {
-                Axis axis = orbitSource .getAxis( normal );
-                if ( axis == null )
-                    return;
-
-        		// This lets the Panel represent Planes better.
-                panel .setZoneVector( axis .normal() );
-        		
-                Direction orbit = axis .getDirection();
-
-                Color color = m .getColor();
-                if ( color == null )
-                    color = orbitSource .getColor( orbit ) .getPastel();
-                rm .setColor( color );
-            } catch ( IllegalStateException e ) {
-            	if ( logger .isLoggable( Level.WARNING ) )
-            		logger .warning( "Unable to set color for panel, normal = " + normal .toString() );
-            }
-        }
-        else
-            throw new UnsupportedOperationException( "only strut, ball, and panel shapes currently supported" );
-	}
-
-	protected void resetAttributes( RenderedManifestation rm, boolean justShape, Strut strut )
-	{
-		AlgebraicVector offset = strut .getOffset();
-		if ( offset .isOrigin() )
-		    return; // should catch this earlier
-		Axis axis = orbitSource .getAxis( offset );
-		if ( axis == null )
-			return; // this should only happen when using the bare Symmetry-based OrbitSource
-		
-		// This lets the Strut represent Lines better.
-		strut .setZoneVector( axis .normal() );
-		
-		Direction orbit = axis .getDirection();
-		
-		// TODO remove this length computation... see the comment on AbstractShapes.getStrutShape()
-		
-		AlgebraicNumber len = axis .getLength( offset );
-		
-		Polyhedron prototypeLengthShape = mPolyhedra .getStrutShape( orbit, len );
-		rm .setShape( prototypeLengthShape );
-
-		int orn = axis .getOrientation();
-		AlgebraicMatrix orientation = mPolyhedra .getSymmetry() .getMatrix( orn );
-		
-		// Strut geometries only need to be mirrored for certain symmetries
-		AlgebraicMatrix reflection = orbitSource .getSymmetry() .getPrincipalReflection();
-		if ( reflection != null ) {
-			/*
-			 *  Odd prismatic group, where getPrincipalReflection() != null:
-			 */
-			if ( logger .isLoggable( Level.FINE ) ) {
-				logger .fine( "rendering " + offset + " as " + axis );				
-			}
-			if ( axis .getSense() == Axis .MINUS ) {
-				if ( logger .isLoggable( Level.FINER ) ) {
-					logger .finer( "mirroring orientation " + orn );				
-				}
-			    rm .setShape( prototypeLengthShape .getEvilTwin( reflection ) );
-			}
-			if ( ! axis .isOutbound() ) {  // see declaration for details
-				rm .offsetLocation();
-			} else
-				rm .resetLocation(); // might be switching between systems
-		} else {
-			// MINUS orbits are handled just by offsetting... rendering the strut from the opposite end
-			if ( axis .getSense() == Axis .MINUS ) {
-				rm .offsetLocation();
-			} else
-				rm .resetLocation(); // might be switching between systems
-		}
-		rm .setStrut( orbit, orn, axis .getSense(), len );
-		rm .setOrientation( orientation );
-		
-		if ( justShape )
-		    return;
-		
-        Color color = rm .getManifestation() .getColor();
-        if ( color == null )
-            color = mPolyhedra .getColor( orbit );
-		if ( color == null )
-			color = orbitSource .getColor( orbit );
-		rm .setColor( color );
-	}
-
-	protected void resetAttributes( RenderedManifestation rm, boolean justShape, Connector m )
-	{
-		rm .setShape( mPolyhedra .getConnectorShape() );
-		if ( justShape )
-		    return;
-		Color color = rm .getManifestation() .getColor();
-        if ( color == null )
-            color = mPolyhedra .getColor( null );
-        if ( color == null )
-            color = orbitSource .getColor( null );
-		rm .setColor( color );
-		rm .setOrientation( field .identityMatrix( 3 ) );
-	}
-
-    private Polyhedron makePanelPolyhedron( Panel panel )
-    {
-        Polyhedron poly = new Polyhedron( this .field );
-        poly .setPanel( true );
-        int arity = 0;
-        for( AlgebraicVector gv : panel) {
-            arity++;
-            poly .addVertex( gv );            
-        }
-        if ( poly .getVertexList() .size() < arity )
-            return null;
-        Polyhedron.Face front = poly .newFace();
-        Polyhedron.Face back = poly .newFace();
-        for ( int i = 0; i < arity; i++ ) {
-            Integer j = i;
-            front .add( j );
-            back .add( 0, j );
-        }
-        poly .addFace( front );
-        if ( ! this .oneSidedPanels )
-            poly .addFace( back );
-        return poly;
-    }
 
     @Override
     public void manifestationColored( Manifestation m, Color color )
