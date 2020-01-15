@@ -244,4 +244,10 @@ public class JoglOpenGlShim implements OpenGlShim
     {
         gl2 .glDeleteBuffers( 1, new int[] { oldId }, 0 );
     }
+
+    @Override
+    public void glUniform1f( int param, float f )
+    {
+        gl2 .glUniform1f( param, f );
+    }
 }

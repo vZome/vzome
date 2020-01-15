@@ -38,7 +38,9 @@ public interface OpenGlShim {
 
 	void glUniform3f(int mLightPosParam, float f, float g, float h);
 
-	void glUniform4f(int mColorParam, float f, float g, float h, float i);
+    void glUniform1f( int mColorParam, float f );
+
+    void glUniform4f(int mColorParam, float f, float g, float h, float i);
 
     void glUniform1i(int i, int v);
 

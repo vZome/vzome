@@ -66,6 +66,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private int width;
     private int height;
     private boolean forceRender = true;
+    private float fogFront;
 
     public JoglRenderingViewer( Lights lights, JoglScene scene, GLAutoDrawable drawable )
     {
@@ -106,10 +107,10 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             return; // still initializing
         
         this .solids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        this .solids .setView( this.modelView, projection );
+        this .solids .setView( this .modelView, this .projection, this .fogFront, this .far );
         // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt and is consistent with captureImage()
         this .outlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        this .outlines .setView( this.modelView, projection );
+        this .outlines .setView( this.modelView, projection, this .fogFront, this .far );
         this .scene .render( this .solids, this .outlines, this .forceRender );
         this .forceRender = false;
     }
@@ -124,6 +125,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             float fovY = this .fovX / this .aspectRatio;
             FloatUtil .makePerspective( projection, 0, true, fovY, this .aspectRatio, this .near, this .far );
         }
+        float diff = ( this .far - this .near )/5; // offset from near and far by 20%
+        this .fogFront = near + 2 * diff;
         this .forceRender  = true;
     }
 
@@ -279,11 +282,11 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         
         Renderer tempSolids = new SolidRenderer( shim, useVBOs  );
         tempSolids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        tempSolids .setView( this.modelView, projection );
+        tempSolids .setView( this .modelView, this .projection, this .fogFront, this .far );
         Renderer tempOutlines = new OutlineRenderer( shim, useVBOs );
         // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt anything
         tempOutlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        tempOutlines .setView( this.modelView, projection );
+        tempOutlines .setView( this .modelView, this .projection, this .fogFront, this .far );
         this .scene .render( tempSolids, tempOutlines, true );
 
         final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, withAlpha );

@@ -97,7 +97,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
     }
 
     @Override
-    public void setView( float[] modelView, float[] projection )
+    public void setView( float[] modelView, float[] projection, float fogFront, float fogBack )
     {
         gl.glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
