@@ -3,97 +3,191 @@
 
 package org.vorthmann.zome.render.jogl;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.vorthmann.ui.Controller;
+
+import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.ShapeAndInstances;
+import com.vzome.core.render.Shapes;
+import com.vzome.core.render.SymmetryRendering;
 import com.vzome.core.viewing.Lights;
+import com.vzome.opengl.Renderer;
 
-public class JoglScene implements RenderingChanges
+public class JoglScene implements RenderingChanges, PropertyChangeListener
 {
-	JoglScene( Lights lights, boolean isSticky )
+    private Color bkgdColor;
+    private final Map<String, SymmetryRendering> symmetries = new HashMap<>();
+    private int forceRender = 3; // double-buffering means we cannot simply use a boolean
+    private boolean drawOutlines;
+
+    private static final float MODEL_SCALE_FACTOR = 2f; // this seems to align with the way Java3d rendering came out
+
+    JoglScene( Controller controller, Lights lights, boolean isSticky )
 	{
-		// TODO Auto-generated constructor stub
+        this.bkgdColor = lights .getBackgroundColor();
+        
+        this .drawOutlines = controller .propertyIsTrue( "drawOutlines" );
+        
+        lights .addPropertyListener( new PropertyChangeListener(){
+
+            @Override
+            public void propertyChange( PropertyChangeEvent chg )
+            {
+                if ( "backgroundColor" .equals( chg .getPropertyName() ) )
+                {
+                    int rgb =  Integer .parseInt( (String) chg .getNewValue(), 16 );
+                    bkgdColor = new Color( rgb );
+                    forceRender();
+                }
+            }
+        });
 	}
 
-    void render( GL2 gl2 )
+    void render( Renderer solids, Renderer outlines, boolean viewChanged )
     {
-        gl2.glClear( GL.GL_COLOR_BUFFER_BIT );
+        if ( viewChanged )
+            this .forceRender();
 
-        // draw a triangle filling the window
-        gl2.glLoadIdentity();
-        gl2.glBegin( GL.GL_TRIANGLES );
-        gl2.glColor3f( 1, 0, 0 );
-        gl2.glVertex3f( 0, 0, 0 );
-        gl2.glColor3f( 0, 1, 0 );
-        gl2.glVertex3f( 5, 0, 2 );
-        gl2.glColor3f( 0, 0, 1 );
-        gl2.glVertex3f( 2, 5, 3 );
-        gl2.glEnd();
+        if ( this .forceRender > 0 ) {
+            float[] rgba = new float[4];
+            this .bkgdColor .getRGBColorComponents( rgba );
+            solids .clear( rgba );
+
+            for ( SymmetryRendering symmetry : this .symmetries .values() ) {
+                // Just render them all; no harm in mixing, and little cost for empty ones
+                solids .renderSymmetry( symmetry );
+                if ( this .drawOutlines )
+                    outlines .renderSymmetry( symmetry );
+            }
+            -- this .forceRender;
+        }
     }
 
 	@Override
 	public void reset()
 	{
-		// TODO Auto-generated method stub
-
+        for ( SymmetryRendering symmetryRendering : this .symmetries .values() ) {
+            symmetryRendering .reset();
+        }
+        this .forceRender();
 	}
 
 	@Override
-	public void manifestationAdded( RenderedManifestation manifestation )
+	public void manifestationAdded( RenderedManifestation rm )
 	{
-		// TODO Auto-generated method stub
-
+	    String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+	    SymmetryRendering symmetryRendering = this .symmetries .get( symmetryName );
+	    if ( symmetryRendering == null ) {
+	        symmetryRendering = new SymmetryRendering( rm .getModel() .getOrbitSource(), MODEL_SCALE_FACTOR );
+	        this .symmetries .put( symmetryName, symmetryRendering );
+	    }
+	    this .symmetries .get( symmetryName ) .manifestationAdded( rm );
+        this .forceRender();
 	}
 
 	@Override
-	public void manifestationRemoved( RenderedManifestation manifestation )
+	public void manifestationRemoved( RenderedManifestation rm )
 	{
-		// TODO Auto-generated method stub
+        for ( SymmetryRendering symmetryRendering : this .symmetries .values() ) {
+            symmetryRendering .manifestationRemoved( rm ); // this will be a no-op in all but one
+        }
+        this .forceRender();
+    }
 
-	}
+    @Override
+    public boolean shapesChanged( Shapes shapes )
+    {
+        String symmetryName = shapes .getSymmetry() .getName();
+        SymmetryRendering symmetryRendering = this .symmetries .get( symmetryName );
+        boolean success = symmetryRendering .shapesChanged( shapes );
+        if ( success )
+            this .forceRender();
+        return success;
+    }
 
 	@Override
 	public void manifestationSwitched( RenderedManifestation from, RenderedManifestation to )
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public void glowChanged( RenderedManifestation manifestation )
+	public void glowChanged( RenderedManifestation rm )
 	{
-		// TODO Auto-generated method stub
-
-	}
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .glowChanged( rm );
+        this .forceRender();
+    }
 
 	@Override
-	public void colorChanged( RenderedManifestation manifestation )
+	public void colorChanged( RenderedManifestation rm )
 	{
-		// TODO Auto-generated method stub
-
-	}
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .colorChanged( rm );
+        this .forceRender();
+    }
 
 	@Override
-	public void locationChanged( RenderedManifestation manifestation )
+	public void locationChanged( RenderedManifestation rm )
 	{
-		// TODO Auto-generated method stub
-
-	}
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .locationChanged( rm );
+        this .forceRender();
+    }
 
 	@Override
-	public void orientationChanged( RenderedManifestation manifestation )
+	public void orientationChanged( RenderedManifestation rm )
 	{
-		// TODO Auto-generated method stub
-
-	}
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .orientationChanged( rm );
+        this .forceRender();
+    }
 
 	@Override
-	public void shapeChanged( RenderedManifestation manifestation )
+	public void shapeChanged( RenderedManifestation rm )
 	{
-		// TODO Auto-generated method stub
+        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        this .symmetries .get( symmetryName ) .shapeChanged( rm );
+        this .forceRender();
+    }
 
-	}
+    @Override
+    public void propertyChange( PropertyChangeEvent evt )
+    {
+        switch ( evt .getPropertyName() ) {
 
+        case "drawNormals":
+            break;
+
+        case "drawOutlines":
+            drawOutlines = (Boolean) evt .getNewValue();
+            this .forceRender();
+            break;
+
+        case "showFrameLabels":
+            break;
+
+        case "showIcosahedralLabels":
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    private void forceRender()
+    {
+        this .forceRender = 3;  // 2 should suffice, but we do get flicker
+    }
+
+    public void pick( ShapeAndInstances.Intersector intersector )
+    {
+        for ( SymmetryRendering symmetryRendering : this .symmetries .values() )
+            symmetryRendering .pick( intersector ); // this will be a no-op in all but one
+    }
 }

@@ -17,7 +17,7 @@ public interface RenderingViewer extends CameraController.Viewer, ManifestationP
     
 //    org.vorthmann.zome.scenegraph.Factory getSceneGraphFactory();
     
-    void captureImage( int maxSize, ImageCapture capture );
+    void captureImage( int maxSize, boolean withAlpha, ImageCapture capture );
 
     public interface ImageCapture
     {

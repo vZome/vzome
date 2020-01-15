@@ -182,7 +182,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
          */
 
         SplashScreen splash = null;
-        String splashImage = "org/vorthmann/zome/ui/vZome-6-splash.png";
+        String splashImage = "org/vorthmann/zome/ui/vZome-7-splash.png";
         splash = new SplashScreen( splashImage );
         splash .splash();
         logger .info( "splash screen displayed" );
@@ -524,14 +524,37 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             + "\n\nvzome-core: " + mController .getProperty( "coreVersion" );
         JOptionPane.showMessageDialog( null, version + "\n\n"
 
-                + "Contributors:\n\n" + "Scott Vorthmann\n" + "David Hall\n" + "\n"
+                + "Committers:\n\n" 
+                + "Scott Vorthmann\n" 
+                + "David Hall\n" + "\n"
 
-                + "Acknowledgements:\n\n" + "Paul Hildebrandt\n" + "Marc Pelletier\n"
-                + "David Richter\n" + "Brian Hall\n" + "Dan Duddy\n" + "Fabien Vienne\n" + "George Hart\n"
-                + "Edmund Harriss\n" + "Corrado Falcolini\n" + "Ezra Bradford\n" + "Chris Kling\n" + "Samuel Verbiese\n" + "Walt Venable\n"
-                + "Will Ackel\n" + "Tom Darrow\n" + "Sam Vandervelde\n" + "Henri Picciotto\n" + "Florelia Braschi\n"
+                + "Contributors:\n\n"
+                + "Paul Hildebrandt\n"
+                + "David Richter\n"
+                + "Brian Hall\n"
+                + "George Hart\n"
+                + "Edmund Harriss\n"
+                + "Corrado Falcolini\n"
+                + "Ezra Bradford\n"
+                + "Sam Vandervelde\n"
+                + "Jacob Rus\n"
+                + "Dan Duddy\n"
+                + "Walt Venable\n"
+                + "Will Ackel\n"
+                + "John and Jane Kostick\n"
+                + "Samuel Verbiese\n"
+                + "Tom Darrow\n"
+                + "Henri Picciotto\n"
+                + "Florelia Braschi\n"
 
-                + "\n" + "Dedicated to Everett Vorthmann,\n" + "who made me an engineer\n"
+                + "\n" + "In Memoriam:\n\n"
+                + "Marc Pelletier\n"
+                + "Fabien Vienne\n"
+                + "Chris Kling\n"
+
+                + "\n" + "Dedicated to Everett Vorthmann,\n"
+                + "inventor of the Hall effect chip,\n"
+                + "who made me an engineer\n"
                 + "\n",
                 "About vZome", JOptionPane.PLAIN_MESSAGE );
     }

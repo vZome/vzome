@@ -38,7 +38,7 @@ public class Java3dRenderingViewer implements RenderingViewer
     {
         super();
 
-//        GraphicsConfiguration gc = SimpleUniverse .getPreferredConfiguration();
+        //        GraphicsConfiguration gc = SimpleUniverse .getPreferredConfiguration();
         mCanvas = canvas; // new CapturingCanvas3D( gc );
 
         mScene = scene;
@@ -46,36 +46,36 @@ public class Java3dRenderingViewer implements RenderingViewer
         viewTransform = new TransformGroup();
         view = new View();
         mScene .addView( initView( view, viewTransform, mCanvas ) );
-            
+
         mLights = mScene .getLightsGroup();
         mFog = mScene .getFog();
-        
+
         mPickCanvas = new PickCanvas( mCanvas,  mScene .getRoot() );
         mPickCanvas .setMode( PickTool.GEOMETRY );
         mPickCanvas .setTolerance( 0.1f );
     }
-    
+
     @Override
     public void setEye( int eye )
     {
         this .eye = eye;
     }
-    
+
     private int eye = MONOCULAR;
 
     private Java3dSceneGraph mScene;
 
     protected View view;
-    
+
     protected TransformGroup mLights, viewTransform;
-    
+
     protected LinearFog mFog;
-    
+
     private CapturingCanvas3D mCanvas;
-    
+
     private PickCanvas mPickCanvas;
-    
-    
+
+
     private static BranchGroup initView( View view, TransformGroup trans, Canvas3D canvas )
     {
         ViewPlatform vp = new ViewPlatform();
@@ -92,7 +92,7 @@ public class Java3dRenderingViewer implements RenderingViewer
         view .setScreenScalePolicy( View .SCALE_EXPLICIT );
         return bg;
     }
-    
+
     /* (non-Javadoc)
      * @see org.vorthmann.zome.render.java3d.RenderingViewer#getCanvas()
      */
@@ -100,7 +100,7 @@ public class Java3dRenderingViewer implements RenderingViewer
     {
         return mCanvas;
     }
-    
+
     /* (non-Javadoc)
      * @see org.vorthmann.zome.render.java3d.RenderingViewer#getRenderingChanges()
      */
@@ -115,16 +115,16 @@ public class Java3dRenderingViewer implements RenderingViewer
     {
         if ( eye == this.eye )
         {
-        	Transform3D trans = new Transform3D( matrix );
+            Transform3D trans = new Transform3D( matrix );
             viewTransform .setTransform( trans );
             mLights .setTransform( trans );
         }
     }
 
-//    public void setLeftEyeViewTransformation( Transform3D trans )
-//    {
-//        mLeftEyeViewTransform .setTransform( trans );
-//    }
+    //    public void setLeftEyeViewTransformation( Transform3D trans )
+    //    {
+    //        mLeftEyeViewTransform .setTransform( trans );
+    //    }
 
     @Override
     public void setPerspective( double fov, double aspectRatio, double near, double far )
@@ -132,9 +132,9 @@ public class Java3dRenderingViewer implements RenderingViewer
         view .setProjectionPolicy( View.PERSPECTIVE_PROJECTION );
         view .setScreenScale( 1d );
         view .setFieldOfView( fov );
-//        mLeftEyeView .setProjectionPolicy( View.PERSPECTIVE_PROJECTION );
-//        mLeftEyeView .setScreenScale( 1d );
-//        mLeftEyeView .setFieldOfView( fov );
+        //        mLeftEyeView .setProjectionPolicy( View.PERSPECTIVE_PROJECTION );
+        //        mLeftEyeView .setScreenScale( 1d );
+        //        mLeftEyeView .setFieldOfView( fov );
         setDistances( near, far );
     }
 
@@ -143,37 +143,37 @@ public class Java3dRenderingViewer implements RenderingViewer
     {
         view .setProjectionPolicy( View.PARALLEL_PROJECTION );
         view .setScreenScale( 1 / ( 6 * halfEdge ) );  // WHY 6???
-//        mLeftEyeView .setProjectionPolicy( View.PARALLEL_PROJECTION );
-//        mLeftEyeView .setScreenScale( 1 / ( 6 * halfEdge ) );  // WHY 6???
+        //        mLeftEyeView .setProjectionPolicy( View.PARALLEL_PROJECTION );
+        //        mLeftEyeView .setScreenScale( 1 / ( 6 * halfEdge ) );  // WHY 6???
         setDistances( near, far );
     }
-    
+
     protected void setDistances( double near, double far )
     {
         view .setFrontClipDistance( near );
         view .setBackClipDistance( far );
-//        mLeftEyeView .setFrontClipDistance( near );
-//        mLeftEyeView .setBackClipDistance( far );
+        //        mLeftEyeView .setFrontClipDistance( near );
+        //        mLeftEyeView .setBackClipDistance( far );
         double diff = (far-near)/5; // offset from near and far by 20%
         mFog .setBackDistance( far  );
         mFog .setFrontDistance( near + 2 * diff );
     }
-    
-    
+
+
     @Override
     public void pickPoint( MouseEvent e, Point3d virtualCursor, Point3d eyePt )
     {
-    	Transform3D imagePlateToVworld = new Transform3D();
-    	mCanvas .getImagePlateToVworld( imagePlateToVworld );
-    	
-    	mCanvas .getPixelLocationInImagePlate( e .getX(), e .getY(), virtualCursor );
-    	imagePlateToVworld .transform( virtualCursor );
-    	
-    	mCanvas .getCenterEyeInImagePlate( eyePt );
-    	imagePlateToVworld .transform( eyePt );
+        Transform3D imagePlateToVworld = new Transform3D();
+        mCanvas .getImagePlateToVworld( imagePlateToVworld );
+
+        mCanvas .getPixelLocationInImagePlate( e .getX(), e .getY(), virtualCursor );
+        imagePlateToVworld .transform( virtualCursor );
+
+        mCanvas .getCenterEyeInImagePlate( eyePt );
+        imagePlateToVworld .transform( eyePt );
     }
 
-    
+
     @Override
     public RenderedManifestation pickManifestation( MouseEvent e )
     {
@@ -185,16 +185,16 @@ public class Java3dRenderingViewer implements RenderingViewer
             t .printStackTrace();
         }
         Node node = pickResult == null? null : pickResult .getObject();
-        
+
         // for scenegraph.Factory approach
-//        Node node = pickResult == null? null : pickResult .getNode( PickResult.BRANCH_GROUP );
-        
+        //        Node node = pickResult == null? null : pickResult .getNode( PickResult.BRANCH_GROUP );
+
         RenderedManifestation picked = node == null? null : (RenderedManifestation) node .getUserData();
         return picked;
     }
 
     @Override
-    public void captureImage( int maxSize, RenderingViewer.ImageCapture capture )
+    public void captureImage( int maxSize, boolean withAlpha, RenderingViewer.ImageCapture capture )
     {
         if ( mCanvas .isOffScreen() )
         {
@@ -240,10 +240,10 @@ public class Java3dRenderingViewer implements RenderingViewer
             RenderedManifestation picked = (RenderedManifestation) node .getUserData();
             result .add( picked );
         }
-        
+
         // for scenegraph.Factory approach
-//        Node node = pickResult == null? null : pickResult .getNode( PickResult.BRANCH_GROUP );
-        
+        //        Node node = pickResult == null? null : pickResult .getNode( PickResult.BRANCH_GROUP );
+
         return result;
     }
 }

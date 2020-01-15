@@ -5,42 +5,34 @@ package org.vorthmann.zome.render.jogl;
 
 import java.awt.Component;
 
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLProfile;
-import javax.media.opengl.awt.GLCanvas;
-
 import org.vorthmann.j3d.J3dComponentFactory;
 
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLCanvas;
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Lights;
+import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
-import com.vzome.desktop.controller.RenderingViewer.Factory;
 
-public class JoglFactory implements Factory, J3dComponentFactory
+public class JoglFactory implements J3dComponentFactory
 {
-    public JoglFactory( Colors colors, Boolean useEmissiveColor )
-    {
-    }
+    public JoglFactory( Colors colors, Boolean useEmissiveColor ) {}
     
     @Override
-	public Component createJ3dComponent( String name )
-	{
+    public Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller )
+    {
         GLProfile glprofile = GLProfile .getDefault();
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
-        final GLCanvas glcanvas = new GLCanvas( glcapabilities );
+        glcapabilities .setDepthBits( 24 );
+        GLCanvas glcanvas = new GLCanvas( glcapabilities );
+        
+        Lights lights = controller .getSceneLighting();
+        JoglScene scene = new JoglScene( controller, lights, isSticky );
+        RenderingViewer viewer = new JoglRenderingViewer( lights, scene, glcanvas );
+
+        controller .attachViewer( viewer, scene, glcanvas );
+
         return glcanvas;
     }
-
-	@Override
-	public RenderingChanges createRenderingChanges( Lights lights, boolean isSticky )
-	{
-		return new JoglScene( lights, isSticky );
-	}
-
-	@Override
-	public RenderingViewer createRenderingViewer( RenderingChanges scene, Component canvas )
-	{
-		return new JoglRenderingViewer( (JoglScene) scene, (GLCanvas) canvas );
-	}
 }

@@ -86,8 +86,8 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     private boolean drawNormals;
 
-	private boolean drawOutlines;
-	
+    private boolean drawOutlines;
+
     private FrameLabels frameLabels = null;
 
     private IcosahedralLabels icosahedralLabels = null;
@@ -125,12 +125,12 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
             {
                 if ( "backgroundColor" .equals( chg .getPropertyName() ) )
                 {
-                	int rgb =  Integer .parseInt( (String) chg .getNewValue(), 16 );
+                    int rgb =  Integer .parseInt( (String) chg .getNewValue(), 16 );
                     Color newColor = new Color( rgb );
                     backgroundColorChanged( newColor );
                 }
             }} );
-        
+
         mFactory.getColors().addListener( new Colors.Changes()
         {
             @Override
@@ -217,46 +217,46 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         mFog.setCapability( LinearFog.ALLOW_DISTANCE_WRITE );
         mRoot.addChild( mFog );
 
-//        if ( 1 == 0 ) {
-//            // create axes
-//            Color3f red = new Color3f( 1.0f, 0.0f, 0.0f );
-//            Color3f green = new Color3f( 0.0f, 1.0f, 0.0f );
-//            Color3f blue = new Color3f( 0.0f, 0.0f, 1.0f );
-//            Color3f black = new Color3f( 0.0f, 0.0f, 0.0f );
-//
-//            // create line for X axis
-//            LineArray axisXLines = new LineArray( 2, LineArray.COORDINATES | LineArray.COLOR_3 );
-//            mRoot.addChild( new Shape3D( axisXLines ) );
-//
-//            axisXLines.setCoordinate( 0, new Point3f( - 10.0f, 0.0f, 0.0f ) );
-//            axisXLines.setCoordinate( 1, new Point3f( 10.0f, 0.0f, 0.0f ) );
-//
-//            axisXLines.setColor( 1, red );
-//            axisXLines.setColor( 0, black );
-//
-//            // create line for Y axis
-//            LineArray axisYLines = new LineArray( 2, LineArray.COORDINATES | LineArray.COLOR_3 );
-//            mRoot.addChild( new Shape3D( axisYLines ) );
-//
-//            axisYLines.setCoordinate( 0, new Point3f( 0f, - 10.0f, 0f ) );
-//            axisYLines.setCoordinate( 1, new Point3f( 0.0f, 10.0f, 0.0f ) );
-//
-//            axisYLines.setColor( 1, green );
-//            axisYLines.setColor( 0, black );
-//
-//            // create line for Z axis
-//            Point3f z1 = new Point3f( 0.0f, 0.0f, - 10.0f );
-//            Point3f z2 = new Point3f( 0.0f, 0.0f, 10.0f );
-//
-//            LineArray axisZLines = new LineArray( 2, LineArray.COORDINATES | LineArray.COLOR_3 );
-//            mRoot.addChild( new Shape3D( axisZLines ) );
-//
-//            axisZLines.setCoordinate( 0, new Point3f( 0f, 0f, - 10.0f ) );
-//            axisZLines.setCoordinate( 1, new Point3f( 0f, 0f, 10.0f ) );
-//
-//            axisZLines.setColor( 1, blue );
-//            axisZLines.setColor( 0, black );
-//        }
+        //        if ( 1 == 0 ) {
+        //            // create axes
+        //            Color3f red = new Color3f( 1.0f, 0.0f, 0.0f );
+        //            Color3f green = new Color3f( 0.0f, 1.0f, 0.0f );
+        //            Color3f blue = new Color3f( 0.0f, 0.0f, 1.0f );
+        //            Color3f black = new Color3f( 0.0f, 0.0f, 0.0f );
+        //
+        //            // create line for X axis
+        //            LineArray axisXLines = new LineArray( 2, LineArray.COORDINATES | LineArray.COLOR_3 );
+        //            mRoot.addChild( new Shape3D( axisXLines ) );
+        //
+        //            axisXLines.setCoordinate( 0, new Point3f( - 10.0f, 0.0f, 0.0f ) );
+        //            axisXLines.setCoordinate( 1, new Point3f( 10.0f, 0.0f, 0.0f ) );
+        //
+        //            axisXLines.setColor( 1, red );
+        //            axisXLines.setColor( 0, black );
+        //
+        //            // create line for Y axis
+        //            LineArray axisYLines = new LineArray( 2, LineArray.COORDINATES | LineArray.COLOR_3 );
+        //            mRoot.addChild( new Shape3D( axisYLines ) );
+        //
+        //            axisYLines.setCoordinate( 0, new Point3f( 0f, - 10.0f, 0f ) );
+        //            axisYLines.setCoordinate( 1, new Point3f( 0.0f, 10.0f, 0.0f ) );
+        //
+        //            axisYLines.setColor( 1, green );
+        //            axisYLines.setColor( 0, black );
+        //
+        //            // create line for Z axis
+        //            Point3f z1 = new Point3f( 0.0f, 0.0f, - 10.0f );
+        //            Point3f z2 = new Point3f( 0.0f, 0.0f, 10.0f );
+        //
+        //            LineArray axisZLines = new LineArray( 2, LineArray.COORDINATES | LineArray.COLOR_3 );
+        //            mRoot.addChild( new Shape3D( axisZLines ) );
+        //
+        //            axisZLines.setCoordinate( 0, new Point3f( 0f, 0f, - 10.0f ) );
+        //            axisZLines.setCoordinate( 1, new Point3f( 0f, 0f, 10.0f ) );
+        //
+        //            axisZLines.setColor( 1, blue );
+        //            axisZLines.setColor( 0, black );
+        //        }
 
         if ( controller .propertyIsTrue( "drawNormals" ) )
             propertyChange("drawNormals", true );
@@ -362,17 +362,17 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
     @Override
     public void manifestationAdded( RenderedManifestation rm )
     {
-//        int[] /* AlgebraicVector */location = rm.getManifestation().getLocation();
-//        if ( location == null )
-//            location = rm.getShape().getField().origin( 3 );
-    	    	
+        //        int[] /* AlgebraicVector */location = rm.getManifestation().getLocation();
+        //        if ( location == null )
+        //            location = rm.getShape().getField().origin( 3 );
+
         RealVector loc = rm .getLocation();
         if ( loc == null )
             loc = new RealVector( 0d, 0d, 0d );
-        
+
         Appearance appearance = mFactory .getAppearance( rm.getColor(), rm.getGlow() > 0f, rm.getTransparency() > 0f );
         Geometry geom = mFactory .makeSolidGeometry( rm );
-        
+
         if ( logger .isLoggable( Level.FINEST )
                 && rm .getManifestation() == null )
         {
@@ -380,12 +380,12 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
             String shape = ( orbit == null )? "BALL" : orbit .getName() + " strut";
             logger .finest( shape + " at " + loc );
         }
-        
+
         // if we rendering wireframe, we're using absolute coordinates
         if ( ( geom instanceof PointArray ) || ( geom instanceof LineArray ) )
-//            location = rm.getShape().getField().origin( 3 );
+            //            location = rm.getShape().getField().origin( 3 );
             loc = new RealVector( 0d, 0d, 0d );
-        
+
         Shape3D solidPolyhedron = new Shape3D( geom );
         solidPolyhedron .setCapability( Shape3D.ALLOW_APPEARANCE_WRITE );
         solidPolyhedron .setAppearance( appearance );
@@ -404,12 +404,12 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         tg.addChild( solidPolyhedron );
 
         if ( drawOutlines ) {
-        	geom = mFactory .makeOutlineGeometry( rm );
+            geom = mFactory .makeOutlineGeometry( rm );
             Shape3D outlinePolyhedron = new Shape3D( geom );
             outlinePolyhedron .setAppearance( mFactory .getOutlineAppearance() );
-        	tg .addChild( outlinePolyhedron );
+            tg .addChild( outlinePolyhedron );
         }
-        
+
         if(drawNormals && rm.getShape().isPanel()) {
             geom = mFactory .makePanelNormalGeometry( rm );
             Shape3D normalPolyhedron = new Shape3D( geom );
@@ -441,7 +441,7 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         if ( this .isSticky )
             rm.setGraphicsObject( group );
     }
-    
+
     @Override
     public void reset()
     {
@@ -479,7 +479,7 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         if ( target == null ) {
             return;
         }
-        
+
         if ( logger .isLoggable( Level.FINEST )
                 && rm .getManifestation() == null )
         {
@@ -608,26 +608,26 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
         return mFog;
     }
 
-	private void refreshPolygonOutlines() {
-		Collection<BranchGroup> bgs = new ArrayList<>();
+    private void refreshPolygonOutlines() {
+        Collection<BranchGroup> bgs = new ArrayList<>();
         for ( int i = 0; i < mScene .numChildren(); i++ ) {
             BranchGroup bg = (BranchGroup) mScene .getChild( i );
             bgs .add( bg );
         }
         for (BranchGroup branchGroup : bgs) {
             TransformGroup tg = (TransformGroup) branchGroup .getChild( 0 );
-        	Shape3D solidPoly = (Shape3D) tg .getChild( 0 );
-        	RenderedManifestation rm = (RenderedManifestation) solidPoly .getUserData();
-        	if ( rm != null ) {
-        		this .manifestationRemoved( rm );
-        		this .manifestationAdded( rm );
-        	}
-		}
-	}
+            Shape3D solidPoly = (Shape3D) tg .getChild( 0 );
+            RenderedManifestation rm = (RenderedManifestation) solidPoly .getUserData();
+            if ( rm != null ) {
+                this .manifestationRemoved( rm );
+                this .manifestationAdded( rm );
+            }
+        }
+    }
 
-	@Override
-	public void propertyChange( PropertyChangeEvent evt )
-	{
+    @Override
+    public void propertyChange( PropertyChangeEvent evt )
+    {
         propertyChange(evt.getPropertyName(), evt.getNewValue(), evt.getOldValue());
     }
 
@@ -638,36 +638,36 @@ public class Java3dSceneGraph implements RenderingChanges, PropertyChangeListene
 
     protected void propertyChange(String propertyName, Object newValue, Object oldValue) {
         switch (propertyName) {
-            case "drawNormals":
-                drawNormals = (Boolean) newValue;
-                refreshPolygonOutlines();
-                break;
+        case "drawNormals":
+            drawNormals = (Boolean) newValue;
+            refreshPolygonOutlines();
+            break;
 
-            case "drawOutlines":
-                drawOutlines = (Boolean) newValue;
-                ambientForOutlines.setEnable(drawOutlines);
-                directionalForOutlines.setEnable(drawOutlines);
-                refreshPolygonOutlines();
-                break;
+        case "drawOutlines":
+            drawOutlines = (Boolean) newValue;
+            ambientForOutlines.setEnable(drawOutlines);
+            directionalForOutlines.setEnable(drawOutlines);
+            refreshPolygonOutlines();
+            break;
 
-            case "showFrameLabels":
-                if ((Boolean) newValue) {
-                    showFrameLabels();
-                } else {
-                    hideFrameLabels();
-                }
-                break;
+        case "showFrameLabels":
+            if ((Boolean) newValue) {
+                showFrameLabels();
+            } else {
+                hideFrameLabels();
+            }
+            break;
 
-            case "showIcosahedralLabels":
-                if ((Boolean) newValue) {
-                    showIcosahedralLabels();
-                } else {
-                    hideIcosahedralLabels();
-                }
-                break;
+        case "showIcosahedralLabels":
+            if ((Boolean) newValue) {
+                showIcosahedralLabels();
+            } else {
+                hideIcosahedralLabels();
+            }
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
     }
 

@@ -81,11 +81,11 @@ public class Java3dFactory implements J3dComponentFactory
     }
 
     protected final Appearances mAppearances;
-    
+
     protected final Appearance outlines;
-    
+
     protected boolean mHasEmissiveColor;
-    
+
     protected final Map<Polyhedron, Map<AlgebraicMatrix, Geometry> > solidGeometries = new HashMap<>();
 
     protected final Map<Polyhedron, Map<AlgebraicMatrix, Geometry> > outlineGeometries = new HashMap<>();
@@ -94,7 +94,7 @@ public class Java3dFactory implements J3dComponentFactory
 
     public Java3dFactory( Colors colors, Boolean useEmissiveColor )
     {
-		mHasEmissiveColor = useEmissiveColor .booleanValue();
+        mHasEmissiveColor = useEmissiveColor .booleanValue();
         mAppearances = new Appearances( colors, mHasEmissiveColor );
         outlines = new Appearance();
         PolygonAttributes wirePa = new PolygonAttributes( PolygonAttributes.POLYGON_LINE, PolygonAttributes.CULL_BACK, -10f );
@@ -103,7 +103,7 @@ public class Java3dFactory implements J3dComponentFactory
         outlines .setLineAttributes( lineAtts );
         outlines .setColoringAttributes( new ColoringAttributes( new Color3f( Color.BLACK ), ColoringAttributes .SHADE_FLAT ) );
     }
-    
+
     Colors getColors()
     {
         return mAppearances .getColors();
@@ -113,12 +113,12 @@ public class Java3dFactory implements J3dComponentFactory
     {
         return mAppearances .getAppearance( color, glowing, transparent );
     }
-    
+
     Appearance getOutlineAppearance()
     {
         return this .outlines;
     }
-    
+
     Appearance getPanelNormalAppearance()
     {
         // for now, use the same appearance as for outlines
@@ -167,10 +167,10 @@ public class Java3dFactory implements J3dComponentFactory
 
         strips .setCoordinate( 0, new Point3d( v0.x, v0.y, v0.z ) );
         strips .setCoordinate( 1, new Point3d( v1.x, v1.y, v1.z ) );
-        
+
         strips .setCoordinateIndex(0, 0);
         strips .setCoordinateIndex(1, 1);
-        
+
         return strips;
     }
 
@@ -224,59 +224,59 @@ public class Java3dFactory implements J3dComponentFactory
 
             // map is null when shape is a panel
             if ( map != null )
-            	map .put( matrix, geom );
+                map .put( matrix, geom );
         }
 
         return geom;
     }
-    
+
     Geometry makeOutlineGeometry( RenderedManifestation rm )
     {
-    	Polyhedron poly = rm .getShape();
+        Polyhedron poly = rm .getShape();
         Map<AlgebraicMatrix, Geometry> map = null;
-    	if ( ! poly .isPanel() )
-    	{
-    		// Panels are all unique shapes, so there is no point in caching the geometries,
-    		//   and it causes trouble for embeddings, since panel shapes don't change, but
-    		//   their embedded rendering must.
-    		
+        if ( ! poly .isPanel() )
+        {
+            // Panels are all unique shapes, so there is no point in caching the geometries,
+            //   and it causes trouble for embeddings, since panel shapes don't change, but
+            //   their embedded rendering must.
+
             map = outlineGeometries .get( poly );
             if ( map == null ){
                 map = new HashMap<>();
                 outlineGeometries .put( poly, map );
             }
-    	}
+        }
         return makeOutlineGeometry( map, poly, rm .getOrientation(), rm .getEmbedding() );
     }
 
     Geometry makeSolidGeometry( RenderedManifestation rm )
     {
-    	Polyhedron poly = rm .getShape();
-    	Map<AlgebraicMatrix, Geometry> map = null;
-    	if ( ! poly .isPanel() )
-    	{
-    		// Panels are all unique shapes, so there is no point in caching the geometries,
-    		//   and it causes trouble for embeddings, since panel shapes don't change, but
-    		//   their embedded rendering must.
-    		
+        Polyhedron poly = rm .getShape();
+        Map<AlgebraicMatrix, Geometry> map = null;
+        if ( ! poly .isPanel() )
+        {
+            // Panels are all unique shapes, so there is no point in caching the geometries,
+            //   and it causes trouble for embeddings, since panel shapes don't change, but
+            //   their embedded rendering must.
+
             map = solidGeometries .get( poly );
             if ( map == null ){
                 map = new HashMap<>();
                 solidGeometries .put( poly, map );
             }
-    	}
+        }
         return makeGeometry( map, poly, rm .getOrientation(), true, rm .getEmbedding() );
     }
 
     Geometry makeGeometry( Map<AlgebraicMatrix, Geometry> map, Polyhedron poly, AlgebraicMatrix matrix, boolean makeNormals, Embedding embedding )
     {
-    	// map is null when poly is a panel... see above
+        // map is null when poly is a panel... see above
         Geometry geom = ( map == null )? null : map .get( matrix );
 
         if ( geom == null ) {
 
-    		if ( logger .isLoggable( Level.FINE ) )
-    			logger .fine( "creating geometry for " + poly + " and " + matrix );
+            if ( logger .isLoggable( Level.FINE ) )
+                logger .fine( "creating geometry for " + poly + " and " + matrix );
 
             List<AlgebraicVector> vertices = poly .getVertexList();
             Point3d[] coords = new Point3d [ vertices .size() ];
@@ -310,33 +310,33 @@ public class Java3dFactory implements J3dComponentFactory
                     indices[i++] = index;
                 }
             }
-        
+
             GeometryInfo gi = new GeometryInfo( GeometryInfo .POLYGON_ARRAY );
             gi .setCoordinates( coords );
             gi .setCoordinateIndices( indices );
             gi .setStripCounts( stripCounts );
             gi .setContourCounts( contourCounts );
-            
-//          gi .convertToIndexedTriangles();
-            
+
+            //          gi .convertToIndexedTriangles();
+
             if ( makeNormals ) {
-            	NormalGenerator ng = new NormalGenerator();
-            	// zero crease angle means always make creases, no matter how close the normals are
-            	ng .setCreaseAngle( (float) Math .toRadians( 0 ) );
-            	ng .generateNormals( gi );
-                
+                NormalGenerator ng = new NormalGenerator();
+                // zero crease angle means always make creases, no matter how close the normals are
+                ng .setCreaseAngle( (float) Math .toRadians( 0 ) );
+                ng .generateNormals( gi );
+
                 // stripify
                 Stripifier st = new Stripifier();
                 st.stripify( gi );
             }
-            
+
             geom = gi .getGeometryArray();
             if ( makeNormals )
                 geom .setCapability( Geometry.ALLOW_INTERSECT );
 
             // map is null when shape is a panel
             if ( map != null )
-            	map .put( matrix, geom );
+                map .put( matrix, geom );
         }
 
         return geom;

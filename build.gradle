@@ -1,7 +1,7 @@
 
 
 group = 'com.vzome'
-version = '6.0'
+version = '7.0'
 
 wrapper() {
    // Note that gradle version 6.0.1 can't find java3d in the ivy repository.
