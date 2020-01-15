@@ -250,7 +250,15 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public void captureImage( int maxSize, boolean withAlpha, ImageCapture capture )
     {
-        // Key parts of this copied from TestGLOffscreenAutoDrawableBug1044AWT in the Github jogl repo
+        // Key parts of this copied from TestGLOffscreenAutoDrawableBug1044AWT in the Github jogl repo,
+        //   now modified with changes to fix the capture on Windows, thanks to David Hall.
+        
+        int imageWidth = this .width;
+        int imageHeight = this .height;
+        if ( maxSize > 0 ) {
+            imageWidth = maxSize;
+            imageHeight = imageWidth * 4 / 5;
+        }
         
         GLProfile glprofile = GLProfile .getDefault();
         final GLDrawableFactory fac = GLDrawableFactory .getFactory( glprofile );
@@ -258,7 +266,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         glcapabilities .setDepthBits( 32 );
         // Without line below, there is an error on Windows.
         glcapabilities .setDoubleBuffered( false );
-        final GLOffscreenAutoDrawable drawable = fac.createOffscreenAutoDrawable( null, glcapabilities, null, this.width, this.height );
+        final GLOffscreenAutoDrawable drawable = fac.createOffscreenAutoDrawable( null, glcapabilities, null, imageWidth, imageHeight );
         drawable.display();
         final GLContext context = drawable .getContext();
         context .makeCurrent();
