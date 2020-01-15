@@ -72,8 +72,9 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
                     "   int orientation = int( max( 0, min( 59, floor(orientationAndGlow) ) ) );\n" + 
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Vertex );\n" + 
                     "   vec4 normal = ( u_Orientations[ orientation ] * vec4( a_Normal, 0.0 ) );\n" + 
-                    "   v_Vertex = oriented + location;\n" + 
-                    "   gl_Position = (u_ProjMatrix * u_MVMatrix) * v_Vertex;\n" + 
+                    "   vec4 world = oriented + location;\n" + 
+                    "   v_Vertex = u_MVMatrix * world;\n" + 
+                    "   gl_Position = u_ProjMatrix * v_Vertex;\n" + 
                     "\n" + 
                     "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * normal ) );\n" + 
                     "   vec3 linearColor = vec3( fract(orientationAndGlow) );\n" + 

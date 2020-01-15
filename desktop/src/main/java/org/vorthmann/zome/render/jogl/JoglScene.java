@@ -58,6 +58,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
             float[] rgba = new float[4];
             this .bkgdColor .getRGBColorComponents( rgba );
             solids .clear( rgba );
+            outlines .clear( rgba ); // should not really clear
 
             for ( SymmetryRendering symmetry : this .symmetries .values() ) {
                 // Just render them all; no harm in mixing, and little cost for empty ones
