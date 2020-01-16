@@ -5,6 +5,7 @@ package org.vorthmann.zome.render.jogl;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,13 +61,24 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
             solids .clear( rgba );
             outlines .clear( rgba ); // should not really clear
 
-            for ( SymmetryRendering symmetry : this .symmetries .values() ) {
-                // Just render them all; no harm in mixing, and little cost for empty ones
-                solids .renderSymmetry( symmetry );
-                if ( this .drawOutlines )
-                    outlines .renderSymmetry( symmetry );
+            try {
+                for (SymmetryRendering symmetry : this.symmetries.values()) {
+                    // Just render them all; no harm in mixing, and little cost for empty ones
+                    solids.renderSymmetry(symmetry);
+                    if (this.drawOutlines)
+                        outlines.renderSymmetry(symmetry);
+                }
+                --this.forceRender;
+            } catch (ConcurrentModificationException ex) {
+                // Rather than synchronizing these collections, just bail out
+                // of the rendering loop if a ConcurrentModificationException happens.
+                // Subsequent renderings will resolve any visual defect.
+                this.forceRender();
+                // log to stdErr for now, so we have an idea how often it happens
+                System.err.println("Ignoring ConcurrentModificationException on thread: " 
+                        + Thread.currentThread().toString());
+                ex.printStackTrace();
             }
-            -- this .forceRender;
         }
     }
 
