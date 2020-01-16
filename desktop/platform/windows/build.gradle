@@ -30,7 +30,7 @@ ext.copyright = "Copyright ${Calendar.getInstance().get(Calendar.YEAR)}, ${compa
 
 ext.l4jCmdPath = project.hasProperty( 'l4jCmdPath' ) ? project.getProperty( 'l4jCmdPath' ) : 'launch4j' // default requires launch4j on the path
 ext.l4jxmlFileName = 'launch4j.xml'
-ext.l4jOutputBaseFileName = "${rootProject.appName}-Windows-x64-${version}b${rootProject.buildNumber}"
+ext.l4jOutputBaseFileName = "${rootProject.appName}-Windows-x64-${version}.${rootProject.buildNumber}"
 def folderName = "${l4jOutputBaseFileName}"
 ext.l4jOutputDir = "launch4j/${folderName}"  // path is relative to buildDir
 ext.bundledJrePath = './jre/'               // path is relative to launch4j.outputDir and must start with '.'

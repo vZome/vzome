@@ -42,7 +42,7 @@ jvmArgs.each { entry ->
 }
 
 // for application distZip task
-distZip.archiveName = "${rootProject.appName}-Linux-${rootProject.version}b${rootProject.buildNumber}.zip"
+distZip.archiveName = "${rootProject.appName}-Linux-${rootProject.version}.${rootProject.buildNumber}.zip"
 
 // for application startScripts task
 startScripts.applicationName="${rootProject.appName}-${rootProject.version}"
