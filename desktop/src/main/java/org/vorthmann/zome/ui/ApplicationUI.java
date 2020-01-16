@@ -110,7 +110,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
                 // 
                 // SV: I've reversed the %u and %g, so that sorting by name puts related logs together, in order.  The Finder / Explorer already
                 //   knows how to sort by date, so we don't need to support that.
-                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome60_%u_%g.log", 500000, 10);
+                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome7.0_%u_%g.log", 500000, 10);
             } catch (Exception e1) {
                 rootLogger.log(Level.WARNING, "unable to set up vZome file log handler", e1);
                 try {
