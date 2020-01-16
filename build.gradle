@@ -12,7 +12,7 @@ wrapper() {
 }
 
 // these environment variables are available during a Jenkins build
-ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'SNAPSHOT'
+ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'dev'
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 ext.appName = 'vZome'
 ext.edition = appName

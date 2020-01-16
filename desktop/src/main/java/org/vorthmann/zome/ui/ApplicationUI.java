@@ -517,7 +517,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
     public void about()
     {
-        String version = mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + ", build "
+        String version = mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + "."
                 + mController .getProperty( "buildNumber" );
         if ( mController .userHasEntitlement( "developer.extras" ) )
             version += "\n\nGit commit: " + mController .getProperty( "gitCommit" )

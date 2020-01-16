@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Shapes;
 import com.vzome.desktop.controller.RenderingViewer;
 
 class RemoteClientRendering implements RenderingChanges, RenderingViewer, PropertyChangeListener
@@ -70,9 +71,6 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	}
 
 	@Override
-	public void captureImage(int maxSize, ImageCapture capture) {}
-
-	@Override
 	public void reset() {}
 
 	@Override
@@ -121,4 +119,14 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 
 	@Override
 	public void propertyChange( PropertyChangeEvent chg ) {}
+
+    @Override
+    public void captureImage(int maxSize, boolean withAlpha, ImageCapture capture) {}
+
+    @Override
+    public boolean shapesChanged( Shapes shapes )
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }
