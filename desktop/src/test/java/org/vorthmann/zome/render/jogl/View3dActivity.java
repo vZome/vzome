@@ -168,7 +168,7 @@ public class View3dActivity implements GLEventListener
         System.out.println( "ray.orig = " + ray.orig[0] + " " + ray.orig[1] + " " + ray.orig[2]  );
         System.out.println( "ray.dir = " + ray.dir[0] + " " + ray.dir[1] + " " + ray.dir[2]  );
 
-        this .scene .pick( new ShapeAndInstances.Intersector()
+        this .scene .pick( new ShapeAndInstances.Intersector() // only ball picking is implemented
         {
             @Override
             public void intersectAABBox( float[] min, float[] max, RenderedManifestation rm )
@@ -192,7 +192,10 @@ public class View3dActivity implements GLEventListener
             }
 
             @Override
-            public void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm ) {} // only matters for panels
+            public void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale, float[] orientation, float[] loc ) {} // only matters for panels
+
+            @Override
+            public void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale ) {}
         });
         this .scene .refresh();
     }
