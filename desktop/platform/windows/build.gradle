@@ -90,7 +90,7 @@ def logInfo(msg) {
     getLogger().info msg
 }
 
-task cleanJre {
+task cleanJre(type: Delete) {
     outputs.upToDateWhen {
         return !( new File(project.jreDistributionPath).exists() );
     }
@@ -104,7 +104,7 @@ task cleanJre {
 // This dependency is not really needed as long as jreDistributionPath is under $BuildDir but it doesn't hurt.
 clean.dependsOn cleanJre
 
-task cleanDistributions {
+task cleanDistributions(type: Delete) {
     def folder = "${buildDir}/distributions"
     outputs.upToDateWhen {
         return !( new File(folder).exists() );
