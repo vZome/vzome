@@ -24,8 +24,10 @@ public class ShapeAndInstances implements InstancedGeometry
     public interface Intersector
     {
         void intersectAABBox( float[] min, float[] max, RenderedManifestation rm );
-    
-        void intersectTriangle(float[] verticesArray, int i, RenderedManifestation rm);
+        
+        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale );
+        
+        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale, float[] orientation, float[] location );
     }
 
     private FloatBuffer verticesBuffer, normalsBuffer, lineVerticesBuffer, positionsBuffer, colorsBuffer;
@@ -249,7 +251,7 @@ public class ShapeAndInstances implements InstancedGeometry
     private static final float[] MIN = new float[] { -HW, -HW, -HW };
     private static final float[] MAX = new float[] { HW, HW, HW };
 
-    public void pick( Intersector intersector )
+    public void pick( Intersector intersector, float[][] orientations )
     {
         if ( this .shape .isPanel() && ! this .instances .isEmpty() ) {
             // A panel shape has only a single instance, for now
@@ -259,11 +261,20 @@ public class ShapeAndInstances implements InstancedGeometry
             // We just intersect the triangles of one of the two polygons.
             int triangles = this .vertexCount / 6;
             for ( int i = 0; i < triangles; i++ ) {
-                intersector .intersectTriangle( this .verticesArray, i * 9, rm );
+                intersector .intersectTriangle( this .verticesArray, i * 9, rm, 1f / this .globalScale );
             }
         }
         else if ( this .shape .getOrbit() != null ) {
-            // a strut
+            // a strut shape
+            for ( RenderedManifestation rm : instances ) {
+                float[] orientation = orientations [ rm .getStrutZone() ];
+                float[] location = new float[3];
+                rm .getLocation() .addTo( location, location );
+                int triangles = this .vertexCount / 3 ;
+                for ( int i = 0; i < triangles; i++ ) {
+                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, 1f / this .globalScale, orientation, location );
+                }
+            }
         }
         else {
             // a ball; an AABBox works OK
