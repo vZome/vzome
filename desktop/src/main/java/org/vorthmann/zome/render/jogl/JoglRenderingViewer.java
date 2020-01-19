@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 import javax.vecmath.Matrix4d;
-import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
 import com.jogamp.opengl.GL2;
@@ -24,6 +23,8 @@ import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
+import com.vzome.core.math.Line;
+import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
@@ -210,24 +211,37 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public RenderedManifestation pickManifestation( MouseEvent e )
     {
-        int mouseX = e .getX();
-        int mouseY = e .getY();
-        Component canvas = e .getComponent();
-        
-        Ray ray = new Ray();
-        FloatUtil .mapWinToRay(
-                mouseX, canvas .getHeight() - mouseY - 1, 0.1f, 0.3f,
-                this.modelView, 0,
-                this.projection, 0,
-                new int[] { 0, 0, canvas .getWidth(), canvas .getHeight() }, 0,
-                ray,
-                new float[16], new float[16], new float[4] );
+        Line ray = this .pickRay( e );
 
         // The scene will loop over all RMs.  Rendered balls will support the RM.isHit(intersector)
-        //   method.  We try to sort the hits as we go.
+        //   method.  We sort the hits as we go.
         NearestPicker picker = new NearestPicker( ray, this .modelView, this .projection );
         this .scene .pick( picker );
         return picker .getNearest();
+    }
+
+    /* (non-Javadoc)
+     * @see com.vzome.desktop.controller.RenderingViewer#pickRay(java.awt.event.MouseEvent, com.vzome.core.math.RealVector, com.vzome.core.math.RealVector)
+     */
+    @Override
+    public Line pickRay( MouseEvent e )
+    {
+        Component canvas = e .getComponent();
+        int width = canvas .getWidth();
+        int height = canvas .getHeight();
+        int mouseX = e .getX();
+        int mouseY = e .getY();
+        
+        Ray ray = new Ray();
+        FloatUtil .mapWinToRay(
+                mouseX, height - mouseY - 1, 0.1f, 0.3f,
+                this.modelView, 0,
+                this.projection, 0,
+                new int[] { 0, 0, width, height }, 0,
+                ray,
+                new float[16], new float[16], new float[4] );
+        
+        return new Line( new RealVector( ray.orig[0], ray.orig[1], ray.orig[2] ), new RealVector( ray.dir[0], ray.dir[1], ray.dir[2] ) );
     }
     
     @Override
@@ -235,13 +249,6 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public void pickPoint( MouseEvent e, Point3d imagePt, Point3d eyePt )
-    {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
