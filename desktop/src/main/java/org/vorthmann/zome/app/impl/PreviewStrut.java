@@ -207,8 +207,8 @@ public class PreviewStrut implements PropertyChangeListener
     {
         if ( usingWorkingPlane() )
         {
-            if ( this .point == null ) {
-                System.out.println( "no point!!!" );
+            if ( this .point == null && logger .isLoggable( Level.SEVERE ) ) {
+                logger .severe( "No point during workingPlaneDrag!" );
                 return;
             }
             RealVector planeIntersection = this .intersectWorkingPlane( ray );
@@ -222,17 +222,17 @@ public class PreviewStrut implements PropertyChangeListener
     
     private RealVector intersectWorkingPlane( Line ray )
     {
+        RealVector s = ray .getOrigin();
+        RealVector t = s .plus( ray .getDirection() );  // we need two points on the line
+
         // This line-plane intersection comes right out of Vince, GA4CG, p. 196,
         // but I had to derive the general forms for the products.
         
-        RealVector s = ray .getOrigin();
-        RealVector t = s .plus( ray .getDirection() );
-
-        // s ^ t = l
+        // The line l is encoded in the outer product s ^ t, a bivector.
         double e12 = s.x * t.y - t.x * s.y;
         double e23 = s.y * t.z - t.y * s.z;
         double e31 = s.z * t.x - t.z * s.x;
-        double e10 = s.x - t.x; // homogeneous 3-vectors have 4th coord == 1
+        double e10 = s.x - t.x; // homogeneous 3-vectors have 4th coord == 1, what would be t.w and s.w
         double e20 = s.y - t.y;
         double e30 = s.z - t.z;
 
@@ -242,6 +242,7 @@ public class PreviewStrut implements PropertyChangeListener
         double x_e3 = - workingPlaneDual[ 1 ] * e31 - workingPlaneDual[ 0 ] * e30 + workingPlaneDual[ 2 ] * e23;
         double x_e0 = workingPlaneDual[ 1 ] * e10 + workingPlaneDual[ 2 ] * e20 + workingPlaneDual[ 3 ] * e30;
         
+        // Convert from homogeneous to normal 3D coordinates
         return new RealVector( x_e1 / x_e0, x_e2 / x_e0, x_e3 / x_e0 );
     }
 }

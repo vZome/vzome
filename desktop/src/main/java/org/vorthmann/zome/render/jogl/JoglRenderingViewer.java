@@ -232,14 +232,21 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         int mouseX = e .getX();
         int mouseY = e .getY();
         
+        // I wasted a lot of time here looking at the Java3d implementation, which had a bug.
+        //  Furthermore, it was based on the Java3d notion of "image plate" coordinates, which
+        //  are hard to understand in terms of OpenGL, at least from the documentation I could
+        //  find.  I'm very happy to be rid of Java3d.
+        
         Ray ray = new Ray();
         FloatUtil .mapWinToRay(
-                mouseX, height - mouseY - 1, 0.1f, 0.3f,
+                mouseX, height - mouseY, 0f, 1f,  // Y is reversed from AWT to GL.  Z must be zero or very small.
                 this.modelView, 0,
                 this.projection, 0,
                 new int[] { 0, 0, width, height }, 0,
                 ray,
                 new float[16], new float[16], new float[4] );
+        
+        // Ray is expressed in world coordinates.
         
         return new Line( new RealVector( ray.orig[0], ray.orig[1], ray.orig[2] ), new RealVector( ray.dir[0], ray.dir[1], ray.dir[2] ) );
     }
