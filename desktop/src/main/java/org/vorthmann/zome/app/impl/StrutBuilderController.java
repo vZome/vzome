@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
-import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
 
 import org.vorthmann.j3d.CanvasTool;
@@ -20,6 +19,7 @@ import org.vorthmann.ui.LeftMouseDragAdapter;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
+import com.vzome.core.math.Line;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.render.RenderingChanges;
@@ -176,7 +176,7 @@ public class StrutBuilderController extends DefaultController implements CanvasT
                 if ( target instanceof Connector )
                 {
                     mErrors .clearError();
-                    Point point = (Point) target .getConstructions() .next();
+                    Point point = (Point) target .getFirstConstruction();
                     AlgebraicVector workingPlaneNormal = null;
                     if ( useWorkingPlane && (workingPlaneAxis != null ) )
                         workingPlaneNormal = workingPlaneAxis;
@@ -207,10 +207,8 @@ public class StrutBuilderController extends DefaultController implements CanvasT
             @Override
             public void mouseDragged( MouseEvent e )
             {
-                Point3d imagePt = new Point3d();
-                Point3d eyePt = new Point3d();
-                viewer .pickPoint( e, imagePt, eyePt );
-                previewStrut .workingPlaneDrag( imagePt, eyePt );
+                Line ray = viewer .pickRay( e );
+                previewStrut .workingPlaneDrag( ray );
             }
         } );
     }

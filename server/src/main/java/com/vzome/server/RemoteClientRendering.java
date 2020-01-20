@@ -6,10 +6,10 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 
 import javax.vecmath.Matrix4d;
-import javax.vecmath.Point3d;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vzome.core.math.Line;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
@@ -62,7 +62,10 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	}
 
 	@Override
-	public void pickPoint(MouseEvent e, Point3d imagePt, Point3d eyePt) {}
+	public Line pickRay( MouseEvent e )
+	{
+	    return null;
+	}
 
 	@Override
 	public RenderingChanges getRenderingChanges()
