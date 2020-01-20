@@ -161,4 +161,11 @@ public class RealVector
         sum[ 1 ] = (float) (addend[ 1 ] + this.y);
         sum[ 2 ] = (float) (addend[ 2 ] + this.z);
     }
+
+    public void toArray( float[] output )
+    {
+        output[ 0 ] = (float) this.x;
+        output[ 1 ] = (float) this.y;
+        output[ 2 ] = (float) this.z;
+    }
 }
