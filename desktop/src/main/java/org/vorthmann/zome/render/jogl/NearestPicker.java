@@ -55,20 +55,30 @@ class NearestPicker implements ShapeAndInstances.Intersector
 
     @Override
     public void intersectTriangle( float[] verticesArray, int offset, RenderedManifestation rm, float scale, float[] orientation, float[] location )
-    {
+    {        
         // Incoming verticesArray is an array larger than 9, and the three vertices are stored in order.
-        // We have to put them into a 4x4 matrix in order to orient them all at once.
-        // Then we add the location and put them back into a 9-element array, vertices3x3.
-        
-        for ( int i = 0; i < 3; i++ ) { // ith column
-            for ( int j = 0; j < 3; j++ ) { // jth row
-                this .verticesIn[ 4*i + j ] = verticesArray[ offset + 3*i + j ];
+
+        if ( orientation == null ) {
+            for ( int i = 0; i < 3; i++ ) {
+                for ( int j = 0; j < 3; j++ ) {
+                    this .vertices3x3[ 3*i + j ] = verticesArray[ offset + 3*i + j ] * scale + location[ j ];
+                }
             }
         }
-        FloatUtil .multMatrix( orientation, this .verticesIn, this .verticesOut );
-        for ( int i = 0; i < 3; i++ ) {
-            for ( int j = 0; j < 3; j++ ) {
-                this .vertices3x3[ 3*i + j ] = this .verticesOut[ 4*i + j ] * scale + location[ j ];
+        else {
+            // If we have an orientation, we have to put them into a 4x4 matrix in order to orient them all at once.
+            // Then we add the location and put them back into a 9-element array, vertices3x3.
+
+            for ( int i = 0; i < 3; i++ ) { // ith column
+                for ( int j = 0; j < 3; j++ ) { // jth row
+                    this .verticesIn[ 4*i + j ] = verticesArray[ offset + 3*i + j ];
+                }
+            }
+            FloatUtil .multMatrix( orientation, this .verticesIn, this .verticesOut );
+            for ( int i = 0; i < 3; i++ ) {
+                for ( int j = 0; j < 3; j++ ) {
+                    this .vertices3x3[ 3*i + j ] = this .verticesOut[ 4*i + j ] * scale + location[ j ];
+                }
             }
         }
         intersectTriangle( this .vertices3x3, 0, rm, 1f );

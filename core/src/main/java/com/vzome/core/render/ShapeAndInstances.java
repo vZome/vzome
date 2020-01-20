@@ -247,10 +247,6 @@ public class ShapeAndInstances implements InstancedGeometry
         this .hasChanges = true;
     }
     
-    private static final float HW = 0.5f;
-    private static final float[] MIN = new float[] { -HW, -HW, -HW };
-    private static final float[] MAX = new float[] { HW, HW, HW };
-
     public void pick( Intersector intersector, float[][] orientations )
     {
         if ( this .shape .isPanel() && ! this .instances .isEmpty() ) {
@@ -277,15 +273,14 @@ public class ShapeAndInstances implements InstancedGeometry
             }
         }
         else {
-            // a ball; an AABBox works OK
-            float[] min = new float[3];
-            float[] max = new float[3];
+            // a ball shape
             for ( RenderedManifestation rm : instances ) {
-                // use AABBox to intersect, for a connector
-                RealVector loc = rm .getLocation();
-                loc .addTo( MIN, min ); // avoid RealVector creation, for speed
-                loc .addTo( MAX, max );
-                intersector .intersectAABBox( min, max, rm );
+                float[] location = new float[3];
+                rm .getLocation() .addTo( location, location );
+                int triangles = this .vertexCount / 3 ;
+                for ( int i = 0; i < triangles; i++ ) {
+                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, 1f / this .globalScale, null, location );
+                }
             }
         }
     }
