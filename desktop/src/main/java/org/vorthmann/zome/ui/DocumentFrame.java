@@ -890,6 +890,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			break;
 
 		case "has.pages":
+		    // lessonPanel is necessary for thumbnails to render when loading a file
+		    createLessonPanel();
             if ( articleButton != null )
             {
                 boolean enable = e .getNewValue() .toString() .equals( "true" );
