@@ -57,7 +57,6 @@ public class DefaultFieldApplication implements FieldApplication
 
 	public DefaultFieldApplication( AlgebraicField field )
 	{
-		super();
 		this .field = field;
 	}
 
@@ -110,10 +109,12 @@ public class DefaultFieldApplication implements FieldApplication
 	@Override
 	public void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools )
 	{
-	    // Any SymmetryTool factory here is good enough
+	    // These symm parameters can be null since it will be overwritten by SymmetryTool.setXmlAttributes()
+        // Any SymmetryTool factory here is good enough
 	    toolFactories .put( "SymmetryTool", new OctahedralToolFactory( tools, null ) );
 	    toolFactories .put( "RotationTool", new RotationTool.Factory( tools, null ) );
 	    toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, null ) );
+	    
 	    toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
 	    toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
         toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
