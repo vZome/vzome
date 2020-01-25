@@ -291,6 +291,9 @@ public class GoldenFieldApplication extends DefaultFieldApplication
         IcosahedralSymmetry symm = (IcosahedralSymmetry) icosahedralPerspective .getSymmetry();
         // symm matters for this one, since it is final in the tool
         toolFactories .put( "AxialStretchTool", new AxialStretchTool.Factory( tools, symm, false, false, false ) );
+
+        // this one has to replace the same-named factory in the base class
+        toolFactories .put( "SymmetryTool", new IcosahedralToolFactory( tools, symm ) );
     }
 
     private CommandUniformH4Polytope h4Builder = null;
