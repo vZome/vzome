@@ -610,7 +610,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
                 }
             }
 
-            // This has to before any of the tools are defined, in mHistory .synchronize() below
+            // This has to be done before any of the tools are defined, in mHistory .synchronize() below
             Element toolsXml = (Element) mXML .getElementsByTagName( "Tools" ) .item( 0 );
             if ( toolsXml != null )
                 this .tools .loadFromXml( toolsXml );
