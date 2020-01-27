@@ -215,6 +215,12 @@ public class SnubDodecField extends AlgebraicField
     }
 
     @Override
+    public AlgebraicNumber getGoldenRatio()
+    {
+        return getUnitTerm(1);
+    }
+    
+    @Override
     public String getIrrational( int which, int format )
     {
         if ( format == DEFAULT_FORMAT )

@@ -77,6 +77,12 @@ public final class PentagonField extends AlgebraicField
     }
 
     @Override
+    public AlgebraicNumber getGoldenRatio()
+    {
+        return getUnitTerm(1);
+    }
+
+    @Override
     public String getIrrational( int which )
     {
         return this .getIrrational( which, DEFAULT_FORMAT );
