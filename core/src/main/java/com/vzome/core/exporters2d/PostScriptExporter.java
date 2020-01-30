@@ -74,7 +74,7 @@ public class PostScriptExporter extends SnapshotExporter {
 	    if ( strokeWidth > 0 )
             output .print( strokeWidth + " setlinewidth 1 setlinejoin\n" );
         RGB_FORMAT .setMaximumFractionDigits( 3 );
-        XY_FORMAT .setMaximumFractionDigits( 2 );
+        XY_FORMAT .setMaximumFractionDigits( 3 );
 	}
 	
     @Override
