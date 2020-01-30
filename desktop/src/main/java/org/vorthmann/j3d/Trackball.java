@@ -58,6 +58,11 @@ public abstract class Trackball extends MouseToolDefault {
         mSpeed = speed * Math .PI / (double) 180;
     }
 
+    protected double getSpeed()
+    {
+        return mSpeed;
+    }
+
     public void setModal( boolean value )
     {
         mModal = value;    
@@ -84,7 +89,7 @@ public abstract class Trackball extends MouseToolDefault {
             trackballRolled( e );
     }
 
-    private  void trackballRolled( MouseEvent e )
+    private void trackballRolled( MouseEvent e )
     {
         // get the new coordinates
         int newX = e .getX();
@@ -95,11 +100,13 @@ public abstract class Trackball extends MouseToolDefault {
         // set the old values
         oldX = newX;
         oldY = newY;
+        
+        double relativeSpeed = this .getSpeed(); // this lets a subclass modify speed dynamically
 
-        double radians = ((double) angleY) * mSpeed;
+        double radians = ((double) angleY) * relativeSpeed;
         AxisAngle4d yAngle = new AxisAngle4d( new Vector3d( 1d, 0d, 0d ), radians );
 
-        radians = ((double) angleX) * mSpeed;
+        radians = ((double) angleX) * relativeSpeed;
         AxisAngle4d xAngle = new AxisAngle4d( new Vector3d( 0d, 1d, 0d ), radians );
 
 		Matrix4d x = new Matrix4d();

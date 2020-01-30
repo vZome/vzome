@@ -43,7 +43,7 @@ sourceSets.main.output.resourcesDir 'build/resources'
 
 // for the 'macappbundle' Gradle plugin
 macAppBundle {
-    appName = "${->project.appName}-${->project.version}b${->project.buildNumber}"
+    appName = "${->project.appName}-${->project.version}.${->project.buildNumber}"
     dmgName = "${appName}-MacOSX"
     volumeName = "${dmgName}-build-${->project.buildNumber}"
     delegate.mainClassName = 'com.vzome.platform.mac.Adapter'

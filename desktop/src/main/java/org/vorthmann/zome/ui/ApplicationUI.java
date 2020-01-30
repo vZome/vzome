@@ -14,7 +14,6 @@ import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -98,7 +97,9 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         if (fh == null) {
             Path logsFolder = Platform.logsFolder();
             try {
-                Files .createDirectory( logsFolder );
+                if(! Files.exists(logsFolder)) {
+                    Files .createDirectory( logsFolder );
+                }
                 // If there is a log file naming conflict and no "%u" field has been specified, 
                 //  an incremental unique number will be added at the end of the filename after a dot.
                 // This behavior interferes with file associations based on the .log file extension.
@@ -109,8 +110,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
                 // 
                 // SV: I've reversed the %u and %g, so that sorting by name puts related logs together, in order.  The Finder / Explorer already
                 //   knows how to sort by date, so we don't need to support that.
-                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome60_%u_%g.log", 500000, 10);
-            } catch (FileAlreadyExistsException e1) {
+                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome7.0_%u_%g.log", 500000, 10);
             } catch (Exception e1) {
                 rootLogger.log(Level.WARNING, "unable to set up vZome file log handler", e1);
                 try {
@@ -124,6 +124,18 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
                 rootLogger.addHandler(fh);
             }
         }
+        // The following reflection code generates a warning in Java 11 so I'm omitting it, 
+        // but still leaving it here so it can be uncommented for debugging
+//        if(fh != null) {
+//            try {
+//                Field privateFilesField = fh.getClass().getDeclaredField("files");
+//                privateFilesField.setAccessible(true);
+//                File[] files = (File[]) privateFilesField.get(fh);
+//                System.out.println("Log file " + files[0].getCanonicalPath());
+//            } catch(Exception ex) {
+//                ex.printStackTrace();
+//            }
+//        }
     }
 
     private static ApplicationUI theUI;
@@ -170,7 +182,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
          */
 
         SplashScreen splash = null;
-        String splashImage = "org/vorthmann/zome/ui/vZome-6-splash.png";
+        String splashImage = "org/vorthmann/zome/ui/vZome-7-splash.png";
         splash = new SplashScreen( splashImage );
         splash .splash();
         logger .info( "splash screen displayed" );
@@ -505,21 +517,44 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
     public void about()
     {
-        String version = mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + ", build "
+        String version = mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + "."
                 + mController .getProperty( "buildNumber" );
         if ( mController .userHasEntitlement( "developer.extras" ) )
             version += "\n\nGit commit: " + mController .getProperty( "gitCommit" )
             + "\n\nvzome-core: " + mController .getProperty( "coreVersion" );
         JOptionPane.showMessageDialog( null, version + "\n\n"
 
-                + "Contributors:\n\n" + "Scott Vorthmann\n" + "David Hall\n" + "\n"
+                + "Committers:\n\n" 
+                + "Scott Vorthmann\n" 
+                + "David Hall\n" + "\n"
 
-                + "Acknowledgements:\n\n" + "Paul Hildebrandt\n" + "Marc Pelletier\n"
-                + "David Richter\n" + "Brian Hall\n" + "Dan Duddy\n" + "Fabien Vienne\n" + "George Hart\n"
-                + "Edmund Harriss\n" + "Corrado Falcolini\n" + "Ezra Bradford\n" + "Chris Kling\n" + "Samuel Verbiese\n" + "Walt Venable\n"
-                + "Will Ackel\n" + "Tom Darrow\n" + "Sam Vandervelde\n" + "Henri Picciotto\n" + "Florelia Braschi\n"
+                + "Contributors:\n\n"
+                + "Paul Hildebrandt\n"
+                + "David Richter\n"
+                + "Brian Hall\n"
+                + "George Hart\n"
+                + "Edmund Harriss\n"
+                + "Corrado Falcolini\n"
+                + "Ezra Bradford\n"
+                + "Sam Vandervelde\n"
+                + "Jacob Rus\n"
+                + "Dan Duddy\n"
+                + "Walt Venable\n"
+                + "Will Ackel\n"
+                + "John and Jane Kostick\n"
+                + "Samuel Verbiese\n"
+                + "Tom Darrow\n"
+                + "Henri Picciotto\n"
+                + "Florelia Braschi\n"
 
-                + "\n" + "Dedicated to Everett Vorthmann,\n" + "who made me an engineer\n"
+                + "\n" + "In Memoriam:\n\n"
+                + "Marc Pelletier\n"
+                + "Fabien Vienne\n"
+                + "Chris Kling\n"
+
+                + "\n" + "Dedicated to Everett Vorthmann,\n"
+                + "inventor of the Hall effect chip,\n"
+                + "who made me an engineer\n"
                 + "\n",
                 "About vZome", JOptionPane.PLAIN_MESSAGE );
     }

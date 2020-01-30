@@ -27,13 +27,10 @@ import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.render.Shapes;
 import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
-import com.vzome.core.tools.BookmarkTool;
 import com.vzome.core.tools.IcosahedralToolFactory;
 import com.vzome.core.tools.InversionTool;
 import com.vzome.core.tools.LinearMapTool;
 import com.vzome.core.tools.MirrorTool;
-import com.vzome.core.tools.ModuleTool;
-import com.vzome.core.tools.PlaneSelectionTool;
 import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
@@ -287,26 +284,16 @@ public class GoldenFieldApplication extends DefaultFieldApplication
     @Override
     public void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools )
     {
+        // register the default tool factories
+        super.registerToolFactories( toolFactories, tools );
+        
+        // add any tools that are unique for this field
         IcosahedralSymmetry symm = (IcosahedralSymmetry) icosahedralPerspective .getSymmetry();
         // symm matters for this one, since it is final in the tool
         toolFactories .put( "AxialStretchTool", new AxialStretchTool.Factory( tools, symm, false, false, false ) );
-        
-        // We might as well use symm in the rest, though it will be overwritten by SymmetryTool.setXmlAttributes()
+
+        // this one has to replace the same-named factory in the base class
         toolFactories .put( "SymmetryTool", new IcosahedralToolFactory( tools, symm ) );
-        toolFactories .put( "RotationTool", new RotationTool.Factory( tools, symm ) );
-        toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, symm ) );
-        toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
-        toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
-        toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
-        toolFactories .put( "ProjectionTool", new ProjectionTool.Factory( tools ) );
-        toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
-        toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
-        
-        // These tool factories have to be available for loading legacy documents.
-        
-        toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, null, true ) );
-        toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
-        toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
     }
 
     private CommandUniformH4Polytope h4Builder = null;

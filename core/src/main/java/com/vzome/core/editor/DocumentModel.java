@@ -211,7 +211,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             symmetrySys .createToolFactories( this .tools );
         }
 
-        this .kind .registerToolFactories( this .toolFactories, this .tools );
+        kind .registerToolFactories( this .toolFactories, this .tools );
 
         this .bookmarkFactory = new BookmarkTool.Factory( tools );
         this .editorModel .addSelectionSummaryListener( this .bookmarkFactory );
@@ -534,7 +534,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
                 @Override
                 public QuaternionicSymmetry getQuaternionSet( String name )
                 {
-                    return kind .getQuaternionSymmetry( name);
+                    return kind .getQuaternionSymmetry( name );
                 }
             };
 
@@ -610,7 +610,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
                 }
             }
 
-            // This has to before any of the tools are defined, in mHistory .synchronize() below
+            // This has to be done before any of the tools are defined, in mHistory .synchronize() below
             Element toolsXml = (Element) mXML .getElementsByTagName( "Tools" ) .item( 0 );
             if ( toolsXml != null )
                 this .tools .loadFromXml( toolsXml );
@@ -891,12 +891,14 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public SymmetrySystem getSymmetrySystem( String name )
     {
-        return this .symmetrySystems .get( name );
+        if ( name == null )
+            return this .getSymmetrySystem();
+        else
+            return this .symmetrySystems .get( name );
     }
 
-    public void setSymmetrySystem( String name )
+    public void setSymmetrySystem( SymmetrySystem system )
     {
-        SymmetrySystem system = this .symmetrySystems .get( name );
         this .editorModel .setSymmetrySystem( system );
     }
 

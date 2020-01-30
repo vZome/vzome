@@ -136,7 +136,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu .setEnabled( fullPower && canSave );
 
         submenu = new JMenu( "Export 3D Panels..." );
-        submenu .add( createMenuItem( "StL", "export.StL" ) );
+        submenu .add( createMenuItem( "StL (mm)", "export.StL" ) );
         submenu .add( createMenuItem( "OFF", "export.off" ) );
         submenu .add( createMenuItem( "PLY", "export.ply" ) );
         menu.add( submenu );

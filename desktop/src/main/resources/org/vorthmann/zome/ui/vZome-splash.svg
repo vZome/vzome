@@ -10,12 +10,12 @@
    version="1.1"
    viewBox="0 0 774.00003 486.00002"
    id="svg2"
-   inkscape:version="0.91 r13725"
-   sodipodi:docname="vZome-6-splash.svg"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   sodipodi:docname="vZome-splash.svg"
    width="8.6000004in"
    height="5.4000001in"
    style="stroke:#000000;stroke-width:0.5;stroke-linejoin:round"
-   inkscape:export-filename="/Users/vorth/vZome/vzome-all/desktop/src/main/resources/org/vorthmann/zome/ui/vZome-6-splash2.png"
+   inkscape:export-filename="/Users/vorth/vZome/vzome-all/desktop/src/main/resources/org/vorthmann/zome/ui/vZome-7-splash.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <metadata
@@ -53,47 +53,45 @@
      fit-margin-bottom="0"
      units="in"
      inkscape:zoom="1.2432572"
-     inkscape:cx="361.46968"
+     inkscape:cx="297.12258"
      inkscape:cy="249.67482"
-     inkscape:window-x="16"
-     inkscape:window-y="1"
+     inkscape:window-x="84"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:45px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#750032;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#750032;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
      x="445.62662"
      y="225.85635"
-     id="text3622"
-     sodipodi:linespacing="125%"><tspan
+     id="text3622"><tspan
        sodipodi:role="line"
        id="tspan3624"
        x="445.62662"
        y="225.85635"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:90px;font-family:'Arial Rounded MT Bold';-inkscape-font-specification:'Arial Rounded MT Bold, ';fill:#750032;fill-opacity:1">vZome</tspan></text>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:90px;line-height:1.25;font-family:'Arial Rounded MT Bold';-inkscape-font-specification:'Arial Rounded MT Bold, ';fill:#750032;fill-opacity:1">vZome</tspan></text>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5px;line-height:125%;font-family:'Arial Rounded MT Bold';-inkscape-font-specification:'Arial Rounded MT Bold, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#815600;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:'Arial Rounded MT Bold';-inkscape-font-specification:'Arial Rounded MT Bold, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#9b77e1;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
      x="379.58566"
      y="442.14844"
-     id="text4449"
-     sodipodi:linespacing="125%"><tspan
+     id="text4449"><tspan
        sodipodi:role="line"
        id="tspan4451"
        x="379.58566"
        y="442.14844"
-       style="fill:#d4aa00">https://github.com/vZome/vzome</tspan></text>
+       style="font-size:22.5px;line-height:1.25;fill:#9b77e1;fill-opacity:1;">https://github.com/vZome/vzome</tspan></text>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5px;line-height:125%;font-family:'Arial Rounded MT Bold';-inkscape-font-specification:'Arial Rounded MT Bold, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#9b77e1;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="545.84821"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:'Arial Rounded MT Bold';-inkscape-font-specification:'Arial Rounded MT Bold, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#647100;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+     x="534.59821"
      y="410.13559"
-     id="text4453"
-     sodipodi:linespacing="125%"><tspan
+     id="text4453"><tspan
        sodipodi:role="line"
        id="tspan4455"
-       x="545.84821"
-       y="410.13559">http://vzome.com</tspan></text>
+       x="534.59821"
+       y="410.13559"
+       style="font-size:22.5px;line-height:1.25;fill:#647100;fill-opacity:1;">https://vzome.com</tspan></text>
   <g
      style="stroke:#000000;stroke-width:0.5;stroke-linejoin:round"
      id="g3975"
@@ -791,14 +789,13 @@
   </g>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#596500;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="542.12433"
+     style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#d4aa00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="632.12433"
      y="298.58908"
-     id="text4136"
-     sodipodi:linespacing="125%"><tspan
+     id="text4136"><tspan
        sodipodi:role="line"
        id="tspan4138"
-       x="542.12433"
+       x="632.12433"
        y="298.58908"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:70px;line-height:125%;font-family:'Arial Rounded MT Bold';-inkscape-font-specification:'Arial Rounded MT Bold, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#596500;fill-opacity:1">6.0</tspan></text>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:70px;line-height:125%;font-family:'Arial Rounded MT Bold';-inkscape-font-specification:'Arial Rounded MT Bold, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#d4aa00;fill-opacity:1">7.0</tspan></text>
 </svg>

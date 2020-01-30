@@ -100,6 +100,13 @@ public class RenderedModelTest
 		{
 			fail( "should not be called" );
 		}
+
+        @Override
+        public boolean shapesChanged( Shapes shapes )
+        {
+            fail( "should not be called" );
+            return false;
+        }
 	}
 
 	@Test

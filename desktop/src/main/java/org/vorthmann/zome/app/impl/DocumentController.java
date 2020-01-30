@@ -285,7 +285,7 @@ public class DocumentController extends DefaultController implements Controller3
         for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
         {
             String name = symper .getName();
-            SymmetryController symmController = new SymmetryController( strutBuilder, this .documentModel .getSymmetrySystem( name ) );
+            SymmetryController symmController = new SymmetryController( strutBuilder, this .documentModel .getSymmetrySystem( name ), mRenderedModel );
             strutBuilder .addSubController( "symmetry." + name, symmController );
             this .symmetries .put( name, symmController );
         }
@@ -300,7 +300,7 @@ public class DocumentController extends DefaultController implements Controller3
         lessonController = new LessonController( this .documentModel .getLesson(), cameraController );
         this .addSubController( "lesson", lessonController );
 
-        setSymmetrySystem( this .documentModel .getSymmetrySystem() );
+        setSymmetrySystem( null );
 
         // can't do this before the setSymmetrySystem() call just above
         if ( mRenderedModel != null )
@@ -309,7 +309,7 @@ public class DocumentController extends DefaultController implements Controller3
             this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
         }
 
-        partsController = new PartsController( symmetryController .getOrbitSource() );
+        partsController = new PartsController( this .documentModel .getSymmetrySystem() );
         this .addSubController( "parts", partsController );
         mRenderedModel .addListener( partsController );
 
@@ -344,7 +344,7 @@ public class DocumentController extends DefaultController implements Controller3
             }
         };
 
-        articleModeMainTrackball = cameraController .getTrackball();
+        articleModeMainTrackball = cameraController .getTrackball( 0.7d );
         // will not be attached, initially; gets attached on switchToArticle
         if ( propertyIsTrue( "presenter.mode" ) )
             ((Trackball) articleModeMainTrackball) .setModal( false );
@@ -445,12 +445,18 @@ public class DocumentController extends DefaultController implements Controller3
             }
     }
 
-    private void setSymmetrySystem( SymmetrySystem symmetrySystem )
+    /**
+     * @param symmetryName can be null
+     */
+    private void setSymmetrySystem( String symmetryName )
     {
-        String name =  symmetrySystem .getName();
-        symmetryController = this .symmetries .get( name );
+        SymmetrySystem symmetrySystem = this .documentModel .getSymmetrySystem( symmetryName );
+        symmetryName = symmetrySystem .getName(); // in case it was null before
+        this .documentModel .setSymmetrySystem( symmetrySystem );
+        
+        symmetryController = this .symmetries .get( symmetryName );
         if(symmetryController == null) {
-            String msg = "Unsupported symmetry: " + name;
+            String msg = "Unsupported symmetry: " + symmetryName;
             mErrors.reportError(msg, new Object[] {} );
             throw new IllegalStateException( msg );
         }
@@ -459,16 +465,12 @@ public class DocumentController extends DefaultController implements Controller3
         RenderedModel model = this .mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
         cameraController .setSymmetry( model, symmetryController .getSnapper() );
 
-        firePropertyChange( "symmetry", null, name ); // notify UI, so cardpanel can flip, or whatever
-        setRenderingStyle();
-    }
+        firePropertyChange( "symmetry", null, symmetryName  ); // notify UI, so cardpanel can flip, or whatever
 
-    private void setRenderingStyle()
-    {
         if ( mRenderedModel != null ) {
             if ( partsController != null )
-                partsController .startSwitch( symmetryController .getOrbitSource() );
-            mRenderedModel .setOrbitSource( symmetryController .getOrbitSource() );
+                partsController .startSwitch( symmetrySystem );
+            mRenderedModel .setOrbitSource( symmetrySystem );
             if ( partsController != null )
                 partsController .endSwitch();
         }
@@ -679,13 +681,9 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
     
             default:
-                if ( action.startsWith( "setStyle." ) )
-                    setRenderingStyle();
-    
-                else if ( action.startsWith( "setSymmetry." ) ) {
+                if ( action.startsWith( "setSymmetry." ) ) {
                     String system = action.substring( "setSymmetry.".length() );
-                    this .documentModel .setSymmetrySystem( system );
-                    setSymmetrySystem( this .documentModel .getSymmetrySystem() );
+                    setSymmetrySystem( system );
                 }
     
                 else if ( e != null && PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
@@ -930,7 +928,15 @@ public class DocumentController extends DefaultController implements Controller3
         if ( animation != null ) {
             animation .rotate();
         }
-        imageCaptureViewer .captureImage( maxSize, new RenderingViewer.ImageCapture()
+        String format = extension.toUpperCase();
+        // According to https://stackoverflow.com/a/3432532/4568099, regarding the "pinkish orange tint", 
+        // Java saves the JPEG as ARGB (still with transparency information). 
+        // Most viewers, when opening, assume the four channels must correspond to a CMYK (not ARGB) and thus the red tint.
+        // In Windows 10, this results in a pinkish orange tint. On Scott's Mac, it's solid black.
+        // the solution is to exclude the alpha data when exporting JPEG.
+        boolean withAlpha = ! (format.equals( "BMP" ) || format.equals( "JPG" ));
+
+        imageCaptureViewer .captureImage( maxSize, withAlpha, new RenderingViewer.ImageCapture()
         {
             private void setImageCompression(String format, ImageWriteParam iwParam)
             {
@@ -1393,7 +1399,7 @@ public class DocumentController extends DefaultController implements Controller3
             StringBuffer buf = new StringBuffer();
             if ( pickedManifestation != null ) {
                 final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
-                OrbitSource symmetry  = symmetryController .getOrbitSource();
+                OrbitSource symmetry  = this .documentModel .getSymmetrySystem();
                 Manifestation man = pickedManifestation;
                 Axis zone = null;
                 if (man instanceof Connector) {

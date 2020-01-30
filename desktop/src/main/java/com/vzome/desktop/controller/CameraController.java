@@ -345,10 +345,20 @@ public class CameraController extends DefaultController implements Controller3d
             super .doAction( action, e );
     }
 
-    public MouseTool getTrackball()
+    public MouseTool getTrackball( double speed )
     {
-        return new Trackball()
+        return new Trackball( speed, true )
         {
+//            @Override
+//            protected double getSpeed()
+//            {
+//                double baseSpeed = super.getSpeed();
+//                // make speed depend on model.getMagnification()
+//                float mag = model .getMagnification();
+//                float power = (-1f/3f) * ( mag + 2f );
+//                return baseSpeed * Math .pow( 10d, power );
+//            }
+
             @Override
             public void mousePressed( MouseEvent e )
             {
@@ -449,7 +459,7 @@ public class CameraController extends DefaultController implements Controller3d
             model .getViewOrientation(lookDir, upDir);
             return upDir.toString();
         }
-
+        
         case "drawNormals": // for the trackball rendering
             return "false";
 
@@ -511,7 +521,7 @@ public class CameraController extends DefaultController implements Controller3d
     @Override
     public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
     {
-        MouseTool trackball = this .getTrackball();
+        MouseTool trackball = this .getTrackball( 0.04d );
         
         // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
         //  and CameraControlPanel will attach a better one to the parent component 
