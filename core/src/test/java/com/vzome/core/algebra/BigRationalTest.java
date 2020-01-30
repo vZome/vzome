@@ -1,12 +1,12 @@
 package com.vzome.core.algebra;
 
 import static com.vzome.core.generic.Utilities.compareDoubles;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -333,10 +333,11 @@ public class BigRationalTest {
 
     @Test
     public void testEvaluate() {
-        assertEquals((double) Long.MIN_VALUE, new BigRational(Long.MIN_VALUE).evaluate()); // big
-        assertEquals(17d, new BigRational(17L).evaluate()); // not big
-        assertEquals(0.25d, new BigRational("-9/-36").evaluate()); // not big
-        assertEquals(0.001d, new BigRational(Long.MIN_VALUE + "/" + Long.MIN_VALUE+"000").evaluate()); // big
+        double delta = 0.0D;
+        assertEquals(Long.MIN_VALUE, new BigRational(Long.MIN_VALUE).evaluate(), delta); // big
+        assertEquals(17d, new BigRational(17L).evaluate(), delta); // not big
+        assertEquals(0.25d, new BigRational("-9/-36").evaluate(), delta); // not big
+        assertEquals(0.001d, new BigRational(Long.MIN_VALUE + "/" + Long.MIN_VALUE+"000").evaluate(), delta); // big
         
         // last digit of n is chosen so it can't be reduced (e.g. to 2/3)
         String n = "222222222222222222222222222222222222222222222222220"; 
@@ -354,7 +355,7 @@ public class BigRationalTest {
         // and especially when the decimal part is greater than 1/2,
         // then r.evaluate() may introduce 
         // minimal rounding error in the last digit.
-        double delta = 0.0000000000001;
+        delta = 0.0000000000001;
         
         double value = r.evaluate();
         compareDoubles(r.evaluate(), value, 0d); // subsequent calls to evaluate() will return the cached value which will be unchanged.       

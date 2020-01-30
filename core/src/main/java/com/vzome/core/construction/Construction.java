@@ -118,6 +118,8 @@ public abstract class Construction
         mImpossible = value;
     }
 
+    public abstract boolean is3d();
+
     /**
      * Update the state variables (like location) of this construction
      * according to the current parameters and attributes.

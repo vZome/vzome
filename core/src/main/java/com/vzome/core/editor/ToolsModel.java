@@ -62,23 +62,18 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		return super .put( key, tool );
 	}
 
-	public UndoableEdit createEdit( Element xml )
+	public UndoableEdit createEdit( String className )
 	{
-		UndoableEdit edit = null;
-        String className = xml .getLocalName();
 		switch ( className ) {
 
         case "ToolApplied":
-			edit = new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), false );
-			return edit;
+            return new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), false );
 
         case "ApplyTool":
-			edit = new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), true );
-			return edit;
+            return new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), true );
         
 		case "SelectToolParameters":
-			edit = new SelectToolParameters( this, null );
-			return edit;
+		    return new SelectToolParameters( this, null );
 
         default:
 			return null;
@@ -185,8 +180,12 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     {
         // update the tool from the maps, deserialized earlier
         String id = tool .getId();
-        tool .setLabel( this .toolLabels .get( id ) );
-        tool .setInputBehaviors( this .toolInputBehaviors .get( id ) );
+        String label = this .toolLabels .get( id );
+        if ( label != null ) // be careful not to override the defaults for legacy commands with no serialized maps
+            tool .setLabel( label );
+        EnumSet<InputBehaviors> behaviors = this .toolInputBehaviors .get( id );
+        if ( behaviors != null ) // be careful not to override the defaults for legacy commands with no serialized maps
+            tool .setInputBehaviors( behaviors );
         tool .setHidden( this .hiddenTools .contains( id ) );
     }
 

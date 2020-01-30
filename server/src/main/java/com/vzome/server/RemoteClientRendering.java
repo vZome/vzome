@@ -6,13 +6,14 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 
 import javax.vecmath.Matrix4d;
-import javax.vecmath.Point3d;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vzome.core.math.Line;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Shapes;
 import com.vzome.desktop.controller.RenderingViewer;
 
 class RemoteClientRendering implements RenderingChanges, RenderingViewer, PropertyChangeListener
@@ -61,16 +62,16 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	}
 
 	@Override
-	public void pickPoint(MouseEvent e, Point3d imagePt, Point3d eyePt) {}
+	public Line pickRay( MouseEvent e )
+	{
+	    return null;
+	}
 
 	@Override
 	public RenderingChanges getRenderingChanges()
 	{
 		return this;
 	}
-
-	@Override
-	public void captureImage(int maxSize, ImageCapture capture) {}
 
 	@Override
 	public void reset() {}
@@ -121,4 +122,14 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 
 	@Override
 	public void propertyChange( PropertyChangeEvent chg ) {}
+
+    @Override
+    public void captureImage(int maxSize, boolean withAlpha, ImageCapture capture) {}
+
+    @Override
+    public boolean shapesChanged( Shapes shapes )
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

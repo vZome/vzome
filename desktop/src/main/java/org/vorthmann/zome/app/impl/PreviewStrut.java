@@ -5,10 +5,11 @@ package org.vorthmann.zome.app.impl;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.vecmath.Point3d;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
 
@@ -16,7 +17,8 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.StrutCreation;
+import com.vzome.core.edits.StrutCreation;
+import com.vzome.core.math.Line;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -39,8 +41,6 @@ public class PreviewStrut implements PropertyChangeListener
 
     private Point point;
 
-    private boolean usingWorkingPlane;
-
     private Axis zone;
 
     private SymmetryController symmetryController;
@@ -49,7 +49,7 @@ public class PreviewStrut implements PropertyChangeListener
 
     private StrutCreation strut;
 
-    private double[] workingPlaneDual = new double[4]; // a GA homogeneous vector for the dual of the working plane
+    private double[] workingPlaneDual = null; // a GA homogeneous 4-vector for the dual of the working plane
 
     private static Logger logger = Logger .getLogger( "org.vorthmann.zome.app.impl.PreviewStrut" );
 
@@ -84,8 +84,7 @@ public class PreviewStrut implements PropertyChangeListener
 
         setSymmetryController( symmetryController );
         OrbitSet orbits = symmetryController .getBuildOrbits();
-        usingWorkingPlane = workingPlaneNormal != null;
-        if ( usingWorkingPlane )
+        if ( workingPlaneNormal != null )
         {
             orbits = new PlaneOrbitSet( orbits, workingPlaneNormal );
 
@@ -124,10 +123,11 @@ public class PreviewStrut implements PropertyChangeListener
             double P_e120 = e12 * 1d  + e20 * r.x - e10 * r.y;
 
             // dual of P = e0123 * P
-            workingPlaneDual[ 0 ] = - P_e123;
-            workingPlaneDual[ 1 ] = - P_e320;
-            workingPlaneDual[ 2 ] = P_e310;
-            workingPlaneDual[ 3 ] = P_e120;
+            this .workingPlaneDual = new double[4];
+            this .workingPlaneDual[ 0 ] = - P_e123;
+            this .workingPlaneDual[ 1 ] = - P_e320;
+            this .workingPlaneDual[ 2 ] = P_e310;
+            this .workingPlaneDual[ 3 ] = P_e120;
         }
 
         this .zone = zoneBall .setOrbits( orbits );
@@ -150,10 +150,15 @@ public class PreviewStrut implements PropertyChangeListener
         strut = null;
         if ( logger .isLoggable( Level.FINE ) )
             logger .fine( "preview finished at  " + zone );
-        document .createStrut( point, zone, length .getValue() );
+        Map<String, Object> params = new HashMap<>();
+        params .put( "anchor", point );
+        params .put( "zone", zone );
+        params .put( "length", length .getValue() );
+        document .doEdit( "StrutCreation", params );
         point = null;
         zone = null;
         length = null;
+        this .workingPlaneDual = null;
     }
 
     public LengthController getLengthModel()
@@ -186,44 +191,58 @@ public class PreviewStrut implements PropertyChangeListener
         this .symmetryController = symmetryController;
         rendering .setOrbitSource( symmetryController .getOrbitSource() );
     }
+    
+    private final boolean usingWorkingPlane()
+    {
+        return this .workingPlaneDual != null;
+    }
 
     public void trackballRolled( Quat4d roll )
     {
-        if ( point != null && ! usingWorkingPlane )
+        if ( point != null && ! usingWorkingPlane() )
             zoneBall .trackballRolled( roll );  // some of these events will trigger the zone change
     }
 
-    public void workingPlaneDrag( Point3d imagePt, Point3d eyePt )
+    public void workingPlaneDrag( Line ray )
     {
-        if ( point != null && usingWorkingPlane )
+        if ( usingWorkingPlane() )
         {
-            RealVector localCenter = this.point.getLocation() .toRealVector();
-
-            RealVector s = new RealVector( imagePt.x, imagePt.y, imagePt.z );
-            RealVector q = new RealVector( eyePt.x, eyePt.y, eyePt.z );
-
-            // This line-plane intersection comes right out of Vince, GA4CG, p. 196,
-            // but I had to derive the general forms for the products.
-
-            // s ^ t = l
-            double e12 = s.x * q.y - q.x * s.y;
-            double e23 = s.y * q.z - q.y * s.z;
-            double e31 = s.z * q.x - q.z * s.x;
-            double e10 = s.x - q.x; // homogeneous 3-vectors have 4th coord == 1
-            double e20 = s.y - q.y;
-            double e30 = s.z - q.z;
-
-            // dualP . l = x (the result, in homogeneous coordinates)
-            double x_e1 = - workingPlaneDual[ 2 ] * e12 - workingPlaneDual[ 0 ] * e10 + workingPlaneDual[ 3 ] * e31;
-            double x_e2 = - workingPlaneDual[ 3 ] * e23 - workingPlaneDual[ 0 ] * e20 + workingPlaneDual[ 1 ] * e12;
-            double x_e3 = - workingPlaneDual[ 1 ] * e31 - workingPlaneDual[ 0 ] * e30 + workingPlaneDual[ 2 ] * e23;
-            double x_e0 = workingPlaneDual[ 1 ] * e10 + workingPlaneDual[ 2 ] * e20 + workingPlaneDual[ 3 ] * e30;
+            if ( this .point == null && logger .isLoggable( Level.SEVERE ) ) {
+                logger .severe( "No point during workingPlaneDrag!" );
+                return;
+            }
+            RealVector planeIntersection = this .intersectWorkingPlane( ray );
+            RealVector vectorInPlane = planeIntersection .minus( this .point .getLocation() .toRealVector() );
 
             Vector3d almostPlanarVector = new Vector3d();
-            almostPlanarVector .set( x_e1 / x_e0 - localCenter.x,
-                    x_e2 / x_e0 - localCenter.y,
-                    x_e3 / x_e0 - localCenter.z );
+            almostPlanarVector .set( vectorInPlane.x, vectorInPlane.y, vectorInPlane.z );
             zoneBall .setVector( almostPlanarVector );
         }
+    }
+    
+    private RealVector intersectWorkingPlane( Line ray )
+    {
+        RealVector s = ray .getOrigin();
+        RealVector t = s .plus( ray .getDirection() );  // we need two points on the line
+
+        // This line-plane intersection comes right out of Vince, GA4CG, p. 196,
+        // but I had to derive the general forms for the products.
+        
+        // The line l is encoded in the outer product s ^ t, a bivector.
+        double e12 = s.x * t.y - t.x * s.y;
+        double e23 = s.y * t.z - t.y * s.z;
+        double e31 = s.z * t.x - t.z * s.x;
+        double e10 = s.x - t.x; // homogeneous 3-vectors have 4th coord == 1, what would be t.w and s.w
+        double e20 = s.y - t.y;
+        double e30 = s.z - t.z;
+
+        // dualP . l = x (the result, in homogeneous coordinates)
+        double x_e1 = - workingPlaneDual[ 2 ] * e12 - workingPlaneDual[ 0 ] * e10 + workingPlaneDual[ 3 ] * e31;
+        double x_e2 = - workingPlaneDual[ 3 ] * e23 - workingPlaneDual[ 0 ] * e20 + workingPlaneDual[ 1 ] * e12;
+        double x_e3 = - workingPlaneDual[ 1 ] * e31 - workingPlaneDual[ 0 ] * e30 + workingPlaneDual[ 2 ] * e23;
+        double x_e0 = workingPlaneDual[ 1 ] * e10 + workingPlaneDual[ 2 ] * e20 + workingPlaneDual[ 3 ] * e30;
+        
+        // Convert from homogeneous to normal 3D coordinates
+        return new RealVector( x_e1 / x_e0, x_e2 / x_e0, x_e3 / x_e0 );
     }
 }

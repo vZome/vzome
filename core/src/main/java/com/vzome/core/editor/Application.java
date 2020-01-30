@@ -83,7 +83,7 @@ public class Application
         properties = loadDefaults();
         if ( overrides != null )
         {
-        	properties .putAll( overrides );
+            properties .putAll( overrides );
         }
         properties .putAll( loadBuildProperties() );
 
@@ -119,7 +119,7 @@ public class Application
         this .exporters .put( "seg", new SegExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "ply", new PlyExporter( this .mColors, this .mLights ) );
         this .exporters .put( "history", new HistoryExporter( null, this .mColors, this .mLights, null ) );
-        
+
         this .exporters2d .put( "pdf", PDFExporter::new );
         this .exporters2d .put( "svg", SVGExporter::new );
         this .exporters2d .put( "ps",  PostScriptExporter::new );
@@ -127,7 +127,7 @@ public class Application
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         this.fieldAppSuppliers.put("golden", GoldenFieldApplication::new);
         this.fieldAppSuppliers.put("rootTwo", RootTwoFieldApplication::new);
-		this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new);
+        this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new);
         this.fieldAppSuppliers.put("dodecagon", RootThreeFieldApplication::new);
         this.fieldAppSuppliers.put("heptagon", HeptagonFieldApplication::new);
         this.fieldAppSuppliers.put("snubDodec", SnubDodecFieldApplication::new);
@@ -140,14 +140,14 @@ public class Application
 
         // parse the bytes as XML
         try {
-        	DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
-        	factory .setNamespaceAware( true );
-        	DocumentBuilder builder = factory .newDocumentBuilder();
-        	xml = builder .parse( bytes );
+            DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
+            factory .setNamespaceAware( true );
+            DocumentBuilder builder = factory .newDocumentBuilder();
+            xml = builder .parse( bytes );
             bytes.close();
-        } catch ( SAXException e ) {
-//            String errorCode = "XML is bad:  " + e.getMessage() + " at line " + e.getLineNumber() + ", column "
-//                    + e.getColumnNumber();
+        } catch ( SAXException | IOException e ) {
+            //            String errorCode = "XML is bad:  " + e.getMessage() + " at line " + e.getLineNumber() + ", column "
+            //                    + e.getColumnNumber();
             logger .severe( e .getMessage() );
             throw e;
         }
@@ -182,90 +182,92 @@ public class Application
         return new DocumentModel( kind, failures, element, this );
     }
 
-	public DocumentModel createDocument( String fieldName )
-	{
-		FieldApplication kind = this .getDocumentKind( fieldName );
-		return new DocumentModel( kind, failures, null, this );
-	}
+    public DocumentModel createDocument( String fieldName )
+    {
+        FieldApplication kind = this .getDocumentKind( fieldName );
+        return new DocumentModel( kind, failures, null, this );
+    }
 
-	public DocumentModel importDocument( String content, String extension )
-	{
-		String fieldName = "golden";
-		// TODO: use fieldName from VEF input
-		FieldApplication kind = this .getDocumentKind( fieldName );
-		DocumentModel result = new DocumentModel( kind, failures, null, this );
-		result .doScriptAction( extension, content );
-		return result;
-	}
+    public DocumentModel importDocument( String content, String extension )
+    {
+        String fieldName = "golden";
+        // TODO: use fieldName from VEF input
+        FieldApplication kind = this .getDocumentKind( fieldName );
+        DocumentModel result = new DocumentModel( kind, failures, null, this );
+        Map<String,Object> props = new HashMap<>();
+        props .put( "script", content );
+        result .doEdit( extension, props );
+        return result;
+    }
 
-	public AlgebraicField getField( String name )
-	{
-		return this .getDocumentKind( name ) .getField();
-	}
+    public AlgebraicField getField( String name )
+    {
+        return this .getDocumentKind( name ) .getField();
+    }
 
-	public FieldApplication getDocumentKind( String name )
-	{
+    public FieldApplication getDocumentKind( String name )
+    {
         Supplier<FieldApplication> supplier = fieldAppSuppliers.get(name);
         if( supplier != null ) {
             return supplier.get();
         }
         throw new IllegalArgumentException("Unknown Application Type " + name);
-	}
+    }
 
-	public Set<String> getFieldNames()
-	{
+    public Set<String> getFieldNames()
+    {
         return fieldAppSuppliers.keySet();
-	}
+    }
 
-	public static Properties loadDefaults()
-	{
+    public static Properties loadDefaults()
+    {
         String defaultRsrc = "com/vzome/core/editor/defaultPrefs.properties";
         Properties defaults = new Properties();
         try {
             ClassLoader cl = Application.class.getClassLoader();
             InputStream in = cl.getResourceAsStream( defaultRsrc );
             if ( in != null )
-            	defaults .load( in );
+                defaults .load( in );
         } catch ( IOException ioe ) {
             System.err.println( "problem reading default preferences: " + defaultRsrc );
         }
         return defaults;
-	}
+    }
 
-	public static Properties loadBuildProperties()
-	{
+    public static Properties loadBuildProperties()
+    {
         String defaultRsrc = "vzome-core-build.properties";
         Properties defaults = new Properties();
         try {
             ClassLoader cl = Application.class.getClassLoader();
             InputStream in = cl.getResourceAsStream( defaultRsrc );
             if ( in != null )
-            	defaults .load( in );
+                defaults .load( in );
         } catch ( IOException ioe ) {
             logger.warning( "problem reading build properties: " + defaultRsrc );
         }
         return defaults;
-	}
+    }
 
-	public Colors getColors()
-	{
-		return this .mColors;
-	}
+    public Colors getColors()
+    {
+        return this .mColors;
+    }
 
     public Exporter3d getExporter( String format )
     {
         return this .exporters .get( format );
     }
 
-	public Lights getLights()
-	{
-		return this .mLights;
-	}
+    public Lights getLights()
+    {
+        return this .mLights;
+    }
 
-	public String getCoreVersion()
-	{
-		return this .properties .getProperty( "version" );
-	}
+    public String getCoreVersion()
+    {
+        return this .properties .getProperty( "version" );
+    }
 
     public SnapshotExporter getSnapshotExporter( String format )
     {

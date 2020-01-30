@@ -12,7 +12,6 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 /**
@@ -23,9 +22,9 @@ import com.vzome.core.model.Strut;
  */
 public class ApiEdit extends ChangeManifestations
 {
-	public ApiEdit( Selection selection, RealizedModel realized, Point origin )
+	public ApiEdit( EditorModel editor )
 	{
-		super( selection, realized, false );
+		super( editor .getSelection(), editor .getRealizedModel() );
 	}
 	
 	private Selection getSelection()

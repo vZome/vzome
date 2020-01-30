@@ -1,14 +1,14 @@
 
 
 group = 'com.vzome'
-version = '6.0'
+version = '7.0'
 
 task wrapper(type: Wrapper) {
    gradleVersion = '4.5.1' //version required
 }
 
 // these environment variables are available during a Jenkins build
-ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'SNAPSHOT'
+ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'dev'
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 ext.appName = 'vZome'
 ext.edition = appName

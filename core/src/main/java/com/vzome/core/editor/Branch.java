@@ -5,6 +5,7 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.w3c.dom.Document;
@@ -12,8 +13,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 
 public class Branch implements UndoableEdit
 {
@@ -24,6 +25,12 @@ public class Branch implements UndoableEdit
 		super();
 		this .context = context;
 	}
+
+    @Override
+    public boolean isNoOp()
+    {
+        return false;
+    }
 
 	private List<UndoableEdit> edits = new ArrayList<>();
     private XmlSaveFormat format;
@@ -52,7 +59,7 @@ public class Branch implements UndoableEdit
 
                 // the remainder is essentially identical to DeferredEdit .redo()
 
-                UndoableEdit edit = context .createEdit( editElem, format .groupingDoneInSelection() );
+                UndoableEdit edit = context .createEdit( editElem );
                 addEdit( edit );
                 edit. loadAndPerform(editElem, format, new UndoableEdit.Context()
                 {
@@ -70,9 +77,9 @@ public class Branch implements UndoableEdit
                     }
 
                     @Override
-                    public UndoableEdit createEdit( Element xml, boolean groupInSelection )
+                    public UndoableEdit createEdit( Element xml )
                     {
-                        return context .createEdit( xml, groupInSelection );
+                        return context .createEdit( xml );
                     }
                 } );
             }
@@ -89,6 +96,9 @@ public class Branch implements UndoableEdit
 
     @Override
     public void redo() {}
+
+    @Override
+    public void configure( Map<String,Object> props ) {}
 
     @Override
     public boolean isVisible()

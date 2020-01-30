@@ -1,7 +1,12 @@
 package com.vzome.core.model;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
+import com.vzome.core.construction.Construction;
+import com.vzome.core.construction.FreePoint;
+import com.vzome.core.construction.Point;
+import com.vzome.core.construction.SegmentJoiningPoints;
 
 /**
  * @author Scott Vorthmann
@@ -98,6 +103,19 @@ public class Strut extends Manifestation implements Comparable<Strut>
     public AlgebraicVector getCentroid()
     {
         return AlgebraicVectors.getCentroid(new AlgebraicVector[] { m_end1, m_end2 });
+    }
+
+    @Override
+    public Construction toConstruction()
+    {
+        Construction first = this .getFirstConstruction();
+        if ( first .is3d() )
+            return first;
+        
+        AlgebraicField field = m_end1 .getField();
+        Point pt1 = new FreePoint( field .projectTo3d( m_end1, true ) );
+        Point pt2 = new FreePoint( field .projectTo3d( m_end2, true ) );
+        return new SegmentJoiningPoints( pt1, pt2 );
     }
 
     public AlgebraicVector getEnd()

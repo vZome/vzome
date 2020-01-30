@@ -1,14 +1,20 @@
 package com.vzome.core.algebra;
 
 import static com.vzome.core.generic.Utilities.getSourceCodeLine;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+
+import com.vzome.core.generic.Utilities;
+import com.vzome.fields.sqrtphi.SqrtPhiField;
 
 /**
  * @author David Hall
@@ -38,6 +44,37 @@ public class AlgebraicFieldTest {
         }
     }
         
+    @Test
+    public void testGoldenRatio() {
+        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
+        List<AlgebraicField> goldenFields = new ArrayList<>();
+        goldenFields.add(new PentagonField());
+        goldenFields.add(new SnubDodecField());
+        goldenFields.add(new SqrtPhiField());
+        
+        for(AlgebraicField field : goldenFields) {
+            String fieldName = field.getName();
+            AlgebraicNumber golden = field.getGoldenRatio();
+            assertNotNull(fieldName, golden);
+            assertEquals(fieldName, PentagonField.PHI_VALUE, golden.evaluate(), 0.00000000000001d);
+            System.out.println(fieldName + ": golden ratio\t= " + golden.toString());
+        }
+
+        // make sure we test some golden and some non-golden fields
+        int nNull = 0;
+        int nGold = 0;
+        for(AlgebraicField field : fields) {
+            assertEquals(field.getName(), goldenFields.contains(field), field.getGoldenRatio() != null);
+            if(field.getGoldenRatio() == null) {
+                nNull ++;
+            } else {
+                nGold++;
+            }
+        }
+        assertTrue(nNull > 0);
+        assertTrue(nGold > 0);
+    }
+    
     @Test
     public void testOrder() {
         int pass = 0;

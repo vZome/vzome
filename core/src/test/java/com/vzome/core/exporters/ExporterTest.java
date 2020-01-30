@@ -1,11 +1,13 @@
 package com.vzome.core.exporters;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -21,7 +23,6 @@ import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.UndoableEdit;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
@@ -52,17 +53,16 @@ public class ExporterTest {
             doc = createDocument(fieldName);
         }
     
-        public void importVefData(String vefData) {
-            doc.importVEF( doc .getField() .one(), vefData );
+        public void importVefData(String vefData)
+        {
+            Map<String, Object> params = new HashMap<>();
+            params .put( "vef", vefData );
+            params .put( "scale", doc .getField() .one() );
+            doc .doEdit( "LoadVEF/quaternion", params );
         }
 
         public void select( Manifestation man ) {
-            UndoableEdit edit = doc.selectManifestation (man, false);
-            try {
-                edit.perform();
-            } catch (Command.Failure ex) {
-                throw new RuntimeException(ex);
-            }
+            doc .doPickEdit( man, "SelectManifestation" );
         }
 
         public String exportModelAsVEF() {

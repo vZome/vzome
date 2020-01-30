@@ -1,6 +1,6 @@
 package com.vzome.core.algebra;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -9,6 +9,8 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 
 public class AlgebraicMatrixTest {
+    
+    static final double zeroDelta = 0.0D;
 
     @Test
     public void testDeterminant1D()
@@ -24,7 +26,7 @@ public class AlgebraicMatrixTest {
         assertEquals("properly dimensioned vectors", c0.dimension(), m.getMatrix().length);
         
         AlgebraicNumber d = m.determinant(); // calculate it
-        assertEquals( "calculated determinant", -17D, d.evaluate());
+        assertEquals( "calculated determinant", -17D, d.evaluate(), zeroDelta);
         
         assertEquals( "The determinant of a square matrix equals the determinant of its transpose.", d, m.transpose().determinant());
     }
@@ -44,7 +46,7 @@ public class AlgebraicMatrixTest {
         assertEquals("properly dimensioned vectors", c0.dimension(), m.getMatrix().length);
         
         AlgebraicNumber d = m.determinant(); // calculate it
-        assertEquals( "calculated determinant", -2D, d.evaluate());
+        assertEquals( "calculated determinant", -2D, d.evaluate(), zeroDelta);
         
         assertEquals( "The determinant of a square matrix equals the determinant of its transpose.", d, m.transpose().determinant());
     }
@@ -65,7 +67,7 @@ public class AlgebraicMatrixTest {
         assertEquals("properly dimensioned vectors", c0.dimension(), m.getMatrix().length);
         
         AlgebraicNumber d = m.determinant(); // calculate it
-        assertEquals( "calculated determinant", -12D, d.evaluate());
+        assertEquals( "calculated determinant", -12D, d.evaluate(), zeroDelta);
         
         assertEquals( "The determinant of a square matrix equals the determinant of its transpose.", d, m.transpose().determinant());
     }
@@ -87,7 +89,7 @@ public class AlgebraicMatrixTest {
         assertEquals("properly dimensioned vectors", c0.dimension(), m.getMatrix().length);
         
         AlgebraicNumber d = m.determinant(); // calculate it
-        assertEquals( "calculated determinant", -1240D, d.evaluate());
+        assertEquals( "calculated determinant", -1240D, d.evaluate(), zeroDelta);
         
         assertEquals( "The determinant of a square matrix equals the determinant of its transpose.", d, m.transpose().determinant());
     }
@@ -110,7 +112,7 @@ public class AlgebraicMatrixTest {
         assertEquals("properly dimensioned vectors", c0.dimension(), m.getMatrix().length);
         
         AlgebraicNumber d = m.determinant(); // calculate it
-        assertEquals( "calculated determinant", 27940D, d.evaluate());
+        assertEquals( "calculated determinant", 27940D, d.evaluate(), zeroDelta);
         
         assertEquals( "The determinant of a square matrix equals the determinant of its transpose.", d, m.transpose().determinant());
     }
@@ -168,7 +170,7 @@ public class AlgebraicMatrixTest {
         
         final AlgebraicMatrix t = m.transpose();
         final AlgebraicMatrix mt = m.times(t);
-                assertTrue("Multiplying a non-square matrix by its transpose results in a symmetric square matrix", mt.isSquare());
+        assertTrue("Multiplying a non-square matrix by its transpose results in a symmetric square matrix", mt.isSquare());
         assertEquals("A 3x5 matrix times a 5x3 matrix generates a 3x3 matrix", nRows, mt.getMatrix().length);
         
         // reverse the order of the multiplication
@@ -229,10 +231,27 @@ public class AlgebraicMatrixTest {
         assertEquals( r .timesColumn( c1 ), b1 );
         assertEquals( r .timesColumn( c2 ), b2 );
     }
+ 
+    @Test
+    public void testMatrixInverse()
+    {
+        final AlgebraicField field = new PentagonField();
+        final AlgebraicMatrix identity = new AlgebraicMatrix( field, 3 );
+
+        AlgebraicVector c0 = new AlgebraicVector( field.one(), field.zero(), field .createRational( 5 ) );
+        AlgebraicVector c1 = new AlgebraicVector( field.one(), field.createRational( 2 ), field .createRational( 5 ) );
+        AlgebraicVector c2 = new AlgebraicVector( field.one(), field.createRational( 3 ), field .one() );
+        AlgebraicMatrix matrix = new AlgebraicMatrix( c0, c1, c2 );
+        assertFalse(matrix.equals(identity));
+        
+        AlgebraicMatrix result = matrix.times(matrix.inverse());
+
+        assertTrue(result.equals(identity));
+    }
 
     // This test was moved from AlgebraicNumberTest to AlgebraicMatrixTest 
     @Test
-    public void testMatrixInverse()
+    public void testMatrixTranspose()
     {
         AlgebraicField field = new PentagonField();
 
@@ -246,6 +265,5 @@ public class AlgebraicMatrixTest {
         assertEquals( m .timesColumn( in ), out );
         assertEquals( m .transpose() .timesRow( in ), out );
     }
-
 
 }

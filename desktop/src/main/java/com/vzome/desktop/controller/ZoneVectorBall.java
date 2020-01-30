@@ -75,7 +75,7 @@ public abstract class ZoneVectorBall
      */
     public void setVector( Vector3d vector )
     {
-    	zoneVector3d = vector;
+        zoneVector3d = vector;
         mapVectorToAxis();
     }
 
@@ -84,10 +84,16 @@ public abstract class ZoneVectorBall
         RealVector vector = new RealVector( zoneVector3d.x, zoneVector3d.y, zoneVector3d.z );
         Axis oldAxis = zone;
         zone = orbits .getAxis( vector );
-        if ( zone == null && oldAxis == null )
+        if ( zone == null && oldAxis == null ) {
+            if ( logger .isLoggable( Level.FINER ) )
+                logger .finer( "mapVectorToAxis null zone for " + vector );
             return;
-        if ( zone != null && zone .equals(  oldAxis ) )
+        }
+        if ( zone != null && zone .equals(  oldAxis ) ) {
+            if ( logger .isLoggable( Level.FINER ) )
+                logger .finer( "mapVectorToAxis  zone " + zone + " unchanged for " + vector );
             return;
+        }
 		if ( logger .isLoggable( Level.FINER ) )
 			logger .finer( "preview finished at  " + zone + " for " + vector );
         zoneChanged( oldAxis, zone );

@@ -3,148 +3,313 @@
 
 package org.vorthmann.zome.render.jogl;
 
+import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.Collection;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.glu.GLU;
 import javax.vecmath.Matrix4d;
-import javax.vecmath.Point3d;
+import javax.vecmath.Vector3f;
 
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.GLDrawableFactory;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLOffscreenAutoDrawable;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.math.FloatUtil;
+import com.jogamp.opengl.math.Ray;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
+import com.vzome.core.math.Line;
+import com.vzome.core.math.RealVector;
+import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.opengl.OutlineRenderer;
+import com.vzome.opengl.Renderer;
+import com.vzome.opengl.SolidRenderer;
 
-public class JoglRenderingViewer implements RenderingViewer
+/**
+ * A lower-level, and hopefully more performant alternative to Java3dRenderingViewer.
+ * 
+ * Note that even JOGL is behind the times, still supporting immediate mode:
+ * 
+ *   https://www.khronos.org/opengl/wiki/Legacy_OpenGL
+ *   
+ * I have not found any modern tutorials for JOGL, so I'm working from
+ * 
+ *   http://www.opengl-tutorial.org/
+ * 
+ * @author vorth
+ *
+ */
+public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 {
-	private final JoglScene scene;
-	private FPSAnimator animator;
-	private final GLU glu = new GLU();
-	private int width, height;
-	private double near = 100, far = 2000, fov = 45;
-	private double halfEdge = 100;
+    private final JoglScene scene;
+    private JoglOpenGlShim glShim;
+    private Renderer outlines = null;
+    private Renderer solids = null;
+    private FPSAnimator animator;
 
-	public JoglRenderingViewer( JoglScene scene, GLCanvas canvas )
-	{
-		this .scene = scene;
+    private float near = 100, far = 2000, fovX = 0.5f;
+    private float[] projection = new float[16];
+    private float[] modelView = new float[16]; // stored in column-major order, for JOGL-friendliness
+    private float aspectRatio = 1f;
+    private float halfEdgeX;
+    private float[][] lightDirections;
+    private float[][] lightColors;
+    private float[] ambientLight;
+    private int width;
+    private int height;
+    private boolean forceRender = true;
+    private float fogFront;
 
-		if ( canvas == null )
-			return;
-		
-		canvas .addGLEventListener( new GLEventListener()
-		{    
-            @Override
-            public void reshape( GLAutoDrawable glautodrawable, int x, int y, int width, int height )
-            {
-                JoglRenderingViewer.this .width = width;
-                JoglRenderingViewer.this .height = height;
-                JoglRenderingViewer.this .updateView( glautodrawable .getGL() .getGL2() );
-            }
-            
-            @Override
-            public void init( GLAutoDrawable glautodrawable ) {}
-            
-            @Override
-            public void dispose( GLAutoDrawable glautodrawable ) {}
-            
-            @Override
-            public void display( GLAutoDrawable glautodrawable )
-            {
-                JoglRenderingViewer.this .updateView( glautodrawable .getGL() .getGL2() );
-            	// GL commands to render the scene here
-            	JoglRenderingViewer.this .scene .render( glautodrawable .getGL() .getGL2() );
-            }
-        });
-		
-        // Start animator (which should be a field).
-        this .animator = new FPSAnimator( canvas, 60 );
-        this .animator .start();
-	}
-
-    private void updateView( GL2 gl2 )
+    public JoglRenderingViewer( Lights lights, JoglScene scene, GLAutoDrawable drawable )
     {
-        gl2 .glMatrixMode( GL2.GL_PROJECTION );
-        gl2 .glLoadIdentity();
+        this .scene = scene;
 
-        // coordinate system origin at lower left with width and height same as the window
-        if ( this .fov == 0 )
-        	gl2 .glOrtho( - this .halfEdge, this .halfEdge, - this .halfEdge, this .halfEdge, this .near, this .far );
-        else
-        	this .glu .gluPerspective( this .fov, this .width / this .height, this .near, this .far );
-        glu .gluLookAt( 0, 0, (this .far - this .near) / 2f, 0, 0, 0, 0, 1, 0 );
+        if ( drawable == null )
+            return;
 
-        gl2 .glMatrixMode( GL2.GL_MODELVIEW );
-        gl2 .glLoadIdentity();
+        int num = lights .size();
+        this .lightDirections = new float[num][];
+        this .lightColors = new float[num][];
+        for ( int i = 0; i < num; i++ ) {
+            Vector3f direction = new Vector3f();
+            Color color = lights.getDirectionalLight( i, direction ); // sets direction as a side-effect
+            this .lightColors[i] = new float[4];
+            color .getRGBColorComponents( this .lightColors[i] );
+            this .lightDirections[i] = new float[3];
+            this .lightDirections[i][0] = direction .x;
+            this .lightDirections[i][1] = direction .y;
+            this .lightDirections[i][2] = direction .z;
+        }
+        Color color = lights .getAmbientColor();
+        this .ambientLight = new float[4];
+        color .getRGBColorComponents( this .ambientLight );
 
-        gl2 .glViewport( 0, 0, this .width, this .height );
+        drawable .addGLEventListener( this );
+
+        // Start animator (which should be a field).
+        this .animator = new FPSAnimator( drawable, 60 );
+        this .animator .start();
     }
 
-	@Override
-	public void setEye( int eye )
-	{
-		// TODO Auto-generated method stub
+    // Private methods
+    
+    private void render()
+    {
+        if ( this .solids == null )
+            return; // still initializing
+        
+        this .solids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        this .solids .setView( this .modelView, this .projection, this .fogFront, this .far );
+        // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt and is consistent with captureImage()
+        this .outlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        this .outlines .setView( this.modelView, projection, this .fogFront, this .far );
+        this .scene .render( this .solids, this .outlines, this .forceRender );
+        this .forceRender = false;
+    }
+    
+    private void setProjection()
+    {
+        if ( this .fovX == 0f ) {
+            float halfEdgeY = this .halfEdgeX / this .aspectRatio;
+            FloatUtil .makeOrtho( projection, 0, true, -halfEdgeX, halfEdgeX, -halfEdgeY, halfEdgeY, this .near, this .far );
+        } else {
+            // The Camera model is set up for fovX, but FloatUtil.makePerspective wants fovY
+            float fovY = this .fovX / this .aspectRatio;
+            FloatUtil .makePerspective( projection, 0, true, fovY, this .aspectRatio, this .near, this .far );
+        }
+        float diff = ( this .far - this .near )/5; // offset from near and far by 20%
+        this .fogFront = near + 2 * diff;
+        this .forceRender  = true;
+    }
 
-	}
+    // These are GLEventListener methods
 
-	@Override
-	public void setViewTransformation( Matrix4d trans, int eye )
-	{
-		// TODO Auto-generated method stub
+    @Override
+    public void init( GLAutoDrawable drawable )
+    {
+        this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
+        boolean useVBOs = true;  // this context will rendered many, many times
+        this .solids = new SolidRenderer( this .glShim, useVBOs );
+        this .outlines = new OutlineRenderer( this .glShim, useVBOs );
+        // store the scene geometry
+    }
 
-	}
+    @Override
+    public void dispose( GLAutoDrawable drawable )
+    {
+        this .animator .stop();
+    }
 
-	@Override
-	public void setPerspective( double fov, double aspectRatio, double near, double far )
-	{
-		this .fov = fov;
-		this .near = near;
-		this .far = far;
-	}
+    @Override
+    public void display( GLAutoDrawable drawable )
+    {
+        if ( this .glShim .isSameContext( drawable .getGL() .getGL2() ) ) {
+            this .render();
+        }
+        else
+            System.out.println( "Different GL2!" );
+    }
 
-	@Override
-	public void setOrthographic( double halfEdge, double near, double far )
-	{
-		this .fov = 0;
-		this .halfEdge = halfEdge / 70;
-		this .near = near;
-		this .far = far;
-	}
+    // These are RenderingViewer methods
+    
+    @Override
+    public void setEye( int eye ) {}
 
-	@Override
-	public RenderedManifestation pickManifestation( MouseEvent e )
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void setViewTransformation( Matrix4d trans, int eye )
+    {
+        Matrix4d copy = new Matrix4d();
+        copy .invert( trans );
+        int i = 0;
+        // JOGL requires column-major order
+        for ( int column = 0; column < 4; column++ )
+            for ( int row = 0; row < 4; row++ )
+            {
+                this .modelView[ i ] = (float) copy .getElement( row, column );
+                ++i;
+            }
+        this .forceRender  = true;
+    }
 
-	@Override
-	public Collection pickCube()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
+    {
+        this.width = width;
+        this.height = height;
+        this .aspectRatio = (float) width / (float) height;
+        this .setProjection();
+    }
 
-	@Override
-	public void pickPoint( MouseEvent e, Point3d imagePt, Point3d eyePt )
-	{
-		// TODO Auto-generated method stub
+    @Override
+    public void setPerspective( double fovX, double aspectRatio, double near, double far )
+    {
+        this .fovX = (float) fovX;
+        this .near = (float) near;
+        this .far = (float) far;
+        this .setProjection();
+    }
 
-	}
+    @Override
+    public void setOrthographic( double halfEdgeX, double near, double far )
+    {
+        this .halfEdgeX = (float) halfEdgeX;
+        this .fovX = 0;
+        this .near = (float) near;
+        this .far = (float) far;
+        this .setProjection();
+    }
 
-	@Override
-	public RenderingChanges getRenderingChanges()
-	{
-		return this .scene;
-	}
+    @Override
+    public RenderedManifestation pickManifestation( MouseEvent e )
+    {
+        Line ray = this .pickRay( e );
 
-	@Override
-	public void captureImage( int maxSize, ImageCapture capture )
-	{
-		// TODO Auto-generated method stub
-	}
+        // The scene will loop over all RMs.  Rendered balls will support the RM.isHit(intersector)
+        //   method.  We sort the hits as we go.
+        NearestPicker picker = new NearestPicker( ray, this .modelView, this .projection );
+        this .scene .pick( picker );
+        return picker .getNearest();
+    }
 
+    /* (non-Javadoc)
+     * @see com.vzome.desktop.controller.RenderingViewer#pickRay(java.awt.event.MouseEvent, com.vzome.core.math.RealVector, com.vzome.core.math.RealVector)
+     */
+    @Override
+    public Line pickRay( MouseEvent e )
+    {
+        Component canvas = e .getComponent();
+        int width = canvas .getWidth();
+        int height = canvas .getHeight();
+        int mouseX = e .getX();
+        int mouseY = e .getY();
+        
+        // I wasted a lot of time here looking at the Java3d implementation, which had a bug.
+        //  Furthermore, it was based on the Java3d notion of "image plate" coordinates, which
+        //  are hard to understand in terms of OpenGL, at least from the documentation I could
+        //  find.  I'm very happy to be rid of Java3d.
+        
+        Ray ray = new Ray();
+        FloatUtil .mapWinToRay(
+                mouseX, height - mouseY, 0f, 1f,  // Y is reversed from AWT to GL.  Z must be zero or very small.
+                this.modelView, 0,
+                this.projection, 0,
+                new int[] { 0, 0, width, height }, 0,
+                ray,
+                new float[16], new float[16], new float[4] );
+        
+        // Ray is expressed in world coordinates.
+        
+        return new Line( new RealVector( ray.orig[0], ray.orig[1], ray.orig[2] ), new RealVector( ray.dir[0], ray.dir[1], ray.dir[2] ) );
+    }
+    
+    @Override
+    public Collection<RenderedManifestation> pickCube()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public RenderingChanges getRenderingChanges()
+    {
+        return this .scene;
+    }
+
+    @Override
+    public void captureImage( int maxSize, boolean withAlpha, ImageCapture capture )
+    {
+        // Key parts of this copied from TestGLOffscreenAutoDrawableBug1044AWT in the Github jogl repo,
+        //   now modified with changes to fix the capture on Windows, thanks to David Hall.
+        
+        int imageWidth = this .width;
+        int imageHeight = this .height;
+        if ( maxSize > 0 ) {
+            imageWidth = maxSize;
+            imageHeight = imageWidth * 4 / 5;
+        }
+        
+        GLProfile glprofile = GLProfile .getDefault();
+        final GLDrawableFactory fac = GLDrawableFactory .getFactory( glprofile );
+        final GLCapabilities glcapabilities = new GLCapabilities( glprofile );
+        glcapabilities .setDepthBits( 32 );
+        // Without line below, there is an error on Windows.
+        glcapabilities .setDoubleBuffered( false );
+        final GLOffscreenAutoDrawable drawable = fac.createOffscreenAutoDrawable( null, glcapabilities, null, imageWidth, imageHeight );
+        drawable.display();
+        final GLContext context = drawable .getContext();
+        context .makeCurrent();
+
+        System.err.println( "Chosen: " + drawable .getChosenGLCapabilities() );
+
+        final GL2 gl2 = context .getGL() .getGL2();
+        JoglOpenGlShim shim = new JoglOpenGlShim( gl2 );
+        boolean useVBOs = false;  // this context will be discarded after a single rendering
+        
+        Renderer tempSolids = new SolidRenderer( shim, useVBOs  );
+        tempSolids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        tempSolids .setView( this .modelView, this .projection, this .fogFront, this .far );
+        Renderer tempOutlines = new OutlineRenderer( shim, useVBOs );
+        // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt anything
+        tempOutlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
+        tempOutlines .setView( this .modelView, this .projection, this .fogFront, this .far );
+        this .scene .render( tempSolids, tempOutlines, true );
+
+        final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, withAlpha );
+        final BufferedImage image = agb .readPixelsToBufferedImage( gl2, true );
+        
+        capture .captureImage( image );
+
+        context .destroy();
+        drawable .setRealized( false );
+        System.out.println( "Done!" );
+    }
 }

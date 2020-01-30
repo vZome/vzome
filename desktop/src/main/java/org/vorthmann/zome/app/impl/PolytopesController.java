@@ -4,6 +4,12 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
@@ -11,31 +17,36 @@ import org.vorthmann.ui.DefaultController;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.Quaternion;
+import com.vzome.core.algebra.VefVectorExporter;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.WythoffConstruction;
 
 public class PolytopesController extends DefaultController
 {
-	private final DocumentModel model;
-    
+    private final DocumentModel model;
+
     private String group = "H4";
-    
+
     private final String[] groups;
 
     private boolean[] generateEdge = new boolean[]{ false, false, false, true };
     private boolean[] renderEdge = new boolean[]{ true, true, true, true };
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
-    private final VectorController rotationQuaternion;
     private final AlgebraicField field;
     private final AlgebraicNumber defaultScaleFactor;
+    private final FieldApplication fieldApp;
 
     public PolytopesController( DocumentModel document )
     {
         this .model = document;
         this .field = document .getField();
+        this .fieldApp = document .getFieldApplication();
         this .defaultScaleFactor = field .createPower( Direction .USER_SCALE + 2 );
         for (int i = 0; i < edgeScales.length; i++)
         {
@@ -43,62 +54,62 @@ public class PolytopesController extends DefaultController
         }
         // TODO: get the list from the field itself
         if ( null == document .getFieldApplication() .getQuaternionSymmetry( "H_4" ) ) {
-        	groups = new String[]{ "A4", "B4/C4", "D4", "F4" };
-        	group = "F4";
+            groups = new String[]{ "A4", "B4/C4", "D4", "F4" };
+            group = "F4";
         } else {
-        	groups = new String[]{ "A4", "B4/C4", "D4", "F4", "H4" };
-        	group = "H4";
+            groups = new String[]{ "A4", "B4/C4", "D4", "F4", "H4" };
+            group = "H4";
         }
-        rotationQuaternion = new VectorController( field .basisVector( 4, AlgebraicVector.W4 ) );
     }
 
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
-    	switch ( action ) {
+        switch ( action ) {
 
-    	case "setQuaternion":
-    		/*
-    		 *   The old way:
-    		 *     With no symmetry axis set, the 120-cell comes out with medium blue struts.
-    		 *     With a short blue symmetry axis set, it comes out with double short blue struts.
-    		 *   We don't need to scale that way now, but we do need to scale in a predictable way.
-    		 *   The new way:
-    		 *     A quaternion value of (1,0,0,0) produces a 120-cell with medium blue struts, as before.
-    		 *     With no quaternion strut selected, the quaternion value defaults to (1,0,0,0).
-    		 *     With a single short blue selected as the quaternion, the quaternion is (0,1,0,0) or similar.
-    		 */
-    		Segment strut = model .getSelectedSegment();
-    		if ( strut != null ) {
-    		    AlgebraicVector vector = strut .getOffset();
-    		    SymmetrySystem symm = model .getSymmetrySystem();
-    		    Axis zone = symm .getAxis( vector );
-    		    AlgebraicNumber len = zone .getLength( vector );
-    		    len = zone .getOrbit() .getLengthInUnits( len );
-    		    vector = zone .normal() .scale( len );
-    		    rotationQuaternion .setVector( vector .inflateTo4d() );
-    		} else {
-    			AlgebraicVector vector = this .field .basisVector( 4, AlgebraicVector.W4 );
-    			rotationQuaternion .setVector( vector );
-    		}
-			return;
+        case "setQuaternion":
+            /*
+             *   The old way:
+             *     With no symmetry axis set, the 120-cell comes out with medium blue struts.
+             *     With a short blue symmetry axis set, it comes out with double short blue struts.
+             *   We don't need to scale that way now, but we do need to scale in a predictable way.
+             *   The new way:
+             *     A quaternion value of (1,0,0,0) produces a 120-cell with medium blue struts, as before.
+             *     With no quaternion strut selected, the quaternion value defaults to (1,0,0,0).
+             *     With a single short blue selected as the quaternion, the quaternion is (0,1,0,0) or similar.
+             */
+            Segment strut = model .getSelectedSegment();
+            if ( strut != null ) {
+                AlgebraicVector vector = strut .getOffset();
+                SymmetrySystem symm = model .getSymmetrySystem();
+                Axis zone = symm .getAxis( vector );
+                AlgebraicNumber len = zone .getLength( vector );
+                len = zone .getOrbit() .getLengthInUnits( len );
+                vector = zone .normal() .scale( len );
+                VectorController vc = (VectorController) super .getSubController( "quaternion" );
+                vc .setVector( vector .inflateTo4d() );
+            } else {
+                // use whatever value the quaternion has from before
+            }
+            return;
 
-		default:
-			break;
-		}
+        default:
+            break;
+        }
         if ( "generate".equals( action ) )
         {
-            int index = 0;
-            int edgesToRender = 0;
-            for ( int i = 0; i < 4; i++ )
-            {
-                if ( generateEdge [ i ] )
-                    index += 1 << i;
-                if ( renderEdge[ i ] )
-                    edgesToRender += 1 << i;
-            }
-            AlgebraicVector quaternion = rotationQuaternion .getVector() .scale( this .defaultScaleFactor );
-            model .generatePolytope( group, group, index, edgesToRender, quaternion, edgeScales );
+            int index = encodeBits( this .generateEdge );
+            int edgesToRender = encodeBits( this .renderEdge );
+            VectorController vc = (VectorController) super .getSubController( "quaternion" );
+            AlgebraicVector quaternion = vc .getVector() .scale( this .defaultScaleFactor );
+            Map<String, Object> params = new HashMap<>();
+            params .put( "groupName", group );
+            params .put( "renderGroupName", group );
+            params .put( "index", index );
+            params .put( "edgesToRender", edgesToRender );
+            params .put( "edgeScales", edgeScales );
+            params .put( "quaternion", quaternion );
+            model .doEdit( "Polytope4d", params );
         }
         else if ( action .startsWith( "setGroup." ) )
         {
@@ -121,11 +132,68 @@ public class PolytopesController extends DefaultController
         else
             super.doAction( action, e );
     }
+    
+    private static int encodeBits( boolean[] bits )
+    {
+        int result = 0;
+        for ( int i = 0; i < 4; i++ )
+        {
+            if ( bits[ i ] )
+                result += 1 << i;
+        }
+        return result;
+    }
+
+    @Override
+    public void doFileAction( String command, File file )
+    {
+        try {
+            Writer out = new FileWriter( file );
+            try {
+                int index = encodeBits( this .generateEdge );
+                int edgesToRender = encodeBits( this .renderEdge );
+                VectorController vc = (VectorController) super .getSubController( "quaternion" );
+                AlgebraicVector quaternion = vc .getVector() .scale( this .defaultScaleFactor );
+                quaternion = quaternion .scale( field .createPower( -5 ) );
+                Quaternion rightQuat = new Quaternion( field, quaternion );
+                VefVectorExporter exporter = new VefVectorExporter( out, this .field );
+                this .fieldApp .constructPolytope( group, index, edgesToRender, this .edgeScales, new WythoffConstruction.Listener()
+                {
+                    @Override
+                    public Object addVertex( AlgebraicVector v )
+                    {
+                        AlgebraicVector projected = rightQuat .leftMultiply( v );
+                        exporter .exportPoint( projected );
+                        return projected;
+                    }
+                    
+                    @Override
+                    public Object addEdge( Object p1, Object p2 )
+                    {
+                        exporter .exportSegment( (AlgebraicVector) p1, (AlgebraicVector) p2 );
+                        return null;
+                    }
+                    
+                    @Override
+                    public Object addFace( Object[] vertices )
+                    {
+                        return null;
+                    }
+                });
+                exporter .finishExport();
+            } finally {
+                out.close();
+            }
+        }
+        catch ( IOException e ) {
+            mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
+        }
+    }
 
     @Override
     public String[] getCommandList( String listName )
     {
-    	return this .groups;
+        return this .groups;
     }
 
     @Override
@@ -152,15 +220,12 @@ public class PolytopesController extends DefaultController
     }
 
     @Override
-	public Controller getSubController( String name )
+    public Controller getSubController( String name )
     {
-    	switch ( name ) {
+        switch ( name ) {
 
-    	case "rotation":
-			return this .rotationQuaternion;
-
-		default:
-			return super.getSubController( name );
-		}
-	}
+        default:
+            return super.getSubController( name );
+        }
+    }
 }

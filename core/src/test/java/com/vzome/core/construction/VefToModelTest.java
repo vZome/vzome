@@ -3,10 +3,10 @@
 
 package com.vzome.core.construction;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
@@ -173,6 +173,36 @@ public class VefToModelTest
         v0 = p0.getLocation();
         assertEquals(expected, v0);
 
+    }
+
+    @Test
+    public void testParseOffset() {
+        final Projection projection = null;
+        final NewConstructions effects = new NewConstructions();
+        final AlgebraicVector offset = null;
+        final AlgebraicField field = new RootThreeField();
+
+        AlgebraicNumber scale = field.one();
+
+        VefToModel parser = new VefToModel(projection, effects, scale, offset);
+
+        String vefData = "vZome VEF 10 field rootThree "
+                + "offset 10 -20 30 -40 "
+                + "3 "
+                + "0 0 0 0 "
+                + "0 1 2 3 "
+                + "4 5 6 7 "
+                ;
+
+        AlgebraicVector expected = field.createVector(new int[][] {
+            {5-20,1, 0,1},
+            {6+30,1, 0,1},
+            {7-40,1, 0,1}
+        });
+        parser.parseVEF(vefData, field);
+        Point p0 = (Point) effects.get(2);
+        AlgebraicVector v0 = p0.getLocation();
+        assertEquals(expected, v0);
     }
 
     @Test
@@ -546,7 +576,7 @@ public class VefToModelTest
         double r = new RootTwoField(). createAlgebraicNumber( terms ).evaluate();
         double p = new PentagonField(). createAlgebraicNumber( terms ).evaluate();
         double d = new SnubDodecField().createAlgebraicNumber( terms ).evaluate();
-        assertEquals(p, d);
+        assertEquals(p, d, 0.0D);
         assertFalse(p == r);
 
         int testsPassed = 0;

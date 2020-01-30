@@ -1,6 +1,6 @@
 package com.vzome.core.generic;
 
-import static junit.framework.TestCase.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author David Hall

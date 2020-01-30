@@ -3,17 +3,19 @@
 
 package com.vzome.core.construction;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 
-import junit.framework.TestCase;
-
-public class Test4dRotations extends TestCase
+public class Test4dRotations
 {
-
+    @Test
     public void testRotatedPoint()
     {
         AlgebraicField field = new PentagonField();

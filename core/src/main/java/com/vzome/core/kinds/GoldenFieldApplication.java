@@ -17,26 +17,25 @@ import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.commands.CommandTetrahedralSymmetry;
 import com.vzome.core.commands.CommandUniformH4Polytope;
 import com.vzome.core.commands.CommandVanOss600Cell;
-import com.vzome.core.editor.AxialStretchTool;
-import com.vzome.core.editor.AxialSymmetryToolFactory;
-import com.vzome.core.editor.BookmarkTool;
-import com.vzome.core.editor.IcosahedralToolFactory;
-import com.vzome.core.editor.InversionTool;
-import com.vzome.core.editor.LinearMapTool;
-import com.vzome.core.editor.MirrorTool;
-import com.vzome.core.editor.ModuleTool;
-import com.vzome.core.editor.PlaneSelectionTool;
-import com.vzome.core.editor.RotationTool;
-import com.vzome.core.editor.ScalingTool;
-import com.vzome.core.editor.TetrahedralToolFactory;
 import com.vzome.core.editor.ToolsModel;
-import com.vzome.core.editor.TranslationTool;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.render.Shapes;
+import com.vzome.core.tools.AxialStretchTool;
+import com.vzome.core.tools.AxialSymmetryToolFactory;
+import com.vzome.core.tools.IcosahedralToolFactory;
+import com.vzome.core.tools.InversionTool;
+import com.vzome.core.tools.LinearMapTool;
+import com.vzome.core.tools.MirrorTool;
+import com.vzome.core.tools.ProjectionTool;
+import com.vzome.core.tools.RotationTool;
+import com.vzome.core.tools.ScalingTool;
+import com.vzome.core.tools.TetrahedralToolFactory;
+import com.vzome.core.tools.TranslationTool;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
 
@@ -50,7 +49,11 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  *
  */
 public class GoldenFieldApplication extends DefaultFieldApplication
-{
+{        
+    private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", getField() );
+    private final QuaternionicSymmetry H4_ROT = new QuaternionicSymmetry( "H4_ROT", "com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef", getField() );
+    private final QuaternionicSymmetry T2 = new QuaternionicSymmetry( "2T", "com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef", getField() );
+
     public GoldenFieldApplication()
     {
         super( new PentagonField() );
@@ -114,7 +117,7 @@ public class GoldenFieldApplication extends DefaultFieldApplication
         private final Command IxTsymmetry = new CommandQuaternionSymmetry( H4, T2 );
         private final Command TxTsymmetry = new CommandQuaternionSymmetry( T2, T2 );
         private final Command vanOss600cell = new CommandVanOss600Cell();
-        private final Command octasymm = new CommandSymmetry( icosaSymm );
+        private final Command octasymm = new CommandSymmetry( new OctahedralSymmetry( getField(), "", "" ) );
 
         @Override
         public Symmetry getSymmetry()
@@ -159,6 +162,7 @@ public class GoldenFieldApplication extends DefaultFieldApplication
                 result .add( new RotationTool.Factory( tools, this .icosaSymm ) );
 //                 result .add( new PlaneSelectionTool.Factory( tools ) );
                 result .add( new TranslationTool.Factory( tools ) );
+                result .add( new ProjectionTool.Factory( tools ) );
                 break;
 
             case LINEAR_MAP:
@@ -232,10 +236,6 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 //            return "org/vorthmann/zome/app/icosahedral-developer.vZome";
         }
     };
-        
-    private final QuaternionicSymmetry H4 = new QuaternionicSymmetry( "H_4", "com/vzome/core/math/symmetry/H4roots.vef", getField() );
-    private final QuaternionicSymmetry H4_ROT = new QuaternionicSymmetry( "H4_ROT", "com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef", getField() );
-    private final QuaternionicSymmetry T2 = new QuaternionicSymmetry( "2T", "com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef", getField() );
 
     @Override
     public Collection<SymmetryPerspective> getSymmetryPerspectives()
@@ -284,25 +284,16 @@ public class GoldenFieldApplication extends DefaultFieldApplication
     @Override
     public void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools )
     {
+        // register the default tool factories
+        super.registerToolFactories( toolFactories, tools );
+        
+        // add any tools that are unique for this field
         IcosahedralSymmetry symm = (IcosahedralSymmetry) icosahedralPerspective .getSymmetry();
         // symm matters for this one, since it is final in the tool
         toolFactories .put( "AxialStretchTool", new AxialStretchTool.Factory( tools, symm, false, false, false ) );
-        
-        // We might as well use symm in the rest, though it will be overwritten by SymmetryTool.setXmlAttributes()
+
+        // this one has to replace the same-named factory in the base class
         toolFactories .put( "SymmetryTool", new IcosahedralToolFactory( tools, symm ) );
-        toolFactories .put( "RotationTool", new RotationTool.Factory( tools, symm ) );
-        toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, symm ) );
-        toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
-        toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
-        toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
-        toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
-        toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
-        
-        // These tool factories have to be available for loading legacy documents.
-        
-        toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, null, true ) );
-        toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
-        toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
     }
 
     private CommandUniformH4Polytope h4Builder = null;

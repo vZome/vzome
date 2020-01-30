@@ -16,6 +16,17 @@ import com.vzome.core.algebra.BigRational;
 
 public abstract class VefParser
 {
+    
+    // Version 10 supports:
+    // An offset vector may be specified which will be added to each vertex after it is scaled.
+    // If not specified, nothing is added.
+    public static final int VERSION_EXPLICIT_OFFSET = 10;
+    
+    // Version 9 supports:
+    // The number of dimensions may be specified for parsing AlgebraicVectors. 
+    // If not specified, use 4D for backward compatibility. 
+    public static final int VERSION_EXPLICIT_DIMENSION = 9;
+    
     // Version 8 supports:
     // Scale can optionally be represented as an AlgebraicVector with separate scale per coordinate
     // or as an AlgebraicNumber with the same scale for all coordinates (original behavior)
@@ -36,9 +47,13 @@ public abstract class VefParser
     
     private int mVersion = 0;
     
+    private int dimension = 4;
+    
     private boolean isRational = false;
 
     private transient AlgebraicField field;
+    
+    protected AlgebraicVector parsedOffset;
 
     protected abstract void startVertices( int numVertices );
     
@@ -148,25 +163,44 @@ public abstract class VefParser
             }
         }
         
-        AlgebraicVector scaleVector = new AlgebraicVector( field, 4 );
+        // format >= 9 allows the number of dimensions to be specified for parsing AlgebraicVectors 
+        if ( token .equals( "dimension" ) ) {
+            try {
+                token = tokens .nextToken();
+            } catch ( NoSuchElementException e1 ) {
+                throw new IllegalStateException( "VEF format error: no tokens after \"dimension\"" );
+            }
+            try {
+                this.dimension = Integer .parseInt( token );
+            } catch ( NumberFormatException e ) {
+                throw new RuntimeException( "VEF format error: dimension number (\"" + token + "\") must be an integer", e );
+            }
+            try {
+                token = tokens.nextToken();
+            } catch (NoSuchElementException e) {
+                throw new IllegalStateException( "VEF format error: no tokens after \"dimension\"" );
+            }
+        }
+        
+        AlgebraicVector scaleVector = new AlgebraicVector( field, this.dimension );
         if ( token .equals( "scale" ) ) {
             try {
                 token = tokens .nextToken();
                 // format >= 8 allows discreet scaling per coordinate with keyword "vector"
                 if ( token.equals("vector") ) {
                     try {
-                        for (int tokNum = 0; tokNum < 4; tokNum++) {
+                        for (int tokNum = 0; tokNum < this.dimension; tokNum++) {
                             token = tokens.nextToken();
                             AlgebraicNumber coord = parseIntegralNumber(token);
                             scaleVector.setComponent(tokNum, coord); // format is W X Y Z
                         }
                     } catch (NoSuchElementException e) {
-                        throw new IllegalStateException("VEF format error: scale vector requires 4 coordinates");
+                        throw new IllegalStateException("VEF format error: scale vector requires " + this.dimension + " coordinates");
                     }
                 }
                 else {
                     AlgebraicNumber scale = parseIntegralNumber( token );
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < this.dimension; i++) {
                         scaleVector.setComponent(i, scale);
                     }
                 }
@@ -176,8 +210,27 @@ public abstract class VefParser
             }
         }
         else {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < this.dimension; i++) {
                 scaleVector.setComponent(i, field.one());
+            }
+        }
+        
+        parsedOffset = new AlgebraicVector( field, this.dimension );
+        if ( token .equals( "offset" ) ) {
+            // format >= 10 allows an offset to be specified which will be added to each vertex after it is scaled
+            try {
+                for (int tokNum = 0; tokNum < this.dimension; tokNum++) {
+                    token = tokens.nextToken();
+                    AlgebraicNumber coord = parseIntegralNumber(token);
+                    parsedOffset.setComponent(tokNum, coord); // format is W X Y Z
+                }
+            } catch (NoSuchElementException e) {
+                throw new IllegalStateException("VEF format error: offset vector requires " + this.dimension + " coordinates");
+            }
+            try {
+                token = tokens.nextToken();
+            } catch (NoSuchElementException e) {
+                throw new IllegalStateException( "VEF format error: no tokens after \"offset\"" );
             }
         }
         
@@ -188,10 +241,13 @@ public abstract class VefParser
             throw new RuntimeException( "VEF format error: number of vertices (\"" + token + "\") must be an integer", e );
         }
         startVertices( numVertices );
+        // testing hasOffset is more efficent in a loop 
+        // than using !parsedOffset.isOrigin() which re-tests all coordinates in each iteration
+        final boolean hasOffset = !parsedOffset.isOrigin();
         for ( int i = 0 ; i < numVertices; i++ )
         {
-            AlgebraicVector v = field .origin( 4 );
-            for ( int tokNum = 0; tokNum < 4; tokNum ++ ) {
+            AlgebraicVector v = field .origin( this.dimension );
+            for ( int tokNum = 0; tokNum < this.dimension; tokNum ++ ) {
                 try {
                     token = tokens .nextToken();
                 } catch ( NoSuchElementException e1 ) {
@@ -207,6 +263,9 @@ public abstract class VefParser
 //                    field .setVectorComponent( v, (tokNum+1)%4, coord ); // format is X Y Z W
 //                else
                     v .setComponent( tokNum, coord ); // format is W X Y Z
+            }
+            if(hasOffset) {
+                v = v.plus(parsedOffset);
             }
             addVertex( i, v );
         }

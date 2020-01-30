@@ -6,12 +6,12 @@ import static com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.VEF_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.ZOMIC_FORMAT;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
@@ -432,7 +432,8 @@ public class AlgebraicNumberTest
     	
 	    assertEquals(
 	    	pent.createAlgebraicNumber( 2, 3 ).evaluate(),
-	    	snub.createAlgebraicNumber( 2, 3 ).evaluate()
+	    	snub.createAlgebraicNumber( 2, 3 ).evaluate(),
+	    	0.0D
 	    );
 	    
 	    assertTrue(  AlgebraicFields.haveSameInitialCoefficients(pent, PentagonField.FIELD_NAME) );	    

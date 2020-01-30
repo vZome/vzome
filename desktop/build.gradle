@@ -42,7 +42,7 @@ jvmArgs.each { entry ->
 }
 
 // for application distZip task
-distZip.archiveName = "${rootProject.appName}-Linux-${rootProject.version}b${rootProject.buildNumber}.zip"
+distZip.archiveName = "${rootProject.appName}-Linux-${rootProject.version}.${rootProject.buildNumber}.zip"
 
 // for application startScripts task
 startScripts.applicationName="${rootProject.appName}-${rootProject.version}"
@@ -58,8 +58,8 @@ sourceSets {
 
 dependencies {
 //    compile group: 'com.vzome.core', name: 'vzome-core', version:'0.16.0'
-    compile group: 'java3d', name: 'j3dcore', version:'1.6.0-final'
-    compile group: 'java3d', name: 'j3dutils', version:'1.6.0-final'
+//    compile group: 'java3d', name: 'j3dcore', version:'1.6.0-final'
+//    compile group: 'java3d', name: 'j3dutils', version:'1.6.0-final'
     compile group: 'java3d', name: 'vecmath', version:'1.6.0-final'
     compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version:'2.3.2'
     compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version:'2.3.2'
@@ -71,7 +71,7 @@ dependencies {
 sourceSets {
     main {
         java {
-            exclude 'org/vorthmann/zome/render/jogl/**'  // initial framework for a pure JOGL renderer is not ready for use
+            exclude 'org/vorthmann/zome/render/java3d/**' 
         }
         resources {
             // The convention-based default built-in srcDir is 'src/main/resources' 

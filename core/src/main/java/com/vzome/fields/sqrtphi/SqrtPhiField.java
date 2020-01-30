@@ -1,5 +1,6 @@
 package com.vzome.fields.sqrtphi;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.ParameterizedField;
 import com.vzome.core.algebra.PentagonField;
@@ -142,5 +143,12 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
             remapped[dim][7] = 1;
         }
         return super.createVector(remapped);
-    }        
+    }
+    
+    @Override
+    public AlgebraicNumber getGoldenRatio()
+    {
+        return getUnitTerm(2);
+    }
+    
 }

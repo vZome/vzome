@@ -23,11 +23,11 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Color;
-import com.vzome.core.render.RenderedModel.OrbitSource;
+import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Shapes;
 import com.vzome.desktop.controller.CameraController;
 
-public class SymmetryController extends DefaultController// implements RenderedModel.OrbitSource
+public class SymmetryController extends DefaultController
 {
     @Override
     public String getProperty( String string )
@@ -72,6 +72,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     private final Map<String, Controller> symmetryToolFactories = new LinkedHashMap<>();
     private final Map<String, Controller> transformToolFactories = new LinkedHashMap<>();
     private final Map<String, Controller> linearMapToolFactories = new LinkedHashMap<>();
+    private final RenderedModel renderedModel;
 
     public Symmetry getSymmetry()
     {
@@ -83,9 +84,10 @@ public class SymmetryController extends DefaultController// implements RenderedM
         return snapper;
     }
 
-    public SymmetryController( Controller parent, SymmetrySystem model )
+    public SymmetryController( Controller parent, SymmetrySystem model, RenderedModel mRenderedModel )
     {
-        this.symmetrySystem = model;
+        this .symmetrySystem = model;
+        renderedModel = mRenderedModel;
         Symmetry symmetry = model .getSymmetry();
         availableOrbits = new OrbitSet( symmetry );
         snapOrbits = new OrbitSet( symmetry );
@@ -237,22 +239,32 @@ public class SymmetryController extends DefaultController// implements RenderedM
     @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
-        if ( action .equals( "rZomeOrbits" )
-                || action .equals( "predefinedOrbits" )
-                || action .equals( "setAllDirections" ) )
-        {
+        switch (action) {
+
+        case "rZomeOrbits":
+        case "predefinedOrbits":
+        case "setAllDirections":
             availableController .doAction( action, e );
-        }
-        else if ( action .startsWith( "setStyle." ) )
-        {
-            String styleName =  action .substring( "setStyle." .length() );
-            this .symmetrySystem .setStyle( styleName );
-            super .doAction( action, e ); // falling through so that rendering gets adjusted
-        }
-        else {
-            boolean handled = this .symmetrySystem .doAction( action );
-            if ( ! handled )
-                super .doAction( action, e );
+            break;
+
+        case "ReplaceWithShape":
+            action += "/" + this .symmetrySystem .getName() + ":" + this .symmetrySystem .getStyle() .getName();
+            super .doAction( action, e );
+            break;
+
+        default:
+            if ( action .startsWith( "setStyle." ) )
+            {
+                String styleName =  action .substring( "setStyle." .length() );
+                this .symmetrySystem .setStyle( styleName );
+                this .renderedModel .setShapes( this .symmetrySystem .getShapes() );
+            }
+            else {
+                boolean handled = this .symmetrySystem .doAction( action );
+                if ( ! handled )
+                    super .doAction( action, e );
+            }
+            break;
         }
     }
 
@@ -275,7 +287,9 @@ public class SymmetryController extends DefaultController// implements RenderedM
         return this .symmetrySystem .getOrbits();
     }
 
-    public OrbitSource getOrbitSource()
+    // TODO: Can we get rid of this?  It is only needed by PreviewStrut.
+    //   We should be able to accomplish the sync with PropertyChangeListeners
+    public RenderedModel.OrbitSource getOrbitSource()
     {
         return this .symmetrySystem;
     }

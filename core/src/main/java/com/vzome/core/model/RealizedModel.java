@@ -193,6 +193,7 @@ public class RealizedModel implements Iterable<Manifestation> //implements Const
     
     public void setColor( Manifestation m, Color color )
     {
+        m .setColor( color );
         if ( m .isRendered() ) {
             for (ManifestationChanges next : mListeners) {
                 next .manifestationColored( m, color );

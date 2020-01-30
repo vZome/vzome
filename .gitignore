@@ -29,3 +29,5 @@ run-vzome.bat
 run-vzome.sh
 testOut.xml
 Thumbs.db
+_eclipse_workspace
+vZome.code-workspace

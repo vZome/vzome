@@ -153,4 +153,19 @@ public class RealVector
         hash = 41 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
         return hash;
     }
+
+    // For picking, where we want to avoid unnecessary object creation
+    public void addTo( float[] addend, float[] sum )
+    {
+        sum[ 0 ] = (float) (addend[ 0 ] + this.x);
+        sum[ 1 ] = (float) (addend[ 1 ] + this.y);
+        sum[ 2 ] = (float) (addend[ 2 ] + this.z);
+    }
+
+    public void toArray( float[] output )
+    {
+        output[ 0 ] = (float) this.x;
+        output[ 1 ] = (float) this.y;
+        output[ 2 ] = (float) this.z;
+    }
 }

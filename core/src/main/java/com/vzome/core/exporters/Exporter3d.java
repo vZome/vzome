@@ -19,12 +19,14 @@ public abstract class Exporter3d
     //    so actual ball diameter = .6958
     public static final double RZOME_BLUE_DIAMETER_INCHES = 0.6958d;
     
-    public static final double RZOME_BLUE_DIAMETER_CM = 1.768d;
+    public static final double RZOME_BLUE_DIAMETER_CM = 1.7673d;
     
     public static final double RZOME_INCH_SCALING = RZOME_BLUE_DIAMETER_INCHES / VZOME_BLUE_DIAMETER;
     
     public static final double RZOME_CM_SCALING = RZOME_BLUE_DIAMETER_CM / VZOME_BLUE_DIAMETER;
-	
+    
+    public static final double RZOME_MM_SCALING = RZOME_CM_SCALING * 10d;
+    
     // This scale factor corresponds to a vZome model that uses a long blue as the radius of a ball.
     //  norm squared of diameter in vZome: 1967.87  => diameter == 44.36
 	static final double VZOME_STRUT_MODEL_BALL_DIAMETER = 44.36d;

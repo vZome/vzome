@@ -68,4 +68,10 @@ public class TransparentRendering implements RenderingChanges
         throw new IllegalStateException();
     }
 
+    @Override
+    public boolean shapesChanged( Shapes shapes )
+    {
+        return this .mRealOne .shapesChanged( shapes );
+    }
+
 }
