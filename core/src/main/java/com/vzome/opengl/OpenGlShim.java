@@ -85,4 +85,6 @@ public interface OpenGlShim {
 	void multiplyMV(float[] lightPosInEyeSpace, float[] view, float[] mlightposinworldspace );
 
     void glPolygonOffset(float f, float g);
+
+    void glEnableBlending();
 }

@@ -183,6 +183,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         gl.glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
+        gl .glEnableBlending();
         gl .glEnableBackFaceCulling();
         gl .glEnableDepth();
         gl .glClear( background[0], background[1], background[2], background[3] );

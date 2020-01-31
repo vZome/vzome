@@ -254,6 +254,13 @@ public class JoglOpenGlShim implements OpenGlShim
     @Override
     public void glEnableBackFaceCulling()
     {
+        gl2 .glEnable( GL2 .GL_BLEND );
+    }
+
+    @Override
+    public void glEnableBlending()
+    {
         gl2 .glEnable( GL2 .GL_CULL_FACE );
+        gl2 .glBlendFunc( GL2 .GL_SRC_ALPHA, GL2 .GL_ONE_MINUS_SRC_ALPHA );
     }
 }
