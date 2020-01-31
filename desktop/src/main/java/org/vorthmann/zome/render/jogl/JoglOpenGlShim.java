@@ -250,4 +250,10 @@ public class JoglOpenGlShim implements OpenGlShim
     {
         gl2 .glUniform1f( param, f );
     }
+
+    @Override
+    public void glEnableBackFaceCulling()
+    {
+        gl2 .glEnable( GL2 .GL_CULL_FACE );
+    }
 }

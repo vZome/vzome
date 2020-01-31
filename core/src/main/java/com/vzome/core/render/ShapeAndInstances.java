@@ -188,6 +188,8 @@ public class ShapeAndInstances implements InstancedGeometry
             for( RenderedManifestation part : instances ) {
                 RealVector vector = part .getLocation();
                 int zone = part .getStrutZone();
+                if ( zone < 0 )
+                    zone = 0;
                 float orientationAndGlow = part .getGlow() + (float) zone;
                 offsets[i * 4 + 0] = globalScale * (float) vector .x;
                 offsets[i * 4 + 1] = globalScale * (float) vector .y;

@@ -50,6 +50,8 @@ public interface OpenGlShim {
 	
 	void glEnableDepth();
 	
+	void glEnableBackFaceCulling();
+	
 	void glClear( float r, float g, float b, float alpha );
 
 	void glVertexAttribDivisor(int mPositionParam, int i);
