@@ -201,10 +201,13 @@ public class ShapeAndInstances implements InstancedGeometry
                 if ( color == null )
                     color = Color.WHITE;
                 color .getRGBColorComponents( rgba );
+                float opacity = 1f - part .getTransparency();
+                if ( opacity > 0.999f )
+                    opacity = rgba[ 3 ];
                 colors[i * 4 + 0] = rgba[ 0 ];
                 colors[i * 4 + 1] = rgba[ 1 ];
                 colors[i * 4 + 2] = rgba[ 2 ];
-                colors[i * 4 + 3] = rgba[ 3 ];
+                colors[i * 4 + 3] = opacity;
 
                 ++i;
             }

@@ -20,7 +20,7 @@ public class TransparentRendering implements RenderingChanges
     @Override
     public void manifestationAdded( RenderedManifestation manifestation )
     {
-        manifestation .setTransparency( 0.99f );
+        manifestation .setTransparency( 0.50f );
         manifestation .setPickable( false );
         mRealOne .manifestationAdded( manifestation );
     }
