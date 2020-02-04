@@ -115,7 +115,7 @@ public class View3dActivity implements GLEventListener
         }
         else if ( this .scene != null )
         {
-            this .renderer .setView( mCamera, projection, 0.1f, 200f );
+            this .renderer .setView( mCamera, projection, 0.1f, 0.1f, 200f, true );
             this .renderer .setLights( this .lightDirections, this .lightColors, new float[] { 0.15f, 0.15f, 0.15f, 1f } );
             this .renderer .clear( new float[] { 0.5f, 0.6f, 0.7f, 1f } );
             this .renderer .renderSymmetry( scene );
