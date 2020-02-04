@@ -263,4 +263,10 @@ public class JoglOpenGlShim implements OpenGlShim
         gl2 .glEnable( GL2 .GL_CULL_FACE );
         gl2 .glBlendFunc( GL2 .GL_SRC_ALPHA, GL2 .GL_ONE_MINUS_SRC_ALPHA );
     }
+
+    @Override
+    public void glEnableMSAA()
+    {
+        gl2 .glEnable( GL2 .GL_MULTISAMPLE );
+    }
 }

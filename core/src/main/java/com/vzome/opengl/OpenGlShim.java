@@ -87,4 +87,6 @@ public interface OpenGlShim {
     void glPolygonOffset(float f, float g);
 
     void glEnableBlending();
+
+    void glEnableMSAA();
 }
