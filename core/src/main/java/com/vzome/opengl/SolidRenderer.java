@@ -32,10 +32,11 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
     private final boolean useVBOs;
 
     // uniforms for the fragment shader
-    private int u_CameraEye;
+    private int u_Perspective;
     private int u_FogColor;
-    private int u_FogMax;
+    private int u_Near;
     private int u_FogMin;
+    private int u_Far;
 
     public SolidRenderer( OpenGlShim gl, boolean useVBOs )
     {
@@ -60,7 +61,6 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
                     "attribute vec4 a_Color;\n" +
                     "\n" +
                     "varying vec4 v_Color;\n" + 
-                    "varying vec4 v_Vertex;\n" + 
                     "\n" + 
                     "void main()\n" + 
                     "{\n" + 
@@ -73,8 +73,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Vertex );\n" + 
                     "   vec4 normal = ( u_Orientations[ orientation ] * vec4( a_Normal, 0.0 ) );\n" + 
                     "   vec4 world = oriented + location;\n" + 
-                    "   v_Vertex = u_MVMatrix * world;\n" + 
-                    "   gl_Position = u_ProjMatrix * v_Vertex;\n" + 
+                    "   gl_Position = u_ProjMatrix * u_MVMatrix * world;\n" + 
                     "\n" + 
                     "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * normal ) );\n" + 
                     "   vec3 linearColor = vec3( fract(orientationAndGlow) );\n" + 
@@ -88,30 +87,42 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
                     "}";
         int vertexShader = OpenGlUtilities.loadGLShader( gl, true, vertexShaderSrc );
 
+        // See https://learnopengl.com/Advanced-OpenGL/Depth-testing
+        //  and https://stackoverflow.com/questions/7777913/how-to-render-depth-linearly-in-modern-opengl-with-gl-fragcoord-z-in-fragment-sh/45710371
+        
         String fragmentShaderSrc = version + "\n" + 
                 "\n" + 
-                "uniform vec4 u_CameraEye;\n" + 
                 "uniform vec4 u_FogColor;\n" + 
-                "uniform float u_FogMax;\n" + 
+                "uniform float u_Near;\n" + 
+                "uniform float u_Far;\n" + 
                 "uniform float u_FogMin;\n" + 
+                "uniform int u_Perspective;\n" + 
                 "\n" + 
                 "varying vec4 v_Color;\n" + 
-                "varying vec4 v_Vertex;\n" + 
                 "\n" + 
                 "float getFogFactor( float d )\n" + 
                 "{\n" + 
-                "    if ( d >= u_FogMax ) return 1;\n" + 
+                "    if ( d >= 1 ) return 1;\n" + 
                 "    if ( d <= u_FogMin ) return 0;\n" + 
-                "\n" + 
-                "    return 1 - (u_FogMax - d) / (u_FogMax - u_FogMin);\n" + 
+                "    return 1 - (1 - d) / (1 - u_FogMin);\n" + 
+                "}\n" + 
+                "float LinearizeDepth(float depth) \n" + 
+                "{\n" + 
+                "    if ( u_Perspective == 0 ) { \n" +
+                "        return depth * (u_Far-u_Near) + u_Near; \n" +
+                "    } else { \n" +
+                "        float z = depth * 2.0 - 1.0; // back to NDC \n" + 
+                "        return (2.0 * u_Near * u_Far) / (u_Far + u_Near - z * (u_Far - u_Near));    \n" + 
+                "    }\n" +
                 "}\n" + 
                 "\n" + 
                 "void main(void)\n" + 
                 "{\n" + 
-                "    float d = distance( u_CameraEye, v_Vertex );\n" + 
-                "    float alpha = getFogFactor( d );\n" + 
+                "    float depth = LinearizeDepth(gl_FragCoord.z) / u_Far; // divide by far for demonstration\n" + 
+                "    float fogFactor = getFogFactor( depth );\n" + 
                 "\n" + 
-                "    gl_FragColor = mix( v_Color, u_FogColor, alpha );\n" + 
+                "    gl_FragColor = mix( v_Color, u_FogColor, fogFactor );\n" + 
+                "    //gl_FragColor = vec4(vec3(fogFactor), 1.0); // visualize fogFactor \n" + 
                 "}";
         int fragmentShader = OpenGlUtilities.loadGLShader( gl, false, fragmentShaderSrc );
 
@@ -136,9 +147,10 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
             u_Orientations[ i ] = gl.glGetUniformLocation( programId, "u_Orientations[" + i + "]" );
         OpenGlUtilities.checkGLError( gl, "vertex shader uniforms");
 
-        u_CameraEye = gl.glGetUniformLocation( programId, "u_CameraEye" );
+        u_Perspective = gl.glGetUniformLocation( programId, "u_Perspective" );
         u_FogColor = gl.glGetUniformLocation( programId, "u_FogColor" );
-        u_FogMax = gl.glGetUniformLocation( programId, "u_FogMax" );
+        u_Near = gl.glGetUniformLocation( programId, "u_Near" );
+        u_Far = gl.glGetUniformLocation( programId, "u_Far" );
         u_FogMin = gl.glGetUniformLocation( programId, "u_FogMin" );
         OpenGlUtilities.checkGLError( gl, "fragment shader uniforms");
 
@@ -166,16 +178,17 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         }
     }
 
-    public void setView( float[] modelView, float[] projection, float fogFront, float fogBack )
+    public void setView( float[] modelView, float[] projection, float near, float fogFront, float far, boolean perspective )
     {
         gl .glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
 
         gl .glUniformMatrix4fv( u_MVMatrix, 1, false, modelView, 0);
         gl .glUniformMatrix4fv( u_ProjMatrix, 1, false, projection, 0 );
-        gl .glUniform4f( u_CameraEye, modelView[12], modelView[13], modelView[14], modelView[15] );
-        gl .glUniform1f( u_FogMin, fogFront );
-        gl .glUniform1f( u_FogMax, fogBack );
+        gl .glUniform1f( u_FogMin, ( fogFront - near ) / ( far - near ) );
+        gl .glUniform1f( u_Near, near );
+        gl .glUniform1f( u_Far, far );
+        gl .glUniform1i( u_Perspective, perspective? 1 : 0 );
     }
     
     public void clear( float[] background )
