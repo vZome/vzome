@@ -1296,8 +1296,8 @@ public class DocumentController extends DefaultController implements Controller3
             showFrameLabels = "true" .equals( value );
             firePropertyChange( "showFrameLabels", old, showFrameLabels );
         }
-
-        super .setModelProperty( cmd, value );
+        else
+            super .setModelProperty( cmd, value );
     }
 
 

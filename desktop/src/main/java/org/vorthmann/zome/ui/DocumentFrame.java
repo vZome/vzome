@@ -87,7 +87,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	private final boolean developerExtras;
 	
 	private final ActionListener localActions;
-	
+	    
+    private final FileDialog fileDialog = new FileDialog( this );
+    
 	private File mFile = null;
 	
 	private final Controller.ErrorChannel errors;
@@ -258,7 +260,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     
                 case "snapshot.2d":
                     if ( snapshot2dFrame == null ) {
-                        snapshot2dFrame = new Snapshot2dFrame( mController.getSubController( "snapshot.2d" ), new FileDialog( DocumentFrame.this ) );
+                        snapshot2dFrame = new Snapshot2dFrame( mController.getSubController( "snapshot.2d" ), fileDialog );
                     }
                     snapshot2dFrame.setPanelSize( modelPanel .getRenderedSize() );
                     snapshot2dFrame.pack();
@@ -274,7 +276,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 case "export4dPolytope":
                     {
                         Controller polytopesController = mController .getSubController( "polytopes" );
-                        ActionListener actionListener = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, cmd, "vef", polytopesController );
+                        ActionListener actionListener = new ControllerFileAction( fileDialog, false, cmd, "vef", polytopesController );
                         actionListener .actionPerformed( e );
                     }
                     break;
@@ -381,7 +383,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         Controller importScaleController = mController .getSubController( "importScale" );
                         if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
                             importScaleDialog = new VefImportDialog( DocumentFrame.this, importScaleController, "Set Scale and Rotation",
-                                new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
+                                new ControllerFileAction( fileDialog, true, cmd, "vef", controller ) );
                         }
                         importScaleDialog .setVisible( true );
                     }
@@ -569,7 +571,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 setTitle( newTitle );
             }
         };
-		this .saveAsAction = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, "save", "vZome", saveAsController );
+        mController .addSubController( "saveAs", saveAsController ); // need this so property flow works
+		this .saveAsAction = new ControllerFileAction( fileDialog, false, "save", "vZome", saveAsController );
 
         this .setJMenuBar( new DocumentMenuBar( mController, this ) );
 
@@ -765,7 +768,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "open":
             case "newFromTemplate":
             case "openDeferringRedo":
-                actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vZome", controller );
+                actionListener = new ControllerFileAction( fileDialog, true, command, "vZome", controller );
                 break;
 
             case "saveAs":
@@ -794,7 +797,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 break;
 
             case "capture-animation":
-                actionListener = new ControllerFileAction( new FileDialog( this ), false, command, "png", controller );
+                actionListener = new ControllerFileAction( fileDialog, false, command, "png", controller );
                 break;
 
             default:
@@ -815,11 +818,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 }
                 else if ( command .startsWith( "capture." ) ) {
                     String ext = command .substring( "capture." .length() );
-                    actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
+                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
                 }
                 else if ( command .startsWith( "export2d." ) ) {
                     String ext = command .substring( "export2d." .length() );
-                    actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
+                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
                 }
                 else if ( command .startsWith( "export." ) ) {
                     String ext = command .substring( "export." .length() );
@@ -831,7 +834,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     default:
                         break;
                     }
-                    actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
+                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
                 }
                 else {
                     actionListener = getExclusiveAction( command, controller );
