@@ -470,6 +470,12 @@ public class ApplicationController extends DefaultController
     }
 
     @Override
+    public void setModelProperty( String name, Object value )
+    {
+        this .properties .setProperty( name, value .toString() );
+    }
+
+    @Override
     public Controller getSubController( final String name )
     {
         return docControllers .get( name );
