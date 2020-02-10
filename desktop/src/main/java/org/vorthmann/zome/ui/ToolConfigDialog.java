@@ -34,7 +34,7 @@ import com.jogamp.newt.event.KeyEvent;
 
 public class ToolConfigDialog extends JDialog implements ActionListener
 {
-    private final JButton iconButton, hideButton;
+    private final JButton iconButton, hideButton, showParamsButton;
     private final JTextField toolName;
     private final JLabel toolLabel;
 	private final CardPanel namePanel;
@@ -157,12 +157,10 @@ public class ToolConfigDialog extends JDialog implements ActionListener
             iconAndLabel .add( namePanel, BorderLayout .CENTER );
         }
         tabs = new JTabbedPane();
-        if ( ! forBookmark )
-            this .add( tabs, BorderLayout .CENTER );
+        this .add( tabs, BorderLayout .CENTER );
         {
             JPanel inputsOutputs = new JPanel();
             tabs .addTab( "behavior", inputsOutputs );
-            tabs .setSelectedIndex( 0 );  // should be "behavior" tab
             inputsOutputs .setLayout( new GridLayout( 1, 2 ) );
             {
                 JPanel inputs = new JPanel();
@@ -195,12 +193,13 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 
             JPanel showParamsPanel = new JPanel();
             tabs .add( "configuration", showParamsPanel );
+            tabs .setSelectedIndex( 0 );  // should be "behavior" tab for tool, "configuration" for bookmark
             showParamsPanel .setLayout( new BorderLayout() );
-            this .hideButton = new JButton( "Hide permanently" );
+            this .hideButton = new JButton( "Remove tool" );
             showParamsPanel .add( this .hideButton, BorderLayout .NORTH );
             this .hideButton .setActionCommand( "hideTool" );
             this .hideButton .addActionListener( this );
-            JButton showParamsButton = new JButton( "Show and select parameters" );
+            this .showParamsButton = new JButton( "Show and select parameters" );
             showParamsPanel .add( showParamsButton, BorderLayout .SOUTH );
             showParamsButton .setActionCommand( "selectParams" );
             showParamsButton .addActionListener( this );
@@ -217,21 +216,30 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 		toolName .setText( label );
 		toolLabel .setText(label );
 		boolean predefined = controller .propertyIsTrue( "predefined" );
-        namePanel .showCard( predefined? "builtin" : "editable" );
+		boolean isBookmark = "bookmark" .equals( controller .getProperty( "kind" ) );
+
+		namePanel .showCard( predefined? "builtin" : "editable" );
         this .hideButton .setEnabled( ! predefined );
-		boolean selectInputs = controller .propertyIsTrue( "selectInputs" );
+        this .showParamsButton .setEnabled( ! predefined );
+
+        boolean selectInputs = controller .propertyIsTrue( "selectInputs" );
 		selectInputsCheckbox .setSelected( selectInputs );
-		selectInputsCheckbox .setEnabled( ! predefined );
+		selectInputsCheckbox .setEnabled( ! predefined && ! isBookmark );
+		
 		boolean deleteInputs = controller .propertyIsTrue( "deleteInputs" );
 		deleteInputsCheckbox .setSelected( deleteInputs );
-		selectInputsCheckbox .setEnabled( ! predefined && ! deleteInputs );
-		deleteInputsCheckbox .setEnabled( ! predefined );
+		selectInputsCheckbox .setEnabled( ! predefined && ! isBookmark && ! deleteInputs );
+		deleteInputsCheckbox .setEnabled( ! predefined && ! isBookmark );
+		
 		boolean selectOutputs = controller .propertyIsTrue( "selectOutputs" );
-		selectOutputsCheckbox .setSelected( selectOutputs );
-		boolean createOutputs = controller .propertyIsTrue( "createOutputs" );
+        selectOutputsCheckbox .setSelected( selectOutputs );
+		
+        boolean createOutputs = controller .propertyIsTrue( "createOutputs" );
 		createOutputsCheckbox .setSelected( createOutputs );
-		selectOutputsCheckbox .setEnabled( createOutputs );
-        tabs .setSelectedIndex( 0 );  // should be "behavior" tab
+		createOutputsCheckbox .setEnabled( ! isBookmark );
+		selectOutputsCheckbox .setEnabled( createOutputs && ! isBookmark );
+        
+		tabs .setSelectedIndex( 0 );  // should be "behavior" tab
         setLocationRelativeTo( button );
         setVisible( true );
     }

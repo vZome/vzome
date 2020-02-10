@@ -12,6 +12,8 @@ import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -46,6 +48,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
     private final CardPanel toolbarCards;
     private final Collection<SymmetryToolbarsPanel> toolBarPanels = new ArrayList<SymmetryToolbarsPanel>();
     private final ToolConfigDialog bookmarkConfigDialog;
+    private final Map<String,JButton> bookmarkButtons = new HashMap<>(); // to support hiding bookmarks
 
     public ModelPanel( Controller3d controller, J3dComponentFactory factory, ControlActions enabler, boolean isEditor, boolean fullPower )
     {
@@ -165,6 +168,12 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                             String id = (String) evt .getOldValue();
                             for (SymmetryToolbarsPanel panel : toolBarPanels ) {
                                 panel .hideTool( id );
+                            }
+                            JButton button = bookmarkButtons .remove( id );
+                            if ( button != null ) { // may be null during deserialization
+                                bookmarkBar .remove( button );
+                                bookmarkBar .revalidate();
+                                bookmarkBar .repaint();
                             }
                             break;
 
@@ -303,6 +312,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                 }
             }
         });
+        bookmarkButtons .put( controller .getProperty( "id" ), button );
         bookmarkBar .add( button );
     }
 
