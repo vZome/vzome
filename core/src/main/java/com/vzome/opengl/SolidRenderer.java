@@ -102,8 +102,8 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
                 "\n" + 
                 "float getFogFactor( float d )\n" + 
                 "{\n" + 
-                "    if ( d >= 1 ) return 1;\n" + 
-                "    if ( d <= u_FogMin ) return 0;\n" + 
+                "    if ( d >= 1 ) return 1.0;\n" + 
+                "    if ( d <= u_FogMin ) return 0.0;\n" + 
                 "    return 1 - (1 - d) / (1 - u_FogMin);\n" + 
                 "}\n" + 
                 "float LinearizeDepth(float depth) \n" + 

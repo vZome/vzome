@@ -1,9 +1,19 @@
 package com.vzome.opengl;
 
 import java.nio.FloatBuffer;
+import java.util.logging.Logger;
 
 public class OpenGlUtilities
 {
+    private static final Logger lOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
+    
+    public static void logConfiguration( OpenGlShim gl )
+    {
+    	String msg = gl.getGLSLVersionString();
+    	// could add more hardware or driver into here
+    	lOGGER.config(msg);
+    }
+    
     static int storeBuffer( OpenGlShim gl, FloatBuffer clientBuffer, int oldId )
     {
         if ( oldId != -1 ) {
@@ -33,9 +43,20 @@ public class OpenGlUtilities
     static void checkGLError( OpenGlShim gl, String func )
     {
         int error;
+        int qty = 0;
+        String delim = " ";
+        StringBuffer buf = new StringBuffer();
         while ((error = gl.glGetError()) != 0) {
-            System.out.println( func + ": glError " + error);
-            throw new RuntimeException(func + ": glError " + error);
+        	buf.append(delim);
+        	buf.append(error);
+        	delim = ", ";
+        	qty++;
+        }
+        if(qty != 0) {
+        	logConfiguration(gl);
+        	String msg = func + ": glError" + (qty == 1 ? "" : "s") + buf.toString();
+        	lOGGER.warning(msg);
+        	throw new RuntimeException(msg);
         }
     }
 
@@ -63,7 +84,7 @@ public class OpenGlUtilities
         // If the compilation failed, delete the shader.
         if (compileStatus[0] == 0) {
             String problem = gl.glGetShaderInfoLog(shader);
-            System .out.println(  "Error compiling shader: " + problem );
+            lOGGER.severe(code + "\nError compiling shader: " + problem );
             gl.glDeleteShader(shader);
             shader = 0;
         }
