@@ -9,6 +9,7 @@ import java.util.Map;
 import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
@@ -84,9 +85,13 @@ public class SnubDodecFieldApplication extends DefaultFieldApplication
 
                  */      
                 AlgebraicNumber scale = mField .createPower( -3 );
-                createZoneOrbit( "snubPentagon", 0, NO_ROTATION, rationalVector( new int[]{ 4,-4,0,0,-2,2,  -4,0,0,0,2,0,  0,0,0,0,0,2 } ), false, false, scale ) .withCorrection();
-                createZoneOrbit( "snubTriangle", 0, NO_ROTATION, rationalVector( new int[]{ 0,-4,-2,0,0,2,  -4,4,0,-2,2,-2,  -4,0,-2,-2,2,0 } ), false, false, scale ) .withCorrection();
-                createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, rationalVector( new int[]{ 8,0,0,4,-4,0,  0,-4,0,0,0,0,  0,0,0,0,0,0 } ), false, false, scale ) .withCorrection();
+                AlgebraicVector vSnubPentagon = mField.createIntegerVector(new int[][]{ { 4,-4, 0, 0,-2, 2},  {-4, 0, 0, 0, 2, 0},  { 0, 0, 0, 0, 0, 2} } );
+                AlgebraicVector vSnubTriangle = mField.createIntegerVector(new int[][]{ { 0,-4,-2, 0, 0, 2},  {-4, 4, 0,-2, 2,-2},  {-4, 0,-2,-2, 2, 0} } );
+                AlgebraicVector vSnubDiagonal = mField.createIntegerVector(new int[][]{ { 8, 0, 0, 4,-4, 0},  { 0,-4, 0, 0, 0, 0},  { 0, 0, 0, 0, 0, 0} } );
+
+                createZoneOrbit( "snubPentagon", 0, NO_ROTATION, vSnubPentagon, false, false, scale ) .withCorrection();
+                createZoneOrbit( "snubTriangle", 0, NO_ROTATION, vSnubTriangle, false, false, scale ) .withCorrection();
+                createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, vSnubDiagonal, false, false, scale ) .withCorrection();
             }
         };
         {

@@ -139,25 +139,6 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return "icosahedral";
     }
 
-    /**
-     * Make a rational vector with unit denominators from an integer vector.
-     * @param canonical
-     * @return
-     */
-    protected AlgebraicVector rationalVector( int[] integers )
-    {
-        AlgebraicVector result = mField .origin( 3 );
-        for (int i = 0; i < 3; i++)
-        {
-            int[] factors = new int[ integers.length / 3 ];
-            for (int j = 0; j < factors.length; j++) {
-				factors[ j ] = integers[ i * factors.length + j ];
-			}
-            result .setComponent( i, mField .createAlgebraicNumber( factors ) );
-        }
-        return result;
-    }
-    
     @Override
     protected AlgebraicVector[] getOrbitTriangle()
     {
