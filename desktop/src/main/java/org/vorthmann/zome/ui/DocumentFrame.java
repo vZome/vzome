@@ -129,7 +129,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         String path = mController .getProperty( "window.file" );
         if ( path != null )
-        	this .mFile = new File( path ); // this enables "save" in localActions
+            this .mFile = new File( path ); // this enables "save" in localActions
 
         // TODO: compute these booleans once here, and don't recompute in DocumentMenuBar
 

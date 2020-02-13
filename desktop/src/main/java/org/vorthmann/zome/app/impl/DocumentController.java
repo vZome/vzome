@@ -1272,6 +1272,7 @@ public class DocumentController extends DefaultController implements Controller3
             // App controller will set topDocument, or remove the document.
             firePropertyChange( "visible", null, value );
         } else if ( "name".equals( cmd ) ) {
+            this .properties .setProperty( "window.file", (String) value );
             // App controller is listening, will change its map
             firePropertyChange( "name", null, value );
         } else if ( "backgroundColor".equals( cmd ) ) {
