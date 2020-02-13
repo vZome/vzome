@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,15 +87,30 @@ public class ControllerFileAction implements ActionListener
         if ( directory == null )
             directory = this .mController .getProperty( this .mOpening? "last-open-directory.vZome" : "last-save-directory.vZome" );
         mFileChooser .setDirectory( directory );
+
+        String fileName = this .mController .getProperty( "window.file" );
+        if ( fileName != null && ! this .mOpening ) {
+            Path filePath = new File( fileName ) .toPath();
+            fileName = filePath .getFileName() .toString();
+            int index = fileName .lastIndexOf( "." );
+            if ( index > 0 )
+            {
+                fileName = fileName .substring( 0, index );
+            }
+            fileName = fileName + "." + mExtension;
+            mFileChooser .setFile( fileName );
+        }
+
         mFileChooser .setVisible( true );
-        String fileName = mFileChooser .getFile();
+        fileName = mFileChooser .getFile();
         if ( fileName == null )
         {
             logger .info( "file action cancelled" );
             return;
         }
-        if ( ! mOpening && ! fileName .endsWith( "." + mExtension ) )
+        if ( ! mOpening && ! fileName .endsWith( "." + mExtension ) ) {
             fileName = fileName + "." + mExtension;
+        }
         directory = mFileChooser .getDirectory();  // cache this for convenience, for the next use
         this .mController .setProperty( this .getDirectoryProperty(), directory ); // set it for other windows
         File file = new File( directory, fileName );
