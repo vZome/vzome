@@ -394,7 +394,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add( enableIf( isEditor, createMenuItem( "Point Reflection", "pointsymm" ) ) );
 
         menu .addSeparator();
-        menu.add( enableIf( isEditor, createMenuItem( "Replace With Panels", "ReplaceWithShape", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Replace With Panels", "ReplaceWithShape", controller, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
 
         menu .addSeparator();
         menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog", KeyEvent.VK_P, COMMAND_OPTION ) ) );
