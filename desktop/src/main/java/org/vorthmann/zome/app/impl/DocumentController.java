@@ -593,6 +593,11 @@ public class DocumentController extends DefaultController implements Controller3
                 }
                 break;
 
+
+            case "ReplaceWithShape":
+                this .getSymmetryController() .doAction( action, e );
+                break;
+
             case "toggleFrameLabels":
                 {
                     showFrameLabels = ! showFrameLabels;
