@@ -921,28 +921,28 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	//
 	boolean closeWindow()
 	{
-    	if ( "true".equals( mController.getProperty( "edited" ) ) && ( isEditor && canSave ) )
-    	{
-    		// TODO replace showConfirmDialog() with use of EscapeDialog, or something similar...
-    		//   see  http://java.sun.com/docs/books/tutorial/uiswing/components/dialog.html
-    		int response = JOptionPane.showConfirmDialog( DocumentFrame.this, "Do you want to save your changes?",
-    				"file is changed", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE );
+	    if ( "true".equals( mController.getProperty( "edited" ) ) && ( isEditor && canSave ) )
+	    {
+	        // TODO replace showConfirmDialog() with use of EscapeDialog, or something similar...
+	        //   see  http://java.sun.com/docs/books/tutorial/uiswing/components/dialog.html
+	        int response = JOptionPane.showConfirmDialog( DocumentFrame.this, "Do you want to save your changes?",
+	                "file is changed", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE );
 
-    		if ( response == JOptionPane.CANCEL_OPTION )
-    			return false;
-    		if ( response == JOptionPane.YES_OPTION )
-    			try {
-    				localActions .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "save" ) );
-    				return false;
-    			} catch ( RuntimeException re ) {
-    				logger.log( Level.WARNING, "did not save due to error", re );
-    				return false;
-    			}
-    	}
-    	dispose();
-    	mController .setProperty( "visible", Boolean.FALSE );
-    	return true;
-    }
+	        if ( response == JOptionPane.CANCEL_OPTION )
+	            return false;
+	        if ( response == JOptionPane.YES_OPTION )
+	            try {
+	                localActions .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "save" ) );
+	                return false;
+	            } catch ( RuntimeException re ) {
+	                logger.log( Level.WARNING, "did not save due to error", re );
+	                return false;
+	            }
+	    }
+	    dispose();
+	    mController .setProperty( "visible", Boolean.FALSE );
+	    return true;
+	}
 
 	public void makeUnnamed()
 	{

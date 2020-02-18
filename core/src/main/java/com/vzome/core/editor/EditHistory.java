@@ -477,11 +477,14 @@ public class EditHistory implements Iterable<UndoableEdit>
 
         private Context context;
 
+        private String lineNumber;
+
         public DeferredEdit( XmlSaveFormat format, Element editElem, Context context )
         {
             this.format = format;
             this.xml = editElem;
             this.context = context;
+            this.lineNumber = (String) editElem .getUserData( "vZome-lineNum" );
         }
 
         @Override

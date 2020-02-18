@@ -18,6 +18,19 @@ public class UndoRedoController extends DefaultController implements Controller
     }
 
     @Override
+    public String getProperty( String key )
+    {
+        switch (key) {
+
+        case "line.number":
+            return Integer .toString( this .model .getEditNumber() );
+
+        default:
+            return super.getProperty( key );
+        }
+    }
+
+    @Override
     public void doAction( String action, ActionEvent e ) throws Exception
     {
         switch ( action ) {

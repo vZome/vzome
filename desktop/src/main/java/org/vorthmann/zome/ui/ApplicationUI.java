@@ -37,6 +37,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
+import com.vzome.dap.DapAdapter;
 import com.vzome.desktop.controller.Controller3d;
 
 /**
@@ -65,6 +66,8 @@ import com.vzome.desktop.controller.Controller3d;
 public final class ApplicationUI implements ActionListener, PropertyChangeListener
 {
     private ApplicationController mController;
+
+    private DapAdapter debugger;
 
     private Controller.ErrorChannel errors;
 
@@ -307,6 +310,18 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
             if ( splash != null )
                 splash .dispose();
+            
+            ui .debugger = new DapAdapter(); // inert unless we start the server
+            String debugPortStr = ui .mController .getProperty( "debug.adapter.port" );
+            if ( debugPortStr != null ) {
+                try {
+                    Integer debugPort = Integer .parseInt( debugPortStr );
+                    ui .debugger .startServer( debugPort, ui .mController );
+                } catch ( NumberFormatException e ) {
+                    if ( logger .isLoggable( Level .WARNING ) )
+                        logger .warning( "debug.adapter.port not an integer; debugger not listening" );
+                }
+            }
         }
     }
 
