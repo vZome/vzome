@@ -19,6 +19,7 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.UndoableEdit.Context;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
+import com.vzome.xml.LocationData;
 
 public class EditHistory implements Iterable<UndoableEdit>
 {	
@@ -489,6 +490,15 @@ public class EditHistory implements Iterable<UndoableEdit>
         {
             return false;
         }
+        
+        private int getEndLineNumber()
+        {
+            LocationData locationData = (LocationData) xml .getUserData( LocationData .LOCATION_DATA_KEY );
+            if ( locationData != null )
+                return locationData .getEndLine();
+            else
+                return 0;
+        }
 
         @Override
         public Element getXml( Document doc )
@@ -535,7 +545,7 @@ public class EditHistory implements Iterable<UndoableEdit>
              * 
              * 3. the UndoableEdit may migrate itself, generating
              */
-            int num = mEditNumber;
+            int num = this .getEndLineNumber();
             mEdits .remove( --mEditNumber );
 
             if ( logger.isLoggable( Level.FINE ) ) // see the logger declaration to enable FINE
@@ -543,7 +553,7 @@ public class EditHistory implements Iterable<UndoableEdit>
 
             UndoableEdit realized = null;
             String cmdName = xml.getLocalName();
-
+            
             if ( cmdName .equals( "Breakpoint" ) )
             {
                 realized = new Breakpoint();
