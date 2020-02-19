@@ -23,7 +23,7 @@ public class UndoRedoController extends DefaultController implements Controller
         switch (key) {
 
         case "line.number":
-            return Integer .toString( this .model .getEditNumber() );
+            return Integer .toString( this .model .getNextLineNumber() );
 
         default:
             return super.getProperty( key );

@@ -246,6 +246,15 @@ public class EditHistory implements Iterable<UndoableEdit>
         } while ( ! (undone instanceof BeginBlock) );
         return undone;
     }
+    
+    public int getNextLineNumber()
+    {
+        UndoableEdit undoable = mEdits .get( mEditNumber );
+        if ( undoable instanceof DeferredEdit )
+            return ((DeferredEdit) undoable) .getLineNumber();
+        else
+            return 0;
+    }
 
     public UndoableEdit redo() throws Command.Failure
     {
@@ -478,14 +487,11 @@ public class EditHistory implements Iterable<UndoableEdit>
 
         private Context context;
 
-        private String lineNumber;
-
         public DeferredEdit( XmlSaveFormat format, Element editElem, Context context )
         {
             this.format = format;
             this.xml = editElem;
             this.context = context;
-            this.lineNumber = (String) editElem .getUserData( "vZome-lineNum" );
         }
 
         @Override
@@ -494,11 +500,11 @@ public class EditHistory implements Iterable<UndoableEdit>
             return false;
         }
         
-        private int getEndLineNumber()
+        public int getLineNumber()
         {
             LocationData locationData = (LocationData) xml .getUserData( LocationData .LOCATION_DATA_KEY );
             if ( locationData != null )
-                return locationData .getEndLine();
+                return locationData .getStartLine();
             else
                 return 0;
         }
@@ -548,7 +554,7 @@ public class EditHistory implements Iterable<UndoableEdit>
              * 
              * 3. the UndoableEdit may migrate itself, generating
              */
-            int num = this .getEndLineNumber();
+            int num = this .getLineNumber();
             mEdits .remove( --mEditNumber );
 
             if ( logger.isLoggable( Level.FINE ) ) // see the logger declaration to enable FINE
