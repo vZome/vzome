@@ -99,7 +99,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
         private final Command tetrasymm = new CommandTetrahedralSymmetry( icosaSymm );
         private final Command axialsymm = new CommandAxialSymmetry( icosaSymm );
         private final Command h4symmetry = new CommandQuaternionSymmetry( H4, H4 );
-        private final Command octasymm = new CommandSymmetry( icosaSymm );
+        private final Command octasymm = new CommandSymmetry( new OctahedralSymmetry( getField(), "", "" ) );
         
 //        private final AbstractShapes octahedralShapes = new OctahedralShapes( "octahedral", "octahedra", this .icosaSymm );
         private final AbstractShapes tinyIcosaShapes = new ExportedVEFShapes( null, "sqrtPhi/tinyIcosahedra", "tiny icosahedra", icosaSymm);
@@ -226,7 +226,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
         		.createStandardOrbits( "blue" );
 
         private final Command axialsymm = new CommandAxialSymmetry( pentaSymm );
-        private final Command octasymm = new CommandSymmetry( pentaSymm );
+        private final Command octasymm = new CommandSymmetry( new OctahedralSymmetry( getField(), "", "" ) );
         
         private final AbstractShapes octahedralShapes = new ExportedVEFShapes( null, "sqrtPhi/octahedra", "octahedra", pentaSymm );
         private final AbstractShapes kostickShapes = new ExportedVEFShapes( null, "sqrtPhi/fivefold", "Kostick", pentaSymm, octahedralShapes );
