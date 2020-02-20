@@ -129,24 +129,6 @@ public class EditHistory implements Iterable<UndoableEdit>
         return edit;
     }
 
-    public UndoableEdit undoToBreakpoint()
-    {
-        // always try once, to skip over a breakpoint we might be sitting on
-        UndoableEdit edit = undo();
-        if ( edit == null )
-            return edit;
-        do {
-            edit = undo();
-            if ( edit == null )
-                break;
-            if ( edit instanceof Breakpoint ) {
-                break;
-            }
-        } while ( true );
-        this .listener .publishChanges();
-        return edit;
-    }
-
     public UndoableEdit redoToBreakpoint() throws Command.Failure
     {
         // always try once, to skip over a breakpoint we might be sitting on
@@ -154,22 +136,58 @@ public class EditHistory implements Iterable<UndoableEdit>
         if ( edit == null )
             return edit;
         do {
+            if ( this .atBreakpoint() )
+                break;
             edit = redo();
             if ( edit == null )
                 break;
-            if ( edit instanceof Breakpoint ) {
-                break;
-            }
         } while ( true );
         this .listener .publishChanges();
         return edit;
     }
-
-    public void setBreakpoint()
+    
+    private boolean atBreakpoint()
     {
-        mEdits .add( mEditNumber++, new Breakpoint() );
+        if ( mEditNumber == mEdits .size() )
+            return false;
+        UndoableEdit edit = mEdits .get( mEditNumber );
+        return edit instanceof DeferredEdit && ((DeferredEdit) edit) .isBreakpoint() ;
     }
 
+    public void setBreakpoints( int[] lineNumbers )
+    {
+        int index = 0;
+        int lineNumber = lineNumbers[ index ];
+        for ( UndoableEdit undoableEdit : mEdits )
+            if ( undoableEdit instanceof DeferredEdit ) {
+                DeferredEdit edit = (DeferredEdit) undoableEdit;
+                int startLine = edit .getLineNumber();
+                if ( startLine != 0 && startLine >= lineNumber ) {
+                    edit .setBreakpoint( true );
+                    ++index;
+                    if ( index < lineNumbers .length )
+                        lineNumber = lineNumbers[ index ];
+                    else
+                        // We must continue to loop, to clear old breakpoints
+                        lineNumber = Integer .MAX_VALUE;
+                } else {
+                    edit .setBreakpoint( false );
+                }
+            }
+    }
+    
+    public List<Integer> getBreakpoints()
+    {
+        List<Integer> result = new ArrayList<>();
+        for ( UndoableEdit undoableEdit : mEdits )
+            if ( undoableEdit instanceof DeferredEdit ) {
+                DeferredEdit edit = (DeferredEdit) undoableEdit;
+                if ( edit .isBreakpoint() )
+                    result .add( edit .getLineNumber() );
+            }
+        return result;
+    }
+    
     public UndoableEdit redoAll( int breakpoint ) throws Command.Failure
     {
         UndoableEdit last = null;
@@ -486,12 +504,24 @@ public class EditHistory implements Iterable<UndoableEdit>
         private final Element xml;
 
         private Context context;
+        
+        private boolean isBreakpoint = false;
 
         public DeferredEdit( XmlSaveFormat format, Element editElem, Context context )
         {
             this.format = format;
             this.xml = editElem;
             this.context = context;
+        }
+
+        public void setBreakpoint( boolean value )
+        {
+            this .isBreakpoint = value;
+        }
+        
+        public boolean isBreakpoint()
+        {
+            return this .isBreakpoint;
         }
 
         @Override

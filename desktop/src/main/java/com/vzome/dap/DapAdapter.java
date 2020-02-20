@@ -7,12 +7,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.eclipse.lsp4j.debug.Breakpoint;
 import org.eclipse.lsp4j.debug.Capabilities;
 import org.eclipse.lsp4j.debug.ConfigurationDoneArguments;
 import org.eclipse.lsp4j.debug.ContinueArguments;
@@ -28,6 +32,7 @@ import org.eclipse.lsp4j.debug.SetBreakpointsArguments;
 import org.eclipse.lsp4j.debug.SetBreakpointsResponse;
 import org.eclipse.lsp4j.debug.SetExceptionBreakpointsArguments;
 import org.eclipse.lsp4j.debug.Source;
+import org.eclipse.lsp4j.debug.SourceBreakpoint;
 import org.eclipse.lsp4j.debug.StackFrame;
 import org.eclipse.lsp4j.debug.StackTraceArguments;
 import org.eclipse.lsp4j.debug.StackTraceResponse;
@@ -39,6 +44,8 @@ import org.eclipse.lsp4j.debug.services.IDebugProtocolClient;
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.vorthmann.ui.Controller;
+
+import com.vzome.core.editor.Branch;
 
 public class DapAdapter implements IDebugProtocolServer
 {
@@ -135,21 +142,22 @@ public class DapAdapter implements IDebugProtocolServer
             this .source .setAdapterData( "vzome-adapter-data" );
 
             boolean stopOnEntry = (Boolean) args .get( "stopOnEntry" );
-            if ( stopOnEntry ) {
-                this .appController .doFileAction( "openDeferringRedo", file );
-                
-                this .client .initialized();
-                
-                // If we don't send a stopped event, the debugger will assume
-                //  the "program" is running, and won't offer the step controls.
-                StoppedEventArguments arguments = new StoppedEventArguments();
-                arguments .setReason( "entry" );
-                arguments .setThreadId( THREAD_ID );
-                this .client .stopped( arguments );
-            } else {
-                this .appController .doFileAction( "open", file );
-            }
+            
+            this .appController .doFileAction( "openDeferringRedo", file );
+            
+            this .client .initialized();
+
             this .docController = this .appController .getSubController( path ) .getSubController( "undoRedo" );
+            if ( ! stopOnEntry ) {
+                this .docController .actionPerformed( this, "redoToBreakpoint" );
+            }
+
+            // If we don't send a stopped event, the debugger will assume
+            //  the "program" is running, and won't offer the step controls.
+            StoppedEventArguments arguments = new StoppedEventArguments();
+            arguments .setReason( stopOnEntry? "entry" : "breakpoint" );
+            arguments .setThreadId( THREAD_ID );
+            this .client .stopped( arguments );
         } );
     }
 
@@ -259,13 +267,42 @@ public class DapAdapter implements IDebugProtocolServer
     @Override
     public CompletableFuture<SetBreakpointsResponse> setBreakpoints( SetBreakpointsArguments args )
     {
-        // TODO Auto-generated method stub
-        return IDebugProtocolServer.super.setBreakpoints(args);
+        if ( logger .isLoggable( Level.INFO ) )
+            logger .info( "setBreakpoints() args: " + args .toString() );
+        
+        String breakpoints = Arrays .asList( args .getBreakpoints() ) .stream() .map( x -> x.getLine() .toString() )
+            .collect( Collectors .joining( "," ) );
+
+        this .docController .actionPerformed( this, "setBreakpoints." + breakpoints );
+        breakpoints = this .docController .getProperty( "breakpoints" );
+        List<Breakpoint> brkptInts = Arrays .asList( breakpoints .split( "," ) ) .stream()
+                .map( x -> {
+                    int line = Integer .parseInt( x );
+                    Breakpoint breakpoint = new Breakpoint();
+                    breakpoint .setLine( (long) line );
+                    breakpoint .setVerified( line >= 0 );
+                    breakpoint .setSource( source );
+                    return breakpoint;
+                } ) .collect( Collectors .toList() );
+
+        SetBreakpointsResponse response = new SetBreakpointsResponse();
+        response .setBreakpoints( (Breakpoint[]) brkptInts.toArray( new Breakpoint[brkptInts.size()] ) );
+        return CompletableFuture .completedFuture( response );
     }
 
     @Override
     public CompletableFuture<ContinueResponse> continue_(ContinueArguments args)
     {
+        if ( logger .isLoggable( Level.INFO ) )
+            logger .info( "continue_() args: " + args .toString() );
+
+        this .docController .actionPerformed( this, "redoToBreakpoint" );
+
+        StoppedEventArguments arguments = new StoppedEventArguments();
+        arguments .setReason( "breakpoint" );
+        arguments .setThreadId( THREAD_ID );
+        this .client .stopped( arguments );
+
         ContinueResponse response = new ContinueResponse();
         return CompletableFuture .completedFuture( response );
     }
