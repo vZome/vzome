@@ -141,12 +141,23 @@ public abstract class AlgebraicField
         return true;
     }
 
+    /**
+     * Generates an AlgebraicNumber with the specified {@code BigRational} factors.
+     * @param factors
+     * @return
+     */
     public final AlgebraicNumber createAlgebraicNumber( BigRational[] factors )
     {
         return new AlgebraicNumber( this, factors );
     }
 
-    public final AlgebraicNumber createAlgebraicNumber( int... factors )
+    /**
+     * Generates an AlgebraicNumber with integer terms (having only unit denominators).
+     * Use {@code createAlgebraicNumber( BigRational[] factors )} if denominators other than one are required.
+     * @param factors
+     * @return
+     */
+    public final AlgebraicNumber createAlgebraicNumber( int[] factors )
     {
         BigRational[] brs = new BigRational[ factors .length ];
         for ( int j = 0; j < factors.length; j++ ) {
