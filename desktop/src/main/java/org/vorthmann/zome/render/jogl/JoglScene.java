@@ -74,10 +74,10 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
                 // of the rendering loop if a ConcurrentModificationException happens.
                 // Subsequent renderings will resolve any visual defect.
                 this.forceRender();
-                // log to stdErr for now, so we have an idea how often it happens
-                System.err.println("Ignoring ConcurrentModificationException on thread: " 
-                        + Thread.currentThread().toString());
-                ex.printStackTrace();
+                // log to stdErr to get an idea how often it happens
+//                System.err.println("Ignoring ConcurrentModificationException on thread: " 
+//                        + Thread.currentThread().toString());
+//                ex.printStackTrace();
             }
         }
     }

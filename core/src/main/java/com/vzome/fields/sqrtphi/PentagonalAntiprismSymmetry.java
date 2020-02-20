@@ -110,7 +110,6 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
         unitLength = this .mField .createPower( 6 );
 		createZoneOrbit( "blue", 0, -1, this .mField .basisVector( 3, AlgebraicVector.X ), true, false, unitLength );
 
-		this .computeOrbitDots();
         return this;
     }
     

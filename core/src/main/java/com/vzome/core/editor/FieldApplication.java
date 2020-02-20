@@ -30,6 +30,12 @@ public interface FieldApplication
 		
 		List<Tool> predefineTools( Tool.Kind kind, ToolsModel model );
 
+		/**
+		 * These commands should all be symmetry-DEPENDANT. 
+		 * Contrast with {@code FieldApplication.getLegacyCommand(action) }.
+		 * @param action
+		 * @return
+		 */
 		Command getLegacyCommand( String action );
 
 		String getModelResourcePath();
@@ -51,5 +57,11 @@ public interface FieldApplication
 
     void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools );
 
+    /**
+     * These commands should all be symmetry-INDEPENDANT. 
+     * Contrast with {@code FieldApplication.SymmetryPerspective.getLegacyCommand(action) }.
+     * @param action
+     * @return
+     */
 	Command getLegacyCommand( String action );
 }
