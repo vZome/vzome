@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Test;
 
@@ -49,6 +51,8 @@ import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 
 public class FieldApplicationTest
 {
+    private static final Logger LOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
+    
     private static Set<FieldApplication> getTestFieldApplications() {
         Set<FieldApplication> result = new HashSet<>();
         result.add( new GoldenFieldApplication());
@@ -63,6 +67,7 @@ public class FieldApplicationTest
     @Test
     public void testFieldApplications()
     {
+//        LOGGER.setLevel(Level.FINE);
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         for(FieldApplication app : getTestFieldApplications()) {
             final String appName = app.getName();
@@ -253,7 +258,25 @@ public class FieldApplicationTest
         assertTrue(appName + "." + name + " SymmetryPerspective must contain defaultGeometry: " + defaultGeometry.getName(), geometries.contains(defaultGeometry));
 
         for(Shapes shapes : geometries) {
+            logConnectorShapes(appName, name, shapes);
             testConnectorShapes(perspective.getSymmetry(), shapes);
+        }
+    }
+
+    private void logConnectorShapes(String appName, String perspectiveName, Shapes shapes)
+    {
+        if(LOGGER.isLoggable(Level.FINE)) {
+            String delim = "\t\t\t";
+            String alias = shapes.getAlias();
+            alias = (alias == null) ? "" : alias;
+            StringBuilder buf = new StringBuilder();
+            buf.append(appName)             .append(delim);
+            buf.append(perspectiveName)     .append(delim);
+            buf.append(shapes.getPackage()) .append(delim);
+            buf.append(shapes.getName())    .append(delim);
+            buf.append(alias)               .append(delim);
+//            System.out.println(buf.toString());
+            LOGGER.fine(buf.toString());
         }
     }
 
@@ -332,6 +355,7 @@ public class FieldApplicationTest
             assertNotNull("createToolFactories()", toolFactoryList);
             
             String name = perspective.getName();
+            String source = appName + "." + name;
             switch(name) {
             case "octahedral":
                 verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
@@ -367,9 +391,10 @@ public class FieldApplicationTest
         }
     }
     
-    private void verifyToolFactoryCounts(String perspectiveName, Tool.Kind kind, List<Tool.Factory> toolFactoryList, int symmetryCount, int transformCount, int linearMapCount)
+    private void verifyToolFactoryCounts(String source, Tool.Kind kind, List<Tool.Factory> toolFactoryList, int symmetryCount, int transformCount, int linearMapCount)
     {
-        String msg = perspectiveName + " " + kind;
+        String msg = source + "\t" + kind;
+        logToolFactoryList(msg, toolFactoryList);
         switch(kind) {
         case SYMMETRY:
             assertEquals(msg, symmetryCount, toolFactoryList.size());
@@ -386,9 +411,20 @@ public class FieldApplicationTest
         default:
             fail("unexpected kind: " + kind); // in case we add more some day...
         }
-        
-        for(Factory toolFactory : toolFactoryList) {
-            System.out.println(msg + "\t" + toolFactory.getClass().getName());
+    }
+    
+    public void logToolFactoryList(String source, List<Tool.Factory> toolFactoryList)
+    {
+        if(LOGGER.isLoggable(Level.FINE)) {
+            StringBuilder buf = new StringBuilder();
+            for(Factory toolFactory : toolFactoryList) {
+                buf.append(source)
+                .append("\t")
+                .append(toolFactory.getClass().getName())
+                .append("\n");
+            }
+//            System.out.println(buf.toString());
+            LOGGER.fine(buf.toString());
         }
     }
 
