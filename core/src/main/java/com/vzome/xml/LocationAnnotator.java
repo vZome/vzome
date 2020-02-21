@@ -17,11 +17,17 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.LocatorImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-public class LocationAnnotator extends XMLFilterImpl {
+public class LocationAnnotator extends XMLFilterImpl
+{
+    class LocatedElement
+    {
+        public Locator locator;
+        public Element element;
+    }
 
     private Locator locator;
     private Element lastAddedElement;
-    private Stack<Locator> locatorStack = new Stack<Locator>();
+    private Stack<LocatedElement> locatorStack = new Stack<LocatedElement>();
     private UserDataHandler dataHandler = new LocationDataHandler();
 
     public LocationAnnotator(XMLReader xmlReader, Document dom) {
@@ -32,7 +38,8 @@ public class LocationAnnotator extends XMLFilterImpl {
             @Override
             public void handleEvent(Event e) {
                 EventTarget target = ((MutationEvent) e).getTarget();
-                lastAddedElement = (Element) target;
+                if ( target instanceof Element )
+                    locatorStack .peek() .element = (Element) target;
             }
         };
         ((EventTarget) dom).addEventListener("DOMNodeInserted",
@@ -52,7 +59,9 @@ public class LocationAnnotator extends XMLFilterImpl {
 
         // Keep snapshot of start location,
         // for later when end of element is found.
-        locatorStack.push(new LocatorImpl(locator));
+        LocatedElement le = new LocatedElement();
+        le .locator = new LocatorImpl(locator);
+        locatorStack.push( le );
     }
 
     @Override
@@ -64,7 +73,8 @@ public class LocationAnnotator extends XMLFilterImpl {
         super.endElement(uri, localName, qName);
       
         if (locatorStack.size() > 0) {
-            Locator startLocator = locatorStack.pop();
+            LocatedElement le = locatorStack.pop();
+            Locator startLocator = le .locator;
           
             LocationData location = new LocationData(
                     startLocator.getSystemId(),
@@ -73,7 +83,7 @@ public class LocationAnnotator extends XMLFilterImpl {
                     locator.getLineNumber(),
                     locator.getColumnNumber());
           
-            lastAddedElement.setUserData(
+            le.element .setUserData(
                     LocationData.LOCATION_DATA_KEY, location,
                     dataHandler);
         }
