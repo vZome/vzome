@@ -386,6 +386,10 @@ public class FieldApplicationTest
         default:
             fail("unexpected kind: " + kind); // in case we add more some day...
         }
+        
+        for(Factory toolFactory : toolFactoryList) {
+            System.out.println(msg + "\t" + toolFactory.getClass().getName());
+        }
     }
 
     private void testModelResourcePath(SymmetryPerspective perspective, String appName)
