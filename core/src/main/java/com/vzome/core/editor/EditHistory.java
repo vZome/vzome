@@ -4,6 +4,7 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -151,40 +152,37 @@ public class EditHistory implements Iterable<UndoableEdit>
         if ( mEditNumber == mEdits .size() )
             return false;
         UndoableEdit edit = mEdits .get( mEditNumber );
-        return edit instanceof DeferredEdit && ((DeferredEdit) edit) .isBreakpoint() ;
+        return edit .hasBreakpoint() ;
     }
 
     public void setBreakpoints( int[] lineNumbers )
     {
+        Arrays .sort( lineNumbers );
         int index = 0;
         int lineNumber = lineNumbers[ index ];
-        for ( UndoableEdit undoableEdit : mEdits )
-            if ( undoableEdit instanceof DeferredEdit ) {
-                DeferredEdit edit = (DeferredEdit) undoableEdit;
-                int startLine = edit .getLineNumber();
-                if ( startLine != 0 && startLine >= lineNumber ) {
-                    edit .setBreakpoint( true );
-                    ++index;
-                    if ( index < lineNumbers .length )
-                        lineNumber = lineNumbers[ index ];
-                    else
-                        // We must continue to loop, to clear old breakpoints
-                        lineNumber = Integer .MAX_VALUE;
-                } else {
-                    edit .setBreakpoint( false );
-                }
+        for ( UndoableEdit edit : mEdits ) {
+            int startLine = edit .getLineNumber();
+            if ( startLine != 0 && startLine >= lineNumber ) {
+                edit .setBreakpoint( true );
+                ++index;
+                if ( index < lineNumbers .length )
+                    lineNumber = lineNumbers[ index ];
+                else
+                    // We must continue to loop, to clear old breakpoints
+                    lineNumber = Integer .MAX_VALUE;
+            } else {
+                edit .setBreakpoint( false );
             }
+        }
     }
     
     public List<Integer> getBreakpoints()
     {
         List<Integer> result = new ArrayList<>();
-        for ( UndoableEdit undoableEdit : mEdits )
-            if ( undoableEdit instanceof DeferredEdit ) {
-                DeferredEdit edit = (DeferredEdit) undoableEdit;
-                if ( edit .isBreakpoint() )
-                    result .add( edit .getLineNumber() );
-            }
+        for ( UndoableEdit edit : mEdits ) {
+            if ( edit .hasBreakpoint() )
+                result .add( edit .getLineNumber() );
+        }
         return result;
     }
     
@@ -431,7 +429,7 @@ public class EditHistory implements Iterable<UndoableEdit>
         mEdits .add( mEditNumber++, edit );
     }
 
-    public class Breakpoint implements UndoableEdit
+    public class Breakpoint extends UndoableEdit
     {
         @Override
         public Element getXml( Document doc )
@@ -497,7 +495,7 @@ public class EditHistory implements Iterable<UndoableEdit>
         }
     }
 
-    private class DeferredEdit implements UndoableEdit
+    private class DeferredEdit extends UndoableEdit
     {
         private final XmlSaveFormat format;
 
@@ -519,7 +517,7 @@ public class EditHistory implements Iterable<UndoableEdit>
             this .isBreakpoint = value;
         }
         
-        public boolean isBreakpoint()
+        public boolean hasBreakpoint()
         {
             return this .isBreakpoint;
         }
@@ -600,6 +598,7 @@ public class EditHistory implements Iterable<UndoableEdit>
             else
                 realized = context .createEdit( xml );
             //            System.out.println( "edit: " + num + " " + cmdName );
+            realized .setLineNumber( num );
 
             try {
                 EditHistory .this .listener .showCommand( xml, num );
@@ -628,7 +627,9 @@ public class EditHistory implements Iterable<UndoableEdit>
                     @Override
                     public UndoableEdit createEdit( Element xml )
                     {
-                        return context .createEdit( xml );
+                        UndoableEdit edit = context .createEdit( xml );
+                        edit .setLineNumber( getLineNumber() );
+                        return edit;
                     }
                 } ); // this method needs to have the history, since it may migrate
                 //        		System.out.println();

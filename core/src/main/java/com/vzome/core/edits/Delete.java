@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.Selection;
-import com.vzome.core.editor.UndoableEdit;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 
-public class Delete extends ChangeManifestations implements UndoableEdit
+public class Delete extends ChangeManifestations
 {
 	@Override
 	public void perform() throws Failure
