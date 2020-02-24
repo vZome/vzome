@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.commands.Command;
 import com.vzome.core.math.DomUtils;
 
-public abstract class SideEffects implements UndoableEdit
+public abstract class SideEffects extends UndoableEdit
 {
     @Override
     public Element getDetailXml( Document doc )

@@ -16,7 +16,7 @@ import com.vzome.core.commands.XmlSaveFormat;
  * @author Scott Vorthmann
  *
  */
-public class EndBlock implements UndoableEdit
+public class EndBlock extends UndoableEdit
 {
     public EndBlock( EditorModel editor )
     {
