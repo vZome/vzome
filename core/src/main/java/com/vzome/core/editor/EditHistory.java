@@ -265,10 +265,20 @@ public class EditHistory implements Iterable<UndoableEdit>
     
     public int getNextLineNumber()
     {
-        UndoableEdit undoable = mEdits .get( mEditNumber );
+        if(mEdits.isEmpty())
+            return 3; // this works on a brand new model with an empty EditHistory, though it's a bit of a hack
+        
+        int editNumber = mEditNumber;
+        if( editNumber >= mEdits.size() )
+            editNumber = mEdits.size() - 1; // avoid overflow by getting the last edit
+        
+        UndoableEdit undoable = mEdits .get( editNumber );
         if ( undoable instanceof DeferredEdit )
             return ((DeferredEdit) undoable) .getLineNumber();
         else
+            // This happens upon the initial VSCode debugger launch if 
+            // we don't set lastStickyEdit="-1" in the vZome file we're debugging
+            // or when we single step past the last edit
             return 0;
     }
 
@@ -512,11 +522,13 @@ public class EditHistory implements Iterable<UndoableEdit>
             this.context = context;
         }
 
+        @Override
         public void setBreakpoint( boolean value )
         {
             this .isBreakpoint = value;
         }
         
+        @Override
         public boolean hasBreakpoint()
         {
             return this .isBreakpoint;
@@ -528,6 +540,7 @@ public class EditHistory implements Iterable<UndoableEdit>
             return false;
         }
         
+        @Override
         public int getLineNumber()
         {
             LocationData locationData = (LocationData) xml .getUserData( LocationData .LOCATION_DATA_KEY );
