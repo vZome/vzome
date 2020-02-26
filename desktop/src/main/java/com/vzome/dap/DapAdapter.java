@@ -157,6 +157,7 @@ public class DapAdapter implements IDebugProtocolServer
             
             String path = (String) args .get( "modelFile" );
             File file = new File( path );
+            path = file.getAbsolutePath().toString(); // adjust path delimiters for OS as needed
             this .source .setPath( path );
             this .source .setName( file .getName() );
             this .source .setAdapterData( "vzome-adapter-data" );
