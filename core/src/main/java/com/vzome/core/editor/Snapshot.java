@@ -13,7 +13,7 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.DomUtils;
 import com.vzome.core.render.RenderedModel;
 
-public class Snapshot implements UndoableEdit
+public class Snapshot extends UndoableEdit
 {
 	public interface Recorder
 	{

@@ -34,6 +34,12 @@ public class CommandPolygon extends AbstractCommand
     }
     
     @Override
+    public boolean ordersSelection()
+    {
+        return true;
+    }
+
+    @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects ) throws Failure
     {
         List<Point> points = new ArrayList<>();

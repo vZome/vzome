@@ -40,6 +40,10 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
     @Override
     public void captureSnapshot( RenderedModel snapshot, Camera camera, int maxSize, final Listener callback )
     {
+        if(snapshot == null) {
+            // hope we're using VSCode to debug a vZome file with lastStickyEdit = -1
+            return; // avoid NPE
+        }
         super .restoreView( camera );
         scene .reset(); // This is very important... forget all of the prior rendering
         

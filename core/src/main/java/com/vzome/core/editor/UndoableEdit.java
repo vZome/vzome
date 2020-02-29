@@ -11,23 +11,23 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 
 
-public interface UndoableEdit
+public abstract class UndoableEdit
 {
-    public void configure( Map<String,Object> props );
+    public abstract void configure( Map<String,Object> props );
     
-    public void perform() throws Command.Failure;
+    public abstract void perform() throws Command.Failure;
 
-    public void undo();
+    public abstract void undo();
 
-    public void redo() throws Command.Failure;
+    public abstract void redo() throws Command.Failure;
 
-    public boolean isNoOp();
+    public abstract boolean isNoOp();
 
-    public boolean isVisible();
+    public abstract boolean isVisible();
 
-    public Element getXml( Document doc );
+    public abstract Element getXml( Document doc );
 
-    public void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Command.Failure;
+    public abstract void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Command.Failure;
 
     //    public interface History
     //    {
@@ -45,13 +45,36 @@ public interface UndoableEdit
      * True when this edit must cause a persistent history branch.
      * @return
      */
-    public boolean isSticky();
+    public abstract boolean isSticky();
 
     /**
      * True when this edit invalidates redoable edits.
      * @return
      */
-    public boolean isDestructive();
+    public abstract boolean isDestructive();
 
-    public Element getDetailXml( Document doc );
+    public abstract Element getDetailXml( Document doc );
+    
+    private boolean hasBreakpoint = false;
+    private int lineNumber = -1;
+    
+    public boolean hasBreakpoint()
+    {
+        return this .hasBreakpoint;
+    }
+    
+    public void setBreakpoint( boolean value )
+    {
+        this .hasBreakpoint = value;
+    }
+    
+    public int getLineNumber()
+    {
+        return this .lineNumber ;
+    }
+    
+    public void setLineNumber( int lineNumber )
+    {
+        this .lineNumber = lineNumber;
+    }
 }
