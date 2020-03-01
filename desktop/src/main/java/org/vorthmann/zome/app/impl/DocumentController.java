@@ -1272,38 +1272,49 @@ public class DocumentController extends DefaultController implements Controller3
     @Override
     public void setModelProperty( String cmd, Object value )
     {
-        if ( "visible".equals( cmd ) ) {
+        switch(cmd) {
+        case "visible":
             // Window is listening, will bring itself to the front, or close itself
             // App controller will set topDocument, or remove the document.
             firePropertyChange( "visible", null, value );
-        } else if ( "name".equals( cmd ) ) {
+            break;
+            
+        case "name":
             this .properties .setProperty( "window.file", (String) value );
             // App controller is listening, will change its map
             firePropertyChange( "name", null, value );
-        } else if ( "backgroundColor".equals( cmd ) ) {
+            break;
+            
+        case "backgroundColor":
             sceneLighting .setProperty( cmd, value );
-        } else if ( "lastObjectColor".equals( cmd ) ) {
+            break;
+            
+        case "lastObjectColor":
             this .lastObjectColor = (String) value;
-        } else if ( "terminating".equals( cmd ) ) {
+            break;
+            
+        case "terminating":
             firePropertyChange( cmd, null, value );
-        }
-        else if ( "clipboard" .equals( cmd ) ) {
+            break;
+            
+        case "clipboard":
             if( systemClipboard != null ) {
                 systemClipboard.setClipboardContents((String) value);
-            }
-            else {
+            } else {
                 designClipboard = (String) value;
             }
-        }
+            break;
         
-        else if ( "showFrameLabels" .equals( cmd ) )
-        {
+        case "showFrameLabels":
             boolean old = showFrameLabels;
             showFrameLabels = "true" .equals( value );
             firePropertyChange( "showFrameLabels", old, showFrameLabels );
-        }
-        else
+            break;
+            
+        default:
             super .setModelProperty( cmd, value );
+            break;
+        }
     }
 
 
