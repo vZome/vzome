@@ -2,7 +2,6 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
@@ -109,7 +108,7 @@ public class StrutBuilderController extends DefaultController implements CanvasT
     }
     
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         switch ( action ) {
 
@@ -132,7 +131,7 @@ public class StrutBuilderController extends DefaultController implements CanvasT
         }
 
         default:
-            super .doAction( action, e );
+            super .doAction( action );
         }
     }
     

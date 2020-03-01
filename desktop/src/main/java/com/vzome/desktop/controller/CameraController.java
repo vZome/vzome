@@ -4,7 +4,6 @@
 package com.vzome.desktop.controller;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
@@ -288,7 +287,7 @@ public class CameraController extends DefaultController implements Controller3d
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         if ( action .equals( "toggleSnap" ) )
         {
@@ -342,7 +341,7 @@ public class CameraController extends DefaultController implements Controller3d
             saveBaselineView();
         }
         else
-            super .doAction( action, e );
+            super .doAction( action );
     }
 
     public MouseTool getTrackball( double speed )

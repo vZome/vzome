@@ -1,6 +1,5 @@
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.util.stream.Collectors;
 
 import org.vorthmann.ui.Controller;
@@ -36,7 +35,7 @@ public class UndoRedoController extends DefaultController implements Controller
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         switch ( action ) {
 
@@ -102,7 +101,7 @@ public class UndoRedoController extends DefaultController implements Controller
                 }
             }
             else
-                super .doAction( action, e );
+                super .doAction( action );
             break;
         }
     }

@@ -39,8 +39,6 @@ import org.vorthmann.j3d.Trackball;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
-import org.vorthmann.zome.app.impl.PartsController.PartInfo;
-import org.vorthmann.zome.ui.PartsPanel.PartsPanelActionEvent;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -479,7 +477,7 @@ public class DocumentController extends DefaultController implements Controller3
 
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Failure
+    public void doAction( String action ) throws Failure
     {
         if ( "finish.load".equals( action ) ) {
 
@@ -503,7 +501,7 @@ public class DocumentController extends DefaultController implements Controller3
                 else
                     try {
                         currentSnapshot = new RenderedModel( null, null ); // force render of first snapshot, see "renderSnapshot." below
-                        lessonController .doAction( "restoreSnapshot", new ActionEvent( this, 0, "restoreSnapshot" ) );
+                        lessonController .doAction( "restoreSnapshot" );
                         // order these to avoid issues with the thumbnails (unexplained)
                         lessonController .renderThumbnails( documentModel, thumbnails );
                     } catch ( Exception e1 ) {
@@ -536,7 +534,7 @@ public class DocumentController extends DefaultController implements Controller3
     
                     this .documentModel .addPropertyChangeListener( this .articleChanges );
                     this .documentModel .removePropertyChangeListener( this .modelChanges );
-                    this .lessonController .doAction( "restoreSnapshot", e );
+                    this .lessonController .doAction( "restoreSnapshot" );
     
                     this .editingModel = false;
                     firePropertyChange( "editor.mode", "model", "article" );
@@ -568,7 +566,7 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
 
             case "nextPage":
-                lessonController .doAction( action, e );
+                lessonController .doAction( action );
                 break;
 
             case "switchToModel":
@@ -595,7 +593,7 @@ public class DocumentController extends DefaultController implements Controller3
 
 
             case "ReplaceWithShape":
-                this .getSymmetryController() .doAction( action, e );
+                this .getSymmetryController() .doAction( action );
                 break;
 
             case "toggleFrameLabels":
@@ -647,9 +645,9 @@ public class DocumentController extends DefaultController implements Controller3
                         if ( orbit != null )
                             usedOrbits .add( orbit );
                     }
-                    symmetryController .availableController .doAction( "setNoDirections", null );
+                    symmetryController .availableController .doAction( "setNoDirections" );
                     for ( Direction orbit : usedOrbits ) {
-                        symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
+                        symmetryController .availableController .doAction( "enableDirection." + orbit .getName() );
                     }
                 }
                 break;
@@ -691,56 +689,40 @@ public class DocumentController extends DefaultController implements Controller3
                     setSymmetrySystem( system );
                 }
     
-                else if ( e != null && PartsPanelActionEvent.class.isAssignableFrom(e.getClass()) )
+                else if ( action.startsWith( "AdjustSelectionByOrbitLength/" ) )
                 {
-                    // this is a select or deselect command from the PartsPanel context menu
-                    PartsPanelActionEvent ppae = PartsPanelActionEvent.class.cast(e);
-                    PartInfo partInfo = ppae.row.partInfo;
-                    String cmd = action.toLowerCase();
-                    switch(ppae.row.partClassGroupingOrder) {
-                        case BALLS_TOTAL:
-                            documentModel .doEdit( "AdjustSelectionByClass/" + cmd + "Balls" );
-                            break;
-    
-                        case STRUTS_TOTAL:
-                            documentModel .doEdit( "AdjustSelectionByClass/" + cmd + "Struts" );
-                            break;
-    
-                        case PANELS_TOTAL:
-                            documentModel .doEdit( "AdjustSelectionByClass/" + cmd + "Panels" );
-                            break;
-    
-                        case STRUTS:
-                        {
-                            Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
-                            AlgebraicNumber unitScalar = orbit.getLengthInUnits(symmetryController.getSymmetry().getField().one());
-                            AlgebraicNumber rawLength = partInfo.strutLength.dividedBy(unitScalar);
-                            Map<String,Object> props = new HashMap<>();
-                            props .put( "orbit", orbit );
-                            if ( rawLength != null )
-                                props .put( "length", rawLength );
-                            documentModel .doEdit( "AdjustSelectionByOrbitLength/" + cmd + "SimilarStruts", props );
-                        }
-                        break;
-    
-                        case PANELS:
-                        {
-                            Direction orbit = symmetryController.getOrbits().getDirection(partInfo.orbitStr);
-                            Map<String,Object> props = new HashMap<>();
-                            props .put( "orbit", orbit );
-                            documentModel .doEdit( "AdjustSelectionByOrbitLength/" + cmd + "SimilarPanels", props );
-                        }
-                        break;
-    
-                        default:
-                            break;
+                    String tail = action.substring( "AdjustSelectionByOrbitLength/" .length() );
+                    String[] sections = tail .split( "/" );
+                    String mode = sections[ 0 ];
+                    String orbitStr = sections[ 1 ];
+                    if ( mode .endsWith( "Struts" ) )
+                    {
+                        Map<String,Object> props = new HashMap<>();
+                        Direction orbit = symmetryController .getOrbits() .getDirection( orbitStr );
+                        props .put( "orbit", orbit );
+
+                        String lengthStr = sections[ 2 ];
+                        AlgebraicNumber unitScalar = orbit .getLengthInUnits( symmetryController.getSymmetry().getField().one() );
+                        AlgebraicNumber length = unitScalar .getField() .parseNumber( lengthStr );
+                        AlgebraicNumber rawLength = length .dividedBy( unitScalar );
+                        if ( rawLength != null )
+                            props .put( "length", rawLength );
+
+                        documentModel .doEdit( "AdjustSelectionByOrbitLength/" + mode, props );
+                    }
+                    else
+                    {
+                        Direction orbit = symmetryController.getOrbits().getDirection( orbitStr );
+                        Map<String,Object> props = new HashMap<>();
+                        props .put( "orbit", orbit );
+                        documentModel .doEdit( "AdjustSelectionByOrbitLength/" + mode, props );
                     }
                 }
                 else
                 {
                     boolean handled = documentModel .doEdit( action );
                     if ( ! handled )
-                        super .doAction( action, e );
+                        super .doAction( action );
                 }
             }
 
@@ -1374,8 +1356,8 @@ public class DocumentController extends DefaultController implements Controller3
                 Axis zone = symmetryController .getZone( offset );
                 Direction orbit = zone .getOrbit();
                 AlgebraicNumber length = zone .getLength( offset );
-                symmetryController .availableController .doAction( "enableDirection." + orbit .getName(), null );
-                symmetryController .buildController .doAction( "setSingleDirection." + orbit .getName(), null );
+                symmetryController .availableController .doAction( "enableDirection." + orbit .getName() );
+                symmetryController .buildController .doAction( "setSingleDirection." + orbit .getName() );
                 LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
                 lmodel .setActualLength( length );
                 break;

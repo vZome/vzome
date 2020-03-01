@@ -3,7 +3,6 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.vorthmann.j3d.MouseTool;
@@ -42,7 +41,7 @@ public class LengthController extends DefaultController
         private static final int MAX_SCALE = 6, MIN_SCALE = -6;
 
         @Override
-        public void doAction( String action, ActionEvent e ) throws Exception
+        public void doAction( String action ) throws Exception
         {
             if ( "scaleUp" .equals( action ) )
                 setScale( this .scale + 1 );
@@ -53,7 +52,7 @@ public class LengthController extends DefaultController
 //            else if ( "zero" .equals( action ) )
 //                ; // TODO multiply this value into the lengthModel, and zero this value
             else
-            	super.doAction( action, e );
+            	super.doAction( action );
         }
 
         private int scale = 0;
@@ -286,7 +285,7 @@ public class LengthController extends DefaultController
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         switch ( action ) {
 
@@ -353,7 +352,7 @@ public class LengthController extends DefaultController
 
         case "scaleUp":
         case "scaleDown":
-            currentScales[ this .multiplier ] .doAction( action, e );
+            currentScales[ this .multiplier ] .doAction( action );
             return;
 
         case "newZeroScale":
@@ -373,7 +372,7 @@ public class LengthController extends DefaultController
 	            fireLengthChange();
 		    }
 		    else
-		        super.doAction( action, e );
+		        super.doAction( action );
 		}
         
 //        else if ( action .startsWith( "adjustScale." ) )

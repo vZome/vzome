@@ -3,7 +3,6 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -42,7 +41,7 @@ public class LessonController extends DefaultController
     }
     
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         if ( ! listening )
             // guard against events that originate here
@@ -154,7 +153,7 @@ public class LessonController extends DefaultController
                 model .setContent(buff .toString());
         }
         else
-            super.doAction( action, e );
+            super.doAction( action );
     }
     
     @Override

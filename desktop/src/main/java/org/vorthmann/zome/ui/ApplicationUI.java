@@ -1,9 +1,9 @@
 
 package org.vorthmann.zome.ui;
 
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystemNotFoundException;
@@ -63,7 +64,7 @@ import com.vzome.desktop.controller.Controller3d;
  * @author vorth
  *
  */
-public final class ApplicationUI implements ActionListener, PropertyChangeListener
+public final class ApplicationUI implements ApplicationController.UI, PropertyChangeListener
 {
     private ApplicationController mController;
 
@@ -351,10 +352,8 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
     }
 
     @Override
-    public void actionPerformed( ActionEvent event )
+    public void doAction( String action )
     {
-        String action = event. getActionCommand();
-
         switch ( action ) {
 
         case "showAbout":
@@ -373,9 +372,25 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             break;
 
         default:
-            JOptionPane .showMessageDialog( null,
-                    "No handler for action: \"" + action + "\"",
-                    "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+            if ( action .startsWith( "browse-" ) )
+            {
+                String url = action .substring( "browse-" .length() );
+                if ( Desktop.isDesktopSupported() && Desktop.getDesktop() .isSupported( Desktop.Action.BROWSE ) ) {
+                    try {
+                        Desktop.getDesktop() .browse( new URI( url ) );
+                    } catch (IOException | URISyntaxException e) {
+                        e .printStackTrace();
+                        JOptionPane .showMessageDialog( null,
+                                "Sorry, I am unable to launch the browser.",
+                                "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+                    }
+                }
+            }
+            else {
+                JOptionPane .showMessageDialog( null,
+                        "No handler for action: \"" + action + "\"",
+                        "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+            }
         }
     }
 

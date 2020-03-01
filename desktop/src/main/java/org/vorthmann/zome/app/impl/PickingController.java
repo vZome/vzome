@@ -1,6 +1,5 @@
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
 import org.vorthmann.ui.Controller;
@@ -36,7 +35,7 @@ public class PickingController extends DefaultController implements Controller
 	}
 
 	@Override
-	public void doAction( String action, ActionEvent e ) throws Exception
+	public void doAction( String action ) throws Exception
 	{
         switch ( action ) {
 
@@ -56,7 +55,7 @@ public class PickingController extends DefaultController implements Controller
         	break;
             
 		default:
-			this .delegate .doAction( action, e );
+			this .delegate .doAction( action );
 		}
 
 		this .pickedManifestation = null;

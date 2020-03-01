@@ -50,7 +50,7 @@ public class DefaultController implements Controller
         try {
             if ( logger .isLoggable( Level .FINE ) )
                 logger.fine( "ACTION: " + getPath() + "||" + e.getActionCommand() );
-            doAction( e .getActionCommand(), e );
+            doAction( e .getActionCommand() );
         } catch ( Exception ex )
         {
             ex .printStackTrace();
@@ -78,10 +78,10 @@ public class DefaultController implements Controller
         pcs .removePropertyChangeListener( listener );
     }
 
-    protected void doAction( String action, ActionEvent e ) throws Exception
+    protected void doAction( String action ) throws Exception
     {
         if ( mNextController != null )
-            mNextController .doAction( action, e );
+            mNextController .doAction( action );
         else
             mErrors .reportError( UNKNOWN_ACTION, new Object[]{ action } );
     }

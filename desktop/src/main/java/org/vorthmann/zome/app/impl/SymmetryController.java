@@ -3,7 +3,6 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -237,19 +236,19 @@ public class SymmetryController extends DefaultController
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         switch (action) {
 
         case "rZomeOrbits":
         case "predefinedOrbits":
         case "setAllDirections":
-            availableController .doAction( action, e );
+            availableController .doAction( action );
             break;
 
         case "ReplaceWithShape":
             action += "/" + this .symmetrySystem .getName() + ":" + this .symmetrySystem .getStyle() .getName();
-            super .doAction( action, e );
+            super .doAction( action );
             break;
 
         default:
@@ -262,7 +261,7 @@ public class SymmetryController extends DefaultController
             else {
                 boolean handled = this .symmetrySystem .doAction( action );
                 if ( ! handled )
-                    super .doAction( action, e );
+                    super .doAction( action );
             }
             break;
         }
