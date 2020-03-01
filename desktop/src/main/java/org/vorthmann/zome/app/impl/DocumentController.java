@@ -93,6 +93,8 @@ public class DocumentController extends DefaultController implements Controller3
     private DocumentModel documentModel;
     private boolean editingModel;
     private Camera currentView; // ?? TBD if this is in the right group
+    private boolean magnificationChanged = false;
+    private final boolean trackMagnificationChange;
     private final Properties properties;
     
     // to RenderedModelController
@@ -167,6 +169,8 @@ public class DocumentController extends DefaultController implements Controller3
         final boolean asTemplate = propertyIsTrue( "as.template" );
 
         final boolean newDocument = propertyIsTrue( "new.document" );
+        
+        trackMagnificationChange = propertyIsTrue( "document.trackMagnificationChange" );
         
         drawOutlines = propertyIsTrue( "outline.geometry" );
 
@@ -797,11 +801,12 @@ public class DocumentController extends DefaultController implements Controller3
                 try (FileOutputStream out = new FileOutputStream( file )) {
                     documentModel .serialize( out, this .properties );
                 }
-                // just did a save, so lets record the document change count again,
+                // just did a save, so lets reset magnificationChanged and record the document change count again,
                 //  so isEdited() will return false until more changes occur.
-                // IMPORTANT! TODO if we ever implement "save a copy", this code should NOT reset
+                // IMPORTANT! TODO if we ever implement "save a copy", this code should NOT reset magnificationChanged or
                 //   the count just because we're writing a copy.  The reset will have to move to the
                 //   context of the save.
+                this.magnificationChanged = false;
                 this .changeCount  = this .documentModel .getChangeCount();
 
                 // Sample prefs file entry: save.exports=export.dae capture.png capture.jpg export.vef
@@ -1121,7 +1126,7 @@ public class DocumentController extends DefaultController implements Controller3
     public boolean isEdited()
     {
         int currentChangeCount = this .documentModel .getChangeCount();
-        return currentChangeCount > this .changeCount;
+        return magnificationChanged || (currentChangeCount > this .changeCount);
     }
 
 
@@ -1273,6 +1278,13 @@ public class DocumentController extends DefaultController implements Controller3
     public void setModelProperty( String cmd, Object value )
     {
         switch(cmd) {
+        case "magnification":
+            // If trackMagnificationChange is true 
+            // then track the fact that the camera's zoom has changed 
+            // so this.isEdited() will be true.
+            this.magnificationChanged = trackMagnificationChange;
+            break;
+            
         case "visible":
             // Window is listening, will bring itself to the front, or close itself
             // App controller will set topDocument, or remove the document.

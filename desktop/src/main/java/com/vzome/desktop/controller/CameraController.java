@@ -498,9 +498,9 @@ public class CameraController extends DefaultController implements Controller3d
             }
             setMagnification( Float .parseFloat( (String) value ) );
             lastZoom = now;
+            // notify the DocumentController so it considers the model to be edited. 
         }
-        else
-            super .setModelProperty( propName, value );
+        super .setModelProperty( propName, value );
     }
 
     public void copyView( Camera newView )
