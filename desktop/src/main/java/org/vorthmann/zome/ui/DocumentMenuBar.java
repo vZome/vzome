@@ -207,7 +207,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                 {
                     String number = JOptionPane.showInputDialog( null, "Enter the edit number.", "Set Edit Number",
                             JOptionPane.PLAIN_MESSAGE );
-                    controller .getSubController( "undoRedo" ) .actionPerformed( new ActionEvent( DocumentMenuBar.this, ActionEvent.ACTION_PERFORMED, "redoUntilEdit." + number ) );
+                    controller .getSubController( "undoRedo" ) .actionPerformed( DocumentMenuBar.this, "redoUntilEdit." + number );
                 }
             } ) );
         }
@@ -621,7 +621,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             subc = subc .getSubController( controllerName );
         if ( subc != null ) {
             menuItem .setEnabled( true );
-            menuItem .addActionListener( subc );
+            menuItem .addActionListener( new ControllerActionListener( subc ) );
         }
         else
             menuItem .setEnabled( false );

@@ -3,6 +3,7 @@ package org.vorthmann.zome.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
@@ -115,24 +116,26 @@ public class CameraControlPanel extends JPanel {
                 
         JPanel checkboxesPanel = new JPanel();
         topPanel .add( checkboxesPanel, BorderLayout.CENTER );
+        
+        ActionListener actionListener = new ControllerActionListener( controller );
 
         final JCheckBox perspectiveCheckbox = new JCheckBox( "perspective" );
         //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
-        perspectiveCheckbox .addActionListener( controller );
+        perspectiveCheckbox .addActionListener( actionListener );
         perspectiveCheckbox .setActionCommand( "togglePerspective" );
         perspectiveCheckbox .setSelected( "true" .equals( controller .getProperty( "perspective" ) ) );
         checkboxesPanel .add( perspectiveCheckbox );
 
         final JCheckBox snapperCheckbox = new JCheckBox( "snap" );
         //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
-        snapperCheckbox .addActionListener( controller );
+        snapperCheckbox .addActionListener( actionListener );
         snapperCheckbox .setActionCommand( "toggleSnap" );
         snapperCheckbox .setSelected( "true" .equals( controller .getProperty( "snap" ) ) );
         checkboxesPanel .add( snapperCheckbox );
 
         final JCheckBox outlinesCheckbox = new JCheckBox( "outlines" );
         //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
-        outlinesCheckbox .addActionListener( controller );
+        outlinesCheckbox .addActionListener( actionListener );
         outlinesCheckbox .setActionCommand( "toggleOutlines" );
         outlinesCheckbox .setSelected( "true" .equals( controller .getProperty( "docDrawOutlines" ) ) );
         checkboxesPanel .add( outlinesCheckbox );

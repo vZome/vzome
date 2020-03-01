@@ -3,7 +3,6 @@ package org.vorthmann.zome.ui;
 
 import java.awt.Desktop;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -364,7 +363,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             String str = JOptionPane .showInputDialog( null, "Enter the URL for an online .vZome file.", "Open URL",
                     JOptionPane.PLAIN_MESSAGE );
             if ( str != null )
-                mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "openURL-" + str ) );
+                mController .actionPerformed( this, "openURL-" + str );
             break;
 
         case "quit":

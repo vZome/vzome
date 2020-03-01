@@ -5,7 +5,6 @@ package org.vorthmann.ui;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -41,16 +40,10 @@ public class DefaultController implements Controller
     @Override
     public void actionPerformed( Object source, String action )
     {
-        this .actionPerformed( new ActionEvent( source, ActionEvent.ACTION_PERFORMED, action ) );
-    }
-
-    @Override
-    public final void actionPerformed( ActionEvent e )
-    {
         try {
             if ( logger .isLoggable( Level .FINE ) )
-                logger.fine( "ACTION: " + getPath() + "||" + e.getActionCommand() );
-            doAction( e .getActionCommand() );
+                logger.fine( "ACTION: " + getPath() + "||" + action );
+            doAction( action );
         } catch ( Exception ex )
         {
             ex .printStackTrace();

@@ -44,7 +44,7 @@ public class StrutBuilderPanel extends JPanel
         final JCheckBox usePlaneCheckbox = new JCheckBox( "Use working plane" );
         usePlaneCheckbox .setEnabled( controller .propertyIsTrue( "workingPlaneDefined" ) );
         usePlaneCheckbox .setSelected( controller .propertyIsTrue( "useWorkingPlane" ) );
-        usePlaneCheckbox .addActionListener( controller );
+        usePlaneCheckbox .addActionListener( new ControllerActionListener(controller) );
         usePlaneCheckbox .setActionCommand( "toggleWorkingPlane" );
         usePlanePanel .add( usePlaneCheckbox, BorderLayout.EAST );
         constraintsPanel .add( usePlanePanel, BorderLayout.NORTH );

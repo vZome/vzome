@@ -3,7 +3,6 @@ package org.vorthmann.zome.app.impl;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
@@ -337,7 +336,7 @@ public class DocumentController extends DefaultController implements Controller3
             @Override
             public void mouseClicked( MouseEvent e )
             {
-                actionPerformed( new ActionEvent( e .getSource(), ActionEvent.ACTION_PERFORMED, "nextPage" ) );
+                actionPerformed( e .getSource(), "nextPage" );
                 e .consume();
             }
         };

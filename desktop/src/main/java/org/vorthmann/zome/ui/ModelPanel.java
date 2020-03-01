@@ -275,7 +275,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         String tooltip = TOOLTIP_PREFIX + name + TOOLTIP_SUFFIX;
         JButton button = makeIconButton( tooltip, iconPath );
         button .setActionCommand( "apply" );
-        button .addActionListener( controller );
+        button .addActionListener( new ControllerActionListener( controller ) );
         button .addMouseListener( new MouseAdapter()
         {
             @Override
@@ -323,7 +323,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                 + "</b><br><br>A selection bookmark lets you re-create<br>any selection at a later time.</html>";
         final JButton button = makeIconButton( html, iconPath );
         button .setActionCommand( "createTool" );
-        button .addActionListener( buttonController );
+        button .addActionListener( new ControllerActionListener(buttonController) );
         button .setEnabled( buttonController != null && buttonController .propertyIsTrue( "enabled" ) );
         if ( buttonController != null )
             buttonController .addPropertyListener( new PropertyChangeListener()
@@ -492,7 +492,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         {
             control .setEnabled( true );
             control .setActionCommand( action );
-            control .addActionListener( this .controller );
+            control .addActionListener( new ControllerActionListener( this .controller ) );
             return control;
         }
     }
