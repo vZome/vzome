@@ -13,7 +13,6 @@ import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.DodecagonalSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Shapes;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.InversionTool;
 import com.vzome.core.tools.LinearMapTool;
@@ -41,8 +40,10 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
     public RootThreeFieldApplication()
     {
         super( new RootThreeField() );
+        
         OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
-        AbstractSymmetry symm = (AbstractSymmetry) octahedralPerspective .getSymmetry();
+        
+        AbstractSymmetry symm = octahedralPerspective .getSymmetry();
 
         symm .createZoneOrbit( "red",   0, Symmetry .NO_ROTATION, new int[][] { {1,1, 1,2}, {1,2, 0,1}, {0,1, 0,1} }, true );
         symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {2,1, 0,1} } );
@@ -52,40 +53,20 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         octahedralPerspective .setDefaultGeometry( defaultShapes );
     }
 
-    final SymmetryPerspective dodecagonalPerspective = new SymmetryPerspective()
+    private final SymmetryPerspective dodecagonalPerspective = new AbstractSymmetryPerspective(new DodecagonalSymmetry( getField(), "prisms" ))
     {
-        private final DodecagonalSymmetry symmetry = new DodecagonalSymmetry( getField(), "prisms" );
         {
-            symmetry .computeOrbitDots();
-        }
-
-        private final AbstractShapes defaultShapes = new ExportedVEFShapes( null, "dodecagon3d", "prisms", symmetry );
-        private final AbstractShapes hexagonShapes = new DodecagonalShapes( "dodecagonal", "hexagons", "flat hexagons", symmetry );
-
-        private final Command dodecagonsymm = new CommandSymmetry( this .symmetry );
-
-        @Override
-        public Symmetry getSymmetry()
-        {
-            return this .symmetry;
+            AbstractShapes defaultShapes = new ExportedVEFShapes( null, "dodecagon3d", "prisms", symmetry );
+            AbstractShapes hexagonShapes = new DodecagonalShapes( "dodecagonal", "hexagons", "flat hexagons", symmetry );
+            // this is the order they will appear in the menu
+            setDefaultGeometry( defaultShapes );
+            addShapes(hexagonShapes);
         }
 
         @Override
         public String getName()
         {
             return "dodecagonal";
-        }
-
-        @Override
-        public List<Shapes> getGeometries()
-        {
-            return Arrays.asList( defaultShapes, hexagonShapes );
-        }
-
-        @Override
-        public Shapes getDefaultGeometry()
-        {
-            return this .defaultShapes;
         }
 
         @Override
@@ -144,16 +125,17 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
             return result;
         }
 
+        private final Command dodecagonsymm = new CommandSymmetry( this .symmetry );
+
         @Override
         public Command getLegacyCommand( String action )
         {
             switch ( action ) {
-
             case "dodecagonsymm":
-                return this .dodecagonsymm;
+                return dodecagonsymm;
 
             default:
-                return null;
+                return super.getLegacyCommand(action);
             }
         }
 

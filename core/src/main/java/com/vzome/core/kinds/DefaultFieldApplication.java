@@ -15,7 +15,6 @@ import com.vzome.core.commands.CommandHide;
 import com.vzome.core.commands.CommandMidpoint;
 import com.vzome.core.commands.CommandMirrorSymmetry;
 import com.vzome.core.commands.CommandPolygon;
-import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.commands.CommandTranslate;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.ToolsModel;
@@ -52,7 +51,6 @@ public class DefaultFieldApplication implements FieldApplication
     private final Command hideball = new CommandHide();
     private final Command hide = new CommandHide();
     private final Command panel = new CommandPolygon();
-    private final Command tauDivide = new CommandTauDivision();
     private final Command midpoint = new CommandMidpoint();
 
 	public DefaultFieldApplication( AlgebraicField field )
@@ -160,9 +158,9 @@ public class DefaultFieldApplication implements FieldApplication
 	}
 
 	@Override
-	public Command getLegacyCommand( String name )
+	public Command getLegacyCommand( String action )
 	{
-		switch ( name ) {
+		switch ( action ) {
 		case "pointsymm": return pointsymm;
 		case "mirrorsymm": return mirrorsymm;
 		case "translate": return translate;
@@ -170,8 +168,9 @@ public class DefaultFieldApplication implements FieldApplication
 		case "hideball": return hideball;
 		case "hide": return hide;
 		case "panel": return panel;
-		case "tauDivide": return tauDivide;
 		case "midpoint": return midpoint;
+		case "octasymm":
+		    return getDefaultSymmetryPerspective().getLegacyCommand(action);
 		default:
 			return null;
 		}

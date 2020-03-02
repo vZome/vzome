@@ -1,6 +1,6 @@
 package com.vzome.core.algebra;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -10,12 +10,12 @@ public class AlgebraicVectorTest {
 	public void testCrossProduct()
 	{
 		AlgebraicField field = new PentagonField();
-		AlgebraicNumber two = field .createAlgebraicNumber( 2 );
-		AlgebraicNumber three = field .createAlgebraicNumber( 3 );
+		AlgebraicNumber two = field .createRational( 2 );
+		AlgebraicNumber three = field .createRational( 3 );
 		AlgebraicVector x = new AlgebraicVector( two, field .one(), two );
 		AlgebraicVector y = new AlgebraicVector( three, field .one() .negate(), three .negate() );
 		AlgebraicVector result = x .cross( y );
-		AlgebraicVector target = new AlgebraicVector( field .one() .negate(), field .createAlgebraicNumber( 12 ), field .createAlgebraicNumber( -5 ) );
+		AlgebraicVector target = new AlgebraicVector( field .one() .negate(), field .createRational( 12 ), field .createRational( -5 ) );
 		assertEquals( target, result );
 	}
 

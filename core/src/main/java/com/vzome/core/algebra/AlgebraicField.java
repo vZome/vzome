@@ -141,12 +141,23 @@ public abstract class AlgebraicField
         return true;
     }
 
+    /**
+     * Generates an AlgebraicNumber with the specified {@code BigRational} factors.
+     * @param factors
+     * @return
+     */
     public final AlgebraicNumber createAlgebraicNumber( BigRational[] factors )
     {
         return new AlgebraicNumber( this, factors );
     }
 
-    public final AlgebraicNumber createAlgebraicNumber( int... factors )
+    /**
+     * Generates an AlgebraicNumber with integer terms (having only unit denominators).
+     * Use {@code createAlgebraicNumber( BigRational[] factors )} if denominators other than one are required.
+     * @param factors
+     * @return
+     */
+    public final AlgebraicNumber createAlgebraicNumber( int[] factors )
     {
         BigRational[] brs = new BigRational[ factors .length ];
         for ( int j = 0; j < factors.length; j++ ) {
@@ -473,6 +484,24 @@ public abstract class AlgebraicField
             coords[c] = new AlgebraicNumber(this, factors);
         }
         return new AlgebraicVector( coords );
+    }
+    
+    /**
+     * Generates an AlgebraicVector with all AlgebraicNumber terms being integers (having unit denominators).
+     * Contrast this with {@code createVector(int[][] nums)} which requires all denominators to be specified.
+     * @param nums is a 2 dimensional integer array. The length of nums becomes the number of dimensions in the resulting AlgebraicVector.
+     * For example, {@code (new PentagonField()).createIntegerVector( new int[][]{ {0,-1}, {2,3}, {4,5} } ); } 
+     * generates the 3 dimensional vector (-φ, 2 +3φ, 4 +5φ) having all integer terms. 
+     * @return an AlgebraicVector
+     */
+    public AlgebraicVector createIntegerVector( int[][] nums )
+    {
+        final int dims = nums.length;
+        AlgebraicVector result = origin( dims );
+        for (int dim = 0; dim < dims; dim++) {
+            result .setComponent( dim, createAlgebraicNumber( nums[dim] ) );
+        }
+        return result;
     }
 
     /**

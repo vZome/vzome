@@ -8,6 +8,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.vorthmann.ui.Controller;
 
@@ -22,6 +24,8 @@ import com.vzome.opengl.Renderer;
 
 public class JoglScene implements RenderingChanges, PropertyChangeListener
 {
+    private static final Logger LOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
+    
     private Color bkgdColor;
     private final Map<String, SymmetryRendering> symmetries = new HashMap<>();
     private int forceRender = 3; // double-buffering means we cannot simply use a boolean
@@ -74,10 +78,9 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
                 // of the rendering loop if a ConcurrentModificationException happens.
                 // Subsequent renderings will resolve any visual defect.
                 this.forceRender();
-                // log to stdErr for now, so we have an idea how often it happens
-                System.err.println("Ignoring ConcurrentModificationException on thread: " 
-                        + Thread.currentThread().toString());
-                ex.printStackTrace();
+                if(LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("Ignoring ConcurrentModificationException on thread: " + Thread.currentThread());
+                }
             }
         }
     }
