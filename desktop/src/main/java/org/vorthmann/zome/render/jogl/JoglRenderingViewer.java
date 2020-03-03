@@ -27,7 +27,7 @@ import com.vzome.core.math.Line;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.opengl.OutlineRenderer;
@@ -50,7 +50,7 @@ import com.vzome.opengl.SolidRenderer;
  */
 public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 {
-    private final JoglScene scene;
+    private final Scene scene;
     private JoglOpenGlShim glShim;
     private Renderer outlines = null;
     private Renderer solids = null;
@@ -69,7 +69,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private boolean forceRender = true;
     private float fogFront;
 
-    public JoglRenderingViewer( Lights lights, JoglScene scene, GLAutoDrawable drawable )
+    public JoglRenderingViewer( Lights lights, Scene scene, GLAutoDrawable drawable )
     {
         this .scene = scene;
 
@@ -258,12 +258,6 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public RenderingChanges getRenderingChanges()
-    {
-        return this .scene;
     }
 
     @Override

@@ -1,7 +1,5 @@
 
-//(c) Copyright 2014, Scott Vorthmann.
-
-package org.vorthmann.zome.render.jogl;
+package com.vzome.core.render;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -9,18 +7,10 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.vorthmann.ui.Controller;
-
-import com.vzome.core.render.Color;
-import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderingChanges;
-import com.vzome.core.render.ShapeAndInstances;
-import com.vzome.core.render.Shapes;
-import com.vzome.core.render.SymmetryRendering;
 import com.vzome.core.viewing.Lights;
 import com.vzome.opengl.Renderer;
 
-public class JoglScene implements RenderingChanges, PropertyChangeListener
+public class Scene implements RenderingChanges, PropertyChangeListener
 {
     private Color bkgdColor;
     private final Map<String, SymmetryRendering> symmetries = new HashMap<>();
@@ -29,11 +19,11 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
 
     private static final float MODEL_SCALE_FACTOR = 2f; // this seems to align with the way Java3d rendering came out
 
-    JoglScene( Controller controller, Lights lights, boolean isSticky )
+    public Scene( Lights lights, boolean isSticky, boolean drawOutlines )
 	{
         this.bkgdColor = lights .getBackgroundColor();
         
-        this .drawOutlines = controller .propertyIsTrue( "drawOutlines" );
+        this .drawOutlines = drawOutlines;
         
         lights .addPropertyListener( new PropertyChangeListener(){
 
@@ -50,7 +40,7 @@ public class JoglScene implements RenderingChanges, PropertyChangeListener
         });
 	}
 
-    void render( Renderer solids, Renderer outlines, boolean viewChanged )
+    public void render( Renderer solids, Renderer outlines, boolean viewChanged )
     {
         if ( viewChanged )
             this .forceRender();
