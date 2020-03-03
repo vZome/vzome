@@ -165,19 +165,19 @@ public class AlgebraicNumberTest
         assertEquals( "11/3 5/2", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(5/2,11/3)", number.toString( AlgebraicField.VEF_FORMAT ) );
         
-        number = field .createAlgebraicNumber( 0 );
+        number = field .createRational( 0 );
 
         assertEquals( "0", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "0", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         assertEquals( "0 0", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(0,0)", number.toString( AlgebraicField.VEF_FORMAT ) );
         
-        number = field .createAlgebraicNumber( 1, 0 );
+        number = field .createAlgebraicNumber( new int[]{1, 0} );
 
         assertEquals( "1", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "1", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         
-        number = field .createAlgebraicNumber( 0, 1 );
+        number = field .createAlgebraicNumber( new int[]{0, 1} );
 
         assertEquals( "\u03C6", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "phi", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
@@ -198,17 +198,17 @@ public class AlgebraicNumberTest
         assertEquals( "-12 8 2 -1 6 -4", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(-4,6,-1,2,8,-12)", number.toString( AlgebraicField.VEF_FORMAT ) );
 
-        number = field .createAlgebraicNumber( 0, 0, 0, 0, 0, 0 );
+        number = field .createAlgebraicNumber( new int[]{0, 0, 0, 0, 0, 0} );
         
         assertEquals( "0", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "0", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
 
-        number = field .createAlgebraicNumber( 0, 0, 1, 0, 0, 0 );
+        number = field .createAlgebraicNumber( new int[]{0, 0, 1, 0, 0, 0} );
         
         assertEquals( "\u03BE", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "xi", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
 
-        number = field .createAlgebraicNumber( 0, 1, 0, 0, 0, 1 );
+        number = field .createAlgebraicNumber( new int[]{0, 1, 0, 0, 0, 1} );
         
         assertEquals( "\u03C6 +\u03C6\u03BE\u00B2", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "phi +phi*xi^2", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
@@ -431,8 +431,8 @@ public class AlgebraicNumberTest
     	AlgebraicField root = new RootTwoField();
     	
 	    assertEquals(
-	    	pent.createAlgebraicNumber( 2, 3 ).evaluate(),
-	    	snub.createAlgebraicNumber( 2, 3 ).evaluate(),
+	    	pent.createAlgebraicNumber( new int[]{2, 3} ).evaluate(),
+	    	snub.createAlgebraicNumber( new int[]{2, 3} ).evaluate(),
 	    	0.0D
 	    );
 	    

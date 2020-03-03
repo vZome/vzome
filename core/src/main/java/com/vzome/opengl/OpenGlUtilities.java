@@ -5,13 +5,13 @@ import java.util.logging.Logger;
 
 public class OpenGlUtilities
 {
-    private static final Logger lOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
+    private static final Logger LOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
     
     public static void logConfiguration( OpenGlShim gl )
     {
     	String msg = gl.getGLSLVersionString();
     	// could add more hardware or driver into here
-    	lOGGER.config(msg);
+    	LOGGER.config(msg);
     }
     
     static int storeBuffer( OpenGlShim gl, FloatBuffer clientBuffer, int oldId )
@@ -55,7 +55,7 @@ public class OpenGlUtilities
         if(qty != 0) {
         	logConfiguration(gl);
         	String msg = func + ": glError" + (qty == 1 ? "" : "s") + buf.toString();
-        	lOGGER.warning(msg);
+        	LOGGER.warning(msg);
         	throw new RuntimeException(msg);
         }
     }
@@ -84,7 +84,7 @@ public class OpenGlUtilities
         // If the compilation failed, delete the shader.
         if (compileStatus[0] == 0) {
             String problem = gl.glGetShaderInfoLog(shader);
-            lOGGER.severe(code + "\nError compiling shader: " + problem );
+            LOGGER.severe(code + "\nError compiling shader: " + problem );
             gl.glDeleteShader(shader);
             shader = 0;
         }

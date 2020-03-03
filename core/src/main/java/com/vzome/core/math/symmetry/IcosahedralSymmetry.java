@@ -139,32 +139,13 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return "icosahedral";
     }
 
-    /**
-     * Make a rational vector with unit denominators from an integer vector.
-     * @param canonical
-     * @return
-     */
-    protected AlgebraicVector rationalVector( int[] integers )
-    {
-        AlgebraicVector result = mField .origin( 3 );
-        for (int i = 0; i < 3; i++)
-        {
-            int[] factors = new int[ integers.length / 3 ];
-            for (int j = 0; j < factors.length; j++) {
-				factors[ j ] = integers[ i * factors.length + j ];
-			}
-            result .setComponent( i, mField .createAlgebraicNumber( factors ) );
-        }
-        return result;
-    }
-    
     @Override
     protected AlgebraicVector[] getOrbitTriangle()
     {
-        AlgebraicNumber twice = this .getField() .createRational( 2 );
+        AlgebraicNumber twice = mField .createRational( 2 );
         AlgebraicVector blueVertex = this .getDirection( "blue" ) .getPrototype() .scale( twice );
         AlgebraicVector redVertex = this .getDirection( "red" ) .getPrototype();
-        AlgebraicNumber phiInv = this .getField() .createPower( -1 );
+        AlgebraicNumber phiInv = mField.getGoldenRatio().reciprocal();
         AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype() .scale( phiInv );
         return new AlgebraicVector[] { blueVertex, redVertex, yellowVertex };
     }
