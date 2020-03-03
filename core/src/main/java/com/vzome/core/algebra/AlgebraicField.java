@@ -141,24 +141,21 @@ public abstract class AlgebraicField
         return true;
     }
 
+    /**
+     * The AlgebraicNumber constructor already validates the number of terms.
+     * It pads the array with ZEROs if it's too short,
+     * throws an exception if it's too long,
+     * and replaces all nulls with ZERO.
+     * No need to duplicate any of that here.
+     * This method is called by the AlgebraicNumber constructor. 
+     * It is primarily intended to allow subclasses to intercept
+     * a pair of terms from the golden field and remap them as needed for that field.
+     * Otherwise, the terms are returned unchanged.
+     * @param terms
+     * @return
+     */
     protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
-        // this is the most common case, so check it first
-        if(terms.length == order) {
-            return terms;
-        }
-        // too short
-        if(terms.length < order) {
-            BigRational[] padded = new BigRational[order];
-            for(int i = 0; i < terms.length; i++) {
-                padded[i] = terms[i];
-            }
-            for(int i = terms.length; i < order; i++) {
-                padded[i] = BigRational.ZERO;
-            }
-            return padded;
-        }
-        // too long
-        throw new IllegalStateException("Too many terms for " + getName() + " field. Expected " + order + ", found " + terms.length);
+        return terms;
     }
     
     /**
@@ -168,7 +165,7 @@ public abstract class AlgebraicField
      */
     public final AlgebraicNumber createAlgebraicNumber( BigRational[] factors )
     {
-        return new AlgebraicNumber( this, prepareAlgebraicNumberTerms(factors) );
+        return new AlgebraicNumber( this, factors );
     }
 
     /**

@@ -108,7 +108,6 @@ public class AlgebraicNumberTest
         final PentagonField goldenField = new PentagonField();
         final int ones = -37, phis = 42; // these can have any non-zero value
         final int denom = 1, scalePower = 0; // these must be as stated
-//        final int ones = 1, phis = 1, denom = 1, scalePower = 0;
         final AlgebraicNumber goldenNumber = goldenField.createAlgebraicNumber(ones, phis, denom, scalePower);
         System.out.println(goldenField.getName() + ": " + goldenNumber + "\n");
         final BigRational[] goldenTerms = goldenNumber.getFactors();
@@ -119,12 +118,10 @@ public class AlgebraicNumberTest
             System.out.println(field.getName());
             assertNotNull(field.getGoldenRatio());
             { // Using new AlgebraicNumber( AlgebraicField field, BigRational[] newFactors )
-              // puts the onus on the caller to be sure the terms are correct.
+             // this test originally failed
                 AlgebraicNumber test = new AlgebraicNumber(field, goldenTerms);
                 System.out.println(test);
-                // This is why AlgebraicNumbers should always be made by the field
-                // if there's any doubt about the terms.
-                assertNotEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
+                assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
             }
             { // Using field.createAlgebraicNumber( BigRational[] factors )
               // this test originally failed
