@@ -58,7 +58,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         isOne = isOne(this.factors);
     }
 
-    AlgebraicNumber( AlgebraicField field, BigRational... newFactors )
+    AlgebraicNumber( AlgebraicField field, BigRational[] newFactors )
     {
         if ( newFactors.length > field .getOrder() )
             throw new IllegalStateException( newFactors.length + " is too many factors for field \"" + field.getName() + "\"" );
