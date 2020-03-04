@@ -58,11 +58,12 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         isOne = isOne(this.factors);
     }
 
-    AlgebraicNumber( AlgebraicField field, BigRational... newFactors )
+    AlgebraicNumber( AlgebraicField field, BigRational[] factors )
     {
-        if ( newFactors.length > field .getOrder() )
-            throw new IllegalStateException( newFactors.length + " is too many factors for field \"" + field.getName() + "\"" );
+        if ( factors.length > field .getOrder() )
+            throw new IllegalStateException( factors.length + " is too many factors for field \"" + field.getName() + "\"" );
         this .field = field;
+        BigRational[] newFactors = field.prepareAlgebraicNumberTerms(factors);
         this .factors = new BigRational[ field .getOrder() ];
         for ( int i = 0; i < newFactors.length; i++ ) {
             this .factors[ i ] = newFactors[ i ] == null 

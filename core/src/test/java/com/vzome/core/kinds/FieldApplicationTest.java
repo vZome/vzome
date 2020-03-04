@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,8 +54,9 @@ public class FieldApplicationTest
 {
     private static final Logger LOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
     
-    private static Set<FieldApplication> getTestFieldApplications() {
-        Set<FieldApplication> result = new HashSet<>();
+    private static Collection<FieldApplication> getTestFieldApplications() {
+        // preserve insertion order for consistent test result
+        Collection<FieldApplication> result = new ArrayList<>();
         result.add( new GoldenFieldApplication());
         result.add( new RootTwoFieldApplication());
         result.add( new RootThreeFieldApplication());

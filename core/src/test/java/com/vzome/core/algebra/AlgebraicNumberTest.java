@@ -15,8 +15,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
+
+import com.vzome.fields.sqrtphi.SqrtPhiField;
 
 public class AlgebraicNumberTest
 {
@@ -76,7 +80,7 @@ public class AlgebraicNumberTest
         AlgebraicNumber n1 = field.createRational(ones, denom).plus( field.createPower(power).times( field.createRational(irrat, denom) ) );
 
         // Note that we also have these other methods available with their own syntactical subtleties
-        // field.createAlgebraicNumber( int... factors )
+        // field.createAlgebraicNumber( int[] factors )
         // field.createAlgebraicNumber( BigRational[] factors )
 
         assertEquals(n0, n1);
@@ -86,6 +90,83 @@ public class AlgebraicNumberTest
         assertEquals("-7/5 +3/5*phi", n1.toString(EXPRESSION_FORMAT));
         assertEquals("-7/5 3/5", n1.toString(ZOMIC_FORMAT));
         assertEquals("(3/5,-7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
+    }
+
+    @Test
+    public void testPrepareAlgebraicNumberTerms() {
+        List<AlgebraicField> fields = new ArrayList<>();
+        // list any fields that need to remap golden terms 
+        fields.add(new SqrtPhiField());
+        for(int n = 5; n <= 50; n += 5) {
+//            fields.add(new PolygonField(n)); // TODO eventually
+        }
+//        fields.add(new SqrtField(5));  // TODO eventually
+        
+        // There are numerous ways to create AlgebraicNumbers with multiple terms
+        // This test ensures that all of them generate the correct AlgebraicNumber 
+        // when given only 2 terms from an AlgebraicNumber from the golden field 
+        final PentagonField goldenField = new PentagonField();
+        final int ones = -37, phis = 42; // these can have any non-zero value
+        final int denom = 1, scalePower = 0; // these must be as stated
+        final AlgebraicNumber goldenNumber = goldenField.createAlgebraicNumber(ones, phis, denom, scalePower);
+        System.out.println(goldenField.getName() + ": " + goldenNumber + "\n");
+        final BigRational[] goldenTerms = goldenNumber.getFactors();
+        final double goldenEvaluate = goldenNumber.evaluate();
+        final double delta = 0.0d;
+        
+        for (AlgebraicField field : fields) {
+            System.out.println(field.getName());
+            assertNotNull(field.getGoldenRatio());
+            { // Using new AlgebraicNumber( AlgebraicField field, BigRational[] newFactors )
+             // this test originally failed
+                AlgebraicNumber test = new AlgebraicNumber(field, goldenTerms);
+                System.out.println(test);
+                assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
+            }
+            { // Using field.createAlgebraicNumber( BigRational[] factors )
+              // this test originally failed
+                AlgebraicNumber test = field.createAlgebraicNumber(goldenTerms);
+                System.out.println(test);
+                assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
+            }
+            { // Using field.createAlgebraicNumber( int[] factors )
+              // this test originally failed
+                int[] terms = { ones, phis };
+                AlgebraicNumber test = field.createAlgebraicNumber(terms);
+                System.out.println(test);
+                assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
+            }
+            { // Using field.createVector( int[][] nums )
+                int[][] terms = { 
+                        { ones, denom, phis, denom }, 
+                        { ones, denom, phis, denom },
+                        { ones, denom, phis, denom }, 
+                    };
+                AlgebraicVector testVector = field.createVector(terms);
+                System.out.println(testVector);
+                assertEquals(field.getName(), 3, testVector.dimension());
+                for (AlgebraicNumber test : testVector.getComponents()) {
+                    assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
+                }
+            }
+            { // Using field.parseVector( String nums )
+              // requires the string to have exactly the correct number of terms
+              // so this test is dependent on the field we're testing
+                if (field instanceof SqrtPhiField) {
+                    final int dims = 4;
+                    StringBuilder sb = new StringBuilder();
+                    for (int d = 0; d < dims; d++) {
+                        sb.append(ones).append(" 0 ").append(phis).append(" 0 ");
+                    }
+                    AlgebraicVector testVector = field.parseVector(sb.toString());
+                    System.out.println(testVector);
+                    assertEquals(field.getName(), dims, testVector.dimension());
+                    for (AlgebraicNumber test : testVector.getComponents()) {
+                        assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
+                    }
+                }
+            }
+        }
     }
 
     @Test
