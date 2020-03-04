@@ -91,13 +91,12 @@ public class Application
         String format = "pov";
         if ( args.length > 0 )
             format = args[ 0 ];
-        String urlStr = "http://vzome.com/models/2007/07-Jul/affine120-bop/purpleBlueOrange-affine120cell.vZome";
+        String urlStr = "http://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome";
         if ( args.length > 1 )
             urlStr = args[ 1 ];
 		Application app = new Application();
 		try {
-			InputStream bytes = new URL( urlStr ) .openStream();
-			Document model = app .loadDocument( bytes );
+		    Document model = app .loadUrl( urlStr );
             Exporter exporter = app .getExporter( format );
             exporter .doExport( model, new PrintWriter( System.out ), 1080, 1920 );
 		} catch ( Exception e ) {
