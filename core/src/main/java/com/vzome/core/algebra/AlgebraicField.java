@@ -142,6 +142,23 @@ public abstract class AlgebraicField
     }
 
     /**
+     * The AlgebraicNumber constructor already validates the number of terms.
+     * It pads the array with ZEROs if it's too short,
+     * throws an exception if it's too long,
+     * and replaces all nulls with ZERO.
+     * No need to duplicate any of that here.
+     * This method is called by the AlgebraicNumber constructor. 
+     * It is primarily intended to allow subclasses to intercept
+     * a pair of terms from the golden field and remap them as needed for that field.
+     * Otherwise, the terms are returned unchanged.
+     * @param terms
+     * @return
+     */
+    protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
+        return terms;
+    }
+    
+    /**
      * Generates an AlgebraicNumber with the specified {@code BigRational} factors.
      * @param factors
      * @return
@@ -163,7 +180,7 @@ public abstract class AlgebraicField
         for ( int j = 0; j < factors.length; j++ ) {
             brs[ j ] = new BigRational( factors[ j ] );
         }
-        return new AlgebraicNumber( this, brs );
+        return createAlgebraicNumber( brs );
     }
 
     public final AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
@@ -176,10 +193,10 @@ public abstract class AlgebraicField
         }
         if ( scalePower != 0 ) {
             AlgebraicNumber multiplier = this .createPower( scalePower );
-            return new AlgebraicNumber( this, factors ) .times( multiplier );
+            return createAlgebraicNumber(factors ) .times( multiplier );
         }
         else
-            return new AlgebraicNumber( this, factors );
+            return createAlgebraicNumber( factors );
     }
 
     /**
@@ -481,7 +498,7 @@ public abstract class AlgebraicField
                 int denominator = nums[c][(f*2)+1];
                 factors[f] = new BigRational(numerator, denominator);
             }
-            coords[c] = new AlgebraicNumber(this, factors);
+            coords[c] = createAlgebraicNumber(factors);
         }
         return new AlgebraicVector( coords );
     }
@@ -623,7 +640,7 @@ public abstract class AlgebraicField
         for ( int i = 0; i < rats.length; i++ ) {
             rats[ i ] = new BigRational( tokenizer .nextToken() );
         }
-        return new AlgebraicNumber( this, rats );
+        return createAlgebraicNumber( rats );
     }
 
     public AlgebraicVector parseVector( String nums )
