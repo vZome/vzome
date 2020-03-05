@@ -174,7 +174,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         
 	    mRendered .add( rm );
 	    if ( mainListener != null )
-    	    mainListener .manifestationAdded( rm );
+	        mainListener .manifestationAdded( rm );
         for (RenderingChanges listener : mListeners) {
             listener .manifestationAdded( rm );
         }

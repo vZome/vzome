@@ -25,8 +25,35 @@ public class MyFirstScript : MonoBehaviour
 
     void SetLabelText( string message )
     { 
-        Debug.Log( "message from java: " + message );
+        Debug.Log( "%%%%%%%%%%%%%% SetLabelText from java: " + message );
         label.text = message;
+    }
+
+    void LogInfo( string message )
+    { 
+        Debug.Log( "%%%%%%%%%%%%%% From Java: " + message );
+        label.text = message;
+    }
+
+    void LogException( string message )
+    { 
+        Debug.LogError( "%%%%%%%%%%%%%% From Java: " + message );
+        label.text = message;
+    }
+
+    void DefineMesh( string json )
+    { 
+        Debug.Log( "%%%%%%%%%%%%%% DefineMesh from Java: " + json );
+    }
+
+    void CreateGameObject( string json )
+    { 
+        Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + json );
+    }
+
+    void DeleteGameObject( string json )
+    { 
+        Debug.Log( "%%%%%%%%%%%%%% DeleteGameObject from Java: " + json );
     }
 }
 
@@ -43,20 +70,11 @@ public struct LoadVZomeJob : IJob
         string url = Encoding.ASCII.GetString( urlBytes.ToArray() );
         urlBytes .Dispose();
 
-        AndroidJavaObject application = new AndroidJavaObject( "com.vzome.api.Application" );
-        Debug.Log( "%%%%%%%%%%%%%% app created successfully " );
+        AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" );
+        AndroidJavaObject adapter = new AndroidJavaObject( "com.vzome.unity.Adapter", jc, "JavaCallbacks" );
+        Debug.Log( "%%%%%%%%%%%%%% adapter created successfully " );
         Debug.Log( "%%%%%%%%%%%%%% attempting to open: " + url );
-        AndroidJavaObject document = application .Call<AndroidJavaObject>( "loadUrl", url );
-        Debug.Log( "%%%%%%%%%%%%%% opened successfully: " + url );
-        document = document .Call<AndroidJavaObject>( "getDocumentModel" );
-        Debug.Log( "%%%%%%%%%%%%%% got the DocumentModel" );
-        AndroidJavaObject field = document .Call<AndroidJavaObject>( "getField" );
-        Debug.Log( "%%%%%%%%%%%%%% got the AlgebraicField" );
-        string fieldName = field .Call<string>( "getName" );
-        Debug.Log( "%%%%%%%%%%%%%% got the field name" );
-
-        using ( AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" ) ) { 
-            jc .CallStatic( "UnitySendMessage", "JavaCallbacks", "SetLabelText", "field name: " + fieldName );
-        } 
+        adapter .Call<AndroidJavaObject>( "loadUrl", url );
+        Debug.Log( "%%%%%%%%%%%%%% loadUrl returned" );
     }
 }

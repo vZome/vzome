@@ -55,13 +55,19 @@ public class Application
         //  This won't switch protocols, but seems to work otherwise.
         conn .setInstanceFollowRedirects( true );
         bytes = conn .getInputStream();
-        return loadDocument( bytes );
+        return loadDocument( bytes, false );
     }
 
-	public Document loadDocument( InputStream bytes ) throws Exception
-	{
+    public Document loadDocument( InputStream bytes ) throws Exception
+    {
+        return this .loadDocument( bytes, true );
+    }
+
+    public Document loadDocument( InputStream bytes, boolean finish ) throws Exception
+    {
 		DocumentModel docDelegate = this .delegate .loadDocument( bytes );
-		docDelegate .finishLoading( false, false );
+		if ( finish )
+		    docDelegate .finishLoading( false, false );
 		return new Document( docDelegate );
     }
     
@@ -97,6 +103,7 @@ public class Application
 		Application app = new Application();
 		try {
 		    Document model = app .loadUrl( urlStr );
+		    model .getDocumentModel() .finishLoading( false, false );
             Exporter exporter = app .getExporter( format );
             exporter .doExport( model, new PrintWriter( System.out ), 1080, 1920 );
 		} catch ( Exception e ) {

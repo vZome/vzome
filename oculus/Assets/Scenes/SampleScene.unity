@@ -954,7 +954,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   label: {fileID: 1086999695}
-  url: https://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome
+  url: https://vzome.com/models/2007/04-Apr/5cell/A4_3C.vZome
 --- !u!4 &1049569966
 Transform:
   m_ObjectHideFlags: 0
