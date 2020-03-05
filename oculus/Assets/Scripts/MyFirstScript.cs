@@ -1,31 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Jobs;
+using Unity.Collections;
 
 public class MyFirstScript : MonoBehaviour
 {
     public Text label;
-
-    public void Start()
-    {
-        // AndroidJavaClass clazz = new AndroidJavaClass( "org.vorthmann.zome.app.impl.ApplicationController" );
-        // AndroidJavaObject application = clazz .CallStatic<AndroidJavaObject>( "createHeadless" );
-        // Debug.Log( "%%%%%%%%%%%%%% app created successfully " );
-        // string url = "https://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome";
-        // Debug.Log( "%%%%%%%%%%%%%% attempting to open: " + url );
-        // application .Call( "doAction", "openURL-" + url );
-        // Debug.Log( "%%%%%%%%%%%%%% opened successfully: " + url );
-        // AndroidJavaObject document = application .Call<AndroidJavaObject>( "getSubController", url );
-        // Debug.Log( "%%%%%%%%%%%%%% retrieved successfully: " + url );
-    }
+    public string url;
 
     public void LoadVZome()
     {
-        label.text = "Loading vZome file...";
+        // string url = "https://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome";
+        label.text = "Loading url: " + url;
         Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
         LoadVZomeJob job = new LoadVZomeJob();
+        job.urlBytes = new NativeArray<byte>( url.Length, Allocator.Temp );
+        job.urlBytes .CopyFrom( Encoding.ASCII.GetBytes( url ) );
         JobHandle jh = job .Schedule();
         Debug.Log( "%%%%%%%%%%%%%% job .Scheduled. " );
     }
@@ -40,18 +33,18 @@ public class MyFirstScript : MonoBehaviour
 
 public struct LoadVZomeJob : IJob
 {
+    public NativeArray<byte> urlBytes;
+    
     public void Execute()
     {
         Debug.Log( "%%%%%%%%%%%%%% AndroidJNI.AttachCurrentThread... " );
         AndroidJNI.AttachCurrentThread();
 
-        AndroidJavaObject jo = new AndroidJavaObject("java.lang.String", "some_string"); 
-        int hash = jo.Call<int>("hashCode"); 
-        Debug.Log( "%%%%%%%%%%%%%% hashCode: " + hash ); 
+        string url = Encoding.ASCII.GetString( urlBytes.ToArray() );
+        urlBytes .Dispose();
 
         AndroidJavaObject application = new AndroidJavaObject( "com.vzome.api.Application" );
         Debug.Log( "%%%%%%%%%%%%%% app created successfully " );
-        string url = "https://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome";
         Debug.Log( "%%%%%%%%%%%%%% attempting to open: " + url );
         AndroidJavaObject document = application .Call<AndroidJavaObject>( "loadUrl", url );
         Debug.Log( "%%%%%%%%%%%%%% opened successfully: " + url );
