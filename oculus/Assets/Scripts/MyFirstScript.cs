@@ -7,16 +7,9 @@ using Unity.Jobs;
 public class MyFirstScript : MonoBehaviour
 {
     public Text label;
-    public float width = 1;
-    public float height = 1;
 
     public void Start()
     {
-        Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
-        LoadVZomeJob job = new LoadVZomeJob();
-        JobHandle jh = job .Schedule();
-        Debug.Log( "%%%%%%%%%%%%%% job .Scheduled. " );
-
         // AndroidJavaClass clazz = new AndroidJavaClass( "org.vorthmann.zome.app.impl.ApplicationController" );
         // AndroidJavaObject application = clazz .CallStatic<AndroidJavaObject>( "createHeadless" );
         // Debug.Log( "%%%%%%%%%%%%%% app created successfully " );
@@ -28,52 +21,19 @@ public class MyFirstScript : MonoBehaviour
         // Debug.Log( "%%%%%%%%%%%%%% retrieved successfully: " + url );
     }
 
-    public void MakeQuad()
+    public void LoadVZome()
     {
-        MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
+        label.text = "Loading vZome file...";
+        Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
+        LoadVZomeJob job = new LoadVZomeJob();
+        JobHandle jh = job .Schedule();
+        Debug.Log( "%%%%%%%%%%%%%% job .Scheduled. " );
+    }
 
-        MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
-
-        Mesh mesh = new Mesh();
-
-        Vector3[] vertices = new Vector3[4]
-        {
-            new Vector3(0, 0, 0),
-            new Vector3(width*2, 0, 0),
-            new Vector3(0, height, 0),
-            new Vector3(width, height, 0)
-        };
-        mesh.vertices = vertices;
-
-        int[] tris = new int[6]
-        {
-            // lower left triangle
-            0, 2, 1,
-            // upper right triangle
-            2, 3, 1
-        };
-        mesh.triangles = tris;
-
-        Vector3[] normals = new Vector3[4]
-        {
-            -Vector3.forward,
-            -Vector3.forward,
-            -Vector3.forward,
-            -Vector3.forward
-        };
-        mesh.normals = normals;
-
-        Vector2[] uv = new Vector2[4]
-        {
-            new Vector2(0, 0),
-            new Vector2(1, 0),
-            new Vector2(0, 1),
-            new Vector2(1, 1)
-        };
-        mesh.uv = uv;
-
-        meshFilter.mesh = mesh;
+    void SetLabelText( string message )
+    { 
+        Debug.Log( "message from java: " + message );
+        label.text = message;
     }
 }
 
@@ -95,5 +55,15 @@ public struct LoadVZomeJob : IJob
         Debug.Log( "%%%%%%%%%%%%%% attempting to open: " + url );
         AndroidJavaObject document = application .Call<AndroidJavaObject>( "loadUrl", url );
         Debug.Log( "%%%%%%%%%%%%%% opened successfully: " + url );
+        document = document .Call<AndroidJavaObject>( "getDocumentModel" );
+        Debug.Log( "%%%%%%%%%%%%%% got the DocumentModel" );
+        AndroidJavaObject field = document .Call<AndroidJavaObject>( "getField" );
+        Debug.Log( "%%%%%%%%%%%%%% got the AlgebraicField" );
+        string fieldName = field .Call<string>( "getName" );
+        Debug.Log( "%%%%%%%%%%%%%% got the field name" );
+
+        using ( AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" ) ) { 
+            jc .CallStatic( "UnitySendMessage", "JavaCallbacks", "SetLabelText", "field name: " + fieldName );
+        } 
     }
 }
