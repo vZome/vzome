@@ -7,43 +7,14 @@ using UnityEngine.UI;
 using Unity.Jobs;
 using Unity.Collections;
 
-public class MyFirstScript : MonoBehaviour
+public class VZomeJavaBridge : MonoBehaviour
 {
-    [Serializable]
-    public struct Shape
-    {
-        public string id;
-    }
-
-    [Serializable]
-    public struct Instance
-    {
-        public string id;
-        public string shape;
-        public string color;
-        public Vector3 position;
-        public Quaternion rotation;
-    }
-
-    [Serializable]
-    public struct Vector3
-    {
-        public float x;
-        public float y;
-        public float z;
-    }
-
-    [Serializable]
-    public struct Quaternion
-    {
-        public float x;
-        public float y;
-        public float z;
-        public float w;
-    }
-
-    public UnityEngine.UI.Text label;
+    public GameObject group;
+    public GameObject template;
+    public Text label;
     public string url;
+
+    private IDictionary<string, Mesh> meshes = new Dictionary<string, Mesh>();
 
     public void LoadVZome()
     {
@@ -75,20 +46,73 @@ public class MyFirstScript : MonoBehaviour
     }
 
     void DefineMesh( string json )
-    { 
+    {
+        Debug .Log( "%%%%%%%%%%%%%% DefineMesh from Java: " + json );
         Shape shape = JsonUtility.FromJson<Shape>(json);
-        Debug.Log( "%%%%%%%%%%%%%% DefineMesh from Java: " + shape.id );
+        Debug.Log( "%%%%%%%%%%%%%% DefineMesh: shape deserialized" );
+        Mesh mesh = shape .ToMesh();
+        Debug.Log( "%%%%%%%%%%%%%% DefineMesh: mesh created: " + mesh.vertices[0] );
+        meshes .Add( shape .id, mesh );
     }
 
     void CreateGameObject( string json )
     { 
         Instance instance = JsonUtility.FromJson<Instance>(json);
         Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + instance.id );
+        GameObject copy = Instantiate( template );
+        Transform xform = copy .GetComponent<Transform>();
+        xform .position = instance .position;
+        MeshRenderer meshRenderer = copy .AddComponent<MeshRenderer>();
+        meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
+        Color color;
+        ColorUtility .TryParseHtmlString( instance .color, out color );
+        meshRenderer.sharedMaterial .color = color;
+        MeshFilter meshFilter = copy .AddComponent<MeshFilter>();
+        meshFilter.mesh = meshes[ instance .shape ];
+        xform .SetParent( group .transform );
+        Debug.Log( "%%%%%%%%%%%%%% CreateGameObject done!" );
     }
 
     void DeleteGameObject( string json )
     { 
         Debug.Log( "%%%%%%%%%%%%%% DeleteGameObject from Java: " + json );
+    }
+
+    [Serializable]
+    public class Shape
+    {
+        public string id;
+        public Vector3[] tvertices;
+        public Vector3[] normals;
+        public int[] triangles;
+
+        public Mesh ToMesh()
+        {
+            Mesh mesh = new Mesh();
+            mesh.vertices = this.tvertices;
+            mesh.triangles = this.triangles;
+            mesh.normals = this.normals;
+            return mesh;
+        }
+    }
+
+    [Serializable]
+    public struct Instance
+    {
+        public string id;
+        public string shape;
+        public string color;
+        public Vector3 position;
+        public Quaternion rotation;
+    }
+
+    [Serializable]
+    public struct Quaternion
+    {
+        public float x;
+        public float y;
+        public float z;
+        public float w;
     }
 }
 

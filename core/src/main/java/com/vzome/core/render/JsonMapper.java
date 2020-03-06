@@ -35,11 +35,22 @@ public class JsonMapper
     private static class RealTrianglesView implements AlgebraicNumber.Views.Real, Polygon.Views.Triangles {}
 
     // Keep things simple for the client code: all real numbers, all faces triangulated
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ObjectWriter objectWriter = objectMapper .writerWithView( RealTrianglesView.class );
+    private final ObjectMapper objectMapper;
+    private final ObjectWriter objectWriter;
 
     private final Set<String> shapeIds = new HashSet<>();
     private Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
+    
+    public JsonMapper()
+    {
+        this( RealTrianglesView.class );
+    }
+    
+    public JsonMapper( Class<?> view )
+    {
+        this .objectMapper = new ObjectMapper();
+        this .objectWriter = objectMapper .writerWithView( view );
+    }
     
     public ObjectMapper getObjectMapper()
     {

@@ -639,6 +639,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &625469345
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 625469346}
+  m_Layer: 0
+  m_Name: vZomeTemplate
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &625469346
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625469345}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &650416564
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,6 +863,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &711346148
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 711346149}
+  m_Layer: 0
+  m_Name: vZomeAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &711346149
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711346148}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.562, y: 1.709, z: 0.305}
+  m_LocalScale: {x: 0.025560264, y: 0.025560264, z: 0.025560264}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1005736778
 GameObject:
   m_ObjectHideFlags: 0
@@ -938,11 +998,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1049569964}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 951e06c6ba3ac40e5ac484d483a3764c, type: 3}
+  m_Script: {fileID: 11500000, guid: 38036b1a49a4048d3a5228f156c048c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  group: {fileID: 711346148}
+  template: {fileID: 625469345}
   label: {fileID: 1086999695}
-  url: https://vzome.com/models/2007/04-Apr/5cell/A4_7E.vZome
+  url: https://vzome.com/models/2007/04-Apr/5cell/A4_24.vZome
 --- !u!4 &1049569966
 Transform:
   m_ObjectHideFlags: 0
@@ -6993,8 +7055,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 951e06c6ba3ac40e5ac484d483a3764c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  label: {fileID: 0}
-  url: 
 --- !u!33 &1800817343835581370
 MeshFilter:
   m_ObjectHideFlags: 0

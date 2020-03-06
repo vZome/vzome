@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.math.Polyhedron;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
@@ -33,6 +35,7 @@ public class Adapter
     
     void sendMessage( String callbackFn, String message )
     {
+//        System.out.println( message );
         try {
             Method method = this .unityPlayerClass .getMethod( "UnitySendMessage", new Class<?>[] { String.class, String.class, String.class } );
             method .invoke( null, gameObjectName, callbackFn, message );
@@ -64,10 +67,12 @@ public class Adapter
         }
     }
     
+    private static class UnityMeshView implements AlgebraicNumber.Views.Real, Polyhedron.Views.UnityMesh {}
+
     private class Renderer implements RenderingChanges
     {
         private final Adapter adapter;
-        private final JsonMapper mapper = new JsonMapper();
+        private final JsonMapper mapper = new JsonMapper( UnityMeshView.class );
         private final ObjectWriter objectWriter = mapper .getObjectMapper() .writer();
 
         Renderer( Adapter adapter )
@@ -86,17 +91,17 @@ public class Adapter
                 this .adapter .sendMessage( "LogException", e .getMessage() );
             }
         }
-        
-        // TODO extract the code shared with RemoteClientRendering in the server project?
 
         @Override
         public void manifestationAdded( RenderedManifestation rm )
         {
             ObjectNode node = this .mapper .getObjectNode( rm );
             if ( node != null ) {
-                ObjectNode shapeNode = this .mapper .getShapeNode( rm .getShape() );
+                Polyhedron shape = rm .getShape();
+                ObjectNode shapeNode = this .mapper .getShapeNode( shape );
                 if ( shapeNode != null )
                 {
+                    shapeNode .put( "id", shape .getGuid() .toString() );
                     sendJson( "DefineMesh", shapeNode );
                 }
                 node .put( "id", rm .getGuid() .toString() );

@@ -19,6 +19,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.algebra.AlgebraicVectors;
+import com.vzome.core.math.Polyhedron.Face.Triangle;
 import com.vzome.core.math.symmetry.Direction;
 
 
@@ -402,6 +403,55 @@ public class Polyhedron implements Cloneable
         ArrayList<Face.Triangle> result = new ArrayList<>();
         for ( Face face : m_faces ) {
             result .addAll( face .getTriangles() );
+        }
+        return result;
+    }
+
+    // These views will be used for JSON serialization
+    public static class Views {
+        public interface UnityMesh{}
+    }
+
+    @JsonProperty( "triangles" )
+    @JsonView( Views.UnityMesh.class )
+    public List<Integer> getTriangles()
+    {
+        ArrayList<Integer> result = new ArrayList<>();
+        for ( Face face : m_faces ) {
+            for ( Triangle triangle : face .getTriangles() )
+                for ( int index : triangle .vertices )
+                    result .add( index );
+        }
+        return result;
+    }
+
+    @JsonProperty( "tvertices" )
+    @JsonView( Views.UnityMesh.class )
+    public List<RealVector> getTriangleVertices()
+    {
+        ArrayList<RealVector> result = new ArrayList<>();
+        for ( Face face : m_faces ) {
+            for ( Triangle triangle : face .getTriangles() ) {
+                for ( int index : triangle .vertices ) {
+                    AlgebraicVector vertex = this .m_vertexList .get( index );
+                    result .add( vertex .toRealVector() );
+                }
+            }
+        }
+        return result;
+    }
+
+    @JsonProperty( "normals" )
+    @JsonView( Views.UnityMesh.class )
+    public List<RealVector> getNormals()
+    {
+        ArrayList<RealVector> result = new ArrayList<>();
+        for ( Face face : m_faces ) {
+            for ( Triangle triangle : face .getTriangles() ) {
+                result .add( triangle .normal );
+                result .add( triangle .normal );
+                result .add( triangle .normal );
+            }
         }
         return result;
     }
