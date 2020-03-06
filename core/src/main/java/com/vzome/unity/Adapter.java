@@ -16,6 +16,7 @@ import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.render.Shapes;
+import com.vzome.core.viewing.ExportedVEFShapes;
 
 public class Adapter
 {
@@ -43,6 +44,12 @@ public class Adapter
         catch ( NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
             e.printStackTrace();
         }
+    }
+    
+    public void registerShape( String path, String vef )
+    {
+        System.out.println( "registerShape " + path );
+        ExportedVEFShapes .injectShapeVEF( path, vef );
     }
     
     public DocumentModel loadUrl( String url )

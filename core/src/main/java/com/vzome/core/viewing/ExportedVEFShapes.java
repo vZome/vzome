@@ -9,8 +9,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -45,9 +47,16 @@ public class ExportedVEFShapes extends AbstractShapes
     private final AbstractShapes fallback;
 
     private final Properties colors = new Properties();
+    
+    private static final Map<String, String> INJECTED = new HashMap<String, String>();
 
     private static final Logger logger = Logger.getLogger( "com.vzome.core.viewing.shapes" );
 
+    public static void injectShapeVEF( String key, String vef )
+    {
+        INJECTED .put( key, vef );
+    }
+    
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {
         this( prefsFolder, pkgName, name, alias, symm, ( symm instanceof IcosahedralSymmetry )? new OctahedralShapes( pkgName, name, (IcosahedralSymmetry) symm ) : null );
@@ -113,6 +122,9 @@ public class ExportedVEFShapes extends AbstractShapes
 
     protected String loadVefData( String name )
     {
+        if ( INJECTED .containsKey( mPkgName + "-" + name ) )
+            return INJECTED .get( mPkgName + "-" + name );
+        
         String script = mPkgName + "/" + name + ".vef";
         File shapeFile = new File( this .prefsFolder, "Shapes/" + script );
         InputStream stream = null;

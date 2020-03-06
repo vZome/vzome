@@ -18,6 +18,16 @@ public class VZomeJavaBridge : MonoBehaviour
 
     public void LoadVZome()
     {
+        AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" );
+        AndroidJavaObject adapter = new AndroidJavaObject( "com.vzome.unity.Adapter", jc, "JavaCallbacks" );
+
+        UnityEngine.Object[] shapes = Resources.LoadAll( "Shapes", typeof(TextAsset) );
+        foreach ( var vef in shapes )
+        {
+            Debug.Log( "%%%%%%%%%%%%%% loaded shape VEF " + vef.name );
+            adapter .Call( "registerShape", vef.name, ((TextAsset) vef).text );
+        }
+        
         label.text = "Loading url: " + url;
         Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
         LoadVZomeJob job = new LoadVZomeJob();
