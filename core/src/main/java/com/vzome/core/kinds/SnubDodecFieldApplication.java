@@ -44,30 +44,45 @@ public class SnubDodecFieldApplication extends DefaultFieldApplication
             {
                 super .createOtherOrbits();
                 /*
-                  PENTAGON
+                  PENTAGON EDGE
                   4 + phi*-4 + xi*0 + phi*xi*0 + xi^2*-2 + phi*xi^2*2, -4 + phi*0 + xi*0 + phi*xi*0 + xi^2*2 + phi*xi^2*0, 0 + phi*0 + xi*0 + phi*xi*0 + xi^2*0 + phi*xi^2*2
                   4 -4 0 0 -2 2 -4 0 0 0 2 0 0 0 0 0 0 2
                   (2,-2,0,0,-4,4) (0,2,0,0,0,-4) (2,0,0,0,0,0)
                 
-                  TRIANGLE
+                  TRIANGLE EDGE
                   0 + phi*-4 + xi*-2 + phi*xi*0 + xi^2*0 + phi*xi^2*2, -4 + phi*4 + xi*0 + phi*xi*-2 + xi^2*2 + phi*xi^2*-2, -4 + phi*0 + xi*-2 + phi*xi*-2 + xi^2*2 + phi*xi^2*0
                   0 -4 -2 0 0 2 -4 4 0 -2 2 -2 -4 0 -2 -2 2 0
                   (2,0,0,-2,-4,0) (-2,2,-2,0,4,-4) (0,2,-2,-2,0,-4)
                 
-                  DIAGONAL
+                  DIAGONAL EDGE
                   8 + phi*0 + xi*0 + phi*xi*4 + xi^2*-4 + phi*xi^2*0, 0 + phi*-4 + xi*0 + phi*xi*0 + xi^2*0 + phi*xi^2*0, 0 + phi*0 + xi*0 + phi*xi*0 + xi^2*0 + phi*xi^2*0
                   8 0 0 4 -4 0 0 -4 0 0 0 0 0 0 0 0 0 0
                   (0,-4,4,0,0,8) (0,0,0,0,-4,0) (0,0,0,0,0,0)
+
+                  SNUB FACE NORMAL
+                  -1 +xi -phi*xi +xi^2, 1, 1 -xi +2*phi*xi +phi*xi^2
+                  -1 0 1 -1 1 0 1 0 0 0 0 0 1 0 -1 2 0 1
+                  (0,1,-1,1,0,-1) (0,0,0,0,0,1) (1,0,2,-1,0,1)
+
+                  SNUB VERTEX
+                  1, 1 -xi +phi*xi -xi^2, 1 +phi*xi -xi^2 +phi*xi^2
+                  1 0 0 0 0 0 1 0 -1 1 -1 0 1 0 0 1 -1 1
+                  (0,0,0,0,0,1) (0,-1,1,-1,0,1) (1,-1,1,0,0,1)
 
                  */      
                     AlgebraicVector vSnubPentagon = mField.createIntegerVector(new int[][]{ { 4,-4, 0, 0,-2, 2},  {-4, 0, 0, 0, 2, 0},  { 0, 0, 0, 0, 0, 2} } );
                     AlgebraicVector vSnubTriangle = mField.createIntegerVector(new int[][]{ { 0,-4,-2, 0, 0, 2},  {-4, 4, 0,-2, 2,-2},  {-4, 0,-2,-2, 2, 0} } );
                     AlgebraicVector vSnubDiagonal = mField.createIntegerVector(new int[][]{ { 8, 0, 0, 4,-4, 0},  { 0,-4, 0, 0, 0, 0},  { 0, 0, 0, 0, 0, 0} } );
+                    AlgebraicVector vSnubFaceNorm = mField.createIntegerVector(new int[][]{ {-1, 0, 1,-1, 1, 0},  { 1, 0, 0, 0, 0, 0},  { 1, 0,-1, 2, 0, 1} } );
+                    AlgebraicVector vSnubVertex   = mField.createIntegerVector(new int[][]{ { 1, 0, 0, 0, 0, 0},  { 1, 0,-1, 1,-1, 0},  { 1, 0, 0, 1,-1, 1} } );
                     AlgebraicNumber scale = mField .createPower( -3 );
 
-                    createZoneOrbit( "snubPentagon", 0, NO_ROTATION, vSnubPentagon, false, false, scale ) .withCorrection();
-                    createZoneOrbit( "snubTriangle", 0, NO_ROTATION, vSnubTriangle, false, false, scale ) .withCorrection();
-                    createZoneOrbit( "snubDiagonal", 0, NO_ROTATION, vSnubDiagonal, false, false, scale ) .withCorrection();
+                    // actual colors are assigned in /core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
+                    createZoneOrbit( "snubPentagon",   0, NO_ROTATION, vSnubPentagon, false, false, scale ) .withCorrection();
+                    createZoneOrbit( "snubTriangle",   0, NO_ROTATION, vSnubTriangle, false, false, scale ) .withCorrection();
+                    createZoneOrbit( "snubDiagonal",   0, NO_ROTATION, vSnubDiagonal, false, false, scale ) .withCorrection();
+                    createZoneOrbit( "snubFaceNormal", 0, NO_ROTATION, vSnubFaceNorm, false, false, scale ) .withCorrection();
+                    createZoneOrbit( "snubVertex",     0, NO_ROTATION, vSnubVertex,   false, false, scale ) .withCorrection();
                 }
             };
             this.icosahedralPerspective = new IcosahedralSymmetryPerspective( icosaSymm ); 
