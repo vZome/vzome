@@ -204,18 +204,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 40919614}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &63068018 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 11400020, guid: ce816f2e6abb0504092c23ed9b970dfd,
-    type: 3}
-  m_PrefabInstance: {fileID: 40919614}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df9f338034892c44ebb62d97894772f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &156023227
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,7 +372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf162022e230bb745ab2ec48cd357f9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CameraRig: {fileID: 63068018}
+  CameraRig: {fileID: 0}
   EnableCollision: 0
   CollideLayers:
     serializedVersion: 2
@@ -954,7 +942,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   label: {fileID: 1086999695}
-  url: https://vzome.com/models/2007/04-Apr/5cell/A4_3C.vZome
+  url: https://vzome.com/models/2007/04-Apr/5cell/A4_7E.vZome
 --- !u!4 &1049569966
 Transform:
   m_ObjectHideFlags: 0

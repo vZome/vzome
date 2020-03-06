@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -8,12 +9,44 @@ using Unity.Collections;
 
 public class MyFirstScript : MonoBehaviour
 {
-    public Text label;
+    [Serializable]
+    public struct Shape
+    {
+        public string id;
+    }
+
+    [Serializable]
+    public struct Instance
+    {
+        public string id;
+        public string shape;
+        public string color;
+        public Vector3 position;
+        public Quaternion rotation;
+    }
+
+    [Serializable]
+    public struct Vector3
+    {
+        public float x;
+        public float y;
+        public float z;
+    }
+
+    [Serializable]
+    public struct Quaternion
+    {
+        public float x;
+        public float y;
+        public float z;
+        public float w;
+    }
+
+    public UnityEngine.UI.Text label;
     public string url;
 
     public void LoadVZome()
     {
-        // string url = "https://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome";
         label.text = "Loading url: " + url;
         Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
         LoadVZomeJob job = new LoadVZomeJob();
@@ -43,12 +76,14 @@ public class MyFirstScript : MonoBehaviour
 
     void DefineMesh( string json )
     { 
-        Debug.Log( "%%%%%%%%%%%%%% DefineMesh from Java: " + json );
+        Shape shape = JsonUtility.FromJson<Shape>(json);
+        Debug.Log( "%%%%%%%%%%%%%% DefineMesh from Java: " + shape.id );
     }
 
     void CreateGameObject( string json )
     { 
-        Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + json );
+        Instance instance = JsonUtility.FromJson<Instance>(json);
+        Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + instance.id );
     }
 
     void DeleteGameObject( string json )
@@ -56,7 +91,6 @@ public class MyFirstScript : MonoBehaviour
         Debug.Log( "%%%%%%%%%%%%%% DeleteGameObject from Java: " + json );
     }
 }
-
 
 public struct LoadVZomeJob : IJob
 {
