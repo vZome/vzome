@@ -27,7 +27,7 @@ public class VZomeJavaBridge : MonoBehaviour
             Debug.Log( "%%%%%%%%%%%%%% loaded shape VEF " + vef.name );
             adapter .Call( "registerShape", vef.name, ((TextAsset) vef).text );
         }
-        
+
         label.text = "Loading url: " + url;
         Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
         LoadVZomeJob job = new LoadVZomeJob();
@@ -72,6 +72,7 @@ public class VZomeJavaBridge : MonoBehaviour
         GameObject copy = Instantiate( template );
         Transform xform = copy .GetComponent<Transform>();
         xform .position = instance .position;
+        xform .rotation = instance .rotation;
         MeshRenderer meshRenderer = copy .AddComponent<MeshRenderer>();
         meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
         Color color;
@@ -114,15 +115,6 @@ public class VZomeJavaBridge : MonoBehaviour
         public string color;
         public Vector3 position;
         public Quaternion rotation;
-    }
-
-    [Serializable]
-    public struct Quaternion
-    {
-        public float x;
-        public float y;
-        public float z;
-        public float w;
     }
 }
 

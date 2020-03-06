@@ -136,5 +136,4 @@ public class JsonMapper
         }
         return result;
     }
-
 }
