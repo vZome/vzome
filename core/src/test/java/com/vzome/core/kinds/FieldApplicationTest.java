@@ -69,7 +69,7 @@ public class FieldApplicationTest
     @Test
     public void testFieldApplications()
     {
-        LOGGER.setLevel(Level.FINE);
+//        LOGGER.setLevel(Level.FINE);
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         for(FieldApplication app : getTestFieldApplications()) {
             final String appName = app.getName();
