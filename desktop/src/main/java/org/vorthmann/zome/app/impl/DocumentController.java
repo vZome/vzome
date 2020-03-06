@@ -1516,6 +1516,8 @@ public class DocumentController extends DefaultController implements Controller3
                     // should never get here
                     return man.getClass().getSimpleName();
                 }
+                buf.append("\n\ncolor (RGB): ");
+                buf.append(man.getColor().toString());
                 
                 if( devExtras) {
                     if( zone != null) {
@@ -1537,6 +1539,10 @@ public class DocumentController extends DefaultController implements Controller3
 
                 buf.append( "\n\nsymmetry: " );
                 buf.append( cameraController.getProperty( "symmetry" ) );
+
+                buf.append("\n\nbackground color (RGB): ");
+                buf.append(this .sceneLighting .getBackgroundColor() .toString());
+
                 if( propertyIsTrue("show.camera.properties") ) {
                     buf.append( "\n\nlook at point: " );
                     buf.append( cameraController.getProperty( "lookAtPoint" ) );
@@ -1553,6 +1559,8 @@ public class DocumentController extends DefaultController implements Controller3
                     buf.append( cameraController.getProperty( "magnification" ) );
                 }
                
+                System .out .println(buf.toString().replace("\n\n", "\n"));
+                System .out .println();
                 return buf.toString();
             }
 
