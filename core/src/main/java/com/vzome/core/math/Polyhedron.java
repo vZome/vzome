@@ -416,11 +416,16 @@ public class Polyhedron implements Cloneable
     @JsonView( Views.UnityMesh.class )
     public List<Integer> getTriangles()
     {
+        int index = 0;
         ArrayList<Integer> result = new ArrayList<>();
         for ( Face face : m_faces ) {
-            for ( Triangle triangle : face .getTriangles() )
-                for ( int index : triangle .vertices )
-                    result .add( index );
+            for ( Triangle triangle : face .getTriangles() ) {
+                // The old indices don't matter here, since we are creating a new tvertices list,
+                //   and normals to match.
+                result .add( index++ );
+                result .add( index++ );
+                result .add( index++ );
+            }
         }
         return result;
     }
