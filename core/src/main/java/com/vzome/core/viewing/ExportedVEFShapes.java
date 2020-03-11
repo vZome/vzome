@@ -54,6 +54,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
     public static void injectShapeVEF( String key, String vef )
     {
+        key = key .replace( "--", "/" );
         INJECTED .put( key, vef );
     }
     
