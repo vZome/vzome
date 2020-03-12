@@ -70,9 +70,6 @@ public class VZomeJavaBridge : MonoBehaviour
         Instance instance = JsonUtility.FromJson<Instance>(json);
         Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + instance.id );
         GameObject copy = Instantiate( template );
-        Transform xform = copy .GetComponent<Transform>();
-        xform .position = instance .position;
-        xform .rotation = instance .rotation;
         MeshRenderer meshRenderer = copy .AddComponent<MeshRenderer>();
         meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
         Color color;
@@ -80,7 +77,11 @@ public class VZomeJavaBridge : MonoBehaviour
         meshRenderer.sharedMaterial .color = color;
         MeshFilter meshFilter = copy .AddComponent<MeshFilter>();
         meshFilter.mesh = meshes[ instance .shape ];
-        xform .SetParent( group .transform );
+
+        copy .transform .localPosition = instance .position;
+        copy .transform .localRotation = instance .rotation;
+        copy .transform .SetParent( group .transform, false );
+
         Debug.Log( "%%%%%%%%%%%%%% CreateGameObject done!" );
     }
 
