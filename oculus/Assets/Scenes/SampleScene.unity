@@ -1243,7 +1243,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: https://vzome.com/models/2007/05-May/affine120cells/yellowStretch-120cell.vZome
+  m_Text: https://vzome.com/models/2006/02-Feb/24-Scott/grandAntiprism-red.vZome
 --- !u!222 &1284853748
 CanvasRenderer:
   m_ObjectHideFlags: 0
