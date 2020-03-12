@@ -9,7 +9,6 @@ using Unity.Collections;
 
 public class VZomeJavaBridge : MonoBehaviour
 {
-    public GameObject group;
     public GameObject template;
     public Text label;
     public string url;
@@ -80,7 +79,7 @@ public class VZomeJavaBridge : MonoBehaviour
 
         copy .transform .localPosition = instance .position;
         copy .transform .localRotation = instance .rotation;
-        copy .transform .SetParent( group .transform, false );
+        copy .transform .SetParent( this .transform, false );
 
         Debug.Log( "%%%%%%%%%%%%%% CreateGameObject done!" );
     }
@@ -132,7 +131,7 @@ public struct LoadVZomeJob : IJob
         urlBytes .Dispose();
 
         AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" );
-        AndroidJavaObject adapter = new AndroidJavaObject( "com.vzome.unity.Adapter", jc, "JavaCallbacks" );
+        AndroidJavaObject adapter = new AndroidJavaObject( "com.vzome.unity.Adapter", jc, "vZomeModel1" );
         Debug.Log( "%%%%%%%%%%%%%% adapter created successfully " );
         Debug.Log( "%%%%%%%%%%%%%% attempting to open: " + url );
         adapter .Call<AndroidJavaObject>( "loadUrl", url );

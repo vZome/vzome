@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 156023230}
   - component: {fileID: 156023229}
   m_Layer: 5
-  m_Name: Text
+  m_Name: ButtonText1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -525,7 +525,7 @@ GameObject:
   m_Component:
   - component: {fileID: 625469346}
   m_Layer: 0
-  m_Name: vZomeTemplate
+  m_Name: vZomeTemplate1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -558,7 +558,7 @@ GameObject:
   - component: {fileID: 650416566}
   - component: {fileID: 650416565}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Canvas1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -749,8 +749,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 711346149}
+  - component: {fileID: 711346150}
   m_Layer: 0
-  m_Name: vZomeAnchor
+  m_Name: vZomeModel1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -770,55 +771,23 @@ Transform:
   - {fileID: 625469346}
   - {fileID: 650416568}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 33.006, z: 0}
---- !u!1 &1049569964
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1049569966}
-  - component: {fileID: 1049569965}
-  m_Layer: 0
-  m_Name: JavaCallbacks
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1049569965
+--- !u!114 &711346150
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1049569964}
+  m_GameObject: {fileID: 711346148}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 38036b1a49a4048d3a5228f156c048c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  group: {fileID: 711346148}
   template: {fileID: 625469345}
   label: {fileID: 1086999695}
   url: https://vzome.com/models/2007/05-May/affine120cells/sulfurNavyRose-affine120cell.vZome
---- !u!4 &1049569966
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1049569964}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1086999692
 GameObject:
   m_ObjectHideFlags: 0
@@ -831,7 +800,7 @@ GameObject:
   - component: {fileID: 1086999696}
   - component: {fileID: 1086999695}
   m_Layer: 5
-  m_Name: JavaMessages
+  m_Name: JavaMessages1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -908,7 +877,7 @@ GameObject:
   - component: {fileID: 1128250326}
   - component: {fileID: 1128250325}
   m_Layer: 5
-  m_Name: ModelUrl
+  m_Name: ModelUrl1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1154,7 +1123,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 977d07ad639704004a5ecfee3bbc2a28,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 977d07ad639704004a5ecfee3bbc2a28,
         type: 3}
@@ -1197,7 +1166,7 @@ GameObject:
   - component: {fileID: 2096556603}
   - component: {fileID: 2096556602}
   m_Layer: 5
-  m_Name: LoadVZomeButton
+  m_Name: LoadButton1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1266,7 +1235,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1049569965}
+      - m_Target: {fileID: 711346150}
         m_MethodName: LoadVZome
         m_Mode: 1
         m_Arguments:
