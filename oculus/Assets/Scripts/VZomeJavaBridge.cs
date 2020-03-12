@@ -9,11 +9,11 @@ using Unity.Collections;
 
 public class VZomeJavaBridge : MonoBehaviour
 {
-    public GameObject template;
-    public Text label;
-    public string url;
-
     private IDictionary<string, Mesh> meshes = new Dictionary<string, Mesh>();
+    private IDictionary<string, GameObject> instances = new Dictionary<string, GameObject>();
+
+    private Text msgText;
+    private GameObject template;
 
     public void LoadVZome()
     {
@@ -27,11 +27,25 @@ public class VZomeJavaBridge : MonoBehaviour
             adapter .Call( "registerShape", vef.name, ((TextAsset) vef).text );
         }
 
-        label.text = "Loading url: " + url;
+        template = this .transform .Find( "vZomeTemplate" ) .gameObject;
+
+        Transform canvas = this .transform .Find( "Canvas" );
+        GameObject urlLabel = canvas .Find( "ModelUrl" ) .gameObject;
+        GameObject messages = canvas .Find( "JavaMessages" ) .gameObject;
+
+        string url = urlLabel .GetComponent<Text>() .text;
+        msgText = messages .GetComponent<Text>();
+        msgText .text = "Loading url: " + url;
         Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
         LoadVZomeJob job = new LoadVZomeJob();
+
         job.urlBytes = new NativeArray<byte>( url.Length, Allocator.Temp );
         job.urlBytes .CopyFrom( Encoding.ASCII.GetBytes( url ) );
+
+        string anchor = this .name;
+        job.anchorBytes = new NativeArray<byte>( anchor.Length, Allocator.Temp );
+        job.anchorBytes .CopyFrom( Encoding.ASCII.GetBytes( anchor ) );
+
         JobHandle jh = job .Schedule();
         Debug.Log( "%%%%%%%%%%%%%% job .Scheduled. " );
     }
@@ -39,19 +53,19 @@ public class VZomeJavaBridge : MonoBehaviour
     void SetLabelText( string message )
     { 
         Debug.Log( "%%%%%%%%%%%%%% SetLabelText from java: " + message );
-        label.text = message;
+        msgText .text = message;
     }
 
     void LogInfo( string message )
     { 
         Debug.Log( "%%%%%%%%%%%%%% From Java: " + message );
-        label.text = message;
+        msgText .text = message;
     }
 
     void LogException( string message )
     { 
         Debug.LogError( "%%%%%%%%%%%%%% From Java: " + message );
-        label.text = message;
+        msgText .text = message;
     }
 
     void DefineMesh( string json )
@@ -81,12 +95,16 @@ public class VZomeJavaBridge : MonoBehaviour
         copy .transform .localRotation = instance .rotation;
         copy .transform .SetParent( this .transform, false );
 
+        instances .Add( instance .id, copy );
         Debug.Log( "%%%%%%%%%%%%%% CreateGameObject done!" );
     }
 
     void DeleteGameObject( string json )
     { 
-        Debug.Log( "%%%%%%%%%%%%%% DeleteGameObject from Java: " + json );
+        Deletion deletion = JsonUtility.FromJson<Deletion>(json);
+        Debug.Log( "%%%%%%%%%%%%%% DeleteGameObject from Java: " + deletion .id );
+        Destroy( instances[ deletion .id ] );
+        instances .Remove( deletion .id );
     }
 
     [Serializable]
@@ -108,6 +126,12 @@ public class VZomeJavaBridge : MonoBehaviour
     }
 
     [Serializable]
+    public struct Deletion
+    {
+        public string id;
+    }
+
+    [Serializable]
     public struct Instance
     {
         public string id;
@@ -121,6 +145,7 @@ public class VZomeJavaBridge : MonoBehaviour
 public struct LoadVZomeJob : IJob
 {
     public NativeArray<byte> urlBytes;
+    public NativeArray<byte> anchorBytes;
     
     public void Execute()
     {
@@ -130,8 +155,11 @@ public struct LoadVZomeJob : IJob
         string url = Encoding.ASCII.GetString( urlBytes.ToArray() );
         urlBytes .Dispose();
 
+        string anchor = Encoding.ASCII.GetString( anchorBytes.ToArray() );
+        anchorBytes .Dispose();
+
         AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" );
-        AndroidJavaObject adapter = new AndroidJavaObject( "com.vzome.unity.Adapter", jc, "vZomeModel1" );
+        AndroidJavaObject adapter = new AndroidJavaObject( "com.vzome.unity.Adapter", jc, anchor );
         Debug.Log( "%%%%%%%%%%%%%% adapter created successfully " );
         Debug.Log( "%%%%%%%%%%%%%% attempting to open: " + url );
         adapter .Call<AndroidJavaObject>( "loadUrl", url );
