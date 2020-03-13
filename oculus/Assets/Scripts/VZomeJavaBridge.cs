@@ -174,7 +174,7 @@ public struct LoadVZomeJob : IJob
         AndroidJavaObject adapter = new AndroidJavaObject( "com.vzome.unity.Adapter", jc, anchor );
         Debug.Log( "%%%%%%%%%%%%%% adapter created successfully " );
         Debug.Log( "%%%%%%%%%%%%%% attempting to open: " + url );
-        adapter .Call<AndroidJavaObject>( "loadUrl", url );
-        Debug.Log( "%%%%%%%%%%%%%% loadUrl returned" );
+        adapter .Call<AndroidJavaObject>( "loadFile", url );
+        Debug.Log( "%%%%%%%%%%%%%% loadFile returned" );
     }
 }

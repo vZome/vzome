@@ -55,14 +55,37 @@ public class Adapter
         ExportedVEFShapes .injectShapeVEF( path, vef );
     }
     
+    public Controller loadFile( String path )
+    {
+        try {
+            Document doc = this .app .loadFile( path );
+            logInfo( "loadFile done: " + path );
+            DocumentModel model = doc .getDocumentModel();
+            RenderedModel renderedModel = model .getRenderedModel();
+            renderedModel .addListener( this .renderer );
+            this .logInfo( "renderer is listening" );
+
+            // This just to render the center ball
+            RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
+
+            model .finishLoading( false, false );
+            this .logInfo( "DONE rendering!" );
+
+            return new Controller( model, this );
+        }
+        catch (Exception e)
+        {
+            this .logException( e );
+            return null;
+        }
+    }
+    
     public Controller loadUrl( String url )
     {
         try {
             Document doc = this .app .loadUrl( url );
             logInfo( "loadUrl done: " + url );
             DocumentModel model = doc .getDocumentModel();
-//            FieldApplication kind = new GoldenFieldApplication();
-//            DocumentModel model = new DocumentModel( kind, null, null, this .app .getDelegate() );
             RenderedModel renderedModel = model .getRenderedModel();
             renderedModel .addListener( this .renderer );
             this .logInfo( "renderer is listening" );

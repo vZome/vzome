@@ -3,6 +3,8 @@
 
 package com.vzome.api;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
@@ -45,6 +47,13 @@ public class Application
 		// TODO cleaner abstraction to wrap FailureChannel
 	    this .delegate = new com.vzome.core.editor.Application( true, failures, props );
 	}
+    
+    public Document loadFile( String path ) throws Exception
+    {
+        File file = new File( path );
+        InputStream bytes = new FileInputStream( file );
+        return loadDocument( bytes, false );
+    }
     
     public Document loadUrl( String path ) throws Exception
     {
