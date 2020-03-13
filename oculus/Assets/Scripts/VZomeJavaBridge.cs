@@ -10,6 +10,7 @@ using Unity.Collections;
 public class VZomeJavaBridge : MonoBehaviour
 {
     private IDictionary<string, Mesh> meshes = new Dictionary<string, Mesh>();
+    private IDictionary<string, Material> materials = new Dictionary<string, Material>();
     private IDictionary<string, GameObject> instances = new Dictionary<string, GameObject>();
 
     private Text msgText;
@@ -84,10 +85,21 @@ public class VZomeJavaBridge : MonoBehaviour
         Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + instance.id );
         GameObject copy = Instantiate( template );
         MeshRenderer meshRenderer = copy .AddComponent<MeshRenderer>();
-        meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
-        Color color;
-        ColorUtility .TryParseHtmlString( instance .color, out color );
-        meshRenderer.sharedMaterial .color = color;
+
+        Debug.Log( "&&&&& instance .color: " + instance.color );
+        Material material;
+        if ( materials .ContainsKey( instance .color ) ) {
+            material = materials[ instance .color ];
+        } else {
+            material = new Material( Shader.Find("Standard") );
+            Debug.Log( "&&&&& material created for " + instance.color );
+            Color color;
+            ColorUtility .TryParseHtmlString( instance .color, out color );
+            material .color = color;
+            materials .Add( instance .color, material );
+        }
+        meshRenderer.sharedMaterial = material;
+
         MeshFilter meshFilter = copy .AddComponent<MeshFilter>();
         meshFilter.mesh = meshes[ instance .shape ];
 
