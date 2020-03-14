@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Jobs;
@@ -15,6 +15,27 @@ public class VZomeJavaBridge : MonoBehaviour
 
     private Text msgText;
     private GameObject template;
+
+    public Dropdown dropdown;
+    string selectedFile;
+
+    private const string VZOME_PATH = "/mnt/sdcard/Oculus/vZome/";
+    private List<string> fileNames = new List<string>();
+
+    void Start()
+    {
+        foreach (string path in Directory .GetFiles( VZOME_PATH ) )
+        {
+            string filename = Path .GetFileName( path );
+            fileNames .Add( filename );
+        }
+        dropdown .AddOptions( fileNames );
+    }
+
+    public void DropdownIndexChanged( int index )
+    {
+        selectedFile = fileNames[ index ];
+    }
 
     public void LoadVZome()
     {
@@ -31,17 +52,16 @@ public class VZomeJavaBridge : MonoBehaviour
         template = this .transform .Find( "vZomeTemplate" ) .gameObject;
 
         Transform canvas = this .transform .Find( "Canvas" );
-        GameObject urlLabel = canvas .Find( "ModelUrl" ) .gameObject;
         GameObject messages = canvas .Find( "JavaMessages" ) .gameObject;
 
-        string url = urlLabel .GetComponent<Text>() .text;
         msgText = messages .GetComponent<Text>();
-        msgText .text = "Loading url: " + url;
+        msgText .text = "Loading file: " + selectedFile;
         Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
         LoadVZomeJob job = new LoadVZomeJob();
 
-        job.urlBytes = new NativeArray<byte>( url.Length, Allocator.Temp );
-        job.urlBytes .CopyFrom( Encoding.ASCII.GetBytes( url ) );
+        string filePath = VZOME_PATH + selectedFile;
+        job.urlBytes = new NativeArray<byte>( filePath.Length, Allocator.Temp );
+        job.urlBytes .CopyFrom( Encoding.ASCII.GetBytes( filePath ) );
 
         string anchor = this .name;
         job.anchorBytes = new NativeArray<byte>( anchor.Length, Allocator.Temp );
