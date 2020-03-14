@@ -31,6 +31,7 @@ public class VZomeJavaBridge : MonoBehaviour
             fileNames .Add( filename );
         }
         dropdown .AddOptions( fileNames );
+        DropdownIndexChanged( 0 );
     }
 
     public void DropdownIndexChanged( int index )
@@ -122,6 +123,9 @@ public class VZomeJavaBridge : MonoBehaviour
 
         MeshFilter meshFilter = copy .AddComponent<MeshFilter>();
         meshFilter.mesh = meshes[ instance .shape ];
+
+        MeshCollider collider = copy .GetComponent<MeshCollider>();
+        collider .sharedMesh = meshFilter .mesh;
 
         copy .transform .localPosition = instance .position;
         copy .transform .localRotation = instance .rotation;
