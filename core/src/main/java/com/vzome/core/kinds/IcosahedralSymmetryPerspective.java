@@ -55,10 +55,10 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
         final AbstractShapes tinyShapes = new ExportedVEFShapes(null, "tiny", "tiny connectors", this.symmetry);
         final AbstractShapes tinyDodecs = new ExportedVEFShapes(null, "dodecs", "small dodecahedra", "tiny dodecahedra", this.symmetry, tinyShapes);
         final AbstractShapes bigZome = new ExportedVEFShapes(null, "bigzome", "Big Zome", this.symmetry, tinyShapes);
-        final AbstractShapes noTwist = new ExportedVEFShapes(null, "noTwist", "no-twist 121 zone", this.symmetry);
+        final AbstractShapes noTwist = new ExportedVEFShapes( null, "noTwist", "no-twist 121 zone", this.symmetry, true );
         final AbstractShapes vienne2 = new ExportedVEFShapes(null, "vienne2", "Vienne", this.symmetry, icosadefaultShapes);
         final AbstractShapes vienne3 = new ExportedVEFShapes(null, "vienne3", "Vienne lifelike", this.symmetry, vienne2);
-        final AbstractShapes vienne = new ExportedVEFShapes(null, "vienne", "Vienne 121 zone", this.symmetry);
+        final AbstractShapes vienne = new ExportedVEFShapes( null, "vienne", "Vienne 121 zone", this.symmetry, true );
         
         // this is the order they will be shown on the dialog
         addShapes(icosadefaultShapes); 

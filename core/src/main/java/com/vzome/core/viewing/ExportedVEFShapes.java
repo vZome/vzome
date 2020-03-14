@@ -57,15 +57,20 @@ public class ExportedVEFShapes extends AbstractShapes
         key = key .replace( "--", "/" );
         INJECTED .put( key, vef );
     }
-    
-    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
-    {
-        this( prefsFolder, pkgName, name, alias, symm, ( symm instanceof IcosahedralSymmetry )? new OctahedralShapes( pkgName, name, (IcosahedralSymmetry) symm ) : null );
-    }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
     {
         this( prefsFolder, pkgName, name, null, symm );
+    }
+
+    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, boolean useZomic )
+    {
+        this( prefsFolder, pkgName, name, null, symm, new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) );
+    }
+
+    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
+    {
+        this( prefsFolder, pkgName, name, alias, symm, new OctahedralShapes( pkgName, name, (IcosahedralSymmetry) symm ) );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, AbstractShapes fallback )
