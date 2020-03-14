@@ -143,6 +143,12 @@ public class LessonModel implements Iterable<PageModel>
         int newPageNum = pages .size();
         PageModel pc = new PageModel( "", "", view, snapshotId );
         pages .add( newPageNum, pc );
+        
+        // This is redundant with goToPage(), below, but we need to initialize
+        //  pageNum before we fire the "has.pages" property, which will create the
+        //  LessonPanel, calling back for various properties.
+        this .pageNum = newPageNum;
+        
         if ( pages .size() == 1 )
             firePropertyChange( "has.pages", false, true );
         firePropertyChange( "newElementAddedAt-" + newPageNum, false, true );
