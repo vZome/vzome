@@ -118,7 +118,12 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
     @Override
     public final String toString()
     {
-        return this .getVectorExpression( AlgebraicField .DEFAULT_FORMAT );
+        return toString( AlgebraicField .DEFAULT_FORMAT );
+    }
+
+    public final String toString(int format)
+    {
+        return this .getVectorExpression( format );
     }
 
     public AlgebraicNumber getComponent( int i )
