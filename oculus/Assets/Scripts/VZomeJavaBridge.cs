@@ -18,17 +18,23 @@ public class VZomeJavaBridge : MonoBehaviour
 
     public Transform canvas;
     public Dropdown dropdown;
-    string selectedFile;
+    int selectedFile;
 
     private const string VZOME_PATH = "/mnt/sdcard/Oculus/vZome/";
+    private const string VZOME_EXTENSION = ".vzome";
     private List<string> fileNames = new List<string>();
+    private List<string> paths = new List<string>();
 
     void Start()
     {
         foreach (string path in Directory .GetFiles( VZOME_PATH ) )
         {
-            string filename = Path .GetFileName( path );
-            fileNames .Add( filename );
+            string ext = Path .GetExtension( path ) .ToLower();
+            if ( VZOME_EXTENSION .Equals( ext ) ) {
+                string filename = Path .GetFileNameWithoutExtension( path );
+                fileNames .Add( filename );
+                paths .Add( path );
+            }
         }
         dropdown .AddOptions( fileNames );
         DropdownIndexChanged( 0 );
@@ -36,7 +42,7 @@ public class VZomeJavaBridge : MonoBehaviour
 
     public void DropdownIndexChanged( int index )
     {
-        selectedFile = fileNames[ index ];
+        selectedFile = index;
     }
 
     public void LoadVZome()
@@ -56,11 +62,11 @@ public class VZomeJavaBridge : MonoBehaviour
         GameObject messages = canvas .Find( "JavaMessages" ) .gameObject;
 
         msgText = messages .GetComponent<Text>();
-        msgText .text = "Loading file: " + selectedFile;
+        msgText .text = "Loading file: " + fileNames[ selectedFile ];
         Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
         LoadVZomeJob job = new LoadVZomeJob();
 
-        string filePath = VZOME_PATH + selectedFile;
+        string filePath = paths[ selectedFile ];
         job.urlBytes = new NativeArray<byte>( filePath.Length, Allocator.Temp );
         job.urlBytes .CopyFrom( Encoding.ASCII.GetBytes( filePath ) );
 
