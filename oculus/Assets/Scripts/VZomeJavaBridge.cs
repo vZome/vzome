@@ -16,6 +16,7 @@ public class VZomeJavaBridge : MonoBehaviour
     private Text msgText;
     private GameObject template;
 
+    public Transform canvas;
     public Dropdown dropdown;
     string selectedFile;
 
@@ -51,7 +52,6 @@ public class VZomeJavaBridge : MonoBehaviour
 
         template = this .transform .Find( "vZomeTemplate" ) .gameObject;
 
-        Transform canvas = this .transform .Find( "Canvas" );
         GameObject messages = canvas .Find( "JavaMessages" ) .gameObject;
 
         msgText = messages .GetComponent<Text>();
