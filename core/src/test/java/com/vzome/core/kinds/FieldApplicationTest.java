@@ -104,46 +104,139 @@ public class FieldApplicationTest
         }
     }
 
+    private void assertSymmetryDirection(String appName, Symmetry symmetry, String directionName) {
+        final String msg = "Expected " + appName + " " + symmetry.getName() + " " + directionName + " direction to be non-null.";
+        assertNotNull(msg, symmetry.getDirection(directionName));
+    }
+    
+    private void addTo(Set<String> stringSet, String... stringArray) {
+        for(String string : stringArray) {
+            if(string != null)
+                stringSet.add(string);
+        }
+    }
+    
     private void testSymmetryPerspective(SymmetryPerspective perspective, String appName) 
     {
         final String symmName = perspective.getSymmetry().getName();
         final String name = perspective.getName();
         assertEquals(appName + ".symmetryName", symmName, name);
-        
+
+        // because testNames is a set, not a list, it will also ensure that all names are unique
+        final Set<String> testNames = new HashSet<>();
         switch(name) {
         case "octahedral":
-            noop();
+            addTo(testNames, "blue", "yellow", "green");
+            switch(appName) {
+            case "golden":
+                addTo(testNames,
+                        "lavender",
+                        "olive",
+                        "maroon",
+                        "brown",
+                        "red",
+                        "purple",
+                        "black",
+                        "turquoise"
+                );
+                break;
+
+            case "rootTwo":
+                addTo(testNames, "brown");
+                break;
+
+            case "rootThree":
+                addTo(testNames,"red", "brown");
+                break;
+
+            case "sqrtPhi":
+                addTo(testNames,"slate", "mauve", "ivory");
+                break;
+            }
             break;
             
         case "icosahedral":
-            noop();
+            addTo(testNames, 
+                    "blue",
+                    "red",
+                    "yellow",
+                    "green",
+                    "orange",
+                    "purple",
+                    "black",
+                    "lavender",
+                    "olive",
+                    "maroon",
+                    "rose",
+                    "navy",
+                    "turquoise",
+                    "coral",
+                    "sulfur",
+                    "sand",
+                    "apple",
+                    "cinnamon",
+                    "spruce",
+                    "brown"
+            );
+            if (appName.startsWith("snubDodec")) {
+                addTo(testNames, 
+                        "snubPentagon",
+                        "snubTriangle",
+                        "snubDiagonal",
+                        "snubFaceNormal",
+                        "snubVertex"
+                );
+            }
             break;
-            
+
         case "dodecagonal":
-            noop();
+            addTo(testNames, "red", "green", "blue");
             break;
-            
+
         case "pentagonal":
-            noop();
+            addTo(testNames, "red", "green", "blue");
             break;
-            
+
         case "heptagonal antiprism":
-            noop();
+            addTo(testNames, "red", "blue");
             break;
-            
+
         case "heptagonal antiprism corrected":
-            noop();
+            addTo(testNames, "red", "blue");
             break;
-            
+
         case "synestructics":
-            noop();
+            addTo(testNames, "orange", "yellow", "magenta", "brown");
             break;
-            
+
         default:
             fail(appName + " has an unexpected perspective name: " + name);
         }
+
+        final Symmetry symmetry = perspective.getSymmetry();
+        final String msg = "Expected " + appName + " " + symmetry.getName();
+
+        int nExpected = symmetry.getDirectionNames().length;
+        assertTrue(msg + " to have at least 2 directions" , nExpected >= 2);
+        if(nExpected != testNames.size()) {
+            // list the actual directions for comparison to testNames
+            listDirections(appName, symmetry);
+            assertEquals(msg, nExpected, testNames.size());
+        }
+
+        for(String dirName : testNames) {
+            assertSymmetryDirection(appName, symmetry, dirName);
+        }
     }
     
+    private void listDirections(String appName, Symmetry symmetry) {
+        final String msg = appName + " " + symmetry.getName() + " ";
+        System.out.println(msg);
+        for( Direction dir : symmetry) {
+            System.out.println("\"" + dir.getName() + "\",");
+        }
+    }
+
     private void testGetLegacyCommand(FieldApplication app)
     {
         testCommand(app, "pointsymm");
@@ -277,7 +370,7 @@ public class FieldApplicationTest
             buf.append(shapes.getPackage()) .append(delim);
             buf.append(shapes.getName())    .append(delim);
             buf.append(alias)               .append(delim);
-//            System.out.println(buf.toString());
+            System.out.println(buf.toString());
             LOGGER.fine(buf.toString());
         }
     }
@@ -425,7 +518,7 @@ public class FieldApplicationTest
                 .append(toolFactory.getClass().getName())
                 .append("\n");
             }
-//            System.out.println(buf.toString());
+            System.out.println(buf.toString());
             LOGGER.fine(buf.toString());
         }
     }
