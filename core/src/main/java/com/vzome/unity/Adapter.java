@@ -42,7 +42,7 @@ public class Adapter
         try {
             Adapter adapter = new Adapter( gameObject, path, APP .loadFile( path ) );
             adapters .put( path, adapter );
-            adapter .sendMessage( "AdapterReady", "" );
+            adapter .sendMessage( "AdapterReady", path );
         }
         catch ( Exception e )
         {

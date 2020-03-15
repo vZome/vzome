@@ -25,11 +25,13 @@ public class VZomeJavaBridge : MonoBehaviour
     private List<string> fileNames = new List<string>();
     private List<string> paths = new List<string>();
 
+    private AndroidJavaClass adapterClass;
+    private AndroidJavaObject adapter;
+
     void Start()
     {
-        AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" );
-        AndroidJavaObject adapterClass = new AndroidJavaClass( "com.vzome.unity.Adapter" );
-        adapterClass .CallStatic( "initialize", jc );
+        adapterClass = new AndroidJavaClass( "com.vzome.unity.Adapter" );
+        adapterClass .CallStatic( "initialize", new AndroidJavaClass( "com.unity3d.player.UnityPlayer" ) );
 
         UnityEngine.Object[] shapes = Resources.LoadAll( "Shapes", typeof(TextAsset) );
         foreach ( var vef in shapes )
@@ -56,11 +58,21 @@ public class VZomeJavaBridge : MonoBehaviour
         selectedFile = index;
     }
 
+    public void UndoAll()
+    {
+        Debug.Log( "%%%%%%%%%%%%%% UndoAll triggered" );
+        if ( adapter != null ) {
+            Debug.Log( "%%%%%%%%%%%%%% UndoAll has adapter" );
+            adapter .Call( "doAction", "undoAll" );
+        }
+    }
+
     public void LoadVZome()
     {
         template = this .transform .Find( "vZomeTemplate" ) .gameObject;
 
-        GameObject messages = canvas .Find( "JavaMessages" ) .gameObject;
+        Transform panel = canvas .Find( "Panel" );
+        GameObject messages = panel .Find( "JavaMessages" ) .gameObject;
 
         msgText = messages .GetComponent<Text>();
         msgText .text = "Loading file: " + fileNames[ selectedFile ];
@@ -76,6 +88,12 @@ public class VZomeJavaBridge : MonoBehaviour
 
         JobHandle jh = job .Schedule();
         Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob scheduled. " );
+    }
+
+    void AdapterReady( string path )
+    { 
+        adapter = adapterClass .CallStatic<AndroidJavaObject>( "getAdapter", path );
+        Debug.Log( "%%%%%%%%%%%%%% AdapterReady got the adapter: " + adapter .ToString() );
     }
 
     void SetLabelText( string message )
