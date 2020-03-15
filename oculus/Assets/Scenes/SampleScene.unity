@@ -1169,9 +1169,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 625469346}
-  - component: {fileID: 625469347}
   - component: {fileID: 625469349}
   - component: {fileID: 625469348}
+  - component: {fileID: 625469347}
   m_Layer: 0
   m_Name: vZomeTemplate
   m_TagString: Untagged
@@ -1202,7 +1202,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 625469345}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02d61468f8b77ae4b92c344bc9a600fb, type: 3}
+  m_Script: {fileID: 11500000, guid: b03f0572d5800487eadc4b56eb03a1e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_allowOffhandGrab: 1
@@ -1210,6 +1210,7 @@ MonoBehaviour:
   m_snapOrientation: 0
   m_snapOffset: {fileID: 0}
   m_grabPoints: []
+  vZomeId: 
 --- !u!64 &625469348
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1480,7 +1481,7 @@ GameObject:
   - component: {fileID: 711346149}
   - component: {fileID: 711346150}
   m_Layer: 0
-  m_Name: vZomeModel1
+  m_Name: vZomeModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

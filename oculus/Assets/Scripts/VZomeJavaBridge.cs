@@ -58,15 +58,6 @@ public class VZomeJavaBridge : MonoBehaviour
         selectedFile = index;
     }
 
-    public void UndoAll()
-    {
-        Debug.Log( "%%%%%%%%%%%%%% UndoAll triggered" );
-        if ( adapter != null ) {
-            Debug.Log( "%%%%%%%%%%%%%% UndoAll has adapter" );
-            adapter .Call( "doAction", "undoAll" );
-        }
-    }
-
     public void LoadVZome()
     {
         template = this .transform .Find( "vZomeTemplate" ) .gameObject;
@@ -148,6 +139,10 @@ public class VZomeJavaBridge : MonoBehaviour
         MeshCollider collider = copy .GetComponent<MeshCollider>();
         collider .sharedMesh = meshFilter .mesh;
 
+        GrabSnapper snapper = copy .GetComponent<GrabSnapper>();
+        snapper .vZomeId = instance.id;
+        snapper .bridge = this;
+
         copy .transform .localPosition = instance .position;
         copy .transform .localRotation = instance .rotation;
         copy .transform .SetParent( this .transform, false );
@@ -156,12 +151,43 @@ public class VZomeJavaBridge : MonoBehaviour
         Debug.Log( "%%%%%%%%%%%%%% CreateGameObject done!" );
     }
 
+    void ResetGameObject( string json )
+    { 
+        Instance instance = JsonUtility.FromJson<Instance>(json);
+        GameObject go = instances[ instance .id ];
+        go .transform .localPosition = instance .position;
+        go .transform .localRotation = instance .rotation;
+        go .transform .localScale = new Vector3( 1, 1, 1 );
+        go .transform .SetParent( this .transform, false );
+        Debug.Log( "%%%%%%%%%%%%%% ResetGameObject done!" );
+    }
+
     void DeleteGameObject( string json )
     { 
         Deletion deletion = JsonUtility.FromJson<Deletion>(json);
         Debug.Log( "%%%%%%%%%%%%%% DeleteGameObject from Java: " + deletion .id );
         Destroy( instances[ deletion .id ] );
         instances .Remove( deletion .id );
+    }
+
+    // These methods require the adapter
+
+    public void UndoAll()
+    {
+        Debug.Log( "%%%%%%%%%%%%%% UndoAll triggered" );
+        if ( adapter != null ) {
+            Debug.Log( "%%%%%%%%%%%%%% UndoAll has adapter" );
+            adapter .Call( "doAction", "undoAll" );
+        }
+    }
+
+    public void ObjectMoved( String id )
+    {
+        Debug.Log( "%%%%%%%%%%%%%% ObjectMoved triggered" );
+        if ( adapter != null ) {
+            Debug.Log( "%%%%%%%%%%%%%% ObjectMoved has adapter" );
+            adapter .Call( "doAction", "resetRotation/" + id );
+        }
     }
 
     [Serializable]

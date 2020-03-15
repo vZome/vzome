@@ -1,9 +1,11 @@
 package com.vzome.core.render;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -30,6 +32,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	private float mSelectionGlow = 0.8f;
 
 	protected final HashSet<RenderedManifestation> mRendered = new HashSet<>();
+	
+	protected final HashMap<UUID, RenderedManifestation> byID = new HashMap<>();
 
 	private final AlgebraicField field;
 
@@ -116,7 +120,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
         this .enabled = enabled;
     }
-    
+        
     public RenderedModel( final AlgebraicField field, boolean enabled )
     {
         this( field, null );
@@ -173,6 +177,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    m .setRenderedObject( rm );
         
 	    mRendered .add( rm );
+	    this .byID .put( rm .getGuid(), rm );
 	    if ( mainListener != null )
 	        mainListener .manifestationAdded( rm );
         for (RenderingChanges listener : mListeners) {
@@ -199,9 +204,15 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             mainListener .manifestationRemoved( rendered );
 	    if ( ! mRendered .remove( rendered ) )
 	        throw new IllegalStateException( "unable to remove RenderedManifestation" );
+	    
+        this .byID .remove( rendered .getGuid() );
         m .setRenderedObject( null );
 	}
-	            
+    
+    public RenderedManifestation getRenderedManifestation( String guid )
+    {
+        return this .byID .get( UUID .fromString( guid ) );
+    }
 
 	public void setManifestationGlow( Manifestation m, boolean on )
 	{
@@ -317,6 +328,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                 }
             }
             mRendered .addAll( newSet );
+            for ( RenderedManifestation rm : newSet ) {
+                this .byID .put( rm .getGuid(), rm );
+            }
         }
 	    
 	}

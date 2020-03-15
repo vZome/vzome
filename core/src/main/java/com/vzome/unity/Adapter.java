@@ -9,6 +9,7 @@ import com.vzome.api.Application;
 import com.vzome.api.Document;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.ExportedVEFShapes;
@@ -71,6 +72,7 @@ public class Adapter
     private final String path;
     private final DocumentModel model;
     private final RenderingChanges renderer;
+    private final RenderedModel renderedModel;
 
     private Adapter( String gameObjectName, String path, Document doc )
     {
@@ -80,7 +82,7 @@ public class Adapter
         this .renderer = new Renderer( this );
 
         logInfo( "loaded: " + path );
-        RenderedModel renderedModel = model .getRenderedModel();
+        renderedModel = model .getRenderedModel();
         renderedModel .addListener( this .renderer );
 
         // This just to render the center ball
@@ -140,7 +142,13 @@ public class Adapter
                 break;
 
             default:
-                this .model .doEdit( action );
+                if ( action .startsWith( "resetRotation/" ) ) {
+                    String guid = action .substring( "resetRotation/" .length() );
+                    RenderedManifestation rm = this .renderedModel .getRenderedManifestation( guid );
+                    this .renderer .locationChanged( rm );
+                }
+                else
+                    this .model .doEdit( action );
                 break;
             }
         }

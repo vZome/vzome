@@ -67,19 +67,26 @@ class Renderer implements RenderingChanges
     public void manifestationSwitched( RenderedManifestation from, RenderedManifestation to ) {}
 
     @Override
-    public void glowChanged( RenderedManifestation manifestation ) {}
+    public void glowChanged( RenderedManifestation rm ) {}
 
     @Override
-    public void colorChanged( RenderedManifestation manifestation ) {}
+    public void colorChanged( RenderedManifestation rm ) {}
 
     @Override
-    public void locationChanged( RenderedManifestation manifestation ) {}
+    public void locationChanged( RenderedManifestation rm )
+    {
+        ObjectNode node = this .mapper .getObjectNode( rm );
+        if ( node != null ) {
+            node .put( "id", rm .getGuid() .toString() );
+            sendJson( "ResetGameObject", node );
+        }
+    }
 
     @Override
-    public void orientationChanged( RenderedManifestation manifestation ) {}
+    public void orientationChanged( RenderedManifestation rm ) {}
 
     @Override
-    public void shapeChanged( RenderedManifestation manifestation ) {}
+    public void shapeChanged( RenderedManifestation rm ) {}
 
     @Override
     public boolean shapesChanged( Shapes shapes )
