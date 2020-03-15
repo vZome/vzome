@@ -2,9 +2,12 @@ package com.vzome.unity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.vzome.api.Application;
 import com.vzome.api.Document;
+import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
@@ -12,99 +15,142 @@ import com.vzome.core.viewing.ExportedVEFShapes;
 
 public class Adapter
 {
-    private final Class<?> unityPlayerClass;
-    private final String gameObjectName;
-    private final Application app;
-    private final RenderingChanges renderer;
-
-    public Adapter( Class<?> unityPlayerClass, String gameObjectName )
-    {
-        this .unityPlayerClass = unityPlayerClass;
-        this .gameObjectName = gameObjectName;
-        
-        this .app = new Application();
-        this .renderer = new Renderer( this );
-    }
+    private static final Application APP = new Application();
+    private static Method SEND_MESSAGE_METHOD;
     
-    void sendMessage( String callbackFn, String message )
+    private static final Map<String, Adapter> adapters = new HashMap<String, Adapter>();
+
+    public static void initialize( Class<?> unityPlayerClass )
     {
-//        System.out.println( message );
         try {
-            Method method = this .unityPlayerClass .getMethod( "UnitySendMessage", new Class<?>[] { String.class, String.class, String.class } );
-            method .invoke( null, gameObjectName, callbackFn, message );
+            SEND_MESSAGE_METHOD = unityPlayerClass .getMethod( "UnitySendMessage", new Class<?>[] { String.class, String.class, String.class } );
         }
-        catch ( NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+        catch ( NoSuchMethodException | SecurityException e )
+        {
             e.printStackTrace();
         }
     }
 
-    public void logInfo( String message )
-    {
-        this .sendMessage( "LogInfo", message );
-    }
-
-    public void logException( Exception e )
-    {
-        e .printStackTrace();
-        this .sendMessage( "LogException", e .getMessage() );
-    }
-
-    public void registerShape( String path, String vef )
+    public static void registerShape( String path, String vef )
     {
         System.out.println( "registerShape " + path );
         ExportedVEFShapes .injectShapeVEF( path, vef );
     }
     
-    public Controller loadFile( String path )
+    public static void loadFile( String path, String gameObject )
     {
         try {
-            Document doc = this .app .loadFile( path );
-            logInfo( "loadFile done: " + path );
-            DocumentModel model = doc .getDocumentModel();
-            RenderedModel renderedModel = model .getRenderedModel();
-            renderedModel .addListener( this .renderer );
-            this .logInfo( "renderer is listening" );
-
-            // This just to render the center ball
-            RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
-
-            model .finishLoading( false, false );
-            this .logInfo( "DONE rendering!" );
-
-            return new Controller( model, this );
+            Adapter adapter = new Adapter( gameObject, path, APP .loadFile( path ) );
+            adapters .put( path, adapter );
+            adapter .sendMessage( "AdapterReady", "" );
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
-            this .logException( e );
-            return null;
+            e .printStackTrace();
         }
     }
     
-    public Controller loadUrl( String url )
+    public static Adapter getAdapter( String path )
+    {
+        return adapters .get( path );
+    }
+    
+    public static Adapter loadUrl( String url, String gameObject )
     {
         try {
-            Document doc = this .app .loadUrl( url );
-            logInfo( "loadUrl done: " + url );
-            DocumentModel model = doc .getDocumentModel();
-            RenderedModel renderedModel = model .getRenderedModel();
-            renderedModel .addListener( this .renderer );
-            this .logInfo( "renderer is listening" );
-
-            // This just to render the center ball
-            RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
-
-            model .finishLoading( false, false );
-            this .logInfo( "DONE rendering!" );
-
-            return new Controller( model, this );
+            return new Adapter( gameObject, url, APP .loadUrl( url ) );
         }
         catch (Exception e)
         {
-            this .logException( e );
+            e .printStackTrace();
             return null;
         }
     }
-        
+
+    private final String gameObjectName;
+    private final String path;
+    private final DocumentModel model;
+    private final RenderingChanges renderer;
+
+    private Adapter( String gameObjectName, String path, Document doc )
+    {
+        this .gameObjectName = gameObjectName;
+        this .path = path;
+        this .model = doc .getDocumentModel();
+        this .renderer = new Renderer( this );
+
+        logInfo( "loaded: " + path );
+        RenderedModel renderedModel = model .getRenderedModel();
+        renderedModel .addListener( this .renderer );
+
+        // This just to render the center ball
+        RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
+
+        try {
+            model .finishLoading( false, false );
+            this .logInfo( "DONE rendering!" );
+        }
+        catch ( Failure e )
+        {
+            this .logException( e );
+        }
+    }
+    
+    protected void sendMessage( String callbackFn, String message )
+    {
+        try {
+            SEND_MESSAGE_METHOD .invoke( null, this .gameObjectName, callbackFn, message );
+        }
+        catch ( SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
+        {
+            e.printStackTrace();
+        }
+    }
+
+    protected void logInfo( String message )
+    {
+        this .sendMessage( "LogInfo", message );
+    }
+
+    protected void logException( Exception e )
+    {
+        e .printStackTrace();
+        this .sendMessage( "LogException", e .getMessage() );
+    }
+    
+    public void doAction( String action )
+    {
+        try {
+            switch ( action ) {
+
+            case "undo":
+                this .model .getHistoryModel() .undo( true );
+                break;
+
+            case "redo":
+                this .model .getHistoryModel() .redo( true );
+                break;
+
+            case "undoAll":
+                this .model .getHistoryModel() .undoAll();
+                break;
+
+            case "redoAll":
+                this .model .getHistoryModel() .redoAll( - 1 );
+                break;
+
+            default:
+                this .model .doEdit( action );
+                break;
+            }
+        }
+        catch ( Exception e )
+        {
+            e .printStackTrace();
+            this .logException( e );
+        }
+    }
+
     public static void main( String[] args )
     {
         String twoPanels = 
@@ -126,9 +172,8 @@ public class Adapter
                 "\n" + 
                 "0\n" + 
                 "";
-        Adapter adapter = new Adapter( null, null );
-        adapter .registerShape( "default-connector", twoPanels );
-        Controller c = adapter .loadUrl( "http://vzome.com/models/2008/02-Feb/06-Scott-K4more/K4more.vZome" );
+        registerShape( "default-connector", twoPanels );
+        Adapter adapter = loadUrl( "http://vzome.com/models/2008/02-Feb/06-Scott-K4more/K4more.vZome", null );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
@@ -137,7 +182,7 @@ public class Adapter
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
-        c .doAction( "undo" );
-        c .doAction( "undo" );
+        adapter .doAction( "undo" );
+        adapter .doAction( "undo" );
     }
 }

@@ -27,6 +27,17 @@ public class VZomeJavaBridge : MonoBehaviour
 
     void Start()
     {
+        AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" );
+        AndroidJavaObject adapterClass = new AndroidJavaClass( "com.vzome.unity.Adapter" );
+        adapterClass .CallStatic( "initialize", jc );
+
+        UnityEngine.Object[] shapes = Resources.LoadAll( "Shapes", typeof(TextAsset) );
+        foreach ( var vef in shapes )
+        {
+            Debug.Log( "%%%%%%%%%%%%%% loaded shape VEF " + vef.name );
+            adapterClass .CallStatic( "registerShape", vef.name, ((TextAsset) vef).text );
+        }
+
         foreach (string path in Directory .GetFiles( VZOME_PATH ) )
         {
             string ext = Path .GetExtension( path ) .ToLower();
@@ -47,40 +58,29 @@ public class VZomeJavaBridge : MonoBehaviour
 
     public void LoadVZome()
     {
-        AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" );
-        AndroidJavaObject adapter = new AndroidJavaObject( "com.vzome.unity.Adapter", jc, "JavaCallbacks" );
-
-        UnityEngine.Object[] shapes = Resources.LoadAll( "Shapes", typeof(TextAsset) );
-        foreach ( var vef in shapes )
-        {
-            Debug.Log( "%%%%%%%%%%%%%% loaded shape VEF " + vef.name );
-            adapter .Call( "registerShape", vef.name, ((TextAsset) vef).text );
-        }
-
         template = this .transform .Find( "vZomeTemplate" ) .gameObject;
 
         GameObject messages = canvas .Find( "JavaMessages" ) .gameObject;
 
         msgText = messages .GetComponent<Text>();
         msgText .text = "Loading file: " + fileNames[ selectedFile ];
-        Debug.Log( "%%%%%%%%%%%%%% new LoadVZomeJob... " );
         LoadVZomeJob job = new LoadVZomeJob();
 
         string filePath = paths[ selectedFile ];
-        job.urlBytes = new NativeArray<byte>( filePath.Length, Allocator.Temp );
-        job.urlBytes .CopyFrom( Encoding.ASCII.GetBytes( filePath ) );
+        job .pathN = new NativeArray<byte>( filePath.Length, Allocator.Temp );
+        job .pathN .CopyFrom( Encoding.ASCII.GetBytes( filePath ) );
 
         string anchor = this .name;
-        job.anchorBytes = new NativeArray<byte>( anchor.Length, Allocator.Temp );
-        job.anchorBytes .CopyFrom( Encoding.ASCII.GetBytes( anchor ) );
+        job .objectNameN = new NativeArray<byte>( anchor.Length, Allocator.Temp );
+        job .objectNameN .CopyFrom( Encoding.ASCII.GetBytes( anchor ) );
 
         JobHandle jh = job .Schedule();
-        Debug.Log( "%%%%%%%%%%%%%% job .Scheduled. " );
+        Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob scheduled. " );
     }
 
     void SetLabelText( string message )
     { 
-        Debug.Log( "%%%%%%%%%%%%%% SetLabelText from java: " + message );
+        Debug.Log( "%%%%%%%%%%%%%% SetLabelText from Java: " + message );
         msgText .text = message;
     }
 
@@ -98,9 +98,7 @@ public class VZomeJavaBridge : MonoBehaviour
 
     void DefineMesh( string json )
     {
-        Debug .Log( "%%%%%%%%%%%%%% DefineMesh from Java: " + json );
         Shape shape = JsonUtility.FromJson<Shape>(json);
-        Debug.Log( "%%%%%%%%%%%%%% DefineMesh: shape deserialized" );
         Mesh mesh = shape .ToMesh();
         Debug.Log( "%%%%%%%%%%%%%% DefineMesh: mesh created: " + mesh.vertices[0] );
         meshes .Add( shape .id, mesh );
@@ -113,7 +111,6 @@ public class VZomeJavaBridge : MonoBehaviour
         GameObject copy = Instantiate( template );
         MeshRenderer meshRenderer = copy .AddComponent<MeshRenderer>();
 
-        Debug.Log( "&&&&& instance .color: " + instance.color );
         Material material;
         if ( materials .ContainsKey( instance .color ) ) {
             material = materials[ instance .color ];
@@ -186,25 +183,22 @@ public class VZomeJavaBridge : MonoBehaviour
 
 public struct LoadVZomeJob : IJob
 {
-    public NativeArray<byte> urlBytes;
-    public NativeArray<byte> anchorBytes;
+    public NativeArray<byte> pathN;
+    public NativeArray<byte> objectNameN;
     
     public void Execute()
     {
-        Debug.Log( "%%%%%%%%%%%%%% AndroidJNI.AttachCurrentThread... " );
+        string path = Encoding.ASCII.GetString( pathN .ToArray() );
+        pathN .Dispose();
+
+        string objectName = Encoding.ASCII.GetString( objectNameN .ToArray() );
+        objectNameN .Dispose();
+
         AndroidJNI.AttachCurrentThread();
 
-        string url = Encoding.ASCII.GetString( urlBytes.ToArray() );
-        urlBytes .Dispose();
-
-        string anchor = Encoding.ASCII.GetString( anchorBytes.ToArray() );
-        anchorBytes .Dispose();
-
-        AndroidJavaClass jc = new AndroidJavaClass( "com.unity3d.player.UnityPlayer" );
-        AndroidJavaObject adapter = new AndroidJavaObject( "com.vzome.unity.Adapter", jc, anchor );
-        Debug.Log( "%%%%%%%%%%%%%% adapter created successfully " );
-        Debug.Log( "%%%%%%%%%%%%%% attempting to open: " + url );
-        adapter .Call<AndroidJavaObject>( "loadFile", url );
-        Debug.Log( "%%%%%%%%%%%%%% loadFile returned" );
+        AndroidJavaClass adapterClass = new AndroidJavaClass( "com.vzome.unity.Adapter" );
+        Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob attempting to open: " + path );
+        adapterClass .CallStatic( "loadFile", path, objectName );
+        Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob: loadFile returned" );
     }
 }
