@@ -181,12 +181,22 @@ public class VZomeJavaBridge : MonoBehaviour
         }
     }
 
-    public void ObjectMoved( String id )
+    public void ObjectMoved( String id, GameObject go )
     {
-        Debug.Log( "%%%%%%%%%%%%%% ObjectMoved triggered" );
+        // At this point, the local transform is apparently left over
+        //  from the OVRGrabber, and does NOT reflect the true parent
+        //  transform.  It is still a global transform.
+        //  We have to use "true" here to make it truly relative again,
+        //  before we send it across to Java.
+        go .transform .SetParent( this .transform, true );
         if ( adapter != null ) {
-            Debug.Log( "%%%%%%%%%%%%%% ObjectMoved has adapter" );
-            adapter .Call( "doAction", "resetRotation/" + id );
+            MovedInstance mi = new MovedInstance();
+            mi .position = go .transform .localPosition;
+            mi .rotation = go .transform .localRotation;
+            mi .id = id;
+            mi .action = "MoveObject";
+            string json = JsonUtility .ToJson( mi );
+            adapter .Call( "doAction", json );
         }
     }
 
@@ -220,6 +230,15 @@ public class VZomeJavaBridge : MonoBehaviour
         public string id;
         public string shape;
         public string color;
+        public Vector3 position;
+        public Quaternion rotation;
+    }
+
+    [Serializable]
+    public struct MovedInstance
+    {
+        public string action;
+        public string id;
         public Vector3 position;
         public Quaternion rotation;
     }

@@ -16,6 +16,6 @@ public class GrabSnapper : OVRGrabbable
     {
         base.GrabEnd(linearVelocity, angularVelocity);
 
-        bridge .ObjectMoved( vZomeId );
+        bridge .ObjectMoved( vZomeId, this .gameObject );
     }
 }

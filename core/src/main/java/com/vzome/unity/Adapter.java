@@ -5,10 +5,21 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.vecmath.Matrix3d;
+import javax.vecmath.Quat4d;
+import javax.vecmath.Vector3d;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
+import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
@@ -73,6 +84,7 @@ public class Adapter
     private final DocumentModel model;
     private final RenderingChanges renderer;
     private final RenderedModel renderedModel;
+    private final ObjectMapper objectMapper;
 
     private Adapter( String gameObjectName, String path, Document doc )
     {
@@ -81,6 +93,8 @@ public class Adapter
         this .model = doc .getDocumentModel();
         this .renderer = new Renderer( this );
 
+        this .objectMapper = new ObjectMapper();
+//
         logInfo( "loaded: " + path );
         renderedModel = model .getRenderedModel();
         renderedModel .addListener( this .renderer );
@@ -142,10 +156,43 @@ public class Adapter
                 break;
 
             default:
-                if ( action .startsWith( "resetRotation/" ) ) {
-                    String guid = action .substring( "resetRotation/" .length() );
-                    RenderedManifestation rm = this .renderedModel .getRenderedManifestation( guid );
-                    this .renderer .locationChanged( rm );
+                if ( action .startsWith( "{" ) ) {
+                    
+                    JsonNode node = this .objectMapper .readTree( action );
+                    action = node .get( "action" ) .asText();
+                    switch ( action ) {
+
+                    case "MoveObject":
+                        String guid = node .get( "id" ) .asText();
+                        RenderedManifestation rm = this .renderedModel .getRenderedManifestation( guid );
+                        
+                        JsonNode posNode = node .get( "position" );
+                        RealVector posR = this .objectMapper .treeToValue( posNode, RealVector.class );
+
+                        Direction orbit = rm .getStrutOrbit();
+                        if ( orbit != null ) {
+                            JsonNode rotNode = node .get( "rotation" );
+                            Quat4d rot = this .objectMapper .treeToValue( rotNode, Quat4d.class );
+                            Matrix3d m = new Matrix3d();
+                            m .set( rot );
+
+                            RealVector protoR = orbit .getPrototype() .toRealVector();
+                            Vector3d prototype = new Vector3d( protoR.x, protoR.y, protoR.z );
+                            m .transform( prototype );
+                            RealVector rotated = new RealVector( prototype .x, prototype .y, prototype .z );
+                            
+                            Axis axis = orbit .getAxis( rotated );
+                            Symmetry symmetry = orbit .getSymmetry();
+                            AlgebraicMatrix matrix = symmetry .getMatrix( axis .getOrientation() );                    
+                            rm .setOrientation( matrix );
+                        }
+
+                        this .renderer .locationChanged( rm );
+                        break;
+
+                    default:
+                        break;
+                    }
                 }
                 else
                     this .model .doEdit( action );
