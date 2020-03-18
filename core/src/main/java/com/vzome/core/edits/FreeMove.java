@@ -46,6 +46,9 @@ public class FreeMove extends ChangeManifestations
     public void perform() throws Command.Failure
     {
         Construction c = this .objectToMove .toConstruction();
+        
+        if ( c == null )
+            System.err.println( "Null result from Manifestation .toConstruction()!" );
 
         // Since vZome code is not really expecting locations and rotations to change, we will
         //   implement this as a delete + create.

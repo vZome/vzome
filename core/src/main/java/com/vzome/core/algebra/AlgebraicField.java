@@ -3,7 +3,10 @@
 package com.vzome.core.algebra;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
+
+import com.vzome.core.math.RealVector;
 
 public abstract class AlgebraicField
 {
@@ -12,6 +15,18 @@ public abstract class AlgebraicField
     abstract double evaluateNumber( BigRational[] factors );
 
     abstract BigRational[] scaleBy( BigRational[] factors, int whichIrrational );
+    
+    /**
+     * The integers should be the same indices used by getUnitTerm().
+     * Subclasses must override to usefully participate in the generation
+     * of AlgebraicSeries.
+     * @param input
+     * @return
+     */
+    List<Integer> recurrence( List<Integer> input )
+    {
+        return input;
+    }
 
     void normalize( BigRational[] factors ) {}
 
@@ -52,6 +67,10 @@ public abstract class AlgebraicField
      * Negative powers of the irrationals.
      */
     private final ArrayList<AlgebraicNumber>[] negativePowers;
+    
+    private static final double SMALL_SERIES_THRESHOLD = 30d;
+
+    private final AlgebraicSeries smallSeries;
 
     // Eclipse says that rawtypes is unnecessary here, but without it,
     // Netbeans and the gradle command line both generate the rawtypes warning 
@@ -71,6 +90,21 @@ public abstract class AlgebraicField
         one = this .createRational( BigRational.ONE );
         positivePowers = new ArrayList[ order-1 ];
         negativePowers = new ArrayList[ order-1 ];
+        
+        this .smallSeries = this .generateSeries( SMALL_SERIES_THRESHOLD );
+    }
+    
+    public AlgebraicNumber nearestAlgebraicNumber( double target )
+    {
+        return this .smallSeries .nearestAlgebraicNumber( target );
+    }
+    
+    public AlgebraicVector nearestAlgebraicVector( RealVector target )
+    {
+        return new AlgebraicVector(
+                this .smallSeries .nearestAlgebraicNumber( target.x ),
+                this .smallSeries .nearestAlgebraicNumber( target.y ),
+                this .smallSeries .nearestAlgebraicNumber( target.z ) );
     }
 
     public String getName()
@@ -678,5 +712,17 @@ public abstract class AlgebraicField
     public int getNumMultipliers()
     {
         return this .getNumIrrationals(); // the right value for any order-2 field, and for some higher order fields, also
+    }
+
+    public AlgebraicSeries generateSeries( double threshold )
+    {
+        AlgebraicNumber multiplier = this .createPower( 1, this .getNumIrrationals() );
+        AlgebraicNumber cover = this .one();
+        int power = 0;
+        while ( cover .evaluate() < threshold ) {
+            cover = cover .times( multiplier );
+            ++ power;
+        }
+        return new AlgebraicSeries( this, power );
     }
 }

@@ -17,7 +17,6 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.math.Polyhedron;
-import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
@@ -100,8 +99,7 @@ public class JsonMapper
                 color = Color.WHITE;
             node .put( "color", color .toWebString() );
 
-            RealVector center = ((Connector) man) .getLocation() .toRealVector();
-            node .set( "position", this .asTreeWithView( center ) );
+            node .set( "position", this .asTreeWithView( rm .getLocation() ) );
 
             return node;
         }

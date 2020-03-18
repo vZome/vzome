@@ -73,14 +73,7 @@ class Renderer implements RenderingChanges
     public void colorChanged( RenderedManifestation rm ) {}
 
     @Override
-    public void locationChanged( RenderedManifestation rm )
-    {
-        ObjectNode node = this .mapper .getObjectNode( rm );
-        if ( node != null ) {
-            node .put( "id", rm .getGuid() .toString() );
-            sendJson( "ResetGameObject", node );
-        }
-    }
+    public void locationChanged( RenderedManifestation rm ) {}
 
     @Override
     public void orientationChanged( RenderedManifestation rm ) {}

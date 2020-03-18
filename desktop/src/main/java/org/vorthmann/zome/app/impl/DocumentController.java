@@ -1375,6 +1375,7 @@ public class DocumentController extends DefaultController implements Controller3
                 AlgebraicMatrix rotation = symmetry .getMatrix( zone .getOrientation() );
                 props .put( "rotation", rotation .inverse() ); // invert the strut orientation, so the result is always the canonical zone
                 documentModel .doEdit( "FreeMove", props );
+                break;
             }
 
             default:

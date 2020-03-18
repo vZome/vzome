@@ -13,7 +13,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.math.RealVector;
@@ -67,15 +69,16 @@ public class Adapter
         return adapters .get( path );
     }
     
-    public static Adapter loadUrl( String url, String gameObject )
+    public static void loadUrl( String url, String gameObject )
     {
         try {
-            return new Adapter( gameObject, url, APP .loadUrl( url ) );
+            Adapter adapter = new Adapter( gameObject, url, APP .loadUrl( url ) );
+            adapters .put( url, adapter );
+            adapter .sendMessage( "AdapterReady", url );
         }
         catch (Exception e)
         {
             e .printStackTrace();
-            return null;
         }
     }
 
@@ -114,6 +117,7 @@ public class Adapter
     
     protected void sendMessage( String callbackFn, String message )
     {
+        System.out.println( "Adapter.sendMessage(): " + message );
         try {
             SEND_MESSAGE_METHOD .invoke( null, this .gameObjectName, callbackFn, message );
         }
@@ -158,6 +162,7 @@ public class Adapter
             default:
                 if ( action .startsWith( "{" ) ) {
                     
+                    System.out.println( action );
                     JsonNode node = this .objectMapper .readTree( action );
                     action = node .get( "action" ) .asText();
                     switch ( action ) {
@@ -165,12 +170,28 @@ public class Adapter
                     case "MoveObject":
                         String guid = node .get( "id" ) .asText();
                         RenderedManifestation rm = this .renderedModel .getRenderedManifestation( guid );
-                        
+                        AlgebraicField field = this .renderedModel .getField();
+
                         JsonNode posNode = node .get( "position" );
                         RealVector posR = this .objectMapper .treeToValue( posNode, RealVector.class );
+                        
+                        RenderedManifestation nearby = null; // this .renderedModel .getNearbyBall( posR, 1f );
+                        AlgebraicVector targetPosition = null;
+                        if ( nearby != null )
+                            targetPosition = nearby .getLocationAV();
+                        else {
+                            AlgebraicVector snapPos = field .nearestAlgebraicVector( posR );
+                            targetPosition = snapPos;
+                        }
 
                         Direction orbit = rm .getStrutOrbit();
+                        AlgebraicMatrix rotation = field .identityMatrix( 3 );
                         if ( orbit != null ) {
+                            
+                            // There is a bug here; the rotations come out very wrong.
+                            //  This is because we are computing the absolute rotation,
+                            //  but it should be relative to the existing strut orientation.
+                            
                             JsonNode rotNode = node .get( "rotation" );
                             Quat4d rot = this .objectMapper .treeToValue( rotNode, Quat4d.class );
                             Matrix3d m = new Matrix3d();
@@ -183,11 +204,14 @@ public class Adapter
                             
                             Axis axis = orbit .getAxis( rotated );
                             Symmetry symmetry = orbit .getSymmetry();
-                            AlgebraicMatrix matrix = symmetry .getMatrix( axis .getOrientation() );                    
-                            rm .setOrientation( matrix );
+                            rotation = symmetry .getMatrix( axis .getOrientation() );                    
                         }
 
-                        this .renderer .locationChanged( rm );
+                        Map<String,Object> props = new HashMap<>();
+                        props .put( "picked", rm .getManifestation() );
+                        props .put( "location", targetPosition );
+                        props .put( "rotation", rotation ); // NOTE: this applies to the existing strut orientation!
+                        this .model .doEdit( "FreeMove", props );
                         break;
 
                     default:
@@ -228,7 +252,8 @@ public class Adapter
                 "0\n" + 
                 "";
         registerShape( "default-connector", twoPanels );
-        Adapter adapter = loadUrl( "http://vzome.com/models/2008/02-Feb/06-Scott-K4more/K4more.vZome", null );
+        String url = "http://vzome.com/models/2008/02-Feb/06-Scott-K4more/K4more.vZome";
+        loadUrl( url, null );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
@@ -237,7 +262,6 @@ public class Adapter
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
-        adapter .doAction( "undo" );
-        adapter .doAction( "undo" );
+        Adapter adapter = getAdapter( url );
     }
 }

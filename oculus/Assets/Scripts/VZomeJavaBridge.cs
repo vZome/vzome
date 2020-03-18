@@ -116,7 +116,6 @@ public class VZomeJavaBridge : MonoBehaviour
     void CreateGameObject( string json )
     { 
         Instance instance = JsonUtility.FromJson<Instance>(json);
-        Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + instance.id );
         GameObject copy = Instantiate( template );
         MeshRenderer meshRenderer = copy .AddComponent<MeshRenderer>();
 
@@ -148,26 +147,20 @@ public class VZomeJavaBridge : MonoBehaviour
         copy .transform .SetParent( this .transform, false );
 
         instances .Add( instance .id, copy );
-        Debug.Log( "%%%%%%%%%%%%%% CreateGameObject done!" );
-    }
-
-    void ResetGameObject( string json )
-    { 
-        Instance instance = JsonUtility.FromJson<Instance>(json);
-        GameObject go = instances[ instance .id ];
-        go .transform .localPosition = instance .position;
-        go .transform .localRotation = instance .rotation;
-        go .transform .localScale = new Vector3( 1, 1, 1 );
-        go .transform .SetParent( this .transform, false );
-        Debug.Log( "%%%%%%%%%%%%%% ResetGameObject done!" );
+        Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + instance.id );
     }
 
     void DeleteGameObject( string json )
     { 
         Deletion deletion = JsonUtility.FromJson<Deletion>(json);
         Debug.Log( "%%%%%%%%%%%%%% DeleteGameObject from Java: " + deletion .id );
-        Destroy( instances[ deletion .id ] );
+        GameObject toDelete = instances[ deletion .id ];
+        // Failing to null these out causes a bug; the Destroy() method is too voracious.
+        toDelete .GetComponent<MeshCollider>() .sharedMesh = null;
+        toDelete .GetComponent<MeshRenderer>() .sharedMaterial = null;
+        toDelete .GetComponent<MeshFilter>() .mesh = null;
         instances .Remove( deletion .id );
+        Destroy( toDelete );
     }
 
     // These methods require the adapter
