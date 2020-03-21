@@ -43,6 +43,7 @@ import org.vorthmann.zome.app.impl.PartsController.PartInfo;
 import org.vorthmann.zome.ui.PartsPanel.PartsPanelActionEvent;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
@@ -1379,6 +1380,20 @@ public class DocumentController extends DefaultController implements Controller3
                 LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
                 lmodel .setActualLength( length );
                 break;
+            }
+            
+            // This is only for manual testing of the FreeMove edit, needed for VR grabbing.
+            case "testMoveAndRotate": {
+                Map<String,Object> props = new HashMap<>();
+                props .put( "picked", pickedManifestation );
+                Strut strut = (Strut) pickedManifestation;
+                props .put( "location", strut .getEnd() ); // move the strut to its own end location
+                Axis zone = symmetryController .getZone( strut .getOffset() );
+                Direction orbit = zone .getOrbit();
+                Symmetry symmetry = orbit .getSymmetry();
+                AlgebraicMatrix rotation = symmetry .getMatrix( zone .getOrientation() );
+                props .put( "rotation", rotation .inverse() ); // invert the strut orientation, so the result is always the canonical zone
+                documentModel .doEdit( "FreeMove", props );
             }
 
             default:

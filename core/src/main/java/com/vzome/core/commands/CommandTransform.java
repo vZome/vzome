@@ -7,12 +7,8 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.Point;
-import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.construction.TransformedPoint;
-import com.vzome.core.construction.TransformedPolygon;
-import com.vzome.core.construction.TransformedSegment;
 import com.vzome.core.math.symmetry.Symmetry;
 
 /**
@@ -66,16 +62,7 @@ public abstract class CommandTransform extends AbstractCommand
         final ConstructionList output = new ConstructionList();
         effects .constructionAdded( transform );
         for (Construction param : params) {
-            Construction result = null;
-            if (param instanceof Point) {
-                result = new TransformedPoint(transform, (Point) param);
-            } else if (param instanceof Segment) {
-                result = new TransformedSegment(transform, (Segment) param);
-            } else if (param instanceof Polygon) {
-                result = new TransformedPolygon(transform, (Polygon) param);
-            } else {
-                // TODO handle other constructions 
-            }
+            Construction result = transform .transform( param );
             if ( result == null )
                 continue;
             effects .constructionAdded( result );
