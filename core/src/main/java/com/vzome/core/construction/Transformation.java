@@ -114,6 +114,20 @@ public abstract class Transformation extends Construction
         arg = arg .plus( mOffset );
         return arg;
     }
+    
+    public Construction transform( Construction c )
+    {
+        if ( c instanceof Point ) {
+            return new TransformedPoint( this, (Point) c );
+        } else if ( c instanceof Segment ) {
+            return new TransformedSegment( this, (Segment) c );
+        } else if ( c instanceof Polygon ) {
+            return new TransformedPolygon( this, (Polygon) c );
+        } else {
+            // TODO handle other constructions
+            return null;
+        }
+    }
 
     @Override
     public Element getXml( Document doc )
