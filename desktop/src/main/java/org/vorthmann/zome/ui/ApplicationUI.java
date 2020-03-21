@@ -311,10 +311,10 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             if ( splash != null )
                 splash .dispose();
             
-            ui .debugger = new DapAdapter(); // inert unless we start the server
             String debugPortStr = ui .mController .getProperty( "debug.adapter.port" );
             if ( debugPortStr != null ) {
                 try {
+                    ui .debugger = new DapAdapter(); // inert unless we start the server
                     Integer debugPort = Integer .parseInt( debugPortStr );
                     ui .debugger .startServer( debugPort, ui .mController );
                 } catch ( NumberFormatException e ) {

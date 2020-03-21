@@ -8,12 +8,8 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.ChangeOfBasis;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
-import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.construction.TransformedPoint;
-import com.vzome.core.construction.TransformedPolygon;
-import com.vzome.core.construction.TransformedSegment;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.model.Manifestation;
@@ -58,16 +54,7 @@ public class AffineTransformAll extends ChangeManifestations
             if ( m .getRenderedObject() == null )
                 continue;
             Construction c = m .getConstructions() .next();
-            Construction result = null;
-            if ( c instanceof Point ) {
-                result = new TransformedPoint( transform, (Point) c );
-            } else if ( c instanceof Segment ) {
-                result = new TransformedSegment( transform, (Segment) c );
-            } else if ( c instanceof Polygon ) {
-                result = new TransformedPolygon( transform, (Polygon) c );
-            } else {
-                // TODO handle other constructions 
-            }
+            Construction result = transform .transform( c );
             select( manifestConstruction( result ) );
         }
         redo();
