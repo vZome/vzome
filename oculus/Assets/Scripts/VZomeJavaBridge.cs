@@ -165,12 +165,22 @@ public class VZomeJavaBridge : MonoBehaviour
 
     // These methods require the adapter
 
-    public void UndoAll()
+    private void DoModelAction( object obj )
     {
-        Debug.Log( "%%%%%%%%%%%%%% UndoAll triggered" );
         if ( adapter != null ) {
-            Debug.Log( "%%%%%%%%%%%%%% UndoAll has adapter" );
-            adapter .Call( "doAction", "undoAll" );
+            string json = JsonUtility .ToJson( obj );
+            Debug .Log( "%%%%%%%%%%%%%% Calling doAction: " + json );
+            adapter .Call( "doAction", json );
+        }
+    }
+
+    public void DoSimpleAction( String action )
+    {
+        if ( adapter != null ) {
+            Debug .Log( "%%%%%%%%%%%%%% Calling DoSimpleAction: " + action );
+            SimpleAction pa = new SimpleAction();
+            pa .action = action;
+            DoModelAction( pa );
         }
     }
 
@@ -188,8 +198,7 @@ public class VZomeJavaBridge : MonoBehaviour
             mi .rotation = go .transform .localRotation;
             mi .id = id;
             mi .action = "MoveObject";
-            string json = JsonUtility .ToJson( mi );
-            adapter .Call( "doAction", json );
+            DoModelAction( mi );
         }
     }
 
@@ -225,6 +234,12 @@ public class VZomeJavaBridge : MonoBehaviour
         public string color;
         public Vector3 position;
         public Quaternion rotation;
+    }
+
+    [Serializable]
+    public struct SimpleAction
+    {
+        public string action;
     }
 
     [Serializable]

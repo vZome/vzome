@@ -116,7 +116,7 @@ public class Adapter
     
     protected void sendMessage( String callbackFn, String message )
     {
-        System.out.println( "Adapter.sendMessage(): " + message );
+        System.out.println( "Adapter.sendMessage(): " + callbackFn + " : " + message );
         try {
             SEND_MESSAGE_METHOD .invoke( null, this .gameObjectName, callbackFn, message );
         }
@@ -140,81 +140,76 @@ public class Adapter
     public void doAction( String action )
     {
         try {
-            switch ( action ) {
+            if ( action .startsWith( "{" ) ) {
 
-            case "undo":
-                this .model .getHistoryModel() .undo( true );
-                break;
+                System.out.println( action );
+                JsonNode node = this .objectMapper .readTree( action );
+                action = node .get( "action" ) .asText();
+                switch ( action ) {
 
-            case "redo":
-                this .model .getHistoryModel() .redo( true );
-                break;
+                case "undo":
+                    this .model .getHistoryModel() .undo( true );
+                    break;
 
-            case "undoAll":
-                this .model .getHistoryModel() .undoAll();
-                break;
+                case "redo":
+                    this .model .getHistoryModel() .redo( true );
+                    break;
 
-            case "redoAll":
-                this .model .getHistoryModel() .redoAll( - 1 );
-                break;
+                case "undoAll":
+                    this .model .getHistoryModel() .undoAll();
+                    break;
 
-            default:
-                if ( action .startsWith( "{" ) ) {
-                    
-                    System.out.println( action );
-                    JsonNode node = this .objectMapper .readTree( action );
-                    action = node .get( "action" ) .asText();
-                    switch ( action ) {
+                case "redoAll":
+                    this .model .getHistoryModel() .redoAll( - 1 );
+                    break;
 
-                    case "MoveObject":
-                        String guid = node .get( "id" ) .asText();
-                        RenderedManifestation rm = this .renderedModel .getRenderedManifestation( guid );
-                        AlgebraicField field = this .renderedModel .getField();
+                case "MoveObject":
+                    String guid = node .get( "id" ) .asText();
+                    RenderedManifestation rm = this .renderedModel .getRenderedManifestation( guid );
+                    AlgebraicField field = this .renderedModel .getField();
 
-                        JsonNode posNode = node .get( "position" );
-                        RealVector posR = this .objectMapper .treeToValue( posNode, RealVector.class );
-                        
-                        RenderedManifestation nearby = null; // this .renderedModel .getNearbyBall( posR, 1f );
-                        AlgebraicVector targetPosition = null;
-                        if ( nearby != null )
-                            targetPosition = nearby .getLocationAV();
-                        else {
-                            AlgebraicVector snapPos = field .nearestAlgebraicVector( posR );
-                            targetPosition = snapPos;
-                        }
+                    JsonNode posNode = node .get( "position" );
+                    RealVector posR = this .objectMapper .treeToValue( posNode, RealVector.class );
 
-                        Direction orbit = rm .getStrutOrbit();
-                        if ( orbit != null ) {
-                                                        
-                            JsonNode rotNode = node .get( "rotation" );
-                            Quat4d rot = this .objectMapper .treeToValue( rotNode, Quat4d.class );
-                            Matrix3d m = new Matrix3d();
-                            m .set( rot );
-
-                            RealVector protoR = orbit .getPrototype() .toRealVector();
-                            Vector3d prototype = new Vector3d( protoR.x, protoR.y, protoR.z );
-                            m .transform( prototype );
-                            RealVector rotated = new RealVector( prototype .x, prototype .y, prototype .z );
-                            
-                            Axis axis = orbit .getAxis( rotated );
-
-                            Map<String,Object> props = new HashMap<>();
-                            props .put( "oldStrut", rm .getManifestation() );
-                            props .put( "anchor", new FreePoint( targetPosition ) );
-                            props .put( "zone", axis );
-                            props .put( "length", rm .getStrutLength() );
-                            this .model .doEdit( "StrutMove", props );
-                        }
-                        break;
-
-                    default:
-                        break;
+                    RenderedManifestation nearby = null; // this .renderedModel .getNearbyBall( posR, 1f );
+                    AlgebraicVector targetPosition = null;
+                    if ( nearby != null )
+                        targetPosition = nearby .getLocationAV();
+                    else {
+                        AlgebraicVector snapPos = field .nearestAlgebraicVector( posR );
+                        targetPosition = snapPos;
                     }
+
+                    Direction orbit = rm .getStrutOrbit();
+                    if ( orbit != null ) {
+
+                        JsonNode rotNode = node .get( "rotation" );
+                        Quat4d rot = this .objectMapper .treeToValue( rotNode, Quat4d.class );
+                        Matrix3d m = new Matrix3d();
+                        m .set( rot );
+
+                        RealVector protoR = orbit .getPrototype() .toRealVector();
+                        Vector3d prototype = new Vector3d( protoR.x, protoR.y, protoR.z );
+                        m .transform( prototype );
+                        RealVector rotated = new RealVector( prototype .x, prototype .y, prototype .z );
+
+                        Axis axis = orbit .getAxis( rotated );
+
+                        Map<String,Object> props = new HashMap<>();
+                        props .put( "oldStrut", rm .getManifestation() );
+                        props .put( "anchor", new FreePoint( targetPosition ) );
+                        props .put( "zone", axis );
+                        props .put( "length", rm .getStrutLength() );
+                        this .model .doEdit( "StrutMove", props );
+                    }
+                    break;
+
+                default:
+                    break;
                 }
-                else
-                    this .model .doEdit( action );
-                break;
             }
+            else
+                this .model .doEdit( action );
         }
         catch ( Exception e )
         {
