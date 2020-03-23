@@ -22,7 +22,7 @@ import com.vzome.core.model.RealizedModel;
 
 public class StrutCreation extends ChangeManifestations
 {
-    private Point mAnchor;
+    protected Point mAnchor;
     private Axis mAxis;
     private AlgebraicNumber mLength;
     

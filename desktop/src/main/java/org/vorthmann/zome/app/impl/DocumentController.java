@@ -40,13 +40,13 @@ import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
+import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
@@ -1325,37 +1325,15 @@ public class DocumentController extends DefaultController implements Controller3
     }
     
 
-    public void doManifestationAction( Manifestation pickedManifestation, String action )
+    public void doManifestationAction( RenderedManifestation picked, String action )
     {
-        Construction singleConstruction = null;
-        if ( pickedManifestation != null )
-            singleConstruction = pickedManifestation .toConstruction();
 
         try {
             switch ( action ) {
 
-            case "undoToManifestation":
-                this .documentModel .undoToManifestation( pickedManifestation );
-                break;
-
-            case "setWorkingPlaneAxis":
-                this .strutBuilder .setWorkingPlaneAxis( ((Segment) singleConstruction).getOffset() );
-                break;
-
-            case "setWorkingPlane":
-                this .strutBuilder .setWorkingPlaneAxis( ((Polygon) singleConstruction ).getNormal() );
-                break;
-
-            case "lookAtThis":
-                RealVector loc = documentModel .getCentroid( pickedManifestation );
-                cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
-                break;
-
             case "setBuildOrbitAndLength": {
-                AlgebraicVector offset = ((Strut) pickedManifestation) .getOffset();
-                Axis zone = symmetryController .getZone( offset );
-                Direction orbit = zone .getOrbit();
-                AlgebraicNumber length = zone .getLength( offset );
+                AlgebraicNumber length = picked .getStrutLength();
+                Direction orbit = picked .getStrutOrbit();
                 symmetryController .availableController .doAction( "enableDirection." + orbit .getName() );
                 symmetryController .buildController .doAction( "setSingleDirection." + orbit .getName() );
                 LengthController lmodel = (LengthController) symmetryController .buildController .getSubController( "currentLength" );
@@ -1365,21 +1343,22 @@ public class DocumentController extends DefaultController implements Controller3
             
             // This is only for manual testing of the FreeMove edit, needed for VR grabbing.
             case "testMoveAndRotate": {
+                Direction orbit = picked .getStrutOrbit();
+                AlgebraicNumber length = picked .getStrutLength();
+                
+                Strut strut = (Strut) picked .getManifestation();
+
                 Map<String,Object> props = new HashMap<>();
-                props .put( "picked", pickedManifestation );
-                Strut strut = (Strut) pickedManifestation;
-                props .put( "location", strut .getEnd() ); // move the strut to its own end location
-                Axis zone = symmetryController .getZone( strut .getOffset() );
-                Direction orbit = zone .getOrbit();
-                Symmetry symmetry = orbit .getSymmetry();
-                AlgebraicMatrix rotation = symmetry .getMatrix( zone .getOrientation() );
-                props .put( "rotation", rotation .inverse() ); // invert the strut orientation, so the result is always the canonical zone
-                documentModel .doEdit( "FreeMove", props );
+                props .put( "oldStrut", strut );
+                props .put( "anchor", new FreePoint( strut .getEnd() ) ); // move the strut to its own end location
+                props .put( "zone", orbit .getAxis( 0, 0 ) ); // always clone as the +0 zone, for this test
+                props .put( "length", length );
+                documentModel .doEdit( "StrutMove", props );
                 break;
             }
 
             default:
-                documentModel .doPickEdit( pickedManifestation, action );
+                doManifestationAction( picked .getManifestation(), action );
             }
         } catch ( Command.Failure failure ) {
             // signal an error to the user
@@ -1391,6 +1370,37 @@ public class DocumentController extends DefaultController implements Controller3
             else
                 mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { re } );
         } 
+    }
+    
+
+    public void doManifestationAction( Manifestation pickedManifestation, String action )
+    {
+        Construction singleConstruction = null;
+        if ( pickedManifestation != null )
+            singleConstruction = pickedManifestation .toConstruction();
+
+        switch ( action ) {
+
+        case "undoToManifestation":
+            this .documentModel .undoToManifestation( pickedManifestation );
+            break;
+
+        case "setWorkingPlaneAxis":
+            this .strutBuilder .setWorkingPlaneAxis( ((Segment) singleConstruction).getOffset() );
+            break;
+
+        case "setWorkingPlane":
+            this .strutBuilder .setWorkingPlaneAxis( ((Polygon) singleConstruction ).getNormal() );
+            break;
+
+        case "lookAtThis":
+            RealVector loc = documentModel .getCentroid( pickedManifestation );
+            cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+            break;
+
+        default:
+            documentModel .doPickEdit( pickedManifestation, action );
+        }
     }
 
     public String getManifestationProperty( Manifestation pickedManifestation, String propName )

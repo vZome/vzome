@@ -487,8 +487,8 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
             this .add( setMenuAction( "setBuildOrbitAndLength", new JMenuItem( "Build With This" ) ) );
             this .add( enabler .setMenuAction( "showProperties-"+key, this .controller, new JMenuItem( "Show Properties" ) ) );
 
-            // This is only for manual testing of the FreeMove edit, needed for VR grabbing.
-            // this .add( setMenuAction( "testMoveAndRotate", new JMenuItem( "Move and Rotate" ) ) );
+            // This is only for manual testing of the StrutMove edit, needed for VR grabbing.
+//            this .add( setMenuAction( "testMoveAndRotate", new JMenuItem( "Move and Rotate" ) ) );
         }
 
         private JMenuItem setMenuAction( String action, JMenuItem control )
