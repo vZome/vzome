@@ -171,7 +171,7 @@ public class Adapter
                     JsonNode posNode = node .get( "position" );
                     RealVector posR = this .objectMapper .treeToValue( posNode, RealVector.class );
 
-                    RenderedManifestation nearby = null; // this .renderedModel .getNearbyBall( posR, 1f );
+                    RenderedManifestation nearby = this .renderedModel .getNearbyBall( posR, 0.6d );
                     AlgebraicVector targetPosition = null;
                     if ( nearby != null )
                         targetPosition = nearby .getLocationAV();

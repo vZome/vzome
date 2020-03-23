@@ -466,4 +466,17 @@ vZome VEF 6 field heptagon
         cosine = Math.max(-1.0d, cosine);
         return Math.acos( cosine );
     }
+
+    public RenderedManifestation getNearbyBall( RealVector location, double tolerance )
+    {
+        for ( RenderedManifestation rm : this .mRendered ) {
+            if ( rm .getManifestation() instanceof Connector ) {
+                RealVector ballLoc = rm .getLocation();
+                double distance = ballLoc .minus( location ) .length();
+                if ( distance < tolerance )
+                    return rm;
+            }
+        }
+        return null;
+    }
 }
