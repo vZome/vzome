@@ -28,6 +28,7 @@ public class PickingController extends DefaultController implements Controller
 	private final DocumentController delegate;
 	
 	private transient Manifestation pickedManifestation;
+    private RenderedManifestation pickedRM;
 
 	public PickingController( RenderingViewer viewer, DocumentController delegate )
 	{
@@ -47,14 +48,17 @@ public class PickingController extends DefaultController implements Controller
         case "setWorkingPlaneAxis":
         case "setWorkingPlane":
         case "lookAtThis":
-        case "setBuildOrbitAndLength":
         case "SelectCollinear":
         case "SelectParallelStruts":
         case "AdjustSelectionByOrbitLength/selectSimilarStruts":
 		case "ReplaceWithShape":
+            this .delegate .doManifestationAction( this .pickedManifestation, action );
+            break;
+            
+        case "setBuildOrbitAndLength":
         case "testMoveAndRotate":
-		    this .delegate .doManifestationAction( this .pickedManifestation, action );
-        	break;
+            this .delegate .doManifestationAction( this .pickedRM, action );
+            break;
             
 		default:
 			this .delegate .doAction( action, e );
@@ -66,10 +70,10 @@ public class PickingController extends DefaultController implements Controller
 	@Override
 	public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
 	{
-        RenderedManifestation rm = this .viewer .pickManifestation( e );
+        pickedRM = this .viewer .pickManifestation( e );
         pickedManifestation = null;
-        if ( rm != null && rm.isPickable() )
-        	pickedManifestation = rm.getManifestation();
+        if ( pickedRM != null && pickedRM.isPickable() )
+        	pickedManifestation = pickedRM.getManifestation();
 
         boolean[] result = this .delegate .enableContextualCommands( menu, e );
         for ( int i = 0; i < menu.length; i++ ) {
