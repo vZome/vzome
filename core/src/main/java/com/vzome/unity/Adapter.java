@@ -14,14 +14,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.construction.FreePoint;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
@@ -185,13 +184,8 @@ public class Adapter
                         }
 
                         Direction orbit = rm .getStrutOrbit();
-                        AlgebraicMatrix rotation = field .identityMatrix( 3 );
                         if ( orbit != null ) {
-                            
-                            // There is a bug here; the rotations come out very wrong.
-                            //  This is because we are computing the absolute rotation,
-                            //  but it should be relative to the existing strut orientation.
-                            
+                                                        
                             JsonNode rotNode = node .get( "rotation" );
                             Quat4d rot = this .objectMapper .treeToValue( rotNode, Quat4d.class );
                             Matrix3d m = new Matrix3d();
@@ -203,15 +197,14 @@ public class Adapter
                             RealVector rotated = new RealVector( prototype .x, prototype .y, prototype .z );
                             
                             Axis axis = orbit .getAxis( rotated );
-                            Symmetry symmetry = orbit .getSymmetry();
-                            rotation = symmetry .getMatrix( axis .getOrientation() );                    
-                        }
 
-                        Map<String,Object> props = new HashMap<>();
-                        props .put( "picked", rm .getManifestation() );
-                        props .put( "location", targetPosition );
-                        props .put( "rotation", rotation ); // NOTE: this applies to the existing strut orientation!
-                        this .model .doEdit( "FreeMove", props );
+                            Map<String,Object> props = new HashMap<>();
+                            props .put( "oldStrut", rm .getManifestation() );
+                            props .put( "anchor", new FreePoint( targetPosition ) );
+                            props .put( "zone", axis );
+                            props .put( "length", rm .getStrutLength() );
+                            this .model .doEdit( "StrutMove", props );
+                        }
                         break;
 
                     default:
