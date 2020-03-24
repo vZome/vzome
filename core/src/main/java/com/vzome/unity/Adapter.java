@@ -21,6 +21,7 @@ import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
@@ -188,7 +189,9 @@ public class Adapter
                         Matrix3d m = new Matrix3d();
                         m .set( rot );
 
-                        RealVector protoR = orbit .getPrototype() .toRealVector();
+                        // Do NOT use orbit .getPrototype(), since that does not always line up with the shape.
+                        //  See ExportedVEFShapes .createStrutGeometry()
+                        RealVector protoR = orbit .getAxis( Symmetry .PLUS, 0 ) .normal() .toRealVector();
                         Vector3d prototype = new Vector3d( protoR.x, protoR.y, protoR.z );
                         m .transform( prototype );
                         RealVector rotated = new RealVector( prototype .x, prototype .y, prototype .z );
