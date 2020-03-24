@@ -1360,6 +1360,24 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
             }
             
+            case "CreateStrutPrototype": {
+                // This command is primarily intended to be used 
+                // while adding new directions to FieldApplications.
+                // Specifically it may be helpful in determining 
+                // an appropriate unitLength for createZoneOrbit().
+                // Since during this stage, the prototype vector and unit length may differ
+                // from their eventual values, I don't want to add a command in core to do this
+                // because a file with that command in it would potentially fail if the prototype is changed.
+                // For that reason, I want the command history to look the same 
+                // as if the strut were generated with the usual mouse drag paradigm. 
+                Map<String,Object> props = new HashMap<>();
+                props .put( "anchor", new FreePoint(symmetryController.getSymmetry().getField().origin(3)) );
+                props .put( "zone", symmetryController .getZone( picked.getStrutOrbit().getPrototype() ) );
+                props .put( "length", picked.getStrutOrbit().getUnitLength() );
+                documentModel .doEdit( "StrutCreation", props );
+                break;
+            }
+
             // This is only for manual testing of the FreeMove edit, needed for VR grabbing.
             case "testMoveAndRotate": {
                 Direction orbit = picked .getStrutOrbit();

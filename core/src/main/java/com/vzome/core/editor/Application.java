@@ -30,13 +30,13 @@ import org.xml.sax.XMLReader;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
+import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.LiveGraphicsExporter;
-import com.vzome.core.exporters.ShapesJsonExporter;
 import com.vzome.core.exporters.OffExporter;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
@@ -47,6 +47,7 @@ import com.vzome.core.exporters.RulerExporter;
 import com.vzome.core.exporters.STEPExporter;
 import com.vzome.core.exporters.SecondLifeExporter;
 import com.vzome.core.exporters.SegExporter;
+import com.vzome.core.exporters.ShapesJsonExporter;
 import com.vzome.core.exporters.StlExporter;
 import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.exporters.VefExporter;
@@ -259,7 +260,10 @@ public class Application
         if( supplier != null ) {
             return supplier.get();
         }
-        throw new IllegalArgumentException("Unknown Application Type " + name);
+        // maybe because default.field is invalid in your prefs file?
+        String msg = "Unknown Application Type " + name;
+        failures.reportFailure(new Failure(msg));
+        throw new IllegalArgumentException(msg);
     }
 
     public Set<String> getFieldNames()
