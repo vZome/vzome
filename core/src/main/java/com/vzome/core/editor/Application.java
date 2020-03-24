@@ -30,6 +30,7 @@ import org.xml.sax.XMLReader;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
+import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
@@ -266,7 +267,10 @@ public class Application
         if( supplier != null ) {
             return supplier.get();
         }
-        throw new IllegalArgumentException("Unknown Application Type " + name);
+        // maybe because default.field is invalid in your prefs file?
+        String msg = "Unknown Application Type " + name;
+        failures.reportFailure(new Failure(msg));
+        throw new IllegalArgumentException(msg);
     }
 
     public Set<String> getFieldNames()

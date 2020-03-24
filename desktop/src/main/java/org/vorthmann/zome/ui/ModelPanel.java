@@ -484,6 +484,12 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 
             this .addSeparator();
 
+            if(controller .propertyIsTrue( "create.strut.prototype" )) {
+                // DJH - pretty much nobody will use this command, 
+                // so only add it to the menu if it's enabled in the prefs file.
+                this .add( setMenuAction( "CreateStrutPrototype", new JMenuItem( "Create Strut Prototype" ) ) );
+            }
+
             this .add( setMenuAction( "setBuildOrbitAndLength", new JMenuItem( "Build With This" ) ) );
             this .add( enabler .setMenuAction( "showProperties-"+key, this .controller, new JMenuItem( "Show Properties" ) ) );
 
