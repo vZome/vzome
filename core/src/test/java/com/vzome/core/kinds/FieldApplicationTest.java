@@ -2,8 +2,10 @@ package com.vzome.core.kinds;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -23,6 +25,7 @@ import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
@@ -90,9 +93,7 @@ public class FieldApplicationTest
                 assertFalse("SymmetryPerspective names must be unique within a FieldApplication.", names.contains(name));
                 names.add(name);
                 
-                SymmetryPerspective sp = app.getSymmetryPerspective(name);
-                boolean same = perspective == sp; // be sure to test same-ness with "==" rather than equals()
-                assertTrue(appName + "." + name + " ? " + sp.getName(), same);
+                assertSame(appName + "." + name, perspective, app.getSymmetryPerspective(name));
                 
                 testGetLegacyCommand(perspective, appName);
                 testGeometries(perspective, appName);
@@ -226,6 +227,46 @@ public class FieldApplicationTest
 
         for(String dirName : testNames) {
             assertSymmetryDirection(appName, symmetry, dirName);
+        }
+        testDirectionAxisVsPrototype(appName, symmetry);
+    }
+    
+    public static void testDirectionAxisVsPrototype(String appName, Symmetry symmetry) {
+        for( Direction dir : symmetry) {
+            String symDirName = symmetry.getName() + " " + dir.getName();
+            String msg = appName + " " + symDirName;
+            AlgebraicVector vProto = dir.getPrototype();
+            AlgebraicVector vPlus0 = dir.getAxis(Symmetry.PLUS, 0).normal();
+            AlgebraicNumber quadranceProto = vProto.dot(vProto);
+            AlgebraicNumber quadrancePlus0 = vPlus0.dot(vPlus0);
+            assertEquals(msg, quadranceProto, quadrancePlus0);
+            
+            switch(symDirName) {
+            case "synestructics magenta": // effectively the same as octahedral green
+            case "octahedral green":
+            case "icosahedral green":
+            case "icosahedral orange":
+            case "icosahedral black":
+                // These legacy directions don't have vProto equal to vPlus0.
+                // Although it would be nice, who knows what would break
+                // or if it's even possible at this stage. 
+                // Unless and until the oversight can be fixed, 
+                // I'm just going to account for these few legacy directions here.
+                System.out.println(msg);
+                System.out.println("\tdir.getPrototype()            = " + vProto);
+                System.out.println("\tdir.getAxis(PLUS, 0).normal() = " + vPlus0);
+                assertNotEquals(symDirName, vProto, vPlus0);
+                break;
+            
+            default:
+                // Verify that all other predefined directions
+                // are oriented so that vProto equals vPlus0.
+                if(dir.isAutomatic()) {
+                   System.out.println("I don't know if automatic directions even matter... DJH?"); 
+                }
+                assertEquals(symDirName, vProto, vPlus0);
+                break;
+            }
         }
     }
     

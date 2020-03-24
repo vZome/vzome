@@ -55,6 +55,7 @@ public class PickingController extends DefaultController implements Controller
             break;
             
         case "setBuildOrbitAndLength":
+        case "CreateStrutAxisPlus0":
         case "CreateStrutPrototype":
         case "testMoveAndRotate":
             this .delegate .doManifestationAction( this .pickedRM, action );
@@ -96,6 +97,7 @@ public class PickingController extends DefaultController implements Controller
             case "SelectParallelStruts":
             case "AdjustSelectionByOrbitLength/selectSimilarStruts":
             case "setBuildOrbitAndLength":
+            case "CreateStrutAxisPlus0":
             case "CreateStrutPrototype":
             case "testMoveAndRotate":
                 result[ i ] = pickedManifestation instanceof Strut;

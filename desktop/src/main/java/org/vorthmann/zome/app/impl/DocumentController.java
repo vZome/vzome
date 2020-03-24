@@ -1342,10 +1342,10 @@ public class DocumentController extends DefaultController implements Controller3
             }
             
             case "CreateStrutPrototype": {
-                // This command is primarily intended to be used 
+                // This command was primarily designed to help 
                 // while adding new directions to FieldApplications.
-                // Specifically it may be helpful in determining 
-                // an appropriate unitLength for createZoneOrbit().
+                // CreateStrutAxisPlus0 and CreateStrutPrototype 
+                // are identical except for the way the zone is chosen.
                 // Since during this stage, the prototype vector and unit length may differ
                 // from their eventual values, I don't want to add a command in core to do this
                 // because a file with that command in it would potentially fail if the prototype is changed.
@@ -1354,6 +1354,25 @@ public class DocumentController extends DefaultController implements Controller3
                 Map<String,Object> props = new HashMap<>();
                 props .put( "anchor", new FreePoint(symmetryController.getSymmetry().getField().origin(3)) );
                 props .put( "zone", symmetryController .getZone( picked.getStrutOrbit().getPrototype() ) );
+                props .put( "length", picked.getStrutOrbit().getUnitLength() );
+                documentModel .doEdit( "StrutCreation", props );
+                break;
+            }
+
+            case "CreateStrutAxisPlus0": {
+                // This command was primarily designed to help
+                // with adding new directions to FieldApplications.
+                // Specifically it can be helpful in determining 
+                // an appropriate unitLength for createZoneOrbit().
+                // CreateStrutAxisPlus0 and CreateStrutPrototype 
+                // are identical except for the way the zone is chosen.
+                // For most directions the two are equivalent
+                // but for a few legacy directions, they differ.
+                // See FieldApplicationTest.testDirectionAxisVsPrototype()
+                // for a list of those that differ.
+                Map<String,Object> props = new HashMap<>();
+                props .put( "anchor", new FreePoint(symmetryController.getSymmetry().getField().origin(3)) );
+                props .put( "zone", symmetryController.getZone(picked.getStrutOrbit().getAxis(Symmetry.PLUS, 0).normal()));
                 props .put( "length", picked.getStrutOrbit().getUnitLength() );
                 documentModel .doEdit( "StrutCreation", props );
                 break;
