@@ -33,6 +33,8 @@ public class StrutMove extends StrutCreation
         this .deleteManifestation( this .oldStrut );
         manifestConstruction( this .mAnchor );
 
+        super .redo(); // capture the delete, in case we add the same strut back
+        
         super .perform();
     }
 
