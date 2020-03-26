@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.FreePoint;
@@ -168,41 +169,66 @@ public class Adapter
                     String guid = node .get( "id" ) .asText();
                     RenderedManifestation rm = this .renderedModel .getRenderedManifestation( guid );
                     AlgebraicField field = this .renderedModel .getField();
-
-                    JsonNode posNode = node .get( "position" );
-                    RealVector posR = this .objectMapper .treeToValue( posNode, RealVector.class );
-
-                    RenderedManifestation nearby = this .renderedModel .getNearbyBall( posR, 0.6d );
-                    AlgebraicVector targetPosition = null;
-                    if ( nearby != null )
-                        targetPosition = nearby .getLocationAV();
-                    else {
-                        AlgebraicVector snapPos = field .nearestAlgebraicVector( posR );
-                        targetPosition = snapPos;
-                    }
+                    AlgebraicNumber strutLen = rm .getStrutLength();
 
                     Direction orbit = rm .getStrutOrbit();
                     if ( orbit != null ) {
 
+                        // First, get the rotation as a matrix
                         JsonNode rotNode = node .get( "rotation" );
                         Quat4d rot = this .objectMapper .treeToValue( rotNode, Quat4d.class );
                         Matrix3d m = new Matrix3d();
                         m .set( rot );
 
+                        // The rotation is in terms of the shape we sent to Unity, so we need to get a
+                        //  vector corresponding to that shape orientation, which is axis +0.
                         // Do NOT use orbit .getPrototype(), since that does not always line up with the shape.
                         //  See ExportedVEFShapes .createStrutGeometry()
-                        RealVector protoR = orbit .getAxis( Symmetry .PLUS, 0 ) .normal() .toRealVector();
-                        Vector3d prototype = new Vector3d( protoR.x, protoR.y, protoR.z );
-                        m .transform( prototype );
-                        RealVector rotated = new RealVector( prototype .x, prototype .y, prototype .z );
+                        RealVector axis0 = orbit .getAxis( Symmetry .PLUS, 0 ) .normal() .toRealVector();
+                        
+                        Vector3d axis0_v3d = new Vector3d( axis0.x, axis0.y, axis0.z );
+                        m .transform( axis0_v3d );
+                        RealVector rotated = new RealVector( axis0_v3d .x, axis0_v3d .y, axis0_v3d .z );
+                        
+                        // Now, we scale rotated to be the same length as the original strut, so we can
+                        //  compute the endpoint of our rotated strut.
+                        double scaleFactor = strutLen .evaluate();
+                        RealVector offset = rotated .scale( scaleFactor );
 
+                        // We have everything we need to get both endpoints in R^3
+                        JsonNode posNode = node .get( "position" );
+                        RealVector posR = this .objectMapper .treeToValue( posNode, RealVector.class );
+                        RealVector endR = posR .plus( offset );
+
+                        // We are going to need the zone to snap to anyway, and in particular, we may need
+                        //  it if posR is not near a ball but endR is.
                         Axis axis = orbit .getAxis( rotated );
 
+                        // Now we have both ends, so we try to find a ball close to either end.
+                        AlgebraicVector targetPosition = null;
+                        RenderedManifestation nearby = this .renderedModel .getNearbyBall( posR, 0.6d );
+                        if ( nearby != null )
+                            targetPosition = nearby .getLocationAV();
+                        else {
+                            nearby = this .renderedModel .getNearbyBall( endR, 0.6d );
+                            if ( nearby != null ) {
+                                // We need to work backwards from the ball position to where we can place the strut.
+                                //  This is why we needed axis.
+                                targetPosition = nearby .getLocationAV() .minus( axis .normal() .scale( strutLen ) );
+                            }
+                            else {
+                                // If neither end is near a ball, we'll just snap the start to a nearby "integer" point.
+                                AlgebraicVector snapPos = field .nearestAlgebraicVector( posR );
+                                targetPosition = snapPos;
+                            }
+                        }
+
+                        // OK, finally ready to do the edit.
                         Map<String,Object> props = new HashMap<>();
                         props .put( "oldStrut", rm .getManifestation() );
                         props .put( "anchor", new FreePoint( targetPosition ) );
                         props .put( "zone", axis );
-                        props .put( "length", rm .getStrutLength() );
+                        props .put( "length", strutLen );
                         this .model .doEdit( "StrutMove", props );
                     }
                     break;
