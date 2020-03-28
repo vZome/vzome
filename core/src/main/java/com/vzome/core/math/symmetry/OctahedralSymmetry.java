@@ -17,9 +17,15 @@ public class OctahedralSymmetry extends AbstractSymmetry
 
     public final Permutation IDENTITY = new Permutation( this, null );
     
-    private final String frameColor;
-    
-    public OctahedralSymmetry( AlgebraicField field, String frameColor )
+    protected final String frameColor;
+
+    public OctahedralSymmetry( AlgebraicField field ) {
+        this( field, "blue");
+    }
+
+    // Only a derived class is allowed to specify a different frame color
+    // Currently only the RootTwoFieldApplication.synestructicsSymmetry does so.
+    protected OctahedralSymmetry( AlgebraicField field, String frameColor )
     {
         super( ORDER, field, frameColor );
         this.frameColor = frameColor;

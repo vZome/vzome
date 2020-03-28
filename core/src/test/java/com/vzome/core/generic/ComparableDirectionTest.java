@@ -35,7 +35,7 @@ public class ComparableDirectionTest extends ComparableTest<Direction> {
 		testValues = list.toArray(new Direction[list.size()]);
 
 		list.clear();
-        symmetry = new OctahedralSymmetry( new HeptagonField(), "blue" );
+        symmetry = new OctahedralSymmetry( new HeptagonField() );
         for(String dirName : symmetry.getDirectionNames()) {
             list.add(symmetry.getDirection(dirName));
         }
