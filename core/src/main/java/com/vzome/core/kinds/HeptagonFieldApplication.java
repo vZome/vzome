@@ -48,7 +48,7 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
     private class HeptagonalSymmetryPerspective extends AbstractSymmetryPerspective
 	{
 	    HeptagonalSymmetryPerspective(boolean corrected) {
-	        super(new HeptagonalAntiprismSymmetry(getField(), "blue", "heptagonal antiprism", corrected).createStandardOrbits( "blue" ));
+	        super(new HeptagonalAntiprismSymmetry(getField(), "blue", corrected).createStandardOrbits( "blue" ));
 	        AbstractShapes octahedralShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
 	        AbstractShapes antiprismShapes = new ExportedVEFShapes( null, "heptagon/antiprism", "heptagonal antiprism", symmetry, octahedralShapes );
 	        

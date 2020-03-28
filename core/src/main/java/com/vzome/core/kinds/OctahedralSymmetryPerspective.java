@@ -22,7 +22,7 @@ import com.vzome.core.viewing.OctahedralShapes;
 public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspective
 {
 	public OctahedralSymmetryPerspective( AlgebraicField field ) {
-		super(new OctahedralSymmetry( field, "blue", "small octahedra" ) );
+		super(new OctahedralSymmetry( field, "blue" ) );
         setDefaultGeometry( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
 	}
 	

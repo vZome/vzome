@@ -23,7 +23,7 @@ public class ComparableDirectionTest extends ComparableTest<Direction> {
 	private final Direction[] ordered3Values;
 
 	public ComparableDirectionTest() {
-        Symmetry symmetry = new IcosahedralSymmetry( new PentagonField(), "default" );
+        Symmetry symmetry = new IcosahedralSymmetry( new PentagonField() );
 		ArrayList<Direction> list = new ArrayList<>();
         Direction[] o3V = null;
         for(String dirName : symmetry.getDirectionNames()) {
@@ -35,7 +35,7 @@ public class ComparableDirectionTest extends ComparableTest<Direction> {
 		testValues = list.toArray(new Direction[list.size()]);
 
 		list.clear();
-        symmetry = new OctahedralSymmetry( new HeptagonField(), "blue", "octahedra" );
+        symmetry = new OctahedralSymmetry( new HeptagonField(), "blue" );
         for(String dirName : symmetry.getDirectionNames()) {
             list.add(symmetry.getDirection(dirName));
         }

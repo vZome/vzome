@@ -53,7 +53,7 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         octahedralPerspective .setDefaultGeometry( defaultShapes );
     }
 
-    private final SymmetryPerspective dodecagonalPerspective = new AbstractSymmetryPerspective(new DodecagonalSymmetry( getField(), "prisms" ))
+    private final SymmetryPerspective dodecagonalPerspective = new AbstractSymmetryPerspective(new DodecagonalSymmetry( getField() ))
     {
         {
             AbstractShapes defaultShapes = new ExportedVEFShapes( null, "dodecagon3d", "prisms", symmetry );

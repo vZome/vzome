@@ -67,7 +67,7 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
      * field is just the Integers!
      */
 
-    private final Symmetry synestructicsSymmetry = new OctahedralSymmetry( getField(), "orange", "Synestructics" )
+    private final Symmetry synestructicsSymmetry = new OctahedralSymmetry( getField(), "orange" )
     {
         @Override
         public String getName()

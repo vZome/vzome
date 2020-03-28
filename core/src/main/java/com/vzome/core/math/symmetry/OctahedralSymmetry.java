@@ -19,9 +19,9 @@ public class OctahedralSymmetry extends AbstractSymmetry
     
     private final String frameColor;
     
-    public OctahedralSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
+    public OctahedralSymmetry( AlgebraicField field, String frameColor )
     {
-        super( ORDER, field, frameColor, defaultStyle );
+        super( ORDER, field, frameColor );
         this.frameColor = frameColor;
         tetrahedralSubgroup = closure( new int[] { 0, 2, 4 } );
     }
@@ -45,6 +45,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
         }
     }
 
+    @Override
     public boolean reverseOrbitTriangle()
     {
         return true;

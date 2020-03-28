@@ -42,9 +42,9 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
 
     private Axis preferredAxis;
         
-    public PentagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
+    public PentagonalAntiprismSymmetry( AlgebraicField field, String frameColor )
 	{
-		super( 10, field, frameColor, defaultStyle, field .createMatrix( PRINCIPAL_REFLECTION ) );
+		super( 10, field, frameColor, field .createMatrix( PRINCIPAL_REFLECTION ) );
 		// calls createInitialPermutations, createFrameOrbit, createOtherOrbits
 	}
 

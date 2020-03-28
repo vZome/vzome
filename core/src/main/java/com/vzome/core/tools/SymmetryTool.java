@@ -209,7 +209,7 @@ public class SymmetryTool extends TransformationTool
 	            }
 	            if ( prepareTool ) {
 	                AlgebraicMatrix inverse = orientation .inverse();
-	                OctahedralSymmetry octa = new OctahedralSymmetry( symmetry .getField(), null, null );
+	                OctahedralSymmetry octa = new OctahedralSymmetry( symmetry .getField(), null );
 	                int order = octa .getChiralOrder();
 	                this .transforms = new Transformation[ order-1 ];
 	                for ( int i = 0; i < order-1; i++ ) {

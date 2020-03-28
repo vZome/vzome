@@ -76,7 +76,7 @@ public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
         switch ( action ) {
         case "octasymm":
             // this will be availble to all SymmetryPerspectives even if they are not Octahedral
-            return new CommandSymmetry( new OctahedralSymmetry(getSymmetry().getField(), "", "") );
+            return new CommandSymmetry( new OctahedralSymmetry(getSymmetry().getField(), "blue") );
 
         default:
             return null;
