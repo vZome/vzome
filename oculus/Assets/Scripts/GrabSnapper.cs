@@ -6,9 +6,12 @@ public class GrabSnapper : OVRGrabbable
 {
     public string vZomeId;
     public VZomeJavaBridge bridge;
- 
+
     public override void GrabBegin(OVRGrabber hand, Collider grabPoint)
     {
+        AudioSource source = GetComponent<AudioSource>();
+        source .Play();
+
         base.GrabBegin(hand, grabPoint);
     }
  

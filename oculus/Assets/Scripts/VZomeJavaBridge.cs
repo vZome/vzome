@@ -16,6 +16,10 @@ public class VZomeJavaBridge : MonoBehaviour
     private Text msgText;
     private GameObject template;
 
+    public AudioClip snapReleaseSound; 
+    public AudioClip modelReadySound; 
+    public AudioSource source;
+
     public Transform canvas;
     public Dropdown dropdown;
     int selectedFile;
@@ -85,6 +89,7 @@ public class VZomeJavaBridge : MonoBehaviour
     { 
         adapter = adapterClass .CallStatic<AndroidJavaObject>( "getAdapter", path );
         Debug.Log( "%%%%%%%%%%%%%% AdapterReady got the adapter: " + adapter .ToString() );
+        source .PlayOneShot( modelReadySound, 1f );
     }
 
     void SetLabelText( string message )
@@ -193,6 +198,8 @@ public class VZomeJavaBridge : MonoBehaviour
         //  before we send it across to Java.
         go .transform .SetParent( this .transform, true );
         if ( adapter != null ) {
+            source .PlayOneShot( snapReleaseSound, 1f );
+
             MovedInstance mi = new MovedInstance();
             mi .position = go .transform .localPosition;
             mi .rotation = go .transform .localRotation;
