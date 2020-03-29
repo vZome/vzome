@@ -2424,6 +2424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grabBegin: 0.55
   grabEnd: 0.35
+  hapticAudioClip: {fileID: 8300000, guid: 96ef0579f40c147f892c5a7fa2a0a540, type: 3}
   m_parentHeldObject: 1
   m_moveHandPosition: 0
   m_gripTransform: {fileID: 1562069059}
@@ -2543,7 +2544,7 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 40919614}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1793089059
+--- !u!114 &1793089058
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2557,6 +2558,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grabBegin: 0.55
   grabEnd: 0.35
+  hapticAudioClip: {fileID: 8300000, guid: 96ef0579f40c147f892c5a7fa2a0a540, type: 3}
   m_parentHeldObject: 1
   m_moveHandPosition: 0
   m_gripTransform: {fileID: 1793089057}
