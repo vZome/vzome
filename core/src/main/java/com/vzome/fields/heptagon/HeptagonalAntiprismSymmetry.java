@@ -19,14 +19,14 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	private final boolean correctedOrbits;
     private Axis preferredAxis;
 
-    public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
+    public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor)
 	{
-		this( field, frameColor, defaultStyle, false);
+		this( field, frameColor, false);
 	}
 
-	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle, boolean correctedOrbits )
+	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, boolean correctedOrbits )
 	{
-		super( 14, field, frameColor, defaultStyle,
+		super( 14, field, frameColor,
 					correctedOrbits?
 							// reflection in Z (red) will yield the negative zones
 							new AlgebraicMatrix( field .basisVector( 3, AlgebraicVector.X ),

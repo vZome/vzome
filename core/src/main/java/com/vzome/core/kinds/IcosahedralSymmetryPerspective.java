@@ -44,7 +44,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
     private final Command cmdVanOss600cell;
 
     public IcosahedralSymmetryPerspective(AlgebraicField field) {
-        this(new IcosahedralSymmetry(field, "solid connectors") );
+        this( new IcosahedralSymmetry(field) );
     }
     
     protected IcosahedralSymmetryPerspective(IcosahedralSymmetry symm) {

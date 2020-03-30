@@ -224,7 +224,7 @@ public class PrintVisitor extends Visitor .Default{
 			}
 
 			PentagonField field = new PentagonField();
-			IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field, "solid connectors" );
+			IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field );
 			ZomicStatement program;
 			if(useNewParser) {
 				program = ZomicASTCompiler.compile( file, symmetry);

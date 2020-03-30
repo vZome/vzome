@@ -69,8 +69,6 @@ public interface Symmetry extends Iterable<Direction>, Embedding
     
     Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector vector );
 
-    String getDefaultStyle();
-
     public abstract int[] getIncidentOrientations( int orientation );
 
     public abstract Direction getSpecialOrbit( SpecialOrbit which );

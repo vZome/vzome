@@ -67,7 +67,7 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
      * field is just the Integers!
      */
 
-    private final Symmetry synestructicsSymmetry = new OctahedralSymmetry( getField(), "orange", "Synestructics" )
+    private final Symmetry synestructicsSymmetry = new OctahedralSymmetry( getField(), "orange" )
     {
         @Override
         public String getName()
@@ -81,7 +81,7 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
             switch ( which ) {
 
             case BLUE:
-                return this .getDirection( "orange" );
+                return this .getDirection( this. frameColor );
 
             case RED:
                 return this .getDirection( "magenta" );
@@ -98,7 +98,7 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
         protected AlgebraicVector[] getOrbitTriangle()
         {
             AlgebraicVector magentaVertex = this .getDirection( "magenta" ) .getPrototype();
-            AlgebraicVector orangeVertex = this .getDirection( "orange" ) .getPrototype();
+            AlgebraicVector orangeVertex = this .getDirection( this. frameColor ) .getPrototype();
             AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype();
             return new AlgebraicVector[] { magentaVertex, orangeVertex, yellowVertex };
         }

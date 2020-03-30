@@ -37,24 +37,20 @@ public abstract class AbstractSymmetry implements Symmetry
 
     protected final AlgebraicField mField;
 
-    protected final String defaultStyle;
-
     private AlgebraicMatrix principalReflection = null;
 
     private OrbitDotLocator dotLocator;
 
-    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle )
+    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor )
     {
-        this( order, field, frameColor, defaultStyle, null );
+        this( order, field, frameColor, null );
     }
 
-    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle, AlgebraicMatrix principalReflection )
+    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, AlgebraicMatrix principalReflection )
     {
         mField = field;
 
         this.principalReflection = principalReflection;
-
-        this .defaultStyle = defaultStyle;
 
         mOrientations = new Permutation[ order ];
         mMatrices = new AlgebraicMatrix[ order ];
@@ -126,13 +122,6 @@ public abstract class AbstractSymmetry implements Symmetry
     protected abstract void createOtherOrbits();
 
     protected abstract void createInitialPermutations();
-
-    @Override
-    @JsonIgnore
-    public String getDefaultStyle()
-    {
-        return this .defaultStyle;
-    }
 
     @Override
     @JsonIgnore
@@ -544,6 +533,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return new AlgebraicVector[] { blueVertex, redVertex, yellowVertex };
     }
 
+    @Override
     public String computeOrbitDots()
     {
         this.dotLocator = new OrbitDotLocator( this, this .getOrbitTriangle() );
@@ -553,6 +543,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return dotLocator .getDebuggerOutput(); // stop logging new orbits
     }
 
+    @Override
     public boolean reverseOrbitTriangle()
     {
         return false;

@@ -18,9 +18,9 @@ public class DodecagonalSymmetry extends AbstractSymmetry
 	public final Permutation IDENTITY = new Permutation( this, null );
 
     
-    public DodecagonalSymmetry( AlgebraicField field, String defaultStyle )
+    public DodecagonalSymmetry( AlgebraicField field)
     {
-        super( ORDER, field, "blue", defaultStyle );
+        super( ORDER, field, "blue" );
     }
     
     @Override
