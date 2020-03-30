@@ -8,7 +8,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 
 
 /**
@@ -24,13 +23,9 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 
 	private Axis preferredAxis;
     
-	public static void main(String[] args) {
-		new IcosahedralSymmetry( new PentagonField(), "" );
-	}
-	
-    public IcosahedralSymmetry( AlgebraicField field, String defaultStyle )
+    public IcosahedralSymmetry( AlgebraicField field )
     {
-        super( 60, field, "blue", defaultStyle );
+        super( 60, field, "blue" );
         
         for ( int i = 0; i < this.INCIDENCES.length; i++ ) {
             this .INCIDENCES[ i ][ 0 ] = getPermutation( i ) .mapIndex( 30 );

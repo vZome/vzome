@@ -38,7 +38,7 @@ public class SnubDodecFieldApplication extends DefaultFieldApplication
         super( new SnubDodecField() );
         
         AlgebraicField field = this.getField();
-        IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( field, "solid connectors" ) 
+        IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( field ) 
         {
             @Override
             protected void createOtherOrbits()

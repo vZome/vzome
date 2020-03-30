@@ -81,7 +81,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 	}
 	
     private final IcosahedralSymmetryPerspective icosahedralPerspective = new IcosahedralSymmetryPerspective( 
-            new IcosahedralSymmetry( getField(), "small octahedra" ) ) 
+            new IcosahedralSymmetry( getField() ) ) 
     {
         {
             final IcosahedralSymmetry icosaSymm = this.getSymmetry();
@@ -99,7 +99,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
     };
     
     private final SymmetryPerspective pentagonalPerspective = new AbstractSymmetryPerspective(
-            new PentagonalAntiprismSymmetry( getField(), "small octahedra", null ) ) 
+            new PentagonalAntiprismSymmetry( getField(), null ) ) 
     {
         {
             final PentagonalAntiprismSymmetry pentaSymm = getSymmetry();

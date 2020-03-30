@@ -16,7 +16,7 @@ public class DumpBlueAngles {
     {
     	final double EPSILON = 5E-10f;
 
-        Symmetry icosa = new IcosahedralSymmetry( new PentagonField(), "solid connectors" );
+        Symmetry icosa = new IcosahedralSymmetry( new PentagonField() );
         Direction blue = icosa .getDirection( "blue" );
         
         Map<Double, Axis[]> blueAngles = new HashMap<>();

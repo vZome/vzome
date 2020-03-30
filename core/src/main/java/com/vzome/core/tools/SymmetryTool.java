@@ -203,13 +203,20 @@ public class SymmetryTool extends TransformationTool
 	                    break;
 
 	                default:
+	                    // TODO: Test this with the RootTwo.synestructicsSymmetry
+	                    // and if that's broke, then make this more generalized so it does work 
 	                    return "selected alignment strut is not an octahedral axis.";
 	                }
 	                orientation = symmetry .getMatrix( blueIndex );
 	            }
 	            if ( prepareTool ) {
 	                AlgebraicMatrix inverse = orientation .inverse();
-	                OctahedralSymmetry octa = new OctahedralSymmetry( symmetry .getField(), null, null );
+                    // Only make a new OctahedralSymmetry if necessary
+	                // TODO: When would it be necessary?
+	                // Maybe when loading a legacy file - Dunno - DJH ???
+	                OctahedralSymmetry octa = (symmetry instanceof OctahedralSymmetry) 
+	                        ? (OctahedralSymmetry) symmetry
+	                        : new OctahedralSymmetry( symmetry .getField() );
 	                int order = octa .getChiralOrder();
 	                this .transforms = new Transformation[ order-1 ];
 	                for ( int i = 0; i < order-1; i++ ) {

@@ -59,7 +59,7 @@ public class ZomicASTTest
 	private final ZomicNamingConvention namingConvention;
 	
 	public ZomicASTTest() {
-		symmetry = new IcosahedralSymmetry( new PentagonField(), "default" );
+		symmetry = new IcosahedralSymmetry( new PentagonField() );
 		namingConvention = new ZomicNamingConvention(symmetry);
 		initColors();	
 	}

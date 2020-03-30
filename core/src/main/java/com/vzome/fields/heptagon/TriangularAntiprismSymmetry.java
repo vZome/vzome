@@ -13,9 +13,9 @@ public class TriangularAntiprismSymmetry extends OctahedralSymmetry
 {
     private final Matrix3d SHEAR;
 
-	public TriangularAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
+	public TriangularAntiprismSymmetry( AlgebraicField field, String frameColor )
 	{
-		super( field, frameColor, defaultStyle );
+		super( field, frameColor );
 
         HeptagonField hf = (HeptagonField) this .mField;
         final double rho = hf.getUnitTerm(1).evaluate();
@@ -49,12 +49,6 @@ public class TriangularAntiprismSymmetry extends OctahedralSymmetry
 
     @Override
     public String getName()
-    {
-        return "triangular antiprism";
-    }
-
-    @Override
-    public String getDefaultStyle()
     {
         return "triangular antiprism";
     }
