@@ -199,11 +199,11 @@ public class FieldApplicationTest
             break;
 
         case "heptagonal antiprism":
-            addTo(testNames, "red", "blue");
+            addTo(testNames, "red", "blue", "yellow");
             break;
 
         case "heptagonal antiprism corrected":
-            addTo(testNames, "red", "blue");
+            addTo(testNames, "red", "blue", "yellow");
             break;
 
         case "synestructics":

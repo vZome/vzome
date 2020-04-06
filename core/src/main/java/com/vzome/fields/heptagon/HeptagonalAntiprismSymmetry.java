@@ -148,6 +148,10 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
         Direction blueOrbit = createZoneOrbit( frameColor, 0, 7, this .mField .basisVector( 3, AlgebraicVector.X ), true );
         blueOrbit .setDotLocation( 0d, 1d );
 
+        AlgebraicVector yellowVector = mField.createIntegerVector(new int[][]{ { 1, 0, 0 },  {-2, 0, 1 },  { 0, 0, 0 } } );
+        AlgebraicNumber yellowScalar= mField.createRational(2).dividedBy(mField.createAlgebraicNumber(new int[] { 3, 2,-2 }));
+        createZoneOrbit( "yellow", 0, 7, yellowVector, true, false, yellowScalar);
+
         return this;
     }
     
@@ -186,21 +190,11 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	{
 		return null; // TODO
 	}
-    
+
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public boolean reverseOrbitTriangle()
     {
-        HeptagonField hf = (HeptagonField) this .getField();
-        
-        AlgebraicVector blueVertex = hf .basisVector( 3, AlgebraicVector.X );
-        AlgebraicVector redVertex = hf .basisVector( 3, AlgebraicVector.Z );
-        
-        AlgebraicNumber s = hf .getAffineScalar().reciprocal(); // reciprocal of sigma
-        AlgebraicVector orthoVertex = hf .origin( 3 )
-                .setComponent( AlgebraicVector.X, hf .one() )
-                .setComponent( AlgebraicVector.Y, s .negate() );
-        
-        return new AlgebraicVector[] { blueVertex, redVertex, orthoVertex };
+        return true;
     }
 
 	@Override
@@ -209,13 +203,13 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
         switch ( which ) {
 
         case BLUE:
-            return this .getDirection( "blue" );
+            return this .getDirection( "blue" );  // TODO: should use frameColor
 
         case RED:
             return this .getDirection( "red" );
 
         case YELLOW:
-            return this .getDirection( "blue" );
+            return this .getDirection( "yellow" ); 
 
         default:
             return null;
