@@ -1,5 +1,7 @@
 package com.vzome.core.algebra;
 
+import com.vzome.fields.sqrtphi.SqrtPhiField;
+
 public class AlgebraicFields {
     private AlgebraicFields() {}
     
@@ -8,7 +10,7 @@ public class AlgebraicFields {
      * @param field
      * @param subFieldName
      * @return true, only if the named subField is of equal or lower order than field
-     * and all of the coefficients of the named fubField are equal to 
+     * and all of the coefficients of the named subField are equal to 
      * the coefficients of field in corresponding positions.
      * <br>
      * For example, if field is a SnubDodecField, and {@code PentagonField.FIELD_NAME.equals(subFieldName)},
@@ -90,10 +92,18 @@ public class AlgebraicFields {
             coefficients = HeptagonField.getFieldCoefficients();
             break;
             
+        case SnubCubeField.FIELD_NAME:
+            coefficients = SnubCubeField.getFieldCoefficients();
+            break;
+            
         case SnubDodecField.FIELD_NAME:
             coefficients = SnubDodecField.getFieldCoefficients();
             break;
 
+        case SqrtPhiField.FIELD_NAME:
+            coefficients = SqrtPhiField.getFieldCoefficients();
+            break;
+            
         default:
             break;
         }

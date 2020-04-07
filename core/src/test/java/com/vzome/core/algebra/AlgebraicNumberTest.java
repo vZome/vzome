@@ -465,7 +465,9 @@ public class AlgebraicNumberTest
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField()
+            new SnubDodecField(),
+            new SqrtPhiField(),
+            new SnubCubeField()
         };
         int tests = 0;
         for(AlgebraicField field : fields ) {

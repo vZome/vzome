@@ -49,6 +49,7 @@ import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
+import com.vzome.core.kinds.SnubCubeFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
@@ -128,6 +129,7 @@ public class Application
         this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new);
         this.fieldAppSuppliers.put("dodecagon", RootThreeFieldApplication::new);
         this.fieldAppSuppliers.put("heptagon", HeptagonFieldApplication::new);
+        this.fieldAppSuppliers.put("snubCube", SnubCubeFieldApplication::new);
         this.fieldAppSuppliers.put("snubDodec", SnubDodecFieldApplication::new);
         this.fieldAppSuppliers.put( "sqrtPhi", SqrtPhiFieldApplication::new);
     }
