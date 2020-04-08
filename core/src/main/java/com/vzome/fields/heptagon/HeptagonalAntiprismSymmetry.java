@@ -148,6 +148,10 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
         Direction blueOrbit = createZoneOrbit( frameColor, 0, 7, this .mField .basisVector( 3, AlgebraicVector.X ), true );
         blueOrbit .setDotLocation( 0d, 1d );
 
+        AlgebraicVector greenVector = mField.createIntegerVector(new int[][]{ { 1, 0, 0 },  {-2, 0, 1 },  { 0, 0, 0 } } );
+        AlgebraicNumber greenScalar= mField.createRational(2).dividedBy(mField.createAlgebraicNumber(new int[] { 3, 2,-2 }));
+        createZoneOrbit( "green", 0, 7, greenVector, false, false, greenScalar);
+
         return this;
     }
     
