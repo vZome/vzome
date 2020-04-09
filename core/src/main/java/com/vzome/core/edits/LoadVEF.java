@@ -52,9 +52,12 @@ public class LoadVEF extends ChangeManifestations
             scale = field .one();
         }
 
-        String projectionName = (String) params .get( "mode" );
-        switch ( projectionName ) {
+        String mode = (String) params .getOrDefault( "mode", "" );
 
+        switch ( mode ) {
+        case "":
+            break;
+            
         case "clipboard":
             if( vefData != null && ! vefData.startsWith("vZome VEF" ))
                 // Although older VEF formats don't all include the header and could possibly be successfully pasted here,
@@ -69,7 +72,7 @@ public class LoadVEF extends ChangeManifestations
             break;
         
         default:
-            setProjection( projectionName, field );
+            setProjection( mode, field );
             break;
         }
     }
