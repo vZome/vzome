@@ -82,6 +82,8 @@ public interface Symmetry extends Iterable<Direction>, Embedding
 	 */
 	public abstract AlgebraicMatrix getPrincipalReflection();
 	
+	public AlgebraicVector[] getOrbitTriangle();
+	
 	/**
 	 * Compute the orbit triangle dots for all existing orbits,
 	 * and leave behind an OrbitDotLocator for new ones.
