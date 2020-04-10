@@ -88,7 +88,7 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
     protected void createOtherOrbits() {}
 
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
         AlgebraicVector redVertex = this .mField .createVector( FIVEFOLD_AXIS );
         AlgebraicVector greenVertex = this .mField .createVector( TWOFOLD_AXIS );

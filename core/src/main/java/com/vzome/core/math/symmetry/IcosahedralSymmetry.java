@@ -135,7 +135,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     }
 
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
         AlgebraicNumber twice = mField .createRational( 2 );
         AlgebraicVector blueVertex = this .getDirection( "blue" ) .getPrototype() .scale( twice );

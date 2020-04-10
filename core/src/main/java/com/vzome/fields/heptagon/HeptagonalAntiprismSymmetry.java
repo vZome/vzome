@@ -188,7 +188,7 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	}
     
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
         HeptagonField hf = (HeptagonField) this .getField();
         

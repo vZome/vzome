@@ -95,7 +95,7 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
         }
 
         @Override
-        protected AlgebraicVector[] getOrbitTriangle()
+        public AlgebraicVector[] getOrbitTriangle()
         {
             AlgebraicVector magentaVertex = this .getDirection( "magenta" ) .getPrototype();
             AlgebraicVector orangeVertex = this .getDirection( this. frameColor ) .getPrototype();
