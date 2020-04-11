@@ -44,6 +44,8 @@ public interface FieldApplication
         boolean orbitIsStandard( Direction orbit );
 
         boolean orbitIsBuildDefault( Direction orbit );
+
+        AlgebraicNumber getOrbitUnitLength( Direction orbit );
 	}
 	
 	AlgebraicField getField();

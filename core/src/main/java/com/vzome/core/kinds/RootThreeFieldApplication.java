@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.vzome.api.Tool;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandSymmetry;
@@ -81,6 +82,20 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
 
             default:
                 return false;
+            }
+        }
+        
+        @Override
+        public AlgebraicNumber getOrbitUnitLength( Direction orbit )
+        {
+            switch ( orbit .getName() ) {
+
+            case "blue":
+            case "green":
+                return getField() .createPower( 2 );
+
+            default:
+                return super .getOrbitUnitLength( orbit );
             }
         }
 

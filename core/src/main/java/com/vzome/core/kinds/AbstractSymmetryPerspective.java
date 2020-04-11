@@ -3,6 +3,7 @@ package com.vzome.core.kinds;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
@@ -105,5 +106,11 @@ public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
     {
         Axis zone0 = orbit .getAxis( 0, 0 );
         return zone0 .getRotationPermutation() != null;
+    }
+    
+    @Override
+    public AlgebraicNumber getOrbitUnitLength( Direction orbit )
+    {
+        return orbit .getUnitLength();
     }
 }
