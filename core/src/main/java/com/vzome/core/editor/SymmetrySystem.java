@@ -63,11 +63,11 @@ public class SymmetrySystem implements OrbitSource
         orbits = new OrbitSet( symmetry );
         if ( symmXml == null ) 
         {
-            for (Direction dir : symmetry .getOrbitSet()) {
-                if ( dir .isStandard() || allowNonstandard )  // reader
-                    orbits .add( dir );
-                Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
-                orbitColors .put( dir, color );
+            for ( Direction orbit : symmetry .getOrbitSet() ) {
+                if ( symmetryPerspective .orbitIsStandard( orbit ) || allowNonstandard )  // reader
+                    orbits .add( orbit );
+                Color color = colors .getColor( Colors.DIRECTION + orbit .getName() );
+                orbitColors .put( orbit, color );
             }
         }
         else
@@ -399,5 +399,20 @@ public class SymmetrySystem implements OrbitSource
     public String getModelResourcePath()
     {
         return this .symmetryPerspective .getModelResourcePath();
+    }
+
+    public boolean orbitIsStandard( Direction orbit )
+    {
+        return this .symmetryPerspective .orbitIsStandard( orbit );
+    }
+
+    public boolean orbitIsBuildDefault( Direction orbit )
+    {
+        return this .symmetryPerspective .orbitIsBuildDefault( orbit );
+    }
+
+    public AlgebraicNumber getOrbitUnitLength( Direction orbit )
+    {
+        return this .symmetryPerspective .getOrbitUnitLength( orbit );
     }
 }

@@ -6,11 +6,13 @@ import java.util.Collection;
 import java.util.List;
 
 import com.vzome.api.Tool;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.DodecagonalSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
@@ -67,6 +69,34 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         public String getName()
         {
             return "dodecagonal";
+        }
+
+        @Override
+        public boolean orbitIsBuildDefault( Direction orbit )
+        {
+            switch ( orbit .getName() ) {
+
+            case "blue":
+            case "green":
+                return true;
+
+            default:
+                return false;
+            }
+        }
+        
+        @Override
+        public AlgebraicNumber getOrbitUnitLength( Direction orbit )
+        {
+            switch ( orbit .getName() ) {
+
+            case "blue":
+            case "green":
+                return getField() .createPower( 2 );
+
+            default:
+                return super .getOrbitUnitLength( orbit );
+            }
         }
 
         @Override
