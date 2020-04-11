@@ -16,6 +16,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.api.Tool;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.symmetry.Axis;
@@ -94,18 +95,17 @@ public class SymmetryController extends DefaultController
         buildOrbits = new OrbitSet( symmetry );
         renderOrbits = new OrbitSet( symmetry );
         snapper = new SymmetrySnapper( snapOrbits );
-        for (Direction dir : symmetry .getOrbitSet()) {
-            if ( dir .isStandard() )
+        for (Direction orbit : symmetry .getOrbitSet()) {
+            if ( model .orbitIsStandard( orbit ) )
             {
-                availableOrbits .add( dir );
-                snapOrbits .add( dir );
-                Axis zone = dir .getAxis( 0, 0 );
-                if ( zone .getRotationPermutation() != null )
+                availableOrbits .add( orbit );
+                snapOrbits .add( orbit );
+                if ( model .orbitIsBuildDefault( orbit ) )
                 {
-                    buildOrbits .add( dir );
+                    buildOrbits .add( orbit );
                 }
             }
-            renderOrbits .add( dir );
+            renderOrbits .add( orbit );
         }
         availableController = new OrbitSetController( availableOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         this .addSubController( "availableOrbits", availableController );
@@ -116,10 +116,11 @@ public class SymmetryController extends DefaultController
         renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         this .addSubController( "renderOrbits", renderController );
 
-        for ( Direction dir : this .symmetrySystem .getOrbits() ) {
-            LengthController lengthModel = new LengthController( dir );
-            buildController .addSubController( "length." + dir .getName(), lengthModel );
-            orbitLengths .put( dir, lengthModel );
+        for ( Direction orbit : this .symmetrySystem .getOrbits() ) {
+            AlgebraicNumber unitLength = this .symmetrySystem .getOrbitUnitLength( orbit );
+            LengthController lengthModel = new LengthController( symmetry .getField(), unitLength );
+            buildController .addSubController( "length." + orbit .getName(), lengthModel );
+            orbitLengths .put( orbit, lengthModel );
         }
         if ( parent .propertyIsTrue( "disable.known.directions" ) )
             this .symmetrySystem .disableKnownDirection();
@@ -268,16 +269,17 @@ public class SymmetryController extends DefaultController
         }
     }
 
-    private LengthController getLengthController( Direction dir )
+    private LengthController getLengthController( Direction orbit )
     {
-        LengthController result = orbitLengths .get( dir );
-        if ( result == null && dir != null )
+        LengthController result = orbitLengths .get( orbit );
+        if ( result == null && orbit != null )
         {
-            result = new LengthController( dir );
-            buildController .addSubController( "length." + dir .getName(), result );
-            orbitLengths .put( dir, result );
-            renderOrbits .add( dir );
-            availableOrbits .add( dir );
+            AlgebraicNumber unitLength = this .symmetrySystem .getOrbitUnitLength( orbit );
+            result = new LengthController( this .symmetrySystem .getSymmetry() .getField(), unitLength );
+            buildController .addSubController( "length." + orbit .getName(), result );
+            orbitLengths .put( orbit, result );
+            renderOrbits .add( orbit );
+            availableOrbits .add( orbit );
         }
         return result;
     }
