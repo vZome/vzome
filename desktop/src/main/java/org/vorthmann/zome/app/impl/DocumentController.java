@@ -683,6 +683,27 @@ public class DocumentController extends DefaultController implements Controller3
                 }
                 break;
     
+            case "showOrbitTriangle": // invoked from custom menu
+            {
+                AlgebraicVector[] orbitTriangle = 
+                getSymmetryController().getSymmetry().getOrbitTriangle();
+                StringBuffer buf = new StringBuffer();
+                // We don't need the VEF header here, so skip it.
+                // Specify that the vectors are all 3D
+                // so we don't need v.inflateTo4d() in the loop below
+                buf.append("dimension 3\n\n3");// always 3 vertices too
+                for(AlgebraicVector v : orbitTriangle) {
+                    buf.append("\n");
+                    v.getVectorExpression(buf, AlgebraicField.VEF_FORMAT);
+                }
+                // 0 edges, 1 triangular panel and 0 balls
+                buf.append("\n\n0\n\n1\n3  0 1 2\n\n0\n");
+                Map<String, Object> params = new HashMap<>();
+                params .put( "vef", buf.toString() );
+                documentModel .doEdit( "LoadVEF", params );
+            }
+            break;
+
             default:
                 if ( action.startsWith( "setSymmetry." ) ) {
                     String system = action.substring( "setSymmetry.".length() );

@@ -525,7 +525,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
     }
     
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
         AlgebraicVector blueVertex = this .getSpecialOrbit( SpecialOrbit.BLUE ) .getPrototype();
         AlgebraicVector redVertex = this .getSpecialOrbit( SpecialOrbit.RED ) .getPrototype();

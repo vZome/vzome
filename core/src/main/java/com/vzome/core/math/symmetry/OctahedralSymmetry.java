@@ -58,7 +58,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
     }
 
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
         AlgebraicVector greenVertex = this .getDirection( "green" ) .getPrototype();
         AlgebraicVector blueVertex = this .getDirection( "blue" ) .getPrototype();
