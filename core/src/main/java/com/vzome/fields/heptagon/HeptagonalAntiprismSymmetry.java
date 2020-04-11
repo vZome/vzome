@@ -194,17 +194,27 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
     @Override
     public AlgebraicVector[] getOrbitTriangle()
     {
-        HeptagonField hf = (HeptagonField) this .getField();
+        AlgebraicField field = this .getField();
+        final AlgebraicNumber zero = field .zero();
         
-        AlgebraicVector blueVertex = hf .basisVector( 3, AlgebraicVector.X );
-        AlgebraicVector redVertex = hf .basisVector( 3, AlgebraicVector.Z );
+        // I could hard code x here, but I want to show the derivation
+        // so I can more easily replicate the logic in the PolygonField
+        // x = ((-r/s) + (-s/s)) / 2 = (-r-s)/2s
+        AlgebraicNumber x = field .createAlgebraicNumber(new int[] { 0,-1,-1 })
+                .dividedBy( field .createAlgebraicNumber(new int[] { 0, 0, 2 }));
+        // orthoVertex is on the negative X axis.
+        AlgebraicVector orthoVertex = new AlgebraicVector( x, zero, zero );
+
+        AlgebraicVector sideVertex = field .basisVector( 3, AlgebraicVector.Z );
         
-        AlgebraicNumber s = hf .getAffineScalar().reciprocal(); // reciprocal of sigma
-        AlgebraicVector orthoVertex = hf .origin( 3 )
-                .setComponent( AlgebraicVector.X, hf .one() )
-                .setComponent( AlgebraicVector.Y, s .negate() );
-        
-        return new AlgebraicVector[] { blueVertex, redVertex, orthoVertex };
+        x = field .createRational(-1);
+        AlgebraicNumber y = field .createAlgebraicNumber(new int[] { 0,-1, 1 }); // y = 1/s
+        AlgebraicVector topVertex = new AlgebraicVector( x, y, zero );
+
+        // these variable names and their position in the array
+        // correspond to the positions where they will be shown in the orbit triangle
+        // rather than any specific colors
+        return new AlgebraicVector[] { orthoVertex, sideVertex, topVertex };
     }
 
 	@Override
