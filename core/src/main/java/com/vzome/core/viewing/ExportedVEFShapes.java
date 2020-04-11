@@ -70,7 +70,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {
-        this( prefsFolder, pkgName, name, alias, symm, new OctahedralShapes( pkgName, name, (IcosahedralSymmetry) symm ) );
+        this( prefsFolder, pkgName, name, alias, symm, new OctahedralShapes( pkgName, name, symm ) );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, AbstractShapes fallback )
