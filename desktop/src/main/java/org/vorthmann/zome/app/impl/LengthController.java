@@ -179,11 +179,6 @@ public class LengthController extends DefaultController
         
     private final AlgebraicField field;
         
-    public LengthController( Direction orbit )
-    {
-        this( orbit .getSymmetry() .getField(), orbit .getUnitLength() );
-    }
-
     public LengthController( AlgebraicField field )
     {
         this( field, field .one() );

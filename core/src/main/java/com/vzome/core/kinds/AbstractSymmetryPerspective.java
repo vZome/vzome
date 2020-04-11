@@ -3,15 +3,18 @@ package com.vzome.core.kinds;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Shapes;
 
-public abstract class AbstractSymmetryPerspective implements SymmetryPerspective {
-
+public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
+{
     protected final Symmetry symmetry;
 
     private final List<Shapes> geometries = new ArrayList<>();
@@ -92,4 +95,22 @@ public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
         }
     }
 
+    @Override
+    public boolean orbitIsStandard( Direction orbit )
+    {
+        return orbit .isStandard();
+    }
+
+    @Override
+    public boolean orbitIsBuildDefault( Direction orbit )
+    {
+        Axis zone0 = orbit .getAxis( 0, 0 );
+        return zone0 .getRotationPermutation() != null;
+    }
+    
+    @Override
+    public AlgebraicNumber getOrbitUnitLength( Direction orbit )
+    {
+        return orbit .getUnitLength();
+    }
 }
