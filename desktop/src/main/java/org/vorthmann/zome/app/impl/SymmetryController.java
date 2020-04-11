@@ -94,18 +94,17 @@ public class SymmetryController extends DefaultController
         buildOrbits = new OrbitSet( symmetry );
         renderOrbits = new OrbitSet( symmetry );
         snapper = new SymmetrySnapper( snapOrbits );
-        for (Direction dir : symmetry .getOrbitSet()) {
-            if ( dir .isStandard() )
+        for (Direction orbit : symmetry .getOrbitSet()) {
+            if ( model .orbitIsStandard( orbit ) )
             {
-                availableOrbits .add( dir );
-                snapOrbits .add( dir );
-                Axis zone = dir .getAxis( 0, 0 );
-                if ( zone .getRotationPermutation() != null )
+                availableOrbits .add( orbit );
+                snapOrbits .add( orbit );
+                if ( model .orbitIsBuildDefault( orbit ) )
                 {
-                    buildOrbits .add( dir );
+                    buildOrbits .add( orbit );
                 }
             }
-            renderOrbits .add( dir );
+            renderOrbits .add( orbit );
         }
         availableController = new OrbitSetController( availableOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         this .addSubController( "availableOrbits", availableController );

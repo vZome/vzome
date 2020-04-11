@@ -9,6 +9,7 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.Command;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
@@ -39,6 +40,10 @@ public interface FieldApplication
 		Command getLegacyCommand( String action );
 
 		String getModelResourcePath();
+
+        boolean orbitIsStandard( Direction orbit );
+
+        boolean orbitIsBuildDefault( Direction orbit );
 	}
 	
 	AlgebraicField getField();

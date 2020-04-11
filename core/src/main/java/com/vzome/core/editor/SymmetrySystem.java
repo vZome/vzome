@@ -400,4 +400,14 @@ public class SymmetrySystem implements OrbitSource
     {
         return this .symmetryPerspective .getModelResourcePath();
     }
+
+    public boolean orbitIsStandard( Direction orbit )
+    {
+        return this .symmetryPerspective .orbitIsStandard( orbit );
+    }
+
+    public boolean orbitIsBuildDefault( Direction orbit )
+    {
+        return this .symmetryPerspective .orbitIsBuildDefault( orbit );
+    }
 }

@@ -11,6 +11,7 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.DodecagonalSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
@@ -67,6 +68,20 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         public String getName()
         {
             return "dodecagonal";
+        }
+
+        @Override
+        public boolean orbitIsBuildDefault( Direction orbit )
+        {
+            switch ( orbit .getName() ) {
+
+            case "blue":
+            case "green":
+                return true;
+
+            default:
+                return false;
+            }
         }
 
         @Override
