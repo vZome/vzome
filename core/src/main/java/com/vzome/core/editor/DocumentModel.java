@@ -54,7 +54,6 @@ import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.exporters2d.Java2dExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.exporters2d.SnapshotExporter;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.OrbitSet;
@@ -73,6 +72,7 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.BookmarkTool;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
+import com.vzome.xml.DomUtils;
 
 public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 {

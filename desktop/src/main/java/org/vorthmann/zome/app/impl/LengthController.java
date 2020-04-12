@@ -9,11 +9,9 @@ import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
-import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Direction;
 
 /**
@@ -245,31 +243,6 @@ public class LengthController extends DefaultController
     public void fireLengthChange()
     {
         firePropertyChange( "length", true, false );
-    }
-
-    public void getXml( Element lengthElem )
-    {
-        // backward-compatible, for now
-        //  TODO THIS IS BROKEN!  Does not deal with more than one multiplier!
-        DomUtils .addAttribute( lengthElem, "scale", Integer.toString( currentScales[ this .multiplier ] .getScale() + SCALE_OFFSET ) );
-        DomUtils .addAttribute( lengthElem, "taus", "0" );
-        DomUtils .addAttribute( lengthElem, "ones", "1" );
-        DomUtils .addAttribute( lengthElem, "divisor", half? "2" : "1" );
-    }
-
-    public void setXml( Element length )
-    {
-        String attrValue = length .getAttribute( "scale" );
-        // handling nulls since I used a non-published version to migrate internal models,
-        //   and it did not serialize any attributes at all
-        int scale = ( attrValue != null && ! attrValue .isEmpty() )? Integer .parseInt( attrValue ) : 4;        
-        //  TODO THIS IS BROKEN!  Does not deal with more than one multiplier!
-        this .currentScales[ this .multiplier ] .setScale( scale - SCALE_OFFSET );  // vZome files record the actual scale, not user scale
-        
-        // TODO handle other two attribute values!
-        
-        attrValue = length .getAttribute( "divisor" );
-        half = ( attrValue == null || attrValue .isEmpty() )? false : "2" .equals( attrValue );
     }
     
     private void resetScales()

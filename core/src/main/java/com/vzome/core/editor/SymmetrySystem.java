@@ -23,7 +23,6 @@ import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.UndoableEdit.Context;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -33,6 +32,7 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel.OrbitSource;
+import com.vzome.xml.DomUtils;
 import com.vzome.core.render.Shapes;
 
 public class SymmetrySystem implements OrbitSource

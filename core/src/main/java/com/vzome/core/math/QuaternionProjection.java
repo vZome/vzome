@@ -9,6 +9,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.xml.DomUtils;
 
 public class QuaternionProjection implements Projection
 {

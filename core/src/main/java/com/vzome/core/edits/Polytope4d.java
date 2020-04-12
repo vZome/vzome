@@ -21,11 +21,11 @@ import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.Selection;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.xml.DomUtils;
 
 public class Polytope4d extends ChangeManifestations
 {

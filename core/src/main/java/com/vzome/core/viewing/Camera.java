@@ -13,7 +13,7 @@ import javax.vecmath.Vector3f;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.math.DomUtils;
+import com.vzome.xml.DomUtils;
 
 public class Camera
 {

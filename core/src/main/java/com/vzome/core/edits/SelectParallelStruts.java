@@ -10,10 +10,10 @@ import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Strut;
+import com.vzome.xml.DomUtils;
 
 /**
  * @author David Hall

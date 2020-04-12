@@ -13,20 +13,8 @@ import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 import javax.vecmath.Vector3f;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXSource;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
@@ -66,7 +54,7 @@ import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
-import com.vzome.xml.LocationAnnotator;
+import com.vzome.xml.DomUtils;
 
 public class Application
 {
@@ -146,69 +134,10 @@ public class Application
 
     public DocumentModel loadDocument( InputStream bytes ) throws Exception
     {
-        Document doc = null;
+        String noLineNums = this .properties .getProperty( "no.line.numbers" );
+        boolean captureLineNumbers = noLineNums == null || noLineNums .equals( "false" );
 
-        // parse the bytes as XML
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
-            factory .setNamespaceAware( true );
-
-            String noLineNums = this .properties .getProperty( "no.line.numbers" );
-            boolean captureLineNumbers = noLineNums == null || noLineNums .equals( "false" );
-            
-            if ( captureLineNumbers ) {
-
-                // This complicated solution for capturing line numbers is from
-                //    http://javacoalface.blogspot.com/2011/04/line-and-column-numbers-in-xml-dom.html
-
-                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                Transformer nullTransformer = transformerFactory.newTransformer();
-
-                DocumentBuilder docBuilder = factory .newDocumentBuilder();
-                doc = docBuilder.newDocument();
-                DOMResult domResult = new DOMResult( doc );
-
-                /*
-                 * Create SAX parser/XMLReader that will parse XML. If factory
-                 * options are not required then this can be short cut by:
-                 *      xmlReader = XMLReaderFactory.createXMLReader();
-                 */
-                SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-                saxParserFactory .setNamespaceAware( true );            
-                SAXParser saxParser = saxParserFactory.newSAXParser();
-                XMLReader xmlReader = saxParser.getXMLReader();
-
-                /*
-                 * Create our filter to wrap the SAX parser, that captures the
-                 * locations of elements and annotates their nodes as they are
-                 * inserted into the DOM.
-                 */
-                xmlReader = new LocationAnnotator( xmlReader, doc );
-
-                /*
-                 * Create the SAXSource to use the annotator.
-                 */
-                InputSource inputSource = new InputSource( bytes );
-                SAXSource saxSource = new SAXSource( xmlReader, inputSource );
-
-                /*
-                 * Finally read the XML into the DOM.
-                 */
-                nullTransformer.transform(saxSource, domResult);
-            }
-            else {
-                DocumentBuilder builder = factory .newDocumentBuilder();
-                doc = builder .parse( bytes );
-            }
-            bytes.close();
-        } catch ( SAXException | IOException e ) {
-            //            String errorCode = "XML is bad:  " + e.getMessage() + " at line " + e.getLineNumber() + ", column "
-            //                    + e.getColumnNumber();
-            logger .severe( e .getMessage() );
-            throw e;
-        }
-
-        Element element = doc .getDocumentElement();
+        Element element = DomUtils .parseXml( bytes, captureLineNumbers );
         String tns = element .getNamespaceURI();
         XmlSaveFormat format = XmlSaveFormat .getFormat( tns );
 

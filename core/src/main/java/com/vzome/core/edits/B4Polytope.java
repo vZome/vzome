@@ -17,13 +17,13 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.Selection;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.symmetry.B4Group;
 import com.vzome.core.math.symmetry.CoxeterGroup;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.xml.DomUtils;
 
 /**
  * This is only used when opening legacy files.  The UI and controllers now use the generic Polytope4d.

@@ -17,9 +17,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vzome.core.editor.Snapshot.SnapshotAction;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.ThumbnailRenderer;
+import com.vzome.xml.DomUtils;
 import com.vzome.core.viewing.Camera;
 
 

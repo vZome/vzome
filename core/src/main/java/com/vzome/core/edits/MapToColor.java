@@ -1,6 +1,6 @@
 package com.vzome.core.edits;
 
-import static com.vzome.core.math.DomUtils.addAttribute;
+import static com.vzome.xml.DomUtils.addAttribute;
 
 import java.util.Map;
 

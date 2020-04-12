@@ -12,13 +12,13 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Group;
 import com.vzome.core.model.GroupElement;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
+import com.vzome.xml.DomUtils;
 
 public abstract class ChangeSelection extends SideEffects
 {

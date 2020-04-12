@@ -14,7 +14,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
-import com.vzome.core.math.DomUtils;
+import com.vzome.xml.DomUtils;
 
 public abstract class SideEffects extends UndoableEdit
 {

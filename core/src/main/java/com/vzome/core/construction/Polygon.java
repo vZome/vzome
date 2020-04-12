@@ -11,7 +11,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
-import com.vzome.core.math.DomUtils;
+import com.vzome.xml.DomUtils;
 
 
 public abstract class Polygon extends Construction
