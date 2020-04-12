@@ -686,7 +686,7 @@ public class DocumentController extends DefaultController implements Controller3
             case "openTrackballModel": // invoked from custom menu
                 String modelResourcePath = this .symmetryController .getProperty( "modelResourcePath" );
                 if ( modelResourcePath != null )
-                    super .doAction( "newFromResource-" + modelResourcePath, e );
+                    super .doAction( "newFromResource-" + modelResourcePath );
                 break;
 
             case "showOrbitTriangle": // invoked from custom menu
