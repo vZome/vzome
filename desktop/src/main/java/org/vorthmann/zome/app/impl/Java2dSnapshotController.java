@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
@@ -92,7 +91,7 @@ public class Java2dSnapshotController extends DefaultController
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         if ( action .equals( "refresh" ) )
         {
@@ -143,7 +142,7 @@ public class Java2dSnapshotController extends DefaultController
             current = false;
         }
         else
-            super .doAction( action, e );
+            super .doAction( action );
     }
     
     @Override

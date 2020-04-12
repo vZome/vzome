@@ -1,6 +1,5 @@
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.EnumSet;
 
@@ -24,7 +23,7 @@ public class ToolController extends DefaultController
 	}
 
 	@Override
-	public void doAction( String action, ActionEvent e ) throws Exception
+	public void doAction( String action ) throws Exception
 	{
         EnumSet<InputBehaviors> inputBehaviors = this .tool .getInputBehaviors();
 		switch ( action ) {
@@ -87,7 +86,7 @@ public class ToolController extends DefaultController
 			break;
 
 		default:
-			super .doAction( action, e );
+			super .doAction( action );
 		}
 	}
 

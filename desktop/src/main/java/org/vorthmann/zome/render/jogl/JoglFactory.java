@@ -16,6 +16,7 @@ import com.jogamp.opengl.GLCapabilitiesImmutable;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.vzome.core.render.Colors;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
@@ -67,7 +68,8 @@ public class JoglFactory implements J3dComponentFactory
         GLCanvas glcanvas = new GLCanvas( glcapabilities, chooser, null );
         
         Lights lights = controller .getSceneLighting();
-        JoglScene scene = new JoglScene( controller, lights, isSticky );
+        boolean drawOutlines = controller .propertyIsTrue( "drawOutlines" );
+        Scene scene = new Scene( lights, isSticky, drawOutlines );
         RenderingViewer viewer = new JoglRenderingViewer( lights, scene, glcanvas );
 
         controller .attachViewer( viewer, scene, glcanvas );

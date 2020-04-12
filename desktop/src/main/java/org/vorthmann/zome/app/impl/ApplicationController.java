@@ -1,8 +1,5 @@
 package org.vorthmann.zome.app.impl;
 
-import java.awt.Desktop;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -12,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,7 +42,7 @@ public class ApplicationController extends DefaultController
 
     private final Map<String, DocumentController> docControllers = new HashMap<>();
 
-    private final ActionListener ui;
+    private final UI ui;
 
     private final Properties userPreferences = new Properties();
 
@@ -61,8 +57,13 @@ public class ApplicationController extends DefaultController
     private int lastUntitled = 0;
 
     private Map<String, RenderedModel> symmetryModels = new HashMap<String, RenderedModel>();
+    
+    public interface UI
+    {
+        public void doAction( String action );
+    }
 
-    public ApplicationController( ActionListener ui, Properties commandLineArgs, J3dComponentFactory rvFactory )
+    public ApplicationController( UI ui, Properties commandLineArgs, J3dComponentFactory rvFactory )
     {
         super();
 
@@ -183,15 +184,16 @@ public class ApplicationController extends DefaultController
     }
 
     @Override
-    public void doAction( String action, ActionEvent event )
+    public void doAction( String action )
     {
         try {
             if ( action .equals( "showAbout" ) 
                     || action .equals( "openURL" ) 
-                    || action .equals( "quit" ) 
+                    || action .equals( "quit" )
+                    || action .startsWith( "browse-" )
                     )
             {
-                this .ui .actionPerformed( event );
+                this .ui .doAction( action );
                 return;
             }
 
@@ -200,7 +202,7 @@ public class ApplicationController extends DefaultController
                 if ( sawWelcome == null )
                 {
                     String welcome = properties .getProperty( "welcome" );
-                    doAction( "openResource-" + welcome, null );
+                    doAction( "openResource-" + welcome );
                     userPreferences .setProperty( "saw.welcome", "true" );
                     FileWriter writer;
                     try {
@@ -241,13 +243,6 @@ public class ApplicationController extends DefaultController
                     docProps .setProperty( "buildNumber", this .properties .getProperty( "buildNumber" ) );
                     docProps .setProperty( "gitCommit", this .properties .getProperty( "gitCommit" ) );
                     newDocumentController( title, document, docProps );
-                }
-            }
-            else if ( action .startsWith( "browse-" ) )
-            {
-                String url = action .substring( "browse-" .length() );
-                if ( Desktop.isDesktopSupported() && Desktop.getDesktop() .isSupported( Desktop.Action.BROWSE ) ) {
-                    Desktop.getDesktop() .browse( new URI( url ) );
                 }
             }
             else if ( action .startsWith( "openResource-" ) )

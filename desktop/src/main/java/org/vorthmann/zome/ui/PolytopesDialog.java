@@ -58,7 +58,7 @@ public class PolytopesDialog extends EscapeDialog
                         {
                             JComboBox<?> combo = (JComboBox<?>) e.getSource();
                             String command = "setGroup." + combo .getSelectedItem().toString();
-                            controller .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
+                            controller .actionPerformed( e .getSource(), command );
                         }
                     } );
                     labelAndGroup .add( groups );
@@ -95,7 +95,7 @@ public class PolytopesDialog extends EscapeDialog
             					@Override
             					public void actionPerformed( ActionEvent e )
             					{
-            						controller .actionPerformed( e );
+            						controller .actionPerformed( e .getSource(), e .getActionCommand() );
             						boolean enabled = "true" .equals( controller .getProperty( "edge." + edge ) );
             						renderCheckboxes[ edge ] .setEnabled( enabled );
             						if ( enabled )
@@ -138,7 +138,7 @@ public class PolytopesDialog extends EscapeDialog
             				renderCheckboxes[ i ] .setEnabled( enabled );
             				renderCheckboxes[ i ] .setSelected( enabled && render );
             				renderCheckboxes[ i ] .setActionCommand( "render." + i );
-            				renderCheckboxes[ i ] .addActionListener( controller );
+            				renderCheckboxes[ i ] .addActionListener( new ControllerActionListener(controller) );
             				checkboxes .add( renderCheckboxes[ i ] );
             			}
             			checkboxes .add( Box.createRigidArea( new Dimension( 30, 0 ) ) );
@@ -177,7 +177,7 @@ public class PolytopesDialog extends EscapeDialog
             {
                 quaternionPanel .syncToModel();
                 PolytopesDialog.this .setVisible( false );
-                controller .actionPerformed( e );
+                controller .actionPerformed( e .getSource(), e .getActionCommand() );
             }
         } );
         buttons .add( build );

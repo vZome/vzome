@@ -323,7 +323,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     String colorString = Integer.toHexString( ( rgb << 8 ) | alpha );
                     mController .setProperty( "lastObjectColor", "#"+colorString );
                     String command = "ColorManifestations/" + colorString;
-                    mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
+                    mController .actionPerformed( e .getSource(), command );
                     break;
                     
                 case "setBackgroundColor":
@@ -334,14 +334,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
                 
                 case "usedOrbits":
-                    mController .actionPerformed( e ); // TO DO exclusive
+                    mController .actionPerformed( e .getSource(), e .getActionCommand() ); // TO DO exclusive
                     break;
                 
                 case "rZomeOrbits":
                 case "predefinedOrbits":
                 case "setAllDirections":
                     delegate = mController .getSubController( "symmetry." + system );
-                    delegate .actionPerformed( e );
+                    delegate .actionPerformed( e .getSource(), e .getActionCommand() );
                     break;
                 
                 case "configureShapes":
@@ -374,7 +374,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     if ( ( bookmarkName == null ) || ( bookmarkName .length() == 0 ) ) {
                         return;
                     }
-                    mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "newTool/" + bookmarkId + "/" + bookmarkName ) );
+                    mController .actionPerformed( e .getSource(), "newTool/" + bookmarkId + "/" + bookmarkName );
                     break;
 
                 default:
@@ -390,7 +390,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     else if ( cmd .startsWith( "setSymmetry." ) )
                     {
                         system = cmd .substring( "setSymmetry.".length() );
-                        mController .actionPerformed( e ); // TODO getExclusiveAction
+                        mController .actionPerformed( e .getSource(), e .getActionCommand() ); // TODO getExclusiveAction
                     }
                     else if ( cmd .startsWith( "execCommandLine/" ) )
                     {
@@ -417,7 +417,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                                 JOptionPane.PLAIN_MESSAGE );
                     }
                     else
-                        mController .actionPerformed( e );
+                        mController .actionPerformed( e .getSource(), e .getActionCommand() );
                     break;
                 }
             }
@@ -429,6 +429,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         lessonController = mController .getSubController( "lesson" );
         lessonController .addPropertyListener( this );
 
+        ControllerActionListener actionListener = new ControllerActionListener( this .mController );
+        
         // Now the component containment hierarchy
         
         JPanel outerPanel = new JPanel( new BorderLayout() );
@@ -448,7 +450,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     articleButtonsPanel .add( modelButton );
                     group .add( modelButton );
                     modelButton .setActionCommand( "switchToModel" );
-                    modelButton .addActionListener( mController );
+                    modelButton .addActionListener( actionListener );
                     snapshotButton = new JButton( "-> capture ->" );
                     //                String imgLocation = "/icons/snapshot.png";
                     //                URL imageURL = getClass().getResource( imgLocation );
@@ -466,10 +468,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 						@Override
                         public void actionPerformed( ActionEvent e )
                         {
-                            mController .actionPerformed( e ); // sends thumbnailChanged propertyChange, but no listener...
+                            mController .actionPerformed( e .getSource(), e .getActionCommand() ); // sends thumbnailChanged propertyChange, but no listener...
                             articleButton .doClick();  // switch to article mode, so now there's a listener
                             // now trigger the propertyChange again
-                            lessonController .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "setView" ) );
+                            lessonController .actionPerformed( DocumentFrame.this, "setView" );
                         }
                     } );
                     articleButton  = new JRadioButton( "Article" );
@@ -478,7 +480,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     articleButtonsPanel .add( articleButton );
                     group .add( articleButton );
                     articleButton .setActionCommand( "switchToArticle" );
-                    articleButton .addActionListener( mController );
+                    articleButton .addActionListener( actionListener );
 
                     JPanel statusPanel = new JPanel( new BorderLayout() );
                     statusPanel .setBorder( BorderFactory .createEmptyBorder( 4, 4, 4, 4 ) );
@@ -742,7 +744,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         control .setEnabled( enable );
         if ( control .isEnabled() )
         {
-            ActionListener actionListener = controller;
+            ActionListener actionListener = new ControllerActionListener(controller);
             switch ( command ) {
 
             // these can fall through to the ApplicationController
@@ -762,7 +764,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "toggleFrameLabels":
             case "toggleNormals":
             case "toggleOutlines":
-                actionListener = controller;
                 break;
 
             case "open":
@@ -802,7 +803,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
             default:
                 if ( command .startsWith( "openResource-" ) ) {
-                    actionListener = controller;
                 }
                 else if ( command .startsWith( "LoadVEF/" ) ) {
                     actionListener = this .localActions;

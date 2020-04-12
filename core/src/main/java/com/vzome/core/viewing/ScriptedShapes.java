@@ -40,7 +40,7 @@ public class ScriptedShapes extends AbstractShapes
     {
         ZomicStrutGeometry zsg = new ZomicStrutGeometry( mPkgName, dir, mSymmetry );
         if ( zsg .isDefined() )
-        	return zsg;
+            return zsg;
         if ( fallback != null )
             return fallback .createStrutGeometry( dir );
         return super .createStrutGeometry( dir );

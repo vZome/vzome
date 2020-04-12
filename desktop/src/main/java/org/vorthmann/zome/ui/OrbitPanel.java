@@ -56,7 +56,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
             @Override
             public void actionPerformed( ActionEvent evt )
             {
-            	enabledOrbits .actionPerformed( evt );
+                enabledOrbits .actionPerformed( evt .getSource(), evt .getActionCommand() );
             }
         };
 
@@ -153,7 +153,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 
 	public void orbitsChanged()
     {
-		enabledOrbits .actionPerformed( new ActionEvent( orbitTriangle, 0, "refreshDots" ) );
+		enabledOrbits .actionPerformed( orbitTriangle, "refreshDots" );
         
         orbitCheckboxes .removeAll();
         String[] dirNames = enabledOrbits .getCommandList( "allOrbits" );
@@ -181,7 +181,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
                 checkbox .setVisible( true );
                 checkbox .setSelected( false );
                 checkbox .setActionCommand( "toggleDirection." + orbitName );
-                checkbox .addActionListener( enabledOrbits );
+                checkbox .addActionListener( new ControllerActionListener(enabledOrbits) );
                 panel .add( checkbox, BorderLayout.CENTER );
             }
             orbitCheckboxes .add( panel );

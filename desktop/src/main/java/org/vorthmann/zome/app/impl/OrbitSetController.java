@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
@@ -133,7 +132,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         if ( action .equals( "refreshDots" ) )
         {
@@ -144,7 +143,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
                 || action .equals( "short" ) || action .equals( "medium" ) || action .equals( "long" )
                 || action .startsWith( "adjustScale." ) || action .equals( "scaleUp" ) || action .equals( "scaleDown" ) )
         {
-            getSubController( "currentLength" ) .actionPerformed( e );
+            getSubController( "currentLength" ) .actionPerformed( null, action );
             return;
         }
         if ( action .equals( "setNoDirections" ) )

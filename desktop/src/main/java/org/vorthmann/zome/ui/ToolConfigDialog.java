@@ -247,7 +247,7 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 	@Override
 	public void actionPerformed( ActionEvent e )
 	{
-		this .controller .actionPerformed( e );
+		this .controller .actionPerformed( e .getSource(), e .getActionCommand() );
 		switch ( e .getActionCommand() ) {
 		
         case "apply":

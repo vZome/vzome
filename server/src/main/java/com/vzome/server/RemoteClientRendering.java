@@ -68,12 +68,6 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	}
 
 	@Override
-	public RenderingChanges getRenderingChanges()
-	{
-		return this;
-	}
-
-	@Override
 	public void reset() {}
 
 	@Override
