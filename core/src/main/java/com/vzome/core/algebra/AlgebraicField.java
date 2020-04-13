@@ -70,7 +70,7 @@ public abstract class AlgebraicField
     
     private static final double SMALL_SERIES_THRESHOLD = 30d;
 
-    private final AlgebraicSeries smallSeries;
+    private AlgebraicSeries smallSeries;
 
     // Eclipse says that rawtypes is unnecessary here, but without it,
     // Netbeans and the gradle command line both generate the rawtypes warning 
@@ -90,17 +90,27 @@ public abstract class AlgebraicField
         one = this .createRational( BigRational.ONE );
         positivePowers = new ArrayList[ order-1 ];
         negativePowers = new ArrayList[ order-1 ];
-        
-        this .smallSeries = this .generateSeries( SMALL_SERIES_THRESHOLD );
     }
-    
+
+    // generateSeries() calls createPower() which can't be used in the ParameterizedField
+    // until the c'tor is fully executed. That means smallSeries can't be initialized
+    // in this base class c'tor, so this method generates it one time upon first use 
+    // rather than in the c'tor which also means smallSeries can't be final.
+    private void initSmallSeries() {
+        if(smallSeries == null) {
+            this .smallSeries = this .generateSeries( SMALL_SERIES_THRESHOLD );
+        }
+    }
+
     public AlgebraicNumber nearestAlgebraicNumber( double target )
     {
+        initSmallSeries(); // initialze smallSeries on first use;
         return this .smallSeries .nearestAlgebraicNumber( target );
     }
     
     public AlgebraicVector nearestAlgebraicVector( RealVector target )
     {
+        initSmallSeries(); // initialze smallSeries on first use;
         return new AlgebraicVector(
                 this .smallSeries .nearestAlgebraicNumber( target.x ),
                 this .smallSeries .nearestAlgebraicNumber( target.y ),
