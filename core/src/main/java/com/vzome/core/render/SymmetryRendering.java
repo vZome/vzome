@@ -91,13 +91,11 @@ public class SymmetryRendering implements RenderingChanges
                 continue; // no change necessary
             Collection<RenderedManifestation> instances = shapesAndInstances .getInstances();
             Polyhedron shape = null;
-            boolean needsOrientation = false;
             for ( RenderedManifestation rm : instances ) {
                 rm .resetAttributes( this .orbits, shapes, false, true );
                 shape = rm .getShape(); // they are all the same shape!
-                needsOrientation = rm .getStrutOrbit() != null;
             }
-            ShapeAndInstances newShapesAndInstances = this .getShapeAndInstances( shape, needsOrientation );
+            ShapeAndInstances newShapesAndInstances = this .getShapeAndInstances( shape );
             for ( RenderedManifestation rm : instances ) {
                 newShapesAndInstances .addInstance( rm );
             }
@@ -107,13 +105,11 @@ public class SymmetryRendering implements RenderingChanges
         return true;
     }
     
-    private ShapeAndInstances getShapeAndInstances( Polyhedron shape, boolean needsOrientation )
+    private ShapeAndInstances getShapeAndInstances( Polyhedron shape )
     {
         ShapeAndInstances shapesAndInstances = (ShapeAndInstances) this .geometries .get( shape );
         if ( shapesAndInstances == null ) {
-            Symmetry symmetry = this .orbits .getSymmetry();
-            Embedding embedding = needsOrientation? symmetry : TRIVIAL_EMBEDDING;
-            shapesAndInstances = new ShapeAndInstances( shape, embedding, this .globalScale );
+            shapesAndInstances = new ShapeAndInstances( shape, this .globalScale );
             this .geometries .put( shape, shapesAndInstances );
         }
         return shapesAndInstances;
@@ -123,8 +119,7 @@ public class SymmetryRendering implements RenderingChanges
     public void manifestationAdded( RenderedManifestation rm )
     {
         Polyhedron shape = rm .getShape();
-        boolean needsOrientation = rm .getStrutOrbit() != null;
-        ShapeAndInstances shapesAndInstances = this .getShapeAndInstances( shape, needsOrientation );
+        ShapeAndInstances shapesAndInstances = this .getShapeAndInstances( shape );
         shapesAndInstances .addInstance( rm );
     }
 
