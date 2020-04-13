@@ -19,9 +19,9 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.VefToModel;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
+import com.vzome.xml.DomUtils;
 
 /**
  * @author Scott Vorthmann

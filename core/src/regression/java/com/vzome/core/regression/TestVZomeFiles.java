@@ -34,7 +34,7 @@ import com.vzome.api.Application;
 import com.vzome.api.Exporter;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.math.DomUtils;
+import com.vzome.xml.DomUtils;
 
 
 /**

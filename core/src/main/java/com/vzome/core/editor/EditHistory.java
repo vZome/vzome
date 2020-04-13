@@ -18,8 +18,8 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.UndoableEdit.Context;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
+import com.vzome.xml.DomUtils;
 import com.vzome.xml.LocationData;
 
 public class EditHistory implements Iterable<UndoableEdit>

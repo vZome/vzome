@@ -17,7 +17,6 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.Manifestations.ManifestationIterator;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.edits.ColorMappers.ColorMapper;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -27,6 +26,7 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
+import com.vzome.xml.DomUtils;
 
 /**
  * @author David Hall

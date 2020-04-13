@@ -19,7 +19,6 @@ import com.vzome.core.construction.VefToModel;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.ManifestConstructions;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.PerspectiveProjection;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
@@ -27,6 +26,7 @@ import com.vzome.core.math.SixCubeProjection;
 import com.vzome.core.math.TetrahedralProjection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
+import com.vzome.xml.DomUtils;
 
 public class LoadVEF extends ChangeManifestations
 {

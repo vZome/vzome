@@ -30,12 +30,12 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.xml.DomUtils;
 
 public class XmlSaveFormat
 {

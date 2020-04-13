@@ -17,7 +17,7 @@ import org.w3c.dom.NodeList;
 import com.vzome.api.Tool.InputBehaviors;
 import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.construction.Point;
-import com.vzome.core.math.DomUtils;
+import com.vzome.xml.DomUtils;
 
 @SuppressWarnings("serial")
 public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
