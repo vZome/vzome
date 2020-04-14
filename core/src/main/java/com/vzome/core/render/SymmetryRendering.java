@@ -17,17 +17,15 @@ import com.vzome.opengl.InstancedGeometry;
 public class SymmetryRendering implements RenderingChanges
 {
     private final float[][] orientations;
+    private final float[] embedding;
     private final Map<Polyhedron, InstancedGeometry> geometries = new HashMap<Polyhedron, InstancedGeometry>();
     private final float globalScale;
     private final OrbitSource orbits;
     
-    private static final Embedding TRIVIAL_EMBEDDING = new Embedding.Trivial();
-
     public SymmetryRendering( OrbitSource orbits, float globalScale )
     {
         this .orbits = orbits;
         this .globalScale = globalScale;
-        Embedding embedding = orbits .getSymmetry();
 
         Symmetry symmetry = orbits .getSymmetry();
         AlgebraicField field = symmetry .getField();
@@ -41,7 +39,7 @@ public class SymmetryRendering implements RenderingChanges
             {
                 AlgebraicVector columnSelect = field .basisVector( 3, i );
                 AlgebraicVector columnI = transform .timesColumn( columnSelect );
-                RealVector colRV = embedding .embedInR3( columnI );
+                RealVector colRV = columnI .toRealVector();
                 asFloats[ i*4+0 ] = (float) colRV.x;
                 asFloats[ i*4+1 ] = (float) colRV.y;
                 asFloats[ i*4+2 ] = (float) colRV.z;
@@ -53,6 +51,22 @@ public class SymmetryRendering implements RenderingChanges
             asFloats[ 15 ] = 1f;
             this .orientations[ orientation ] = asFloats;
         }
+
+        Embedding embedding = orbits .getSymmetry();
+        this .embedding = new float[ 16 ];
+        for ( int i = 0; i < 3; i++ )
+        {
+            AlgebraicVector columnSelect = field .basisVector( 3, i );
+            RealVector colRV = embedding .embedInR3( columnSelect );
+            this .embedding[ i*4+0 ] = (float) colRV.x;
+            this .embedding[ i*4+1 ] = (float) colRV.y;
+            this .embedding[ i*4+2 ] = (float) colRV.z;
+            this .embedding[ i*4+3 ] = 0f;
+        }
+        this .embedding[ 12 ] = 0f;
+        this .embedding[ 13 ] = 0f;
+        this .embedding[ 14 ] = 0f;
+        this .embedding[ 15 ] = 1f;
     }
 
     public SymmetryRendering( RenderedModel renderedModel, float globalScale )
@@ -70,6 +84,11 @@ public class SymmetryRendering implements RenderingChanges
             ShapeAndInstances shapeAndInstances = (ShapeAndInstances) geometry;
             shapeAndInstances .pick( intersector, this .orientations );
         }
+    }
+
+    public float[] getEmbedding()
+    {
+        return this .embedding;
     }
 
     public float[][] getOrientations()

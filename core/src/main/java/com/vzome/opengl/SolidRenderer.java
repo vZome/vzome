@@ -21,6 +21,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
     // uniforms for the vertex shader
     private int u_ProjMatrix;
     private int u_MVMatrix;
+    private int u_Embedding;
     private int u_AmbientLight;
     private int u_NumLights;
     private int[] u_LightDirections = new int[10];
@@ -47,6 +48,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         String vertexShaderSrc = version + "\n" +
                     "uniform mat4 u_ProjMatrix;\n" +
                     "uniform mat4 u_MVMatrix;\n" +
+                    "uniform mat4 u_Embedding;\n" +
                     "uniform mat4 u_Orientations[60];\n" +
                     "\n" +
                     "#define MAX_LIGHTS 10\n" + 
@@ -73,9 +75,9 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Vertex );\n" + 
                     "   vec4 normal = ( u_Orientations[ orientation ] * vec4( a_Normal, 0.0 ) );\n" + 
                     "   vec4 world = oriented + location;\n" + 
-                    "   gl_Position = u_ProjMatrix * u_MVMatrix * world;\n" + 
+                    "   gl_Position = u_ProjMatrix * u_MVMatrix * u_Embedding * world;\n" + 
                     "\n" + 
-                    "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * normal ) );\n" + 
+                    "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * u_Embedding * normal ) );\n" + 
                     "   vec3 linearColor = vec3( fract(orientationAndGlow) );\n" + 
                     "   linearColor += u_AmbientLight * 0.9;\n" + 
                     "   for( int i = 0; i < u_NumLights; ++i ){\n" + 
@@ -136,6 +138,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         OpenGlUtilities.checkGLError( gl, "glLinkProgram");
 
         u_MVMatrix = gl.glGetUniformLocation( programId, "u_MVMatrix" );
+        u_Embedding = gl.glGetUniformLocation( programId, "u_Embedding" );
         u_ProjMatrix = gl.glGetUniformLocation( programId, "u_ProjMatrix" );
         u_AmbientLight = gl.glGetUniformLocation( programId, "u_AmbientLight" );
         u_NumLights = gl.glGetUniformLocation( programId, "u_NumLights" );
@@ -207,6 +210,8 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
     {
         gl.glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
+
+        gl .glUniformMatrix4fv( u_Embedding, 1, false, symmetryRendering .getEmbedding(), 0);
 
         float[][] orientations = symmetryRendering .getOrientations();
         for ( int i = 0; i < orientations.length; i++ )

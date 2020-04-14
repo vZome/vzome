@@ -18,6 +18,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
     // uniforms for the vertex shader
     private int u_ProjMatrix;
     private int u_MVMatrix;
+    private int u_Embedding;
     private int[] u_Orientations = new int[60];
 
     // uniforms for the fragment shader
@@ -41,6 +42,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
         String vertexShaderSrc = version + "\n" +
                     "uniform mat4 u_ProjMatrix;\n" +
                     "uniform mat4 u_MVMatrix;\n" +
+                    "uniform mat4 u_Embedding;\n" +
                     "uniform mat4 u_Orientations[60];\n" +
                     "\n" +
                     "attribute vec4 a_Vertex;\n" + 
@@ -56,7 +58,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
                     "   int orientation = int( max( 0, min( 59, floor(orientationAndGlow) ) ) );\n" + 
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Vertex );\n" + 
                     "   vec4 world = oriented + location;\n" + 
-                    "   gl_Position = u_ProjMatrix * u_MVMatrix * world;\n" + 
+                    "   gl_Position = u_ProjMatrix * u_MVMatrix * u_Embedding * world;\n" + 
                     "}";
         int vertexShader = OpenGlUtilities.loadGLShader( gl, true, vertexShaderSrc );
 
@@ -107,6 +109,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
         OpenGlUtilities.checkGLError( gl, "glLinkProgram");
 
         u_MVMatrix = gl .glGetUniformLocation( programId, "u_MVMatrix" );
+        u_Embedding = gl.glGetUniformLocation( programId, "u_Embedding" );
         u_ProjMatrix = gl .glGetUniformLocation( programId, "u_ProjMatrix" );
         for ( int i = 0; i < u_Orientations.length; i++ )
             u_Orientations[ i ] = gl.glGetUniformLocation( programId, "u_Orientations[" + i + "]" );
@@ -164,6 +167,8 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
     {
         gl.glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
+
+        gl .glUniformMatrix4fv( u_Embedding, 1, false, symmetryRendering .getEmbedding(), 0);
 
         float[][] orientations = symmetryRendering .getOrientations();
         for ( int i = 0; i < orientations.length; i++ )

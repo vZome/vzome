@@ -189,14 +189,16 @@ public class ShapeAndInstances implements InstancedGeometry
             float[] colors = new float[4 * instances.size()];
             int i = 0;
             for( RenderedManifestation part : instances ) {
-                RealVector vector = part .getLocation();
+                AlgebraicVector vector = part .getLocationAV();
+                // Embedding will be handled in the shader
+                RealVector rv = ( vector == null )? new RealVector() : vector .toRealVector();
                 int zone = part .getStrutZone();
                 if ( zone < 0 )
                     zone = 0;
                 float orientationAndGlow = part .getGlow() + (float) zone;
-                offsets[i * 4 + 0] = globalScale * (float) vector .x;
-                offsets[i * 4 + 1] = globalScale * (float) vector .y;
-                offsets[i * 4 + 2] = globalScale * (float) vector .z;
+                offsets[i * 4 + 0] = globalScale * (float) rv .x;
+                offsets[i * 4 + 1] = globalScale * (float) rv .y;
+                offsets[i * 4 + 2] = globalScale * (float) rv .z;
                 offsets[i * 4 + 3] = orientationAndGlow;
 
                 float[] rgba = new float[4];
