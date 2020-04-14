@@ -142,15 +142,23 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	public HeptagonalAntiprismSymmetry createStandardOrbits( String frameColor )
 	{
         Direction redOrbit = createZoneOrbit( "red", 0, 1, this .mField .basisVector( 3, AlgebraicVector.Z ), true );
-        redOrbit .setDotLocation( 1d, 0d );
         this .preferredAxis = redOrbit .getAxis( Symmetry.PLUS, 0 );
 
-        Direction blueOrbit = createZoneOrbit( frameColor, 0, 7, this .mField .basisVector( 3, AlgebraicVector.X ), true );
-        blueOrbit .setDotLocation( 0d, 1d );
-
-        AlgebraicVector greenVector = mField.createIntegerVector(new int[][]{ { 1, 0, 0 },  {-2, 0, 1 },  { 0, 0, 0 } } );
-        AlgebraicNumber greenScalar= mField.createRational(2).dividedBy(mField.createAlgebraicNumber(new int[] { 3, 2,-2 }));
-        createZoneOrbit( "green", 0, 7, greenVector, false, false, greenScalar);
+        AlgebraicVector blueFrameVector = this .mField .basisVector( 3, AlgebraicVector.X );
+        Direction blueOrbit = createZoneOrbit( frameColor, 0, 7, blueFrameVector, true );
+        
+        // Get the vector for 1/14 rotation of blue axis 0 vector (second arg to getAxis() is (7+1)/2)
+        AlgebraicVector blueRotatedVector = blueOrbit.getAxis(PLUS, (7+1)/2).normal();
+        // combine the two blue vectors to get the green vector 
+        // of the correct magnitude and direction so no scale param is needed
+        // I could hard code the green vector here, but I want to do the math here 
+        // so the deriviation is clear for when I generalize it in the PolygonField 
+        AlgebraicVector greenVector = blueFrameVector.minus(blueRotatedVector);
+        // TODO: I think that half sizes make sense for these green struts, 
+        // but using the c'tor with the half-sizes param doesn't seem to affect the UI.
+        // For now, I won't mess with that here. 
+        // The control of half-sizes probably belongs in the SymmetryPerspective anyway, but that's for another day.  
+        createZoneOrbit( "green", 0, 7, greenVector);
 
         return this;
     }
