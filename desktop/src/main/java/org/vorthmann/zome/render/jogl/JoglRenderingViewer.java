@@ -138,8 +138,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     {
         this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
         boolean useVBOs = true;  // this context will rendered many, many times
-        this .solids = new SolidRenderer( this .glShim, useVBOs );
-        this .outlines = new OutlineRenderer( this .glShim, useVBOs );
+        int maxOrientations = this .scene .getMaxOrientations();
+        this .solids = new SolidRenderer( this .glShim, useVBOs, maxOrientations );
+        this .outlines = new OutlineRenderer( this .glShim, useVBOs, maxOrientations );
         // store the scene geometry
     }
 
@@ -289,11 +290,12 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         final GL2 gl2 = context .getGL() .getGL2();
         JoglOpenGlShim shim = new JoglOpenGlShim( gl2 );
         boolean useVBOs = false;  // this context will be discarded after a single rendering
+        int maxOrientations = this .scene .getMaxOrientations();
         
-        Renderer tempSolids = new SolidRenderer( shim, useVBOs  );
+        Renderer tempSolids = new SolidRenderer( shim, useVBOs, maxOrientations );
         tempSolids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         tempSolids .setView( this .modelView, this .projection, this .near, this .fogFront, this .far, this .fovX != 0f );
-        Renderer tempOutlines = new OutlineRenderer( shim, useVBOs );
+        Renderer tempOutlines = new OutlineRenderer( shim, useVBOs, maxOrientations );
         // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt anything
         tempOutlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         tempOutlines .setView( this .modelView, this .projection, this .near, this .fogFront, this .far, this .fovX != 0f );

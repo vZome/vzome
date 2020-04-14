@@ -19,7 +19,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
     private int u_ProjMatrix;
     private int u_MVMatrix;
     private int u_Embedding;
-    private int[] u_Orientations = new int[60];
+    private int[] u_Orientations;
 
     // uniforms for the fragment shader
     private int u_LineColor;
@@ -33,17 +33,20 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
 
     private final boolean useVBOs;
 
-    public OutlineRenderer( OpenGlShim gl, boolean useVBOs )
+    public OutlineRenderer( OpenGlShim gl, boolean useVBOs, int maxOrientations )
     {
         this .gl = gl;
         this .useVBOs = useVBOs;
+        this .u_Orientations = new int[ maxOrientations ];
         String version = gl .getGLSLVersionString();
 
         String vertexShaderSrc = version + "\n" +
+                    "#define MAX_ORIENTATIONS " + maxOrientations + "\n" + 
+                    "\n" +
                     "uniform mat4 u_ProjMatrix;\n" +
                     "uniform mat4 u_MVMatrix;\n" +
                     "uniform mat4 u_Embedding;\n" +
-                    "uniform mat4 u_Orientations[60];\n" +
+                    "uniform mat4 u_Orientations[MAX_ORIENTATIONS];\n" +
                     "\n" +
                     "attribute vec4 a_Vertex;\n" + 
                     "attribute vec4 a_InstanceData;\n" + 
@@ -55,7 +58,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
                     "   vec4 location = vec4( a_InstanceData.xyz, 1.0 );\n" + 
                     "\n" + 
                     "\n" + 
-                    "   int orientation = int( max( 0, min( 59, floor(orientationAndGlow) ) ) );\n" + 
+                    "   int orientation = int( max( 0, min( MAX_ORIENTATIONS-1, floor(orientationAndGlow) ) ) );\n" + 
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Vertex );\n" + 
                     "   vec4 world = oriented + location;\n" + 
                     "   gl_Position = u_ProjMatrix * u_MVMatrix * u_Embedding * world;\n" + 
