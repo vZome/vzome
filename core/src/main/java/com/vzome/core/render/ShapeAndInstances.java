@@ -21,12 +21,10 @@ import com.vzome.opengl.InstancedGeometry;
 public class ShapeAndInstances implements InstancedGeometry
 {
     public interface Intersector
-    {
-        void intersectAABBox( float[] min, float[] max, RenderedManifestation rm );
+    {        
+        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale, float[] embedding );
         
-        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale );
-        
-        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale, float[] orientation, float[] location );
+        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale, float[] embedding, float[] orientation, float[] location );
     }
 
     private FloatBuffer verticesBuffer, normalsBuffer, lineVerticesBuffer, positionsBuffer, colorsBuffer;
@@ -51,7 +49,7 @@ public class ShapeAndInstances implements InstancedGeometry
         this .globalScale = globalScale;
 
         // Note, we don't need any Embedding here.  This shape will be
-        //  oriented for each instance, in the shader, and we cannot to
+        //  oriented for each instance, in the shader, and we cannot do
         //  embedding before that.
         
         List<RealVector> vertices = new ArrayList<>();
@@ -257,8 +255,9 @@ public class ShapeAndInstances implements InstancedGeometry
         this .hasChanges = true;
     }
     
-    public void pick( Intersector intersector, float[][] orientations )
+    public void pick( Intersector intersector, float[][] orientations, float[] embedding )
     {
+        float scale = 1f / this .globalScale;
         if ( this .shape .isPanel() && ! this .instances .isEmpty() ) {
             // A panel shape has only a single instance, for now
             RenderedManifestation rm = this .instances .iterator() .next();
@@ -267,29 +266,35 @@ public class ShapeAndInstances implements InstancedGeometry
             // We just intersect the triangles of one of the two polygons.
             int triangles = this .vertexCount / 6;
             for ( int i = 0; i < triangles; i++ ) {
-                intersector .intersectTriangle( this .verticesArray, i * 9, rm, 1f / this .globalScale );
+                intersector .intersectTriangle( this .verticesArray, i * 9, rm, scale, embedding );
             }
         }
         else if ( this .shape .getOrbit() != null ) {
             // a strut shape
             for ( RenderedManifestation rm : instances ) {
                 float[] orientation = orientations [ rm .getStrutZone() ];
+                AlgebraicVector vector = rm .getLocationAV();
+                // Embedding will be handled in the intersector
+                RealVector rv = ( vector == null )? new RealVector() : vector .toRealVector();
                 float[] location = new float[3];
-                rm .getLocation() .addTo( location, location );
+                rv .addTo( location, location );
                 int triangles = this .vertexCount / 3 ;
                 for ( int i = 0; i < triangles; i++ ) {
-                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, 1f / this .globalScale, orientation, location );
+                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, scale, embedding, orientation, location );
                 }
             }
         }
         else {
             // a ball shape
             for ( RenderedManifestation rm : instances ) {
+                AlgebraicVector vector = rm .getLocationAV();
+                // Embedding will be handled in the intersector
+                RealVector rv = ( vector == null )? new RealVector() : vector .toRealVector();
                 float[] location = new float[3];
-                rm .getLocation() .addTo( location, location );
+                rv .addTo( location, location );
                 int triangles = this .vertexCount / 3 ;
                 for ( int i = 0; i < triangles; i++ ) {
-                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, 1f / this .globalScale, null, location );
+                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, scale, embedding, null, location );
                 }
             }
         }
