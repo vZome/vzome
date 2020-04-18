@@ -720,7 +720,9 @@ public class DocumentController extends DefaultController implements Controller3
                 else if ( action.startsWith( "AdjustSelectionByOrbitLength/" ) )
                 {
                     String tail = action.substring( "AdjustSelectionByOrbitLength/" .length() );
-                    String[] sections = tail .split( "/" );
+                    // struts lengths may include fractions, 
+                    // so only split on the first two slashes to make 3 sections max. 
+                    String[] sections = tail .split( "/", 3 );
                     String mode = sections[ 0 ];
                     String orbitStr = sections[ 1 ];
                     if ( mode .endsWith( "Struts" ) )
