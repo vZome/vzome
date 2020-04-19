@@ -23,9 +23,12 @@ public class Scene implements RenderingChanges, PropertyChangeListener
 
     private static final float MODEL_SCALE_FACTOR = 2f; // this seems to align with the way Java3d rendering came out
 
-    public Scene( Lights lights, boolean isSticky, boolean drawOutlines )
+    private final int maxOrientations;
+
+    public Scene( Lights lights, boolean isSticky, boolean drawOutlines, int maxOrientations )
 	{
-        this.bkgdColor = lights .getBackgroundColor();
+        this .maxOrientations = maxOrientations;
+        this .bkgdColor = lights .getBackgroundColor();
         
         this .drawOutlines = drawOutlines;
         
@@ -195,5 +198,10 @@ public class Scene implements RenderingChanges, PropertyChangeListener
     {
         for ( SymmetryRendering symmetryRendering : this .symmetries .values() )
             symmetryRendering .pick( intersector ); // this will be a no-op in all but one
+    }
+
+    public int getMaxOrientations()
+    {
+        return this .maxOrientations;
     }
 }

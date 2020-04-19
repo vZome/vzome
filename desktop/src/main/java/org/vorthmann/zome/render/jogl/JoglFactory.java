@@ -69,7 +69,8 @@ public class JoglFactory implements J3dComponentFactory
         
         Lights lights = controller .getSceneLighting();
         boolean drawOutlines = controller .propertyIsTrue( "drawOutlines" );
-        Scene scene = new Scene( lights, isSticky, drawOutlines );
+        int maxOrientations = Integer .parseInt( controller .getProperty( "maxOrientations" ) );
+        Scene scene = new Scene( lights, isSticky, drawOutlines, maxOrientations );
         RenderingViewer viewer = new JoglRenderingViewer( lights, scene, glcanvas );
 
         controller .attachViewer( viewer, scene, glcanvas );

@@ -5,6 +5,7 @@ import javax.vecmath.Vector3f;
 
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.desktop.controller.CameraController;
 
@@ -24,11 +25,12 @@ public class SymmetrySnapper implements CameraController.Snapper
         Axis axis = orbitSet .getAxis( vector );
         if ( axis == null )
             return;
-        RealVector rv = axis .normal() .toRealVector();
+        Embedding embedding = orbitSet .getSymmetry();
+        RealVector rv = embedding .embedInR3( axis .normal() );
         lookDir .set( (float) rv.x, (float) rv.y, (float) rv.z );
         vector = new RealVector( upDir .x, upDir .y, upDir .z );
         axis = orbitSet .getAxis( vector );
-        rv = axis .normal() .toRealVector();
+        rv = embedding .embedInR3( axis .normal() );
         upDir .set( (float) rv.x, (float) rv.y, (float) rv.z );
         
         Vector3f cross = new Vector3f();

@@ -21,11 +21,12 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
     // uniforms for the vertex shader
     private int u_ProjMatrix;
     private int u_MVMatrix;
+    private int u_Embedding;
     private int u_AmbientLight;
     private int u_NumLights;
     private int[] u_LightDirections = new int[10];
     private int[] u_LightColors = new int[10];
-    private int[] u_Orientations = new int[60];
+    private int[] u_Orientations;
 
     private static final int COORDS_PER_VERTEX = 3;
 
@@ -38,18 +39,22 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
     private int u_FogMin;
     private int u_Far;
 
-    public SolidRenderer( OpenGlShim gl, boolean useVBOs )
+    public SolidRenderer( OpenGlShim gl, boolean useVBOs, int maxOrientations )
     {
         this .gl = gl;
         this .useVBOs = useVBOs;
+        this .u_Orientations = new int[ maxOrientations ];
         String version = gl .getGLSLVersionString();
 
         String vertexShaderSrc = version + "\n" +
+                    "#define MAX_ORIENTATIONS " + maxOrientations + "\n" + 
+                    "#define MAX_LIGHTS 10\n" + 
+                    "\n" +
                     "uniform mat4 u_ProjMatrix;\n" +
                     "uniform mat4 u_MVMatrix;\n" +
-                    "uniform mat4 u_Orientations[60];\n" +
+                    "uniform mat4 u_Embedding;\n" +
+                    "uniform mat4 u_Orientations[MAX_ORIENTATIONS];\n" +
                     "\n" +
-                    "#define MAX_LIGHTS 10\n" + 
                     "uniform int  u_NumLights;\n" + 
                     "uniform vec3 u_AmbientLight;\n" + 
                     "uniform vec3 u_LightDirections[MAX_LIGHTS];\n" + 
@@ -69,13 +74,13 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
                     "   vec4 location = vec4( a_InstanceData.xyz, 1.0 );\n" + 
                     "\n" + 
                     "\n" + 
-                    "   int orientation = int( max( 0, min( 59, floor(orientationAndGlow) ) ) );\n" + 
+                    "   int orientation = int( max( 0, min( MAX_ORIENTATIONS-1, floor(orientationAndGlow) ) ) );\n" + 
                     "   vec4 oriented = ( u_Orientations[ orientation ] * a_Vertex );\n" + 
                     "   vec4 normal = ( u_Orientations[ orientation ] * vec4( a_Normal, 0.0 ) );\n" + 
                     "   vec4 world = oriented + location;\n" + 
-                    "   gl_Position = u_ProjMatrix * u_MVMatrix * world;\n" + 
+                    "   gl_Position = u_ProjMatrix * u_MVMatrix * u_Embedding * world;\n" + 
                     "\n" + 
-                    "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * normal ) );\n" + 
+                    "   vec3 modelViewNormal = normalize( vec3( u_MVMatrix * u_Embedding * normal ) );\n" + 
                     "   vec3 linearColor = vec3( fract(orientationAndGlow) );\n" + 
                     "   linearColor += u_AmbientLight * 0.9;\n" + 
                     "   for( int i = 0; i < u_NumLights; ++i ){\n" + 
@@ -136,6 +141,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         OpenGlUtilities.checkGLError( gl, "glLinkProgram");
 
         u_MVMatrix = gl.glGetUniformLocation( programId, "u_MVMatrix" );
+        u_Embedding = gl.glGetUniformLocation( programId, "u_Embedding" );
         u_ProjMatrix = gl.glGetUniformLocation( programId, "u_ProjMatrix" );
         u_AmbientLight = gl.glGetUniformLocation( programId, "u_AmbientLight" );
         u_NumLights = gl.glGetUniformLocation( programId, "u_NumLights" );
@@ -207,6 +213,8 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
     {
         gl.glUseProgram( programId );
         OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
+
+        gl .glUniformMatrix4fv( u_Embedding, 1, false, symmetryRendering .getEmbedding(), 0);
 
         float[][] orientations = symmetryRendering .getOrientations();
         for ( int i = 0; i < orientations.length; i++ )

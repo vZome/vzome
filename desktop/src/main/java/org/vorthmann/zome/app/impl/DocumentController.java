@@ -73,7 +73,6 @@ import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
@@ -124,7 +123,7 @@ public class DocumentController extends DefaultController implements Controller3
 
     // to LessonController
     //
-    private ThumbnailRenderer thumbnails;
+    private ThumbnailRendererImpl thumbnails;
     private MouseTool lessonPageClick, articleModeMainTrackball, articleModeZoom;
     private final LessonController lessonController;
     private PropertyChangeListener articleChanges;
@@ -291,7 +290,9 @@ public class DocumentController extends DefaultController implements Controller3
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
-        thumbnails = new ThumbnailRendererImpl( app .getJ3dFactory(), sceneLighting );
+        thumbnails = new ThumbnailRendererImpl( sceneLighting );
+        this .addSubController( "thumbnails", (Controller) thumbnails );
+        thumbnails .attachViewer( app .getJ3dFactory() );
 
         mApp = app;
         
@@ -1151,6 +1152,15 @@ public class DocumentController extends DefaultController implements Controller3
     public String getProperty( String propName )
     {
         switch ( propName ) {
+
+        case "maxOrientations":
+            int max = 0;
+            for ( SymmetryPerspective perspective : this .documentModel .getFieldApplication() .getSymmetryPerspectives() ) {
+                int order = perspective .getSymmetry() .getChiralOrder();
+                if ( order > max )
+                    max = order;
+            }
+            return Integer .toString( max );
 
         case "isIcosahedralSymmetry":
             return Boolean .toString( symmetryController.getSymmetry().getName() .equals( "icosahedral" ) );
