@@ -50,7 +50,6 @@ import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
-import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.exporters2d.Java2dExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.exporters2d.SnapshotExporter;
@@ -58,6 +57,7 @@ import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
+import com.vzome.core.model.ColoredMeshJson;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
@@ -351,9 +351,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         switch ( format ) {
 
         case "vson":
-            VsonExporter vsonEx = new VsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
             try {
-                vsonEx .doExport( null, out, 0, 0 );
+                ColoredMeshJson .generate( this .editorModel .getSelection(), this .field, out );
             } catch (IOException e) {
                 // TODO fail better here
                 e.printStackTrace();

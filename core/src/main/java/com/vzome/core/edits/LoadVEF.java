@@ -4,6 +4,7 @@
 package com.vzome.core.edits;
 
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.w3c.dom.Element;
@@ -24,6 +25,7 @@ import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.SixCubeProjection;
 import com.vzome.core.math.TetrahedralProjection;
+import com.vzome.core.model.ColoredMeshJson;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.xml.DomUtils;
@@ -31,9 +33,9 @@ import com.vzome.xml.DomUtils;
 public class LoadVEF extends ChangeManifestations
 {
     private String vefData;
-    private AlgebraicNumber scale;
-    private Projection projection;
-    private final EditorModel editor;
+    protected AlgebraicNumber scale;
+    protected Projection projection;
+    protected final EditorModel editor;
 
     public LoadVEF( EditorModel editor )
     {
@@ -59,11 +61,12 @@ public class LoadVEF extends ChangeManifestations
             break;
             
         case "clipboard":
-            if( vefData != null && ! vefData.startsWith("vZome VEF" ))
+            if( vefData != null && ! vefData.startsWith("vZome VEF" ) && ! vefData.startsWith( "{" ) )
                 // Although older VEF formats don't all include the header and could possibly be successfully pasted here,
                 // we're going to limit it to at least something that includes a valid VEF header.
                 // We won't check the version number so we can still paste formats older than VERSION_W_FIRST
                 // as long as they at least include the minimal header.
+                // NOW SUPPORTING JSON ALSO!
                 vefData = null; //disable the edit
             break;
 
@@ -127,7 +130,7 @@ public class LoadVEF extends ChangeManifestations
         }
     }
     
-    private void setProjection( String projectionName, AlgebraicField field )
+    protected void setProjection( String projectionName, AlgebraicField field )
     {
         // TODO: decouple the projection classes
         switch( projectionName ) {
@@ -155,6 +158,8 @@ public class LoadVEF extends ChangeManifestations
     {
         if( vefData == null )
             return;
+        
+        boolean isJson = vefData .startsWith( "{" ); // This will enable better behaviors!
 
         AlgebraicVector offset = null;
         boolean pointFound = false;
@@ -174,11 +179,34 @@ public class LoadVEF extends ChangeManifestations
                     break; // no need to loop thru any more
                 }
             }
+            if ( isJson ) // no need to be backward-compatible
+                unselect( man );
         }
 
         AlgebraicField field = this .mManifestations .getField();
-        VefToModel v2m = new VefToModel( projection, new ManifestConstructions( this ), scale, offset );
-        v2m .parseVEF( vefData, field );
+        ManifestConstructions events = new ManifestConstructions( this );
+        if ( isJson ) {
+            AlgebraicField.Registry registry = new AlgebraicField.Registry()
+            {
+                @Override
+                public AlgebraicField getField( String name )
+                {
+                    if ( field .getName() .equals( name ) )
+                        return field;
+                    else
+                        return null;
+                }
+            };
+            try {
+                ColoredMeshJson .parse( vefData, offset, events, registry );
+            } catch ( IOException e ) {
+                throw new Failure( e );
+            }
+        }
+        else {
+            VefToModel v2m = new VefToModel( projection, events, scale, offset );
+            v2m .parseVEF( vefData, field );
+        }
 
         redo();
     }

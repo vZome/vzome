@@ -56,7 +56,7 @@ import com.vzome.core.viewing.Lights;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 import com.vzome.xml.DomUtils;
 
-public class Application
+public class Application implements AlgebraicField.Registry
 {
     private final Map<String, Supplier<FieldApplication> > fieldAppSuppliers = new HashMap<>();
 
@@ -184,7 +184,7 @@ public class Application
         result .doEdit( extension, props );
         return result;
     }
-
+    
     public AlgebraicField getField( String name )
     {
         return this .getDocumentKind( name ) .getField();

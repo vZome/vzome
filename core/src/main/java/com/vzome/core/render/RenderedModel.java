@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -478,5 +479,10 @@ vZome VEF 6 field heptagon
             }
         }
         return null;
+    }
+
+    public Iterable<Manifestation> getManifestations()
+    {
+        return this .mRendered .stream() .map( rm -> rm .getManifestation() ) .collect( Collectors .toList() );
     }
 }

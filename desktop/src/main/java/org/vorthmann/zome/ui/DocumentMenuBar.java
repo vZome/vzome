@@ -124,13 +124,13 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu.addSeparator();
 
-        importVEFItem = createMenuItem( "Import vZome VEF...", "LoadVEF/Quaternion" );
+        importVEFItem = createMenuItem( "Import vZome Mesh...", "LoadVEF/Quaternion" );
         menu .add( importVEFItem );
 
         JMenu submenu = new JMenu( "Export 3D Rendering..." );
         submenu .add( createMenuItem( "Collada DAE", "export.dae" ) );
         submenu .add( createMenuItem( "POV-Ray", "export.pov" ) );
-        submenu .add( createMenuItem( "Observable shapes JSON", "export.shapes" ) );
+        submenu .add( createMenuItem( "vZome Shapes JSON", "export.shapes" ) );
         submenu .add( createMenuItem( "VRML", "export.vrml" ) );
         menu.add( submenu );
         submenu .setEnabled( fullPower && canSave );
@@ -140,10 +140,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu .add( createMenuItem( "OFF", "export.off" ) );
         submenu .add( createMenuItem( "PLY", "export.ply" ) );
         menu.add( submenu );
-        submenu = new JMenu( "Export 3D Struts..." );
+        submenu = new JMenu( "Export 3D Mesh..." );
+        submenu .add( createMenuItem( "vZome JSON", "export.vson" ) );
         submenu .add( createMenuItem( "AutoCAD DXF", "export.dxf" ) );
-        submenu .add( createMenuItem( "vZome VEF", "export.vef" ) );
-        submenu .add( createMenuItem( "Observable vZome JSON", "export.vson" ) );
         if ( controller .userHasEntitlement( "export.pdb" ) )
         {
             submenu .add( createMenuItem( "PDB", "export.pdb" ) );
