@@ -32,12 +32,12 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
-import com.jogamp.opengl.math.geom.AABBox;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
+import com.vzome.core.math.Line;
+import com.vzome.core.math.RealVector;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.ShapeAndInstances;
 import com.vzome.core.render.SymmetryRendering;
 import com.vzome.opengl.OpenGlShim;
 import com.vzome.opengl.SolidRenderer;
@@ -88,7 +88,7 @@ public class View3dActivity implements GLEventListener
      */
     public void onSurfaceCreated( OpenGlShim gl, int width, int height )
     {
-        this .renderer = new SolidRenderer( gl, true );
+        this .renderer = new SolidRenderer( gl, true, 60 );
 
         gl.glEnableDepth();
 
@@ -122,10 +122,6 @@ public class View3dActivity implements GLEventListener
         }
     }
     
-    private final float[] dpyTmp1V3 = new float[3];
-    private final float[] dpyTmp2V3 = new float[3];
-    private final float[] dpyTmp3V3 = new float[3];
-
     protected void mouseClicked( MouseEvent e )
     {
         int mouseX = e .getX();
@@ -168,36 +164,18 @@ public class View3dActivity implements GLEventListener
         System.out.println( "ray.orig = " + ray.orig[0] + " " + ray.orig[1] + " " + ray.orig[2]  );
         System.out.println( "ray.dir = " + ray.dir[0] + " " + ray.dir[1] + " " + ray.dir[2]  );
 
-        this .scene .pick( new ShapeAndInstances.Intersector() // only ball picking is implemented
-        {
-            @Override
-            public void intersectAABBox( float[] min, float[] max, RenderedManifestation rm )
-            {
-//                VectorUtil .scaleVec3( min, min, SCALE );
-//                VectorUtil .scaleVec3( max, max, SCALE );
-                AABBox sbox = new AABBox( min, max );
-                float[] result = new float[3];
-                if( sbox.intersectsRay(ray) ) {
-                    if( null == sbox .getRayIntersection( result, ray, FloatUtil.EPSILON, true, dpyTmp1V3, dpyTmp2V3, dpyTmp3V3 ) ) {
-                        System.out.println( "Failure to getRayIntersection" );
-                    } else {
-                        System.out.println( "PICKED: " + rm .toString() );
-                        float glow = rm .getGlow();
-                        if ( glow == 0.0f )
-                            rm .setGlow( 0.8f );
-                        else
-                            rm .setGlow( 0.0f );
-                    }
-                }
-            }
-
-            @Override
-            public void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale, float[] orientation, float[] loc ) {} // only matters for panels
-
-            @Override
-            public void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale ) {}
-        });
-        this .scene .refresh();
+        Line line = new Line( new RealVector( ray.orig[0], ray.orig[1], ray.orig[2] ), new RealVector( ray.dir[0], ray.dir[1], ray.dir[2] ) );
+        NearestPicker picker = new NearestPicker( line, this .mCamera, this .projection );
+        this .scene .pick( picker );
+        RenderedManifestation picked = picker .getNearest();
+        if ( picked != null ) {
+            float glow = picked .getGlow();
+            if ( glow == 0.0f )
+                picked .setGlow( 0.8f );
+            else
+                picked .setGlow( 0.0f );
+            this .scene .refresh();
+        }
     }
 
     protected String doInBackground(String... urls) {
@@ -227,7 +205,7 @@ public class View3dActivity implements GLEventListener
     {
         GLProfile glprofile = GLProfile.getDefault();
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
-        glcapabilities .setDepthBits( 32 );
+        glcapabilities .setDepthBits( 24 );
         final GLCanvas glcanvas = new GLCanvas( glcapabilities );
         
         // new code for this vZome example

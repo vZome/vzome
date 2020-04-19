@@ -13,7 +13,6 @@ import java.util.Set;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.opengl.InstancedGeometry;
 
 /**
@@ -22,12 +21,10 @@ import com.vzome.opengl.InstancedGeometry;
 public class ShapeAndInstances implements InstancedGeometry
 {
     public interface Intersector
-    {
-        void intersectAABBox( float[] min, float[] max, RenderedManifestation rm );
+    {        
+        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale, float[] embedding );
         
-        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale );
-        
-        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale, float[] orientation, float[] location );
+        void intersectTriangle( float[] verticesArray, int i, RenderedManifestation rm, float scale, float[] embedding, float[] orientation, float[] location );
     }
 
     private FloatBuffer verticesBuffer, normalsBuffer, lineVerticesBuffer, positionsBuffer, colorsBuffer;
@@ -46,11 +43,15 @@ public class ShapeAndInstances implements InstancedGeometry
 
     public static final int COORDS_PER_VERTEX = 3;
 
-    public ShapeAndInstances( Polyhedron shape, Embedding embedding, float globalScale )
+    public ShapeAndInstances( Polyhedron shape, float globalScale )
     {
         this .shape = shape;
         this .globalScale = globalScale;
 
+        // Note, we don't need any Embedding here.  This shape will be
+        //  oriented for each instance, in the shader, and we cannot do
+        //  embedding before that.
+        
         List<RealVector> vertices = new ArrayList<>();
         List<RealVector> normals = new ArrayList<>();
         List<RealVector> lineVertices = new ArrayList<>();
@@ -59,11 +60,11 @@ public class ShapeAndInstances implements InstancedGeometry
         for ( Polyhedron.Face face : faces ) {
             int count = face.size();
             AlgebraicVector vertex = vertexList .get( face .getVertex(0) );
-            RealVector rv0 = embedding .embedInR3( vertex );
+            RealVector rv0 = vertex .toRealVector();
             vertex = vertexList.get( face .getVertex(1) );
-            RealVector rv1 = embedding .embedInR3( vertex );
+            RealVector rv1 = vertex .toRealVector();
             vertex = vertexList.get( face .getVertex(2) );
-            RealVector rvLast = embedding .embedInR3( vertex );
+            RealVector rvLast = vertex .toRealVector();
             RealVector normal = rv0.minus(rv1) .cross( rvLast.minus(rv0) ) .normalize();
             vertices .add( rv0 );
             normals .add( normal );
@@ -77,7 +78,7 @@ public class ShapeAndInstances implements InstancedGeometry
             lineVertices .add( rvLast );
             for (int i = 3; i < count; i++) {
                 vertex = vertexList .get( face .getVertex(i) );
-                RealVector rv = embedding .embedInR3( vertex );
+                RealVector rv = vertex .toRealVector();
                 vertices .add( rv0 );
                 vertices .add( rvLast );
                 vertices .add( rv );
@@ -130,9 +131,9 @@ public class ShapeAndInstances implements InstancedGeometry
         this .lineVerticesBuffer .position(0);
     }
 
-    public ShapeAndInstances( Polyhedron shape, Embedding embedding, Collection<RenderedManifestation> instances, float globalScale )
+    public ShapeAndInstances( Polyhedron shape, Collection<RenderedManifestation> instances, float globalScale )
     {
-        this( shape, embedding, globalScale );
+        this( shape, globalScale );
         this .instances .addAll( instances );  // we are changing shapes
     }
 
@@ -186,14 +187,16 @@ public class ShapeAndInstances implements InstancedGeometry
             float[] colors = new float[4 * instances.size()];
             int i = 0;
             for( RenderedManifestation part : instances ) {
-                RealVector vector = part .getLocation();
+                AlgebraicVector vector = part .getLocationAV();
+                // Embedding will be handled in the shader
+                RealVector rv = ( vector == null )? new RealVector() : vector .toRealVector();
                 int zone = part .getStrutZone();
                 if ( zone < 0 )
                     zone = 0;
                 float orientationAndGlow = part .getGlow() + (float) zone;
-                offsets[i * 4 + 0] = globalScale * (float) vector .x;
-                offsets[i * 4 + 1] = globalScale * (float) vector .y;
-                offsets[i * 4 + 2] = globalScale * (float) vector .z;
+                offsets[i * 4 + 0] = globalScale * (float) rv .x;
+                offsets[i * 4 + 1] = globalScale * (float) rv .y;
+                offsets[i * 4 + 2] = globalScale * (float) rv .z;
                 offsets[i * 4 + 3] = orientationAndGlow;
 
                 float[] rgba = new float[4];
@@ -252,8 +255,9 @@ public class ShapeAndInstances implements InstancedGeometry
         this .hasChanges = true;
     }
     
-    public void pick( Intersector intersector, float[][] orientations )
+    public void pick( Intersector intersector, float[][] orientations, float[] embedding )
     {
+        float scale = 1f / this .globalScale;
         if ( this .shape .isPanel() && ! this .instances .isEmpty() ) {
             // A panel shape has only a single instance, for now
             RenderedManifestation rm = this .instances .iterator() .next();
@@ -262,29 +266,35 @@ public class ShapeAndInstances implements InstancedGeometry
             // We just intersect the triangles of one of the two polygons.
             int triangles = this .vertexCount / 6;
             for ( int i = 0; i < triangles; i++ ) {
-                intersector .intersectTriangle( this .verticesArray, i * 9, rm, 1f / this .globalScale );
+                intersector .intersectTriangle( this .verticesArray, i * 9, rm, scale, embedding );
             }
         }
         else if ( this .shape .getOrbit() != null ) {
             // a strut shape
             for ( RenderedManifestation rm : instances ) {
                 float[] orientation = orientations [ rm .getStrutZone() ];
+                AlgebraicVector vector = rm .getLocationAV();
+                // Embedding will be handled in the intersector
+                RealVector rv = ( vector == null )? new RealVector() : vector .toRealVector();
                 float[] location = new float[3];
-                rm .getLocation() .addTo( location, location );
+                rv .addTo( location, location );
                 int triangles = this .vertexCount / 3 ;
                 for ( int i = 0; i < triangles; i++ ) {
-                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, 1f / this .globalScale, orientation, location );
+                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, scale, embedding, orientation, location );
                 }
             }
         }
         else {
             // a ball shape
             for ( RenderedManifestation rm : instances ) {
+                AlgebraicVector vector = rm .getLocationAV();
+                // Embedding will be handled in the intersector
+                RealVector rv = ( vector == null )? new RealVector() : vector .toRealVector();
                 float[] location = new float[3];
-                rm .getLocation() .addTo( location, location );
+                rv .addTo( location, location );
                 int triangles = this .vertexCount / 3 ;
                 for ( int i = 0; i < triangles; i++ ) {
-                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, 1f / this .globalScale, null, location );
+                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, scale, embedding, null, location );
                 }
             }
         }
