@@ -168,12 +168,14 @@ public class View3dActivity implements GLEventListener
         NearestPicker picker = new NearestPicker( line, this .mCamera, this .projection );
         this .scene .pick( picker );
         RenderedManifestation picked = picker .getNearest();
-        float glow = picked .getGlow();
-        if ( glow == 0.0f )
-            picked .setGlow( 0.8f );
-        else
-            picked .setGlow( 0.0f );
-        this .scene .refresh();
+        if ( picked != null ) {
+            float glow = picked .getGlow();
+            if ( glow == 0.0f )
+                picked .setGlow( 0.8f );
+            else
+                picked .setGlow( 0.0f );
+            this .scene .refresh();
+        }
     }
 
     protected String doInBackground(String... urls) {
@@ -203,7 +205,7 @@ public class View3dActivity implements GLEventListener
     {
         GLProfile glprofile = GLProfile.getDefault();
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
-        glcapabilities .setDepthBits( 32 );
+        glcapabilities .setDepthBits( 24 );
         final GLCanvas glcanvas = new GLCanvas( glcapabilities );
         
         // new code for this vZome example
