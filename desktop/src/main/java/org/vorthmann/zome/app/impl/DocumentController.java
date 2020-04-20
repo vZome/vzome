@@ -659,22 +659,23 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
     
             case "cut":
-                setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
+                setProperty( "clipboard", documentModel .copyRenderedModel( "vson" ) );
                 documentModel .doEdit( "Delete" );
                 break;
     
             case "copy":
+            case "copy.vson":
+                setProperty( "clipboard", documentModel .copyRenderedModel( "vson" ) );
+                break;
+                
+            case "copy.vef":
                 setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
                 break;
     
             case "copy.observable":
                 setProperty( "clipboard", documentModel .copyRenderedModel( "observable" ) );
                 break;
-    
-            case "copy.vson":
-                setProperty( "clipboard", documentModel .copyRenderedModel( "vson" ) );
-                break;
-    
+
             case "paste":
                 {
                     String vefContent = getProperty( "clipboard" );

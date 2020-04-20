@@ -145,7 +145,7 @@ public class ColoredMeshJson
                     nums[ i++ ] = mapper .treeToValue( numberNode, int[].class );
                 }
                 AlgebraicVector vertex = field .createIntegerVector( nums );
-                vertex = projection .projectImage( vertex, true );
+                vertex = projection .projectImage( vertex, false );
                 if ( offset != null )
                     vertex = offset .plus( vertex );
                 vertices .add( vertex );
@@ -163,7 +163,9 @@ public class ColoredMeshJson
                 for ( JsonNode ballNode : collection ) {
                     JsonNode vertexNode = ballNode .get( "vertex" );
                     int i = vertexNode .asInt();
-                    events .constructionAdded( new FreePoint( vertices .get( i ) ), null );
+                    JsonNode colorNode = ballNode .get( "color" );
+                    Color color = ( colorNode == null )? null : Color .parseWebColor( colorNode .asText() );
+                    events .constructionAdded( new FreePoint( vertices .get( i ) ), color );
                 }
             }
         }
