@@ -24,14 +24,27 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
     
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
 
-    public ThumbnailRendererImpl( J3dComponentFactory rvFactory, Lights sceneLighting )
+    public ThumbnailRendererImpl( Lights sceneLighting )
     {
         super( new Camera(), sceneLighting );
+    }
+    
+    public void attachViewer( J3dComponentFactory rvFactory )
+    {
         // We must create a "non-sticky" rendering component here, or we will mess up
         //   picking in the main rendering component; we don't want the RenderedManifestations
         //   to record these scene graph objects, which are transient, after all.
         // The canvas must be an offscreen canvas, also.
         rvFactory .createRenderingComponent( false, true, this );
+    }
+
+    @Override
+    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
+    {
+        // no picking, etc., so we don't care about the offscreen canvas
+        this .scene = scene;
+        this .viewer = viewer;
+        super .addViewer( viewer ); // add it to the CameraController
     }
 
     /* (non-Javadoc)
@@ -45,6 +58,7 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
             return; // avoid NPE
         }
         super .restoreView( camera );
+
         scene .reset(); // This is very important... forget all of the prior rendering
         
         if ( logger .isLoggable( Level.FINER ) )
@@ -67,14 +81,5 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
                 callback .thumbnailReady( image );
             }
         } );
-    }
-
-    @Override
-    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
-    {
-        // no picking, etc., so we don't care about the offscreen canvas
-        this .scene = scene;
-        this .viewer = viewer;
-        super .addViewer( viewer ); // add it to the CameraController
     }
 }
