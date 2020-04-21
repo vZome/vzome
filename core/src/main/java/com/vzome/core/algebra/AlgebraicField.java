@@ -214,15 +214,29 @@ public abstract class AlgebraicField
 
     /**
      * Generates an AlgebraicNumber with integer terms (having only unit denominators).
-     * Use {@code createAlgebraicNumber( BigRational[] factors )} if denominators other than one are required.
-     * @param factors
+     * Use {@code createAlgebraicNumber( int[] numerators, int denominator )} 
+     * or {@code createAlgebraicNumber( BigRational[] factors )} 
+     * if denominators other than one are required.
+     * @param terms
      * @return
      */
-    public final AlgebraicNumber createAlgebraicNumber( int[] factors )
+    public final AlgebraicNumber createAlgebraicNumber( int[] terms )
     {
-        BigRational[] brs = new BigRational[ factors .length ];
-        for ( int j = 0; j < factors.length; j++ ) {
-            brs[ j ] = new BigRational( factors[ j ] );
+        return createAlgebraicNumber( terms, 1 );
+    }
+
+    /**
+     * Generates an AlgebraicNumber with the specified numerators,
+     * all having a common denominator as specified.
+     * @param numerators
+     * @param denominator is a common denominator for all numerators
+     * @return
+     */
+    public final AlgebraicNumber createAlgebraicNumber( int[] numerators, int denominator )
+    {
+        BigRational[] brs = new BigRational[ numerators .length ];
+        for ( int j = 0; j < numerators.length; j++ ) {
+            brs[ j ] = new BigRational( numerators[ j ], denominator );
         }
         return createAlgebraicNumber( brs );
     }
