@@ -414,6 +414,9 @@ public class ApplicationController extends DefaultController
                 case "rootThree":
                     return "\u221A3";
 
+                case "snubCube":
+                    return "Snub Cube";
+
                 case "snubDodec":
                     return "Snub Dodec";
 
