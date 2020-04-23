@@ -25,21 +25,9 @@ public class Fields {
     public interface Element<T> {
         T times(T that);
 
-        T times(int n);
-
-        T times(int num, int den);
-
         T plus(T that);
 
-        T plus(int n);
-
-        T plus(int num, int den);
-
         T minus(T that);
-
-        T minus(int n);
-
-        T minus(int num, int den);
 
         T reciprocal();
 

@@ -849,7 +849,6 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
      * @param n is the value to be multiplied
      * @return this * n
      */
-    @Override
     public BigRational times( int n )
     {
         return n == 1 ? this : n == 0 ? ZERO : canMultiplyInteger
@@ -863,7 +862,6 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
      * @param den is the denominator of the fraction to be multiplied
      * @return this * (num / den)
      */
-    @Override
     public BigRational times( int num, int den )
     {
         return this.times( new BigRational( num, den ) );
@@ -910,7 +908,6 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
      * @param n is the value to be added
      * @return this + n
      */
-    @Override
     public BigRational plus( int n )
     {
         return n == 0 
@@ -926,7 +923,6 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
      * @param den is the denominator of the fraction to be added
      * @return this + (num / den)
      */
-    @Override
     public BigRational plus( int num, int den )
     {
         return this.plus( new BigRational( num, den ) );
@@ -1026,7 +1022,6 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
      * @param n is the value to be subtracted
      * @return this - n
      */
-    @Override
     public BigRational minus( int n )
     {
         return n == 0 
@@ -1042,7 +1037,6 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
      * @param den is the denominator of the fraction to be subtracted
      * @return this - (num / den)
      */
-    @Override
     public BigRational minus( int num, int den )
     {
         return this.minus( new BigRational( num, den ) );

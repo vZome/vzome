@@ -189,7 +189,6 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * @param n is the value to be added
      * @return this + n
      */
-    @Override
     public AlgebraicNumber plus( int n )
     {
         return n == 0 ? this : this.plus(field.createRational(n));
@@ -201,7 +200,6 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * @param den is the denominator of the rational value to be added
      * @return this + (num / den)
      */
-    @Override
     public AlgebraicNumber plus( int num, int den )
     {
         return this.plus(field.createRational(num, den));
@@ -242,7 +240,6 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * @param n is the value to be multiplied
      * @return this * n
      */
-    @Override
     public AlgebraicNumber times( int n )
     {
         switch(n) {
@@ -263,7 +260,6 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * @param den is the denominator of the rational value to be multiplied
      * @return this * (num / den)
      */
-    @Override
     public AlgebraicNumber times( int num, int den )
     {
         return this.times(field.createRational(num, den));
@@ -296,7 +292,6 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * @param n is the value to be subtracted
      * @return this - n
      */
-    @Override
     public AlgebraicNumber minus( int n )
     {
         return n == 0 ? this : this.minus(field.createRational(n));
@@ -308,7 +303,6 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
      * @param den is the denominator of the rational value to be subtracted
      * @return this - (num / den)
      */
-    @Override
     public AlgebraicNumber minus( int num, int den )
     {
         return this.minus(field.createRational(num, den));
