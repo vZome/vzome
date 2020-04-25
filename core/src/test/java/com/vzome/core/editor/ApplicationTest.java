@@ -1,10 +1,8 @@
 package com.vzome.core.editor;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import org.junit.After;
@@ -13,7 +11,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.vzome.core.model.RealizedModel;
+import com.vzome.core.construction.Construction;
+import com.vzome.core.model.ColoredMeshJson;
+import com.vzome.core.render.Color;
 
 public class ApplicationTest {
 
@@ -34,7 +34,8 @@ public class ApplicationTest {
     }
 
     @Test
-    public void testImportMesh()
+    public void testColoredMeshJson()
+    
     {
         String testJson = "{\n" + 
                 "  \"field\" : \"golden\",\n" + 
@@ -74,11 +75,17 @@ public class ApplicationTest {
                 "  } ]\n" + 
                 "}";
         Application application = new Application( false, null, new Properties() );
-        InputStream stream = new ByteArrayInputStream( testJson.getBytes() );
+        ColoredMeshJson.Events events = new ColoredMeshJson.Events()
+        {    
+            @Override
+            public void constructionAdded( Construction c, Color color )
+            {
+                // TODO Auto-generated method stub
+            }
+        };
         try {
-            RealizedModel model = application .importMesh( stream );
+            ColoredMeshJson .parse( testJson, null, events, application );
             // TODO put some better assertions here
-            assertNotNull( model );
         }
         catch (IOException e) {
             fail( e .getMessage() );
