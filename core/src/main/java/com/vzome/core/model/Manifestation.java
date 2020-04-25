@@ -11,7 +11,6 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.mesh.Color;
 import com.vzome.core.render.RenderedManifestation;
 
 /**

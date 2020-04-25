@@ -378,7 +378,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
                 default:
-                    if ( cmd .startsWith( "LoadVEF/" ) )
+                    if ( cmd .startsWith( "LoadVEF/" )
+                      || cmd .startsWith( "ImportSimpleMeshJson/" )
+                      || cmd .startsWith( "ImportColoredMeshJson/" ) )
                     {
                         Controller importScaleController = mController .getSubController( "importScale" );
                         if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
@@ -807,6 +809,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 else if ( command .startsWith( "LoadVEF/" ) ) {
                     actionListener = this .localActions;
                 }
+                else if ( command .startsWith( "ImportSimpleMeshJson/" ) ) {
+                    actionListener = this .localActions;
+                }
+                else if ( command .startsWith( "ImportColoredMeshJson/" ) ) {
+                    actionListener = this .localActions;
+                }
                 else if ( command .startsWith( "setSymmetry." ) ) {
                     actionListener = this .localActions;
                 }
@@ -826,6 +834,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 }
                 else if ( command .startsWith( "export." ) ) {
                     String ext = command .substring( "export." .length() );
+                    ext = controller .getProperty( "exportExtension." + ext );
                     switch ( ext ) {
                     case "vrml": ext = "wrl"; break;
                     case "size": ext = "txt"; break;

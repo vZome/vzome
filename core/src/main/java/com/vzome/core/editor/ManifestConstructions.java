@@ -4,14 +4,15 @@ import java.util.ArrayList;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
-import com.vzome.core.mesh.Color;
-import com.vzome.core.mesh.ColoredMeshJson;
+import com.vzome.core.model.Color;
+import com.vzome.core.model.ColoredMeshJson;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.SimpleMeshJson;
 
 // TODO use this in CommandEdit as well
 //
 @SuppressWarnings("serial")
-public class ManifestConstructions extends ArrayList<Construction> implements ConstructionChanges, ColoredMeshJson.Events
+public class ManifestConstructions extends ArrayList<Construction> implements ConstructionChanges, ColoredMeshJson.Events, SimpleMeshJson.Events
 {
 	private final ChangeManifestations edit;
 

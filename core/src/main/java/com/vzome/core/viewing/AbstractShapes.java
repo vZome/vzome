@@ -14,7 +14,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.mesh.Color;
+import com.vzome.core.model.Color;
 import com.vzome.core.parts.FastDefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.render.Shapes;

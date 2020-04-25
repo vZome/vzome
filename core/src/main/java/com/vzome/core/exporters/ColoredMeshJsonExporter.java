@@ -4,18 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
-import com.vzome.core.mesh.ColoredMeshJson;
-import com.vzome.core.render.Colors;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
+import com.vzome.core.model.ColoredMeshJson;
 
 
-public class VsonExporter extends Exporter3d
+public class ColoredMeshJsonExporter extends Exporter3d
 {			
-    public VsonExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
+    public ColoredMeshJsonExporter()
     {
-        super( scene, colors, lights, model );
+        super( null, null, null, null );
     }
 
     @Override
@@ -27,7 +23,7 @@ public class VsonExporter extends Exporter3d
     @Override
     public String getFileExtension()
     {
-        return "vson";
+        return "cmesh.json";
     }
 
     @Override

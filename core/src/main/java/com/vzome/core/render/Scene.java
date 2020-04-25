@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.vzome.core.mesh.Color;
+import com.vzome.core.model.Color;
 import com.vzome.core.viewing.Lights;
 import com.vzome.opengl.Renderer;
 

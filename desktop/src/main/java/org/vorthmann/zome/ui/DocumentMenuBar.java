@@ -127,7 +127,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         JMenu submenu = new JMenu( "Import 3D Mesh..." );
-        submenu .add( createMenuItem( "Color Mesh JSON", "LoadVEF/Quaternion" ) );
+        submenu .add( createMenuItem( "Simple Mesh JSON", "ImportSimpleMeshJson/Quaternion" ) );
+        submenu .add( createMenuItem( "Color Mesh JSON", "ImportColoredMeshJson/Quaternion" ) );
         importVEFItem = createMenuItem( "vZome VEF", "LoadVEF/Quaternion" );
         submenu .add( importVEFItem );
         menu .add( submenu );
@@ -148,7 +149,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu .add( createMenuItem( "PLY", "export.ply" ) );
         menu .add( submenu );
         submenu = new JMenu( "Export 3D Mesh..." );
-        submenu .add( createMenuItem( "Color Mesh JSON", "export.vson" ) );
+        submenu .add( createMenuItem( "Simple Mesh JSON", "export.mesh" ) );
+        submenu .add( createMenuItem( "Color Mesh JSON", "export.cmesh" ) );
         submenu .add( createMenuItem( "AutoCAD DXF", "export.dxf" ) );
         if ( controller .userHasEntitlement( "export.pdb" ) )
         {

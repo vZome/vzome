@@ -2,7 +2,7 @@ package com.vzome.core.edits;
 
 import java.util.function.Function;
 
-import com.vzome.core.mesh.Color;
+import com.vzome.core.model.Color;
 
 /**
  * @author David Hall

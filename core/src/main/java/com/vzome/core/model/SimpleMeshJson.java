@@ -1,4 +1,4 @@
-package com.vzome.core.mesh;
+package com.vzome.core.model;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -13,10 +13,8 @@ import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
@@ -26,19 +24,15 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.Projection;
-import com.vzome.core.model.Connector;
-import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.Panel;
-import com.vzome.core.model.Strut;
 
-public class ColoredMeshJson
+public class SimpleMeshJson
 {
     public static void generate( Iterable<Manifestation> model, AlgebraicField field, Writer writer ) throws IOException
     {
         SortedSet<AlgebraicVector> vertices = new TreeSet<>();
-        ArrayList<JsonNode> balls = new ArrayList<>();
-        ArrayList<JsonNode> struts = new ArrayList<>();
-        ArrayList<JsonNode> panels = new ArrayList<>();
+        ArrayList<Integer> vertexIndices = new ArrayList<>();
+        ArrayList<JsonNode> edgeNodes = new ArrayList<>();
+        ArrayList<JsonNode> faceNodes = new ArrayList<>();
         AlgebraicVector lastBall = null;
         AlgebraicVector lastVertex = null;
 
@@ -80,30 +74,21 @@ public class ColoredMeshJson
         for ( Manifestation man : model ) {
             if ( man instanceof Connector )
             {
-                ObjectNode ballJson = mapper .createObjectNode();
-                ballJson .set( "vertex", mapper .valueToTree( sortedVertexList .indexOf( man .getLocation() ) ) );
-                ballJson .set( "color", mapper .valueToTree( man .getColor() .toWebString() ) );
-                balls .add( ballJson );
+                vertexIndices .add( sortedVertexList .indexOf( man .getLocation() ) );
             }
             else if ( man instanceof Strut )
             {
-                ObjectNode strutJson = mapper .createObjectNode();
                 int start = sortedVertexList .indexOf( man .getLocation() );
                 int end = sortedVertexList .indexOf( ((Strut) man) .getEnd() );
                 JsonNode ends = mapper .valueToTree( new int[]{ start, end } );
-                strutJson .set( "vertices", ends );
-                strutJson .set( "color", mapper .valueToTree( man .getColor() .toWebString() ) );
-                struts .add( strutJson );
+                edgeNodes .add( ends );
             }
             else if ( man instanceof Panel )
             {
-                ObjectNode panelJson = mapper .createObjectNode();
                 @SuppressWarnings("unchecked")
                 Stream<AlgebraicVector> vertexStream = StreamSupport.stream( ( (Iterable<AlgebraicVector>) man ).spliterator(), false);
                 JsonNode node = mapper .valueToTree( vertexStream.map( v -> sortedVertexList .indexOf( v ) ). collect( Collectors.toList() ) );
-                panelJson .set( "vertices", node );
-                panelJson .set( "color", mapper .valueToTree( man .getColor() .toWebString() ) );
-                panels .add( panelJson );
+                faceNodes .add( node );
             }
         }
 
@@ -115,16 +100,15 @@ public class ColoredMeshJson
         generator .writeStartObject();
         generator .writeStringField( "field", field .getName() );
         generator .writeObjectField( "vertices", sortedVertexList .stream() .map( v -> v .minus( origin )) .collect( Collectors .toList() ) );
-        generator .writeObjectField( "balls", balls );
-        generator .writeObjectField( "struts", struts );
-        generator .writeObjectField( "panels", panels );
+        generator .writeObjectField( "edges", edgeNodes );
+        generator .writeObjectField( "faces", faceNodes );
         generator .writeEndObject();
         generator.close();
     }
     
     public interface Events
     {
-        void constructionAdded( Construction c, Color color );
+        void constructionAdded( Construction c );
     }
 
     public static void parse( String json, AlgebraicVector offset, Events events, AlgebraicField.Registry registry ) throws IOException
@@ -154,62 +138,16 @@ public class ColoredMeshJson
                 vertices .add( vertex );
             }
         }
-
-        JsonNode collection = node .get( "balls" );
-        if ( collection != null ) {
-            try {
-                int[] indices = mapper .treeToValue( collection, int[].class );
-                Arrays .stream( indices )
-                    .forEach( i -> events .constructionAdded( new FreePoint( vertices .get( i ) ), null ) );
-            }
-            catch ( JsonProcessingException e ) {
-                for ( JsonNode ballNode : collection ) {
-                    JsonNode vertexNode = ballNode .get( "vertex" );
-                    int i = vertexNode .asInt();
-                    JsonNode colorNode = ballNode .get( "color" );
-                    Color color = ( colorNode == null )? null : Color .parseWebColor( colorNode .asText() );
-                    events .constructionAdded( new FreePoint( vertices .get( i ) ), color );
-                }
-            }
-        }
-
-        // TODO: support "cells"
         
-        collection = node .get( "edges" );
+        JsonNode collection = node .get( "edges" );
         if ( collection != null ) {
             for ( JsonNode strutNode : collection ) {
                 int[] ends = mapper .treeToValue( strutNode, int[].class );
                 Point p1 = new FreePoint( vertices .get( ends[ 0 ] ) );
                 Point p2 = new FreePoint( vertices .get( ends[ 1 ] ) );
-                events .constructionAdded( new SegmentJoiningPoints( p1, p2 ), null );
-            }
-        }
-
-        collection = node .get( "struts" );
-        if ( collection != null ) {
-            for ( JsonNode strutNode : collection ) {
-                if ( strutNode .isArray() ) {
-                    int[] ends = mapper .treeToValue( strutNode, int[].class );
-                    Point p1 = new FreePoint( vertices .get( ends[ 0 ] ) );
-                    Point p2 = new FreePoint( vertices .get( ends[ 1 ] ) );
-                    events .constructionAdded( new SegmentJoiningPoints( p1, p2 ), null );
-                }
-                else if ( strutNode .has( "start" ) ) {
-                    int start = mapper .treeToValue( strutNode .get( "start" ), int.class );
-                    int end = mapper .treeToValue( strutNode .get( "end" ), int.class );
-                    Point p1 = new FreePoint( vertices .get( start ) );
-                    Point p2 = new FreePoint( vertices .get( end ) );
-                    events .constructionAdded( new SegmentJoiningPoints( p1, p2 ), null );
-                }
-                else {
-                    JsonNode verticesNode = strutNode .get( "vertices" );
-                    int[] ends = mapper .treeToValue( verticesNode, int[].class );
-                    Point p1 = new FreePoint( vertices .get( ends[ 0 ] ) );
-                    Point p2 = new FreePoint( vertices .get( ends[ 1 ] ) );
-                    JsonNode colorNode = strutNode .get( "color" );
-                    Color color = ( colorNode == null )? null : Color .parseWebColor( colorNode .asText() );
-                    events .constructionAdded( new SegmentJoiningPoints( p1, p2 ), color );
-                }
+                events .constructionAdded( p1 );
+                events .constructionAdded( p2 );
+                events .constructionAdded( new SegmentJoiningPoints( p1, p2 ) );
             }
         }
         
@@ -221,22 +159,7 @@ public class ColoredMeshJson
                         .mapToObj( i -> new FreePoint( vertices .get( i ) ) )
                         .collect( Collectors .toList() );
                 Polygon panel = new PolygonFromVertices( points );
-                events .constructionAdded( panel, null );
-            }
-        }
-        
-        collection = node .get( "panels" );
-        if ( collection != null ) {
-            for ( JsonNode panelNode : collection ) {
-                JsonNode verticesNode = panelNode .get( "vertices" );
-                int[] indices = mapper .treeToValue( verticesNode, int[].class );
-                List<Point> points = Arrays .stream( indices )
-                        .mapToObj( i -> new FreePoint( vertices .get( i ) ) )
-                        .collect( Collectors .toList() );
-                Polygon panel = new PolygonFromVertices( points );
-                JsonNode colorNode = panelNode .get( "color" );
-                Color color = ( colorNode == null )? null : Color .parseWebColor( colorNode .asText() );
-                events .constructionAdded( panel, color );
+                events .constructionAdded( panel );
             }
         }
     }

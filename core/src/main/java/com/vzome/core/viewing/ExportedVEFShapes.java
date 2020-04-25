@@ -29,7 +29,7 @@ import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.mesh.Color;
+import com.vzome.core.model.Color;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.render.Colors;
 

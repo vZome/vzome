@@ -20,6 +20,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.exporters.ColoredMeshJsonExporter;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
@@ -36,10 +37,10 @@ import com.vzome.core.exporters.STEPExporter;
 import com.vzome.core.exporters.SecondLifeExporter;
 import com.vzome.core.exporters.SegExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
+import com.vzome.core.exporters.SimpleMeshJsonExporter;
 import com.vzome.core.exporters.StlExporter;
 import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.exporters.VefExporter;
-import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.exporters.WebviewJsonExporter;
 import com.vzome.core.exporters2d.PDFExporter;
 import com.vzome.core.exporters2d.PostScriptExporter;
@@ -50,7 +51,7 @@ import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
-import com.vzome.core.mesh.Color;
+import com.vzome.core.model.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
@@ -97,8 +98,10 @@ public class Application implements AlgebraicField.Registry
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        this .exporters .put( "vson", new VsonExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "shapes", new ShapesJsonExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "mesh", new SimpleMeshJsonExporter() );
+        this .exporters .put( "cmesh", new ColoredMeshJsonExporter() );
+        this .exporters .put( "shapes", new ShapesJsonExporter() );
+
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
@@ -108,7 +111,9 @@ public class Application implements AlgebraicField.Registry
         this .exporters .put( "vrml", new VRMLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "off", new OffExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "2life", new SecondLifeExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "vef", new VefExporter( null, this .mColors, this .mLights, null ) );
+        Exporter3d vefExporter = new VefExporter( null, this .mColors, this .mLights, null );
+        this .exporters .put( "vef", vefExporter );
+        this .exporters .put( "partgeom", vefExporter ); // need this here just to find the extension in DocumentController.getProperty()
         this .exporters .put( "partslist", new PartsListExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "size", new RulerExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "stl", new StlExporter( null, this .mColors, this .mLights, null ) );
