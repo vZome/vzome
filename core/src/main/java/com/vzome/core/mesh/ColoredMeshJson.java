@@ -1,4 +1,4 @@
-package com.vzome.core.model;
+package com.vzome.core.mesh;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -26,7 +26,10 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.Projection;
-import com.vzome.core.render.Color;
+import com.vzome.core.model.Connector;
+import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
+import com.vzome.core.model.Strut;
 
 public class ColoredMeshJson
 {

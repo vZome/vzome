@@ -17,6 +17,7 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.mesh.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;

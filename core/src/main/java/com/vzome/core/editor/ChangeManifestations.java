@@ -12,12 +12,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.construction.Construction;
+import com.vzome.core.mesh.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.xml.DomUtils;
 

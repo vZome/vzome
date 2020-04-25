@@ -3,12 +3,12 @@ package com.vzome.core.editor;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.vzome.core.mesh.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Color;
 
 public class SelectionSummary implements ManifestationChanges
 {

@@ -25,7 +25,7 @@ import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.SixCubeProjection;
 import com.vzome.core.math.TetrahedralProjection;
-import com.vzome.core.model.ColoredMeshJson;
+import com.vzome.core.mesh.ColoredMeshJson;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.xml.DomUtils;

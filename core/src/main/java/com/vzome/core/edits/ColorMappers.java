@@ -1,7 +1,8 @@
 package com.vzome.core.edits;
 
-import com.vzome.core.render.Color;
 import java.util.function.Function;
+
+import com.vzome.core.mesh.Color;
 
 /**
  * @author David Hall

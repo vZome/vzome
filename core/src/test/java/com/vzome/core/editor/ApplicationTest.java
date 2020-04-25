@@ -12,8 +12,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.vzome.core.construction.Construction;
-import com.vzome.core.model.ColoredMeshJson;
-import com.vzome.core.render.Color;
+import com.vzome.core.mesh.Color;
+import com.vzome.core.mesh.ColoredMeshJson;
 
 public class ApplicationTest {
 

@@ -74,7 +74,7 @@ public class Java2dExporter
         List<Vector3f> mappedVertices = new ArrayList<>( 60 );
         for (RenderedManifestation rm : model) {
             Polyhedron shape = rm .getShape();
-            com.vzome.core.render.Color c = rm .getColor();
+            com.vzome.core.mesh.Color c = rm .getColor();
             Color color = (c == null)? Color.WHITE : new Color( c .getRGB() );
             
             if ( drawLines ) {

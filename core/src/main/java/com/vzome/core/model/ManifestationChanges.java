@@ -1,7 +1,7 @@
 
 package com.vzome.core.model;
 
-import com.vzome.core.render.Color;
+import com.vzome.core.mesh.Color;
 
 
 public interface ManifestationChanges

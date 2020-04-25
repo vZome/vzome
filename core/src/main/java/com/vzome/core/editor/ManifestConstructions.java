@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
-import com.vzome.core.model.ColoredMeshJson;
+import com.vzome.core.mesh.Color;
+import com.vzome.core.mesh.ColoredMeshJson;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.render.Color;
 
 // TODO use this in CommandEdit as well
 //

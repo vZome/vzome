@@ -19,7 +19,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.math.Projection;
-import com.vzome.core.render.Color;
+import com.vzome.core.mesh.Color;
 
 /**
  * @author Scott Vorthmann

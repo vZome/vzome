@@ -1,0 +1,943 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<testsuites>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/06-Jun/02-Scott-testThumbnails" tests="1" time="4.363" timestamp="2020-04-25T09:25:29">
+    <properties/>
+    <testcase classname="/2012.06-Jun" name="02-Scott-testThumbnails" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/06-Jun/02-Scott-testThumbnails.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/06-Jun/09-Michael-browns/brown_rectangle_diags_icos" tests="1" time="4.363" timestamp="2020-04-25T09:25:29">
+    <properties/>
+    <testcase classname="/2012/06-Jun.09-Michael-browns" name="brown_rectangle_diags_icos" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/06-Jun/09-Michael-browns/brown_rectangle_diags_icos.vZome
+</system-out>
+    <system-err>Apr 25, 2020 9:25:29 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+</system-err>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/06-Jun/09-Michael-browns/brown_rectangle_diags_oct" tests="1" time="4.363" timestamp="2020-04-25T09:25:29">
+    <properties/>
+    <testcase classname="/2012/06-Jun.09-Michael-browns" name="brown_rectangle_diags_oct" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/06-Jun/09-Michael-browns/brown_rectangle_diags_oct.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/06-Jun/10-Michael-browns/brown_cage_interface" tests="1" time="4.363" timestamp="2020-04-25T09:25:29">
+    <properties/>
+    <testcase classname="/2012/06-Jun.10-Michael-browns" name="brown_cage_interface" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/06-Jun/10-Michael-browns/brown_cage_interface.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/06-Jun/10-Scott-forMichael/brown-cage-interface-sv" tests="1" time="4.363" timestamp="2020-04-25T09:25:29">
+    <properties/>
+    <testcase classname="/2012/06-Jun.10-Scott-forMichael" name="brown-cage-interface-sv" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/06-Jun/10-Scott-forMichael/brown-cage-interface-sv.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/06-Jun/10-Scott-forMichael/brown-cage-interface-sv2" tests="1" time="4.363" timestamp="2020-04-25T09:25:29">
+    <properties/>
+    <testcase classname="/2012/06-Jun.10-Scott-forMichael" name="brown-cage-interface-sv2" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/06-Jun/10-Scott-forMichael/brown-cage-interface-sv2.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/08-Aug/27-Scott-bistableBubble/bistableBubbleFrame.jpg" tests="1" time="4.363" timestamp="2020-04-25T09:25:29">
+    <properties/>
+    <testcase classname="/2012/08-Aug.27-Scott-bistableBubble" name="bistableBubbleFrame.jpg" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/08-Aug/27-Scott-bistableBubble/bistableBubbleFrame.jpg.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/09-Sep/03-Scott-forZomespace/howToBuildRT" tests="1" time="4.363" timestamp="2020-04-25T09:25:30">
+    <properties/>
+    <testcase classname="/2012/09-Sep.03-Scott-forZomespace" name="howToBuildRT" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/09-Sep/03-Scott-forZomespace/howToBuildRT.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/09-Sep/03-Scott-forZomespace/zomespaceContribution/source" tests="1" time="4.363" timestamp="2020-04-25T09:25:30">
+    <properties/>
+    <testcase classname="/2012/09-Sep/03-Scott-forZomespace.zomespaceContribution" name="source" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/09-Sep/03-Scott-forZomespace/zomespaceContribution/source.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/09-Sep/03-Scott-forZomespace/another/reusedSnapshot" tests="1" time="4.363" timestamp="2020-04-25T09:25:30">
+    <properties/>
+    <testcase classname="/2012/09-Sep/03-Scott-forZomespace.another" name="reusedSnapshot" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/09-Sep/03-Scott-forZomespace/another/reusedSnapshot.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/09-Sep/03-Scott-forZomespace/another/zomespaceContribution/source" tests="1" time="4.363" timestamp="2020-04-25T09:25:31">
+    <properties/>
+    <testcase classname="/2012/09-Sep/03-Scott-forZomespace/another.zomespaceContribution" name="source" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/09-Sep/03-Scott-forZomespace/another/zomespaceContribution/source.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/12-Dec/15-Scott-metaMetaBall/metaMetaBall-articlePages" tests="1" time="4.363" timestamp="2020-04-25T09:25:31">
+    <properties/>
+    <testcase classname="/2012/12-Dec.15-Scott-metaMetaBall" name="metaMetaBall-articlePages" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/12-Dec/15-Scott-metaMetaBall/metaMetaBall-articlePages.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/12-Dec/15-Scott-metaMetaBall/metaMetaBall-article" tests="1" time="4.363" timestamp="2020-04-25T09:25:32">
+    <properties/>
+    <testcase classname="/2012/12-Dec.15-Scott-metaMetaBall" name="metaMetaBall-article" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/12-Dec/15-Scott-metaMetaBall/metaMetaBall-article.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/12-Dec/15-Scott-metaMetaBall/metaMetaBall-first" tests="1" time="4.363" timestamp="2020-04-25T09:25:32">
+    <properties/>
+    <testcase classname="/2012/12-Dec.15-Scott-metaMetaBall" name="metaMetaBall-first" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/12-Dec/15-Scott-metaMetaBall/metaMetaBall-first.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/12-Dec/29-Scott-cubics/cubicSurfaceLines-py" tests="1" time="4.363" timestamp="2020-04-25T09:25:32">
+    <properties/>
+    <testcase classname="/2012/12-Dec.29-Scott-cubics" name="cubicSurfaceLines-py" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/12-Dec/29-Scott-cubics/cubicSurfaceLines-py.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/12-Dec/29-Scott-cubics/cubicSurfaceLines-24" tests="1" time="4.363" timestamp="2020-04-25T09:25:32">
+    <properties/>
+    <testcase classname="/2012/12-Dec.29-Scott-cubics" name="cubicSurfaceLines-24" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/12-Dec/29-Scott-cubics/cubicSurfaceLines-24.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/12-Dec/29-Scott-cubics/cubicSurfaceLines-study" tests="1" time="4.363" timestamp="2020-04-25T09:25:32">
+    <properties/>
+    <testcase classname="/2012/12-Dec.29-Scott-cubics" name="cubicSurfaceLines-study" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/12-Dec/29-Scott-cubics/cubicSurfaceLines-study.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/12-Dec/29-Scott-cubics/cubicSurfaceLines-24-rZome" tests="1" time="4.363" timestamp="2020-04-25T09:25:32">
+    <properties/>
+    <testcase classname="/2012/12-Dec.29-Scott-cubics" name="cubicSurfaceLines-24-rZome" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/12-Dec/29-Scott-cubics/cubicSurfaceLines-24-rZome.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/29-Scott-grandAntiprism/grandAntiprism-green" tests="1" time="4.363" timestamp="2020-04-25T09:25:32">
+    <properties/>
+    <testcase classname="/2012/04-Apr.29-Scott-grandAntiprism" name="grandAntiprism-green" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/29-Scott-grandAntiprism/grandAntiprism-green.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/29-Scott-grandAntiprism/grandAntiprism-blue4fold" tests="1" time="4.363" timestamp="2020-04-25T09:25:32">
+    <properties/>
+    <testcase classname="/2012/04-Apr.29-Scott-grandAntiprism" name="grandAntiprism-blue4fold" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/29-Scott-grandAntiprism/grandAntiprism-blue4fold.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/29-Scott-grandAntiprism/grandAntiprism-blue" tests="1" time="4.363" timestamp="2020-04-25T09:25:33">
+    <properties/>
+    <testcase classname="/2012/04-Apr.29-Scott-grandAntiprism" name="grandAntiprism-blue" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/29-Scott-grandAntiprism/grandAntiprism-blue.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/29-Scott-grandAntiprism/grandAntiprism-red" tests="1" time="4.363" timestamp="2020-04-25T09:25:33">
+    <properties/>
+    <testcase classname="/2012/04-Apr.29-Scott-grandAntiprism" name="grandAntiprism-red" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/29-Scott-grandAntiprism/grandAntiprism-red.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/03-Sam-helicoids/soccer ball and cy" tests="1" time="4.363" timestamp="2020-04-25T09:25:33">
+    <properties/>
+    <testcase classname="/2012/04-Apr.03-Sam-helicoids" name="soccer ball and cy" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/03-Sam-helicoids/soccer ball and cy.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/03-Sam-helicoids/Towson Zome Full Panels but Horizontal" tests="1" time="4.363" timestamp="2020-04-25T09:25:33">
+    <properties/>
+    <testcase classname="/2012/04-Apr.03-Sam-helicoids" name="Towson Zome Full Panels but Horizontal" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/03-Sam-helicoids/Towson Zome Full Panels but Horizontal.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/03-Sam-helicoids/Towson Zome II with Zonoid and panels" tests="1" time="4.363" timestamp="2020-04-25T09:25:33">
+    <properties/>
+    <testcase classname="/2012/04-Apr.03-Sam-helicoids" name="Towson Zome II with Zonoid and panels" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/03-Sam-helicoids/Towson Zome II with Zonoid and panels.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/03-Sam-helicoids/better%20soccer%20ball%20and%20cy%20complete%20truncations" tests="1" time="4.363" timestamp="2020-04-25T09:25:33">
+    <properties/>
+    <testcase classname="/2012/04-Apr.03-Sam-helicoids" name="better%20soccer%20ball%20and%20cy%20complete%20truncations" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/03-Sam-helicoids/better%20soccer%20ball%20and%20cy%20complete%20truncations.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/120cell-octa-half" tests="1" time="4.363" timestamp="2020-04-25T09:25:36">
+    <properties/>
+    <testcase classname="/2012.04-Apr" name="120cell-octa-half" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/120cell-octa-half.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/01-Scott-oddOrbits/oddOrbitsFromRoiceDemo" tests="1" time="4.363" timestamp="2020-04-25T09:25:36">
+    <properties/>
+    <testcase classname="/2012/04-Apr.01-Scott-oddOrbits" name="oddOrbitsFromRoiceDemo" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/01-Scott-oddOrbits/oddOrbitsFromRoiceDemo.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/12-Paul-helenWall/HelenWall" tests="1" time="4.363" timestamp="2020-04-25T09:25:36">
+    <properties/>
+    <testcase classname="/2012/04-Apr.12-Paul-helenWall" name="HelenWall" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/12-Paul-helenWall/HelenWall.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/19-Scott-buckyForHelen/C60-article" tests="1" time="4.363" timestamp="2020-04-25T09:25:36">
+    <properties/>
+    <testcase classname="/2012/04-Apr.19-Scott-buckyForHelen" name="C60-article" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/19-Scott-buckyForHelen/C60-article.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/29-Brian-K4/k4double-SV-colored" tests="1" time="4.363" timestamp="2020-04-25T09:25:36">
+    <properties/>
+    <testcase classname="/2012/04-Apr.29-Brian-K4" name="k4double-SV-colored" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/29-Brian-K4/k4double-SV-colored.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/29-Brian-K4/k4tunnels9" tests="1" time="4.363" timestamp="2020-04-25T09:25:36">
+    <properties/>
+    <testcase classname="/2012/04-Apr.29-Brian-K4" name="k4tunnels9" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/29-Brian-K4/k4tunnels9.vZome
+</system-out>
+    <system-err>Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: failed construction
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:36 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+</system-err>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/29-Brian-K4/k4double" tests="1" time="4.363" timestamp="2020-04-25T09:25:36">
+    <properties/>
+    <testcase classname="/2012/04-Apr.29-Brian-K4" name="k4double" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/29-Brian-K4/k4double.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/redSquash120cell" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012.04-Apr" name="redSquash120cell" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/redSquash120cell.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/04-Apr/vertexFirst120cell" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012.04-Apr" name="vertexFirst120cell" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/04-Apr/vertexFirst120cell.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/24-Luke-pentaNet/PentaNetThing" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.24-Luke-pentaNet" name="PentaNetThing" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/24-Luke-pentaNet/PentaNetThing.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/24-Scott-notOranges/orangeReplacements" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.24-Scott-notOranges" name="orangeReplacements" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/24-Scott-notOranges/orangeReplacements.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/03-Scott-VEFsample/exportSample" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.03-Scott-VEFsample" name="exportSample" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/03-Scott-VEFsample/exportSample.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/24-Scott-fromLuke/blueOrangePurple" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.24-Scott-fromLuke" name="blueOrangePurple" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/24-Scott-fromLuke/blueOrangePurple.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/15-Sunev-quasicrystal/G3" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.15-Sunev-quasicrystal" name="G3" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/15-Sunev-quasicrystal/G3.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/15-Sunev-quasicrystal/star" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.15-Sunev-quasicrystal" name="star" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/15-Sunev-quasicrystal/star.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/15-Sunev-quasicrystal/star2" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.15-Sunev-quasicrystal" name="star2" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/15-Sunev-quasicrystal/star2.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/15-Sunev-quasicrystal/carbon_onion" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.15-Sunev-quasicrystal" name="carbon_onion" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/15-Sunev-quasicrystal/carbon_onion.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/17-Scott-bubbleShow/bubbleShow" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.17-Scott-bubbleShow" name="bubbleShow" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/17-Scott-bubbleShow/bubbleShow.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/24-Scott-tetras/redGreenTetra1" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.24-Scott-tetras" name="redGreenTetra1" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/24-Scott-tetras/redGreenTetra1.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/24-Scott-tetras/redGreenTetra3" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.24-Scott-tetras" name="redGreenTetra3" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/24-Scott-tetras/redGreenTetra3.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/24-Scott-tetras/redGreenTetra2" tests="1" time="4.363" timestamp="2020-04-25T09:25:37">
+    <properties/>
+    <testcase classname="/2012/11-Nov.24-Scott-tetras" name="redGreenTetra2" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/24-Scott-tetras/redGreenTetra2.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/20-Helen-omni600/omnitruncated dodecaplex 3.14" tests="1" time="4.363" timestamp="2020-04-25T09:25:40">
+    <properties/>
+    <testcase classname="/2012/11-Nov.20-Helen-omni600" name="omnitruncated dodecaplex 3.14" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/20-Helen-omni600/omnitruncated dodecaplex 3.14.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/11-Nov/11-Scott-root3/root-3-demo" tests="1" time="4.363" timestamp="2020-04-25T09:25:40">
+    <properties/>
+    <testcase classname="/2012/11-Nov.11-Scott-root3" name="root-3-demo" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/11-Nov/11-Scott-root3/root-3-demo.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/07-July/05-Scott-zomeSpace" tests="1" time="4.363" timestamp="2020-04-25T09:25:40">
+    <properties/>
+    <testcase classname="/2012.07-July" name="05-Scott-zomeSpace" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/07-July/05-Scott-zomeSpace.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/07-July/29-Scott-forJamesZ/RT-stellation" tests="1" time="4.363" timestamp="2020-04-25T09:25:40">
+    <properties/>
+    <testcase classname="/2012/07-July.29-Scott-forJamesZ" name="RT-stellation" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/07-July/29-Scott-forJamesZ/RT-stellation.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/07-July/zomespaceContribution/source" tests="1" time="4.363" timestamp="2020-04-25T09:25:40">
+    <properties/>
+    <testcase classname="/2012/07-July.zomespaceContribution" name="source" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/07-July/zomespaceContribution/source.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/07-July/22-Scott-6lattice/rhomboDual" tests="1" time="4.363" timestamp="2020-04-25T09:25:40">
+    <properties/>
+    <testcase classname="/2012/07-July.22-Scott-6lattice" name="rhomboDual" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/07-July/22-Scott-6lattice/rhomboDual.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/05-Brian-K4/k4surface2" tests="1" time="4.363" timestamp="2020-04-25T09:25:40">
+    <properties/>
+    <testcase classname="/2012/05-May.05-Brian-K4" name="k4surface2" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/05-Brian-K4/k4surface2.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/05-Brian-K4/gyrangleWithK4s" tests="1" time="4.363" timestamp="2020-04-25T09:25:40">
+    <properties/>
+    <testcase classname="/2012/05-May.05-Brian-K4" name="gyrangleWithK4s" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/05-Brian-K4/gyrangleWithK4s.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/08-Scott/120cell-2tau%5E2" tests="1" time="4.363" timestamp="2020-04-25T09:25:41">
+    <properties/>
+    <testcase classname="/2012/05-May.08-Scott" name="120cell-2tau%5E2" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/08-Scott/120cell-2tau%5E2.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/08-Scott/120cell-2tau%255E2" tests="1" time="4.363" timestamp="2020-04-25T09:25:41">
+    <properties/>
+    <testcase classname="/2012/05-May.08-Scott" name="120cell-2tau%255E2" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/08-Scott/120cell-2tau%255E2.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/08-Scott/120cell-2tau^2" tests="1" time="4.363" timestamp="2020-04-25T09:25:41">
+    <properties/>
+    <testcase classname="/2012/05-May.08-Scott" name="120cell-2tau^2" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/08-Scott/120cell-2tau^2.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/08-Roice/120cell_0+2tau" tests="1" time="4.363" timestamp="2020-04-25T09:25:41">
+    <properties/>
+    <testcase classname="/2012/05-May.08-Roice" name="120cell_0+2tau" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/08-Roice/120cell_0+2tau.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/08-Roice/120cell_1+1tau" tests="1" time="4.363" timestamp="2020-04-25T09:25:41">
+    <properties/>
+    <testcase classname="/2012/05-May.08-Roice" name="120cell_1+1tau" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/08-Roice/120cell_1+1tau.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/08-Roice/120cell_3+0tau" tests="1" time="4.363" timestamp="2020-04-25T09:25:41">
+    <properties/>
+    <testcase classname="/2012/05-May.08-Roice" name="120cell_3+0tau" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/08-Roice/120cell_3+0tau.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/08-Roice/120cell_0+2tau-1" tests="1" time="4.363" timestamp="2020-04-25T09:25:41">
+    <properties/>
+    <testcase classname="/2012/05-May.08-Roice" name="120cell_0+2tau-1" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/08-Roice/120cell_0+2tau-1.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/13-Scott-wrlTest/24cell" tests="1" time="4.363" timestamp="2020-04-25T09:25:41">
+    <properties/>
+    <testcase classname="/2012/05-May.13-Scott-wrlTest" name="24cell" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/13-Scott-wrlTest/24cell.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/13-Scott-wrlTest/600cell" tests="1" time="4.363" timestamp="2020-04-25T09:25:41">
+    <properties/>
+    <testcase classname="/2012/05-May.13-Scott-wrlTest" name="600cell" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/13-Scott-wrlTest/600cell.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/13-Scott-K4surfaces/gyrangleWithK4s-andTriangles" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/05-May.13-Scott-K4surfaces" name="gyrangleWithK4s-andTriangles" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/13-Scott-K4surfaces/gyrangleWithK4s-andTriangles.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/28-Michael-gyroid/blue_skewpent_cages_lcy_article" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/05-May.28-Michael-gyroid" name="blue_skewpent_cages_lcy_article" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/28-Michael-gyroid/blue_skewpent_cages_lcy_article.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/28-Michael-gyroid/brown_gyr_double_lcy_article" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/05-May.28-Michael-gyroid" name="brown_gyr_double_lcy_article" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/28-Michael-gyroid/brown_gyr_double_lcy_article.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/28-Michael-gyroid/blue_bathsheba_greygyr_cyanpent_article" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/05-May.28-Michael-gyroid" name="blue_bathsheba_greygyr_cyanpent_article" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/28-Michael-gyroid/blue_bathsheba_greygyr_cyanpent_article.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/28-Michael-gyroid/brown_gyroid_grey_triad _article" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/05-May.28-Michael-gyroid" name="brown_gyroid_grey_triad _article" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/28-Michael-gyroid/brown_gyroid_grey_triad _article.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/28-Michael-gyroid/brown_gyroid_grey_triad" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/05-May.28-Michael-gyroid" name="brown_gyroid_grey_triad" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/28-Michael-gyroid/brown_gyroid_grey_triad.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/07-Scott/120cell-decagonFaces" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/05-May.07-Scott" name="120cell-decagonFaces" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/07-Scott/120cell-decagonFaces.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/07-Scott/120cell-stereographic" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/05-May.07-Scott" name="120cell-stereographic" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/07-Scott/120cell-stereographic.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/05-May/07-Scott/120cell-decagonFaces-outerHalf" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/05-May.07-Scott" name="120cell-decagonFaces-outerHalf" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/05-May/07-Scott/120cell-decagonFaces-outerHalf.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/08-Scott-testArticle/grandAntiprism-green" tests="1" time="4.363" timestamp="2020-04-25T09:25:42">
+    <properties/>
+    <testcase classname="/2012/01-Jan.08-Scott-testArticle" name="grandAntiprism-green" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/08-Scott-testArticle/grandAntiprism-green.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/08-Scott-testArticle/simpleArticle" tests="1" time="4.363" timestamp="2020-04-25T09:25:43">
+    <properties/>
+    <testcase classname="/2012/01-Jan.08-Scott-testArticle" name="simpleArticle" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/08-Scott-testArticle/simpleArticle.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/14-Scott-nondestructive/chrisCathedral-migratedArticle-noChange" tests="1" time="4.363" timestamp="2020-04-25T09:25:43">
+    <properties/>
+    <testcase classname="/2012/01-Jan.14-Scott-nondestructive" name="chrisCathedral-migratedArticle-noChange" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/14-Scott-nondestructive/chrisCathedral-migratedArticle-noChange.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/14-Scott-nondestructive/testNondestructiveSnapshot" tests="1" time="4.363" timestamp="2020-04-25T09:25:43">
+    <properties/>
+    <testcase classname="/2012/01-Jan.14-Scott-nondestructive" name="testNondestructiveSnapshot" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/14-Scott-nondestructive/testNondestructiveSnapshot.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/14-Scott-nondestructive/chrisCathedral-migratedArticle" tests="1" time="4.363" timestamp="2020-04-25T09:25:43">
+    <properties/>
+    <testcase classname="/2012/01-Jan.14-Scott-nondestructive" name="chrisCathedral-migratedArticle" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/14-Scott-nondestructive/chrisCathedral-migratedArticle.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/14-Scott-nondestructive/chrisCathedral-migratedArticle-newPages" tests="1" time="4.363" timestamp="2020-04-25T09:25:43">
+    <properties/>
+    <testcase classname="/2012/01-Jan.14-Scott-nondestructive" name="chrisCathedral-migratedArticle-newPages" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/14-Scott-nondestructive/chrisCathedral-migratedArticle-newPages.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/showPaul" tests="1" time="4.363" timestamp="2020-04-25T09:25:43">
+    <properties/>
+    <testcase classname="/2012.01-Jan" name="showPaul" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/showPaul.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/02-Scott-testRendering/testBranchLoad2" tests="1" time="4.363" timestamp="2020-04-25T09:25:43">
+    <properties/>
+    <testcase classname="/2012/01-Jan.02-Scott-testRendering" name="testBranchLoad2" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/02-Scott-testRendering/testBranchLoad2.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/02-Scott-testRendering/testBranchLoad1" tests="1" time="4.363" timestamp="2020-04-25T09:25:43">
+    <properties/>
+    <testcase classname="/2012/01-Jan.02-Scott-testRendering" name="testBranchLoad1" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/02-Scott-testRendering/testBranchLoad1.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/01-Jan/07-Scott-articleMigration/bayzomeF4F-migrated" tests="1" time="4.363" timestamp="2020-04-25T09:25:44">
+    <properties/>
+    <testcase classname="/2012/01-Jan.07-Scott-articleMigration" name="bayzomeF4F-migrated" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/01-Jan/07-Scott-articleMigration/bayzomeF4F-migrated.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/10-Oct/27-DKoski-bugreport/31dir 4+12+15" tests="1" time="4.363" timestamp="2020-04-25T09:25:44">
+    <properties/>
+    <testcase classname="/2012/10-Oct.27-DKoski-bugreport" name="31dir 4+12+15" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/10-Oct/27-DKoski-bugreport/31dir 4+12+15.vZome
+</system-out>
+    <system-err>Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: failed construction
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: failed construction
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: failed construction
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: failed construction
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: failed construction
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: failed construction
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+Apr 25, 2020 9:25:44 AM com.vzome.core.editor.SideEffects logBugAccommodation
+WARNING: ACCOMMODATION: null manifestation
+</system-err>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/10-Oct/27-DKoski-bugreport/31dir 6g+10y+15b" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/10-Oct.27-DKoski-bugreport" name="31dir 6g+10y+15b" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/10-Oct/27-DKoski-bugreport/31dir 6g+10y+15b.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/10-Oct/14-Scott-bubbles/3lobe-RTshell-hardFlip" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/10-Oct.14-Scott-bubbles" name="3lobe-RTshell-hardFlip" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/10-Oct/14-Scott-bubbles/3lobe-RTshell-hardFlip.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/29-Brian-blueLacy/miniCubes" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.29-Brian-blueLacy" name="miniCubes" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/29-Brian-blueLacy/miniCubes.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/29-Brian-blueLacy/blue_lace" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.29-Brian-blueLacy" name="blue_lace" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/29-Brian-blueLacy/blue_lace.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/08-Michael-bugs/gyroid_skewpentagons_K4_article" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.08-Michael-bugs" name="gyroid_skewpentagons_K4_article" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/08-Michael-bugs/gyroid_skewpentagons_K4_article.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/08-Michael-bugs/gyroid _triangles_skewpent_article" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.08-Michael-bugs" name="gyroid _triangles_skewpent_article" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/08-Michael-bugs/gyroid _triangles_skewpent_article.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/08-Michael-bugs/gyroid_pentagon_cages_article(2)" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.08-Michael-bugs" name="gyroid_pentagon_cages_article(2)" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/08-Michael-bugs/gyroid_pentagon_cages_article(2).vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/14-Brian-redTetras/redTetrahedral9" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.14-Brian-redTetras" name="redTetrahedral9" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/14-Brian-redTetras/redTetrahedral9.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/14-Brian-redTetras/redTetrahedral10" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.14-Brian-redTetras" name="redTetrahedral10" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/14-Brian-redTetras/redTetrahedral10.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/14-Brian-redTetras/redTetrahedral3" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.14-Brian-redTetras" name="redTetrahedral3" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/14-Brian-redTetras/redTetrahedral3.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/14-Brian-redTetras/yellowTetrahedral1" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.14-Brian-redTetras" name="yellowTetrahedral1" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/14-Brian-redTetras/yellowTetrahedral1.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/14-Brian-redTetras/redTetrahedral5" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.14-Brian-redTetras" name="redTetrahedral5" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/14-Brian-redTetras/redTetrahedral5.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/14-Brian-redTetras/redTetrahedral7" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.14-Brian-redTetras" name="redTetrahedral7" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/14-Brian-redTetras/redTetrahedral7.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/14-Brian-redTetras/redTetrahedral4" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.14-Brian-redTetras" name="redTetrahedral4" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/14-Brian-redTetras/redTetrahedral4.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/07-Ezra-Tcarbon/T-Carbon_whitebg" tests="1" time="4.363" timestamp="2020-04-25T09:25:45">
+    <properties/>
+    <testcase classname="/2012/03-Mar.07-Ezra-Tcarbon" name="T-Carbon_whitebg" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/07-Ezra-Tcarbon/T-Carbon_whitebg.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/11-Scott-g4gx/nanoJunction" tests="1" time="4.363" timestamp="2020-04-25T09:25:46">
+    <properties/>
+    <testcase classname="/2012/03-Mar.11-Scott-g4gx" name="nanoJunction" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/11-Scott-g4gx/nanoJunction.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/11-Scott-g4gx/orangePurpleChiral" tests="1" time="4.363" timestamp="2020-04-25T09:25:46">
+    <properties/>
+    <testcase classname="/2012/03-Mar.11-Scott-g4gx" name="orangePurpleChiral" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/11-Scott-g4gx/orangePurpleChiral.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/22-Scott-nanoRT/nano-RT-3junction" tests="1" time="4.363" timestamp="2020-04-25T09:25:47">
+    <properties/>
+    <testcase classname="/2012/03-Mar.22-Scott-nanoRT" name="nano-RT-3junction" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/22-Scott-nanoRT/nano-RT-3junction.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/22-Scott-nanoRT/nano-blue-line-attempt" tests="1" time="4.363" timestamp="2020-04-25T09:25:49">
+    <properties/>
+    <testcase classname="/2012/03-Mar.22-Scott-nanoRT" name="nano-blue-line-attempt" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/22-Scott-nanoRT/nano-blue-line-attempt.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/22-Scott-nanoRT/nano-blue-line-reds-1" tests="1" time="4.363" timestamp="2020-04-25T09:25:49">
+    <properties/>
+    <testcase classname="/2012/03-Mar.22-Scott-nanoRT" name="nano-blue-line-reds-1" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/22-Scott-nanoRT/nano-blue-line-reds-1.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/22-Scott-nanoRT/nano-ball-redBlueOrange" tests="1" time="4.363" timestamp="2020-04-25T09:25:49">
+    <properties/>
+    <testcase classname="/2012/03-Mar.22-Scott-nanoRT" name="nano-ball-redBlueOrange" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/22-Scott-nanoRT/nano-ball-redBlueOrange.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/22-Scott-nanoRT/nano-redStrut-redBlueGreens" tests="1" time="4.363" timestamp="2020-04-25T09:25:49">
+    <properties/>
+    <testcase classname="/2012/03-Mar.22-Scott-nanoRT" name="nano-redStrut-redBlueGreens" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/22-Scott-nanoRT/nano-redStrut-redBlueGreens.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/08-Scott-forJB/vertexFirst120cell" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/03-Mar.08-Scott-forJB" name="vertexFirst120cell" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/08-Scott-forJB/vertexFirst120cell.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/03-Mar/09-Michael-brownCages/brown_2cage_4-fold_article" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/03-Mar.09-Michael-brownCages" name="brown_2cage_4-fold_article" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/03-Mar/09-Michael-brownCages/brown_2cage_4-fold_article.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/04-Scott-povTuning/hyperdoLifelike" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.04-Scott-povTuning" name="hyperdoLifelike" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/04-Scott-povTuning/hyperdoLifelike.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/23-Brian-yellowSpirals/yellowTetrahedralSpiral" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.23-Brian-yellowSpirals" name="yellowTetrahedralSpiral" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/23-Brian-yellowSpirals/yellowTetrahedralSpiral.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/22-Brian-concaveDodecs/pyritohedron" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.22-Brian-concaveDodecs" name="pyritohedron" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/22-Brian-concaveDodecs/pyritohedron.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/22-Brian-concaveDodecs/butterflies" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.22-Brian-concaveDodecs" name="butterflies" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/22-Brian-concaveDodecs/butterflies.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/22-Brian-concaveDodecs/pyritohedron-tiling" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.22-Brian-concaveDodecs" name="pyritohedron-tiling" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/22-Brian-concaveDodecs/pyritohedron-tiling.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/23-Scott-dodecafish/Dodecafish" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.23-Scott-dodecafish" name="Dodecafish" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/23-Scott-dodecafish/Dodecafish.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/23-Brian-concaveDodecs/nonconvexDodecTiling" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.23-Brian-concaveDodecs" name="nonconvexDodecTiling" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/23-Brian-concaveDodecs/nonconvexDodecTiling.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/18-Scott-newPovTest/hyperdo-with-fog" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.18-Scott-newPovTest" name="hyperdo-with-fog" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/18-Scott-newPovTest/hyperdo-with-fog.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/18-Scott-newPovTest/F4-5-triality" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.18-Scott-newPovTest" name="F4-5-triality" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/18-Scott-newPovTest/F4-5-triality.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/22-Scott-Zomeball/zomeball" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.22-Scott-Zomeball" name="zomeball" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/22-Scott-Zomeball/zomeball.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/17-Scott-egg/FabiensEgg" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.17-Scott-egg" name="FabiensEgg" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/17-Scott-egg/FabiensEgg.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+  <testsuite errors="0" failures="0" hostname="localhost" name="/2012/02-Feb/02-Dekay-bugReports/goofy2" tests="1" time="4.363" timestamp="2020-04-25T09:25:50">
+    <properties/>
+    <testcase classname="/2012/02-Feb.02-Dekay-bugReports" name="goofy2" time="0.1"/>
+    <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2012/02-Feb/02-Dekay-bugReports/goofy2.vZome
+</system-out>
+    <system-err/>
+  </testsuite>
+</testsuites>

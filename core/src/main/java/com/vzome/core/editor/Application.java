@@ -50,7 +50,7 @@ import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
-import com.vzome.core.render.Color;
+import com.vzome.core.mesh.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;

@@ -15,7 +15,7 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.render.Color;
+import com.vzome.core.mesh.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;

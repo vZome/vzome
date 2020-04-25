@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
-import com.vzome.core.model.ColoredMeshJson;
+import com.vzome.core.mesh.ColoredMeshJson;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Camera;

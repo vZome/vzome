@@ -15,7 +15,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.vzome.core.render.Color;
+import com.vzome.core.mesh.Color;
 import com.vzome.xml.DomUtils;
 
 /**

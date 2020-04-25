@@ -25,7 +25,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 import com.vzome.core.math.Line;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.render.Color;
+import com.vzome.core.mesh.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;

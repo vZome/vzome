@@ -1,6 +1,6 @@
 
 
-package com.vzome.core.render;
+package com.vzome.core.mesh;
 
 import java.util.StringTokenizer;
 
