@@ -121,6 +121,16 @@ public class SimpleMeshJson
         // TODO: fail if field is null
         Projection projection = new Projection.Default( field );
         
+        if ( ! node .has( "vertices" ) ) {
+            throw new IOException( "No vertices list in this JSON" );
+        }
+        if ( ! node .has( "edges" ) ) {
+            throw new IOException( "No 'edges' list in this JSON" );
+        }
+        if ( ! node .has( "faces" ) ) {
+            throw new IOException( "No 'faces' list in this JSON" );
+        }
+
         ArrayList<AlgebraicVector> vertices = new ArrayList<>();
         {
             JsonNode verticesNode = node .get( "vertices" );
@@ -140,27 +150,23 @@ public class SimpleMeshJson
         }
         
         JsonNode collection = node .get( "edges" );
-        if ( collection != null ) {
-            for ( JsonNode strutNode : collection ) {
-                int[] ends = mapper .treeToValue( strutNode, int[].class );
-                Point p1 = new FreePoint( vertices .get( ends[ 0 ] ) );
-                Point p2 = new FreePoint( vertices .get( ends[ 1 ] ) );
-                events .constructionAdded( p1 );
-                events .constructionAdded( p2 );
-                events .constructionAdded( new SegmentJoiningPoints( p1, p2 ) );
-            }
+        for ( JsonNode strutNode : collection ) {
+            int[] ends = mapper .treeToValue( strutNode, int[].class );
+            Point p1 = new FreePoint( vertices .get( ends[ 0 ] ) );
+            Point p2 = new FreePoint( vertices .get( ends[ 1 ] ) );
+            events .constructionAdded( p1 );
+            events .constructionAdded( p2 );
+            events .constructionAdded( new SegmentJoiningPoints( p1, p2 ) );
         }
         
         collection = node .get( "faces" );
-        if ( collection != null ) {
-            for ( JsonNode panelNode : collection ) {
-                int[] indices = mapper .treeToValue( panelNode, int[].class );
-                List<Point> points = Arrays .stream( indices )
-                        .mapToObj( i -> new FreePoint( vertices .get( i ) ) )
-                        .collect( Collectors .toList() );
-                Polygon panel = new PolygonFromVertices( points );
-                events .constructionAdded( panel );
-            }
+        for ( JsonNode panelNode : collection ) {
+            int[] indices = mapper .treeToValue( panelNode, int[].class );
+            List<Point> points = Arrays .stream( indices )
+                    .mapToObj( i -> new FreePoint( vertices .get( i ) ) )
+                    .collect( Collectors .toList() );
+            Polygon panel = new PolygonFromVertices( points );
+            events .constructionAdded( panel );
         }
     }
 }

@@ -133,6 +133,13 @@ public class ColoredMeshJson
         // TODO: fail if field is null
         Projection projection = new Projection.Default( field );
         
+        if ( ! node .has( "vertices" ) ) {
+            throw new IOException( "No vertices list in this JSON" );
+        }
+        if ( ! node .has( "balls" ) && ! node .has( "struts" ) && ! node .has( "panels" ) ) {
+            throw new IOException( "No balls, struts, or panels in this JSON" );
+        }
+
         ArrayList<AlgebraicVector> vertices = new ArrayList<>();
         {
             JsonNode verticesNode = node .get( "vertices" );
