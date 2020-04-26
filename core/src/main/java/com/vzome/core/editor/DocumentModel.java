@@ -50,7 +50,6 @@ import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
-import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.exporters2d.Java2dExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.exporters2d.SnapshotExporter;
@@ -58,6 +57,8 @@ import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
+import com.vzome.core.model.Color;
+import com.vzome.core.model.ColoredMeshJson;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
@@ -66,7 +67,6 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.BookmarkTool;
@@ -350,10 +350,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         StringWriter out = new StringWriter();
         switch ( format ) {
 
-        case "vson":
-            VsonExporter vsonEx = new VsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
+        case "cmesh":
             try {
-                vsonEx .doExport( null, out, 0, 0 );
+                ColoredMeshJson .generate( this .editorModel .getSelection(), this .field, out );
             } catch (IOException e) {
                 // TODO fail better here
                 e.printStackTrace();
@@ -361,10 +360,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             break;
 
         case "shapes":
-            ShapesJsonExporter ojex = new ShapesJsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
+            ShapesJsonExporter ojex = new ShapesJsonExporter();
             try {
-                ojex .doExport( null, out, 0, 0 );
-            } catch (IOException e) {
+                ojex .doExport( this, null, null, out, 0, 0 );
+            } catch (Exception e) {
                 // TODO fail better here
                 e.printStackTrace();
             }

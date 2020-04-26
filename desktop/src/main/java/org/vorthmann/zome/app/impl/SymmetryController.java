@@ -22,7 +22,7 @@ import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Color;
+import com.vzome.core.model.Color;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Shapes;
 import com.vzome.desktop.controller.CameraController;

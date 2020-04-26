@@ -1,6 +1,6 @@
 
 
-package com.vzome.core.render;
+package com.vzome.core.model;
 
 import java.util.StringTokenizer;
 
@@ -123,6 +123,14 @@ public class Color
         String green = toks .nextToken();
         String blue = toks .nextToken();
         return new Color( Integer.parseInt( red ), Integer.parseInt( green ), Integer.parseInt( blue ) );
+    }
+
+    public static Color parseWebColor( String colorStr )
+    {
+        return new Color(
+                Integer.valueOf( colorStr.substring( 1, 3 ), 16 ),
+                Integer.valueOf( colorStr.substring( 3, 5 ), 16 ),
+                Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
     }
 
 	public int getRed()

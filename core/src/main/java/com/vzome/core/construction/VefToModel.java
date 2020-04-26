@@ -119,7 +119,7 @@ public class VefToModel extends VefParser
     {
         if ( noBallsSection ) {
             for (Point vertex : mVertices) {
-                mEffects.constructionAdded(vertex);
+                mEffects.constructionAdded( vertex );
             }
         }
     }

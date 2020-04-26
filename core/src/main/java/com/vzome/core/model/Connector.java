@@ -4,7 +4,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.render.Color;
 
 /**
  * @author Scott Vorthmann

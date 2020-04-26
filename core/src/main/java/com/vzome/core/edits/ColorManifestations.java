@@ -6,18 +6,16 @@ package com.vzome.core.edits;
 
 import java.util.Map;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.Selection;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.xml.DomUtils;
 
 public class ColorManifestations extends ChangeManifestations
 {
@@ -44,7 +42,9 @@ public class ColorManifestations extends ChangeManifestations
         for (Manifestation m : mSelection) {
             RenderedManifestation rm = m .getRenderedObject();
             if ( rm != null )
-                plan( new ColorManifestation( m, color ) );
+                // This test is probably unnecessary now that we store color in Manifestation,
+                //  but I don't want to risk a subtle bug by removing the test.
+                colorManifestation( m, color );
             unselect( m, true );
         }
     }
@@ -75,49 +75,6 @@ public class ColorManifestations extends ChangeManifestations
         else
             initialize( null );
     }
-
-    
-    private class ColorManifestation implements SideEffect
-    {
-        private final Manifestation mManifestation;
-
-        private final Color oldColor, newColor;
-        
-        public ColorManifestation( Manifestation manifestation, Color color )
-        {
-            mManifestation = manifestation;
-            this .newColor = color;
-            RenderedManifestation rm = manifestation .getRenderedObject();
-            if ( rm != null ) {
-            	oldColor = rm .getColor();
-            }
-            else
-            	oldColor = Color .GREY_TRANSPARENT; // TODO fix this case
-        }
-
-        @Override
-        public void redo()
-        {
-            mManifestations .setColor( mManifestation, newColor );
-        }
-
-        @Override
-        public void undo()
-        {
-            mManifestations .setColor( mManifestation, oldColor );
-        }
-
-        @Override
-        public Element getXml( Document doc )
-        {
-            Element result = doc .createElement( "color" );
-            DomUtils .addAttribute( result, "rgb", newColor .toString() );
-            Element man = mManifestation .getXml( doc );
-            result .appendChild( man );
-            return result;
-        }
-    }
-
 
     @Override
     protected String getXmlElementName()
