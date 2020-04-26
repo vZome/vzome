@@ -134,10 +134,10 @@ public class ColoredMeshJson
         Projection projection = new Projection.Default( field );
         
         if ( ! node .has( "vertices" ) ) {
-            throw new IOException( "No vertices list in this JSON" );
+            throw new IOException( "There is no 'vertices' list in the JSON" );
         }
         if ( ! node .has( "balls" ) && ! node .has( "struts" ) && ! node .has( "panels" ) ) {
-            throw new IOException( "No balls, struts, or panels in this JSON" );
+            throw new IOException( "There are no balls, struts, or panels in the JSON" );
         }
 
         ArrayList<AlgebraicVector> vertices = new ArrayList<>();

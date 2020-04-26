@@ -192,7 +192,7 @@ public abstract class ImportMesh extends ChangeManifestations
         try {
             this .parseMeshData( offset, events, registry );
         } catch ( IOException e ) {
-            throw new Failure( e );
+            throw new Failure( "The selected file has incorrect content for this import.\n" + e .getMessage() );
         }
 
         redo();

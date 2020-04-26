@@ -122,13 +122,13 @@ public class SimpleMeshJson
         Projection projection = new Projection.Default( field );
         
         if ( ! node .has( "vertices" ) ) {
-            throw new IOException( "No vertices list in this JSON" );
+            throw new IOException( "There is no 'vertices' list in the JSON" );
         }
         if ( ! node .has( "edges" ) ) {
-            throw new IOException( "No 'edges' list in this JSON" );
+            throw new IOException( "There is no 'edges' list in the JSON" );
         }
         if ( ! node .has( "faces" ) ) {
-            throw new IOException( "No 'faces' list in this JSON" );
+            throw new IOException( "There is no 'faces' list in the JSON" );
         }
 
         ArrayList<AlgebraicVector> vertices = new ArrayList<>();
