@@ -60,12 +60,12 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
@@ -659,28 +659,29 @@ public class DocumentController extends DefaultController implements Controller3
                 break;
     
             case "cut":
-                setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
+                setProperty( "clipboard", documentModel .copyRenderedModel( "cmesh" ) );
                 documentModel .doEdit( "Delete" );
                 break;
     
             case "copy":
+            case "copy.cmesh":
+                setProperty( "clipboard", documentModel .copyRenderedModel( "cmesh" ) );
+                break;
+                
+            case "copy.vef":
                 setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
                 break;
     
             case "copy.observable":
                 setProperty( "clipboard", documentModel .copyRenderedModel( "observable" ) );
                 break;
-    
-            case "copy.vson":
-                setProperty( "clipboard", documentModel .copyRenderedModel( "vson" ) );
-                break;
-    
+
             case "paste":
                 {
                     String vefContent = getProperty( "clipboard" );
                     Map<String, Object> params = new HashMap<>();
                     params .put( "vef", vefContent );
-                    documentModel .doEdit( "LoadVEF/clipboard", params );
+                    documentModel .doEdit( "ImportColoredMeshJson/clipboard", params );
                 }
                 break;
     
@@ -915,7 +916,9 @@ public class DocumentController extends DefaultController implements Controller3
                 this .openApplication( file );
                 return;
             }
-            if ( command.startsWith( "LoadVEF/" ) ) {
+            if ( command.startsWith( "LoadVEF/" )
+              || command.startsWith( "ImportSimpleMeshJson/" )
+              || command.startsWith( "ImportColoredMeshJson/" ) ) {
                 String vefData = readFile( file );
                 Map<String, Object> params = new HashMap<>();
                 params .put( "vef", vefData );
@@ -1253,6 +1256,10 @@ public class DocumentController extends DefaultController implements Controller3
                 default:
                     break; // fall through to properties or super
                 }
+            }
+            else if ( propName .startsWith( "exportExtension." ) ) {
+                String format = propName .substring( "exportExtension." .length() );
+                return this .mApp .getExporter( format .toLowerCase() ) .getFileExtension();
             }
 
             String result = this .properties .getProperty( propName );

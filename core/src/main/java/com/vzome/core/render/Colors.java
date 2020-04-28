@@ -10,6 +10,8 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import com.vzome.core.model.Color;
+
 
 public class Colors implements Iterable<String>
 {
