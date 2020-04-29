@@ -22,6 +22,7 @@ import com.vzome.core.tools.OctahedralToolFactory;
 import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
+import com.vzome.core.tools.StereographicProjectionTool;
 import com.vzome.core.tools.TetrahedralToolFactory;
 import com.vzome.core.tools.TranslationTool;
 import com.vzome.core.viewing.AbstractShapes;
@@ -150,6 +151,7 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
                 result .add( new RotationTool.Factory( tools, this .symmetry ) );
                 result .add( new TranslationTool.Factory( tools ) );
                 result .add( new ProjectionTool.Factory( tools ) );
+                result .add( new StereographicProjectionTool.Factory( tools ) );
                 break;
 
             case LINEAR_MAP:

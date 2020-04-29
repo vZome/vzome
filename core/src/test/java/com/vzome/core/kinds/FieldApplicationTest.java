@@ -494,31 +494,31 @@ public class FieldApplicationTest
             String source = appName + "." + name;
             switch(name) {
             case "octahedral":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 5, 1);
                 break;
                 
             case "icosahedral":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 7);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 5, 7);
                 break;
                 
             case "dodecagonal":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 5, 1);
                 break;
                 
             case "pentagonal":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 4, 1);
                 break;
                 
             case "heptagonal antiprism":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 4, 1);
                 break;
                 
             case "heptagonal antiprism corrected":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 4, 1);
                 break;
                 
             case "synestructics":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 5, 1);
                 break;
                 
             default:
