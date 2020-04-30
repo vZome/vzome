@@ -152,3 +152,6 @@ format-2.1.0-models.vZome-files
 
 # Fix PlaneProjection when Panel is projected down to Segment or Segment is projected down to a Point
 2020/04-Apr/19-David-FixProjectionToPlane/FixProjectionToPlane.vZome
+
+# simple and colored mesh import
+2020/04-Apr/26-Scott-regression

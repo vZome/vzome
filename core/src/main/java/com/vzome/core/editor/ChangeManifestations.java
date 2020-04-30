@@ -12,16 +12,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.construction.Construction;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
+import com.vzome.core.render.RenderedManifestation;
+import com.vzome.xml.DomUtils;
 
 public abstract class ChangeManifestations extends ChangeSelection
 {
     protected final RealizedModel mManifestations;
-    
+
     public ChangeManifestations( Selection selection, RealizedModel realized )
     {
         super( selection );
@@ -40,7 +43,7 @@ public abstract class ChangeManifestations extends ChangeSelection
      */
     // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
     private transient Map<Manifestation, Manifestation> mManifestedNow;  // used only while calling manifest
-    
+
     @Override
     public void redo()
     {
@@ -48,9 +51,9 @@ public abstract class ChangeManifestations extends ChangeSelection
             // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
             mManifestedNow = new HashMap<>();
         super .redo();
-//        System.out.print( " manifestations: " + mManifestations .size() );
+        //        System.out.print( " manifestations: " + mManifestations .size() );
     }
-    
+
     @Override
     public void undo()
     {
@@ -58,13 +61,13 @@ public abstract class ChangeManifestations extends ChangeSelection
             mManifestedNow = null;
         super .undo();
     }
-    
+
     protected Manifestation getManifestation( Construction c )
     {
         return mManifestations .getManifestation( c );
         // TODO assert that the result is non-null
     }
-    
+
     public Manifestation manifestConstruction( Construction c )
     {
         //        if ( realizer != null )
@@ -88,26 +91,26 @@ public abstract class ChangeManifestations extends ChangeSelection
         }
         return m;
     }
-    
-//    /**
-//     * This is adapting the current notion of Constructions to the future notion
-//     * of Realizer.
-//     * 
-//     * @param c
-//     * @return
-//     */
-//    private Manifestation realizeConstruction( Construction c )
-//    {
-//        if ( c instanceof Point )
-//            return realizer .realizeBall( ((Point) c) .getLocation() );
-//        if ( c instanceof Segment )
-//        {
-//            Segment segment = (Segment) c;
-//            return realizer .realizeStrut( segment .getCenter(), segment .getLength(), segment .getAxis() );
-//        }
-//        return null;
-//    }
-    
+
+    //    /**
+    //     * This is adapting the current notion of Constructions to the future notion
+    //     * of Realizer.
+    //     * 
+    //     * @param c
+    //     * @return
+    //     */
+    //    private Manifestation realizeConstruction( Construction c )
+    //    {
+    //        if ( c instanceof Point )
+    //            return realizer .realizeBall( ((Point) c) .getLocation() );
+    //        if ( c instanceof Segment )
+    //        {
+    //            Segment segment = (Segment) c;
+    //            return realizer .realizeStrut( segment .getCenter(), segment .getLength(), segment .getAxis() );
+    //        }
+    //        return null;
+    //    }
+
     protected Manifestation unmanifestConstruction( Construction c )
     {
         Manifestation m = mManifestations .removeConstruction( c );
@@ -116,20 +119,25 @@ public abstract class ChangeManifestations extends ChangeSelection
         plan( new ManifestConstruction( c, m, false ) );
         return m;
     }
-    
+
     protected void deleteManifestation( Manifestation man )
-	{
+    {
         plan( new DeleteManifestation( man ) );
-	}
+    }
 
     protected void showManifestation( Manifestation m )
     {
         plan( new RenderManifestation( m, true ) );
     }
-    
+
     protected void hideManifestation( Manifestation m )
     {
         plan( new RenderManifestation( m, false ) );
+    }
+
+    protected void colorManifestation( Manifestation m, Color color )
+    {
+        plan( new ColorManifestation( m, color ) );
     }
 
     protected void hideConnectors()
@@ -167,33 +175,33 @@ public abstract class ChangeManifestations extends ChangeSelection
         for ( Panel panel : Manifestations .getHiddenPanels( this .mManifestations ) )
             showManifestation( panel );
     }
-    
-	public boolean showsManifestation( Manifestation man )
-	{
-		for (Iterator<SideEffect> iterator = this .getEffects(); iterator.hasNext();) {
-			SideEffect effect = iterator.next();
-			if ( effect instanceof ManifestConstruction ) {
-				ManifestConstruction show = (ManifestConstruction) effect;
-				if ( show .showsManifestation( man ) )
-					return true;
-			}
-			else if ( effect instanceof RenderManifestation ) {
-				RenderManifestation show = (RenderManifestation) effect;
-				if ( show .showsManifestation( man ) )
-					return true;
-			}
-		}
-		return false;
-	}    
+
+    public boolean showsManifestation( Manifestation man )
+    {
+        for (Iterator<SideEffect> iterator = this .getEffects(); iterator.hasNext();) {
+            SideEffect effect = iterator.next();
+            if ( effect instanceof ManifestConstruction ) {
+                ManifestConstruction show = (ManifestConstruction) effect;
+                if ( show .showsManifestation( man ) )
+                    return true;
+            }
+            else if ( effect instanceof RenderManifestation ) {
+                RenderManifestation show = (RenderManifestation) effect;
+                if ( show .showsManifestation( man ) )
+                    return true;
+            }
+        }
+        return false;
+    }    
 
     private class ManifestConstruction implements SideEffect
     {
         private final Manifestation mManifestation;
-        
+
         private final Construction mConstruction;
 
         private final boolean mShowing;
-        
+
         public ManifestConstruction( Construction construction, Manifestation manifestation, boolean showing )
         {
             mConstruction = construction;
@@ -247,19 +255,19 @@ public abstract class ChangeManifestations extends ChangeSelection
             result .appendChild( man );
             return result;
         }
-        
+
         public boolean showsManifestation( Manifestation man )
         {
-        	return this .mShowing && this .mManifestation .equals( man );
+            return this .mShowing && this .mManifestation .equals( man );
         }
     }
-    
+
     private class RenderManifestation implements SideEffect
     {
         private final Manifestation mManifestation;
 
         private final boolean mShowing;
-        
+
         public RenderManifestation( Manifestation manifestation, boolean showing )
         {
             mManifestation = manifestation;
@@ -269,7 +277,7 @@ public abstract class ChangeManifestations extends ChangeSelection
         @Override
         public void redo()
         {
-        	mManifestation .setHidden( ! mShowing );
+            mManifestation .setHidden( ! mShowing );
             if ( mShowing )
                 mManifestations .show( mManifestation ); // TODO make this more immediate, call renderer here
             else
@@ -279,7 +287,7 @@ public abstract class ChangeManifestations extends ChangeSelection
         @Override
         public void undo()
         {
-        	mManifestation .setHidden( mShowing );
+            mManifestation .setHidden( mShowing );
             if ( mShowing )
                 mManifestations .hide( mManifestation );
             else
@@ -294,10 +302,10 @@ public abstract class ChangeManifestations extends ChangeSelection
             result .appendChild( man );
             return result;
         }
-        
+
         public boolean showsManifestation( Manifestation man )
         {
-        	return this .mShowing && this .mManifestation .equals( man );
+            return this .mShowing && this .mManifestation .equals( man );
         }
 
     }
@@ -305,7 +313,7 @@ public abstract class ChangeManifestations extends ChangeSelection
     private class DeleteManifestation implements SideEffect
     {
         private final Manifestation mManifestation;
-        
+
         public DeleteManifestation( Manifestation manifestation )
         {
             mManifestation = manifestation;
@@ -314,7 +322,7 @@ public abstract class ChangeManifestations extends ChangeSelection
         @Override
         public void redo()
         {
-        	mManifestation .setHidden( true );
+            mManifestation .setHidden( true );
             mManifestations .hide( mManifestation );
             mManifestations .remove( mManifestation );
         }
@@ -324,13 +332,54 @@ public abstract class ChangeManifestations extends ChangeSelection
         {
             mManifestations .add( mManifestation );
             mManifestations .show( mManifestation );
-        	mManifestation .setHidden( false );
+            mManifestation .setHidden( false );
         }
 
         @Override
         public Element getXml( Document doc )
         {
             Element result = doc .createElement( "delete" );
+            Element man = mManifestation .getXml( doc );
+            result .appendChild( man );
+            return result;
+        }
+    }
+
+    private class ColorManifestation implements SideEffect
+    {
+        private final Manifestation mManifestation;
+
+        private final Color oldColor, newColor;
+
+        public ColorManifestation( Manifestation manifestation, Color color )
+        {
+            mManifestation = manifestation;
+            this .newColor = color;
+            RenderedManifestation rm = manifestation .getRenderedObject();
+            if ( rm != null ) {
+                oldColor = rm .getColor();
+            }
+            else
+                oldColor = Color .GREY_TRANSPARENT; // TODO fix this case
+        }
+
+        @Override
+        public void redo()
+        {
+            mManifestations .setColor( mManifestation, newColor );
+        }
+
+        @Override
+        public void undo()
+        {
+            mManifestations .setColor( mManifestation, oldColor );
+        }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            Element result = doc .createElement( "color" );
+            DomUtils .addAttribute( result, "rgb", newColor .toString() );
             Element man = mManifestation .getXml( doc );
             result .appendChild( man );
             return result;

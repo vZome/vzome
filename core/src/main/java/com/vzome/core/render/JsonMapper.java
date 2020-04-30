@@ -17,8 +17,10 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
 /**
@@ -90,6 +92,20 @@ public class JsonMapper
             return node;
         }
         else if ( man instanceof Connector )
+        {
+            ObjectNode node = this .objectMapper .createObjectNode();
+            node .put( "shape", shapeId );
+
+            Color color = rm .getColor();
+            if ( color == null )
+                color = Color.WHITE;
+            node .put( "color", color .toWebString() );
+
+            node .set( "position", this .asTreeWithView( rm .getLocation() ) );
+
+            return node;
+        }
+        else if ( man instanceof Panel )
         {
             ObjectNode node = this .objectMapper .createObjectNode();
             node .put( "shape", shapeId );

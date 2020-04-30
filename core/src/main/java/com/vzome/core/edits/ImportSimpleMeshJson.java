@@ -4,33 +4,27 @@ import java.io.IOException;
 
 import com.vzome.core.algebra.AlgebraicField.Registry;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.construction.VefToModel;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.ManifestConstructions;
+import com.vzome.core.model.SimpleMeshJson;
 
-public class LoadVEF extends ImportMesh {
-
-    public LoadVEF( EditorModel editor )
+public class ImportSimpleMeshJson extends ImportMesh
+{
+    public ImportSimpleMeshJson( EditorModel editor )
     {
         super( editor );
-    }
-
-    protected boolean deselectInputs()
-    {
-        return false; // Required for backward compatibility
     }
 
     @Override
     protected void parseMeshData( AlgebraicVector offset, ManifestConstructions events, Registry registry )
             throws IOException
     {
-        VefToModel v2m = new VefToModel( projection, events, scale, offset );
-        v2m .parseVEF( this .meshData, this .editor .getKind() .getField() );
+        SimpleMeshJson .parse( meshData, offset, events, registry );
     }
 
     @Override
     protected String getXmlElementName()
     {
-        return "LoadVEF";
+        return "ImportSimpleMeshJson";
     }
 }

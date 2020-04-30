@@ -10,6 +10,11 @@ import com.vzome.core.math.RealVector;
 
 public abstract class AlgebraicField
 {
+    public interface Registry
+    {
+        AlgebraicField getField( String name );
+    }
+
     abstract BigRational[] multiply( BigRational[] v1, BigRational[] v2 );
 
     abstract double evaluateNumber( BigRational[] factors );
