@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
-import org.python.antlr.PythonParser.name_or_print_return;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
