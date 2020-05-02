@@ -551,6 +551,45 @@ public class BigRationalTest {
     }
 
     @Test
+    public void testOperatorOverloads() {
+        BigRational[] numbers = new BigRational[] {
+                BigRational.ZERO,
+                BigRational.ONE,
+                new BigRational(-1),
+                new BigRational(42),
+                new BigRational(22, 7)
+        };
+
+        final int denominator = 5;
+        for(int numerator = -3; numerator <= 3; numerator++) {
+            for(BigRational n : numbers) {
+                // first, test with fractions as numerator and denominator args
+                BigRational r = new BigRational(numerator, denominator);
+                assertEquals("add rat", n. plus(r), n. plus(numerator, denominator));
+                assertEquals("sub rat", n.minus(r), n.minus(numerator, denominator));
+                assertEquals("mul rat", n.times(r), n.times(numerator, denominator));
+                try {
+                    assertEquals("div rat", n.dividedBy(r), n.dividedBy(numerator, denominator));
+                    assertNotEquals("Expected no divide by zero exception.", 0, numerator);
+                } catch( IllegalArgumentException ex) {
+                    assertEquals("Expected divide by zero exception.", 0, numerator);
+                }
+                // and again with just integers
+                r = new BigRational(numerator);
+                assertEquals("add int", n. plus(r), n. plus(numerator));
+                assertEquals("sub int", n.minus(r), n.minus(numerator));
+                assertEquals("mul int", n.times(r), n.times(numerator));
+                try {
+                    assertEquals("div int", n.dividedBy(r), n.dividedBy(numerator));
+                    assertNotEquals("Expected no divide by zero exception.", 0, numerator);
+                } catch( IllegalArgumentException ex) {
+                    assertEquals("Expected divide by zero exception.", 0, numerator);
+                }
+            }
+        }
+    }
+
+    @Test
     public void testPlus() {
     	// test various code optimization paths
         assertEquals("0", BigRational.ZERO.plus(BigRational.ZERO).toString());
