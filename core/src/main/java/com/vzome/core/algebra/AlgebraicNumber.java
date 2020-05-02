@@ -35,6 +35,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
 
     // for JSON serialization
     public static class Views {
+        public interface TrailingDivisor {}
         public interface Rational {}
         public interface Real {}
     }
@@ -345,6 +346,18 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     {
         return this .toString( AlgebraicField .DEFAULT_FORMAT );
     }
+    
+    public int[] toTrailingDivisor()
+    {
+        BigInteger divisor = this .getDivisor();
+        int order = this .factors .length;
+        int[] result = new int[ order + 1 ];
+        result[ order ] = divisor .intValueExact();
+        for ( int i = 0; i < order; i++ ) {
+            result[ i ] = this .factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .getNumerator() .intValueExact();
+        }
+        return result;
+    }
 
     // JSON serialization:
     //
@@ -379,6 +392,10 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
             if ( ( view != null ) && Views.Real.class .isAssignableFrom( view ) )
             {
                 jgen .writeNumber( value .evaluate() );
+            }
+            else if ( ( view != null ) && Views.TrailingDivisor.class .isAssignableFrom( view ) )
+            {
+                jgen .writeObject( value .toTrailingDivisor() );
             }
             else
             {

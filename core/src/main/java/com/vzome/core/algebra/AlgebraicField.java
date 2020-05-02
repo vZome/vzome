@@ -225,9 +225,16 @@ public abstract class AlgebraicField
      */
     public final AlgebraicNumber createAlgebraicNumber( int[] factors )
     {
-        BigRational[] brs = new BigRational[ factors .length ];
-        for ( int j = 0; j < factors.length; j++ ) {
-            brs[ j ] = new BigRational( factors[ j ] );
+        int n = factors .length;
+        int denominator = 1;
+        if ( n == this .order + 1 ) {
+            // factors must be in "trailing denominator" format
+            --n;
+            denominator = factors[ n ];
+        }
+        BigRational[] brs = new BigRational[ n ];
+        for ( int j = 0; j < n; j++ ) {
+            brs[ j ] = new BigRational( factors[ j ], denominator );
         }
         return createAlgebraicNumber( brs );
     }
