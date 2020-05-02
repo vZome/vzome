@@ -93,6 +93,90 @@ public class AlgebraicNumberTest
     }
 
     @Test
+    public void testOperatorOverloads() {
+        AlgebraicField field = new PentagonField();
+        AlgebraicNumber[] numbers = new AlgebraicNumber[] {
+                field.zero(),
+                field.one(),
+                field.createRational(-1),
+                field.createRational(42),
+                field.createRational(22, 7),
+                field.getUnitTerm(1),
+                field.createPower(2),
+                field.createPower(-2)
+        };
+
+        final int denominator = 5;
+        for(int numerator = -3; numerator <= 3; numerator++) {
+            BigRational br = new BigRational(numerator, denominator);
+            for(AlgebraicNumber n : numbers) {
+                // first, test with fractions as numerator and denominator args
+                AlgebraicNumber r = field.createRational(numerator, denominator);
+                assertEquals("add rat", n. plus(r), n. plus(numerator, denominator));
+                assertEquals("sub rat", n.minus(r), n.minus(numerator, denominator));
+                assertEquals("mul rat", n.times(r), n.times(numerator, denominator));
+                try {
+                    assertEquals("div rat", n.dividedBy(r), n.dividedBy(numerator, denominator));
+                    assertNotEquals("Expected no divide by zero exception.", 0, numerator);
+                } catch( IllegalArgumentException ex) {
+                    assertEquals("Expected divide by zero exception.", 0, numerator);
+                }
+                // then with BigRational
+                r = field.createRational(br);
+                assertEquals("add big", n. plus(r), n. plus(br));
+                assertEquals("sub big", n.minus(r), n.minus(br));
+                assertEquals("mul big", n.times(r), n.times(br));
+                try {
+                    assertEquals("div big", n.dividedBy(r), n.dividedBy(br));
+                    assertNotEquals("Expected no divide by zero exception.", 0, numerator);
+                } catch( IllegalArgumentException ex) {
+                    assertEquals("Expected divide by zero exception.", 0, numerator);
+                }
+                // and again with integers
+                r = field.createRational(numerator);
+                assertEquals("add int", n. plus(r), n. plus(numerator));
+                assertEquals("sub int", n.minus(r), n.minus(numerator));
+                assertEquals("mul int", n.times(r), n.times(numerator));
+                try {
+                    assertEquals("div int", n.dividedBy(r), n.dividedBy(numerator));
+                    assertNotEquals("Expected no divide by zero exception.", 0, numerator);
+                } catch( IllegalArgumentException ex) {
+                    assertEquals("Expected divide by zero exception.", 0, numerator);
+                }
+            }
+        }
+    }
+    
+    @Test
+    public void testCreateAlgebraicNumber() {
+        AlgebraicField field = new SqrtPhiField(); // just because it has order > 2
+        
+        int[] nums = new int[] {0, 2, -2, 42}; 
+        for(int den = -3; den <= 3; den++) {
+            if(den == 0) {
+                try {
+                    field.createAlgebraicNumber(nums, den);
+                    fail("Expected divide by zero exception.");
+                } catch( IllegalArgumentException ex) {
+                    // ignore the expected divide by zero
+                }
+            } else {
+                // createAlgebraicNumber interprets its int[] arg as numerators.
+                // In contrast, createVector interprets its int[] arg as numerator denominator pairs.
+                // This test simply verifies that the optional denominator arg to createAlgebraicNumber
+                // is correctly applied to the numerators. 
+                AlgebraicNumber n1 = field.createAlgebraicNumber(nums, den);
+                if(den == 1) {
+                    assertEquals(n1.toString(), n1, field.createAlgebraicNumber(nums));
+                }
+                int[] fractions = new int[] {nums[0], den, nums[1], den, nums[2], den, nums[3], den};
+                AlgebraicNumber n2 = field.createVector(new int[][] {fractions}).getComponent(0);
+                assertEquals(n1.toString(), n1, n2);
+            }
+        }
+    }
+
+    @Test
     public void testPrepareAlgebraicNumberTerms() {
         List<AlgebraicField> fields = new ArrayList<>();
         // list any fields that need to remap golden terms 

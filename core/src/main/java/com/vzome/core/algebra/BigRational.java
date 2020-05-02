@@ -846,7 +846,7 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 
     /**
      * 
-     * @param n int value to be multiplied
+     * @param n is the value to be multiplied
      * @return this * n
      */
     public BigRational times( int n )
@@ -854,6 +854,17 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
         return n == 1 ? this : n == 0 ? ZERO : canMultiplyInteger
                 ? new BigRational( num * n )
                         : this.times( new BigRational( n ) );
+    }
+
+    /**
+     * 
+     * @param num is the numerator of the fraction to be multiplied
+     * @param den is the denominator of the fraction to be multiplied
+     * @return this * (num / den)
+     */
+    public BigRational times( int num, int den )
+    {
+        return this.times( new BigRational( num, den ) );
     }
 
     /**
@@ -894,20 +905,32 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 
     /**
      * 
-     * @param n int value to be added
+     * @param n is the value to be added
      * @return this + n
      */
     public BigRational plus( int n )
     {
         return n == 0 
                 ? this 
-                        : canAddInteger
-                        ? new BigRational( num + n )
-                                : this.plus( new BigRational( n ) );
+                : canAddInteger
+                    ? new BigRational( num + n )
+                    : this.plus( new BigRational( n ) );
     }
 
     /**
-     * @param that
+     * 
+     * @param num is the numerator of the fraction to be added
+     * @param den is the denominator of the fraction to be added
+     * @return this + (num / den)
+     */
+    public BigRational plus( int num, int den )
+    {
+        return this.plus( new BigRational( num, den ) );
+    }
+
+    /**
+     * 
+     * @param that is the value to be added
      * @return this + that
      */
     @Override
@@ -996,20 +1019,32 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
 
     /**
      * 
-     * @param n int value to be subtracted
+     * @param n is the value to be subtracted
      * @return this - n
      */
     public BigRational minus( int n )
     {
         return n == 0 
-                ? this 
-                        : canAddInteger
-                        ? new BigRational( num - n )
-                                : this.plus( new BigRational( -n ) );
+            ? this 
+            : canAddInteger
+                ? new BigRational( num - n )
+                : this.plus( new BigRational( -n ) );
     }
 
     /**
-     * @param that
+     * 
+     * @param num is the numerator of the fraction to be subtracted
+     * @param den is the denominator of the fraction to be subtracted
+     * @return this - (num / den)
+     */
+    public BigRational minus( int num, int den )
+    {
+        return this.minus( new BigRational( num, den ) );
+    }
+
+    /**
+     * 
+     * @param that is the value to be subtracted
      * @return this - that
      */
     @Override
@@ -1044,6 +1079,18 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
         return d == 1 
                 ? this 
                         : this.times( new BigRational( 1, d ) );
+    }
+
+    /**
+     * 
+     * @param num is the numerator of the fraction to be divided
+     * @param den is the denominator of the fraction to be divided
+     * @return this / (num / den)
+     * Note that {@code num} and {@code den} are long, not int as other arithmetic operator methods.
+     */
+    public BigRational dividedBy( long num, long den )
+    {
+        return this.dividedBy( new BigRational( num, den ) );
     }
 
     /**

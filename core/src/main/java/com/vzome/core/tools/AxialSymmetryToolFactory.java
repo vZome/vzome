@@ -3,7 +3,6 @@ package com.vzome.core.tools;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.tools.RotationTool.Factory;
 
 
 public class AxialSymmetryToolFactory extends RotationTool.Factory
