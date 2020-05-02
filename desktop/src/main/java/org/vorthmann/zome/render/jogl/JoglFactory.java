@@ -55,7 +55,7 @@ public class JoglFactory implements J3dComponentFactory
     }
 
     @Override
-    public Component createRenderingComponent( boolean isSticky, boolean isOffScreen, Controller3d controller )
+    public Component createRenderingComponent( boolean isOffScreen, Controller3d controller )
     {
         GLProfile glprofile = GLProfile .getDefault();
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
@@ -70,7 +70,7 @@ public class JoglFactory implements J3dComponentFactory
         Lights lights = controller .getSceneLighting();
         boolean drawOutlines = controller .propertyIsTrue( "drawOutlines" );
         int maxOrientations = Integer .parseInt( controller .getProperty( "maxOrientations" ) );
-        Scene scene = new Scene( lights, isSticky, drawOutlines, maxOrientations );
+        Scene scene = new Scene( lights, drawOutlines, maxOrientations );
         RenderingViewer viewer = new JoglRenderingViewer( lights, scene, glcanvas );
 
         controller .attachViewer( viewer, scene, glcanvas );

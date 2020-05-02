@@ -26,7 +26,7 @@ public class Scene implements RenderingChanges, PropertyChangeListener
 
     private final int maxOrientations;
 
-    public Scene( Lights lights, boolean isSticky, boolean drawOutlines, int maxOrientations )
+    public Scene( Lights lights, boolean drawOutlines, int maxOrientations )
 	{
         this .maxOrientations = maxOrientations;
         this .bkgdColor = lights .getBackgroundColor();

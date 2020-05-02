@@ -35,7 +35,7 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
         //   picking in the main rendering component; we don't want the RenderedManifestations
         //   to record these scene graph objects, which are transient, after all.
         // The canvas must be an offscreen canvas, also.
-        rvFactory .createRenderingComponent( false, true, this );
+        rvFactory .createRenderingComponent( true, this );
     }
 
     @Override
