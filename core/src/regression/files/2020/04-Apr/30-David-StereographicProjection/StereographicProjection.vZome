@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="DEV" coreVersion="7.0" edition="vZome" field="golden" version="7.0">
+  <EditHistory editNumber="131" lastStickyEdit="56">
+    <StrutCreation anchor="0 0 0 0 0 0" index="0" len="2 4"/>
+    <StrutCreation anchor="2 4 0 0 0 0" index="5" len="2 4" symm="octahedral"/>
+    <StrutCreation anchor="2 4 2 4 0 0" index="4" len="2 4" symm="octahedral"/>
+    <SelectAll/>
+    <ApplyTool name="octahedral.builtin/octahedral around origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-2 -4 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <NewCentroid/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation point="2 4 0 0 2 4"/>
+    <EndBlock/>
+    <NewCentroid/>
+    <BeginBlock/>
+    <SelectManifestation point="-1 -2 0 0 0 0"/>
+    <SelectManifestation point="1 2 0 0 1 2"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-1 -2 0 0 0 0"/>
+    <SelectManifestation point="0 0 2 4 0 0"/>
+    <SelectManifestation point="1 2 0 0 1 2"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-2 -4 0 0 2 4"/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <EndBlock/>
+    <NewCentroid/>
+    <BeginBlock/>
+    <SelectManifestation point="-1 -2 0 0 0 0"/>
+    <SelectManifestation point="-1 -2 0 0 2 4"/>
+    <EndBlock/>
+    <NewCentroid/>
+    <BeginBlock/>
+    <SelectManifestation point="-1 -2 0 0 2 4"/>
+    <SelectManifestation point="-1 -2 0 0 1 2"/>
+    <SelectManifestation point="-1 -2 0 0 0 0"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 4 0 0 2 4"/>
+    <SelectManifestation point="2 4 0 0 0 0"/>
+    <SelectManifestation point="2 4 2 4 2 4"/>
+    <SelectManifestation point="-1 -2 0 0 0 0"/>
+    <SelectManifestation point="-1 -2 0 0 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <SelectManifestation point="-1 -2 0 0 0 0"/>
+    <StereographicProjectionTool name="tool-0"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="1 2 0 0 1 2" startSegment="-1 -2 0 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool deleteInputs="true" name="tool-0"/>
+    <SelectManifestation point="1 2 0 0 1 2"/>
+    <ApplyTool deleteInputs="true" name="tool-0"/>
+    <SelectManifestation>
+      <polygonVertex at="-1 -2 0 0 0 0"/>
+      <polygonVertex at="0 0 2 4 0 0"/>
+      <polygonVertex at="1 2 0 0 1 2"/>
+    </SelectManifestation>
+    <ApplyTool deleteInputs="true" name="tool-0"/>
+    <SelectManifestation endSegment="-1 -2 0 0 1 2" startSegment="-1 -2 0 0 2 4"/>
+    <ApplyTool deleteInputs="true" name="tool-0"/>
+    <BeginBlock/>
+    <SelectManifestation point="-1 -2 0 0 1 2"/>
+    <SelectManifestation endSegment="-1 -2 0 0 0 0" startSegment="-1 -2 0 0 1 2"/>
+    <SelectManifestation point="-1 -2 0 0 2 4"/>
+    <EndBlock/>
+    <ApplyTool deleteInputs="true" name="tool-0"/>
+    <SelectManifestation point="-1 -2 0 0 0 0"/>
+    <ApplyTool deleteInputs="true" name="tool-0"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 -2 -4 2 4"/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <SelectManifestation point="0 0 2 4 2 4"/>
+    <SelectManifestation point="0 0 2 4 -2 -4"/>
+    <SelectManifestation point="0 0 -2 -4 -2 -4"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 -2 -4 0 0"/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <SelectManifestation point="0 0 2 4 0 0"/>
+    <SelectManifestation point="0 0 0 0 -2 -4"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool deleteInputs="true" name="tool-0"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-2 -4 -2 -4 -2 -4"/>
+    <SelectManifestation point="-2 -4 -2 -4 2 4"/>
+    <SelectManifestation point="-2 -4 2 4 2 4"/>
+    <SelectManifestation point="-2 -4 2 4 -2 -4"/>
+    <EndBlock/>
+    <Polygon/>
+    <ApplyTool deleteInputs="true" name="tool-0"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectAll/>
+    <EndBlock/>
+    <ApplyTool deleteInputs="true" name="tool-0"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 4 2 4 2 4"/>
+    <SelectManifestation point="2 4 2 4 2 4"/>
+    <SelectManifestation endSegment="2 4 2 4 2 4" startSegment="2 4 2 4 0 0"/>
+    <SelectManifestation endSegment="2 4 2 4 2 4" startSegment="2 4 2 4 0 0"/>
+    <SelectManifestation point="2 4 2 4 2 4"/>
+    <SelectManifestation point="2 4 2 4 0 0"/>
+    <SelectManifestation point="2 4 2 4 -2 -4"/>
+    <SelectManifestation point="2 4 0 0 -2 -4"/>
+    <SelectManifestation point="2 4 -2 -4 -2 -4"/>
+    <SelectManifestation point="2 4 -2 -4 0 0"/>
+    <SelectManifestation point="2 4 -2 -4 2 4"/>
+    <SelectManifestation point="2 4 0 0 2 4"/>
+    <SelectManifestation point="2 4 0 0 3/2 3"/>
+    <SelectManifestation point="2 4 0 0 0 0"/>
+    <SelectManifestation point="2 4 0 0 -6 -12"/>
+    <SelectManifestation point="2 4 -6 -12 -6 -12"/>
+    <SelectManifestation point="2 4 -6 -12 0 0"/>
+    <SelectManifestation point="2 4 -6 -12 6 12"/>
+    <SelectManifestation point="2 4 0 0 6 12"/>
+    <SelectManifestation point="2 4 6 12 6 12"/>
+    <SelectManifestation point="2 4 6 12 0 0"/>
+    <SelectManifestation point="2 4 6 12 -6 -12"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <DeselectAll/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="241.9858856201172" far="483.9717712402348" near="0.6049647230649698" parallel="false" stereoAngle="0.0" width="108.89364852905278">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.027350741457744823" y="0.9943744112649424" z="-0.10233018695970897"/>
+      <LookDirection x="0.40439526147194294" y="-0.10462427938236307" z="-0.9085803391350455"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" renderingStyle="trapezoids">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="107,53,26" name="brown"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,255,255" name="0" prototype="-2 2 0 0 -1 1"/>
+    <Direction color="255,255,255" name="1" prototype="4 -2 -2 1 -8 4"/>
+  </SymmetrySystem>
+  <Tools>
+    <Tool deleteInputs="true" id="tool-0" label="stereographic projection 0"/>
+  </Tools>
+</vzome:vZome>
