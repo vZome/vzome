@@ -31,11 +31,11 @@ import com.vzome.core.tools.LinearMapTool;
 import com.vzome.core.tools.MirrorTool;
 import com.vzome.core.tools.ModuleTool;
 import com.vzome.core.tools.OctahedralToolFactory;
+import com.vzome.core.tools.PerspectiveProjectionTool;
 import com.vzome.core.tools.PlaneSelectionTool;
 import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
-import com.vzome.core.tools.StereographicProjectionTool;
 import com.vzome.core.tools.TranslationTool;
 
 public class DefaultFieldApplication implements FieldApplication
@@ -118,7 +118,7 @@ public class DefaultFieldApplication implements FieldApplication
 	    toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
         toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
         toolFactories .put( "ProjectionTool", new ProjectionTool.Factory( tools ) );
-        toolFactories .put( "StereographicProjectionTool", new StereographicProjectionTool.Factory( tools ) );
+        toolFactories .put( "PerspectiveProjectionTool", new PerspectiveProjectionTool.Factory( tools ) );
 	    toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
 	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
 	

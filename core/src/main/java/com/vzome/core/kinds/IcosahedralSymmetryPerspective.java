@@ -23,7 +23,7 @@ import com.vzome.core.tools.MirrorTool;
 import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
-import com.vzome.core.tools.StereographicProjectionTool;
+import com.vzome.core.tools.PerspectiveProjectionTool;
 import com.vzome.core.tools.TetrahedralToolFactory;
 import com.vzome.core.tools.TranslationTool;
 import com.vzome.core.viewing.AbstractShapes;
@@ -111,7 +111,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
 //            result.add(new PlaneSelectionTool.Factory(tools));
             result.add(new TranslationTool.Factory(tools));
             result.add(new ProjectionTool.Factory(tools));
-            result.add(new StereographicProjectionTool.Factory(tools));
+            result.add(new PerspectiveProjectionTool.Factory(tools));
             break;
         case LINEAR_MAP:
             result.add(new AxialStretchTool.Factory(tools, icosaSymm, true, true, true));

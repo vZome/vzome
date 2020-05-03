@@ -27,7 +27,7 @@ import com.vzome.core.tools.LinearMapTool;
 import com.vzome.core.tools.MirrorTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
-import com.vzome.core.tools.StereographicProjectionTool;
+import com.vzome.core.tools.PerspectiveProjectionTool;
 import com.vzome.core.tools.SymmetryTool;
 import com.vzome.core.tools.TranslationTool;
 import com.vzome.core.viewing.AbstractShapes;
@@ -140,7 +140,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 				result .add( new ScalingTool.Factory( tools, pentaSymm ) );
 				result .add( new RotationTool.Factory( tools, pentaSymm ) );
 				result .add( new TranslationTool.Factory( tools ) );
-				result .add( new StereographicProjectionTool.Factory( tools ) );
+				result .add( new PerspectiveProjectionTool.Factory( tools ) );
 				break;
 
 			case LINEAR_MAP:

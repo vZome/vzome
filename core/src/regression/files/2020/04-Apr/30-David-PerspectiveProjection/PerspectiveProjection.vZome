@@ -56,7 +56,7 @@
     <EndBlock/>
     <Polygon/>
     <SelectManifestation point="-1 -2 0 0 0 0"/>
-    <StereographicProjectionTool name="tool-0"/>
+    <PerspectiveProjectionTool name="tool-0"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation endSegment="1 2 0 0 1 2" startSegment="-1 -2 0 0 0 0"/>

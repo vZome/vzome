@@ -6,7 +6,7 @@ import java.util.List;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
 
-public class StereographicProjection extends Transformation {
+public class PerspectiveProjection extends Transformation {
 
     private final Plane projectionPlane;
     private final Point projectionPoint;
@@ -14,7 +14,7 @@ public class StereographicProjection extends Transformation {
     private final AlgebraicVector base;
     private final AlgebraicVector focalPoint;
 
-    public StereographicProjection(Polygon polygon, Point projectionPoint) {
+    public PerspectiveProjection(Polygon polygon, Point projectionPoint) {
         super(polygon.field);
         this.projectionPlane = new PlaneExtensionOfPolygon(polygon);
         this.projectionPoint = projectionPoint;
@@ -40,12 +40,24 @@ public class StereographicProjection extends Transformation {
     
     /**
      * Unlike the PlaneProjection which applies the same projectionVector to all
-     * constructions, the StereographicProjection must calculate each
+     * constructions, the PerspectiveProjection must calculate each
      * projectionVector based on the coordinate(s) being projected.
      * 
-     * StereographicProjection discards all constructions with projections to infinity.
+     * PerspectiveProjection discards all constructions with vertices on the plane
+     * that project to infinity which is the plane is parallel to the projection plane
+     * and contains the focal point. Scott calls it the no-go plane.
+     * No special treatment is given to constructions that span the no-go plane
+     * unless one of its vertices is on that plane.
+     * For example, a strut with endpoints that intersect the no-go plane
+     * is projected  to two new end points but the new strut itself 
+     * should be extending from one new end point to infinity and back to the other one. 
+     * Instead, we simply join the two points since we don't hae a representation for 
+     * "extending to infinity". Simlar behavior occur with a panel that crosses the no-go plane.
      * 
-     * StereographicProjection uses logic that is similar but not identical to
+     * In general, while the behavior in these cases may not technically be ideal, 
+     * we decided that the other possible use cases made the tool worth implementing.
+     * 
+     * PerspectiveProjection uses logic that is similar but not identical to
      * PlaneProjection to handle the cases where a polygon projects to a segment or
      * a segment projects to a point.
      */

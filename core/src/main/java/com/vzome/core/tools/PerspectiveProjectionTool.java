@@ -7,9 +7,9 @@ import java.util.List;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.commands.Command;
+import com.vzome.core.construction.PerspectiveProjection;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
-import com.vzome.core.construction.StereographicProjection;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
 import com.vzome.core.editor.Selection;
@@ -19,14 +19,15 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 
-public class StereographicProjectionTool extends TransformationTool {
-    private static final String ID = "stereographic projection"; // this is the name of the png used for the tool bars.
-    private static final String LABEL = "Create a stereographic projection tool";
+public class PerspectiveProjectionTool extends TransformationTool {
+    private static final String ID = "perspective projection"; // this is the name of the png used for the tool bars.
+    private static final String LABEL = "Create a perspective projection tool";
     private static final String TOOLTIP = "<p>" +
-                "Created tools stereographically project selected objects<br>"
-                + "onto a 2D plane from a focal point not on that plane.<br>"
+                "Created tools apply perspective projection<br>"
+                + "to selected objects, projecting them onto a 2D plane<br>"
+                + "from a focal point not on that plane.<br>"
                 + "If any point on a part is at the focal point<br>"
-                + "or would be projected to infinty, the entire part is ignored.<br>"
+                + "or would be projected to infinity, the entire part is ignored.<br>"
                 + "To create a tool, select a panel as the projection plane and <br>"
                 + "and a non-coplanar ball to be the focal point.<br>" +
             "</p>";
@@ -47,7 +48,7 @@ public class StereographicProjectionTool extends TransformationTool {
         @Override
         public Tool createToolInternal( String id )
         {
-            return new StereographicProjectionTool( id, getToolsModel() );
+            return new PerspectiveProjectionTool( id, getToolsModel() );
         }
 
         @Override
@@ -57,7 +58,7 @@ public class StereographicProjectionTool extends TransformationTool {
         }
     }
 
-    public StereographicProjectionTool(String id, ToolsModel tools) {
+    public PerspectiveProjectionTool(String id, ToolsModel tools) {
         super(id, tools);
         this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
     }
@@ -94,7 +95,7 @@ public class StereographicProjectionTool extends TransformationTool {
         }
         
         this .transforms = new Transformation[ ] { 
-            new StereographicProjection( 
+            new PerspectiveProjection( 
                 (Polygon) panel.getFirstConstruction(), 
                 (Point) ball.getFirstConstruction() ) 
         };
@@ -110,7 +111,7 @@ public class StereographicProjectionTool extends TransformationTool {
     @Override
     protected String getXmlElementName()
     {
-        return "StereographicProjectionTool";
+        return "PerspectiveProjectionTool";
     }
 
     @Override
