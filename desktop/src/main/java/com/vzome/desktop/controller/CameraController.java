@@ -24,7 +24,7 @@ import org.vorthmann.zome.app.impl.TrackballRenderingViewer;
 
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 
@@ -32,7 +32,7 @@ import com.vzome.core.viewing.Lights;
  * In this camera model, the view frustum shape is generally held constant
  * as other parameters are varied.
  */
-public class CameraController extends DefaultController implements Controller3d
+public class CameraController extends DefaultController implements Scene.Provider
 {
     /**
      * The original frustum.
@@ -53,10 +53,10 @@ public class CameraController extends DefaultController implements Controller3d
 
     private final Camera initialCamera;
 
-    private RenderingChanges scene;
+    private Scene scene;
     private RenderedModel symmetryModel;
 
-    private final Lights sceneLighting;
+    protected final Lights sceneLighting;
 
     public interface Snapper
     {
@@ -517,8 +517,7 @@ public class CameraController extends DefaultController implements Controller3d
         return this .copied != null;
     }
 
-    @Override
-    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
+    public void attachViewer( RenderingViewer viewer, Component canvas )
     {
         MouseTool trackball = this .getTrackball( 0.04d );
         
@@ -529,10 +528,6 @@ public class CameraController extends DefaultController implements Controller3d
 
         this .addViewer( new TrackballRenderingViewer( viewer ) );
 
-        this .scene = scene;
-        for ( RenderedManifestation rm : this .symmetryModel )
-            this .scene .manifestationAdded( rm );
-
         updateViewersTransformation();
         updateViewersProjection();
     }
@@ -540,11 +535,9 @@ public class CameraController extends DefaultController implements Controller3d
     public void setSymmetry( RenderedModel model, Snapper snapper )
     {
         this .symmetryModel = model;
-        if ( scene != null ) {
-            scene .reset();
-            for ( RenderedManifestation rm : symmetryModel )
-                scene .manifestationAdded( rm );
-        }
+        this .scene = new Scene( this .sceneLighting, false, model .getOrbitSource() .getSymmetry() .getChiralOrder() );
+        for ( RenderedManifestation rm : symmetryModel )
+            scene .manifestationAdded( rm );
         this .snapper = snapper;
         if ( snapping ) {
             saveBaselineView(); // might have been zooming
@@ -554,8 +547,8 @@ public class CameraController extends DefaultController implements Controller3d
     }
 
     @Override
-    public Lights getSceneLighting()
+    public Scene getScene()
     {
-        return this.sceneLighting;
+        return this.scene;
     }
 }

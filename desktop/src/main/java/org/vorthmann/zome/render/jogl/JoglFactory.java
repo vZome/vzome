@@ -3,7 +3,6 @@
 
 package org.vorthmann.zome.render.jogl;
 
-import java.awt.Component;
 import java.util.List;
 
 import org.vorthmann.j3d.J3dComponentFactory;
@@ -15,16 +14,11 @@ import com.jogamp.opengl.GLCapabilitiesChooser;
 import com.jogamp.opengl.GLCapabilitiesImmutable;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.Scene;
-import com.vzome.core.viewing.Lights;
-import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 
 public class JoglFactory implements J3dComponentFactory
-{
-    public JoglFactory( Colors colors, Boolean useEmissiveColor ) {}
-    
+{    
     // MSAA (anti-aliasing) implemented per
     //   https://jogamp.org/jogl-demos/src/demos/multisample/Multisample.java
     
@@ -55,7 +49,7 @@ public class JoglFactory implements J3dComponentFactory
     }
 
     @Override
-    public Component createRenderingComponent( boolean isOffScreen, Controller3d controller )
+    public RenderingViewer createRenderingViewer( Scene scene )
     {
         GLProfile glprofile = GLProfile .getDefault();
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
@@ -67,14 +61,6 @@ public class JoglFactory implements J3dComponentFactory
         glcapabilities .setDepthBits( 24 );
         GLCanvas glcanvas = new GLCanvas( glcapabilities, chooser, null );
         
-        Lights lights = controller .getSceneLighting();
-        boolean drawOutlines = controller .propertyIsTrue( "drawOutlines" );
-        int maxOrientations = Integer .parseInt( controller .getProperty( "maxOrientations" ) );
-        Scene scene = new Scene( lights, drawOutlines, maxOrientations );
-        RenderingViewer viewer = new JoglRenderingViewer( lights, scene, glcanvas );
-
-        controller .attachViewer( viewer, scene, glcanvas );
-
-        return glcanvas;
+        return new JoglRenderingViewer( scene, glcanvas );
     }
 }

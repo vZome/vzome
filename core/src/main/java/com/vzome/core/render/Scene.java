@@ -17,8 +17,14 @@ public class Scene implements RenderingChanges, PropertyChangeListener
 {
     private static final Logger LOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
     
+    public interface Provider
+    {
+        Scene getScene();
+    }
+
     private Color bkgdColor;
     private final Map<String, SymmetryRendering> symmetries = new HashMap<>();
+    private final Lights lights;
     private int forceRender = 3; // double-buffering means we cannot simply use a boolean
     private boolean drawOutlines;
 
@@ -29,6 +35,7 @@ public class Scene implements RenderingChanges, PropertyChangeListener
     public Scene( Lights lights, boolean drawOutlines, int maxOrientations )
 	{
         this .maxOrientations = maxOrientations;
+        this .lights = lights;
         this .bkgdColor = lights .getBackgroundColor();
         
         this .drawOutlines = drawOutlines;
@@ -47,6 +54,11 @@ public class Scene implements RenderingChanges, PropertyChangeListener
             }
         });
 	}
+    
+    public Lights getLighting()
+    {
+        return this .lights;
+    }
 
     public void render( Renderer solids, Renderer outlines, boolean viewChanged )
     {

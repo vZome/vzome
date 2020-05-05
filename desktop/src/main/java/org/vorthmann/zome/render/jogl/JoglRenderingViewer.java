@@ -51,6 +51,8 @@ import com.vzome.opengl.SolidRenderer;
 public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 {
     private final Scene scene;
+    private final Component canvas;
+    
     private JoglOpenGlShim glShim;
     private Renderer outlines = null;
     private Renderer solids = null;
@@ -69,13 +71,12 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private boolean forceRender = true;
     private float fogFront;
 
-    public JoglRenderingViewer( Lights lights, Scene scene, GLAutoDrawable drawable )
+    public JoglRenderingViewer( Scene scene, GLAutoDrawable drawable )
     {
         this .scene = scene;
+        this .canvas = (Component) drawable;
 
-        if ( drawable == null )
-            return;
-
+        Lights lights = scene .getLighting();
         int num = lights .size();
         this .lightDirections = new float[num][];
         this .lightColors = new float[num][];
@@ -309,5 +310,11 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         context .destroy();
         drawable .setRealized( false );
         System.out.println( "Done!" );
+    }
+
+    @Override
+    public Component getCanvas()
+    {
+        return this .canvas;
     }
 }

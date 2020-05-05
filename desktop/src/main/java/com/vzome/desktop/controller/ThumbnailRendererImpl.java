@@ -3,7 +3,6 @@
 
 package com.vzome.desktop.controller;
 
-import java.awt.Component;
 import java.awt.image.RenderedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,40 +10,25 @@ import java.util.logging.Logger;
 import org.vorthmann.j3d.J3dComponentFactory;
 
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.ThumbnailRenderer;
 
 
-public class ThumbnailRendererImpl extends CameraController implements ThumbnailRenderer, Controller3d
+public class ThumbnailRendererImpl extends CameraController implements ThumbnailRenderer
 {
-    private RenderingChanges scene;
-    private RenderingViewer viewer;
-    
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
+    private J3dComponentFactory rvFactory;
 
     public ThumbnailRendererImpl( Lights sceneLighting )
     {
         super( new Camera(), sceneLighting );
     }
     
-    public void attachViewer( J3dComponentFactory rvFactory )
+    public void setFactory( J3dComponentFactory rvFactory )
     {
-        // We must create a "non-sticky" rendering component here, or we will mess up
-        //   picking in the main rendering component; we don't want the RenderedManifestations
-        //   to record these scene graph objects, which are transient, after all.
-        // The canvas must be an offscreen canvas, also.
-        rvFactory .createRenderingComponent( true, this );
-    }
-
-    @Override
-    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
-    {
-        // no picking, etc., so we don't care about the offscreen canvas
-        this .scene = scene;
-        this .viewer = viewer;
-        super .addViewer( viewer ); // add it to the CameraController
+        this .rvFactory = rvFactory;
     }
 
     /* (non-Javadoc)
@@ -53,14 +37,14 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
     @Override
     public void captureSnapshot( RenderedModel snapshot, Camera camera, int maxSize, final Listener callback )
     {
-        if(snapshot == null) {
+        if ( snapshot == null ) {
             // hope we're using VSCode to debug a vZome file with lastStickyEdit = -1
             return; // avoid NPE
         }
         super .restoreView( camera );
 
-        scene .reset(); // This is very important... forget all of the prior rendering
-        
+        Scene scene = new Scene( this .sceneLighting, false, 60 ); // TODO: reuse the shapes from the main scene
+
         if ( logger .isLoggable( Level.FINER ) )
         {
             logger .finer( "%%%%%%%%%%%%%%%%%%%%%%%%%%  START THUMBNAIL" );
@@ -73,6 +57,8 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
         {
             logger .finer( "%%%%%%%%%%%%%%%%%%%%%%%%%%    END THUMBNAIL" );
         }
+
+        RenderingViewer viewer = this .rvFactory .createRenderingViewer( scene );
         viewer .captureImage( 80, true, new RenderingViewer.ImageCapture()
         {
             @Override

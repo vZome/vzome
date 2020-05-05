@@ -182,7 +182,7 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
         {
             int instanceCount = shapeClass .prepareToRender( this .useVBOs ? this : null ); // will call back to storeBuffer()
             if ( instanceCount == 0 )
-                return;
+                continue;
             
             if ( this .useVBOs ) {
                 OpenGlUtilities .setVBO( gl, a_Vertex,       shapeClass .getLineVerticesVBO(),  false, COORDS_PER_VERTEX );

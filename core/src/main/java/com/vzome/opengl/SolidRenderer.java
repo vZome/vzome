@@ -225,7 +225,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         {
             int instanceCount = shape .prepareToRender( this .useVBOs ? this : null ); // will call back to storeBuffer()
             if ( instanceCount == 0 )
-                return;
+                continue;
 
             if ( this .useVBOs ) {
                 OpenGlUtilities .setVBO( gl, a_Vertex,       shape .getVerticesVBO(),  false, COORDS_PER_VERTEX );
