@@ -6,7 +6,6 @@ package org.vorthmann.zome.render.jogl;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3f;
@@ -68,7 +67,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private float[] ambientLight;
     private int width;
     private int height;
-    private boolean forceRender = true;
+    private boolean cameraChanged = true;
     private float fogFront;
 
     public JoglRenderingViewer( Scene scene, GLAutoDrawable drawable )
@@ -113,8 +112,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt and is consistent with captureImage()
         this .outlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
         this .outlines .setView( this.modelView, projection, this .near, this .fogFront, this .far, this .fovX != 0f );
-        this .scene .render( this .solids, this .outlines, this .forceRender );
-        this .forceRender = false;
+        this .scene .render( this .solids, this .outlines, this .cameraChanged );
+        this .cameraChanged = false;
     }
     
     private void setProjection()
@@ -129,7 +128,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         }
         float diff = ( this .far - this .near )/5; // offset from near and far by 20%
         this .fogFront = near + 2 * diff;
-        this .forceRender  = true;
+        this .cameraChanged  = true;
     }
 
     // These are GLEventListener methods
@@ -164,13 +163,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     // These are RenderingViewer methods
     
     @Override
-    public void setEye( int eye ) {}
-
-    @Override
-    public void setViewTransformation( Matrix4d trans, int eye )
+    public void setViewTransformation( Matrix4d trans )
     {
-        if ( eye != MONOCULAR )
-            return;
         Matrix4d copy = new Matrix4d();
         copy .invert( trans );
         int i = 0;
@@ -181,7 +175,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
                 this .modelView[ i ] = (float) copy .getElement( row, column );
                 ++i;
             }
-        this .forceRender  = true;
+        this .cameraChanged  = true;
     }
 
     @Override
@@ -255,13 +249,6 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         return new Line( new RealVector( ray.orig[0], ray.orig[1], ray.orig[2] ), new RealVector( ray.dir[0], ray.dir[1], ray.dir[2] ) );
     }
     
-    @Override
-    public Collection<RenderedManifestation> pickCube()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Override
     public void captureImage( int maxSize, boolean withAlpha, ImageCapture capture )
     {

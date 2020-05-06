@@ -67,9 +67,7 @@ public class CameraController extends DefaultController implements Scene.Provide
     {
         int MONOCULAR = 0; int LEFT_EYE = 1; int RIGHT_EYE = 2;
 
-        void setEye( int eye );
-
-        void setViewTransformation( Matrix4d trans, int eye );
+        void setViewTransformation( Matrix4d trans );
 
         void setPerspective( double fov, double aspectRatio, double near, double far );
 
@@ -144,20 +142,10 @@ public class CameraController extends DefaultController implements Scene.Provide
             return;
         Matrix4d trans = new Matrix4d();
 
-        model .getViewTransform( trans, 0d );
+        model .getViewTransform( trans );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            mViewers .get( i ) .setViewTransformation( trans, Viewer .MONOCULAR );
-
-        model .getStereoViewTransform( trans, Viewer .LEFT_EYE );
-        trans .invert();
-        for ( int i = 0; i < mViewers .size(); i++ )
-            mViewers .get( i ) .setViewTransformation( trans, Viewer .LEFT_EYE );
-
-        model .getStereoViewTransform( trans, Viewer .RIGHT_EYE );
-        trans .invert();
-        for ( int i = 0; i < mViewers .size(); i++ )
-            mViewers .get( i ) .setViewTransformation( trans, Viewer .RIGHT_EYE );
+            mViewers .get( i ) .setViewTransformation( trans );
     }
 
     private void updateViewersProjection()
@@ -186,7 +174,7 @@ public class CameraController extends DefaultController implements Scene.Provide
         Vector3d axis = new Vector3d( q.x, q.y, q.z );
 
         Matrix4d viewTrans = new Matrix4d();
-        model .getViewTransform( viewTrans, 0d );
+        model .getViewTransform( viewTrans );
         viewTrans .invert();
 
         // now map the axis back to world coordinates
@@ -198,7 +186,7 @@ public class CameraController extends DefaultController implements Scene.Provide
     public void mapViewToWorld( Vector3f vector )
     {
         Matrix4d viewTrans = new Matrix4d();
-        model .getViewTransform( viewTrans, 0d );
+        model .getViewTransform( viewTrans );
         viewTrans .invert();
         viewTrans .transform( vector );
     }
@@ -517,7 +505,7 @@ public class CameraController extends DefaultController implements Scene.Provide
         return this .copied != null;
     }
 
-    public void attachViewer( RenderingViewer viewer, Component canvas )
+    public void attachViewer( CameraController.Viewer viewer, Component canvas )
     {
         MouseTool trackball = this .getTrackball( 0.04d );
         

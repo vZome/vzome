@@ -50,7 +50,7 @@ public class POVRayExporter extends Exporter3d
     public void mapViewToWorld( Camera view, Vector3f vector )
     {
         Matrix4d viewTrans = new Matrix4d();
-        view .getViewTransform( viewTrans, 0d );
+        view .getViewTransform( viewTrans );
         viewTrans .invert();
         viewTrans .transform( vector );
     }
