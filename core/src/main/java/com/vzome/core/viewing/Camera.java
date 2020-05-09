@@ -241,21 +241,7 @@ public class Camera
         matrix .set( mat );
     }
 
-
-    //	public void getWorldRotation( Quat4d q )
-    //	{
-    //		Vector3d axis = new Vector3d( q.x, q.y, q.z );
-    //
-    //		Transform3D viewTrans = new Transform3D();
-    //		getViewTransform( viewTrans, 0d );
-    //        viewTrans .invert();
-    //
-    //		// now map the axis back to world coordinates
-    //		viewTrans .transform( axis );
-    //		q.x = axis.x; q.y = axis.y; q.z = axis.z;
-    //	}
-
-
+    
     public Point3d getLookAtPoint()
     {
         return mLookAtPoint;
