@@ -42,7 +42,7 @@ public class Java2dExporter
         Java2dSnapshot snapshot = new Java2dSnapshot();
 
         this .viewTransform = new Matrix4d();
-        view .getViewTransform( this .viewTransform, 0d );
+        view .getViewTransform( this .viewTransform );
         
         if ( ! view .isPerspective() ) {
             double edge = view .getWidth() / 2;

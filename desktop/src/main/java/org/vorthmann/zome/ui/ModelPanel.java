@@ -26,19 +26,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.CardPanel;
 import org.vorthmann.ui.Controller;
+import org.vorthmann.zome.app.impl.DocumentController;
+import org.vorthmann.zome.app.impl.PickingController;
 
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.desktop.controller.RenderingViewer;
 
 public class ModelPanel extends JPanel implements PropertyChangeListener, SymmetryToolbarsPanel.ButtonFactory
 {
     private static final String TOOLTIP_PREFIX = "<html><b>";
     private static final String TOOLTIP_SUFFIX = "</b><br><br><p>Right-click to configure this tool.</p></html>";
 
-    private final Component monocularCanvas; //, leftEyeCanvas, rightEyeCanvas;
-    private MouseListener monocularClicks; //, leftEyeClicks, rightEyeClicks;
+    private final Component monocularCanvas;
+    private MouseListener monocularClicks;
     private final JToolBar oldToolBar, bookmarkBar;
     private final JScrollPane bookmarkScroller;
     private final boolean isEditor;
@@ -50,7 +51,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
     private final ToolConfigDialog bookmarkConfigDialog;
     private final Map<String,JButton> bookmarkButtons = new HashMap<>(); // to support hiding bookmarks
 
-    public ModelPanel( Controller3d controller, J3dComponentFactory factory, ControlActions enabler, boolean isEditor, boolean fullPower )
+    public ModelPanel( Controller controller, RenderingViewer viewer, ControlActions enabler, boolean isEditor, boolean fullPower )
     {
         super( new BorderLayout() );
         this .controller = controller;
@@ -58,9 +59,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         this .isEditor = isEditor;
 
         this .bookmarkConfigDialog = new ToolConfigDialog( (JFrame) this.getParent(), true );
-
-        //        Controller leftController = controller .getSubController( "leftEyePicking" );
-        //        Controller rightController = controller .getSubController( "rightEyePicking" );
 
         controller .addPropertyListener( this );
 
@@ -77,27 +75,14 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         mMonocularPanel = new JPanel( new BorderLayout() );
 
         mMonocularPanel .setPreferredSize( new Dimension( 2000, 2000 ) );
-        // This rendering component should be the only sticky one (first argument),
-        //  so that picking works correctly for this canvas.
-        monocularCanvas = factory .createRenderingComponent( true, false, controller );
-        // createRenderingComponent must precede this getSubController
-        Controller monoController = controller .getSubController( "monocularPicking" );
+        monocularCanvas = viewer .getCanvas();
+        ((DocumentController) controller) .attachViewer( viewer, monocularCanvas );
+
+        Controller monoController = new PickingController( viewer, (DocumentController) controller );
+        controller .addSubController( "monocularPicking", monoController );
         mMonocularPanel .add( monocularCanvas, BorderLayout.CENTER );
 
         monoStereoPanel .add( mMonocularPanel, "mono" );
-        //        JPanel stereoPanel = new JPanel();
-        //        {
-        //            GridLayout grid = new GridLayout( 1, 2 );
-        //            stereoPanel .setLayout( grid );
-        //            leftEyeCanvas = ( (J3dComponentFactory) controller ) .createJ3dComponent( "mainViewer-leftEye" );
-        //            stereoPanel .add( leftEyeCanvas );
-        //            rightEyeCanvas = ( (J3dComponentFactory) controller ) .createJ3dComponent( "mainViewer-rightEye" );
-        //            stereoPanel .add( rightEyeCanvas );
-        //        }
-        //        monoStereoPanel .add( stereoPanel, "stereo" );
-        //        if ( showStereo )
-        //            monoStereoCardLayout .show( monoStereoPanel, "stereo" );
-        //        else
         monoStereoCardLayout .show( monoStereoPanel, "mono" );
         cameraController .addPropertyListener( new PropertyChangeListener()
         {
