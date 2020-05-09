@@ -70,18 +70,17 @@ import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderedModel.OrbitSource;
-import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.CameraController;
-import com.vzome.desktop.controller.Controller3d;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
 
 /**
  * @author Scott Vorthmann 2003
  */
-public class DocumentController extends DefaultController implements Controller3d
+public class DocumentController extends DefaultController implements Scene.Provider
 {
     // local state
     //
@@ -96,7 +95,7 @@ public class DocumentController extends DefaultController implements Controller3
     //
     private RenderingViewer imageCaptureViewer;
     private final RenderedModel mRenderedModel;
-    private RenderingChanges mainScene;
+    private Scene mainScene;
     private Lights sceneLighting;
     private MouseTool modelModeMainTrackball;
     private Component modelCanvas;
@@ -292,7 +291,7 @@ public class DocumentController extends DefaultController implements Controller3
 
         thumbnails = new ThumbnailRendererImpl( sceneLighting );
         this .addSubController( "thumbnails", (Controller) thumbnails );
-        thumbnails .attachViewer( app .getJ3dFactory() );
+        thumbnails .setFactory( app .getJ3dFactory() );
 
         mApp = app;
         
@@ -307,6 +306,16 @@ public class DocumentController extends DefaultController implements Controller3
             this .documentModel .setRenderedModel( mRenderedModel );
             this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
         }
+
+        int max = 0;
+        for ( SymmetryPerspective perspective : this .documentModel .getFieldApplication() .getSymmetryPerspectives() ) {
+            int order = perspective .getSymmetry() .getChiralOrder();
+            if ( order > max )
+                max = order;
+        }
+        this .mainScene = new Scene( this .sceneLighting, this .drawOutlines, max );
+        if ( this .mainScene instanceof PropertyChangeListener )
+            this .addPropertyListener( (PropertyChangeListener) this .mainScene );
 
         partsController = new PartsController( this .documentModel .getSymmetrySystem() );
         this .addSubController( "parts", partsController );
@@ -387,29 +396,11 @@ public class DocumentController extends DefaultController implements Controller3
         } );
     }
     
-    @Override
-    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
+    public void attachViewer( RenderingViewer viewer, Component canvas )
     {
     		// This is called on a UI thread!
         this .modelCanvas = canvas;
-        this .mainScene = scene;
         this .imageCaptureViewer = viewer;
-
-//      leftEyeCanvas = rvFactory .createJ3dComponent( "" );
-//      RenderingViewer viewer = rvFactory .createRenderingViewer( mainScene, leftEyeCanvas );
-//      mViewPlatform .addViewer( viewer );
-//      viewer .setEye( RenderingViewer .LEFT_EYE );
-//      leftController = new PickingController( viewer, this );
-//
-//      rightEyeCanvas = rvFactory .createJ3dComponent( "" );
-//      viewer = rvFactory .createRenderingViewer( mainScene, rightEyeCanvas );
-//      mViewPlatform .addViewer( viewer );
-//      viewer .setEye( RenderingViewer .RIGHT_EYE );
-//      rightController = new PickingController( viewer, this );
-
-        if ( this .mainScene instanceof PropertyChangeListener )
-            this .addPropertyListener( (PropertyChangeListener) this .mainScene );
-
         
         // clicks become select or deselect all
         selectionClick = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
@@ -430,7 +421,7 @@ public class DocumentController extends DefaultController implements Controller3
         this .cameraController .addViewer( this .imageCaptureViewer );
         this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
-        this .strutBuilder .attach( viewer, scene );
+        this .strutBuilder .attach( viewer, this .mainScene );
         
         if ( this .modelCanvas != null )
             if ( editingModel ) {
@@ -544,22 +535,6 @@ public class DocumentController extends DefaultController implements Controller3
 
             case "takeSnapshot":
                 documentModel .addSnapshotPage( cameraController .getView() );
-                break;
-
-            case "test.pick.cube":
-//              // just a test of Bounds picking
-//          {
-//              Collection rms = imageCaptureViewer.pickCube();
-//              for ( Iterator it = rms.iterator(); it.hasNext(); ) {
-//                  RenderedManifestation rm = (RenderedManifestation) it.next();
-//                  Manifestation targetManifestation = null;
-//                  if ( rm != null && rm.isPickable() )
-//                      targetManifestation = rm.getManifestation();
-//                  else
-//                      continue;
-//                  document .selectManifestation( targetManifestation, true ); // NOT UNDOABLE!
-//              }
-//          }
                 break;
 
             case "refresh.2d":
@@ -878,10 +853,6 @@ public class DocumentController extends DefaultController implements Controller3
                 captureImageFile( file, extension, null );
                 return;
             }
-            //            if ( command .equals( "export.zomespace" ) )
-            //            {
-            //                new ZomespaceExporter( file ) .exportArticle( document, colors, sceneLighting, getSaveXml(), getProperty( "edition" ), getProperty( "version" ) );
-            //            } else
             if ( command.startsWith( "export2d." ) )
             {
                 Dimension size = this .modelCanvas .getSize();              
@@ -1155,15 +1126,6 @@ public class DocumentController extends DefaultController implements Controller3
     public String getProperty( String propName )
     {
         switch ( propName ) {
-
-        case "maxOrientations":
-            int max = 0;
-            for ( SymmetryPerspective perspective : this .documentModel .getFieldApplication() .getSymmetryPerspectives() ) {
-                int order = perspective .getSymmetry() .getChiralOrder();
-                if ( order > max )
-                    max = order;
-            }
-            return Integer .toString( max );
 
         case "isIcosahedralSymmetry":
             return Boolean .toString( symmetryController.getSymmetry().getName() .equals( "icosahedral" ) );
@@ -1680,8 +1642,8 @@ public class DocumentController extends DefaultController implements Controller3
     }
 
     @Override
-    public Lights getSceneLighting()
+    public Scene getScene()
     {
-        return this .sceneLighting;
+        return this .mainScene;
     }
 }

@@ -221,34 +221,28 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
             gl.glUniformMatrix4fv( u_Orientations[ i ], 1, false, orientations[ i ], 0 );
         OpenGlUtilities.checkGLError( gl, "mOrientationsParam");
         
-        for( InstancedGeometry shapeClass : symmetryRendering .getGeometries() )
-            this .renderShape( shapeClass );
-    }
+        for( InstancedGeometry shape : symmetryRendering .getGeometries() )
+        {
+            int instanceCount = shape .prepareToRender( this .useVBOs ? this : null ); // will call back to storeBuffer()
+            if ( instanceCount == 0 )
+                continue;
 
-    public void renderShape( InstancedGeometry shape )
-    {
-        gl.glUseProgram( programId );
-        OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
+            if ( this .useVBOs ) {
+                OpenGlUtilities .setVBO( gl, a_Vertex,       shape .getVerticesVBO(),  false, COORDS_PER_VERTEX );
+                OpenGlUtilities .setVBO( gl, a_Normal,       shape .getNormalsVBO(),   false, COORDS_PER_VERTEX );
+                OpenGlUtilities .setVBO( gl, a_InstanceData, shape .getInstancesVBO(), true, 4 );
+                OpenGlUtilities .setVBO( gl, a_Color,        shape .getColorsVBO(),    true, 4 );
+            }
+            else {
+                OpenGlUtilities .setBuffer( gl, a_Vertex,       shape .getVerticesBuffer(),  false, COORDS_PER_VERTEX );
+                OpenGlUtilities .setBuffer( gl, a_Normal,       shape .getNormalsBuffer(),   false, COORDS_PER_VERTEX );
+                OpenGlUtilities .setBuffer( gl, a_InstanceData, shape .getInstancesBuffer(), true, 4 );
+                OpenGlUtilities .setBuffer( gl, a_Color,        shape .getColorsBuffer(),    true, 4 );
+            }
 
-        int instanceCount = shape .prepareToRender( this .useVBOs ? this : null ); // will call back to storeBuffer()
-        if ( instanceCount == 0 )
-            return;
-
-        if ( this .useVBOs ) {
-            OpenGlUtilities .setVBO( gl, a_Vertex,       shape .getVerticesVBO(),  false, COORDS_PER_VERTEX );
-            OpenGlUtilities .setVBO( gl, a_Normal,       shape .getNormalsVBO(),   false, COORDS_PER_VERTEX );
-            OpenGlUtilities .setVBO( gl, a_InstanceData, shape .getInstancesVBO(), true, 4 );
-            OpenGlUtilities .setVBO( gl, a_Color,        shape .getColorsVBO(),    true, 4 );
+            gl.glDrawTrianglesInstanced( 0, shape .getVertexCount(), instanceCount );
+            OpenGlUtilities.checkGLError( gl, "Drawing a shape");
         }
-        else {
-            OpenGlUtilities .setBuffer( gl, a_Vertex,       shape .getVerticesBuffer(),  false, COORDS_PER_VERTEX );
-            OpenGlUtilities .setBuffer( gl, a_Normal,       shape .getNormalsBuffer(),   false, COORDS_PER_VERTEX );
-            OpenGlUtilities .setBuffer( gl, a_InstanceData, shape .getInstancesBuffer(), true, 4 );
-            OpenGlUtilities .setBuffer( gl, a_Color,        shape .getColorsBuffer(),    true, 4 );
-        }
-
-        gl.glDrawTrianglesInstanced( 0, shape .getVertexCount(), instanceCount );
-        OpenGlUtilities.checkGLError( gl, "Drawing a shape");
     }
 
     @Override

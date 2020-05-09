@@ -179,29 +179,23 @@ public class OutlineRenderer implements InstancedGeometry.BufferStorage, Rendere
         OpenGlUtilities.checkGLError( gl, "mOrientationsParam");
         
         for( InstancedGeometry shapeClass : symmetryRendering .getGeometries() )
-            this .renderShape( shapeClass );
-    }
+        {
+            int instanceCount = shapeClass .prepareToRender( this .useVBOs ? this : null ); // will call back to storeBuffer()
+            if ( instanceCount == 0 )
+                continue;
+            
+            if ( this .useVBOs ) {
+                OpenGlUtilities .setVBO( gl, a_Vertex,       shapeClass .getLineVerticesVBO(),  false, COORDS_PER_VERTEX );
+                OpenGlUtilities .setVBO( gl, a_InstanceData, shapeClass .getInstancesVBO(), true, 4 );
+            }
+            else {
+                OpenGlUtilities .setBuffer( gl, a_Vertex,       shapeClass .getLineVerticesBuffer(),  false, COORDS_PER_VERTEX );
+                OpenGlUtilities .setBuffer( gl, a_InstanceData, shapeClass .getInstancesBuffer(), true, 4 );
+            }
 
-    public void renderShape( InstancedGeometry shape )
-    {
-        gl.glUseProgram( programId );
-        OpenGlUtilities.checkGLError( gl, "glUseProgram" );  // a compile / link problem seems to fail only now!
-
-        int instanceCount = shape .prepareToRender( this .useVBOs ? this : null ); // will call back to storeBuffer()
-        if ( instanceCount == 0 )
-            return;
-        
-        if ( this .useVBOs ) {
-            OpenGlUtilities .setVBO( gl, a_Vertex,       shape .getLineVerticesVBO(),  false, COORDS_PER_VERTEX );
-            OpenGlUtilities .setVBO( gl, a_InstanceData, shape .getInstancesVBO(), true, 4 );
+            gl.glDrawLinesInstanced( 0, shapeClass .getLineVertexCount(), instanceCount );
+            OpenGlUtilities.checkGLError( gl, "Drawing a shape");
         }
-        else {
-            OpenGlUtilities .setBuffer( gl, a_Vertex,       shape .getLineVerticesBuffer(),  false, COORDS_PER_VERTEX );
-            OpenGlUtilities .setBuffer( gl, a_InstanceData, shape .getInstancesBuffer(), true, 4 );
-        }
-
-        gl.glDrawLinesInstanced( 0, shape .getLineVertexCount(), instanceCount );
-        OpenGlUtilities.checkGLError( gl, "Drawing a shape");
     }
 
     @Override
