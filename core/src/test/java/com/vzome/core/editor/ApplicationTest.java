@@ -11,7 +11,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.construction.Construction;
+import com.vzome.core.math.Projection;
 import com.vzome.core.model.Color;
 import com.vzome.core.model.ColoredMeshJson;
 
@@ -84,7 +86,8 @@ public class ApplicationTest {
             }
         };
         try {
-            ColoredMeshJson .parse( testJson, null, events, application );
+            AlgebraicField field = application .getField( "golden" );
+            ColoredMeshJson .parse( testJson, null, new Projection.Default( field ), events, application );
             // TODO put some better assertions here
         }
         catch (IOException e) {

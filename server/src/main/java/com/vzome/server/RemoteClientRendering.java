@@ -1,9 +1,9 @@
 package com.vzome.server;
 
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collection;
 
 import javax.vecmath.Matrix4d;
 
@@ -38,10 +38,7 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 	}
 
 	@Override
-	public void setEye( int eye ) {}
-
-	@Override
-	public void setViewTransformation( Matrix4d trans, int eye ) {}
+	public void setViewTransformation( Matrix4d trans ) {}
 
 	@Override
 	public void setPerspective( double fov, double aspectRatio, double near, double far ) {}
@@ -51,12 +48,6 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
 
 	@Override
 	public RenderedManifestation pickManifestation( MouseEvent e )
-	{
-		return null;
-	}
-
-	@Override
-	public Collection<RenderedManifestation> pickCube()
 	{
 		return null;
 	}
@@ -123,7 +114,11 @@ class RemoteClientRendering implements RenderingChanges, RenderingViewer, Proper
     @Override
     public boolean shapesChanged( Shapes shapes )
     {
-        // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public Component getCanvas() {
+        return null;
     }
 }
