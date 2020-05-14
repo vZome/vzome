@@ -111,7 +111,7 @@ public class SimpleMeshJson
         void constructionAdded( Construction c );
     }
 
-    public static void parse( String json, AlgebraicVector offset, Events events, AlgebraicField.Registry registry ) throws IOException
+    public static void parse( String json, AlgebraicVector offset, Projection projection, Events events, AlgebraicField.Registry registry ) throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper .readTree( json );
@@ -119,7 +119,6 @@ public class SimpleMeshJson
         String fieldName = ( node .has( "field") )? node .get( "field" ) .asText() : "golden";
         AlgebraicField field = registry .getField( fieldName );
         // TODO: fail if field is null
-        Projection projection = new Projection.Default( field );
         
         if ( ! node .has( "vertices" ) ) {
             throw new IOException( "There is no 'vertices' list in the JSON" );
