@@ -19,10 +19,10 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.Controller;
 
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.desktop.controller.CameraController;
+import com.vzome.desktop.controller.RenderingViewer;
 
 /**
  * Description here.
@@ -64,7 +64,7 @@ public class CameraControlPanel extends JPanel {
 //    }
     
     
-	public CameraControlPanel( J3dComponentFactory factory3d, final Controller controller )
+    public CameraControlPanel( RenderingViewer viewer, final Controller controller )
 	{
         this .setBorder( BorderFactory .createTitledBorder( "viewing" ) );
         int nearTicks = magToTicks( MAX_MAG );
@@ -102,7 +102,9 @@ public class CameraControlPanel extends JPanel {
             add( zslider, BorderLayout .EAST );
 
         trackpad = new JPanel( new BorderLayout() );
-        Component trackballCanvas = factory3d .createRenderingComponent( false, false, ((Controller3d) controller) );
+        Component trackballCanvas = viewer .getCanvas();
+        ((CameraController) controller) .attachViewer( viewer, trackballCanvas );
+
         trackpad .add( trackballCanvas, BorderLayout.CENTER );
         trackpad .setAlignmentX( JLabel .CENTER_ALIGNMENT );
         trackpad .setBorder( BorderFactory .createTitledBorder( "rotation trackball" ) );

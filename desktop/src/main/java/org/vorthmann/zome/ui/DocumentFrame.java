@@ -46,7 +46,8 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.core.render.Scene;
+import com.vzome.desktop.controller.RenderingViewer;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {
@@ -118,7 +119,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     	this .appUI = appUI;
     }
         
-    public DocumentFrame( final Controller3d controller, final J3dComponentFactory factory3d )
+    public DocumentFrame( final Controller controller, final J3dComponentFactory factory3d )
     {
         mController = controller;
         mController .addPropertyListener( this );
@@ -495,7 +496,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     leftCenterPanel .add(  modeAndStatusPanel, BorderLayout.PAGE_START );
                 }
 
-                modelPanel = new ModelPanel( (Controller3d) mController, factory3d, (ControlActions) this, this .isEditor, fullPower );
+                Scene scene = ((Scene.Provider) mController) .getScene();
+                RenderingViewer viewer = factory3d .createRenderingViewer( scene );
+                modelPanel = new ModelPanel( mController, viewer, (ControlActions) this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );
@@ -509,7 +512,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
             JPanel rightPanel = new JPanel( new BorderLayout() );
             {
-                viewControl = new CameraControlPanel( factory3d, cameraController );
+                Scene scene = ((Scene.Provider) cameraController) .getScene();
+                RenderingViewer viewer = factory3d .createRenderingViewer( scene );
+                viewControl = new CameraControlPanel( viewer, cameraController );
                 // this is probably moot for reader mode
                 rightPanel .add( viewControl, BorderLayout.PAGE_START );
                 

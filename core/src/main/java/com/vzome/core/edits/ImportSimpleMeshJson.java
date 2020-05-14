@@ -19,7 +19,7 @@ public class ImportSimpleMeshJson extends ImportMesh
     protected void parseMeshData( AlgebraicVector offset, ManifestConstructions events, Registry registry )
             throws IOException
     {
-        SimpleMeshJson .parse( meshData, offset, events, registry );
+        SimpleMeshJson .parse( meshData, offset, projection, events, registry );
     }
 
     @Override
