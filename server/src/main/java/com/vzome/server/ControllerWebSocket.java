@@ -1,6 +1,5 @@
 package com.vzome.server;
 
-import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -21,20 +20,22 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.ApplicationController;
+import org.vorthmann.zome.app.impl.DocumentController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.core.render.Scene;
+import com.vzome.desktop.controller.RenderingViewer;
 
 public class ControllerWebSocket implements WebSocketListener
 {
     private static final Logger LOG = Log.getLogger( ControllerWebSocket.class );
     private Session outbound;
     private final ThrottledQueue queue = new ThrottledQueue( 200, 1000 ); // 40 gets/second
-    private Controller3d docController;
+    private DocumentController docController;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ObjectWriter objectWriter = objectMapper .writer();
 
@@ -94,13 +95,13 @@ public class ControllerWebSocket implements WebSocketListener
             return;
         }
 
-        docController = (Controller3d) APP .getSubController( urlStr );
+        docController = (DocumentController) APP .getSubController( urlStr );
         if ( docController != null ) {
             publish( "error", "Document already in use: " + urlStr );
             this .docController = null; // prevent action on the document
         } else {
             APP .doAction( "openURL-" + urlStr );
-            this .docController = (Controller3d) APP .getSubController( urlStr );
+            this .docController = (DocumentController) APP .getSubController( urlStr );
             if ( this .docController == null ) {
                 publish( "error", "Document load FAILURE: " + urlStr );
                 return;
@@ -120,7 +121,7 @@ public class ControllerWebSocket implements WebSocketListener
                     publish( node );
                 }
             } );
-            this .docController .attachViewer( clientRendering, clientRendering, null );
+            this .docController .attachViewer( clientRendering, null );
             try {
                 this .docController .actionPerformed( this, "finish.load" );
                 publish( "render", "flush" );
@@ -201,8 +202,7 @@ public class ControllerWebSocket implements WebSocketListener
         }, props, new J3dComponentFactory()
         {
             @Override
-            public Component createRenderingComponent( boolean isSticky,
-                    boolean isOffScreen, Controller3d controller )
+            public RenderingViewer createRenderingViewer( Scene scene )
             {
                 // Should never be called
                 return null;
