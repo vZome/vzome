@@ -85,9 +85,9 @@ public class TranslationTool extends TransformationTool
         				break;
         			}
         			if ( p1 == null )
-        				p1 = (Point) ((Connector) man) .getConstructions() .next();
+        				p1 = (Point) ((Connector) man) .getFirstConstruction();
         			else
-        				p2 = (Point) ((Connector) man) .getConstructions() .next();
+        				p2 = (Point) ((Connector) man) .getFirstConstruction();
         		} else if ( !prepareTool ) {
         			// allowed in legacy documents
         			return "Only balls can be selected for this tool.";

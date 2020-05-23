@@ -98,7 +98,7 @@ public class LinearMapTool extends TransformationTool
                     correct = false;
                     break;
                 }
-                center = (Point) ((Connector) man) .getConstructions() .next();
+                center = (Point) ((Connector) man) .getFirstConstruction();
             }
             else if ( man instanceof Strut )
             {
@@ -108,11 +108,11 @@ public class LinearMapTool extends TransformationTool
                 }
                 if ( index / 3 == 0 )
                 {
-                    oldBasis[ index % 3 ] = (Segment) man .getConstructions() .next();
+                    oldBasis[ index % 3 ] = (Segment) man .getFirstConstruction();
                 }
                 else
                 {
-                    newBasis[ index % 3 ] = (Segment) man .getConstructions() .next();
+                    newBasis[ index % 3 ] = (Segment) man .getFirstConstruction();
                 }
                 ++index;
             }

@@ -34,11 +34,11 @@ public class AffineTransformAll extends ChangeManifestations
             if ( man instanceof Strut )
             {
                 if ( s1 == null )
-                    s1 = (Segment) man .getConstructions() .next();
+                    s1 = (Segment) man .getFirstConstruction();
                 else if ( s2 == null )
-                    s2 = (Segment) man .getConstructions() .next();
+                    s2 = (Segment) man .getFirstConstruction();
                 else if ( s3 == null )
-                    s3 = (Segment) man .getConstructions() .next();
+                    s3 = (Segment) man .getFirstConstruction();
             }
         }
         if ( s3 == null || s2 == null || s1 == null )
@@ -53,7 +53,7 @@ public class AffineTransformAll extends ChangeManifestations
         for (Manifestation m : mManifestations) {
             if ( m .getRenderedObject() == null )
                 continue;
-            Construction c = m .getConstructions() .next();
+            Construction c = m .getFirstConstruction();
             Construction result = transform .transform( c );
             select( manifestConstruction( result ) );
         }

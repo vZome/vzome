@@ -88,7 +88,7 @@ public class RunZomicScript extends ChangeManifestations
 		for (Manifestation man : mSelection) {
 			if ( man instanceof Connector )
 			{
-				Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();
+				Point nextPoint = (Point) ((Connector) man) .getFirstConstruction();
 				if ( ! pointFound )
 				{
 					pointFound = true;

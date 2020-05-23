@@ -115,7 +115,7 @@ public class SymmetryTool extends TransformationTool
 	            {
 	                if ( center != null )
 	                    return "No unique symmetry center selected";
-	                center = (Point) ((Connector) man) .getConstructions() .next();
+	                center = (Point) ((Connector) man) .getFirstConstruction();
 	            }
 	            else if ( man instanceof Strut )
 	            {

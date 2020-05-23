@@ -59,8 +59,8 @@ public class AffinePentagon extends ChangeManifestations
 
         // Before we start, be sure the balls at the ends of each strut have not been deleted or hidden.
         // Restore them just in case. No need to test if they already exist.
-        Segment s1 = Segment.class.cast(strut1.getConstructions().next());
-        Segment s2 = Segment.class.cast(strut2.getConstructions().next());
+        Segment s1 = Segment.class.cast(strut1.getFirstConstruction());
+        Segment s2 = Segment.class.cast(strut2.getFirstConstruction());
         manifestConstruction(new SegmentEndPoint(s1, true));
         manifestConstruction(new SegmentEndPoint(s1, false));
         manifestConstruction(new SegmentEndPoint(s2, true));
@@ -100,9 +100,9 @@ public class AffinePentagon extends ChangeManifestations
             if ( m instanceof Connector ) {
                 AlgebraicVector loc = m .getLocation();
                 if ( loc .equals( v1 ) )
-                    p1 = (Point) m .getConstructions() .next();
+                    p1 = (Point) m .getFirstConstruction();
                 else if ( loc .equals( v2 ) )
-                    p2 = (Point) m .getConstructions() .next();
+                    p2 = (Point) m .getFirstConstruction();
             }
         }
 
