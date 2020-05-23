@@ -53,9 +53,9 @@ public class Parallelepiped extends ChangeManifestations
 
         // first, find the offsets and the endpoint vectors: v1, v2, v3
         // Reverse the offset direction(s) if necessary so the two offsets have a common starting point at v0
-        Segment s1 = Segment.class.cast(strut1.getConstructions().next());
-        Segment s2 = Segment.class.cast(strut2.getConstructions().next());
-        Segment s3 = Segment.class.cast(strut3.getConstructions().next());
+        Segment s1 = Segment.class.cast(strut1.getFirstConstruction());
+        Segment s2 = Segment.class.cast(strut2.getFirstConstruction());
+        Segment s3 = Segment.class.cast(strut3.getFirstConstruction());
         AlgebraicVector offset1 = s1 .getOffset();
         AlgebraicVector offset2 = s2 .getOffset();
         AlgebraicVector offset3 = s3 .getOffset();

@@ -171,7 +171,7 @@ public class ReplaceWithShape extends ChangeManifestations
     {
         if ( this .ballOrStrut != null ) {
             // pick-based
-            Construction construction = this .ballOrStrut .getConstructions() .next();
+            Construction construction = this .ballOrStrut .getFirstConstruction();
             if ( construction instanceof Point )
                 XmlSaveFormat .serializePoint( element, "point", (Point) construction );
             else
