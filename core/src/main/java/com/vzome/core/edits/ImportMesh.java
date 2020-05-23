@@ -158,7 +158,7 @@ public abstract class ImportMesh extends ChangeManifestations
         for (Manifestation man : mSelection) {
             if ( man instanceof Connector )
             {
-                Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();
+                Point nextPoint = (Point) ((Connector) man) .getFirstConstruction();
                 if ( ! pointFound )
                 {
                     pointFound = true;
@@ -189,6 +189,9 @@ public abstract class ImportMesh extends ChangeManifestations
             }
         };
         
+        if ( this .projection == null )
+            this .projection = new Projection.Default( field );
+
         try {
             this .parseMeshData( offset, events, registry );
         } catch ( IOException e ) {

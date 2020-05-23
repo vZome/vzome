@@ -37,7 +37,7 @@ public class CrossProduct extends ChangeManifestations
                 // This is for backward compatibility.
                 if ( man instanceof Connector )
                 {
-                    Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();
+                    Point nextPoint = (Point) ((Connector) man) .getFirstConstruction();
                     if ( p1 == null ) {
                         p1 = nextPoint;
                     }

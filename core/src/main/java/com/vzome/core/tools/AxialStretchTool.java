@@ -240,13 +240,13 @@ public class AxialStretchTool extends TransformationTool
             {
                 if ( center != null )
                 	return "Only one ball may be selected";
-                center = (Point) ((Connector) man) .getConstructions() .next();
+                center = (Point) ((Connector) man) .getFirstConstruction();
             }
             else if ( man instanceof Strut )
             {
                 if ( axis != null )
                 	return "Only one strut may be selected";
-                axis = (Segment) ((Strut) man) .getConstructions() .next();
+                axis = (Segment) ((Strut) man) .getFirstConstruction();
             } else if ( man instanceof Panel ) {
             	return "Panels are not supported.";
             }
@@ -352,7 +352,6 @@ public class AxialStretchTool extends TransformationTool
         value = element .getAttribute( "first" );
         this .first = value == null || ! value .equals( "false" );;
 
-        String symmName = element .getAttribute( "symmetry" );
         this .symmetry = (IcosahedralSymmetry) format .parseSymmetry( "icosahedral" );
         super .setXmlAttributes( element, format );
     }

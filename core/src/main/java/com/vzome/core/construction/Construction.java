@@ -55,15 +55,7 @@ public abstract class Construction
      * true for "impossible" constructions
      */
     private boolean mImpossible = false;
-    
-    private boolean mHidden = false;
-    
-    protected transient long mId = NO_ID;
-    
-    private static final long NO_ID = -1;
-    
-    private static long NEXT_ID = 0;
-    
+        
     protected Construction( AlgebraicField field )
     {
         this.field = field;
@@ -72,18 +64,6 @@ public abstract class Construction
     public AlgebraicField getField()
     {
         return field;
-    }
-    
-    public void resetId()
-    {
-        mId = NO_ID;
-    }
-    
-    public long getId()
-    {
-    	if ( mId == NO_ID )
-    		mId = NEXT_ID++;
-    	return mId;
     }
     
     private int mIndex = -1;
@@ -97,17 +77,7 @@ public abstract class Construction
     {
         return mIndex;
     }
-    
-    public boolean isVisible()
-    {
-        return ! mHidden && ! mImpossible;
-    }
-    
-    public void setVisible( boolean value )
-    {
-        mHidden = ! value;
-    }
-    
+
     public boolean isImpossible()
     {
         return mImpossible;

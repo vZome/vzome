@@ -44,7 +44,7 @@ public class LinePlaneIntersect extends ChangeManifestations
             unselect( man );
             if ( ( man instanceof Connector ) && ( p2 == null ) )
             {
-                Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();
+                Point nextPoint = (Point) ((Connector) man) .getFirstConstruction();
                 if ( p0 == null )
                     p0 = nextPoint;
                 else if ( p1 == null )

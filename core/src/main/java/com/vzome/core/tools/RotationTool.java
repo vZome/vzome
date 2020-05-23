@@ -161,7 +161,7 @@ public class RotationTool extends SymmetryTool
                     correct = false;
                     break;
                 }
-                center = (Point) ((Connector) man) .getConstructions() .next();
+                center = (Point) ((Connector) man) .getFirstConstruction();
             }
             else if ( man instanceof Strut )
             {
@@ -170,7 +170,7 @@ public class RotationTool extends SymmetryTool
                     correct = false;
                     break;
                 }
-                axisStrut = (Segment) ((Strut) man) .getConstructions() .next();
+                axisStrut = (Segment) ((Strut) man) .getFirstConstruction();
             }
         }
 

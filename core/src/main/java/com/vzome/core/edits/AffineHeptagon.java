@@ -59,8 +59,8 @@ public class AffineHeptagon extends ChangeManifestations
 
         // Before we start, be sure the balls at both ends of both struts have not been deleted or hidden.
         // It's safe to restore them all without testing if they already exist.
-        Segment s1 = Segment.class.cast(strut1.getConstructions().next());
-        Segment s2 = Segment.class.cast(strut2.getConstructions().next());
+        Segment s1 = Segment.class.cast(strut1.getFirstConstruction());
+        Segment s2 = Segment.class.cast(strut2.getFirstConstruction());
         manifestConstruction( new SegmentEndPoint(s1, true) );
         manifestConstruction( new SegmentEndPoint(s1, false) );
         manifestConstruction( new SegmentEndPoint(s2, true) );
@@ -112,10 +112,10 @@ public class AffineHeptagon extends ChangeManifestations
                     c0 = Connector.class.cast(man);
                 } else if (loc.equals(v1)) {
                     c1 = Connector.class.cast(man);
-                    p1 = (Point) man.getConstructions().next();
+                    p1 = (Point) man.getFirstConstruction();
                 } else if (loc.equals(v2)) {
                     c2 = Connector.class.cast(man);
-                    p2 = (Point) man.getConstructions().next();
+                    p2 = (Point) man.getFirstConstruction();
                 }
             }
         }

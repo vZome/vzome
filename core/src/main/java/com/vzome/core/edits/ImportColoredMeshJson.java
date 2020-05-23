@@ -19,7 +19,7 @@ public class ImportColoredMeshJson extends ImportMesh
     protected void parseMeshData( AlgebraicVector offset, ManifestConstructions events, Registry registry )
             throws IOException
     {
-        ColoredMeshJson .parse( meshData, offset, events, registry );
+        ColoredMeshJson .parse( meshData, offset, projection, events, registry );
     }
 
     @Override

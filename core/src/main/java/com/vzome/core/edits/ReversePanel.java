@@ -29,7 +29,7 @@ public class ReversePanel extends ChangeManifestations
         {
             if ( this .mSelection .manifestationSelected( panel ) )
                 unselect( panel );
-            Polygon polygon = (Polygon) panel .getConstructions() .next();
+            Polygon polygon = (Polygon) panel .getFirstConstruction();
             unmanifestConstruction( polygon );
             // TODO complete this
         }

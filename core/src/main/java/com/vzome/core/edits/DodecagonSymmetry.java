@@ -32,7 +32,7 @@ public class DodecagonSymmetry extends ChangeManifestations
         Transformation transform = new SymmetryTransformation( symmetry, 1, center );
         
         for (Manifestation man : mSelection) {
-            Construction c = man .getConstructions() .next();
+            Construction c = man .getFirstConstruction();
 
             for ( int i = 0; i < 11; i++ )
             {
