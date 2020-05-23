@@ -44,7 +44,7 @@ public class SymmetryCenterChange extends UndoableEdit
     {
         Manifestation man = (Manifestation) props .get( "picked" );
         if ( man != null )
-            this .mNewCenter = (Point) man .getConstructions() .next();
+            this .mNewCenter = (Point) man .getFirstConstruction();
     }
 
     @Override

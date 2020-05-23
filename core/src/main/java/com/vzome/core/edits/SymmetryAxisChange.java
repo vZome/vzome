@@ -43,7 +43,7 @@ public class SymmetryAxisChange extends UndoableEdit
     {
         Manifestation man = (Manifestation) props .get( "picked" );
         if ( man != null )
-            this.mNewAxis = (Segment) man .getConstructions() .next();
+            this.mNewAxis = (Segment) man .getFirstConstruction();
     }
 
     @Override

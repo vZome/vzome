@@ -37,7 +37,7 @@ public class TransformSelection extends ChangeManifestations
         for (Manifestation m : inputs) {
             if ( m .getRenderedObject() == null )
                 continue;
-            Construction c = m .getConstructions() .next();
+            Construction c = m .getFirstConstruction();
             Construction result = transform .transform( c );
             select( manifestConstruction( result ), true );
         }

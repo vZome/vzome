@@ -32,7 +32,7 @@ public class ShowVertices extends ChangeManifestations
             // but how does this affect backward compatability?
             if ( man instanceof Strut )
             {
-                Segment s = (Segment) man .getConstructions() .next();
+                Segment s = (Segment) man .getFirstConstruction();
                 SegmentEndPoint start = new SegmentEndPoint( s, true );
                 manifestConstruction( start );
                 SegmentEndPoint end = new SegmentEndPoint( s, false );
@@ -40,7 +40,7 @@ public class ShowVertices extends ChangeManifestations
             }
             else if ( man instanceof Panel )
             {
-                Polygon polygon = (Polygon) ((Panel) man) .getConstructions() .next();
+                Polygon polygon = (Polygon) ((Panel) man) .getFirstConstruction();
                 for (int i = 0; i < polygon.getVertexCount(); i++) {
                     PolygonVertex v = new PolygonVertex( polygon, i );
                     select( manifestConstruction( v ) );

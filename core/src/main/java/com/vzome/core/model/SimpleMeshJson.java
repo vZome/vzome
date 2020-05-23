@@ -141,7 +141,8 @@ public class SimpleMeshJson
                     nums[ i++ ] = mapper .treeToValue( numberNode, int[].class );
                 }
                 AlgebraicVector vertex = field .createIntegerVector( nums );
-                vertex = projection .projectImage( vertex, false );
+                if ( vertex .dimension() > 3 )
+                    vertex = projection .projectImage( vertex, false );
                 if ( offset != null )
                     vertex = offset .plus( vertex );
                 vertices .add( vertex );
