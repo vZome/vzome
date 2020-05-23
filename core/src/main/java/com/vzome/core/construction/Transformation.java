@@ -42,12 +42,6 @@ public abstract class Transformation extends Construction
             return true;
         }
     }
-
-    @Override
-    public boolean isVisible()
-    {
-        return false;
-    }    
     
     // state variables
     private AlgebraicMatrix mTransform;
