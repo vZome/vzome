@@ -22,6 +22,7 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
+import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.Projection;
 
@@ -141,7 +142,7 @@ public class SimpleMeshJson
                     nums[ i++ ] = mapper .treeToValue( numberNode, int[].class );
                 }
                 AlgebraicVector vertex = field .createIntegerVector( nums );
-                vertex = projection .projectImage( vertex, false );
+                vertex = projection .projectImage( vertex .inflateTo4d(), false );
                 if ( offset != null )
                     vertex = offset .plus( vertex );
                 vertices .add( vertex );
@@ -155,7 +156,9 @@ public class SimpleMeshJson
             Point p2 = new FreePoint( vertices .get( ends[ 1 ] ) );
             events .constructionAdded( p1 );
             events .constructionAdded( p2 );
-            events .constructionAdded( new SegmentJoiningPoints( p1, p2 ) );
+            Segment edge = new SegmentJoiningPoints( p1, p2 );
+            if ( ! edge .getOffset() .isOrigin() )
+                events .constructionAdded( edge );
         }
         
         collection = node .get( "faces" );
@@ -165,7 +168,8 @@ public class SimpleMeshJson
                     .mapToObj( i -> new FreePoint( vertices .get( i ) ) )
                     .collect( Collectors .toList() );
             Polygon panel = new PolygonFromVertices( points );
-            events .constructionAdded( panel );
+            if ( ! panel .isImpossible() )
+                events .constructionAdded( panel );
         }
     }
 }

@@ -189,6 +189,9 @@ public abstract class ImportMesh extends ChangeManifestations
             }
         };
         
+        if ( this .projection == null )
+            this .projection = new Projection.Default( field );
+
         try {
             this .parseMeshData( offset, events, registry );
         } catch ( IOException e ) {
