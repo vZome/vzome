@@ -104,7 +104,7 @@ public class AlgebraicNumberTest
 
         assertEquals( n0, n1 );
 
-        assertEquals( n1 .toString(), n1 .toString( DEFAULT_FORMAT ) );
+        assertEquals( n0 .toString(), n1 .toString( DEFAULT_FORMAT ) );
         assertEquals("(1,7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
         assertArrayEquals( new int[] { ones, irrat, denom }, n0 .toTrailingDivisor() );
     }
