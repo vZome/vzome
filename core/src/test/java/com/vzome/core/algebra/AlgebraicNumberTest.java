@@ -6,6 +6,7 @@ import static com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.VEF_FORMAT;
 import static com.vzome.core.algebra.AlgebraicField.ZOMIC_FORMAT;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -92,6 +93,22 @@ public class AlgebraicNumberTest
         assertEquals("(3/5,-7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
     }
 
+    @Test
+    public void testTrailingDenominatorConstruction()
+    {
+        AlgebraicField field = new PentagonField();
+        int ones = 7, irrat = 5, denom = 5;
+
+        AlgebraicNumber n0 = field.createAlgebraicNumber( ones, irrat, denom, 0 );
+        AlgebraicNumber n1 = field.createAlgebraicNumberFromTD( new int[] { ones, irrat, denom } );
+
+        assertEquals( n0, n1 );
+
+        assertEquals( n0 .toString(), n1 .toString( DEFAULT_FORMAT ) );
+        assertEquals("(1,7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
+        assertArrayEquals( new int[] { ones, irrat, denom }, n0 .toTrailingDivisor() );
+    }
+    
     @Test
     public void testOperatorOverloads() {
         AlgebraicField field = new PentagonField();
@@ -553,18 +570,18 @@ public class AlgebraicNumberTest
         };
         int tests = 0;
         for(AlgebraicField field : fields ) {
-        	int order = field.getOrder();
-        	int[] factors = new int[order];
-        	AlgebraicNumber n = field.createAlgebraicNumber(factors);
+            int order = field.getOrder();
+            int[] factors = new int[order];
+            AlgebraicNumber n = field.createAlgebraicNumber(factors);
             assertTrue(n.isZero());
-            
-            factors = new int[order + 1];
+
+            factors = new int[order + 2];
             try {
-            	field.createAlgebraicNumber(factors);
-            	fail("Expected an IllegalStateException since there are too many factors.");
+                field.createAlgebraicNumber(factors);
+                fail("Expected an IllegalStateException since there are too many factors.");
             }
             catch(IllegalStateException ex) {
-            	tests ++;
+                tests ++;
             }
         }
         assertEquals(fields.length, tests);

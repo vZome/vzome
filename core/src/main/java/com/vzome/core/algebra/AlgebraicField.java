@@ -231,6 +231,26 @@ public abstract class AlgebraicField
     }
 
     /**
+     * Generates an AlgebraicNumber from a "trailing divisor" int array representation.
+     * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
+     * @return
+     */
+    public final AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
+    {
+        int n = trailingDivisorForm .length;
+        int denominator = 1;
+        if ( n == this .order + 1 ) {
+            --n;
+            denominator = trailingDivisorForm[ n ];
+        }
+        BigRational[] brs = new BigRational[ n ];
+        for ( int j = 0; j < n; j++ ) {
+            brs[ j ] = new BigRational( trailingDivisorForm[ j ], denominator );
+        }
+        return createAlgebraicNumber( brs );
+    }
+
+    /**
      * Generates an AlgebraicNumber with the specified numerators,
      * all having a common denominator as specified.
      * @param numerators
@@ -580,6 +600,23 @@ public abstract class AlgebraicField
         AlgebraicVector result = origin( dims );
         for (int dim = 0; dim < dims; dim++) {
             result .setComponent( dim, createAlgebraicNumber( nums[dim] ) );
+        }
+        return result;
+    }
+    
+    /**
+     * Generates an AlgebraicVector with all AlgebraicNumber terms in "trailing divisor" int array form.
+     * @param nums is a 2 dimensional integer array. The length of nums becomes the number of dimensions in the resulting AlgebraicVector.
+     * For example, {@code (new PentagonField()).createIntegerVectorFromTDs( new int[][]{ {0,-1,1}, {2,3,2}, {4,5,2} } ); } 
+     * generates the 3 dimensional vector (-φ, 1 +3φ/2, 2 +5φ/2). 
+     * @return an AlgebraicVector
+     */
+    public AlgebraicVector createIntegerVectorFromTDs( int[][] nums )
+    {
+        final int dims = nums.length;
+        AlgebraicVector result = origin( dims );
+        for (int dim = 0; dim < dims; dim++) {
+            result .setComponent( dim, createAlgebraicNumberFromTD( nums[dim] ) );
         }
         return result;
     }
