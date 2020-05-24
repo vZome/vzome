@@ -230,7 +230,7 @@ public class GenerateLinearMaps
 
 	private Strut strut( Connector start, Axis zone, AlgebraicNumber length )
 	{
-		Point point = (Point) start .getConstructions() .next();
+		Point point = (Point) start .getFirstConstruction();
         Map<String, Object> params = new HashMap<>();
         params .put( "anchor", point );
         params .put( "zone", zone );

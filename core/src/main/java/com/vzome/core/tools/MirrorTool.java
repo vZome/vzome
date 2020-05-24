@@ -129,7 +129,7 @@ public class MirrorTool extends TransformationTool
                         else
                             return "Only one center ball may be selected";
                     }
-                    center = (Point) ((Connector) man) .getConstructions() .next();
+                    center = (Point) ((Connector) man) .getFirstConstruction();
                 }
                 else if ( man instanceof Strut )
                 {
@@ -140,7 +140,7 @@ public class MirrorTool extends TransformationTool
                         else
                             return "Only one mirror axis strut may be selected";
                     }
-                    axis = (Segment) ((Strut) man) .getConstructions() .next();
+                    axis = (Segment) ((Strut) man) .getFirstConstruction();
                 }
                 else if ( man instanceof Panel )
                 {
@@ -151,7 +151,7 @@ public class MirrorTool extends TransformationTool
                         else
                             return "Only one mirror panel may be selected";
                     }
-                    mirrorPanel = (Polygon) ((Panel) man) .getConstructions() .next();
+                    mirrorPanel = (Polygon) ((Panel) man) .getFirstConstruction();
                 }
             }
         if ( center == null ) {

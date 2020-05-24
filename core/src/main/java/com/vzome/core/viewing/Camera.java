@@ -2,7 +2,6 @@ package com.vzome.core.viewing;
 
 import java.util.Objects;
 
-import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
@@ -159,84 +158,6 @@ public class Camera
 
     static final double EPSILON_ABSOLUTE = 1.0e-5;
 
-    private static final boolean almostZero(double a)
-    {
-        return ((a < EPSILON_ABSOLUTE) && (a > -EPSILON_ABSOLUTE));
-    }
-
-    /**
-     * Sets this transform to the identity matrix.
-     */
-    private static void setIdentity( double[] mat )
-    {
-        mat[0] = 1.0;  mat[1] = 0.0;  mat[2] = 0.0;  mat[3] = 0.0;
-        mat[4] = 0.0;  mat[5] = 1.0;  mat[6] = 0.0;  mat[7] = 0.0;
-        mat[8] = 0.0;  mat[9] = 0.0;  mat[10] = 1.0; mat[11] = 0.0;
-        mat[12] = 0.0; mat[13] = 0.0; mat[14] = 0.0; mat[15] = 1.0;
-    }
-
-    /**
-     * Sets the value of this transform to the matrix conversion
-     * of the double precision axis-angle argument; all of the matrix
-     * values are modified.
-     * @param a1 the axis-angle to be converted (x, y, z, angle)
-     */
-    private static void set( AxisAngle4d a1, double[] mat )
-    {
-        double mag = Math.sqrt( a1.x*a1.x + a1.y*a1.y + a1.z*a1.z);
-
-        if (almostZero(mag)) {
-            setIdentity( mat );
-        } else {
-            mag = 1.0/mag;
-            double ax = a1.x*mag;
-            double ay = a1.y*mag;
-            double az = a1.z*mag;
-
-            double sinTheta = Math.sin(a1.angle);
-            double cosTheta = Math.cos(a1.angle);
-            double t = 1.0 - cosTheta;
-
-            double xz = ax * az;
-            double xy = ax * ay;
-            double yz = ay * az;
-
-            mat[0] = t * ax * ax + cosTheta;
-            mat[1] = t * xy - sinTheta * az;
-            mat[2] = t * xz + sinTheta * ay;
-            mat[3] = 0.0;
-
-            mat[4] = t * xy + sinTheta * az;
-            mat[5] = t * ay * ay + cosTheta;
-            mat[6] = t * yz - sinTheta * ax;
-            mat[7] = 0.0;
-
-            mat[8] = t * xz - sinTheta * ay;
-            mat[9] = t * yz + sinTheta * ax;
-            mat[10] = t * az * az + cosTheta;
-            mat[11] = 0.0;
-
-            mat[12] = 0.0;
-            mat[13] = 0.0;
-            mat[14] = 0.0;
-            mat[15] = 1.0;
-        }
-    }
-
-    /**
-     * Transforms the normal parameter by this transform and places the value
-     * back into normal.  The fourth element of the normal is assumed to be zero.
-     * @param normal   the input normal to be transformed
-     */
-    private static void transform( double[] mat, Vector3d normal )
-    {
-        double x =  mat[0]*normal.x + mat[1]*normal.y + mat[2]*normal.z;
-        double y =  mat[4]*normal.x + mat[5]*normal.y + mat[6]*normal.z;
-        normal.z =  mat[8]*normal.x + mat[9]*normal.y + mat[10]*normal.z;
-        normal.x = x;
-        normal.y = y;
-    }
-
     /**
      * Helping function that specifies the position and orientation of a
      * view matrix. The inverse of this transform can be used to control
@@ -308,16 +229,10 @@ public class Camera
      * Get the mapping from view to world coordinates
      * @param trans
      */
-    public void getViewTransform( Matrix4d matrix, double angle )
+    public void getViewTransform( Matrix4d matrix )
     {
         Point3d eyePoint = new Point3d( mLookAtPoint );
         Vector3d dir = new Vector3d( mLookDirection );
-        if ( angle != 0d ) {
-            double[] rotMat = new double[16];
-            AxisAngle4d rotAA = new AxisAngle4d( mUpDirection, angle );
-            set( rotAA, rotMat );
-            transform( rotMat, dir );
-        }
         dir .scale( -mDistance );
         eyePoint .add( dir );
 
@@ -326,21 +241,7 @@ public class Camera
         matrix .set( mat );
     }
 
-
-    //	public void getWorldRotation( Quat4d q )
-    //	{
-    //		Vector3d axis = new Vector3d( q.x, q.y, q.z );
-    //
-    //		Transform3D viewTrans = new Transform3D();
-    //		getViewTransform( viewTrans, 0d );
-    //        viewTrans .invert();
-    //
-    //		// now map the axis back to world coordinates
-    //		viewTrans .transform( axis );
-    //		q.x = axis.x; q.y = axis.y; q.z = axis.z;
-    //	}
-
-
+    
     public Point3d getLookAtPoint()
     {
         return mLookAtPoint;
@@ -402,11 +303,6 @@ public class Camera
     public boolean isStereo()
     {
         return mStereoAngle != 0d;
-    }
-
-    public void getStereoViewTransform( Matrix4d trans, int eye )
-    {
-        getViewTransform( trans, (eye==1)? -mStereoAngle : mStereoAngle );
     }
 
     public double getNearClipDistance()

@@ -15,7 +15,9 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
@@ -58,8 +60,6 @@ public class SimpleMeshJson
             }
         }
         final AlgebraicVector origin = ( lastBall != null )? lastBall : lastVertex;
-        if ( lastBall != null )
-            lastVertex = lastBall;
 
         // Up to this point, the vertices TreeSet has collected and sorted every unique vertex of every manifestation.
         // From now on we'll need their index, so we copy them into an ArrayList, preserving their sorted order.
@@ -99,7 +99,17 @@ public class SimpleMeshJson
 
         generator .writeStartObject();
         generator .writeStringField( "field", field .getName() );
-        generator .writeObjectField( "vertices", sortedVertexList .stream() .map( v -> v .minus( origin )) .collect( Collectors .toList() ) );
+
+        generator .writeFieldName( "vertices" );
+        generator .writeStartArray();
+        ObjectWriter objectWriter = mapper .writerWithView( AlgebraicNumber.Views.TrailingDivisor.class );
+        for ( AlgebraicVector algebraicVector : sortedVertexList ) {
+            algebraicVector = algebraicVector .minus( origin );
+            // This awkward serialize+deserialize seems to be the only way to use views with streaming JSON
+            generator .writeObject( mapper .readTree( objectWriter .writeValueAsString( algebraicVector ) ) );            
+        }
+        generator .writeEndArray();
+
         generator .writeObjectField( "edges", edgeNodes );
         generator .writeObjectField( "faces", faceNodes );
         generator .writeEndObject();
@@ -111,7 +121,7 @@ public class SimpleMeshJson
         void constructionAdded( Construction c );
     }
 
-    public static void parse( String json, AlgebraicVector offset, Events events, AlgebraicField.Registry registry ) throws IOException
+    public static void parse( String json, AlgebraicVector offset, Projection projection, Events events, AlgebraicField.Registry registry ) throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper .readTree( json );
@@ -119,7 +129,6 @@ public class SimpleMeshJson
         String fieldName = ( node .has( "field") )? node .get( "field" ) .asText() : "golden";
         AlgebraicField field = registry .getField( fieldName );
         // TODO: fail if field is null
-        Projection projection = new Projection.Default( field );
         
         if ( ! node .has( "vertices" ) ) {
             throw new IOException( "There is no 'vertices' list in the JSON" );
@@ -141,8 +150,9 @@ public class SimpleMeshJson
                 for ( JsonNode numberNode : vectorNode ) {
                     nums[ i++ ] = mapper .treeToValue( numberNode, int[].class );
                 }
-                AlgebraicVector vertex = field .createIntegerVector( nums );
-                vertex = projection .projectImage( vertex, false );
+                AlgebraicVector vertex = field .createIntegerVectorFromTDs( nums );
+                if ( vertex .dimension() > 3 )
+                    vertex = projection .projectImage( vertex, false );
                 if ( offset != null )
                     vertex = offset .plus( vertex );
                 vertices .add( vertex );

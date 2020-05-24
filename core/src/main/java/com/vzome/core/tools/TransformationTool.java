@@ -82,7 +82,7 @@ public abstract class TransformationTool extends Tool
     @Override
     public void unselect( Manifestation man, boolean ignoreGroups )
     {
-        Construction c = man .getConstructions() .next();
+        Construction c = man .getFirstConstruction();
         this .addParameter( c );
 
         super .unselect( man, ignoreGroups );

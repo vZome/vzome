@@ -155,7 +155,7 @@ public class EditorModel
             return null;
         Manifestation focus = mSelection .getSingleSelection( manifestationClass );
         if ( focus != null )
-            return focus .getConstructions() .next();
+            return focus .getFirstConstruction();
         return null;
     }
 
