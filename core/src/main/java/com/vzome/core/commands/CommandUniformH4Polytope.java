@@ -219,7 +219,7 @@ public class CommandUniformH4Polytope extends CommandTransform
     public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
-        	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );        
+            DomUtils .addAttribute( result, "quaternion", quaternionVector .toParsableString() );        
         super .getXml( result, attributes );
     }
 
