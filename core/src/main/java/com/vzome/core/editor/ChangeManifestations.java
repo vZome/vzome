@@ -135,7 +135,7 @@ public abstract class ChangeManifestations extends ChangeSelection
         plan( new RenderManifestation( m, false ) );
     }
 
-    protected void colorManifestation( Manifestation m, Color color )
+    public void colorManifestation( Manifestation m, Color color )
     {
         plan( new ColorManifestation( m, color ) );
     }

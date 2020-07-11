@@ -71,7 +71,9 @@ public abstract class TransformationTool extends Tool
             Construction result = transform .transform( c );
             if ( result == null )
                 continue;
-            applyTool .manifestConstruction( result );
+            result .setColor( c .getColor() ); // just for consistency
+            Manifestation m = applyTool .manifestConstruction( result );
+            applyTool .colorManifestation( m, c .getColor() );
         }
         applyTool .redo();
     }
