@@ -6,6 +6,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.model.Color;
 
   
 
@@ -108,6 +109,8 @@ public abstract class Construction
     // here we accommodate loading vZome files that recorded command failures in their history
     
     private boolean failed = false;
+
+    private Color color;
     
     public void setFailed()
     {
@@ -119,4 +122,13 @@ public abstract class Construction
         return failed;
     }
 
+    public void setColor( Color color )
+    {
+        this .color = color;
+    }
+
+    public Color getColor()
+    {
+        return this .color;
+    }
 }
