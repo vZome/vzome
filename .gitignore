@@ -40,3 +40,5 @@ oculus/Assets/Oculus/SampleFramework
 oculus/Assets/Oculus/VR/AudioClips
 oculus/Assets/Oculus
 oculus/.vscode
+*.jar
+*.jar.js

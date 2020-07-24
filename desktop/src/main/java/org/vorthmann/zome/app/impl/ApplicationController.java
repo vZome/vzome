@@ -34,7 +34,9 @@ import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;
+import com.vzome.desktop.controller.RenderingViewer;
 
 public class ApplicationController extends DefaultController
 {
@@ -551,4 +553,47 @@ public class ApplicationController extends DefaultController
         return modelApp .getLights();
     }
 
+    public static void main(String[] args)
+    {
+        String action = "openURL-http://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome";
+        if ( args.length > 0 )
+            action = args[ 0 ];
+        try {
+            Properties props = new Properties();
+            props .setProperty( "entitlement.model.edit", "true" );
+            props .setProperty( "keep.alive", "true" );
+
+            ApplicationController appC = new ApplicationController( new ApplicationController.UI()
+            {   
+                @Override
+                public void doAction( String action )
+                {
+                    System .out .println( "UI event: " + action );
+                }
+            }, props, new J3dComponentFactory()
+            {
+                @Override
+                public RenderingViewer createRenderingViewer( Scene scene )
+                {
+                    // Should never be called
+                    return null;
+                }
+            });
+            appC .setErrorChannel( new Controller.ErrorChannel() {
+
+                @Override
+                public void reportError(String errorCode, Object[] arguments)
+                {
+                    System .out .println( errorCode );
+                }
+
+                @Override
+                public void clearError() {}
+            });
+            System.out.println( "about to doAction" );
+            appC .doAction( action );
+        } catch (Exception e) {
+            e .printStackTrace();
+        }
+    }
 }
