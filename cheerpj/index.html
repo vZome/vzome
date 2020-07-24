@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>vZome CheerpJ test</title>
+    <script src="https://cjrtnc.leaningtech.com/2.1/loader.js"></script>
+  </head>
+  <body>
+  </body>
+  <script>
+    cheerpjInit( { javaProperties: [ "java.protocol.handler.pkgs=com.leaningtech.handlers" ] } )
+
+    let classpath = "/app/core-7.0.jar" +
+      ":/app/jackson-annotations-2.9.3.jar" +
+      ":/app/jackson-core-2.9.5.jar" +
+      ":/app/jackson-databind-2.9.5.jar" +
+      ":/app/javax.json-1.0.4.jar" +
+      ":/app/vecmath-1.6.0-final.jar"
+    
+    let modelUrl = "https://gist.githubusercontent.com/vorth/99af46f5bdb72b352b8ce7ab8b290b18/raw/4446d30a194edf5152b8ebcd8fbb55a4393b52b2/icosahedron-A5-faces.vZome"
+
+    // This runs to completion, outputting the POV-Ray export on the browser console
+    cheerpjRunMain( "com.vzome.api.Application", classpath, "pov", modelUrl )
+
+    // This doesn't run to completion with the URL provided; I'm not sure why it fails to parse the content
+    // cheerpjRunMain( "org.vorthmann.zome.app.impl.ApplicationController",
+    //   "/app/desktop-7.0.jar:" + classpath,
+    //   "openURL-" + modelUrl )
+
+  </script>
