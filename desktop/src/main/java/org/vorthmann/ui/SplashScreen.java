@@ -78,7 +78,7 @@ public final class SplashScreen extends Frame {
 
   private void initImageAndTracker(){
     fMediaTracker = new MediaTracker(this);
-    URL imageURL = Thread .currentThread() .getContextClassLoader() .getResource(fImageId);
+    URL imageURL = this .getClass() .getClassLoader() .getResource(fImageId);
     fImage = Toolkit.getDefaultToolkit().getImage(imageURL);
   }
 

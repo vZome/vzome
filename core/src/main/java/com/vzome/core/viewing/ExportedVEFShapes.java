@@ -139,7 +139,7 @@ public class ExportedVEFShapes extends AbstractShapes
                 stream = new FileInputStream( shapeFile );
             else {
                 script = MODEL_PREFIX + script;
-                stream = Thread.currentThread() .getContextClassLoader().getResourceAsStream( script );
+                stream = this .getClass() .getClassLoader() .getResourceAsStream( script );
                 if ( stream == null )
                     return null; // avoid the NPE!
             }

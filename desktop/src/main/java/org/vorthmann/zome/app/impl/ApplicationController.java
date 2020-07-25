@@ -166,7 +166,7 @@ public class ApplicationController extends DefaultController
         if ( result != null )
             return result;
 
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        ClassLoader cl = this .getClass() .getClassLoader();
         InputStream bytes = cl.getResourceAsStream( path );
 
         try {
@@ -250,7 +250,7 @@ public class ApplicationController extends DefaultController
                 docProps .setProperty( "reader.preview", "true" );
                 String path = action .substring( "openResource-" .length() );
                 docProps .setProperty( "window.title", path );
-                ClassLoader cl = Thread .currentThread() .getContextClassLoader();
+                ClassLoader cl = this .getClass() .getClassLoader();
                 InputStream bytes = cl .getResourceAsStream( path );
                 loadDocumentController( path, bytes, docProps );
             }
@@ -259,7 +259,7 @@ public class ApplicationController extends DefaultController
                 Properties docProps = new Properties();
                 docProps .setProperty( "as.template", "true" ); // don't set window.file!
                 String path = action .substring( "newFromResource-" .length() );
-                ClassLoader cl = Thread .currentThread() .getContextClassLoader();
+                ClassLoader cl = this .getClass() .getClassLoader();
                 InputStream bytes = cl .getResourceAsStream( path );
                 loadDocumentController( path, bytes, docProps );
             }
@@ -341,6 +341,7 @@ public class ApplicationController extends DefaultController
                 InputStream bytes = new FileInputStream( file );
                 loadDocumentController( path, bytes, docProps );
             } catch ( Exception e ) {
+                e .printStackTrace();
                 this .mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
             }
         }
@@ -555,9 +556,12 @@ public class ApplicationController extends DefaultController
 
     public static void main(String[] args)
     {
-        String action = "openURL-http://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome";
+        String filePath = "noFilePath";
         if ( args.length > 0 )
-            action = args[ 0 ];
+            filePath = args[ 0 ];
+        String action = "open";
+        if ( args.length > 1 )
+            action = args[ 1 ];
         try {
             Properties props = new Properties();
             props .setProperty( "entitlement.model.edit", "true" );
@@ -590,9 +594,9 @@ public class ApplicationController extends DefaultController
                 @Override
                 public void clearError() {}
             });
-            System.out.println( "about to doAction" );
-            appC .doAction( action );
-        } catch (Exception e) {
+            System.out.println( "about to doFileAction on " + filePath );
+            appC .doFileAction( action, new File( filePath ) );
+        } catch (Throwable e) {
             e .printStackTrace();
         }
     }
