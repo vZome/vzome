@@ -81,7 +81,7 @@ class FileOpener extends Component {
         Select a vZome file: 
         </h3> 
         <div> 
-          <input type="file" onChange={this.onFileChange} /> 
+          <input type="file" onChange={this.onFileChange} accept=".vZome" /> 
           <button onClick={this.onFileUpload}> 
           Open 
           </button> 
