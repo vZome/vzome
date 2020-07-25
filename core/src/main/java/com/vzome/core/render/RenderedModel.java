@@ -1,9 +1,12 @@
 package com.vzome.core.render;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -15,6 +18,7 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
@@ -30,6 +34,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	private float mSelectionGlow = 0.8f;
 
 	protected final HashSet<RenderedManifestation> mRendered = new HashSet<>();
+	
+	protected final HashMap<UUID, RenderedManifestation> byID = new HashMap<>();
 
 	private final AlgebraicField field;
 
@@ -116,7 +122,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
         this .enabled = enabled;
     }
-    
+        
     public RenderedModel( final AlgebraicField field, boolean enabled )
     {
         this( field, null );
@@ -173,8 +179,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    m .setRenderedObject( rm );
         
 	    mRendered .add( rm );
+	    this .byID .put( rm .getGuid(), rm );
 	    if ( mainListener != null )
-    	    mainListener .manifestationAdded( rm );
+	        mainListener .manifestationAdded( rm );
         for (RenderingChanges listener : mListeners) {
             listener .manifestationAdded( rm );
         }
@@ -199,9 +206,15 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             mainListener .manifestationRemoved( rendered );
 	    if ( ! mRendered .remove( rendered ) )
 	        throw new IllegalStateException( "unable to remove RenderedManifestation" );
+	    
+        this .byID .remove( rendered .getGuid() );
         m .setRenderedObject( null );
 	}
-	            
+    
+    public RenderedManifestation getRenderedManifestation( String guid )
+    {
+        return this .byID .get( UUID .fromString( guid ) );
+    }
 
 	public void setManifestationGlow( Manifestation m, boolean on )
 	{
@@ -317,6 +330,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                 }
             }
             mRendered .addAll( newSet );
+            for ( RenderedManifestation rm : newSet ) {
+                this .byID .put( rm .getGuid(), rm );
+            }
         }
 	    
 	}
@@ -451,5 +467,23 @@ vZome VEF 6 field heptagon
         cosine = Math.min( 1.0d, cosine);
         cosine = Math.max(-1.0d, cosine);
         return Math.acos( cosine );
+    }
+
+    public RenderedManifestation getNearbyBall( RealVector location, double tolerance )
+    {
+        for ( RenderedManifestation rm : this .mRendered ) {
+            if ( rm .getManifestation() instanceof Connector ) {
+                RealVector ballLoc = rm .getLocation();
+                double distance = ballLoc .minus( location ) .length();
+                if ( distance < tolerance )
+                    return rm;
+            }
+        }
+        return null;
+    }
+
+    public Iterable<Manifestation> getManifestations()
+    {
+        return this .mRendered .stream() .map( rm -> rm .getManifestation() ) .collect( Collectors .toList() );
     }
 }

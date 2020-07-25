@@ -13,6 +13,7 @@ jre/
 nbproject/
 node_modules/
 repos/
+Shapes/
 target/
 temp/
 
@@ -31,3 +32,13 @@ testOut.xml
 Thumbs.db
 _eclipse_workspace
 vZome.code-workspace
+oculus/Assets/Oculus/Platform/Plugins/MacOSX
+MacOSX.meta
+oculus/Assets/Oculus/VR/Plugins/MacOSX
+oculus/Assets/Oculus/LipSync
+oculus/Assets/Oculus/SampleFramework
+oculus/Assets/Oculus/VR/AudioClips
+oculus/Assets/Oculus
+oculus/.vscode
+*.jar
+*.jar.js

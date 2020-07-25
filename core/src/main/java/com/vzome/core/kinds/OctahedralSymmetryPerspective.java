@@ -1,20 +1,12 @@
 package com.vzome.core.kinds;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.commands.Command;
-import com.vzome.core.commands.CommandAxialSymmetry;
-import com.vzome.core.commands.CommandSymmetry;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
-import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Shapes;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.InversionTool;
 import com.vzome.core.tools.LinearMapTool;
@@ -27,66 +19,17 @@ import com.vzome.core.tools.TetrahedralToolFactory;
 import com.vzome.core.tools.TranslationTool;
 import com.vzome.core.viewing.OctahedralShapes;
 
-public final class OctahedralSymmetryPerspective implements SymmetryPerspective
+public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspective
 {
-	private final AlgebraicField field;
-
-	private final OctahedralSymmetry symmetry;
-	
-	private final List<Shapes> geometries = new ArrayList<>();
-	
-	private final Map<String, Command> commands = new HashMap<String, Command>();
-
-	private Shapes defaultShapes = null;
-
-	public OctahedralSymmetryPerspective( AlgebraicField field )
-	{
-		super();
-		this .field = field;
-		this .symmetry = new OctahedralSymmetry( this .field, "blue", "small octahedra" );
-        this .symmetry .computeOrbitDots();
-		
-		this .commands .put( "octasymm", new CommandSymmetry( this .symmetry ) );
-		this .commands .put( "axialsymm", new CommandAxialSymmetry( this .symmetry ) );
+	public OctahedralSymmetryPerspective( AlgebraicField field ) {
+		super(new OctahedralSymmetry( field ) );
+        setDefaultGeometry( new OctahedralShapes( "octahedral", "octahedra", symmetry ) );
 	}
 	
-	@Override
-	public Symmetry getSymmetry()
-	{
-		return this .symmetry;
-	}
-
-	@Override
-	public String getName()
-	{
-		return "octahedral";
-	}
-	
-	public void addShapes( Shapes shapes )
-	{
-		this .geometries .add( shapes );
-	}
-
-	@Override
-	public List<Shapes> getGeometries()
-	{
-		return this .geometries;
-	}
-
-	public void setDefaultGeometry( Shapes shapes )
-	{
-		this .defaultShapes = shapes;
-	}
-
-	@Override
-	public Shapes getDefaultGeometry()
-	{
-		if ( this .defaultShapes == null ) {
-			this .defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symmetry );
-			this .geometries .add( this .defaultShapes );
-		}
-		return this .defaultShapes;
-	}
+    @Override
+    public OctahedralSymmetry getSymmetry() {
+        return (OctahedralSymmetry) this.symmetry;
+    }
 
 	@Override
 	public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
@@ -144,12 +87,6 @@ public final class OctahedralSymmetryPerspective implements SymmetryPerspective
 			break;
 		}
 		return result;
-	}
-
-	@Override
-	public Command getLegacyCommand( String action )
-	{
-		return null;
 	}
 
 	@Override

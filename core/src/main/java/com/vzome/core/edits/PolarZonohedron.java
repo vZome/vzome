@@ -22,12 +22,12 @@ import com.vzome.core.construction.TransformedSegment;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.SymmetrySystem;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
+import com.vzome.xml.DomUtils;
 
 public class PolarZonohedron extends ChangeManifestations
 {
@@ -175,7 +175,7 @@ public class PolarZonohedron extends ChangeManifestations
     private AlgebraicVector useRotationalSymmetry(List<Strut> struts, StringBuilder errorMsg) throws Failure {
         // try to use rotational symmetry
         Strut axisStrut = struts.get(0);
-        Segment axisSegment = (Segment) axisStrut .getConstructions() .next();
+        Segment axisSegment = (Segment) axisStrut .getFirstConstruction();
         AlgebraicVector v1 = axisSegment .getOffset();
         v1 = axisSegment .getField() .projectTo3d( v1, true );
         Axis axis1 = symmetry .getAxis( v1 );
@@ -197,7 +197,7 @@ public class PolarZonohedron extends ChangeManifestations
     
         // Check that the second strut is not collinear with the first
         Strut spokeStrut = struts.get(1);
-        Segment spokeSegment = (Segment) spokeStrut .getConstructions() .next();
+        Segment spokeSegment = (Segment) spokeStrut .getFirstConstruction();
         AlgebraicVector v2 = spokeSegment .getOffset();
         if( v1.equals(v2) || v1.equals( v2.negate() ) ) {
             // throw an exception and we're done.

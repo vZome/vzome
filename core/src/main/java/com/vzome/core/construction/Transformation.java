@@ -42,12 +42,6 @@ public abstract class Transformation extends Construction
             return true;
         }
     }
-
-    @Override
-    public boolean isVisible()
-    {
-        return false;
-    }    
     
     // state variables
     private AlgebraicMatrix mTransform;
@@ -113,6 +107,20 @@ public abstract class Transformation extends Construction
         arg = mTransform .timesColumn( arg );
         arg = arg .plus( mOffset );
         return arg;
+    }
+    
+    public Construction transform( Construction c )
+    {
+        if ( c instanceof Point ) {
+            return new TransformedPoint( this, (Point) c );
+        } else if ( c instanceof Segment ) {
+            return new TransformedSegment( this, (Segment) c );
+        } else if ( c instanceof Polygon ) {
+            return new TransformedPolygon( this, (Polygon) c );
+        } else {
+            // TODO handle other constructions
+            return null;
+        }
     }
 
     @Override

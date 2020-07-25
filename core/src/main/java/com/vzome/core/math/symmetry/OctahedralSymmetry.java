@@ -17,11 +17,17 @@ public class OctahedralSymmetry extends AbstractSymmetry
 
     public final Permutation IDENTITY = new Permutation( this, null );
     
-    private final String frameColor;
-    
-    public OctahedralSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
+    protected final String frameColor;
+
+    public OctahedralSymmetry( AlgebraicField field ) {
+        this( field, "blue");
+    }
+
+    // Only a derived class is allowed to specify a different frame color
+    // Currently only the RootTwoFieldApplication.synestructicsSymmetry does so.
+    protected OctahedralSymmetry( AlgebraicField field, String frameColor )
     {
-        super( ORDER, field, frameColor, defaultStyle );
+        super( ORDER, field, frameColor );
         this.frameColor = frameColor;
         tetrahedralSubgroup = closure( new int[] { 0, 2, 4 } );
     }
@@ -45,13 +51,14 @@ public class OctahedralSymmetry extends AbstractSymmetry
         }
     }
 
+    @Override
     public boolean reverseOrbitTriangle()
     {
         return true;
     }
 
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
         AlgebraicVector greenVertex = this .getDirection( "green" ) .getPrototype();
         AlgebraicVector blueVertex = this .getDirection( "blue" ) .getPrototype();

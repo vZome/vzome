@@ -3,7 +3,6 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -63,7 +62,7 @@ public class PolytopesController extends DefaultController
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         switch ( action ) {
 
@@ -130,7 +129,7 @@ public class PolytopesController extends DefaultController
             renderEdge[ edge ] = ! state;
         }
         else
-            super.doAction( action, e );
+            super.doAction( action );
     }
     
     private static int encodeBits( boolean[] bits )

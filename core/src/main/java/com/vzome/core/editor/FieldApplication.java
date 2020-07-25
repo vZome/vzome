@@ -9,6 +9,7 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.Command;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
@@ -30,9 +31,21 @@ public interface FieldApplication
 		
 		List<Tool> predefineTools( Tool.Kind kind, ToolsModel model );
 
+		/**
+		 * These commands should all be symmetry-DEPENDANT. 
+		 * Contrast with {@code FieldApplication.getLegacyCommand(action) }.
+		 * @param action
+		 * @return
+		 */
 		Command getLegacyCommand( String action );
 
 		String getModelResourcePath();
+
+        boolean orbitIsStandard( Direction orbit );
+
+        boolean orbitIsBuildDefault( Direction orbit );
+
+        AlgebraicNumber getOrbitUnitLength( Direction orbit );
 	}
 	
 	AlgebraicField getField();
@@ -51,5 +64,11 @@ public interface FieldApplication
 
     void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools );
 
+    /**
+     * These commands should all be symmetry-INDEPENDANT. 
+     * Contrast with {@code FieldApplication.SymmetryPerspective.getLegacyCommand(action) }.
+     * @param action
+     * @return
+     */
 	Command getLegacyCommand( String action );
 }

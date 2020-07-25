@@ -1,6 +1,6 @@
 package com.vzome.core.edits;
 
-import static com.vzome.core.math.DomUtils.addAttribute;
+import static com.vzome.xml.DomUtils.addAttribute;
 
 import java.util.Map;
 
@@ -9,15 +9,13 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.SideEffects;
 import com.vzome.core.editor.SymmetrySystem;
-import com.vzome.core.editor.SideEffects.SideEffect;
 import com.vzome.core.edits.ManifestationColorMappers.ManifestationColorMapper;
-import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 
 /**

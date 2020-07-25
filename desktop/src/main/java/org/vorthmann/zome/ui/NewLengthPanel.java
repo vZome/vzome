@@ -72,7 +72,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
     @Override
     public void actionPerformed( ActionEvent e )
     {
-        controller .actionPerformed( e );
+        controller .actionPerformed( e .getSource(), e .getActionCommand() );
         renderLength();
     }
 
@@ -89,7 +89,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
             this .controller .addPropertyListener( this );
             this .controller .getMouseTool() .attach( this );
         }
-        lengthDialog = new LengthDialog( frame, controller .getSubController( "unit" ), "Custom Unit Strut Length", controller );
+        lengthDialog = new LengthDialog( frame, controller .getSubController( "unit" ), "Custom Unit Strut Length", new ControllerActionListener(controller) );
         boolean value = "true" .equals( controller .getProperty( "showStrutScales" ) );
         lengthDisplay .setVisible( value );
         switchOrbit();
@@ -259,7 +259,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                         public void actionPerformed( ActionEvent e )
                         {
                             // Tell the LengthController to push the custom unit to the NumberController
-                            initialController .actionPerformed( new ActionEvent( e .getSource(), e .getID(), "setCustomUnit" ) );
+                            initialController .actionPerformed( e .getSource(), "setCustomUnit" );
                             // ... then update the dialog
                             lengthDialog .syncFromModel();
                             lengthDialog .setVisible( true );

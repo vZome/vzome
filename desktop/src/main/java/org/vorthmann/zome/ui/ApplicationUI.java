@@ -1,9 +1,8 @@
 
 package org.vorthmann.zome.ui;
 
+import java.awt.Desktop;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -12,6 +11,7 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystemNotFoundException;
@@ -37,7 +37,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.dap.DapAdapter;
 
 /**
  * Top-level UI class for vZome.
@@ -62,9 +62,11 @@ import com.vzome.desktop.controller.Controller3d;
  * @author vorth
  *
  */
-public final class ApplicationUI implements ActionListener, PropertyChangeListener
+public final class ApplicationUI implements ApplicationController.UI, PropertyChangeListener
 {
     private ApplicationController mController;
+
+    private DapAdapter debugger;
 
     private Controller.ErrorChannel errors;
 
@@ -307,6 +309,18 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
             if ( splash != null )
                 splash .dispose();
+            
+            String debugPortStr = ui .mController .getProperty( "debug.adapter.port" );
+            if ( debugPortStr != null ) {
+                try {
+                    ui .debugger = new DapAdapter(); // inert unless we start the server
+                    Integer debugPort = Integer .parseInt( debugPortStr );
+                    ui .debugger .startServer( debugPort, ui .mController );
+                } catch ( NumberFormatException e ) {
+                    if ( logger .isLoggable( Level .WARNING ) )
+                        logger .warning( "debug.adapter.port not an integer; debugger not listening" );
+                }
+            }
         }
     }
 
@@ -316,7 +330,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         switch ( evt .getPropertyName() ) {
 
         case "newDocument":
-            Controller3d controller = (Controller3d) evt. getNewValue();
+            Controller controller = (Controller) evt. getNewValue();
             DocumentFrame window = new DocumentFrame( controller, this .mController .getJ3dFactory() );
             window .setVisible( true );
             window .setAppUI( new PropertyChangeListener() {
@@ -336,10 +350,8 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
     }
 
     @Override
-    public void actionPerformed( ActionEvent event )
+    public void doAction( String action )
     {
-        String action = event. getActionCommand();
-
         switch ( action ) {
 
         case "showAbout":
@@ -350,7 +362,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             String str = JOptionPane .showInputDialog( null, "Enter the URL for an online .vZome file.", "Open URL",
                     JOptionPane.PLAIN_MESSAGE );
             if ( str != null )
-                mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "openURL-" + str ) );
+                mController .actionPerformed( this, "openURL-" + str );
             break;
 
         case "quit":
@@ -358,9 +370,25 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             break;
 
         default:
-            JOptionPane .showMessageDialog( null,
-                    "No handler for action: \"" + action + "\"",
-                    "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+            if ( action .startsWith( "browse-" ) )
+            {
+                String url = action .substring( "browse-" .length() );
+                if ( Desktop.isDesktopSupported() && Desktop.getDesktop() .isSupported( Desktop.Action.BROWSE ) ) {
+                    try {
+                        Desktop.getDesktop() .browse( new URI( url ) );
+                    } catch (IOException | URISyntaxException e) {
+                        e .printStackTrace();
+                        JOptionPane .showMessageDialog( null,
+                                "Sorry, I am unable to launch the browser.",
+                                "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+                    }
+                }
+            }
+            else {
+                JOptionPane .showMessageDialog( null,
+                        "No handler for action: \"" + action + "\"",
+                        "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+            }
         }
     }
 

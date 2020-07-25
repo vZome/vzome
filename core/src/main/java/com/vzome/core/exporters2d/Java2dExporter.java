@@ -42,7 +42,7 @@ public class Java2dExporter
         Java2dSnapshot snapshot = new Java2dSnapshot();
 
         this .viewTransform = new Matrix4d();
-        view .getViewTransform( this .viewTransform, 0d );
+        view .getViewTransform( this .viewTransform );
         
         if ( ! view .isPerspective() ) {
             double edge = view .getWidth() / 2;
@@ -74,7 +74,7 @@ public class Java2dExporter
         List<Vector3f> mappedVertices = new ArrayList<>( 60 );
         for (RenderedManifestation rm : model) {
             Polyhedron shape = rm .getShape();
-            com.vzome.core.render.Color c = rm .getColor();
+            com.vzome.core.model.Color c = rm .getColor();
             Color color = (c == null)? Color.WHITE : new Color( c .getRGB() );
             
             if ( drawLines ) {

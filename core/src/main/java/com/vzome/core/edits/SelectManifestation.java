@@ -15,9 +15,9 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.ChangeSelection;
 import com.vzome.core.editor.EditorModel;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.xml.DomUtils;
 
 public class SelectManifestation extends ChangeSelection
 {

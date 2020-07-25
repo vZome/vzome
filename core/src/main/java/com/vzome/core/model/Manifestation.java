@@ -11,7 +11,6 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 
 /**
@@ -97,6 +96,8 @@ public abstract class Manifestation implements GroupElement
     public void setRenderedObject( RenderedManifestation obj )
     {
         mRendered = obj;
+        if ( obj != null )
+            this .color = obj .getColor();
     }
 
     public RenderedManifestation getRenderedObject()

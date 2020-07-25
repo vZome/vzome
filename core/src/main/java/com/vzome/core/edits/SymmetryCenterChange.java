@@ -16,10 +16,9 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.UndoableEdit;
-import com.vzome.core.editor.UndoableEdit.Context;
 import com.vzome.core.model.Manifestation;
 
-public class SymmetryCenterChange implements UndoableEdit
+public class SymmetryCenterChange extends UndoableEdit
 {
     private Point mOldCenter, mNewCenter;
     private final EditorModel editor;
@@ -45,7 +44,7 @@ public class SymmetryCenterChange implements UndoableEdit
     {
         Manifestation man = (Manifestation) props .get( "picked" );
         if ( man != null )
-            this .mNewCenter = (Point) man .getConstructions() .next();
+            this .mNewCenter = (Point) man .getFirstConstruction();
     }
 
     @Override

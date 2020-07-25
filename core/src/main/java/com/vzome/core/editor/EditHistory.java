@@ -4,6 +4,7 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,9 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.UndoableEdit.Context;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
+import com.vzome.xml.DomUtils;
+import com.vzome.xml.LocationData;
 
 public class EditHistory implements Iterable<UndoableEdit>
 {	
@@ -128,24 +130,6 @@ public class EditHistory implements Iterable<UndoableEdit>
         return edit;
     }
 
-    public UndoableEdit undoToBreakpoint()
-    {
-        // always try once, to skip over a breakpoint we might be sitting on
-        UndoableEdit edit = undo();
-        if ( edit == null )
-            return edit;
-        do {
-            edit = undo();
-            if ( edit == null )
-                break;
-            if ( edit instanceof Breakpoint ) {
-                break;
-            }
-        } while ( true );
-        this .listener .publishChanges();
-        return edit;
-    }
-
     public UndoableEdit redoToBreakpoint() throws Command.Failure
     {
         // always try once, to skip over a breakpoint we might be sitting on
@@ -153,22 +137,55 @@ public class EditHistory implements Iterable<UndoableEdit>
         if ( edit == null )
             return edit;
         do {
+            if ( this .atBreakpoint() )
+                break;
             edit = redo();
             if ( edit == null )
                 break;
-            if ( edit instanceof Breakpoint ) {
-                break;
-            }
         } while ( true );
         this .listener .publishChanges();
         return edit;
     }
-
-    public void setBreakpoint()
+    
+    private boolean atBreakpoint()
     {
-        mEdits .add( mEditNumber++, new Breakpoint() );
+        if ( mEditNumber == mEdits .size() )
+            return false;
+        UndoableEdit edit = mEdits .get( mEditNumber );
+        return edit .hasBreakpoint() ;
     }
 
+    public void setBreakpoints( int[] lineNumbers )
+    {
+        Arrays .sort( lineNumbers );
+        int index = 0;
+        int lineNumber = lineNumbers[ index ];
+        for ( UndoableEdit edit : mEdits ) {
+            int startLine = edit .getLineNumber();
+            if ( startLine != 0 && startLine >= lineNumber ) {
+                edit .setBreakpoint( true );
+                ++index;
+                if ( index < lineNumbers .length )
+                    lineNumber = lineNumbers[ index ];
+                else
+                    // We must continue to loop, to clear old breakpoints
+                    lineNumber = Integer .MAX_VALUE;
+            } else {
+                edit .setBreakpoint( false );
+            }
+        }
+    }
+    
+    public List<Integer> getBreakpoints()
+    {
+        List<Integer> result = new ArrayList<>();
+        for ( UndoableEdit edit : mEdits ) {
+            if ( edit .hasBreakpoint() )
+                result .add( edit .getLineNumber() );
+        }
+        return result;
+    }
+    
     public UndoableEdit redoAll( int breakpoint ) throws Command.Failure
     {
         UndoableEdit last = null;
@@ -244,6 +261,25 @@ public class EditHistory implements Iterable<UndoableEdit>
             undone = undo();
         } while ( ! (undone instanceof BeginBlock) );
         return undone;
+    }
+    
+    public int getNextLineNumber()
+    {
+        if(mEdits.isEmpty())
+            return 3; // this works on a brand new model with an empty EditHistory, though it's a bit of a hack
+        
+        int editNumber = mEditNumber;
+        if( editNumber >= mEdits.size() )
+            editNumber = mEdits.size() - 1; // avoid overflow by getting the last edit
+        
+        UndoableEdit undoable = mEdits .get( editNumber );
+        if ( undoable instanceof DeferredEdit )
+            return ((DeferredEdit) undoable) .getLineNumber();
+        else
+            // This happens upon the initial VSCode debugger launch if 
+            // we don't set lastStickyEdit="-1" in the vZome file we're debugging
+            // or when we single step past the last edit
+            return 0;
     }
 
     public UndoableEdit redo() throws Command.Failure
@@ -403,7 +439,7 @@ public class EditHistory implements Iterable<UndoableEdit>
         mEdits .add( mEditNumber++, edit );
     }
 
-    public class Breakpoint implements UndoableEdit
+    public class Breakpoint extends UndoableEdit
     {
         @Override
         public Element getXml( Document doc )
@@ -469,13 +505,15 @@ public class EditHistory implements Iterable<UndoableEdit>
         }
     }
 
-    private class DeferredEdit implements UndoableEdit
+    private class DeferredEdit extends UndoableEdit
     {
         private final XmlSaveFormat format;
 
         private final Element xml;
 
         private Context context;
+        
+        private boolean isBreakpoint = false;
 
         public DeferredEdit( XmlSaveFormat format, Element editElem, Context context )
         {
@@ -485,9 +523,31 @@ public class EditHistory implements Iterable<UndoableEdit>
         }
 
         @Override
+        public void setBreakpoint( boolean value )
+        {
+            this .isBreakpoint = value;
+        }
+        
+        @Override
+        public boolean hasBreakpoint()
+        {
+            return this .isBreakpoint;
+        }
+
+        @Override
         public boolean isNoOp()
         {
             return false;
+        }
+        
+        @Override
+        public int getLineNumber()
+        {
+            LocationData locationData = (LocationData) xml .getUserData( LocationData .LOCATION_DATA_KEY );
+            if ( locationData != null )
+                return locationData .getStartLine();
+            else
+                return 0;
         }
 
         @Override
@@ -535,7 +595,7 @@ public class EditHistory implements Iterable<UndoableEdit>
              * 
              * 3. the UndoableEdit may migrate itself, generating
              */
-            int num = mEditNumber;
+            int num = this .getLineNumber();
             mEdits .remove( --mEditNumber );
 
             if ( logger.isLoggable( Level.FINE ) ) // see the logger declaration to enable FINE
@@ -543,7 +603,7 @@ public class EditHistory implements Iterable<UndoableEdit>
 
             UndoableEdit realized = null;
             String cmdName = xml.getLocalName();
-
+            
             if ( cmdName .equals( "Breakpoint" ) )
             {
                 realized = new Breakpoint();
@@ -551,6 +611,7 @@ public class EditHistory implements Iterable<UndoableEdit>
             else
                 realized = context .createEdit( xml );
             //            System.out.println( "edit: " + num + " " + cmdName );
+            realized .setLineNumber( num );
 
             try {
                 EditHistory .this .listener .showCommand( xml, num );
@@ -579,7 +640,9 @@ public class EditHistory implements Iterable<UndoableEdit>
                     @Override
                     public UndoableEdit createEdit( Element xml )
                     {
-                        return context .createEdit( xml );
+                        UndoableEdit edit = context .createEdit( xml );
+                        edit .setLineNumber( getLineNumber() );
+                        return edit;
                     }
                 } ); // this method needs to have the history, since it may migrate
                 //        		System.out.println();

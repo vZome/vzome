@@ -118,7 +118,23 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
     @Override
     public final String toString()
     {
-        return this .getVectorExpression( AlgebraicField .DEFAULT_FORMAT );
+        return toString( AlgebraicField .DEFAULT_FORMAT );
+    }
+
+    /**
+     * Formats an AlgebraicVector as a String using the specified format.
+     *  
+     * @param format may be any of the following:
+     * {@code AlgebraicField.DEFAULT_FORMAT = 0; // 4 + 3φ}
+     * {@code AlgebraicField.EXPRESSION_FORMAT = 1; // 4 +3*phi}
+     * {@code AlgebraicField.ZOMIC_FORMAT = 2; // 4 3}
+     * {@code AlgebraicField.VEF_FORMAT = 3; // (3,4)}
+     * 
+     * @return this vector formatted as specified
+     */
+    public final String toString(int format)
+    {
+        return this .getVectorExpression( format );
     }
 
     public AlgebraicNumber getComponent( int i )
@@ -232,6 +248,15 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
             return new AlgebraicVector( this .coordinates[ 0 ], this .coordinates[ 1 ], this .coordinates[ 2 ] );
     }
 
+    /**
+     * 
+     * @param buf a StringBuffer to which the formatted vector will be appended.
+     * @param format may be any of the following:
+     * {@code AlgebraicField.DEFAULT_FORMAT = 0; // 4 + 3φ}
+     * {@code AlgebraicField.EXPRESSION_FORMAT = 1; // 4 +3*phi}
+     * {@code AlgebraicField.ZOMIC_FORMAT = 2; // 4 3}
+     * {@code AlgebraicField.VEF_FORMAT = 3; // (3,4)}
+     */
     public void getVectorExpression( StringBuffer buf, int format )
     {
         if ( format == AlgebraicField.DEFAULT_FORMAT )
@@ -248,6 +273,20 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
             buf .append( ")" );
     }
 
+    /**
+     * Formats an AlgebraicVector as a String using the specified format.
+     * 
+     * Note that {@code AlgebraicVector.toString(int format)} is just a wrapper for this method.
+     * TODO: Avoid the redundancy by deprecating this method, then replacing it with toString(format)
+     *  
+     * @param format may be any of the following:
+     * {@code AlgebraicField.DEFAULT_FORMAT = 0; // 4 + 3φ}
+     * {@code AlgebraicField.EXPRESSION_FORMAT = 1; // 4 +3*phi}
+     * {@code AlgebraicField.ZOMIC_FORMAT = 2; // 4 3}
+     * {@code AlgebraicField.VEF_FORMAT = 3; // (3,4)}
+     * 
+     * @return this vector formatted as specified
+     */
     public String getVectorExpression( int format )
     {
         StringBuffer buf = new StringBuffer();

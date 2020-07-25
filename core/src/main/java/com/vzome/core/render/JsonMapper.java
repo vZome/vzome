@@ -17,9 +17,10 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.math.Polyhedron;
-import com.vzome.core.math.RealVector;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
 /**
@@ -35,11 +36,22 @@ public class JsonMapper
     private static class RealTrianglesView implements AlgebraicNumber.Views.Real, Polygon.Views.Triangles {}
 
     // Keep things simple for the client code: all real numbers, all faces triangulated
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ObjectWriter objectWriter = objectMapper .writerWithView( RealTrianglesView.class );
+    private final ObjectMapper objectMapper;
+    private final ObjectWriter objectWriter;
 
     private final Set<String> shapeIds = new HashSet<>();
     private Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
+    
+    public JsonMapper()
+    {
+        this( RealTrianglesView.class );
+    }
+    
+    public JsonMapper( Class<?> view )
+    {
+        this .objectMapper = new ObjectMapper();
+        this .objectWriter = objectMapper .writerWithView( view );
+    }
     
     public ObjectMapper getObjectMapper()
     {
@@ -89,8 +101,21 @@ public class JsonMapper
                 color = Color.WHITE;
             node .put( "color", color .toWebString() );
 
-            RealVector center = ((Connector) man) .getLocation() .toRealVector();
-            node .set( "position", this .asTreeWithView( center ) );
+            node .set( "position", this .asTreeWithView( rm .getLocation() ) );
+
+            return node;
+        }
+        else if ( man instanceof Panel )
+        {
+            ObjectNode node = this .objectMapper .createObjectNode();
+            node .put( "shape", shapeId );
+
+            Color color = rm .getColor();
+            if ( color == null )
+                color = Color.WHITE;
+            node .put( "color", color .toWebString() );
+
+            node .set( "position", this .asTreeWithView( rm .getLocation() ) );
 
             return node;
         }
@@ -125,5 +150,4 @@ public class JsonMapper
         }
         return result;
     }
-
 }

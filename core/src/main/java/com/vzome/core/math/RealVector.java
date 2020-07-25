@@ -26,10 +26,16 @@ public class RealVector
 
     public final double x, y, z;
 
+    public RealVector()
+    {
+        this( 0d, 0d, 0d );
+    }
+    
     /**
      * Construct a new vector from its coordinate values.
      */
-    public RealVector( double x, double y, double z ) {
+    public RealVector( double x, double y, double z )
+    {
         super();
 
         this .x = x;

@@ -46,7 +46,8 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.core.render.Scene;
+import com.vzome.desktop.controller.RenderingViewer;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {
@@ -87,7 +88,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	private final boolean developerExtras;
 	
 	private final ActionListener localActions;
-	
+	    
+    private final FileDialog fileDialog = new FileDialog( this );
+    
 	private File mFile = null;
 	
 	private final Controller.ErrorChannel errors;
@@ -116,7 +119,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     	this .appUI = appUI;
     }
         
-    public DocumentFrame( final Controller3d controller, final J3dComponentFactory factory3d )
+    public DocumentFrame( final Controller controller, final J3dComponentFactory factory3d )
     {
         mController = controller;
         mController .addPropertyListener( this );
@@ -127,7 +130,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         String path = mController .getProperty( "window.file" );
         if ( path != null )
-        	this .mFile = new File( path ); // this enables "save" in localActions
+            this .mFile = new File( path ); // this enables "save" in localActions
 
         // TODO: compute these booleans once here, and don't recompute in DocumentMenuBar
 
@@ -258,7 +261,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     
                 case "snapshot.2d":
                     if ( snapshot2dFrame == null ) {
-                        snapshot2dFrame = new Snapshot2dFrame( mController.getSubController( "snapshot.2d" ), new FileDialog( DocumentFrame.this ) );
+                        snapshot2dFrame = new Snapshot2dFrame( mController.getSubController( "snapshot.2d" ), fileDialog );
                     }
                     snapshot2dFrame.setPanelSize( modelPanel .getRenderedSize() );
                     snapshot2dFrame.pack();
@@ -274,7 +277,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 case "export4dPolytope":
                     {
                         Controller polytopesController = mController .getSubController( "polytopes" );
-                        ActionListener actionListener = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, cmd, "vef", polytopesController );
+                        ActionListener actionListener = new ControllerFileAction( fileDialog, false, cmd, "vef", polytopesController );
                         actionListener .actionPerformed( e );
                     }
                     break;
@@ -321,7 +324,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     String colorString = Integer.toHexString( ( rgb << 8 ) | alpha );
                     mController .setProperty( "lastObjectColor", "#"+colorString );
                     String command = "ColorManifestations/" + colorString;
-                    mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), command ) );
+                    mController .actionPerformed( e .getSource(), command );
                     break;
                     
                 case "setBackgroundColor":
@@ -332,14 +335,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
                 
                 case "usedOrbits":
-                    mController .actionPerformed( e ); // TO DO exclusive
+                    mController .actionPerformed( e .getSource(), e .getActionCommand() ); // TO DO exclusive
                     break;
                 
                 case "rZomeOrbits":
                 case "predefinedOrbits":
                 case "setAllDirections":
                     delegate = mController .getSubController( "symmetry." + system );
-                    delegate .actionPerformed( e );
+                    delegate .actionPerformed( e .getSource(), e .getActionCommand() );
                     break;
                 
                 case "configureShapes":
@@ -372,23 +375,25 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     if ( ( bookmarkName == null ) || ( bookmarkName .length() == 0 ) ) {
                         return;
                     }
-                    mController .actionPerformed( new ActionEvent( e .getSource(), e.getID(), "newTool/" + bookmarkId + "/" + bookmarkName ) );
+                    mController .actionPerformed( e .getSource(), "newTool/" + bookmarkId + "/" + bookmarkName );
                     break;
 
                 default:
-                    if ( cmd .startsWith( "LoadVEF/" ) )
+                    if ( cmd .startsWith( "LoadVEF/" )
+                      || cmd .startsWith( "ImportSimpleMeshJson/" )
+                      || cmd .startsWith( "ImportColoredMeshJson/" ) )
                     {
                         Controller importScaleController = mController .getSubController( "importScale" );
                         if ( importScaleDialog == null || importScaleDialog.getTitle() != cmd) {
                             importScaleDialog = new VefImportDialog( DocumentFrame.this, importScaleController, "Set Scale and Rotation",
-                                new ControllerFileAction( new FileDialog( DocumentFrame.this ), true, cmd, "vef", controller ) );
+                                new ControllerFileAction( fileDialog, true, cmd, "vef", controller ) );
                         }
                         importScaleDialog .setVisible( true );
                     }
                     else if ( cmd .startsWith( "setSymmetry." ) )
                     {
                         system = cmd .substring( "setSymmetry.".length() );
-                        mController .actionPerformed( e ); // TODO getExclusiveAction
+                        mController .actionPerformed( e .getSource(), e .getActionCommand() ); // TODO getExclusiveAction
                     }
                     else if ( cmd .startsWith( "execCommandLine/" ) )
                     {
@@ -415,7 +420,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                                 JOptionPane.PLAIN_MESSAGE );
                     }
                     else
-                        mController .actionPerformed( e );
+                        mController .actionPerformed( e .getSource(), e .getActionCommand() );
                     break;
                 }
             }
@@ -427,6 +432,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         lessonController = mController .getSubController( "lesson" );
         lessonController .addPropertyListener( this );
 
+        ControllerActionListener actionListener = new ControllerActionListener( this .mController );
+        
         // Now the component containment hierarchy
         
         JPanel outerPanel = new JPanel( new BorderLayout() );
@@ -446,7 +453,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     articleButtonsPanel .add( modelButton );
                     group .add( modelButton );
                     modelButton .setActionCommand( "switchToModel" );
-                    modelButton .addActionListener( mController );
+                    modelButton .addActionListener( actionListener );
                     snapshotButton = new JButton( "-> capture ->" );
                     //                String imgLocation = "/icons/snapshot.png";
                     //                URL imageURL = getClass().getResource( imgLocation );
@@ -464,10 +471,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 						@Override
                         public void actionPerformed( ActionEvent e )
                         {
-                            mController .actionPerformed( e ); // sends thumbnailChanged propertyChange, but no listener...
+                            mController .actionPerformed( e .getSource(), e .getActionCommand() ); // sends thumbnailChanged propertyChange, but no listener...
                             articleButton .doClick();  // switch to article mode, so now there's a listener
                             // now trigger the propertyChange again
-                            lessonController .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "setView" ) );
+                            lessonController .actionPerformed( DocumentFrame.this, "setView" );
                         }
                     } );
                     articleButton  = new JRadioButton( "Article" );
@@ -476,7 +483,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     articleButtonsPanel .add( articleButton );
                     group .add( articleButton );
                     articleButton .setActionCommand( "switchToArticle" );
-                    articleButton .addActionListener( mController );
+                    articleButton .addActionListener( actionListener );
 
                     JPanel statusPanel = new JPanel( new BorderLayout() );
                     statusPanel .setBorder( BorderFactory .createEmptyBorder( 4, 4, 4, 4 ) );
@@ -489,7 +496,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     leftCenterPanel .add(  modeAndStatusPanel, BorderLayout.PAGE_START );
                 }
 
-                modelPanel = new ModelPanel( (Controller3d) mController, factory3d, (ControlActions) this, this .isEditor, fullPower );
+                Scene scene = ((Scene.Provider) mController) .getScene();
+                RenderingViewer viewer = factory3d .createRenderingViewer( scene );
+                modelPanel = new ModelPanel( mController, viewer, (ControlActions) this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );
@@ -503,7 +512,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
             JPanel rightPanel = new JPanel( new BorderLayout() );
             {
-                viewControl = new CameraControlPanel( factory3d, cameraController );
+                Scene scene = ((Scene.Provider) cameraController) .getScene();
+                RenderingViewer viewer = factory3d .createRenderingViewer( scene );
+                viewControl = new CameraControlPanel( viewer, cameraController );
                 // this is probably moot for reader mode
                 rightPanel .add( viewControl, BorderLayout.PAGE_START );
                 
@@ -569,7 +580,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 setTitle( newTitle );
             }
         };
-		this .saveAsAction = new ControllerFileAction( new FileDialog( DocumentFrame.this ), false, "save", "vZome", saveAsController );
+        mController .addSubController( "saveAs", saveAsController ); // need this so property flow works
+		this .saveAsAction = new ControllerFileAction( fileDialog, false, "save", "vZome", saveAsController );
 
         this .setJMenuBar( new DocumentMenuBar( mController, this ) );
 
@@ -739,7 +751,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         control .setEnabled( enable );
         if ( control .isEnabled() )
         {
-            ActionListener actionListener = controller;
+            ActionListener actionListener = new ControllerActionListener(controller);
             switch ( command ) {
 
             // these can fall through to the ApplicationController
@@ -759,13 +771,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "toggleFrameLabels":
             case "toggleNormals":
             case "toggleOutlines":
-                actionListener = controller;
                 break;
 
             case "open":
             case "newFromTemplate":
             case "openDeferringRedo":
-                actionListener = new ControllerFileAction( new FileDialog( this ), true, command, "vZome", controller );
+                actionListener = new ControllerFileAction( fileDialog, true, command, "vZome", controller );
                 break;
 
             case "saveAs":
@@ -794,14 +805,19 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 break;
 
             case "capture-animation":
-                actionListener = new ControllerFileAction( new FileDialog( this ), false, command, "png", controller );
+                actionListener = new ControllerFileAction( fileDialog, false, command, "png", controller );
                 break;
 
             default:
                 if ( command .startsWith( "openResource-" ) ) {
-                    actionListener = controller;
                 }
                 else if ( command .startsWith( "LoadVEF/" ) ) {
+                    actionListener = this .localActions;
+                }
+                else if ( command .startsWith( "ImportSimpleMeshJson/" ) ) {
+                    actionListener = this .localActions;
+                }
+                else if ( command .startsWith( "ImportColoredMeshJson/" ) ) {
                     actionListener = this .localActions;
                 }
                 else if ( command .startsWith( "setSymmetry." ) ) {
@@ -815,14 +831,15 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 }
                 else if ( command .startsWith( "capture." ) ) {
                     String ext = command .substring( "capture." .length() );
-                    actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
+                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
                 }
                 else if ( command .startsWith( "export2d." ) ) {
                     String ext = command .substring( "export2d." .length() );
-                    actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
+                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
                 }
                 else if ( command .startsWith( "export." ) ) {
                     String ext = command .substring( "export." .length() );
+                    ext = controller .getProperty( "exportExtension." + ext );
                     switch ( ext ) {
                     case "vrml": ext = "wrl"; break;
                     case "size": ext = "txt"; break;
@@ -831,7 +848,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     default:
                         break;
                     }
-                    actionListener = new ControllerFileAction( new FileDialog( this ), false, command, ext, controller );
+                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
                 }
                 else {
                     actionListener = getExclusiveAction( command, controller );
@@ -918,28 +935,28 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	//
 	boolean closeWindow()
 	{
-    	if ( "true".equals( mController.getProperty( "edited" ) ) && ( isEditor && canSave ) )
-    	{
-    		// TODO replace showConfirmDialog() with use of EscapeDialog, or something similar...
-    		//   see  http://java.sun.com/docs/books/tutorial/uiswing/components/dialog.html
-    		int response = JOptionPane.showConfirmDialog( DocumentFrame.this, "Do you want to save your changes?",
-    				"file is changed", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE );
+	    if ( "true".equals( mController.getProperty( "edited" ) ) && ( isEditor && canSave ) )
+	    {
+	        // TODO replace showConfirmDialog() with use of EscapeDialog, or something similar...
+	        //   see  http://java.sun.com/docs/books/tutorial/uiswing/components/dialog.html
+	        int response = JOptionPane.showConfirmDialog( DocumentFrame.this, "Do you want to save your changes?",
+	                "file is changed", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE );
 
-    		if ( response == JOptionPane.CANCEL_OPTION )
-    			return false;
-    		if ( response == JOptionPane.YES_OPTION )
-    			try {
-    				localActions .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "save" ) );
-    				return false;
-    			} catch ( RuntimeException re ) {
-    				logger.log( Level.WARNING, "did not save due to error", re );
-    				return false;
-    			}
-    	}
-    	dispose();
-    	mController .setProperty( "visible", Boolean.FALSE );
-    	return true;
-    }
+	        if ( response == JOptionPane.CANCEL_OPTION )
+	            return false;
+	        if ( response == JOptionPane.YES_OPTION )
+	            try {
+	                localActions .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "save" ) );
+	                return false;
+	            } catch ( RuntimeException re ) {
+	                logger.log( Level.WARNING, "did not save due to error", re );
+	                return false;
+	            }
+	    }
+	    dispose();
+	    mController .setProperty( "visible", Boolean.FALSE );
+	    return true;
+	}
 
 	public void makeUnnamed()
 	{

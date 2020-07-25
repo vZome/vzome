@@ -1,8 +1,5 @@
 package org.vorthmann.zome.app.impl;
 
-import java.awt.Desktop;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -12,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,7 +34,9 @@ import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;
+import com.vzome.desktop.controller.RenderingViewer;
 
 public class ApplicationController extends DefaultController
 {
@@ -46,7 +44,7 @@ public class ApplicationController extends DefaultController
 
     private final Map<String, DocumentController> docControllers = new HashMap<>();
 
-    private final ActionListener ui;
+    private final UI ui;
 
     private final Properties userPreferences = new Properties();
 
@@ -61,8 +59,13 @@ public class ApplicationController extends DefaultController
     private int lastUntitled = 0;
 
     private Map<String, RenderedModel> symmetryModels = new HashMap<String, RenderedModel>();
+    
+    public interface UI
+    {
+        public void doAction( String action );
+    }
 
-    public ApplicationController( ActionListener ui, Properties commandLineArgs, J3dComponentFactory rvFactory )
+    public ApplicationController( UI ui, Properties commandLineArgs, J3dComponentFactory rvFactory )
     {
         super();
 
@@ -132,22 +135,19 @@ public class ApplicationController extends DefaultController
         };
         modelApp = new com.vzome.core.editor.Application( true, failures, properties );
 
-        Colors colors = modelApp .getColors();
-
         if ( rvFactory != null ) {
             this .rvFactory = rvFactory;
         }
         else
         {
-            boolean useEmissiveColor = ! propertyIsTrue( "no.glowing.selection" );
             // need this set up before we do any loadModel
             String factoryName = getProperty( "RenderingViewer.Factory.class" );
             if ( factoryName == null )
                 factoryName = "org.vorthmann.zome.render.jogl.JoglFactory";
             try {
                 Class<?> factoryClass = Class.forName( factoryName );
-                Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] { Colors.class, Boolean.class } );
-                this .rvFactory = (J3dComponentFactory) constructor.newInstance( new Object[] { colors, useEmissiveColor } );
+                Constructor<?> constructor = factoryClass .getConstructor( new Class<?>[] {} );
+                this .rvFactory = (J3dComponentFactory) constructor.newInstance( new Object[] {} );
             } catch ( Exception e ) {
                 mErrors.reportError( "Unable to instantiate RenderingViewer.Factory class: " + factoryName, new Object[] {} );
                 System.exit( 0 );
@@ -166,7 +166,7 @@ public class ApplicationController extends DefaultController
         if ( result != null )
             return result;
 
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        ClassLoader cl = this .getClass() .getClassLoader();
         InputStream bytes = cl.getResourceAsStream( path );
 
         try {
@@ -183,15 +183,16 @@ public class ApplicationController extends DefaultController
     }
 
     @Override
-    public void doAction( String action, ActionEvent event )
+    public void doAction( String action )
     {
         try {
             if ( action .equals( "showAbout" ) 
                     || action .equals( "openURL" ) 
-                    || action .equals( "quit" ) 
+                    || action .equals( "quit" )
+                    || action .startsWith( "browse-" )
                     )
             {
-                this .ui .actionPerformed( event );
+                this .ui .doAction( action );
                 return;
             }
 
@@ -200,7 +201,7 @@ public class ApplicationController extends DefaultController
                 if ( sawWelcome == null )
                 {
                     String welcome = properties .getProperty( "welcome" );
-                    doAction( "openResource-" + welcome, null );
+                    doAction( "openResource-" + welcome );
                     userPreferences .setProperty( "saw.welcome", "true" );
                     FileWriter writer;
                     try {
@@ -243,20 +244,13 @@ public class ApplicationController extends DefaultController
                     newDocumentController( title, document, docProps );
                 }
             }
-            else if ( action .startsWith( "browse-" ) )
-            {
-                String url = action .substring( "browse-" .length() );
-                if ( Desktop.isDesktopSupported() && Desktop.getDesktop() .isSupported( Desktop.Action.BROWSE ) ) {
-                    Desktop.getDesktop() .browse( new URI( url ) );
-                }
-            }
             else if ( action .startsWith( "openResource-" ) )
             {
                 Properties docProps = new Properties();
                 docProps .setProperty( "reader.preview", "true" );
                 String path = action .substring( "openResource-" .length() );
                 docProps .setProperty( "window.title", path );
-                ClassLoader cl = Thread .currentThread() .getContextClassLoader();
+                ClassLoader cl = this .getClass() .getClassLoader();
                 InputStream bytes = cl .getResourceAsStream( path );
                 loadDocumentController( path, bytes, docProps );
             }
@@ -265,7 +259,7 @@ public class ApplicationController extends DefaultController
                 Properties docProps = new Properties();
                 docProps .setProperty( "as.template", "true" ); // don't set window.file!
                 String path = action .substring( "newFromResource-" .length() );
-                ClassLoader cl = Thread .currentThread() .getContextClassLoader();
+                ClassLoader cl = this .getClass() .getClassLoader();
                 InputStream bytes = cl .getResourceAsStream( path );
                 loadDocumentController( path, bytes, docProps );
             }
@@ -347,6 +341,7 @@ public class ApplicationController extends DefaultController
                 InputStream bytes = new FileInputStream( file );
                 loadDocumentController( path, bytes, docProps );
             } catch ( Exception e ) {
+                e .printStackTrace();
                 this .mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
             }
         }
@@ -470,6 +465,12 @@ public class ApplicationController extends DefaultController
     }
 
     @Override
+    public void setModelProperty( String name, Object value )
+    {
+        this .properties .setProperty( name, value .toString() );
+    }
+
+    @Override
     public Controller getSubController( final String name )
     {
         return docControllers .get( name );
@@ -553,4 +554,50 @@ public class ApplicationController extends DefaultController
         return modelApp .getLights();
     }
 
+    public static void main(String[] args)
+    {
+        String filePath = "noFilePath";
+        if ( args.length > 0 )
+            filePath = args[ 0 ];
+        String action = "open";
+        if ( args.length > 1 )
+            action = args[ 1 ];
+        try {
+            Properties props = new Properties();
+            props .setProperty( "entitlement.model.edit", "true" );
+            props .setProperty( "keep.alive", "true" );
+
+            ApplicationController appC = new ApplicationController( new ApplicationController.UI()
+            {   
+                @Override
+                public void doAction( String action )
+                {
+                    System .out .println( "UI event: " + action );
+                }
+            }, props, new J3dComponentFactory()
+            {
+                @Override
+                public RenderingViewer createRenderingViewer( Scene scene )
+                {
+                    // Should never be called
+                    return null;
+                }
+            });
+            appC .setErrorChannel( new Controller.ErrorChannel() {
+
+                @Override
+                public void reportError(String errorCode, Object[] arguments)
+                {
+                    System .out .println( errorCode );
+                }
+
+                @Override
+                public void clearError() {}
+            });
+            System.out.println( "about to doFileAction on " + filePath );
+            appC .doFileAction( action, new File( filePath ) );
+        } catch (Throwable e) {
+            e .printStackTrace();
+        }
+    }
 }

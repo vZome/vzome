@@ -9,8 +9,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -27,8 +29,8 @@ import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.model.Color;
 import com.vzome.core.parts.StrutGeometry;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 
 /**
@@ -45,17 +47,30 @@ public class ExportedVEFShapes extends AbstractShapes
     private final AbstractShapes fallback;
 
     private final Properties colors = new Properties();
+    
+    private static final Map<String, String> INJECTED = new HashMap<String, String>();
 
     private static final Logger logger = Logger.getLogger( "com.vzome.core.viewing.shapes" );
 
-    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
+    public static void injectShapeVEF( String key, String vef )
     {
-        this( prefsFolder, pkgName, name, alias, symm, ( symm instanceof IcosahedralSymmetry )? new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) : null );
+        key = key .replace( "--", "/" );
+        INJECTED .put( key, vef );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
     {
         this( prefsFolder, pkgName, name, null, symm );
+    }
+
+    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, boolean useZomic )
+    {
+        this( prefsFolder, pkgName, name, null, symm, new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) );
+    }
+
+    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
+    {
+        this( prefsFolder, pkgName, name, alias, symm, new OctahedralShapes( pkgName, name, symm ) );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, AbstractShapes fallback )
@@ -113,6 +128,9 @@ public class ExportedVEFShapes extends AbstractShapes
 
     protected String loadVefData( String name )
     {
+        if ( INJECTED .containsKey( mPkgName + "-" + name ) )
+            return INJECTED .get( mPkgName + "-" + name );
+        
         String script = mPkgName + "/" + name + ".vef";
         File shapeFile = new File( this .prefsFolder, "Shapes/" + script );
         InputStream stream = null;
@@ -121,7 +139,7 @@ public class ExportedVEFShapes extends AbstractShapes
                 stream = new FileInputStream( shapeFile );
             else {
                 script = MODEL_PREFIX + script;
-                stream = Thread.currentThread() .getContextClassLoader().getResourceAsStream( script );
+                stream = this .getClass() .getClassLoader() .getResourceAsStream( script );
                 if ( stream == null )
                     return null; // avoid the NPE!
             }

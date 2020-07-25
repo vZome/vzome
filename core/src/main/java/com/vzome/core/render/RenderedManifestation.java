@@ -15,6 +15,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Embedding;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -312,7 +313,7 @@ public class RenderedManifestation
     public void resetAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
     {
         if ( this .mManifestation instanceof Panel ) {
-            resetPanelAttributes(orbitSource, oneSidedPanels, colorPanels);
+            resetPanelAttributes( orbitSource, shapes, oneSidedPanels, colorPanels );
         }
         else if ( shapes == null ) {
             return; // rendering a symmetry model with panels only
@@ -328,7 +329,7 @@ public class RenderedManifestation
             throw new UnsupportedOperationException( "only strut, ball, and panel shapes currently supported" );
     }
 
-    private void resetPanelAttributes( RenderedModel.OrbitSource orbitSource, boolean oneSidedPanels, boolean colorPanels )
+    private void resetPanelAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
     {
         Panel panel = (Panel) this .mManifestation;
         Polyhedron shape = makePanelPolyhedron( panel, oneSidedPanels );
@@ -342,12 +343,13 @@ public class RenderedManifestation
             return;
 
         this .setOrientation( orbitSource .getSymmetry() .getField() .identityMatrix( 3 ) );
-        this .setColor( Color.WHITE );
 
         try {
             Axis axis = orbitSource .getAxis( normal );
-            if ( axis == null )
+            if ( axis == null ) {
+                this .setColor( Color.WHITE );
                 return;
+            }
 
             // This lets the Panel represent Planes better.
             panel .setZoneVector( axis .normal() );
@@ -355,8 +357,13 @@ public class RenderedManifestation
             Direction orbit = axis .getDirection();
 
             Color color = this .mManifestation .getColor();
-            if ( color == null )
-                color = orbitSource .getColor( orbit ) .getPastel();
+            if ( color == null ) {
+                color = shapes .getColor( orbit );
+                if ( color == null )
+                    color = orbitSource .getColor( orbit );
+                if ( color != null )
+                    color = color .getPastel();
+            }
             this .setColor( color );
         } catch ( IllegalStateException e ) {
             if ( logger .isLoggable( Level.WARNING ) )

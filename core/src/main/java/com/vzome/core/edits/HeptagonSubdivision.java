@@ -27,7 +27,7 @@ public class HeptagonSubdivision extends ChangeManifestations
         for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Connector ) {
-                Point nextPoint = (Point) ( (Connector) man ).getConstructions().next();
+                Point nextPoint = (Point) ( (Connector) man ).getFirstConstruction();
                 if ( p1 == null )
                     p1 = nextPoint;
                 else {

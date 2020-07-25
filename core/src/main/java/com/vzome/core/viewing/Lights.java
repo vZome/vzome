@@ -15,8 +15,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.vzome.core.math.DomUtils;
-import com.vzome.core.render.Color;
+import com.vzome.core.model.Color;
+import com.vzome.xml.DomUtils;
 
 /**
  * This is really a SceneModel

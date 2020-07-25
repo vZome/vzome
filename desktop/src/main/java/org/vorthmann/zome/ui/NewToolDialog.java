@@ -108,9 +108,7 @@ public class NewToolDialog extends EscapeDialog implements ListSelectionListener
                             public void actionPerformed( ActionEvent e )
                             {
                                 String toolName = namePanel .getText();
-                                ActionEvent ae = new ActionEvent( okButton, ActionEvent.ACTION_PERFORMED,
-                                        "newTool/" + toolId + "/" + toolName );
-                                NewToolDialog .this .controller .actionPerformed( ae );
+                                NewToolDialog .this .controller .actionPerformed( okButton, "newTool/" + toolId + "/" + toolName );
                                 NewToolDialog .this .setVisible( false );
                             }
                         } );

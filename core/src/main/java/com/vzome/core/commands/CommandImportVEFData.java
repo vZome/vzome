@@ -19,9 +19,9 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.VefToModel;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
+import com.vzome.xml.DomUtils;
 
 /**
  * @author Scott Vorthmann
@@ -104,7 +104,7 @@ public class CommandImportVEFData extends AbstractCommand
     public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
-        	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );
+        	DomUtils .addAttribute( result, "quaternion", quaternionVector .toParsableString() );
         
         super .getXml( result, attributes );
     }

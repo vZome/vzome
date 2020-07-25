@@ -72,7 +72,7 @@ public class InversionTool extends TransformationTool
         		{
         			if ( center != null )
         				return "more than one center selected";
-        			center = (Point) ((Connector) man) .getConstructions() .next();
+        			center = (Point) ((Connector) man) .getFirstConstruction();
         		}
         		else if ( ! prepareTool )
         			return "panel or strut selected";

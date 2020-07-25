@@ -4,7 +4,6 @@
 package com.vzome.desktop.controller;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ import org.vorthmann.zome.app.impl.TrackballRenderingViewer;
 
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 
@@ -33,7 +32,7 @@ import com.vzome.core.viewing.Lights;
  * In this camera model, the view frustum shape is generally held constant
  * as other parameters are varied.
  */
-public class CameraController extends DefaultController implements Controller3d
+public class CameraController extends DefaultController implements Scene.Provider
 {
     /**
      * The original frustum.
@@ -54,10 +53,10 @@ public class CameraController extends DefaultController implements Controller3d
 
     private final Camera initialCamera;
 
-    private RenderingChanges scene;
+    private Scene scene;
     private RenderedModel symmetryModel;
 
-    private final Lights sceneLighting;
+    protected final Lights sceneLighting;
 
     public interface Snapper
     {
@@ -68,9 +67,7 @@ public class CameraController extends DefaultController implements Controller3d
     {
         int MONOCULAR = 0; int LEFT_EYE = 1; int RIGHT_EYE = 2;
 
-        void setEye( int eye );
-
-        void setViewTransformation( Matrix4d trans, int eye );
+        void setViewTransformation( Matrix4d trans );
 
         void setPerspective( double fov, double aspectRatio, double near, double far );
 
@@ -145,20 +142,10 @@ public class CameraController extends DefaultController implements Controller3d
             return;
         Matrix4d trans = new Matrix4d();
 
-        model .getViewTransform( trans, 0d );
+        model .getViewTransform( trans );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            mViewers .get( i ) .setViewTransformation( trans, Viewer .MONOCULAR );
-
-        model .getStereoViewTransform( trans, Viewer .LEFT_EYE );
-        trans .invert();
-        for ( int i = 0; i < mViewers .size(); i++ )
-            mViewers .get( i ) .setViewTransformation( trans, Viewer .LEFT_EYE );
-
-        model .getStereoViewTransform( trans, Viewer .RIGHT_EYE );
-        trans .invert();
-        for ( int i = 0; i < mViewers .size(); i++ )
-            mViewers .get( i ) .setViewTransformation( trans, Viewer .RIGHT_EYE );
+            mViewers .get( i ) .setViewTransformation( trans );
     }
 
     private void updateViewersProjection()
@@ -187,7 +174,7 @@ public class CameraController extends DefaultController implements Controller3d
         Vector3d axis = new Vector3d( q.x, q.y, q.z );
 
         Matrix4d viewTrans = new Matrix4d();
-        model .getViewTransform( viewTrans, 0d );
+        model .getViewTransform( viewTrans );
         viewTrans .invert();
 
         // now map the axis back to world coordinates
@@ -199,7 +186,7 @@ public class CameraController extends DefaultController implements Controller3d
     public void mapViewToWorld( Vector3f vector )
     {
         Matrix4d viewTrans = new Matrix4d();
-        model .getViewTransform( viewTrans, 0d );
+        model .getViewTransform( viewTrans );
         viewTrans .invert();
         viewTrans .transform( vector );
     }
@@ -288,7 +275,7 @@ public class CameraController extends DefaultController implements Controller3d
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         if ( action .equals( "toggleSnap" ) )
         {
@@ -342,7 +329,7 @@ public class CameraController extends DefaultController implements Controller3d
             saveBaselineView();
         }
         else
-            super .doAction( action, e );
+            super .doAction( action );
     }
 
     public MouseTool getTrackball( double speed )
@@ -518,8 +505,7 @@ public class CameraController extends DefaultController implements Controller3d
         return this .copied != null;
     }
 
-    @Override
-    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
+    public void attachViewer( CameraController.Viewer viewer, Component canvas )
     {
         MouseTool trackball = this .getTrackball( 0.04d );
         
@@ -530,10 +516,6 @@ public class CameraController extends DefaultController implements Controller3d
 
         this .addViewer( new TrackballRenderingViewer( viewer ) );
 
-        this .scene = scene;
-        for ( RenderedManifestation rm : this .symmetryModel )
-            this .scene .manifestationAdded( rm );
-
         updateViewersTransformation();
         updateViewersProjection();
     }
@@ -541,11 +523,9 @@ public class CameraController extends DefaultController implements Controller3d
     public void setSymmetry( RenderedModel model, Snapper snapper )
     {
         this .symmetryModel = model;
-        if ( scene != null ) {
-            scene .reset();
-            for ( RenderedManifestation rm : symmetryModel )
-                scene .manifestationAdded( rm );
-        }
+        this .scene = new Scene( this .sceneLighting, false, model .getOrbitSource() .getSymmetry() .getChiralOrder() );
+        for ( RenderedManifestation rm : symmetryModel )
+            scene .manifestationAdded( rm );
         this .snapper = snapper;
         if ( snapping ) {
             saveBaselineView(); // might have been zooming
@@ -555,8 +535,8 @@ public class CameraController extends DefaultController implements Controller3d
     }
 
     @Override
-    public Lights getSceneLighting()
+    public Scene getScene()
     {
-        return this.sceneLighting;
+        return this.scene;
     }
 }

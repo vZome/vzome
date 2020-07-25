@@ -8,7 +8,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 
 
 /**
@@ -24,13 +23,9 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 
 	private Axis preferredAxis;
     
-	public static void main(String[] args) {
-		new IcosahedralSymmetry( new PentagonField(), "" );
-	}
-	
-    public IcosahedralSymmetry( AlgebraicField field, String defaultStyle )
+    public IcosahedralSymmetry( AlgebraicField field )
     {
-        super( 60, field, "blue", defaultStyle );
+        super( 60, field, "blue" );
         
         for ( int i = 0; i < this.INCIDENCES.length; i++ ) {
             this .INCIDENCES[ i ][ 0 ] = getPermutation( i ) .mapIndex( 30 );
@@ -139,32 +134,13 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return "icosahedral";
     }
 
-    /**
-     * Make a rational vector with unit denominators from an integer vector.
-     * @param canonical
-     * @return
-     */
-    protected AlgebraicVector rationalVector( int[] integers )
-    {
-        AlgebraicVector result = mField .origin( 3 );
-        for (int i = 0; i < 3; i++)
-        {
-            int[] factors = new int[ integers.length / 3 ];
-            for (int j = 0; j < factors.length; j++) {
-				factors[ j ] = integers[ i * factors.length + j ];
-			}
-            result .setComponent( i, mField .createAlgebraicNumber( factors ) );
-        }
-        return result;
-    }
-    
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
-        AlgebraicNumber twice = this .getField() .createRational( 2 );
+        AlgebraicNumber twice = mField .createRational( 2 );
         AlgebraicVector blueVertex = this .getDirection( "blue" ) .getPrototype() .scale( twice );
         AlgebraicVector redVertex = this .getDirection( "red" ) .getPrototype();
-        AlgebraicNumber phiInv = this .getField() .createPower( -1 );
+        AlgebraicNumber phiInv = mField.getGoldenRatio().reciprocal();
         AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype() .scale( phiInv );
         return new AlgebraicVector[] { blueVertex, redVertex, yellowVertex };
     }

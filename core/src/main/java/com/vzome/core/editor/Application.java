@@ -13,22 +13,19 @@ import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 import javax.vecmath.Vector3f;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
+import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.exporters.ColoredMeshJsonExporter;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.LiveGraphicsExporter;
-import com.vzome.core.exporters.ShapesJsonExporter;
 import com.vzome.core.exporters.OffExporter;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
@@ -39,10 +36,11 @@ import com.vzome.core.exporters.RulerExporter;
 import com.vzome.core.exporters.STEPExporter;
 import com.vzome.core.exporters.SecondLifeExporter;
 import com.vzome.core.exporters.SegExporter;
+import com.vzome.core.exporters.ShapesJsonExporter;
+import com.vzome.core.exporters.SimpleMeshJsonExporter;
 import com.vzome.core.exporters.StlExporter;
 import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.exporters.VefExporter;
-import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.exporters.WebviewJsonExporter;
 import com.vzome.core.exporters2d.PDFExporter;
 import com.vzome.core.exporters2d.PostScriptExporter;
@@ -53,12 +51,13 @@ import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
-import com.vzome.core.render.Color;
+import com.vzome.core.model.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
+import com.vzome.xml.DomUtils;
 
-public class Application
+public class Application implements AlgebraicField.Registry
 {
     private final Map<String, Supplier<FieldApplication> > fieldAppSuppliers = new HashMap<>();
 
@@ -99,8 +98,10 @@ public class Application
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        this .exporters .put( "vson", new VsonExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "shapes", new ShapesJsonExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "mesh", new SimpleMeshJsonExporter() );
+        this .exporters .put( "cmesh", new ColoredMeshJsonExporter() );
+        this .exporters .put( "shapes", new ShapesJsonExporter() );
+
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
@@ -110,7 +111,9 @@ public class Application
         this .exporters .put( "vrml", new VRMLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "off", new OffExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "2life", new SecondLifeExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "vef", new VefExporter( null, this .mColors, this .mLights, null ) );
+        Exporter3d vefExporter = new VefExporter( null, this .mColors, this .mLights, null );
+        this .exporters .put( "vef", vefExporter );
+        this .exporters .put( "partgeom", vefExporter ); // need this here just to find the extension in DocumentController.getProperty()
         this .exporters .put( "partslist", new PartsListExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "size", new RulerExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "stl", new StlExporter( null, this .mColors, this .mLights, null ) );
@@ -136,23 +139,10 @@ public class Application
 
     public DocumentModel loadDocument( InputStream bytes ) throws Exception
     {
-        Document xml = null;
+        String noLineNums = this .properties .getProperty( "no.line.numbers" );
+        boolean captureLineNumbers = noLineNums == null || noLineNums .equals( "false" );
 
-        // parse the bytes as XML
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
-            factory .setNamespaceAware( true );
-            DocumentBuilder builder = factory .newDocumentBuilder();
-            xml = builder .parse( bytes );
-            bytes.close();
-        } catch ( SAXException | IOException e ) {
-            //            String errorCode = "XML is bad:  " + e.getMessage() + " at line " + e.getLineNumber() + ", column "
-            //                    + e.getColumnNumber();
-            logger .severe( e .getMessage() );
-            throw e;
-        }
-
-        Element element = xml .getDocumentElement();
+        Element element = DomUtils .parseXml( bytes, captureLineNumbers );
         String tns = element .getNamespaceURI();
         XmlSaveFormat format = XmlSaveFormat .getFormat( tns );
 
@@ -199,7 +189,7 @@ public class Application
         result .doEdit( extension, props );
         return result;
     }
-
+    
     public AlgebraicField getField( String name )
     {
         return this .getDocumentKind( name ) .getField();
@@ -211,7 +201,10 @@ public class Application
         if( supplier != null ) {
             return supplier.get();
         }
-        throw new IllegalArgumentException("Unknown Application Type " + name);
+        // maybe because default.field is invalid in your prefs file?
+        String msg = "Unknown Application Type " + name;
+        failures.reportFailure(new Failure(msg));
+        throw new IllegalArgumentException(msg);
     }
 
     public Set<String> getFieldNames()

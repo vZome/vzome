@@ -35,6 +35,7 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
 
     // for JSON serialization
     public static class Views {
+        public interface TrailingDivisor {}
         public interface Rational {}
         public interface Real {}
     }
@@ -58,11 +59,12 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         isOne = isOne(this.factors);
     }
 
-    AlgebraicNumber( AlgebraicField field, BigRational... newFactors )
+    AlgebraicNumber( AlgebraicField field, BigRational[] factors )
     {
-        if ( newFactors.length > field .getOrder() )
-            throw new IllegalStateException( newFactors.length + " is too many factors for field \"" + field.getName() + "\"" );
+        if ( factors.length > field .getOrder() )
+            throw new IllegalStateException( factors.length + " is too many factors for field \"" + field.getName() + "\"" );
         this .field = field;
+        BigRational[] newFactors = field.prepareAlgebraicNumberTerms(factors);
         this .factors = new BigRational[ field .getOrder() ];
         for ( int i = 0; i < newFactors.length; i++ ) {
             this .factors[ i ] = newFactors[ i ] == null 
@@ -183,6 +185,42 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return this .field;
     }
 
+    /**
+     * 
+     * @param n is the value to be added
+     * @return this + n
+     */
+    public AlgebraicNumber plus( int n )
+    {
+        return n == 0 ? this : this.plus(field.createRational(n));
+    }
+
+    /**
+     * 
+     * @param num is the numerator of the rational value to be added
+     * @param den is the denominator of the rational value to be added
+     * @return this + (num / den)
+     */
+    public AlgebraicNumber plus( int num, int den )
+    {
+        return this.plus(field.createRational(num, den));
+    }
+
+    /**
+     * 
+     * @param n is the value to be added
+     * @return this + n
+     */
+    public AlgebraicNumber plus( BigRational n )
+    {
+        return this.plus(field.createRational(n));
+    }
+
+    /**
+     * 
+     * @param that is the value to be added
+     * @return this + n
+     */
     @Override
     public AlgebraicNumber plus( AlgebraicNumber that )
     {
@@ -198,6 +236,46 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return new AlgebraicNumber( this .field, sum );
     }
 
+    /**
+     * 
+     * @param n is the value to be multiplied
+     * @return this * n
+     */
+    public AlgebraicNumber times( int n )
+    {
+        switch(n) {
+        case 0:
+            return field.zero();
+        case 1:
+            return this;
+        case -1:
+            return this.negate();
+        default:
+            return this.times(field.createRational(n));
+        }
+    }
+
+    /**
+     * 
+     * @param num is the numerator of the rational value to be multiplied
+     * @param den is the denominator of the rational value to be multiplied
+     * @return this * (num / den)
+     */
+    public AlgebraicNumber times( int num, int den )
+    {
+        return this.times(field.createRational(num, den));
+    }
+
+    /**
+     * 
+     * @param n is the value to be multiplied
+     * @return this * n
+     */
+    public AlgebraicNumber times( BigRational n )
+    {
+        return this.times(field.createRational(n));
+    }
+
     @Override
     public AlgebraicNumber times( AlgebraicNumber that )
     {
@@ -210,6 +288,42 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         return new AlgebraicNumber( this .field, this .field .multiply( this .factors, that .factors ) );
     }
 
+    /**
+     * 
+     * @param n is the value to be subtracted
+     * @return this - n
+     */
+    public AlgebraicNumber minus( int n )
+    {
+        return n == 0 ? this : this.minus(field.createRational(n));
+    }
+
+    /**
+     * 
+     * @param num is the numerator of the rational value to be subtracted
+     * @param den is the denominator of the rational value to be subtracted
+     * @return this - (num / den)
+     */
+    public AlgebraicNumber minus( int num, int den )
+    {
+        return this.minus(field.createRational(num, den));
+    }
+
+    /**
+     * 
+     * @param n is the value to be subtracted
+     * @return this - n
+     */
+    public AlgebraicNumber minus( BigRational n )
+    {
+        return this.minus(field.createRational(n));
+    }
+
+    /**
+     * 
+     * @param that is the value to be subtracted
+     * @return this - n
+     */
     @Override
     public AlgebraicNumber minus( AlgebraicNumber that )
     {
@@ -217,6 +331,37 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
         if ( that .isZero() )
             return this;
         return this .plus( that .negate() );
+    }
+
+    /**
+     * 
+     * @param divisor
+     * @return this / divisor
+     */
+    public AlgebraicNumber dividedBy( int divisor )
+    {
+        return divisor == 1 ? this : this.dividedBy(field.createRational(divisor));
+    }
+
+    /**
+     * 
+     * @param num is the numerator of the divisor
+     * @param den is the denominator of the divisor
+     * @return this / (num / den)
+     */
+    public AlgebraicNumber dividedBy( int num, int den )
+    {
+        return this.dividedBy(field.createRational(num, den));
+    }
+
+    /**
+     * 
+     * @param divisor
+     * @return this / divisor
+     */
+    public AlgebraicNumber dividedBy( BigRational divisor )
+    {
+        return this.dividedBy(field.createRational(divisor));
     }
 
     public AlgebraicNumber dividedBy( AlgebraicNumber that )
@@ -344,6 +489,18 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
     {
         return this .toString( AlgebraicField .DEFAULT_FORMAT );
     }
+    
+    public int[] toTrailingDivisor()
+    {
+        BigInteger divisor = this .getDivisor();
+        int order = this .factors .length;
+        int[] result = new int[ order + 1 ];
+        result[ order ] = divisor .intValueExact();
+        for ( int i = 0; i < order; i++ ) {
+            result[ i ] = this .factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .getNumerator() .intValueExact();
+        }
+        return result;
+    }
 
     // JSON serialization:
     //
@@ -378,6 +535,10 @@ public class AlgebraicNumber implements Fields.Element<AlgebraicNumber>, Compara
             if ( ( view != null ) && Views.Real.class .isAssignableFrom( view ) )
             {
                 jgen .writeNumber( value .evaluate() );
+            }
+            else if ( ( view != null ) && Views.TrailingDivisor.class .isAssignableFrom( view ) )
+            {
+                jgen .writeObject( value .toTrailingDivisor() );
             }
             else
             {
