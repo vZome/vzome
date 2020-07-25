@@ -50,8 +50,7 @@ public class ScriptedShapes extends AbstractShapes
     protected Polyhedron buildConnectorShape( String pkgName )
     {
         String prefix = ZomicStrutGeometry.SCRIPT_PREFIX + pkgName + "/";
-        InputStream nodeScript = Thread.currentThread()
-                .getContextClassLoader().getResourceAsStream(
+        InputStream nodeScript = this .getClass() .getClassLoader() .getResourceAsStream(
                         prefix + NODE_SCRIPT );
         if ( nodeScript == null )
             throw new IllegalStateException( "missing script: " + prefix

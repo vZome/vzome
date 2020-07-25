@@ -4,27 +4,135 @@
     <meta charset="utf-8">
     <title>vZome CheerpJ test</title>
     <script src="https://cjrtnc.leaningtech.com/2.1/loader.js"></script>
-  </head>
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+  
+      form {
+        width: 600px;
+        background: #ccc;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid black;
+      }
+  
+      form ol {
+        padding-left: 0;
+      }
+  
+      form li, div > p {
+        background: #eee;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        list-style-type: none;
+        border: 1px solid black;
+      }
+  
+      form img {
+        height: 64px;
+        order: 1;
+      }
+  
+      form p {
+        line-height: 32px;
+        padding-left: 10px;
+      }
+  
+      form label, form button {
+        background-color: #7F9CCB;
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 1px ridge black;
+        font-size: 0.8rem;
+        height: auto;
+      }
+  
+      form label:hover, form button:hover {
+        background-color: #2D5BA3;
+        color: white;
+      }
+  
+      form label:active, form button:active {
+        background-color: #0D3F8F;
+        color: white;
+      }
+    </style>
+    </head>
   <body>
+    <form>
+      <div>
+        <label for="image_uploads">Choose vZome file</label>
+        <input type="file" id="image_uploads" name="image_uploads" accept=".vZome">
+      </div>
+      <div class="preview">
+        <p>No file currently selected for rendering</p>
+      </div>
+      <div>
+        <button>Submit</button>
+      </div>
+    </form>
+    <script>
+      cheerpjInit( { javaProperties: [ "java.protocol.handler.pkgs=com.leaningtech.handlers" ] } )
+
+      const classpath = "/app/core-7.0.jar" +
+        ":/app/jackson-annotations-2.9.3.jar" +
+        ":/app/jackson-core-2.9.5.jar" +
+        ":/app/jackson-databind-2.9.5.jar" +
+        ":/app/javax.json-1.0.4.jar" +
+        ":/app/vecmath-1.6.0-final.jar"
+
+      const modelUrl = "https://gist.githubusercontent.com/vorth/99af46f5bdb72b352b8ce7ab8b290b18/raw/4446d30a194edf5152b8ebcd8fbb55a4393b52b2/icosahedron-A5-faces.vZome"
+      const input = document.querySelector('input');
+      const preview = document.querySelector('.preview');
+  
+      input.style.opacity = 0;
+  
+      input.addEventListener('change', updateImageDisplay);
+  
+      function updateImageDisplay() {
+        while(preview.firstChild) {
+          preview.removeChild(preview.firstChild);
+        }
+  
+        const curFiles = input.files;
+        if(curFiles.length === 0) {
+          const para = document.createElement('p');
+          para.textContent = 'No files currently selected for upload';
+          preview.appendChild(para);
+        } else {
+          const list = document.createElement('ol');
+          preview.appendChild(list);
+  
+          for(const file of curFiles) {
+            const listItem = document.createElement('li');
+            const para = document.createElement('p');
+  
+            // read the file
+            var reader = new FileReader();
+
+            // file reading finished successfully
+            reader .onload = () => {
+              var text = reader.result
+              const path = "/str/" + file.name
+              cheerpjAddStringFile( path, text )
+              console.log( "Loaded " + path )
+              para.textContent = `File ${path} loading...`
+              listItem .appendChild(para)
+              list .appendChild(listItem)
+
+              cheerpjRunMain( "org.vorthmann.zome.app.impl.ApplicationController", "/app/desktop-7.0.jar:" + classpath, path )
+            }
+
+            // file reading failed
+            reader .onerror = () => alert('Error : Failed to read file')
+
+            // read as text file
+            reader .readAsText( file )
+          }
+        }
+      }
+    </script>
   </body>
-  <script>
-    cheerpjInit( { javaProperties: [ "java.protocol.handler.pkgs=com.leaningtech.handlers" ] } )
-
-    let classpath = "/app/core-7.0.jar" +
-      ":/app/jackson-annotations-2.9.3.jar" +
-      ":/app/jackson-core-2.9.5.jar" +
-      ":/app/jackson-databind-2.9.5.jar" +
-      ":/app/javax.json-1.0.4.jar" +
-      ":/app/vecmath-1.6.0-final.jar"
-    
-    let modelUrl = "https://gist.githubusercontent.com/vorth/99af46f5bdb72b352b8ce7ab8b290b18/raw/4446d30a194edf5152b8ebcd8fbb55a4393b52b2/icosahedron-A5-faces.vZome"
-
-    // This runs to completion, outputting the POV-Ray export on the browser console
-    cheerpjRunMain( "com.vzome.api.Application", classpath, "pov", modelUrl )
-
-    // This doesn't run to completion with the URL provided; I'm not sure why it fails to parse the content
-    // cheerpjRunMain( "org.vorthmann.zome.app.impl.ApplicationController",
-    //   "/app/desktop-7.0.jar:" + classpath,
-    //   "openURL-" + modelUrl )
-
-  </script>
+</html>
