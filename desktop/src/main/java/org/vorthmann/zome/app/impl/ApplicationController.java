@@ -559,9 +559,6 @@ public class ApplicationController extends DefaultController
         String filePath = "noFilePath";
         if ( args.length > 0 )
             filePath = args[ 0 ];
-        String action = "open";
-        if ( args.length > 1 )
-            action = args[ 1 ];
         try {
             Properties props = new Properties();
             props .setProperty( "entitlement.model.edit", "true" );
@@ -594,8 +591,8 @@ public class ApplicationController extends DefaultController
                 @Override
                 public void clearError() {}
             });
-            System.out.println( "about to doFileAction on " + filePath );
-            appC .doFileAction( action, new File( filePath ) );
+            appC .doFileAction( "open", new File( filePath ) );
+            System.out.println( "successfully opened " + filePath );
         } catch (Throwable e) {
             e .printStackTrace();
         }

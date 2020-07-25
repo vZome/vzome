@@ -12,22 +12,24 @@ banner() {
   echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
 }
 
-rm *.jar
-rm *.jar.js
-
 banner 'building the distribution'
 pushd ..
 ./gradlew distZip
 popd
 
+rm public/*.jar
+rm public/*.jar.js
+
 banner 'extracting JAR files'
 unzip ../desktop/build/distributions/vZome-Linux-7.0.dev.zip -d .
-mv vZome-Linux-7.0.dev/lib/jackson-*.jar .
-mv vZome-Linux-7.0.dev/lib/javax.json*.jar .
-mv vZome-Linux-7.0.dev/lib/vecmath*.jar .
-mv vZome-Linux-7.0.dev/lib/core*.jar .
-mv vZome-Linux-7.0.dev/lib/desktop*.jar .
+mv vZome-Linux-7.0.dev/lib/jackson-*.jar public
+mv vZome-Linux-7.0.dev/lib/javax.json*.jar public
+mv vZome-Linux-7.0.dev/lib/vecmath*.jar public
+mv vZome-Linux-7.0.dev/lib/core*.jar public
+mv vZome-Linux-7.0.dev/lib/desktop*.jar public
 rm -rf vZome-Linux-7.0.dev/
+
+pushd public
 
 banner 'compiling vecmath'
 /Applications/cheerpj/cheerpjfy.py vecmath-1.6.0-final.jar 
