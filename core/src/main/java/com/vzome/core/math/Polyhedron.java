@@ -17,7 +17,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.construction.Polygon;
 import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.Polyhedron.Face.Triangle;
 import com.vzome.core.math.symmetry.Direction;
@@ -251,6 +250,7 @@ public class Polyhedron implements Cloneable
         public List<Triangle> getTriangles()
         {
             int arity = this .size();
+            RealVector normal = this .mNormal .toRealVector();
             ArrayList<Triangle> result = new ArrayList<>();
             int v0 = -1, v1 = -1;
             for ( int j = 0; j < arity; j++ ){
@@ -265,7 +265,7 @@ public class Polyhedron implements Cloneable
                 }
                 else
                 {
-                    Triangle triangle = new Triangle( v0, v1, index, this .mNormal .toRealVector() );
+                    Triangle triangle = new Triangle( v0, v1, index, normal );
                     result .add( triangle );
                     v1 = index;
                 }
@@ -384,20 +384,20 @@ public class Polyhedron implements Cloneable
     }
 
     @JsonProperty( "polygons" )
-    @JsonView( Polygon.Views.Polygons.class )
+    @JsonView( Views.Polygons.class )
     public Set<Face> getFaceSet(){
         return m_faces;
     }
 
     @JsonProperty( "id" )
-    @JsonView( Polygon.Views.Triangles.class )
+    @JsonView( Views.Triangles.class )
     public UUID getGuid()
     {
         return this .guid;
     }
 
     @JsonProperty( "faces" )
-    @JsonView( Polygon.Views.Triangles.class )
+    @JsonView( Views.Triangles.class )
     public List<Face.Triangle> getTriangleFaces()
     {
         ArrayList<Face.Triangle> result = new ArrayList<>();
@@ -410,7 +410,10 @@ public class Polyhedron implements Cloneable
     // These views will be used for JSON serialization
     public static class Views {
         public interface UnityMesh{}
+        public interface Triangles{}
+        public interface Polygons{}
     }
+
 
     @JsonProperty( "triangles" )
     @JsonView( Views.UnityMesh.class )

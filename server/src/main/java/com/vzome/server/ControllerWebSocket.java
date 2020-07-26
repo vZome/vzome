@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.render.Scene;
+import com.vzome.desktop.controller.RemoteClientRendering;
 import com.vzome.desktop.controller.RenderingViewer;
 
 public class ControllerWebSocket implements WebSocketListener
@@ -121,7 +122,7 @@ public class ControllerWebSocket implements WebSocketListener
                     publish( node );
                 }
             } );
-            this .docController .attachViewer( clientRendering, null );
+            this .docController .getModel() .getRenderedModel() .addListener( clientRendering );
             try {
                 this .docController .actionPerformed( this, "finish.load" );
                 publish( "render", "flush" );

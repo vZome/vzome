@@ -10,14 +10,13 @@ class FileOpener extends Component {
 	
 	// On file select (from the pop up) 
 	onFileChange = event => { 
+    
+    const selected = event.target.files[0]
+
     // Update the state 
-    this.setState( { selectedFile: event.target.files[0] } ); 
-	}; 
-	
-	// On file upload (click the upload button) 
-	onFileUpload = () => {    
-    // Details of the uploaded file 
-    console.log(this.state.selectedFile)
+    this.setState( { selectedFile: selected } )
+
+    console.log( selected )
     
     // read the file
     const reader = new FileReader();
@@ -29,22 +28,14 @@ class FileOpener extends Component {
       window.cheerpjAddStringFile( path, text )
       console.log( "Loaded " + path )
 
-      const classpath = "/app/desktop-7.0.jar" +
-        ":/app/core-7.0.jar" +
-        ":/app/jackson-annotations-2.9.3.jar" +
-        ":/app/jackson-core-2.9.5.jar" +
-        ":/app/jackson-databind-2.9.5.jar" +
-        ":/app/javax.json-1.0.4.jar" +
-        ":/app/vecmath-1.6.0-final.jar"
-
-      window.cheerpjRunMain( "org.vorthmann.zome.app.impl.ApplicationController", classpath, path )
+      window.cjCall( "com.vzome.cheerpj.RemoteClientShim", "openFile", path )
     }
 
     // file reading failed
     reader.onerror = () => alert('Error : Failed to read file')
 
     // read as text file
-    reader.readAsText( this.state.selectedFile )
+    reader.readAsText( selected )
 	}
 	
 	// File content to be displayed after 
@@ -82,9 +73,6 @@ class FileOpener extends Component {
         </h3> 
         <div> 
           <input type="file" onChange={this.onFileChange} accept=".vZome" /> 
-          <button onClick={this.onFileUpload}> 
-          Open 
-          </button> 
         </div> 
       {this.fileData()} 
       </div> 

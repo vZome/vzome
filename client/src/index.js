@@ -145,6 +145,20 @@ window.cheerpjInit( {
   javaProperties: [ "java.protocol.handler.pkgs=com.leaningtech.handlers" ]
 } )
 
+const classpath = "/app/desktop-7.0.jar" +
+":/app/core-7.0.jar" +
+":/app/jackson-annotations-2.9.3.jar" +
+":/app/jackson-core-2.9.5.jar" +
+":/app/jackson-databind-2.9.5.jar" +
+":/app/javax.json-1.0.4.jar" +
+":/app/vecmath-1.6.0-final.jar"
+
+window.cheerpjRunMain( "com.vzome.cheerpj.RemoteClientShim", classpath )
+
+// I get a failure later (after file open) if I don't do this.
+//  Something in the class loading triggers AWT, perhaps, so I see
+//  "Graphics system is initializing" before the crash.
+window.cheerpjCreateDisplay( 1,1 )
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
