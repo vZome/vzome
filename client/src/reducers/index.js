@@ -1,6 +1,6 @@
 
 import { ActionTypes } from "redux-simple-websocket"
-import { OPEN_URL, CLOSE_VIEW, JAVA_MESSAGE } from '../actions'
+import { URL_PROVIDED, VIEW_CLOSED, JAVA_MESSAGE_RECEIVED } from '../action-events'
 import { DEFAULT_MODEL } from '../models/dodecahedron'
 
 const handleMessage = ( state, parsed ) => {
@@ -54,13 +54,13 @@ const reducer = (state = {
 }, action) => {
   switch (action.type) {
 
-    case OPEN_URL:
+    case URL_PROVIDED:
       return {
         ...state,
         modelUrl: action.payload
       }
 
-    case CLOSE_VIEW:
+    case VIEW_CLOSED:
       return {
         ...state,
         modelUrl: "",
@@ -97,7 +97,7 @@ const reducer = (state = {
     case ActionTypes.RECEIVED_WEBSOCKET_DATA:
       return handleMessage( state, action.payload );
 
-    case JAVA_MESSAGE:
+    case JAVA_MESSAGE_RECEIVED:
       return handleMessage( state, action.payload );
       
     default:

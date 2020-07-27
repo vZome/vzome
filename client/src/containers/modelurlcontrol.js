@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { openUrl, closeView } from '../actions'
+import { urlProvided, viewClosed } from '../action-events'
 import { connectWebSocketAction, closeWebSocketAction } from "redux-simple-websocket"
 
 const BASE_URL = 'wss://vzome-websocket.herokuapp.com'
@@ -22,7 +22,7 @@ let ModelUrlControl = ({ enabled, dispatch }) => {
         if (!input.value.trim()) {
           return
         }
-        dispatch( openUrl( encodeUrl( input.value ) ) )
+        dispatch( urlProvided( encodeUrl( input.value ) ) )
         dispatch( connectWebSocketAction( encodeUrl( input.value ) ) )
       }}>
         <input ref={node => {
@@ -33,7 +33,7 @@ let ModelUrlControl = ({ enabled, dispatch }) => {
         </button>
         <button disabled={enabled} onClick={() => {
           dispatch( closeWebSocketAction( encodeUrl( input.value ) ) )
-          dispatch( closeView() )
+          dispatch( viewClosed() )
         }}>
           Close
         </button>

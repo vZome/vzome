@@ -65,7 +65,7 @@ public class RemoteClientShim
     
     private void sendToJavascript( String message )
     {
-        Global .jsCallS( "globalMessage", Global.JSString( message ) );
+        Global .jsCallS( "dispatchJsonMessage", Global.JSString( message ) );
     }
 
     private void publish( JsonNode node )

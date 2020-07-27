@@ -9,7 +9,7 @@ import { render } from 'react-dom'
 import reducer from './reducers'
 import logger from 'redux-logger'
 import { createSimpleWebSocketMiddleware } from "redux-simple-websocket"
-import { messageReceived } from './actions'
+import { javaMessageReceived } from './action-events'
 
 const store = createStore( reducer,
 								applyMiddleware( createSimpleWebSocketMiddleware(), logger ) );
@@ -18,9 +18,9 @@ const store = createStore( reducer,
 //   from Java back into Javascript.  The simplest way to
 //   provide a global function that can dispatch is this,
 //   attaching it to window.
-window.globalMessage = (s) => {
+window.dispatchJsonMessage = (s) => {
   const message = JSON.parse( s )
-  store.dispatch( messageReceived( message ) )
+  store.dispatch( javaMessageReceived( message ) )
 }
 
 render(
