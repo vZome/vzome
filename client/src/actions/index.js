@@ -1,10 +1,10 @@
 
-
 export const OPEN_URL = 'OPEN_URL'
 export const CLOSE_VIEW = 'CLOSE_VIEW'
 export const SET_BACKGROUND = 'SET_BACKGROUND'
 export const ADD_STRUT = 'ADD_STRUT'
 export const REMOVE_STRUT = 'REMOVE_STRUT'
+export const JAVA_MESSAGE = 'JAVA_MESSAGE'
 
 export const openUrl = (url) => ({
   type: OPEN_URL,
@@ -22,4 +22,9 @@ export const closeView = () => ({
 
 export const undo = () => ({
   type: CLOSE_VIEW
+})
+
+export const messageReceived = (message) => ({
+  type: JAVA_MESSAGE,
+  payload: message
 })

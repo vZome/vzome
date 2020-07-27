@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.leaningtech.client.Global;
 import com.vzome.core.render.Scene;
 import com.vzome.desktop.controller.RemoteClientRendering;
 import com.vzome.desktop.controller.RenderingViewer;
@@ -59,11 +60,18 @@ public class RemoteClientShim
             public void clearError() {}
         });
     }
+    
+//    public native void sendToJavascript( String message );
+    
+    private void sendToJavascript( String message )
+    {
+        Global .jsCallS( "globalMessage", Global.JSString( message ) );
+    }
 
     private void publish( JsonNode node )
     {
         try {
-            System.out.println( this .objectWriter .writeValueAsString( node ) );
+            sendToJavascript( this .objectWriter .writeValueAsString( node ) );
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -74,7 +82,7 @@ public class RemoteClientShim
         ObjectNode wrapper = this .objectMapper .createObjectNode();
         wrapper .put( key, value );
         try {
-            System.out.println( this .objectWriter .writeValueAsString( wrapper ) );
+            sendToJavascript( this .objectWriter .writeValueAsString( wrapper ) );
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

@@ -79,7 +79,8 @@ public class JsonMapper
             for ( Polyhedron.Face.Triangle triangle : shape .getTriangleFaces() ) {
                 ObjectNode tNode = this .objectMapper .createObjectNode();
                 tNode .set( "vertices", this .objectMapper .valueToTree( triangle .vertices ) );
-                tNode .set( "normal", this .getVectorNode( triangle .normal ) );
+                // Sending normals bloats the JSON to the point where it is untenable for CheerpJ cjStringJavaToJs
+                // tNode .set( "normal", this .getVectorNode( triangle .normal ) );
                 arrayNode .add( tNode );
             }
             node .set( "faces", arrayNode );

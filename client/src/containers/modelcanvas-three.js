@@ -13,10 +13,19 @@ const Controls = props => {
   return <trackballControls ref={ref} args={[camera, gl.domElement]} {...props} />
 }
 
+const computeNormal = ( vertices, face ) => {
+  const v0 = vertices[ face.vertices[0] ]
+  const v1 = vertices[ face.vertices[1] ]
+  const v2 = vertices[ face.vertices[2] ]
+  const e1 = new THREE.Vector3().subVectors( v1, v0 )
+  const e2 = new THREE.Vector3().subVectors( v2, v0 )
+  return new THREE.Vector3().crossVectors( e1, e2 )
+}
+
 const Shape = ( { vertices, faces } ) => (
   <geometry attach="geometry"
     vertices={ vertices.map( v => new THREE.Vector3( v.x, v.y, v.z ) ) }
-    faces={ faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], new THREE.Vector3( f.normal.x, f.normal.y, f.normal.z ) ) ) }
+    faces={ faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], computeNormal( vertices, f ) ) ) }
     onUpdate={self => (self.verticesNeedUpdate = true)}
   />
 )

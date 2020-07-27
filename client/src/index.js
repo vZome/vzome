@@ -9,9 +9,19 @@ import { render } from 'react-dom'
 import reducer from './reducers'
 import logger from 'redux-logger'
 import { createSimpleWebSocketMiddleware } from "redux-simple-websocket"
+import { messageReceived } from './actions'
 
 const store = createStore( reducer,
 								applyMiddleware( createSimpleWebSocketMiddleware(), logger ) );
+
+// CheerpJ Global.jsCallS requires a global function to call
+//   from Java back into Javascript.  The simplest way to
+//   provide a global function that can dispatch is this,
+//   attaching it to window.
+window.globalMessage = (s) => {
+  const message = JSON.parse( s )
+  store.dispatch( messageReceived( message ) )
+}
 
 render(
   <Provider store={store}>
@@ -146,6 +156,7 @@ window.cheerpjInit( {
 } )
 
 const classpath = "/app/desktop-7.0.jar" +
+":/app/cheerpj-dom.jar" +
 ":/app/core-7.0.jar" +
 ":/app/jackson-annotations-2.9.3.jar" +
 ":/app/jackson-core-2.9.5.jar" +

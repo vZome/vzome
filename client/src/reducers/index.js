@@ -1,7 +1,48 @@
 
 import { ActionTypes } from "redux-simple-websocket"
-import { OPEN_URL, CLOSE_VIEW } from '../actions'
+import { OPEN_URL, CLOSE_VIEW, JAVA_MESSAGE } from '../actions'
 import { DEFAULT_MODEL } from '../models/dodecahedron'
+
+const handleMessage = ( state, parsed ) => {
+  if ( parsed.render ) {
+    console.log( parsed );
+    if ( parsed.render === 'instance' ) {
+      return {
+        ...state,
+        instances: [
+          ...state.instances,
+          parsed
+        ]
+      }
+    } else if ( parsed.render === 'shape' ) {
+      return {
+        ...state,
+        shapes: [
+          ...state.shapes,
+          parsed
+        ]
+      }
+    } else if ( parsed.render === 'delete' ) {
+      let index = state.instances.findIndex( item => ( item.id === parsed.id ) )
+      if ( index >= 0 ) {
+        console.log( 'deleting instance' );
+        return {
+          ...state,
+          instances: [
+            ...state.instances.slice(0,index),
+            ...state.instances.slice(index+1)
+          ]
+        }
+      }
+      return state
+    } else {
+      return state
+    }
+  } else {
+    console.log( parsed.info );
+    return state
+  }
+}
 
 const reducer = (state = {
   modelUrl: "",
@@ -53,49 +94,11 @@ const reducer = (state = {
       }
 
     case ActionTypes.RECEIVED_WEBSOCKET_DATA:
-      const parsed = action.payload;
-      if ( parsed.render ) {
-        console.log( parsed );
-        if ( parsed.render === 'instance' ) {
-          return {
-            ...state,
-            instances: [
-              ...state.instances,
-              parsed
-            ]
-          }
-        } else if ( parsed.render === 'shape' ) {
-          return {
-            ...state,
-            shapes: [
-              ...state.shapes,
-              {
-                ...parsed,
-                vertices: parsed.vertices.map( ([x,y,z]) => ({x,y,z}) )
-              }
-            ]
-          }
-        } else if ( parsed.render === 'delete' ) {
-          let index = state.instances.findIndex( item => ( item.id === parsed.id ) )
-          if ( index >= 0 ) {
-            console.log( 'deleting instance' );
-            return {
-              ...state,
-              instances: [
-                ...state.instances.slice(0,index),
-                ...state.instances.slice(index+1)
-              ]
-            }
-          }
-          return state
-        } else {
-          return state
-        }
-      } else {
-        console.log( parsed.info );
-        return state
-      }
+      return handleMessage( state, action.payload );
 
+    case JAVA_MESSAGE:
+      return handleMessage( state, action.payload );
+      
     default:
       return state
   }
