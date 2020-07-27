@@ -15,6 +15,7 @@ const handleMessage = ( state, parsed ) => {
         ]
       }
     } else if ( parsed.render === 'shape' ) {
+      // note, we don't need to map the vertices any more
       return {
         ...state,
         shapes: [
