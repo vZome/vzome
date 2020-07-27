@@ -13,6 +13,9 @@ class FileOpener extends Component {
     
     const selected = event.target.files[0]
 
+    if ( !selected )
+      return;
+
     // Update the state 
     this.setState( { selectedFile: selected } )
 
@@ -46,13 +49,7 @@ class FileOpener extends Component {
       
       return ( 
       <div> 
-        <h2>File Details:</h2> 
         <p>File Name: {this.state.selectedFile.name}</p> 
-        <p>File Type: {this.state.selectedFile.type}</p> 
-        <p> 
-        Last Modified:{" "} 
-        {this.state.selectedFile.lastModifiedDate.toDateString()} 
-        </p> 
       </div> 
       )
     } else { 
