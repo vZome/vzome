@@ -36,6 +36,11 @@ const handleMessage = ( state, parsed ) => {
         }
       }
       return state
+    } else if ( parsed.render === 'flush' ) {
+      return {
+        ...state,
+        renderingOn : true
+      }
     } else {
       return state
     }
@@ -47,8 +52,8 @@ const handleMessage = ( state, parsed ) => {
 
 const reducer = (state = {
   modelUrl: "",
-  selectedFile: "",
   javaReady: false,
+  renderingOn: true,
   connectionLive: false,
   instances: DEFAULT_MODEL.instances,
   shapes: DEFAULT_MODEL.shapes,
@@ -62,16 +67,16 @@ const reducer = (state = {
         modelUrl: action.payload
       }
 
-      case JAVA_CODE_LOADED:
-        return {
-          ...state,
-          javaReady: true
-        }
-  
-      case FILE_SELECTED:
+    case JAVA_CODE_LOADED:
       return {
         ...state,
-        selectedFile: action.payload,
+        javaReady: true
+      }
+
+    case FILE_SELECTED:
+      return {
+        ...state,
+        renderingOn: false,
         instances: [],
         shapes: []
       }

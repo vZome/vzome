@@ -59,7 +59,7 @@ const ModelCanvas = ( { instances, shapes } ) => {
 
 const select = (state) => ({
   shapes: state.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
-  instances: state.instances
+  instances: state.renderingOn? state.instances : []
 })
 
 export default connect(select)(ModelCanvas)
