@@ -26,7 +26,7 @@ const Shape = ( { vertices, faces } ) => (
   <geometry attach="geometry"
     vertices={ vertices.map( v => new THREE.Vector3( v.x, v.y, v.z ) ) }
     faces={ faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], computeNormal( vertices, f ) ) ) }
-    onUpdate={self => (self.verticesNeedUpdate = true)}
+    onUpdate={ self => (self.verticesNeedUpdate = true) }
   />
 )
 
