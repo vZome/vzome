@@ -1,6 +1,6 @@
 
 import { ActionTypes } from "redux-simple-websocket"
-import { URL_PROVIDED, FILE_SELECTED, VIEW_CLOSED, JAVA_MESSAGE_RECEIVED } from '../action-events'
+import { URL_PROVIDED, FILE_SELECTED, VIEW_CLOSED, JAVA_MESSAGE_RECEIVED, JAVA_CODE_LOADED } from '../action-events'
 import { DEFAULT_MODEL } from '../models/dodecahedron'
 
 const handleMessage = ( state, parsed ) => {
@@ -48,6 +48,7 @@ const handleMessage = ( state, parsed ) => {
 const reducer = (state = {
   modelUrl: "",
   selectedFile: "",
+  javaReady: false,
   connectionLive: false,
   instances: DEFAULT_MODEL.instances,
   shapes: DEFAULT_MODEL.shapes,
@@ -61,7 +62,13 @@ const reducer = (state = {
         modelUrl: action.payload
       }
 
-    case FILE_SELECTED:
+      case JAVA_CODE_LOADED:
+        return {
+          ...state,
+          javaReady: true
+        }
+  
+      case FILE_SELECTED:
       return {
         ...state,
         selectedFile: action.payload,

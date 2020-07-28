@@ -13,6 +13,7 @@ export const FILE_SELECTED = 'FILE_SELECTED'
 export const VIEW_CLOSED = 'VIEW_CLOSED'
 export const BACKGROUND_SET = 'BACKGROUND_SET'
 export const JAVA_MESSAGE_RECEIVED = 'JAVA_MESSAGE'
+export const JAVA_CODE_LOADED = 'JAVA_CODE_LOADED'
 
 export const urlProvided = (url) => dispatch => {
   const encodedUrl = encodeUrl( url )
@@ -34,6 +35,10 @@ export const viewClosed = (url) => dispatch => {
 export const backgroundSet = (color) => ({
   type: BACKGROUND_SET,
   payload: color
+})
+
+export const javaCodeLoaded = () => ({
+  type: JAVA_CODE_LOADED
 })
 
 export const javaMessageReceived = (message) => ({

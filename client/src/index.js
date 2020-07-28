@@ -9,7 +9,7 @@ import { render } from 'react-dom'
 import logger from 'redux-logger'
 import thunk from 'redux-thunk'
 import { createSimpleWebSocketMiddleware } from "redux-simple-websocket"
-import { javaMessageReceived } from './action-events'
+import { javaMessageReceived, javaCodeLoaded } from './action-events'
 import rootReducer from './reducers'
 
 const store = createStore( rootReducer,
@@ -156,16 +156,13 @@ window.cheerpjInit( {
   javaProperties: [ "java.protocol.handler.pkgs=com.leaningtech.handlers" ]
 } )
 
-const classpath = "/app/desktop-7.0.jar" +
-":/app/cheerpj-dom.jar" +
-":/app/core-7.0.jar" +
-":/app/jackson-annotations-2.9.3.jar" +
-":/app/jackson-core-2.9.5.jar" +
-":/app/jackson-databind-2.9.5.jar" +
-":/app/javax.json-1.0.4.jar" +
-":/app/vecmath-1.6.0-final.jar"
+const pp = "/app" + window.location.pathname + "/"
 
-window.cheerpjRunMain( "com.vzome.cheerpj.RemoteClientShim", classpath )
+const classpath = `${pp}desktop-7.0.jar:${pp}cheerpj-dom.jar:${pp}core-7.0.jar:${pp}jackson-annotations-2.9.3.jar:${pp}jackson-core-2.9.5.jar:${pp}jackson-databind-2.9.5.jar:${pp}javax.json-1.0.4.jar:${pp}vecmath-1.6.0-final.jar`
+
+window.cheerpjRunMain( "com.vzome.cheerpj.RemoteClientShim", classpath ).then( () => {
+  store.dispatch( javaCodeLoaded() )
+} )
 
 // I get a failure later (after file open) if I don't do this.
 //  Something in the class loading triggers AWT, perhaps, so I see

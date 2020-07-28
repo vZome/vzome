@@ -3,7 +3,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { fileSelected } from '../action-events'
 
-let FileOpener = ({ selectedFile, loadFile }) => {
+let FileOpener = ({ enabled, loadFile }) => {
 		
   return ( 
     <div> 
@@ -17,23 +17,14 @@ let FileOpener = ({ selectedFile, loadFile }) => {
               loadFile( selected )
             }
           }
-          accept=".vZome" /> 
+          accept=".vZome" disabled={!enabled} /> 
       </div> 
-      {selectedFile
-        ? <div> 
-            <p>File Name: {selectedFile.name}</p> 
-          </div>
-        : <div> 
-            <br /> 
-            <h4>Choose a vZome file</h4> 
-          </div>
-      }
     </div> 
   )
 } 
 
 const select = (state) => ({
-  selectedFile: state.selectedFile
+  enabled: state.javaReady
 })
 
 const boundEventActions = {

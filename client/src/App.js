@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 // import ModelUrlControl from './containers/modelurlcontrol.js';
@@ -11,8 +10,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1 className="App-title">Welcome to vZome-React</h1>
+        <h1 className="App-title">vZome Online Viewer</h1>
       </header>
       {/* <ModelUrlControl/> */}
       <ModelCanvas/>
