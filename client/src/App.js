@@ -10,7 +10,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1 className="App-title">vZome Online Viewer</h1>
+        <h1 className="App-title">vZome Online Viewer (beta)</h1>
       </header>
       {/* <ModelUrlControl/> */}
       <ModelCanvas/>

@@ -23,10 +23,25 @@ const handleMessage = ( state, parsed ) => {
           parsed
         ]
       }
+    } else if ( parsed.render === 'changeColor' ) {
+      let index = state.instances.findIndex( item => ( item.id === parsed.id ) )
+      if ( index >= 0 ) {
+        return {
+          ...state,
+          instances: [
+            ...state.instances.slice(0,index),
+            {
+              ...state.instances[ index ],
+              color: parsed.color
+            },
+            ...state.instances.slice(index+1)
+          ]
+        }
+      }
+      return state
     } else if ( parsed.render === 'delete' ) {
       let index = state.instances.findIndex( item => ( item.id === parsed.id ) )
       if ( index >= 0 ) {
-        console.log( 'deleting instance' );
         return {
           ...state,
           instances: [

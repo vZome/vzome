@@ -57,14 +57,21 @@ public class RemoteClientRendering implements RenderingChanges
         sendJson( node );
 	}
 
+    @Override
+    public void colorChanged( RenderedManifestation rm )
+    {
+        ObjectNode node = this .mapper .getObjectMapper() .createObjectNode();
+        node .put( "render", "changeColor" );
+        node .put( "id", rm .getGuid() .toString() );
+        node .put( "color", rm .getColor() .toWebString() );
+        sendJson( node );
+    }
+
 	@Override
 	public void manifestationSwitched(RenderedManifestation from, RenderedManifestation to) {}
 
 	@Override
 	public void glowChanged(RenderedManifestation manifestation) {}
-
-	@Override
-	public void colorChanged(RenderedManifestation manifestation) {}
 
 	@Override
 	public void locationChanged(RenderedManifestation manifestation) {}
