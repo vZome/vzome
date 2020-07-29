@@ -1,9 +1,8 @@
 import React from 'react';
 import './App.css';
 
-// import ModelUrlControl from './containers/modelurlcontrol.js';
-import ModelCanvas from './containers/modelcanvas-three.js';
-import FileOpener from './containers/fileopener.js';
+import ModelCanvas from './components/modelcanvas-three.js';
+import FileOpener from './components/fileopener.js';
 
 function App() {
   return (
