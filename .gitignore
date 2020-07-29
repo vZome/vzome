@@ -42,3 +42,5 @@ oculus/Assets/Oculus
 oculus/.vscode
 *.jar
 *.jar.js
+client/app.tgz
+client/app
