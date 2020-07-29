@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.leaningtech.client.Global;
+import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
 import com.vzome.desktop.controller.RemoteClientRendering;
 import com.vzome.desktop.controller.RenderingViewer;
@@ -101,7 +102,9 @@ public class RemoteClientShim implements RemoteClientRendering.EventDispatcher
         // TODO: define a callback to support the ControllerWebSocket case?
 //        consumer.start();
         RemoteClientRendering clientRendering = new RemoteClientRendering( this );
-        docController .getModel() .getRenderedModel() .addListener( clientRendering );
+        RenderedModel renderedModel = docController .getModel() .getRenderedModel();
+        renderedModel .addListener( clientRendering );
+        RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, clientRendering ); // get the origin ball
         try {
             docController .actionPerformed( SHIM, "finish.load" );
             dispatchEvent( "MODEL_LOADED", "" );
