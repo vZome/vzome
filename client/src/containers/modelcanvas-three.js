@@ -42,12 +42,12 @@ const Instance = ( { position, rotation, shape, color } ) => {
   )
 }
 
-const ModelCanvas = ( { instances, shapes } ) => {
+const ModelCanvas = ( { background, instances, shapes } ) => {
   return(
     <Canvas
         gl={{ antialias: true, alpha: false }}
         camera={{ position: [0, 0, 50], fov: 45 }}
-        onCreated={({ scene }) => { scene.background = new THREE.Color('#99ccff') }}>
+        onCreated={({ scene }) => { scene.background = new THREE.Color( background ) }}>
       <ambientLight intensity={0.4} />
       <directionalLight color={0xffffff} intensity={0.5} position={[0,0,20]} lookAt={[0,0,0]} />
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
@@ -58,8 +58,9 @@ const ModelCanvas = ( { instances, shapes } ) => {
 }
 
 const select = (state) => ({
-  shapes: state.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
-  instances: state.renderingOn? state.instances : []
+  background: state.vzomejava.background,
+  shapes: state.vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
+  instances: state.vzomejava.renderingOn? state.vzomejava.instances : []
 })
 
 export default connect(select)(ModelCanvas)

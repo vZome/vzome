@@ -18,7 +18,7 @@ import com.vzome.core.render.Scene;
 import com.vzome.desktop.controller.RemoteClientRendering;
 import com.vzome.desktop.controller.RenderingViewer;
 
-public class RemoteClientShim
+public class RemoteClientShim implements RemoteClientRendering.EventDispatcher
 {
     private static RemoteClientShim SHIM;
 
@@ -60,65 +60,54 @@ public class RemoteClientShim
             public void clearError() {}
         });
     }
-    
-//    public native void sendToJavascript( String message );
-    
-    private void sendToJavascript( String message )
-    {
-        Global .jsCallS( "dispatchJsonMessage", Global.JSString( message ) );
-    }
-
-    private void publish( JsonNode node )
+        
+    private void sendToJavascript( JsonNode event )
     {
         try {
-            sendToJavascript( this .objectWriter .writeValueAsString( node ) );
+            String eventStr = this .objectWriter .writeValueAsString( event );
+            Global .jsCallS( "dispatchToRedux", Global.JSString( eventStr ) );
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
 
-    private void publish( String key, String value )
+    public void dispatchEvent( String type, JsonNode payload )
     {
-        ObjectNode wrapper = this .objectMapper .createObjectNode();
-        wrapper .put( key, value );
-        try {
-            sendToJavascript( this .objectWriter .writeValueAsString( wrapper ) );
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        ObjectNode event = this .objectMapper .createObjectNode();
+        event .put( "type", type );
+        event .set( "payload", payload );
+        sendToJavascript( event );
+    }
+
+    private void dispatchEvent( String type, String payload )
+    {
+        ObjectNode event = this .objectMapper .createObjectNode();
+        event .put( "type", type );
+        event .put( "payload", payload );
+        sendToJavascript( event );
     }
     
     private void renderDocument( String path )
     {
         DocumentController docController = (DocumentController) SHIM .applicationController .getSubController( path );
         if ( docController == null ) {
-            publish( "error", "Document load FAILURE: " + path );
+            dispatchEvent( "LOAD_FAILED", "Document load FAILURE: " + path );
             return;
         }
         String bkgdColor = docController .getProperty( "backgroundColor" );
         if ( bkgdColor != null ) {
-            ObjectNode wrapper = SHIM .objectMapper .createObjectNode();
-            wrapper .put( "render", "background" );
-            wrapper .put( "color", bkgdColor );
-            publish( wrapper );
+            dispatchEvent( "BACKGROUND_SET", bkgdColor );
         }
         // TODO: define a callback to support the ControllerWebSocket case?
 //        consumer.start();
-        RemoteClientRendering clientRendering = new RemoteClientRendering( new RemoteClientRendering.JsonSink() {
-            
-            @Override
-            public void sendJson( JsonNode node ) {
-                publish( node );
-            }
-        } );
+        RemoteClientRendering clientRendering = new RemoteClientRendering( this );
         docController .getModel() .getRenderedModel() .addListener( clientRendering );
         try {
             docController .actionPerformed( SHIM, "finish.load" );
-            publish( "render", "flush" );
-            publish( "info", "Document load SUCCESS" );
+            dispatchEvent( "MODEL_LOADED", "" );
         } catch ( Exception e ) {
             e.printStackTrace();
-            publish( "error", "Document load unknown FAILURE}" );
+            dispatchEvent( "LOAD_FAILED", "Document load unknown FAILURE" );
         }
     }
     

@@ -1,6 +1,5 @@
 
-
-export const DEFAULT_MODEL = {
+export default {
    "shapes":[
       {
          "id":"e03637d8-5b38-4a85-a2c2-0b738320708e",

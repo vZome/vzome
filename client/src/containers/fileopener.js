@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { fileSelected } from '../action-events'
+import { fileSelected } from '../bundles/files'
 
 let FileOpener = ({ enabled, loadFile }) => {
 		
@@ -15,8 +15,7 @@ let FileOpener = ({ enabled, loadFile }) => {
             const selected = e.target.files && e.target.files[0]
             if ( selected )
               loadFile( selected )
-            }
-          }
+          } }
           accept=".vZome" disabled={!enabled} /> 
       </div> 
     </div> 
@@ -24,7 +23,7 @@ let FileOpener = ({ enabled, loadFile }) => {
 } 
 
 const select = (state) => ({
-  enabled: state.javaReady
+  enabled: state.jre.javaReady
 })
 
 const boundEventActions = {

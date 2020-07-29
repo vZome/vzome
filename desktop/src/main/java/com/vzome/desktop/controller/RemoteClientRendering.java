@@ -9,23 +9,18 @@ import com.vzome.core.render.Shapes;
 
 public class RemoteClientRendering implements RenderingChanges
 {
-    private JsonSink queue;
+    private EventDispatcher dispatcher;
     
     private final JsonMapper mapper = new JsonMapper();
 	
-	public interface JsonSink
+	public interface EventDispatcher
 	{
-	    void sendJson( JsonNode node );
+	    void dispatchEvent( String type, JsonNode node );
 	}
 	
-	private void sendJson( JsonNode node )
+	public RemoteClientRendering( EventDispatcher dispatcher )
 	{
-	    this .queue .sendJson( node );
-	}
-
-	public RemoteClientRendering( JsonSink queue )
-	{
-        this .queue = queue;
+        this .dispatcher = dispatcher;
 	}
 
 	@Override
@@ -40,11 +35,10 @@ public class RemoteClientRendering implements RenderingChanges
             if ( shapeNode != null )
             {
                 shapeNode .put( "render", "shape" );
-                sendJson( shapeNode );
+                this .dispatcher .dispatchEvent( "SHAPE_DEFINED", shapeNode );
             }
-            node .put( "render", "instance" );
             node .put( "id", rm .getGuid() .toString() );
-            sendJson( node );
+            this .dispatcher .dispatchEvent( "INSTANCE_ADDED", node );
         }
 	}
 
@@ -54,7 +48,7 @@ public class RemoteClientRendering implements RenderingChanges
         ObjectNode node = this .mapper .getObjectMapper() .createObjectNode();
         node .put( "render", "delete" );
         node .put( "id", rm .getGuid() .toString() );
-        sendJson( node );
+        this .dispatcher .dispatchEvent( "INSTANCE_REMOVED", node );
 	}
 
     @Override
@@ -64,7 +58,7 @@ public class RemoteClientRendering implements RenderingChanges
         node .put( "render", "changeColor" );
         node .put( "id", rm .getGuid() .toString() );
         node .put( "color", rm .getColor() .toWebString() );
-        sendJson( node );
+        this .dispatcher .dispatchEvent( "INSTANCE_COLORED", node );
     }
 
 	@Override
