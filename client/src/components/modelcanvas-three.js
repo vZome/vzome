@@ -1,16 +1,16 @@
 
 import React, { useRef } from 'react';
 import { connect } from 'react-redux'
-import { Canvas, useThree, useRender, extend } from 'react-three-fiber';
+import { Canvas, useThree, extend, useFrame } from 'react-three-fiber';
 import * as THREE from 'three';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 
 extend({ TrackballControls })
 const Controls = props => {
   const { gl, camera } = useThree()
-  const ref = useRef()
-  useRender(() => ref.current.update())
-  return <trackballControls ref={ref} args={[camera, gl.domElement]} {...props} />
+  const controls = useRef()
+  useFrame(() => controls.current.update())
+  return <trackballControls ref={controls} args={[camera, gl.domElement]} {...props} />
 }
 
 const computeNormal = ( vertices, face ) => {
@@ -42,14 +42,23 @@ const Instance = ( { position, rotation, shape, color } ) => {
   )
 }
 
+const Scene = ( { background } ) => {
+  useFrame( ({scene}) => { scene.background = new THREE.Color( background ) } )
+  console.log( background )
+  return (
+    <>
+      <ambientLight intensity={0.4} />
+      <directionalLight color={0xffffff} intensity={0.5} position={[0,0,20]} lookAt={[0,0,0]} />
+    </>
+  )
+}
+
 const ModelCanvas = ( { background, instances, shapes } ) => {
   return(
     <Canvas
         gl={{ antialias: true, alpha: false }}
-        camera={{ position: [0, 0, 50], fov: 45 }}
-        onCreated={({ scene }) => { scene.background = new THREE.Color( background ) }}>
-      <ambientLight intensity={0.4} />
-      <directionalLight color={0xffffff} intensity={0.5} position={[0,0,20]} lookAt={[0,0,0]} />
+        camera={{ position: [0, 0, 50], fov: 45 }}>
+      <Scene background={background} />
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
       { instances.map( ( { id, position, color, rotation, shape } ) => 
           <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
