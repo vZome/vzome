@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -23,6 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -99,6 +102,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
     private Lights sceneLighting;
     private MouseTool modelModeMainTrackball;
     private Component modelCanvas;
+    private Dimension canvasSize = new Dimension( 700, 700 );
     private boolean drawNormals = false;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
@@ -147,6 +151,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
      * 
      * edit /Library/Java/Home/lib/logging.properties
      */
+    private static final Logger logger = Logger .getLogger( "org.vorthmann.zome.app.impl" );
 
     public DocumentController( DocumentModel document, ApplicationController app, Properties props )
     {
@@ -400,6 +405,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
     {
     		// This is called on a UI thread!
         this .modelCanvas = canvas;
+        this .canvasSize = canvas .getSize();
         this .imageCaptureViewer = viewer;
         
         // clicks become select or deselect all
@@ -647,8 +653,8 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
                 break;
     
-            case "copy.observable":
-                setProperty( "clipboard", documentModel .copyRenderedModel( "observable" ) );
+            case "copy.shapes":
+                setProperty( "clipboard", documentModel .copyRenderedModel( "shapes" ) );
                 break;
 
             case "paste":
@@ -686,6 +692,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 documentModel .doEdit( "LoadVEF", params );
             }
             break;
+            
+            case "export.dae":
+                this .doFileAction( action, null );
+                break;
 
             default:
                 if ( action.startsWith( "setSymmetry." ) ) {
@@ -772,6 +782,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
     public void doFileAction( String command, final File file )
     {
         // TODO set output file types
+        if ( logger .isLoggable( Level.FINE ) ) logger .fine( String.format( "doFileAction: %s %s", command, file .getAbsolutePath() ) );
         try {
             final Colors colors = mApp.getColors();
 
@@ -833,7 +844,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
             if ( "capture-animation" .equals( command ) )
             {
                 File dir = file .isDirectory()? file : file .getParentFile();
-                Dimension size = this .modelCanvas .getSize();              
+                Dimension size = this .canvasSize;
                 String html = readResource( "org/vorthmann/zome/app/animation.html" );
                 html = html .replaceFirst( "%%WIDTH%%", Integer .toString( size .width ) );
                 html = html .replaceFirst( "%%HEIGHT%%", Integer .toString( size .height ) );
@@ -855,7 +866,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             if ( command.startsWith( "export2d." ) )
             {
-                Dimension size = this .modelCanvas .getSize();              
+                Dimension size = this .canvasSize;
                 String format = command .substring( "export2d." .length() ) .toLowerCase();
                 Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
                 documentModel .export2d( snapshot, format, file, this .drawOutlines, false );
@@ -864,9 +875,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             if ( command.startsWith( "export." ) )
             {
-                Writer out = new FileWriter( file );
-                Dimension size = this .modelCanvas .getSize();              
+                Dimension size = this .canvasSize;
+                Writer out = null;
                 try {
+                    out = new FileWriter( file );
                     String format = command .substring( "export." .length() ) .toLowerCase();
                     Exporter3d exporter = documentModel .getNaiveExporter( format, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
@@ -881,8 +893,15 @@ public class DocumentController extends DefaultController implements Scene.Provi
                         if ( exporter != null )
                             exporter .doExport( documentModel, file, file.getParentFile(), out, size.height, size.width );
                     }
-                } finally {
-                    out.close();
+                }
+                catch (Exception e) {
+                    logger .severe( "failed exporting " + command );
+                    e .printStackTrace();
+                }
+                finally {
+                    if ( logger .isLoggable( Level.INFO ) ) logger .info( String.format( "exported: %s %s", command, file .getAbsolutePath() ) );
+                    out .flush();
+                    out .close();
                 }
                 this .openApplication( file );
                 return;

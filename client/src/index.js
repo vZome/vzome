@@ -1,15 +1,25 @@
-import React from 'react'
-import { render } from 'react-dom'
-import { createStore, applyMiddleware } from 'redux'
+import React from 'react';
 import { Provider } from 'react-redux'
+import { render } from 'react-dom'
+import * as serviceWorker from './serviceWorker';
+
+import { createStore, applyMiddleware, combineReducers } from 'redux'
 import logger from 'redux-logger'
-import { createSimpleWebSocketMiddleware } from "redux-simple-websocket"
+import thunk from 'redux-thunk'
+
 import './index.css';
 import App from './App';
-import reducer from './reducers'
+import * as jre from './bundles/jre'
+import * as vzomejava from './bundles/vzomejava'
 
-const store = createStore( reducer,
-								applyMiddleware( createSimpleWebSocketMiddleware(), logger ) );
+const rootReducer = combineReducers( {
+  jre: jre.reducer,
+  vzomejava: vzomejava.reducer,
+} )
+
+const store = createStore( rootReducer, applyMiddleware( logger, thunk, vzomejava.middleware ) );
+
+jre.init( window, store )
 
 render(
   <Provider store={store}>
@@ -17,3 +27,8 @@ render(
   </Provider>,
   document.getElementById('root')
 )
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.unregister();

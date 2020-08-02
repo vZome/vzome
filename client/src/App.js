@@ -1,27 +1,19 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import ModelUrlControl from './containers/modelurlcontrol.js';
-import ModelCanvas from './containers/modelcanvas-three.js';
-import EditButtons from './containers/editbuttons.js';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 
-let App = ({ enabled }) => (
-  <div className="App">
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo" />
-      <h1 className="App-title">Welcome to vZome-React</h1>
-    </header>
-    <ModelUrlControl/>
-		<ModelCanvas width={950} height={500} scale={5}/>
-    <EditButtons/>
-  </div>
-)
+import ModelCanvas from './components/modelcanvas-three.js';
+import FileOpener from './components/fileopener.js';
 
-const mapStateToProps = (state) => ({
-  enabled: state.connectionLive
-})
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1 className="App-title">vZome Online Viewer (beta)</h1>
+      </header>
+      <ModelCanvas/>
+      <FileOpener/>
+    </div>
+  );
+}
 
-App = connect(mapStateToProps)(App)
-
-export default App
+export default App;

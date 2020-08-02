@@ -183,6 +183,10 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    if ( mainListener != null )
 	        mainListener .manifestationAdded( rm );
         for (RenderingChanges listener : mListeners) {
+            if ( listener == null ) {
+                System.out.println( "null RenderingChanges" );
+                continue;
+            }
             listener .manifestationAdded( rm );
         }
 	}
