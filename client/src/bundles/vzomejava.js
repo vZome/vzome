@@ -1,6 +1,6 @@
 
 import { FILE_LOADED } from './files'
-import DEFAULT_MODEL from '../models/dodecahedron'
+import DEFAULT_MODEL from '../models/logo'
 import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile } from './jre'
 
 // These are dispatched from Java
