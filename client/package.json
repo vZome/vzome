@@ -3,17 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-redux": "^7.1.1",
+    "drei": "0.0.70",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-redux": "^7.2.1",
     "react-scripts": "^3.4.1",
     "react-three-fiber": "^4.1.0",
-    "redux": "^4.0.4",
+    "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
     "redux-simple-websocket": "^1.0.3",
     "redux-thunk": "^2.3.0",
     "styled-components": "^5.1.1",
-    "three": "^0.108.0"
+    "three": "^0.119.1"
   },
   "homepage": "https://vzome.com/app",
   "scripts": {

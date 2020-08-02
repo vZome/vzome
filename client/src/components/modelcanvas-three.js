@@ -1,8 +1,9 @@
 
-import React, { useRef } from 'react';
+import React, { useRef } from 'react'
 import { connect } from 'react-redux'
-import { Canvas, useThree, extend, useFrame } from 'react-three-fiber';
-import * as THREE from 'three';
+import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
+import * as THREE from 'three'
+import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 import styled, { css } from 'styled-components'
 import { actionTriggered } from '../bundles/vzomejava'
@@ -54,12 +55,14 @@ const Scene = ( { background } ) => {
   )
 }
 
-const ModelCanvas = ( { background, instances, shapes, doAction } ) => {
+const ModelCanvas = ( { background, instances, shapes, fov, position, up, lookAt, doAction } ) => {
   return(
   <>
     <Canvas
         gl={{ antialias: true, alpha: false }}
-        camera={{ position: [0, 0, 50], fov: 45 }}>
+        camera={{ position, fov, up }}
+        onCreated={({ camera }) => camera.lookAt( lookAt )} >
+      <PerspectiveCamera/>
       <Scene background={background} />
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
       { instances.map( ( { id, position, color, rotation, shape } ) => 
@@ -100,6 +103,10 @@ const boundEventActions = {
 }
 
 const select = (state) => ({
+  fov: state.camera.fov,
+  position: state.camera.position,
+  lookAt: state.camera.lookAt,
+  up: state.camera.up,
   background: state.vzomejava.background,
   shapes: state.vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
   instances: state.vzomejava.renderingOn? state.vzomejava.instances : []

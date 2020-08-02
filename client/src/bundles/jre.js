@@ -1,5 +1,5 @@
 
-const LOG_LEVEL = 'FINE'
+const LOG_LEVEL = 'INFO'
 
 const JAVA_CODE_LOADED = 'JAVA_CODE_LOADED'
 

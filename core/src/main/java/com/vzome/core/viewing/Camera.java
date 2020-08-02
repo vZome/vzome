@@ -233,16 +233,21 @@ public class Camera
      */
     public void getViewTransform( Matrix4d matrix )
     {
-        Point3d eyePoint = new Point3d( mLookAtPoint );
-        Vector3d dir = new Vector3d( mLookDirection );
-        dir .scale( -mDistance );
-        eyePoint .add( dir );
+        Point3d eyePoint = getPosition();
 
         double[] mat = new double[16];
         lookAt( mat, eyePoint, mLookAtPoint, mUpDirection );
         matrix .set( mat );
     }
 
+    public Point3d getPosition()
+    {
+        Point3d eyePoint = new Point3d( mLookAtPoint );
+        Vector3d dir = new Vector3d( mLookDirection );
+        dir .scale( -mDistance );
+        eyePoint .add( dir );
+        return eyePoint;
+    }
     
     public Point3d getLookAtPoint()
     {

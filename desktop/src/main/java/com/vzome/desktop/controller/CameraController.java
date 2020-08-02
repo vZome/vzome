@@ -476,6 +476,7 @@ public class CameraController extends DefaultController implements Scene.Provide
                 e.printStackTrace();
                 Logger .getLogger( "com.vzome.desktop.controller" )
                     .severe( String.format( "CameraController.getProperty(json): %s", e.getMessage() ) );
+                return null;
             }
 
         default:

@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
+import com.vzome.core.viewing.Camera;
+import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.JsonClientRendering;
 import com.vzome.desktop.controller.RenderingViewer;
 
@@ -141,10 +143,17 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
             dispatchEvent( "LOAD_FAILED", "Document load FAILURE: " + path );
             return null;
         }
+
         String bkgdColor = docController .getProperty( "backgroundColor" );
         if ( bkgdColor != null ) {
             dispatchEvent( "BACKGROUND_SET", bkgdColor );
         }
+
+        Camera camera = ((CameraController) docController .getSubController( "camera" )) .getView();
+        JsonNode cameraJson = this .objectMapper .valueToTree( camera );
+        if ( cameraJson != null )
+            dispatchEvent( "CAMERA_DEFINED", cameraJson );
+        
         // TODO: define a callback to support the ControllerWebSocket case?
         //        consumer.start();
         JsonClientRendering clientRendering = new JsonClientRendering( this );
