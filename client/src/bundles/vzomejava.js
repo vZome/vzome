@@ -26,6 +26,7 @@ const initialState = {
   renderingOn: true,
   controller: undefined,
   background: '#99ccff',
+  ambientColor: '#292929',
   instances: DEFAULT_MODEL.instances,
   shapes: DEFAULT_MODEL.shapes
 }

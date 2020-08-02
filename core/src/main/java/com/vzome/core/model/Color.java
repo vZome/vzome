@@ -4,6 +4,8 @@ package com.vzome.core.model;
 
 import java.util.StringTokenizer;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * @author Scott Vorthmann
  */
@@ -29,7 +31,7 @@ public class Color
         blue = b > 0xFF? 0xFF : ( b < 0? 0 : b );
         alpha = a > 0xFF? 0xFF : ( a < 0? 0 : a );
     }
-    
+
     public Color( int r, int g, int b, int a )
     {
         red = r > 0xFF? 0xFF : ( r < 0? 0 : r );
@@ -42,7 +44,7 @@ public class Color
     {
         this( r, g, b, 0xFF );
     }
-    
+
     public Color( int rgb )
     {
         this( ( rgb >> 16 ) & 0xFF, ( rgb >> 8 ) & 0xFF, rgb & 0xFF );
@@ -62,13 +64,13 @@ public class Color
         }
         return rgb;
     }
-    
+
     @Override
     public int hashCode()
     {
         return getRGBA();
     }
-    
+
     @Override
     public boolean equals( Object other )
     {
@@ -81,13 +83,13 @@ public class Color
         Color c = (Color) other;
         return red == c.red && green == c.green && blue == c.blue && alpha == c.alpha;
     }
-    
+
     public Color getPastel()
     {
         int r = red + (0xFF - red) / 2;
         int g = green + (0xFF - green) / 2;
         int b = blue + (0xFF - blue) / 2;
-        
+
         return new Color( r, g, b, alpha );
     }
 
@@ -99,23 +101,24 @@ public class Color
     {
         return red * 0x01000000 + green * 0x010000 + blue * 0x0100 + alpha;
     }
-    
+
     public int getRGB()
     {
         return red * 0x010000 + green * 0x0100 + blue;
     }
-    
+
     @Override
     public String toString()
     {
         return red + "," + green + "," + blue + ( (alpha<0xFF)? "," + alpha : "" );
     }
 
+    @JsonValue
     public String toWebString()
     {
-    		return String.format( "#%02X%02X%02X", red, green, blue );
+        return String.format( "#%02X%02X%02X", red, green, blue );
     }
-    
+
     public static Color parseColor( String str )
     {
         StringTokenizer toks = new StringTokenizer( str, "," );
@@ -133,44 +136,44 @@ public class Color
                 Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
     }
 
-	public int getRed()
-	{
-		return red;
-	}
+    public int getRed()
+    {
+        return red;
+    }
 
-	public int getGreen()
-	{
-		return this.green;
-	}
+    public int getGreen()
+    {
+        return this.green;
+    }
 
-	public int getBlue()
-	{
-		return this.blue;
-	}
+    public int getBlue()
+    {
+        return this.blue;
+    }
 
-	public int getAlpha()
-	{
-		return this.alpha;
-	}
+    public int getAlpha()
+    {
+        return this.alpha;
+    }
 
     public static Color getComplement(Color color) {
         return (color == null)
                 ? null
-                : new Color(
-                        (128 + color.red) % 256,
-                        (128 + color.green) % 256,
-                        (128 + color.blue) % 256,
-                        color.alpha);
+                        : new Color(
+                                (128 + color.red) % 256,
+                                (128 + color.green) % 256,
+                                (128 + color.blue) % 256,
+                                color.alpha);
     }
 
     public static Color getInverted(Color color) {
         return (color == null)
                 ? null
-                : new Color(
-                        0xFF - color.red,
-                        0xFF - color.green,
-                        0xFF - color.blue,
-                        color.alpha);
+                        : new Color(
+                                0xFF - color.red,
+                                0xFF - color.green,
+                                0xFF - color.blue,
+                                color.alpha);
     }
 
     /**
@@ -212,17 +215,17 @@ public class Color
         int most = Math.max(Math.max(color.red, color.green), color.blue);
         return (most == 0 || most == 0xFF)
                 ? color
-                : new Color(
-                        0xFF * color.red / most,
-                        0xFF * color.green / most,
-                        0xFF * color.blue / most,
-                        color.alpha);
+                        : new Color(
+                                0xFF * color.red / most,
+                                0xFF * color.green / most,
+                                0xFF * color.blue / most,
+                                color.alpha);
 
     }
 
     public static Color getPastel(Color color) {
         return (color == null)
                 ? null
-                : color.getPastel();
+                        : color.getPastel();
     }
 }

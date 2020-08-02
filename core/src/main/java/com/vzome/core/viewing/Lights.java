@@ -26,7 +26,7 @@ import com.vzome.xml.DomUtils;
 public class Lights //extends DefaultController
 {
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
-    
+
     public void addPropertyListener( PropertyChangeListener listener )
     {
         pcs .addPropertyChangeListener( listener );
@@ -47,12 +47,12 @@ public class Lights //extends DefaultController
 
     protected final List<Color> mDirectionalLightColors = new ArrayList<>(3);
 
-	protected final List<Vector3f> mDirectionalLightVectors = new ArrayList<>(3);
-	
-	protected Color mAmbientLightColor;
-    
+    protected final List<Vector3f> mDirectionalLightVectors = new ArrayList<>(3);
+
+    protected Color mAmbientLightColor;
+
     private Color backgroundColor;
-    
+
 
     public Lights()
     {
@@ -63,7 +63,7 @@ public class Lights //extends DefaultController
     public Lights( Lights prototype )
     {
         this();
-        
+
         this .backgroundColor = prototype .backgroundColor;
         this .mAmbientLightColor = prototype .mAmbientLightColor;
         verifyListSizesMatch();
@@ -93,7 +93,7 @@ public class Lights //extends DefaultController
                         Float .parseFloat( viewElem .getAttribute( "x" ) ),  
                         Float .parseFloat( viewElem .getAttribute( "y" ) ),  
                         Float .parseFloat( viewElem .getAttribute( "z" ) )
-                );
+                        );
                 addDirectionLight( color, pos );
             }
         }
@@ -103,44 +103,44 @@ public class Lights //extends DefaultController
         verifyListSizesMatch();
         return mDirectionalLightVectors.size();
     }
-    
+
     private void verifyListSizesMatch() {
         if( mDirectionalLightVectors.size() != mDirectionalLightColors.size() ) {
             throw new IllegalStateException("List sizes should match." 
                     + " mDirectionalLightVectors.size() = " +  mDirectionalLightVectors.size()
                     + " mDirectionalLightColors.size() = " + mDirectionalLightColors.size() 
-            );
+                    );
         }
     }
-	
-	public final void addDirectionLight( Color color, Vector3f dir )
-	{
-		mDirectionalLightColors .add( color );
-		mDirectionalLightVectors .add( dir );
-	}
-	
-	
-	public void setAmbientColor( Color color )
-	{
-	    mAmbientLightColor = color;
-	}
 
-	public Color getAmbientColor()
-	{
-		return mAmbientLightColor;
-	}
-	
-	public Color getDirectionalLight( int i, Vector3f direction )
-	{
-		direction .set( mDirectionalLightVectors .get( i ) );
-		return mDirectionalLightColors .get( i );
-	}
-    
+    public final void addDirectionLight( Color color, Vector3f dir )
+    {
+        mDirectionalLightColors .add( color );
+        mDirectionalLightVectors .add( dir );
+    }
+
+
+    public void setAmbientColor( Color color )
+    {
+        mAmbientLightColor = color;
+    }
+
+    public Color getAmbientColor()
+    {
+        return mAmbientLightColor;
+    }
+
+    public Color getDirectionalLight( int i, Vector3f direction )
+    {
+        direction .set( mDirectionalLightVectors .get( i ) );
+        return mDirectionalLightColors .get( i );
+    }
+
     public Color getBackgroundColor()
     {
         return this .backgroundColor;
     }
-    
+
     public void setBackgroundColor( Color color )
     {
         this .backgroundColor = color;

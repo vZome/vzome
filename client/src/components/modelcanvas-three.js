@@ -45,17 +45,17 @@ const Instance = ( { position, rotation, shape, color } ) => {
   )
 }
 
-const Scene = ( { background } ) => {
+const Scene = ( { background, ambientColor } ) => {
   useFrame( ({scene}) => { scene.background = new THREE.Color( background ) } )
   return (
     <>
-      <ambientLight intensity={0.4} />
+      <ambientLight color={ambientColor} />
       <directionalLight color={0xffffff} intensity={0.5} position={[0,0,20]} lookAt={[0,0,0]} />
     </>
   )
 }
 
-const ModelCanvas = ( { background, instances, shapes, fov, position, up, lookAt, doAction } ) => {
+const ModelCanvas = ( { background, ambientColor, instances, shapes, fov, position, up, lookAt, doAction } ) => {
   return(
   <>
     <Canvas
@@ -63,7 +63,7 @@ const ModelCanvas = ( { background, instances, shapes, fov, position, up, lookAt
         camera={{ position, fov, up }}
         onCreated={({ camera }) => camera.lookAt( lookAt )} >
       <PerspectiveCamera/>
-      <Scene background={background} />
+      <Scene background={background} ambientColor={ambientColor} />
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
       { instances.map( ( { id, position, color, rotation, shape } ) => 
           <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
@@ -108,6 +108,7 @@ const select = (state) => ({
   lookAt: state.camera.lookAt,
   up: state.camera.up,
   background: state.vzomejava.background,
+  ambientColor: state.vzomejava.ambientColor,
   shapes: state.vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
   instances: state.vzomejava.renderingOn? state.vzomejava.instances : []
 })
