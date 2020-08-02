@@ -7,7 +7,7 @@ import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.render.Shapes;
 
-public class RemoteClientRendering implements RenderingChanges
+public class JsonClientRendering implements RenderingChanges
 {
     private EventDispatcher dispatcher;
     
@@ -18,7 +18,7 @@ public class RemoteClientRendering implements RenderingChanges
 	    void dispatchEvent( String type, JsonNode node );
 	}
 	
-	public RemoteClientRendering( EventDispatcher dispatcher )
+	public JsonClientRendering( EventDispatcher dispatcher )
 	{
         this .dispatcher = dispatcher;
 	}

@@ -28,10 +28,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.render.Scene;
-import com.vzome.desktop.controller.RemoteClientRendering;
+import com.vzome.desktop.controller.JsonClientRendering;
 import com.vzome.desktop.controller.RenderingViewer;
 
-public class ControllerWebSocket implements WebSocketListener, RemoteClientRendering.EventDispatcher
+public class ControllerWebSocket implements WebSocketListener, JsonClientRendering.EventDispatcher
 {
     private static final Logger LOG = Log.getLogger( ControllerWebSocket.class );
     private Session outbound;
@@ -121,7 +121,7 @@ public class ControllerWebSocket implements WebSocketListener, RemoteClientRende
                 dispatchEvent( "BACKGROUND_SET", bkgdColor );
             }
             consumer.start();
-            RemoteClientRendering clientRendering = new RemoteClientRendering( this );
+            JsonClientRendering clientRendering = new JsonClientRendering( this );
             this .docController .getModel() .getRenderedModel() .addListener( clientRendering );
             try {
                 this .docController .actionPerformed( this, "finish.load" );

@@ -12,6 +12,7 @@
     "redux-logger": "^3.0.6",
     "redux-simple-websocket": "^1.0.3",
     "redux-thunk": "^2.3.0",
+    "styled-components": "^5.1.1",
     "three": "^0.108.0"
   },
   "homepage": "https://vzome.com/app",

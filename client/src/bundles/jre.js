@@ -1,4 +1,6 @@
 
+const LOG_LEVEL = 'FINE'
+
 const JAVA_CODE_LOADED = 'JAVA_CODE_LOADED'
 
 export const reducer = ( state = { javaReady: false }, action ) => {
@@ -12,14 +14,24 @@ export const reducer = ( state = { javaReady: false }, action ) => {
   }
 }
 
+export const callObjectMethod = ( object, methodname, ...args ) =>
+{
+  return window.cjCall( object, methodname, ...args )
+}
+
 export const callStaticMethod = ( classname, methodname, ...args ) =>
 {
-  window.cjCall( classname, methodname, args )
+  return window.cjCall( classname, methodname, ...args )
+}
+
+export const createWriteableFile = ( path ) =>
+{
+  return window.cjNew( "java.io.File", `/files${path}` )
 }
 
 export const writeTextFile = ( path, text ) =>
 {
-  window.cheerpjAddStringFile( path, text )
+  return window.cheerpjAddStringFile( path, text )
 }
 
 export const init = ( window, store ) =>
@@ -154,6 +166,7 @@ export const init = ( window, store ) =>
   
   window.cheerpjInit( {
     preloadResources: resourcesToPreload,
+    status: "splash",
     javaProperties: [ "java.protocol.handler.pkgs=com.leaningtech.handlers" ]
   } )
   
@@ -161,7 +174,8 @@ export const init = ( window, store ) =>
   
   const classpath = `${pp}desktop-7.0.jar:${pp}cheerpj-dom.jar:${pp}core-7.0.jar:${pp}jackson-annotations-2.9.3.jar:${pp}jackson-core-2.9.5.jar:${pp}jackson-databind-2.9.5.jar:${pp}javax.json-1.0.4.jar:${pp}vecmath-1.6.0-final.jar`
   
-  window.cheerpjRunMain( "com.vzome.cheerpj.RemoteClientShim", classpath ).then( () => {
+  window.cheerpjRunMain( "com.vzome.cheerpj.JavascriptClientShim", classpath, LOG_LEVEL ).then( () =>
+  {
     store.dispatch( {
       type: JAVA_CODE_LOADED
     } )

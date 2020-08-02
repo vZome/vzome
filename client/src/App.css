@@ -4,14 +4,16 @@
 
 .App-header {
   background-color: #282c34;
-  height: 100px;
-  padding: 20px;
+  height: 50px;
+  padding: 10px;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 1vmin);
+  font-size: calc(5px + 1vmin);
   color: white;
 }
 
 canvas {
+  width: 100%;
   height: 700px;
+  top: 0;
 }

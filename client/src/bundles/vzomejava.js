@@ -1,8 +1,9 @@
 
 import { FILE_LOADED } from './files'
 import DEFAULT_MODEL from '../models/dodecahedron'
-import { writeTextFile, callStaticMethod } from './jre'
+import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile } from './jre'
 
+// These are dispatched from Java
 const BACKGROUND_SET   = 'BACKGROUND_SET'
 const SHAPE_DEFINED    = 'SHAPE_DEFINED'
 const INSTANCE_ADDED   = 'INSTANCE_ADDED'
@@ -11,8 +12,19 @@ const INSTANCE_REMOVED = 'INSTANCE_REMOVED'
 const MODEL_LOADED     = 'MODEL_LOADED'
 const LOAD_FAILED      = 'LOAD_FAILED'
 
+const CONTROLLER_RETURNED = 'CONTROLLER_RETURNED'
+
+export const actionTriggered = (actionString) => async (dispatch, getState) =>
+{
+  const controller = getState().vzomejava.controller
+  const path = "/out.dae"
+  const file = await createWriteableFile( path )
+  callObjectMethod( controller, "doFileAction", actionString, file )  
+}
+
 const initialState = {
   renderingOn: true,
+  controller: undefined,
   background: '#99ccff',
   instances: DEFAULT_MODEL.instances,
   shapes: DEFAULT_MODEL.shapes
@@ -25,6 +37,7 @@ export const reducer = ( state = initialState, action ) => {
       return {
         background: state.background,
         renderingOn: false,
+        controller: undefined,
         instances: [],
         shapes: []
       }
@@ -92,6 +105,12 @@ export const reducer = ( state = initialState, action ) => {
         renderingOn : true
       }
 
+    case CONTROLLER_RETURNED:
+      return {
+        ...state,
+        controller: action.payload
+      }
+  
     case LOAD_FAILED:
       return {
         ...initialState
@@ -102,12 +121,18 @@ export const reducer = ( state = initialState, action ) => {
   }
 }
 
-export const middleware = store => next => action => 
+export const middleware = store => next => async action => 
 {
   if ( action.type === FILE_LOADED ) {
     const path = "/str/" + action.payload.name
     writeTextFile( path, action.payload.text )
-    callStaticMethod( "com.vzome.cheerpj.RemoteClientShim", "openFile", path )  
+    callStaticMethod( "com.vzome.cheerpj.JavascriptClientShim", "openFile", path ).then( (controller) =>
+    {
+      store.dispatch( {
+        type: CONTROLLER_RETURNED,
+        payload: controller
+      } )
+    })
   }
   return next( action )
 }

@@ -296,6 +296,7 @@ public class ApplicationController extends DefaultController
     @Override
     public void doFileAction( String command, File file )
     {
+        if ( logger .isLoggable( Level.INFO ) ) logger .info( String.format( "ApplicationController.doFileAction: %s %s", command, file .getAbsolutePath() ) );
         if ( file != null )
         {
             Properties docProps = new Properties();

@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber';
 import * as THREE from 'three';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
+import styled, { css } from 'styled-components'
+import { actionTriggered } from '../bundles/vzomejava'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -44,7 +46,6 @@ const Instance = ( { position, rotation, shape, color } ) => {
 
 const Scene = ( { background } ) => {
   useFrame( ({scene}) => { scene.background = new THREE.Color( background ) } )
-  console.log( background )
   return (
     <>
       <ambientLight intensity={0.4} />
@@ -53,8 +54,9 @@ const Scene = ( { background } ) => {
   )
 }
 
-const ModelCanvas = ( { background, instances, shapes } ) => {
+const ModelCanvas = ( { background, instances, shapes, doAction } ) => {
   return(
+  <>
     <Canvas
         gl={{ antialias: true, alpha: false }}
         camera={{ position: [0, 0, 50], fov: 45 }}>
@@ -63,7 +65,38 @@ const ModelCanvas = ( { background, instances, shapes } ) => {
       { instances.map( ( { id, position, color, rotation, shape } ) => 
           <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
     </Canvas>
+    <UpperLeft onClick={ ()=>doAction("export.dae") }>
+      export DAE
+    </UpperLeft>
+  </>
   )
+}
+
+const base = css`
+  font-family: 'Teko', sans-serif;
+  position: absolute;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-variant-numeric: slashed-zero tabular-nums;
+  line-height: 1em;
+  pointer-events: none;
+  color: blue;
+`
+
+const UpperLeft = styled.div`
+  ${base}
+  top: 40px;
+  left: 50px;
+  font-size: 2em;
+  pointer-events: all;
+  cursor: pointer;
+  @media only screen and (max-width: 900px) {
+    font-size: 1.5em;
+  }
+`
+
+const boundEventActions = {
+  doAction : actionTriggered
 }
 
 const select = (state) => ({
@@ -72,4 +105,4 @@ const select = (state) => ({
   instances: state.vzomejava.renderingOn? state.vzomejava.instances : []
 })
 
-export default connect(select)(ModelCanvas)
+export default connect( select, boundEventActions )( ModelCanvas )
