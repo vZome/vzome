@@ -14,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -693,10 +692,6 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             break;
             
-            case "export.dae":
-                this .doFileAction( action, null );
-                break;
-
             default:
                 if ( action.startsWith( "setSymmetry." ) ) {
                     String system = action.substring( "setSymmetry.".length() );
