@@ -653,8 +653,8 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 setProperty( "clipboard", documentModel .copySelectionVEF( vefExportOffset ) );
                 break;
     
-            case "copy.observable":
-                setProperty( "clipboard", documentModel .copyRenderedModel( "observable" ) );
+            case "copy.shapes":
+                setProperty( "clipboard", documentModel .copyRenderedModel( "shapes" ) );
                 break;
 
             case "paste":
