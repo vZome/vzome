@@ -656,6 +656,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 setProperty( "clipboard", documentModel .copyRenderedModel( "shapes" ) );
                 break;
 
+            case "copy.camera":
+                setProperty( "clipboard", cameraController .getProperty( "json" ) );
+                break;
+
             case "paste":
                 {
                     String vefContent = getProperty( "clipboard" );

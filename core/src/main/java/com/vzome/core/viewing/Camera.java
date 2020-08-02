@@ -12,6 +12,7 @@ import javax.vecmath.Vector3f;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.xml.DomUtils;
 
 public class Camera
@@ -151,6 +152,7 @@ public class Camera
         upDir .set( mUpDirection );
     }
 
+    @JsonIgnore
     public float getMagnification()
     {
         return (float) Math .log( mDistance / ORIG_DISTANCE );
@@ -245,6 +247,11 @@ public class Camera
     public Point3d getLookAtPoint()
     {
         return mLookAtPoint;
+    }
+
+    public Vector3d getUpDirection()
+    {
+        return this .mUpDirection;
     }
 
 
