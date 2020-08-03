@@ -181,7 +181,7 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
     public static void main( String[] args )
     {
         try {
-            JsonClientShim shim = new JsonClientShim( "INFO" )
+            JsonClientShim shim = new JsonClientShim( "FINE" )
             {
                 @Override
                 public void dispatchSerializedJson( String eventStr )

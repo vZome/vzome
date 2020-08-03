@@ -107,8 +107,8 @@ const select = (state) => ({
   position: state.camera.position,
   lookAt: state.camera.lookAt,
   up: state.camera.up,
-  background: state.vzomejava.background,
-  ambientColor: state.vzomejava.ambientColor,
+  background: state.lighting.backgroundColor,
+  ambientColor: state.lighting.ambientColor,
   shapes: state.vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
   instances: state.vzomejava.renderingOn? state.vzomejava.instances : []
 })
