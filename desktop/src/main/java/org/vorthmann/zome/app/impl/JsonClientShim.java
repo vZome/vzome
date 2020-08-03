@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
@@ -157,14 +158,19 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
 
         // TODO: define a callback to support the ControllerWebSocket case?
         //        consumer.start();
-        JsonClientRendering clientRendering = new JsonClientRendering( this );
+        JsonClientRendering clientRendering = new JsonClientRendering( this, false );
         RenderedModel renderedModel = docController .getModel() .getRenderedModel();
         renderedModel .addListener( clientRendering );
         RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, clientRendering ); // get the origin ball
         try {
             docController .actionPerformed( this, "finish.load" );
-            if ( rootLogger .isLoggable( Level.INFO ) ) rootLogger .info( "Document load success: " + path );
-            dispatchEvent( "MODEL_LOADED", "" );
+            rootLogger .info( "Document load success: " + path );
+            for ( RenderedManifestation renderedManifestation : renderedModel ) {
+                JsonNode instance = this .objectMapper .valueToTree( renderedManifestation );
+                dispatchEvent( "INSTANCE_ADDED", instance );            
+            }
+            clientRendering .enableInstanceStream( true );
+            dispatchEvent( "MODEL_LOADED", "" );            
         } catch ( Exception e ) {
             e.printStackTrace();
             rootLogger .severe( "Document load unknown FAILURE: " + path );

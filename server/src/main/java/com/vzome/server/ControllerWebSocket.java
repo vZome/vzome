@@ -121,7 +121,7 @@ public class ControllerWebSocket implements WebSocketListener, JsonClientRenderi
                 dispatchEvent( "BACKGROUND_SET", bkgdColor );
             }
             consumer.start();
-            JsonClientRendering clientRendering = new JsonClientRendering( this );
+            JsonClientRendering clientRendering = new JsonClientRendering( this, false );
             this .docController .getModel() .getRenderedModel() .addListener( clientRendering );
             try {
                 this .docController .actionPerformed( this, "finish.load" );
