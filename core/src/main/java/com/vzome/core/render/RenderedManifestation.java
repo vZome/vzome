@@ -6,6 +6,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -77,6 +79,7 @@ public class RenderedManifestation
         return this .mManifestation .toString();
     }
 
+    @JsonGetter( "id" )
     public UUID getGuid()
     {
         return guid;
@@ -87,6 +90,7 @@ public class RenderedManifestation
         this .model = model;
     }
 
+    @JsonIgnore
     public RenderedModel getModel()
     {
         return this .model;
@@ -97,6 +101,7 @@ public class RenderedManifestation
         mGraphicsObject = go;
     }
 
+    @JsonIgnore
     public Object getGraphicsObject()
     {
         return mGraphicsObject;
@@ -108,7 +113,7 @@ public class RenderedManifestation
         mGlow = glow;
     }
 
-
+    @JsonIgnore
     public float getGlow()
     {
         return mGlow;
@@ -120,12 +125,19 @@ public class RenderedManifestation
         mTransparency = trans;
     }
 
-
+    @JsonIgnore
     public float getTransparency()
     {
         return mTransparency;
     }
 
+    @JsonGetter( "shape" )
+    public UUID getShapeId()
+    {
+        return this .mShape .getGuid();
+    }
+    
+    @JsonIgnore
     public Polyhedron getShape()
     {
         return mShape;
@@ -136,11 +148,13 @@ public class RenderedManifestation
         mPickable = value;
     }
 
+    @JsonIgnore
     public boolean isPickable()
     {
         return mPickable;
     }
 
+    @JsonIgnore
     public Manifestation getManifestation()
     {
         return mManifestation;
@@ -161,6 +175,7 @@ public class RenderedManifestation
         mOrientation = m;
     }
 
+    @JsonIgnore
     public AlgebraicMatrix getOrientation()
     {
         return mOrientation;
@@ -181,16 +196,19 @@ public class RenderedManifestation
     //        return mAxis;
     //    }
 
+    @JsonGetter( "position" )
     public RealVector getLocation()
     {
         return this .model .renderVector( this .location );
     }
 
+    @JsonIgnore
     public AlgebraicVector getLocationAV()
     {
         return this .location;
     }
 
+    @JsonIgnore
     public Embedding getEmbedding()
     {
         return this .model .getEmbedding();
@@ -267,21 +285,25 @@ public class RenderedManifestation
         this .strutLength = length;
     }
 
+    @JsonIgnore
     public int getStrutZone()
     {
         return this .strutZone;
     }
 
+    @JsonIgnore
     public int getStrutSense()
     {
         return this .strutSense;
     }
 
+    @JsonIgnore
     public AlgebraicNumber getStrutLength()
     {
         return this .strutLength;
     }
 
+    @JsonIgnore
     public Direction getStrutOrbit()
     {
         return this .strutOrbit;
@@ -304,6 +326,7 @@ public class RenderedManifestation
         }
     }
 
+    @JsonIgnore
     public String getSymmetryShapes()
     {
         SymmetrySystem symmetrySystem = (SymmetrySystem) this .model .getOrbitSource();

@@ -40,9 +40,9 @@ public class SymmetryRendering implements RenderingChanges
                 AlgebraicVector columnSelect = field .basisVector( 3, i );
                 AlgebraicVector columnI = transform .timesColumn( columnSelect );
                 RealVector colRV = columnI .toRealVector();
-                asFloats[ i*4+0 ] = (float) colRV.x;
-                asFloats[ i*4+1 ] = (float) colRV.y;
-                asFloats[ i*4+2 ] = (float) colRV.z;
+                asFloats[ i*4+0 ] = colRV.x;
+                asFloats[ i*4+1 ] = colRV.y;
+                asFloats[ i*4+2 ] = colRV.z;
                 asFloats[ i*4+3 ] = 0f;
             }
             asFloats[ 12 ] = 0f;
@@ -58,9 +58,9 @@ public class SymmetryRendering implements RenderingChanges
         {
             AlgebraicVector columnSelect = field .basisVector( 3, i );
             RealVector colRV = embedding .embedInR3( columnSelect );
-            this .embedding[ i*4+0 ] = (float) colRV.x;
-            this .embedding[ i*4+1 ] = (float) colRV.y;
-            this .embedding[ i*4+2 ] = (float) colRV.z;
+            this .embedding[ i*4+0 ] = colRV.x;
+            this .embedding[ i*4+1 ] = colRV.y;
+            this .embedding[ i*4+2 ] = colRV.z;
             this .embedding[ i*4+3 ] = 0f;
         }
         this .embedding[ 12 ] = 0f;

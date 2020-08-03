@@ -144,7 +144,7 @@ public class Java2dExporter
                     if ( doLighting ) {
                         AlgebraicVector faceNormal = partOrientation .timesColumn( face .getNormal() );
                         RealVector normal = model .renderVector( faceNormal ) .normalize();
-                        Vector3f normalV = new Vector3f( (float) normal.x, (float) normal.y, (float) normal.z );
+                        Vector3f normalV = new Vector3f( normal.x, normal.y, normal.z );
                         this .viewTransform .transform( normalV );
                         
                         path .applyLighting( normalV, lightDirs, lightColors, ambientLight );
@@ -247,7 +247,7 @@ public class Java2dExporter
     private Vector3f mapCoordinates( RealVector rv, int height, int width )
     {
         float xscale = width/2f;
-        Point3f vr = new Point3f( (float)rv.x, (float)rv.y, (float)rv.z );
+        Point3f vr = new Point3f( rv.x, rv.y, rv.z );
         // vr is still in world coordinates
         this .viewTransform .transform( vr );
         // vr is now in view coordinates

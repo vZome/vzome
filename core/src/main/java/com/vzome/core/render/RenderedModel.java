@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.exporters.Exporter3d;
@@ -258,6 +259,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     }
 	
     @Override
+    @JsonValue
 	public Iterator<RenderedManifestation> iterator()
 	{
 	    return mRendered .iterator();
