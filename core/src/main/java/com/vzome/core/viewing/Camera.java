@@ -12,6 +12,7 @@ import javax.vecmath.Vector3f;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.xml.DomUtils;
 
 public class Camera
@@ -151,6 +152,7 @@ public class Camera
         upDir .set( mUpDirection );
     }
 
+    @JsonIgnore
     public float getMagnification()
     {
         return (float) Math .log( mDistance / ORIG_DISTANCE );
@@ -231,20 +233,30 @@ public class Camera
      */
     public void getViewTransform( Matrix4d matrix )
     {
-        Point3d eyePoint = new Point3d( mLookAtPoint );
-        Vector3d dir = new Vector3d( mLookDirection );
-        dir .scale( -mDistance );
-        eyePoint .add( dir );
+        Point3d eyePoint = getPosition();
 
         double[] mat = new double[16];
         lookAt( mat, eyePoint, mLookAtPoint, mUpDirection );
         matrix .set( mat );
     }
 
+    public Point3d getPosition()
+    {
+        Point3d eyePoint = new Point3d( mLookAtPoint );
+        Vector3d dir = new Vector3d( mLookDirection );
+        dir .scale( -mDistance );
+        eyePoint .add( dir );
+        return eyePoint;
+    }
     
     public Point3d getLookAtPoint()
     {
         return mLookAtPoint;
+    }
+
+    public Vector3d getUpDirection()
+    {
+        return this .mUpDirection;
     }
 
 

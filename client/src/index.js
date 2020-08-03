@@ -11,10 +11,14 @@ import './index.css';
 import App from './App';
 import * as jre from './bundles/jre'
 import * as vzomejava from './bundles/vzomejava'
+import * as camera from './bundles/camera'
+import * as lighting from './bundles/lighting'
 
 const rootReducer = combineReducers( {
   jre: jre.reducer,
   vzomejava: vzomejava.reducer,
+  lighting: lighting.reducer,
+  camera: camera.reducer
 } )
 
 const store = createStore( rootReducer, applyMiddleware( logger, thunk, vzomejava.middleware ) );

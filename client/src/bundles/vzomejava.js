@@ -4,7 +4,6 @@ import DEFAULT_MODEL from '../models/logo'
 import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile } from './jre'
 
 // These are dispatched from Java
-const BACKGROUND_SET   = 'BACKGROUND_SET'
 const SHAPE_DEFINED    = 'SHAPE_DEFINED'
 const INSTANCE_ADDED   = 'INSTANCE_ADDED'
 const INSTANCE_COLORED = 'INSTANCE_COLORED'
@@ -25,7 +24,6 @@ export const actionTriggered = (actionString) => async (dispatch, getState) =>
 const initialState = {
   renderingOn: true,
   controller: undefined,
-  background: '#99ccff',
   instances: DEFAULT_MODEL.instances,
   shapes: DEFAULT_MODEL.shapes
 }
@@ -35,17 +33,10 @@ export const reducer = ( state = initialState, action ) => {
 
     case FILE_LOADED:
       return {
-        background: state.background,
         renderingOn: false,
         controller: undefined,
         instances: [],
         shapes: []
-      }
-    
-    case BACKGROUND_SET:
-      return {
-        ...state,
-        background: action.payload
       }
 
     case SHAPE_DEFINED:

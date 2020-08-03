@@ -9,6 +9,7 @@ import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
@@ -22,6 +23,9 @@ import org.vorthmann.j3d.Trackball;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.zome.app.impl.TrackballRenderingViewer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
@@ -462,7 +466,19 @@ public class CameraController extends DefaultController implements Scene.Provide
                 return super.getProperty( "trackball.showIcosahedralLabels" );
             else
                 return "false";
-            
+        
+        case "json":
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectWriter objectWriter = objectMapper .writer();
+            try {
+                return objectWriter .writeValueAsString( model );
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                Logger .getLogger( "com.vzome.desktop.controller" )
+                    .severe( String.format( "CameraController.getProperty(json): %s", e.getMessage() ) );
+                return null;
+            }
+
         default:
             return super .getProperty( propName );
         }
