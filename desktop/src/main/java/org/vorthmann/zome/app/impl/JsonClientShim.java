@@ -145,11 +145,6 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
             return null;
         }
 
-        String bkgdColor = docController .getProperty( "backgroundColor" );
-        if ( bkgdColor != null ) {
-            dispatchEvent( "BACKGROUND_SET", bkgdColor );
-        }
-
         Camera camera = ((CameraController) docController .getSubController( "camera" )) .getView();
         JsonNode cameraJson = this .objectMapper .valueToTree( camera );
         if ( cameraJson != null )

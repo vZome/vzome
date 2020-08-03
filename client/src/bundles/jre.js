@@ -180,9 +180,4 @@ export const init = ( window, store ) =>
       type: JAVA_CODE_LOADED
     } )
   } )
-  
-  // I get a failure later (after file open) if I don't do this.
-  //  Something in the class loading triggers AWT, perhaps, so I see
-  //  "Graphics system is initializing" before the crash.
-  window.cheerpjCreateDisplay( 1,1 )
 }
