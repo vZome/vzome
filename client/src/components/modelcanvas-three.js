@@ -69,9 +69,9 @@ const ModelCanvas = ( { background, ambientColor, directionalLights, instances, 
       { instances.map( ( { id, position, color, rotation, shape } ) => 
           <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
     </Canvas>
-    <UpperLeft onClick={ ()=>doAction("export.dae") }>
+    {/* <UpperLeft onClick={ ()=>doAction("export.dae") }>
       export DAE
-    </UpperLeft>
+    </UpperLeft> */}
   </>
   )
 }
