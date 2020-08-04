@@ -12,16 +12,24 @@ public class JsonClientRendering implements RenderingChanges
     private EventDispatcher dispatcher;
     
     private final JsonMapper mapper = new JsonMapper();
+
+    private boolean instanceStreamEnabled = true;
 	
 	public interface EventDispatcher
 	{
 	    void dispatchEvent( String type, JsonNode node );
 	}
 	
-	public JsonClientRendering( EventDispatcher dispatcher )
+	public JsonClientRendering( EventDispatcher dispatcher, boolean instanceStreamEnabled )
 	{
         this .dispatcher = dispatcher;
+        this .instanceStreamEnabled = instanceStreamEnabled;
 	}
+	
+	public void enableInstanceStream( boolean value )
+	{
+        this .instanceStreamEnabled = value;
+    }
 
 	@Override
 	public void reset() {}
@@ -29,24 +37,27 @@ public class JsonClientRendering implements RenderingChanges
 	@Override
 	public void manifestationAdded( RenderedManifestation rm )
 	{
+        ObjectNode shapeNode = this .mapper .getShapeNode( rm .getShape() );
+        if ( shapeNode != null )
+            this .dispatcher .dispatchEvent( "SHAPE_DEFINED", shapeNode );
+
+        if ( ! this .instanceStreamEnabled )
+            return;
+
         ObjectNode node = this .mapper .getObjectNode( rm );
         if ( node != null ) {
-            ObjectNode shapeNode = this .mapper .getShapeNode( rm .getShape() );
-            if ( shapeNode != null )
-            {
-                shapeNode .put( "render", "shape" );
-                this .dispatcher .dispatchEvent( "SHAPE_DEFINED", shapeNode );
-            }
             node .put( "id", rm .getGuid() .toString() );
-            this .dispatcher .dispatchEvent( "INSTANCE_ADDED", node );
+            if ( this .instanceStreamEnabled )
+                this .dispatcher .dispatchEvent( "INSTANCE_ADDED", node );
         }
 	}
 
 	@Override
 	public void manifestationRemoved( RenderedManifestation rm )
 	{
+        if ( ! this .instanceStreamEnabled )
+            return;
         ObjectNode node = this .mapper .getObjectMapper() .createObjectNode();
-        node .put( "render", "delete" );
         node .put( "id", rm .getGuid() .toString() );
         this .dispatcher .dispatchEvent( "INSTANCE_REMOVED", node );
 	}
@@ -54,11 +65,11 @@ public class JsonClientRendering implements RenderingChanges
     @Override
     public void colorChanged( RenderedManifestation rm )
     {
+        if ( ! this .instanceStreamEnabled )
+            return;
         ObjectNode node = this .mapper .getObjectMapper() .createObjectNode();
-        node .put( "render", "changeColor" );
         node .put( "id", rm .getGuid() .toString() );
         node .put( "color", rm .getColor() .toWebString() );
-        this .dispatcher .dispatchEvent( "INSTANCE_COLORED", node );
     }
 
 	@Override

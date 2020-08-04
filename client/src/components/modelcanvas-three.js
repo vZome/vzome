@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { connect } from 'react-redux'
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
@@ -45,34 +45,55 @@ const Instance = ( { position, rotation, shape, color } ) => {
   )
 }
 
-const Scene = ( { background, ambientColor, directionalLights } ) => {
-  useFrame( ({scene}) => { scene.background = new THREE.Color( background ) } )
+// Found this trick for getting the DL.target into the scene here:
+//   https://spectrum.chat/react-three-fiber/general/how-to-set-spotlight-target~823340ea-433e-426a-a0dc-b9a333fc3f94
+const DirLight = ( { direction, color } ) =>
+{
+  const position = direction.map( x => -x )
+  const light = useMemo(() => new THREE.DirectionalLight(), [])
   return (
     <>
-      <ambientLight color={ambientColor} />
-      { directionalLights.map( ( { direction, color } ) => 
-          <directionalLight position={direction} color={color} lookAt={[0,0,0]} /> ) }
+      <primitive object={light} position={position} color={color} />
+      <primitive object={light.target} position={[0,0,0]}  />
     </>
   )
 }
 
-const ModelCanvas = ( { background, ambientColor, directionalLights, instances, shapes, fov, position, up, lookAt, doAction } ) => {
+const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
+  useFrame( ({scene}) => { scene.background = new THREE.Color( backgroundColor ) } )
+  return (
+    <>
+      <ambientLight color={ambientColor} />
+      { directionalLights.map( ( config ) => <DirLight {...config} /> ) }
+    </>
+  )
+}
+
+/*
+TODO:
+  0. NPE
+  1. camera and trackball control
+  2. lighting component extract
+  3. UI overlay
+  4. geometry cache
+*/
+
+const ModelCanvas = ( { lighting, instances, shapes, camera, doAction } ) => {
+  const { fov, position, up } = camera
   return(
-  <>
-    <Canvas
-        gl={{ antialias: true, alpha: false }}
-        camera={{ position, fov, up }}
-        onCreated={({ camera }) => camera.lookAt( lookAt )} >
-      <PerspectiveCamera/>
-      <Scene background={background} ambientColor={ambientColor} directionalLights={directionalLights} />
-      <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
-      { instances.map( ( { id, position, color, rotation, shape } ) => 
-          <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
-    </Canvas>
-    {/* <UpperLeft onClick={ ()=>doAction("export.dae") }>
-      export DAE
-    </UpperLeft> */}
-  </>
+    <>
+      <Canvas gl={{ antialias: true, alpha: false }} >
+        <PerspectiveCamera makeDefault {...{fov, position, up}}>
+          <Lighting {...lighting} />
+        </PerspectiveCamera>
+        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
+        { instances.map( ( { id, position, color, rotation, shape } ) => 
+            <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
+      </Canvas>
+      {/* <UpperLeft onClick={ ()=>doAction("export.dae") }>
+        export DAE
+      </UpperLeft> */}
+    </>
   )
 }
 
@@ -103,16 +124,11 @@ const boundEventActions = {
   doAction : actionTriggered
 }
 
-const select = (state) => ({
-  fov: state.camera.fov,
-  position: state.camera.position,
-  lookAt: state.camera.lookAt,
-  up: state.camera.up,
-  background: state.lighting.backgroundColor,
-  ambientColor: state.lighting.ambientColor,
-  directionalLights: state.lighting.directionalLights,
-  shapes: state.vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
-  instances: state.vzomejava.renderingOn? state.vzomejava.instances : []
+const select = ( { camera, lighting, vzomejava } ) => ({
+  camera,
+  lighting,
+  shapes: vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
+  instances: vzomejava.renderingOn? vzomejava.instances : []
 })
 
 export default connect( select, boundEventActions )( ModelCanvas )

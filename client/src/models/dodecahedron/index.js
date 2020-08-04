@@ -1851,7 +1851,6 @@ export default {
    ],
    "instances":[
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":4.23606797749979,
@@ -1868,7 +1867,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
@@ -1885,7 +1883,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
@@ -1902,7 +1899,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-4.23606797749979,
             "y":11.090169943749475,
@@ -1919,7 +1915,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":11.090169943749475,
             "y":0,
@@ -1936,7 +1931,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":4.23606797749979,
@@ -1953,7 +1947,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":6.854101966249685,
             "y":6.854101966249685,
@@ -1970,7 +1963,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
@@ -1987,7 +1979,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-4.23606797749979,
             "y":11.090169943749475,
@@ -2004,7 +1995,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
@@ -2021,7 +2011,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":-4.23606797749979,
@@ -2038,7 +2027,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
@@ -2055,7 +2043,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":-4.23606797749979,
@@ -2072,7 +2059,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-4.23606797749979,
             "y":-11.090169943749475,
@@ -2089,7 +2075,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
@@ -2106,7 +2091,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-11.090169943749475,
             "y":0,
@@ -2123,7 +2107,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":11.090169943749475,
             "y":0,
@@ -2140,7 +2123,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":-4.23606797749979,
@@ -2157,7 +2139,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":6.854101966249685,
             "y":-6.854101966249685,
@@ -2174,7 +2155,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-11.090169943749475,
             "y":0,
@@ -2191,7 +2171,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":4.23606797749979,
             "y":11.090169943749475,
@@ -2208,7 +2187,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":4.23606797749979,
@@ -2225,7 +2203,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":4.23606797749979,
             "y":-11.090169943749475,
@@ -2242,7 +2219,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-11.090169943749475,
             "y":0,
@@ -2259,7 +2235,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":6.854101966249685,
             "y":6.854101966249685,
@@ -2276,7 +2251,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-11.090169943749475,
             "y":0,
@@ -2293,7 +2267,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
@@ -2310,7 +2283,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":4.23606797749979,
             "y":-11.090169943749475,
@@ -2327,7 +2299,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":6.854101966249685,
             "y":-6.854101966249685,
@@ -2344,7 +2315,6 @@ export default {
          "color":"#00A0E4"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
@@ -2364,7 +2334,6 @@ export default {
 
 
       {
-         "render":"instance",
          "position":{
             "x":4.23606797749979,
             "y":-11.090169943749475,
@@ -2376,7 +2345,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":-11.090169943749475,
             "y":0,
@@ -2388,7 +2356,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
@@ -2400,7 +2367,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,
@@ -2412,7 +2378,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":4.23606797749979,
@@ -2424,7 +2389,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":6.854101966249685,
             "y":6.854101966249685,
@@ -2436,7 +2400,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":6.854101966249685,
@@ -2448,7 +2411,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":-4.23606797749979,
             "y":11.090169943749475,
@@ -2460,7 +2422,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":4.23606797749979,
             "y":11.090169943749475,
@@ -2472,7 +2433,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":11.090169943749475,
             "y":0,
@@ -2484,7 +2444,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":-4.23606797749979,
             "y":-11.090169943749475,
@@ -2496,7 +2455,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":4.23606797749979,
@@ -2508,7 +2466,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":6.854101966249685,
             "y":6.854101966249685,
@@ -2520,7 +2477,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":-4.23606797749979,
@@ -2532,7 +2488,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":6.854101966249685,
             "y":-6.854101966249685,
@@ -2544,7 +2499,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":11.090169943749475,
             "y":0,
@@ -2556,7 +2510,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":-11.090169943749475,
             "y":0,
@@ -2568,7 +2521,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":0,
             "y":-4.23606797749979,
@@ -2580,7 +2532,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":6.854101966249685,
             "y":-6.854101966249685,
@@ -2592,7 +2543,6 @@ export default {
          "color":"#FFFFFF"
       },
       {
-         "render":"instance",
          "position":{
             "x":-6.854101966249685,
             "y":-6.854101966249685,

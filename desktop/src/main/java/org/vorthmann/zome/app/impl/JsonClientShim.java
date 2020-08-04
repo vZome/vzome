@@ -16,6 +16,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.render.JsonMapper;
+import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
@@ -29,7 +32,8 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
     protected final ApplicationController applicationController;
     private final ObjectMapper objectMapper = new ObjectMapper();
     protected final ObjectWriter objectWriter = objectMapper .writer();
-    
+    private final JsonMapper mapper = new JsonMapper();
+
     private final static Logger rootLogger = Logger .getLogger("");
 
     public JsonClientShim( String logLevel )
@@ -150,21 +154,31 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
         if ( cameraJson != null )
             dispatchEvent( "CAMERA_DEFINED", cameraJson );
         
-        Lights lights = this .applicationController .getLights();
+        Lights lights = docController .getScene() .getLighting();
         JsonNode lightsJson = this .objectMapper .valueToTree( lights );
         if ( lightsJson != null )
             dispatchEvent( "LIGHTS_DEFINED", lightsJson );
 
         // TODO: define a callback to support the ControllerWebSocket case?
         //        consumer.start();
-        JsonClientRendering clientRendering = new JsonClientRendering( this );
+        JsonClientRendering clientRendering = new JsonClientRendering( this, false );
         RenderedModel renderedModel = docController .getModel() .getRenderedModel();
         renderedModel .addListener( clientRendering );
         RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, clientRendering ); // get the origin ball
         try {
             docController .actionPerformed( this, "finish.load" );
-            if ( rootLogger .isLoggable( Level.INFO ) ) rootLogger .info( "Document load success: " + path );
-            dispatchEvent( "MODEL_LOADED", "" );
+            rootLogger .info( "Document load success: " + path );
+            for ( RenderedManifestation rm : renderedModel ) {
+                ObjectNode instance = this .objectMapper .valueToTree( rm );
+                AlgebraicMatrix orientation = rm .getOrientation();
+                if ( orientation != null ) {
+                    ObjectNode quaternion = this .mapper .getQuaternionNode( rm .getOrientation() );
+                    instance .set( "rotation", quaternion );
+                }
+                dispatchEvent( "INSTANCE_ADDED", instance );            
+            }
+            clientRendering .enableInstanceStream( true );
+            dispatchEvent( "MODEL_LOADED", "" );            
         } catch ( Exception e ) {
             e.printStackTrace();
             rootLogger .severe( "Document load unknown FAILURE: " + path );

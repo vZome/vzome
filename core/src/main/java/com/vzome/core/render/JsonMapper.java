@@ -152,9 +152,9 @@ public class JsonMapper
     private ObjectNode getVectorNode( RealVector vector )
     {
         ObjectNode node = this .objectMapper .createObjectNode();
-        node .put( "x", (float) vector .x );
-        node .put( "y", (float) vector .y );
-        node .put( "z", (float) vector .z );
+        node .put( "x", vector .x );
+        node .put( "y", vector .y );
+        node .put( "z", vector .z );
         return node;
     }
     
@@ -180,7 +180,7 @@ public class JsonMapper
         }
     }
 
-    private ObjectNode getQuaternionNode( AlgebraicMatrix orientation )
+    public ObjectNode getQuaternionNode( AlgebraicMatrix orientation )
     {
         ObjectNode result = this .rotations .get( orientation );
         if ( result == null ) {
@@ -194,10 +194,10 @@ public class JsonMapper
             Quat4d quat = new Quat4d();
             matrix .get( quat );
             result = this .objectMapper .createObjectNode();
-            result .put( "x", (float) quat .x );
-            result .put( "y", (float) quat .y );
-            result .put( "z", (float) quat .z );
-            result .put( "w", (float) quat .w );
+            result .put( "x", quat .x );
+            result .put( "y", quat .y );
+            result .put( "z", quat .z );
+            result .put( "w", quat .w );
             this .rotations .put( orientation, result );
         }
         return result;
