@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { connect } from 'react-redux'
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
@@ -45,13 +45,26 @@ const Instance = ( { position, rotation, shape, color } ) => {
   )
 }
 
+// Found this trick for getting the DL.target into the scene here:
+//   https://spectrum.chat/react-three-fiber/general/how-to-set-spotlight-target~823340ea-433e-426a-a0dc-b9a333fc3f94
+const DirLight = ( { direction, color } ) =>
+{
+  const position = direction.map( x => -x )
+  const light = useMemo(() => new THREE.DirectionalLight(), [])
+  return (
+    <>
+      <primitive object={light} position={position} color={color} />
+      <primitive object={light.target} position={[0,0,0]}  />
+    </>
+  )
+}
+
 const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
   useFrame( ({scene}) => { scene.background = new THREE.Color( backgroundColor ) } )
   return (
     <>
       <ambientLight color={ambientColor} />
-      { directionalLights.map( ( { direction, color } ) => 
-          <directionalLight position={direction} color={color} lookAt={[0,0,0]} /> ) }
+      { directionalLights.map( ( config ) => <DirLight {...config} /> ) }
     </>
   )
 }
