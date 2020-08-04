@@ -45,8 +45,8 @@ const Instance = ( { position, rotation, shape, color } ) => {
   )
 }
 
-const Scene = ( { background, ambientColor, directionalLights } ) => {
-  useFrame( ({scene}) => { scene.background = new THREE.Color( background ) } )
+const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
+  useFrame( ({scene}) => { scene.background = new THREE.Color( backgroundColor ) } )
   return (
     <>
       <ambientLight color={ambientColor} />
@@ -56,23 +56,31 @@ const Scene = ( { background, ambientColor, directionalLights } ) => {
   )
 }
 
-const ModelCanvas = ( { background, ambientColor, directionalLights, instances, shapes, fov, position, up, lookAt, doAction } ) => {
+/*
+TODO:
+  0. NPE
+  1. camera and trackball control
+  2. lighting component extract
+  3. UI overlay
+  4. geometry cache
+*/
+
+const ModelCanvas = ( { lighting, instances, shapes, camera, doAction } ) => {
+  const { fov, position, up } = camera
   return(
-  <>
-    <Canvas
-        gl={{ antialias: true, alpha: false }}
-        camera={{ position, fov, up }}
-        onCreated={({ camera }) => camera.lookAt( lookAt )} >
-      <PerspectiveCamera/>
-      <Scene background={background} ambientColor={ambientColor} directionalLights={directionalLights} />
-      <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
-      { instances.map( ( { id, position, color, rotation, shape } ) => 
-          <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
-    </Canvas>
-    {/* <UpperLeft onClick={ ()=>doAction("export.dae") }>
-      export DAE
-    </UpperLeft> */}
-  </>
+    <>
+      <Canvas gl={{ antialias: true, alpha: false }} >
+        <PerspectiveCamera makeDefault {...{fov, position, up}}>
+          <Lighting {...lighting} />
+        </PerspectiveCamera>
+        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
+        { instances.map( ( { id, position, color, rotation, shape } ) => 
+            <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
+      </Canvas>
+      {/* <UpperLeft onClick={ ()=>doAction("export.dae") }>
+        export DAE
+      </UpperLeft> */}
+    </>
   )
 }
 
@@ -103,16 +111,11 @@ const boundEventActions = {
   doAction : actionTriggered
 }
 
-const select = (state) => ({
-  fov: state.camera.fov,
-  position: state.camera.position,
-  lookAt: state.camera.lookAt,
-  up: state.camera.up,
-  background: state.lighting.backgroundColor,
-  ambientColor: state.lighting.ambientColor,
-  directionalLights: state.lighting.directionalLights,
-  shapes: state.vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
-  instances: state.vzomejava.renderingOn? state.vzomejava.instances : []
+const select = ( { camera, lighting, vzomejava } ) => ({
+  camera,
+  lighting,
+  shapes: vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
+  instances: vzomejava.renderingOn? vzomejava.instances : []
 })
 
 export default connect( select, boundEventActions )( ModelCanvas )
