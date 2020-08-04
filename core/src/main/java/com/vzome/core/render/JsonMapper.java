@@ -180,7 +180,7 @@ public class JsonMapper
         }
     }
 
-    private ObjectNode getQuaternionNode( AlgebraicMatrix orientation )
+    public ObjectNode getQuaternionNode( AlgebraicMatrix orientation )
     {
         ObjectNode result = this .rotations .get( orientation );
         if ( result == null ) {

@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vzome.core.algebra.AlgebraicMatrix;
+import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
@@ -30,7 +32,8 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
     protected final ApplicationController applicationController;
     private final ObjectMapper objectMapper = new ObjectMapper();
     protected final ObjectWriter objectWriter = objectMapper .writer();
-    
+    private final JsonMapper mapper = new JsonMapper();
+
     private final static Logger rootLogger = Logger .getLogger("");
 
     public JsonClientShim( String logLevel )
@@ -151,7 +154,7 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
         if ( cameraJson != null )
             dispatchEvent( "CAMERA_DEFINED", cameraJson );
         
-        Lights lights = this .applicationController .getLights();
+        Lights lights = docController .getScene() .getLighting();
         JsonNode lightsJson = this .objectMapper .valueToTree( lights );
         if ( lightsJson != null )
             dispatchEvent( "LIGHTS_DEFINED", lightsJson );
@@ -165,8 +168,13 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
         try {
             docController .actionPerformed( this, "finish.load" );
             rootLogger .info( "Document load success: " + path );
-            for ( RenderedManifestation renderedManifestation : renderedModel ) {
-                JsonNode instance = this .objectMapper .valueToTree( renderedManifestation );
+            for ( RenderedManifestation rm : renderedModel ) {
+                ObjectNode instance = this .objectMapper .valueToTree( rm );
+                AlgebraicMatrix orientation = rm .getOrientation();
+                if ( orientation != null ) {
+                    ObjectNode quaternion = this .mapper .getQuaternionNode( rm .getOrientation() );
+                    instance .set( "rotation", quaternion );
+                }
                 dispatchEvent( "INSTANCE_ADDED", instance );            
             }
             clientRendering .enableInstanceStream( true );
