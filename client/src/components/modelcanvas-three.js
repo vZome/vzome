@@ -1,5 +1,5 @@
 
-import React, { useRef, useMemo } from 'react'
+import React, { useRef, useMemo, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
@@ -60,7 +60,8 @@ const DirLight = ( { direction, color } ) =>
 }
 
 const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
-  useFrame( ({scene}) => { scene.background = new THREE.Color( backgroundColor ) } )
+  const color = useMemo(() => new THREE.Color( backgroundColor ), [backgroundColor])
+  useFrame( ({scene}) => { scene.background = color } )
   return (
     <>
       <ambientLight color={ambientColor} />
@@ -72,21 +73,23 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
 /*
 TODO:
   0. NPE
-  1. camera and trackball control
   2. lighting component extract
   3. UI overlay
   4. geometry cache
 */
 
+// Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
+//   https://github.com/react-spring/react-three-fiber/discussions/609
+
 const ModelCanvas = ( { lighting, instances, shapes, camera, doAction } ) => {
-  const { fov, position, up } = camera
+  const { fov, position, up, lookAt } = camera
   return(
     <>
       <Canvas gl={{ antialias: true, alpha: false }} >
         <PerspectiveCamera makeDefault {...{fov, position, up}}>
           <Lighting {...lighting} />
         </PerspectiveCamera>
-        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
+        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         { instances.map( ( { id, position, color, rotation, shape } ) => 
             <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
       </Canvas>
