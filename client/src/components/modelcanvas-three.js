@@ -72,8 +72,8 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
 
 /*
 TODO:
-  0. NPE
-  2. lighting component extract
+  2. lighting component extract (Redux context tunneling)
+  3. auto-load real logo model, internal
   3. UI overlay
   4. geometry cache
 */
