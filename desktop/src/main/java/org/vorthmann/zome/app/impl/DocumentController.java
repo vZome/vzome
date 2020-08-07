@@ -480,12 +480,13 @@ public class DocumentController extends DefaultController implements Scene.Provi
 
             boolean openUndone = propertyIsTrue( "open.undone" );
             boolean asTemplate = propertyIsTrue( "as.template" );
+            boolean headless = propertyIsTrue( "headless.open" );
 
             // used to finish loading a model history on a non-UI thread
             this .documentModel .finishLoading( openUndone, asTemplate );
                         
             // mainScene is not listening to mRenderedModel yet, so batch the rendering changes to it
-            if ( mainScene != null )
+            if ( !headless && mainScene != null )
             {
                 if ( editingModel )
                 {
