@@ -6,7 +6,7 @@ import { fileSelected } from '../bundles/files'
 let FileOpener = ({ enabled, loadFile }) => {
 		
   return ( 
-    <div> 
+    <div>
       <h3> 
       Select a vZome file: 
       </h3> 

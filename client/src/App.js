@@ -3,6 +3,7 @@ import './App.css';
 
 import ModelCanvas from './components/modelcanvas-three.js';
 import FileOpener from './components/fileopener.js';
+import Spinner from './components/spinner.js';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       </header>
       <ModelCanvas/>
       <FileOpener/>
+      <Spinner/>
     </div>
   );
 }
