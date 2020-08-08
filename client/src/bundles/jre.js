@@ -1,3 +1,4 @@
+import { startProgress } from './progress'
 
 const LOG_LEVEL = 'INFO'
 
@@ -163,7 +164,9 @@ export const init = ( window, store ) =>
     "/lt/cheerpj/Arial.ttf",
     "/lt/runtime/rt.jar.java.nio.js"
   ]
-  
+
+  store.dispatch( startProgress( "Loading code..." ) )
+
   window.cheerpjInit( {
     preloadResources: resourcesToPreload,
     status: "splash",

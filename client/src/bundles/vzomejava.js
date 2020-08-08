@@ -16,7 +16,7 @@ const CONTROLLER_RETURNED = 'CONTROLLER_RETURNED'
 
 export const actionTriggered = (actionString) => async (dispatch, getState) =>
 {
-  dispatch( startProgress() )
+  dispatch( startProgress( "Exporting Collada (DAE)..." ) )
   const controller = getState().vzomejava.controller
   const path = "/out.dae"
   const file = await createWriteableFile( path )
@@ -127,6 +127,7 @@ export const middleware = store => next => async action =>
   }
 
   if ( action.type === FILE_LOADED ) {
+    store.dispatch( startProgress( "Parsing vZome model..." ) )
     const path = "/str/" + action.payload.name
     writeTextFile( path, action.payload.text )
     callStaticMethod( "com.vzome.cheerpj.JavascriptClientShim", "openFile", path )

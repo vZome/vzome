@@ -7,7 +7,7 @@ export const fileSelected = selected => dispatch =>
 {
   console.log( selected )
 
-  dispatch( startProgress() )
+  dispatch( startProgress( "Reading file content..." ) )
   
   const reader = new FileReader();
   reader.onload = () =>
@@ -27,7 +27,7 @@ export const fileSelected = selected => dispatch =>
 
 export const fetchModel = path => dispatch =>
 {
-  dispatch( startProgress() )
+  dispatch( startProgress( "Fetching model content..." ) )
   fetch( path )
     .then( response =>
     {

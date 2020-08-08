@@ -39,6 +39,17 @@ canvas {
   max-height: 100%;
 }
 
+#message {
+  position: fixed;
+  bottom: 1em;
+  width: 100%;
+  text-align: center;
+  background-color: rgb(120,120,120); /* Grey fallback color */
+  background-color: rgba(120,120,120, 0.0); /* Grey w/opacity */
+  color: white;
+  margin: auto;
+}
+
 #fileopener {
   position: fixed;
   right: 5%;
