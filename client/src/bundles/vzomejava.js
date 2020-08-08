@@ -2,7 +2,7 @@
 import { FILE_LOADED, fetchModel } from './files'
 import DEFAULT_MODEL from '../models/logo'
 import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile, JAVA_CODE_LOADED } from './jre'
-import { PROGRESS_STOPPED } from './progress'
+import { startProgress, stopProgress } from './progress'
 
 // These are dispatched from Java
 const SHAPE_DEFINED    = 'SHAPE_DEFINED'
@@ -16,10 +16,14 @@ const CONTROLLER_RETURNED = 'CONTROLLER_RETURNED'
 
 export const actionTriggered = (actionString) => async (dispatch, getState) =>
 {
+  dispatch( startProgress() )
   const controller = getState().vzomejava.controller
   const path = "/out.dae"
   const file = await createWriteableFile( path )
-  callObjectMethod( controller, "doFileAction", actionString, file )  
+  callObjectMethod( controller, "doFileAction", actionString, file ).then( () =>
+  {
+    dispatch( stopProgress() )
+  })
 }
 
 const initialState = {
@@ -132,9 +136,7 @@ export const middleware = store => next => async action =>
           type: CONTROLLER_RETURNED,
           payload: controller
         } )
-        store.dispatch( {
-          type: PROGRESS_STOPPED
-        } )
+        store.dispatch( stopProgress() )
       })
   }
   

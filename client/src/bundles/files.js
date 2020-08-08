@@ -1,4 +1,4 @@
-import { PROGRESS_STARTED, PROGRESS_STOPPED } from './progress'
+import { startProgress, stopProgress } from './progress'
 
 export const FILE_FAILED = 'FILE_FAILED'
 export const FILE_LOADED = 'FILE_LOADED'
@@ -7,7 +7,7 @@ export const fileSelected = selected => dispatch =>
 {
   console.log( selected )
 
-  dispatch( { type: PROGRESS_STARTED } )
+  dispatch( startProgress() )
   
   const reader = new FileReader();
   reader.onload = () =>
@@ -19,7 +19,7 @@ export const fileSelected = selected => dispatch =>
   }
   reader.onerror = () =>
   {
-    dispatch( { type: PROGRESS_STOPPED } )
+    dispatch( stopProgress() )
     dispatch( { type: FILE_FAILED, payload: selected.name } )
   }
   reader.readAsText( selected )
@@ -27,7 +27,7 @@ export const fileSelected = selected => dispatch =>
 
 export const fetchModel = path => dispatch =>
 {
-  dispatch( { type: PROGRESS_STARTED } )
+  dispatch( startProgress() )
   fetch( path )
     .then( response =>
     {
@@ -48,7 +48,7 @@ export const fetchModel = path => dispatch =>
     .catch( error =>
     {
       console.error( 'There has been a problem with your fetch operation:', error );
-      dispatch( { type: PROGRESS_STOPPED } )
+      dispatch( stopProgress() )
       dispatch( { type: FILE_FAILED, payload: path } )
     });
 }

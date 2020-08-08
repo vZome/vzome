@@ -1,6 +1,16 @@
 
-export const PROGRESS_STARTED = 'PROGRESS_STARTED'
-export const PROGRESS_STOPPED = 'PROGRESS_STOPPED'
+const PROGRESS_STARTED = 'PROGRESS_STARTED'
+const PROGRESS_STOPPED = 'PROGRESS_STOPPED'
+
+export const startProgress = () =>
+{
+  return { type: PROGRESS_STARTED }
+}
+
+export const stopProgress = () =>
+{
+  return { type: PROGRESS_STOPPED }
+}
 
 export const reducer = ( state = false, action ) => {
   switch (action.type) {
