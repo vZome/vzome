@@ -5,7 +5,6 @@ import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
-import styled, { css } from 'styled-components'
 import { actionTriggered } from '../bundles/vzomejava'
 
 extend({ TrackballControls })
@@ -99,29 +98,6 @@ const ModelCanvas = ( { lighting, instances, shapes, camera, doAction } ) => {
     </>
   )
 }
-
-const base = css`
-  font-family: 'Teko', sans-serif;
-  position: absolute;
-  text-transform: uppercase;
-  font-weight: 900;
-  font-variant-numeric: slashed-zero tabular-nums;
-  line-height: 1em;
-  pointer-events: none;
-  color: blue;
-`
-
-const UpperLeft = styled.div`
-  ${base}
-  top: 40px;
-  left: 50px;
-  font-size: 2em;
-  pointer-events: all;
-  cursor: pointer;
-  @media only screen and (max-width: 900px) {
-    font-size: 1.5em;
-  }
-`
 
 const boundEventActions = {
   doAction : actionTriggered

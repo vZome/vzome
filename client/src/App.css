@@ -1,19 +1,13 @@
 
 .App-header {
   position: fixed;
-  left: 0;
-  top: 50%;
-  width: 40em;
-  margin-top: -2.5em;
-  text-align: left;
+  top: 0;
+  width: 100%;
+  text-align: center;
   background-color: rgb(120,120,120); /* Grey fallback color */
   background-color: rgba(120,120,120, 0.0); /* Grey w/opacity */
-  height: 50px;
-  padding: 10px;
-  align-items: left;
-  justify-content: center;
-  font-size: calc(5px + 1vmin);
   color: white;
+  margin: auto;
 }
 
 canvas {
@@ -47,8 +41,10 @@ canvas {
 
 #fileopener {
   position: fixed;
-  right: 0;
-  top: 50%;
-  width: 18em;
-  margin-top: -2.5em;
+  right: 1%;
+  top: 1%;
+}
+
+.FileInput {
+  display: none;
 }

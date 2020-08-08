@@ -1,24 +1,22 @@
 
-import React from 'react'
+import React, { useRef } from 'react'
 import { connect } from 'react-redux'
 import { fileSelected } from '../bundles/files'
 
 let FileOpener = ({ enabled, loadFile }) => {
-		
+	const ref = useRef()
   return ( 
-    <div id="fileopener">
-      <h3> 
-      Select a vZome file: 
-      </h3> 
-      <div> 
-        <input type="file" onChange={ (e) => {
+    <div id="fileopener" onClick={ () => ref.current.click() }
+        style={{ cursor: enabled ? 'pointer' : 'default' }} >
+      <input className="FileInput" type="file" ref={ref}
+        onChange={ (e) => {
             const selected = e.target.files && e.target.files[0]
             if ( selected )
               loadFile( selected )
           } }
-          accept=".vZome" disabled={!enabled} /> 
-      </div> 
-    </div> 
+        accept=".vZome" disabled={!enabled} /> 
+      <img alt="select a vZome file" className="Icon" src="/app/folder-2.svg" />
+    </div>
   )
 } 
 
