@@ -2,7 +2,7 @@
 const LIGHTS_DEFINED = 'LIGHTS_DEFINED'
 
 const initialState = {
-  backgroundColor: '#AFC8DC',
+  backgroundColor: '#BBDAED',
   ambientColor: '#292929',
   directionalLights: [ // These are the vZome defaults, for consistency
     { direction: [ 1, -1, -1 ], color: '#EBEBE4' },

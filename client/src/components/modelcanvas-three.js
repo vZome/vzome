@@ -1,5 +1,5 @@
 
-import React, { useRef, useMemo, useEffect } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { connect } from 'react-redux'
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
@@ -131,7 +131,7 @@ const select = ( { camera, lighting, vzomejava } ) => ({
   camera,
   lighting,
   shapes: vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
-  instances: vzomejava.renderingOn? vzomejava.instances : []
+  instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
 })
 
 export default connect( select, boundEventActions )( ModelCanvas )

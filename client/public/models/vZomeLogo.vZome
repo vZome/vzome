@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="7.0" field="golden">
+  <EditHistory editNumber="146" lastStickyEdit="146">
+    <BeginBlock/>
+    <SelectAll/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="yellow" index="3" len="0 1" symm="octahedral"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1 1 -1 -1 1 1"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-1 -1 1 1 1 1"/>
+    <SelectManifestation point="1 1 -1 -1 1 1"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="1 1 -1 -1 1 1" startSegment="-1 -1 1 1 1 1"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1 1 1 1 -1 -1"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="lavender" index="8" len="1 2" symm="octahedral"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="1 2 1 2 1 2" startSegment="1 1 1 1 -1 -1"/>
+    <SelectManifestation point="1 2 1 2 1 2"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1 2 1 2 1 2"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="yellow" index="2" len="1 1" symm="octahedral"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="2 4 0 0 0 0" startSegment="1 2 1 2 1 2"/>
+    <SelectManifestation point="2 4 0 0 0 0"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 4 0 0 0 0"/>
+    <SelectManifestation point="1 1 -1 -1 1 1"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="1 1 -1 -1 1 1" startSegment="2 4 0 0 0 0"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 4 0 0 0 0"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="lavender" index="20" len="1 2" symm="octahedral"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="2 3 0 -1 2 3" startSegment="2 4 0 0 0 0"/>
+    <SelectManifestation point="2 3 0 -1 2 3"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 3 0 -1 2 3"/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="0 0 0 0 2 4" startSegment="2 3 0 -1 2 3"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1 2 1 2 1 2"/>
+    <SelectManifestation point="2 3 0 -1 2 3"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="2 3 0 -1 2 3" startSegment="1 2 1 2 1 2"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="2 3 0 -1 2 3"/>
+    <SelectManifestation point="0 1 -2 -3 2 3"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="0 1 -2 -3 2 3" startSegment="2 3 0 -1 2 3"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1 1 -1 -1 1 1"/>
+    <SelectManifestation point="2 3 0 -1 2 3"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="2 3 0 -1 2 3" startSegment="1 1 -1 -1 1 1"/>
+    <EndBlock/>
+    <TetrahedralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TetrahedralSymmetry>
+    <BeginBlock/>
+    <SelectAll/>
+    <SelectManifestation point="0 1 -2 -3 2 3"/>
+    <SelectManifestation endSegment="-1 -2 -1 -2 1 2" startSegment="1 1 -1 -1 1 1"/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <SelectManifestation endSegment="0 1 -2 -3 2 3" startSegment="0 0 0 0 2 4"/>
+    <SelectManifestation endSegment="1 1 -1 -1 1 1" startSegment="0 0 0 0 2 4"/>
+    <SelectManifestation endSegment="0 0 0 0 2 4" startSegment="-1 -2 -1 -2 1 2"/>
+    <SelectManifestation endSegment="0 1 -2 -3 2 3" startSegment="1 1 -1 -1 1 1"/>
+    <SelectManifestation point="1 1 -1 -1 1 1"/>
+    <SelectManifestation endSegment="0 1 -2 -3 2 3" startSegment="-1 -2 -1 -2 1 2"/>
+    <SelectManifestation point="-1 -2 -1 -2 1 2"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation endSegment="1 1 -1 -1 1 1" startSegment="0 0 0 0 2 4"/>
+    <SelectManifestation endSegment="0 1 -2 -3 2 3" startSegment="0 0 0 0 2 4"/>
+    <SelectManifestation point="1 1 -1 -1 1 1"/>
+    <SelectManifestation endSegment="-1 -2 -1 -2 1 2" startSegment="1 1 -1 -1 1 1"/>
+    <SelectManifestation endSegment="0 1 -2 -3 2 3" startSegment="-1 -2 -1 -2 1 2"/>
+    <SelectManifestation endSegment="0 1 -2 -3 2 3" startSegment="1 1 -1 -1 1 1"/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <SelectManifestation point="-1 -2 -1 -2 1 2"/>
+    <SelectManifestation point="0 1 -2 -3 2 3"/>
+    <SelectManifestation endSegment="0 0 0 0 2 4" startSegment="-1 -2 -1 -2 1 2"/>
+    <EndBlock/>
+    <Centroid>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Centroid>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 -1 -3/2 3/2 5/2"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <Snapshot id="0"/>
+    <SelectAll/>
+    <Centroid>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Centroid>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <Snapshot id="1"/>
+    <Snapshot id="2"/>
+  </EditHistory>
+  <notes>
+    <page snapshot="2" title="">
+      <ViewModel distance="27.354455947875977" far="54.70891189575209" near="0.06838614088872282" parallel="false" stereoAngle="0.0" width="12.30950517654418">
+        <LookAtPoint x="0.0" y="-3.4270509831248424" z="5.545084971874737"/>
+        <UpDirection x="-0.8516402530460562" y="0.36473678048760744" z="0.37639867209009925"/>
+        <LookDirection x="0.28731974761813167" y="-0.2757397865723714" z="0.9172867232930424"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="2" title="">
+      <ViewModel distance="27.354455947875977" far="54.70891189575209" near="0.06838614088872282" parallel="false" stereoAngle="0.0" width="12.30950517654418">
+        <LookAtPoint x="0.0" y="-3.4270509831248424" z="5.545084971874737"/>
+        <UpDirection x="-0.8150234718388752" y="0.31833858662882286" z="0.48414593318014615"/>
+        <LookDirection x="0.3896487634718202" y="-0.31730008534816606" z="0.86457764079517"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="2" title="official logo view">
+      <ViewModel distance="27.354455947875977" far="54.70891189575209" near="0.06838614088872282" parallel="false" stereoAngle="0.0" width="12.30950517654418">
+        <LookAtPoint x="0.0" y="-3.4270509831248424" z="5.545084971874737"/>
+        <UpDirection x="-0.8263358392473192" y="0.3136648280747072" z="0.4677429383799356"/>
+        <LookDirection x="0.3968628060106658" y="-0.2649680868234671" z="0.8788013576289374"/>
+      </ViewModel>
+      <content xml:space="preserve">This is the view that I used today to generate the icon file.</content>
+    </page>
+  </notes>
+  <sceneModel ambientLight="41,41,41" background="187,218,237">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="59.6729850769043" far="119.34597015380889" near="0.14918246491525258" parallel="false" stereoAngle="0.0" width="26.852843284606912">
+      <LookAtPoint x="0.0" y="-3.4270509831248424" z="5.545084971874737"/>
+      <UpDirection x="-0.8263358392473192" y="0.3136648280747072" z="0.4677429383799356"/>
+      <LookDirection x="0.3968628060106658" y="-0.2649680868234671" z="0.8788013576289374"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" renderingStyle="trapezoids">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="107,53,26" name="brown"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="18,205,148" name="turquoise"/>
+  </SymmetrySystem>
+  <Tools/>
+</vzome:vZome>
