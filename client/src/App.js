@@ -7,11 +7,11 @@ import Spinner from './components/spinner.js';
 
 function App() {
   return (
-    <div className="App">
+    <div>
+      <ModelCanvas/>
       <header className="App-header">
         <h1 className="App-title">vZome Online Viewer (beta)</h1>
       </header>
-      <ModelCanvas/>
       <FileOpener/>
       <Spinner/>
     </div>

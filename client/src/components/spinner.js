@@ -8,7 +8,9 @@ export const Spinner = ( { visible } ) =>
   if ( visible )
     return (
       <div className="overlay">
-        <Loader type="Rings" color="#CCCCCC" height={800} width={300} />
+        <div className="spinner">
+          <Loader type="Grid" color="#CCCCCC" height={200} width={200} />
+        </div>
       </div>)
   else
     return <div/>

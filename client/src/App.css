@@ -1,12 +1,16 @@
-.App {
-  text-align: center;
-}
 
 .App-header {
-  background-color: #282c34;
+  position: fixed;
+  left: 0;
+  top: 50%;
+  width: 40em;
+  margin-top: -2.5em;
+  text-align: left;
+  background-color: rgb(120,120,120); /* Grey fallback color */
+  background-color: rgba(120,120,120, 0.0); /* Grey w/opacity */
   height: 50px;
   padding: 10px;
-  align-items: center;
+  align-items: left;
   justify-content: center;
   font-size: calc(5px + 1vmin);
   color: white;
@@ -14,30 +18,37 @@
 
 canvas {
   width: 100%;
-  height: 700px;
+  height: 100%;
   top: 0;
 }
 
 /* The Overlay (background) */
 .overlay {
-  /* Height & width depends on how you want to reveal the overlay */   
-  height: 100%;
-  width: 100%;
-  position: fixed; /* Stay in place */
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  
   z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
   background-color: rgb(120,120,120); /* Black fallback color */
   background-color: rgba(120,120,120, 0.5); /* Black w/opacity */
   overflow-x: hidden; /* Disable horizontal scroll */
-  transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
 }
 
 /* Position the content inside the overlay */
-.overlay-content {
-  position: relative;
-  top: 25%; /* 25% from the top */
-  width: 100%; /* 100% width */
-  text-align: center; /* Centered text/links */
-  margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+.spinner {
+  margin: auto;
+  max-height: 100%;
+}
+
+#fileopener {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  width: 18em;
+  margin-top: -2.5em;
 }
