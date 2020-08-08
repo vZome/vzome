@@ -1,26 +1,56 @@
+import { startProgress, stopProgress } from './progress'
 
-export const FILE_SELECTED = 'FILE_SELECTED'
+export const FILE_FAILED = 'FILE_FAILED'
 export const FILE_LOADED = 'FILE_LOADED'
 
-export const fileSelected = (selected) => dispatch =>
+export const fileSelected = selected => dispatch =>
 {
   console.log( selected )
 
-  // This is not used currently
-  dispatch( {
-    type: FILE_SELECTED,
-    payload: selected
-  } )
+  dispatch( startProgress( "Reading file content..." ) )
   
-  // read the file
   const reader = new FileReader();
-  // file reading finished successfully
-  reader.onload = () => dispatch( {
-    type: FILE_LOADED,
-    payload: { name: selected.name, text: reader.result }
-  } )
-  // file reading failed
-  reader.onerror = () => alert('Error : Failed to read file')
-  // read as text file
+  reader.onload = () =>
+  {
+    dispatch( {
+      type: FILE_LOADED,
+      payload: { name: selected.name, text: reader.result }
+    } )
+  }
+  reader.onerror = () =>
+  {
+    dispatch( stopProgress() )
+    dispatch( { type: FILE_FAILED, payload: selected.name } )
+  }
   reader.readAsText( selected )
 }
+
+export const fetchModel = path => dispatch =>
+{
+  dispatch( startProgress( "Fetching model content..." ) )
+  fetch( path )
+    .then( response =>
+    {
+      if ( !response.ok ) {
+        throw new Error( 'Network response was not ok' );
+      }
+      return response.text()
+    })
+    .then( (text) => {
+      dispatch( {
+        type: FILE_LOADED,
+        payload: {
+          name: path.split( '\\' ).pop().split( '/' ).pop(),
+          text
+        }
+      } )
+    })
+    .catch( error =>
+    {
+      console.error( 'There has been a problem with your fetch operation:', error );
+      dispatch( stopProgress() )
+      dispatch( { type: FILE_FAILED, payload: path } )
+    });
+}
+
+ 

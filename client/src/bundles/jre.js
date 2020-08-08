@@ -1,7 +1,8 @@
+import { startProgress } from './progress'
 
 const LOG_LEVEL = 'INFO'
 
-const JAVA_CODE_LOADED = 'JAVA_CODE_LOADED'
+export const JAVA_CODE_LOADED = 'JAVA_CODE_LOADED'
 
 export const reducer = ( state = { javaReady: false }, action ) => {
   switch (action.type) {
@@ -163,7 +164,9 @@ export const init = ( window, store ) =>
     "/lt/cheerpj/Arial.ttf",
     "/lt/runtime/rt.jar.java.nio.js"
   ]
-  
+
+  store.dispatch( startProgress( "Loading code..." ) )
+
   window.cheerpjInit( {
     preloadResources: resourcesToPreload,
     status: "splash",
@@ -176,8 +179,6 @@ export const init = ( window, store ) =>
   
   window.cheerpjRunMain( "com.vzome.cheerpj.JavascriptClientShim", classpath, LOG_LEVEL ).then( () =>
   {
-    store.dispatch( {
-      type: JAVA_CODE_LOADED
-    } )
+    store.dispatch( { type: JAVA_CODE_LOADED } )
   } )
 }

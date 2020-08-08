@@ -1,4 +1,6 @@
 
+import { MODEL_LOADED} from "./vzomejava"
+
 const CAMERA_DEFINED = 'CAMERA_DEFINED'
 
 const initialState = {
@@ -7,7 +9,8 @@ const initialState = {
   lookAt: [ 0, -3.4270, 5.5450 ],
   up: [ -0.8263, 0.3136, 0.4677 ],
   far: 119.34,
-  near: 0.1491
+  near: 0.1491,
+  next: undefined
 }
 
 export const reducer = ( state = initialState, action ) => {
@@ -20,13 +23,22 @@ export const reducer = ( state = initialState, action ) => {
       const aspectRatio = 2
       return {
         ...state,
-        position: [ ...Object.values( position ) ],
-        lookAt: [ ...Object.values( lookAtPoint ) ],
-        up: [ ...Object.values( upDirection ) ],
-        fov: ( fieldOfView / aspectRatio ) * 180 / Math.PI,  // converting radians to degrees
-        near: nearClipDistance,
-        far: farClipDistance
+        next: {
+          position: [ ...Object.values( position ) ],
+          lookAt: [ ...Object.values( lookAtPoint ) ],
+          up: [ ...Object.values( upDirection ) ],
+          fov: ( fieldOfView / aspectRatio ) * 180 / Math.PI,  // converting radians to degrees
+          near: nearClipDistance,
+          far: farClipDistance
+        }
       }
+
+    case MODEL_LOADED:
+      return {
+        ...state.next,
+        next: undefined
+      }
+
 
     default:
       return state

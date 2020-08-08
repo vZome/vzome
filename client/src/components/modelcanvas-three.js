@@ -1,12 +1,10 @@
 
-import React, { useRef, useMemo, useEffect } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { connect } from 'react-redux'
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
-import styled, { css } from 'styled-components'
-import { actionTriggered } from '../bundles/vzomejava'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -81,7 +79,7 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, instances, shapes, camera, doAction } ) => {
+const ModelCanvas = ( { lighting, instances, shapes, camera } ) => {
   const { fov, position, up, lookAt } = camera
   return(
     <>
@@ -93,45 +91,15 @@ const ModelCanvas = ( { lighting, instances, shapes, camera, doAction } ) => {
         { instances.map( ( { id, position, color, rotation, shape } ) => 
             <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
       </Canvas>
-      {/* <UpperLeft onClick={ ()=>doAction("export.dae") }>
-        export DAE
-      </UpperLeft> */}
     </>
   )
-}
-
-const base = css`
-  font-family: 'Teko', sans-serif;
-  position: absolute;
-  text-transform: uppercase;
-  font-weight: 900;
-  font-variant-numeric: slashed-zero tabular-nums;
-  line-height: 1em;
-  pointer-events: none;
-  color: blue;
-`
-
-const UpperLeft = styled.div`
-  ${base}
-  top: 40px;
-  left: 50px;
-  font-size: 2em;
-  pointer-events: all;
-  cursor: pointer;
-  @media only screen and (max-width: 900px) {
-    font-size: 1.5em;
-  }
-`
-
-const boundEventActions = {
-  doAction : actionTriggered
 }
 
 const select = ( { camera, lighting, vzomejava } ) => ({
   camera,
   lighting,
   shapes: vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
-  instances: vzomejava.renderingOn? vzomejava.instances : []
+  instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
 })
 
-export default connect( select, boundEventActions )( ModelCanvas )
+export default connect( select )( ModelCanvas )

@@ -1,31 +1,37 @@
 
-import { FILE_LOADED } from './files'
+import { FILE_LOADED, fetchModel } from './files'
 import DEFAULT_MODEL from '../models/logo'
-import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile } from './jre'
+import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile, JAVA_CODE_LOADED } from './jre'
+import { startProgress, stopProgress } from './progress'
 
 // These are dispatched from Java
 const SHAPE_DEFINED    = 'SHAPE_DEFINED'
 const INSTANCE_ADDED   = 'INSTANCE_ADDED'
 const INSTANCE_COLORED = 'INSTANCE_COLORED'
 const INSTANCE_REMOVED = 'INSTANCE_REMOVED'
-const MODEL_LOADED     = 'MODEL_LOADED'
+export const MODEL_LOADED     = 'MODEL_LOADED'
 const LOAD_FAILED      = 'LOAD_FAILED'
 
 const CONTROLLER_RETURNED = 'CONTROLLER_RETURNED'
 
 export const actionTriggered = (actionString) => async (dispatch, getState) =>
 {
+  dispatch( startProgress( "Exporting Collada (DAE)..." ) )
   const controller = getState().vzomejava.controller
   const path = "/out.dae"
   const file = await createWriteableFile( path )
-  callObjectMethod( controller, "doFileAction", actionString, file )  
+  callObjectMethod( controller, "doFileAction", actionString, file ).then( () =>
+  {
+    dispatch( stopProgress() )
+  })
 }
 
 const initialState = {
   renderingOn: true,
   controller: undefined,
+  shapes: DEFAULT_MODEL.shapes,
   instances: DEFAULT_MODEL.instances,
-  shapes: DEFAULT_MODEL.shapes
+  previous: DEFAULT_MODEL.instances,
 }
 
 export const reducer = ( state = initialState, action ) => {
@@ -33,10 +39,11 @@ export const reducer = ( state = initialState, action ) => {
 
     case FILE_LOADED:
       return {
+        ...state,
         renderingOn: false,
         controller: undefined,
         instances: [],
-        shapes: []
+        previous: state.instances
       }
 
     case SHAPE_DEFINED:
@@ -93,7 +100,8 @@ export const reducer = ( state = initialState, action ) => {
     case MODEL_LOADED:
       return {
         ...state,
-        renderingOn : true
+        renderingOn : true,
+        previous: []
       }
 
     case CONTROLLER_RETURNED:
@@ -114,16 +122,24 @@ export const reducer = ( state = initialState, action ) => {
 
 export const middleware = store => next => async action => 
 {
+  if ( action.type === JAVA_CODE_LOADED ) {
+    store.dispatch( fetchModel( "/app/models/vZomeLogo.vZome" ) )
+  }
+
   if ( action.type === FILE_LOADED ) {
+    store.dispatch( startProgress( "Parsing vZome model..." ) )
     const path = "/str/" + action.payload.name
     writeTextFile( path, action.payload.text )
-    callStaticMethod( "com.vzome.cheerpj.JavascriptClientShim", "openFile", path ).then( (controller) =>
-    {
-      store.dispatch( {
-        type: CONTROLLER_RETURNED,
-        payload: controller
-      } )
-    })
+    callStaticMethod( "com.vzome.cheerpj.JavascriptClientShim", "openFile", path )
+      .then( (controller) =>
+      {
+        store.dispatch( {
+          type: CONTROLLER_RETURNED,
+          payload: controller
+        } )
+        store.dispatch( stopProgress() )
+      })
   }
+  
   return next( action )
 }
