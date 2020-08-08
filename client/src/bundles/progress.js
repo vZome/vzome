@@ -12,7 +12,10 @@ export const stopProgress = () =>
   return { type: PROGRESS_STOPPED }
 }
 
-export const reducer = ( state = false, action ) => {
+// With the initial state as true, we get a grey flash on page load,
+//  because the canvas component is not initialized yet.  TODO
+
+export const reducer = ( state = true, action ) => {
   switch (action.type) {
 
     case PROGRESS_STARTED:
