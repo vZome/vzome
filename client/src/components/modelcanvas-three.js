@@ -5,7 +5,6 @@ import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
-import { actionTriggered } from '../bundles/vzomejava'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -80,7 +79,7 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, instances, shapes, camera, doAction } ) => {
+const ModelCanvas = ( { lighting, instances, shapes, camera } ) => {
   const { fov, position, up, lookAt } = camera
   return(
     <>
@@ -92,15 +91,8 @@ const ModelCanvas = ( { lighting, instances, shapes, camera, doAction } ) => {
         { instances.map( ( { id, position, color, rotation, shape } ) => 
             <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
       </Canvas>
-      {/* <UpperLeft onClick={ ()=>doAction("export.dae") }>
-        export DAE
-      </UpperLeft> */}
     </>
   )
-}
-
-const boundEventActions = {
-  doAction : actionTriggered
 }
 
 const select = ( { camera, lighting, vzomejava } ) => ({
@@ -110,4 +102,4 @@ const select = ( { camera, lighting, vzomejava } ) => ({
   instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
 })
 
-export default connect( select, boundEventActions )( ModelCanvas )
+export default connect( select )( ModelCanvas )

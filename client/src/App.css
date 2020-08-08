@@ -41,10 +41,25 @@ canvas {
 
 #fileopener {
   position: fixed;
+  right: 5%;
+  top: 1%;
+}
+
+#exporter {
+  position: fixed;
   right: 1%;
   top: 1%;
 }
 
 .FileInput {
   display: none;
+}
+
+button {
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
 }
