@@ -5,7 +5,7 @@ import { actionTriggered } from '../bundles/vzomejava'
 
 let Exporter = ({ enabled, doAction }) => {
   return ( 
-    <button id="exporter" onClick={ () => doAction("export.dae") }
+    <button id="exporter" onClick={ () => doAction( "export.dae", "Exporting Collada (DAE)..." ) }
         title="Export as Collada (DAE)"
         style={{ cursor: enabled ? 'pointer' : 'default' }} >
         <img alt="Export a DAE file" className="Icon" src="/app/export.svg" />

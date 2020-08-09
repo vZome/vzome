@@ -14,7 +14,7 @@ export const Spinner = ( { visible, message } ) =>
         <h2 id="message">{message}</h2>
       </div>)
   else
-    return <div/>
+    return null
 }
 
 const select = ( { progress } ) => ({
