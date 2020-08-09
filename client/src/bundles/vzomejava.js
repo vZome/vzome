@@ -14,9 +14,9 @@ const LOAD_FAILED      = 'LOAD_FAILED'
 
 const CONTROLLER_RETURNED = 'CONTROLLER_RETURNED'
 
-export const actionTriggered = (actionString) => async (dispatch, getState) =>
+export const actionTriggered = ( actionString, message ) => async (dispatch, getState) =>
 {
-  dispatch( startProgress( "Exporting Collada (DAE)..." ) )
+  dispatch( startProgress( message ) )
   const controller = getState().vzomejava.controller
   const path = "/out.dae"
   const file = await createWriteableFile( path )
