@@ -1,6 +1,9 @@
 package com.vzome.cheerpj;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.vorthmann.zome.app.impl.DocumentController;
 import org.vorthmann.zome.app.impl.JsonClientShim;
@@ -25,7 +28,20 @@ public class JavascriptClientShim extends JsonClientShim
     @Override
     public void openApplication( File file )
     {
-        Global .jsCallS( "fileExported", Global.JSString( file .getAbsolutePath() ) );
+        Path path = file .toPath();
+        System.out.println( "openApplication " + path );
+        try {
+            byte[] bytes = Files.readAllBytes( path );
+            String name = file .getName();
+            
+            System.out.println( "openApplication got bytes" );
+
+            Global .jsCallS( "fileExported", name, bytes );
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

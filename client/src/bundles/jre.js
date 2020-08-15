@@ -45,9 +45,8 @@ export const init = ( window, store ) =>
   window.dispatchToRedux = (s) => {
     store.dispatch( JSON.parse( s ) )
   }
-
-  window.fileExported = (s) => {
-    store.dispatch( { type: FILE_EXPORTED, payload: s } )
+  window.fileExported = (name, bytes) => {
+    store.dispatch( { type: FILE_EXPORTED, payload: { name, bytes } } )
   }
 
   const resourcesToPreload = [
