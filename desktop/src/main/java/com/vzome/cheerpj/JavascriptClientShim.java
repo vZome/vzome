@@ -22,6 +22,12 @@ public class JavascriptClientShim extends JsonClientShim
         Global .jsCallS( "dispatchToRedux", Global.JSString( eventStr ) );
     }
 
+    @Override
+    public void openApplication( File file )
+    {
+        Global .jsCallS( "fileExported", Global.JSString( file .getAbsolutePath() ) );
+    }
+
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // %%%%%%  These are the entry points.  Always catch Throwable!
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

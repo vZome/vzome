@@ -3,6 +3,7 @@ import { startProgress } from './progress'
 const LOG_LEVEL = 'INFO'
 
 export const JAVA_CODE_LOADED = 'JAVA_CODE_LOADED'
+export const FILE_EXPORTED = 'FILE_EXPORTED'
 
 export const reducer = ( state = { javaReady: false }, action ) => {
   switch (action.type) {
@@ -43,6 +44,10 @@ export const init = ( window, store ) =>
   //   attaching it to window.
   window.dispatchToRedux = (s) => {
     store.dispatch( JSON.parse( s ) )
+  }
+
+  window.fileExported = (s) => {
+    store.dispatch( { type: FILE_EXPORTED, payload: s } )
   }
 
   const resourcesToPreload = [

@@ -525,6 +525,41 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         }
     }
 
+    public void runScript( String script, File file )
+    {
+        try {
+            Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
+                    null, file .getParentFile() );
+        } catch ( IOException e ) {
+            System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+            e .printStackTrace();
+        }
+    }
+
+    public void openApplication( File file )
+    {
+        try {
+            if ( Desktop .isDesktopSupported() ) {
+                // DH - The test for file.exists() shouldn't be needed if this method is invoked in the proper sequence
+                // so I think it should be omitted eventually so the exceptions will be thrown
+                // but I'm leaving it here for now as a debugging aid.
+                if( ! file .exists() ) {
+                    System .err .println( file .getAbsolutePath() + " does not exist." );
+                    //                    return;
+                }
+                Desktop desktop = Desktop .getDesktop();
+                System .err .println( "Opening app for  " + file .getAbsolutePath() + " in thread: " + Thread.currentThread() );
+                desktop .open( file );
+            }
+        } catch ( IOException | IllegalArgumentException e ) {
+            System .err .println( "Desktop.open() failed on " + file .getAbsolutePath() );
+            if ( ! file .exists() ) {
+                System .err .println( "File does not exist." );
+            }
+            e.printStackTrace();
+        }
+    }
+
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // These next three methods may be invoked by the mac Adapter.
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

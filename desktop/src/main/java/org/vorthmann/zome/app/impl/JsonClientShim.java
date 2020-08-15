@@ -80,8 +80,20 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
             @Override
             public void doAction( String action )
             {
-                rootLogger .warning( "WARNING: Unhandled UI event: " + action );
+                rootLogger .warning( "Unhandled UI event: " + action );
                 new RuntimeException( "WARNING: Unhandled UI event" ) .printStackTrace();
+            }
+
+            @Override
+            public void runScript( String script, File file )
+            {
+                rootLogger .warning( "runScript: " + script );
+            }
+
+            @Override
+            public void openApplication( File file )
+            {
+                JsonClientShim.this .openApplication( file );
             }
         }, props, new J3dComponentFactory()
         {
@@ -125,6 +137,8 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
     }
 
     public abstract void dispatchSerializedJson( String eventStr );
+    
+    public abstract void openApplication( File file );
 
     public void dispatchEvent( String type, JsonNode payload )
     {
@@ -199,13 +213,20 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
                 {
                     rootLogger .fine( eventStr );
                 }
+
+                @Override
+                public void openApplication( File file )
+                {
+                    rootLogger .fine( "openApplication for " + file .getAbsolutePath() );
+                }
             };
             
             String path = "/Users/vorth/Dropbox/vZome/attachments/2020/08-Aug/02-Scott-vZome-logo/vZomeLogo.vZome";
             shim .applicationController .doFileAction( "open", new File( path ) );
 
             DocumentController documentController = shim .renderDocument( path );
-            documentController .doFileAction( "export.dae", new File( "/Users/vorth/Downloads/greenTetra.dae" ) );
+            documentController .doFileAction( "export.dae", new File( "/Users/vorth/Downloads/vZomeLogo.dae" ) );
+            documentController .doFileAction( "save", new File( "/Users/vorth/Downloads/vZomeLogo-saved.vZome" ) );
         } catch (Throwable t) {
             t .printStackTrace();
         }
