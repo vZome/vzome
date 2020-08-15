@@ -62,7 +62,11 @@ public class ApplicationController extends DefaultController
     
     public interface UI
     {
-        public void doAction( String action );
+        void doAction( String action );
+        
+        void runScript( String script, File file );
+        
+        void openApplication( File file );
     }
 
     public ApplicationController( UI ui, Properties commandLineArgs, J3dComponentFactory rvFactory )
@@ -554,6 +558,20 @@ public class ApplicationController extends DefaultController
     {
         return modelApp .getLights();
     }
+    
+    protected void runScript( String script, File file )
+    {
+        this .ui .runScript( script, file );
+    }
+
+    protected void openApplication( File file )
+    {
+        String script = this .getProperty( "export.script" );
+        if ( script != null )
+            this .ui .runScript( script, file );
+        else
+            this .ui .openApplication( file );
+    }
 
     public static void main(String[] args)
     {
@@ -572,6 +590,14 @@ public class ApplicationController extends DefaultController
                 {
                     System .out .println( "UI event: " + action );
                 }
+
+                @Override
+                public void runScript( String script, File file )
+                {}
+
+                @Override
+                public void openApplication( File file )
+                {}
             }, props, new J3dComponentFactory()
             {
                 @Override

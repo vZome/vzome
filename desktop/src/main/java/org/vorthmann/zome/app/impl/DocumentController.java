@@ -830,15 +830,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
 
                 String script = this .getProperty( "save.script" );
                 if ( script != null )
-                {
-                    try {
-                        Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
-                                null, file .getParentFile() );
-                    } catch ( IOException e ) {
-                        System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
-                        e .printStackTrace();
-                    }
-                }
+                    this .runScript( script, file );
                 return;
             }
             if ( "capture-animation" .equals( command ) )

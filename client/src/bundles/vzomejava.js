@@ -14,13 +14,13 @@ const LOAD_FAILED      = 'LOAD_FAILED'
 
 const CONTROLLER_RETURNED = 'CONTROLLER_RETURNED'
 
-export const actionTriggered = ( actionString, message ) => async (dispatch, getState) =>
+export const exportTriggered = ( extension, message ) => async (dispatch, getState) =>
 {
   dispatch( startProgress( message ) )
   const controller = getState().vzomejava.controller
-  const path = "/out.dae"
+  const path = "/" + getState().vzomejava.fileName.replace( ".vZome", "." + extension )
   const file = await createWriteableFile( path )
-  callObjectMethod( controller, "doFileAction", actionString, file ).then( () =>
+  callObjectMethod( controller, "doFileAction", "export." + extension, file ).then( () =>
   {
     dispatch( stopProgress() )
   })
@@ -29,6 +29,7 @@ export const actionTriggered = ( actionString, message ) => async (dispatch, get
 const initialState = {
   renderingOn: true,
   controller: undefined,
+  fileName: undefined,
   shapes: DEFAULT_MODEL.shapes,
   instances: DEFAULT_MODEL.instances,
   previous: DEFAULT_MODEL.instances,
@@ -40,6 +41,7 @@ export const reducer = ( state = initialState, action ) => {
     case FILE_LOADED:
       return {
         ...state,
+        fileName: action.payload.name,
         renderingOn: false,
         controller: undefined,
         instances: [],

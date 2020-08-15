@@ -1,4 +1,5 @@
 import { startProgress, stopProgress } from './progress'
+import { FILE_EXPORTED } from './jre'
 
 export const FILE_FAILED = 'FILE_FAILED'
 export const FILE_LOADED = 'FILE_LOADED'
@@ -53,4 +54,30 @@ export const fetchModel = path => dispatch =>
     });
 }
 
- 
+// from https://www.bitdegree.org/learn/javascript-download
+export const download = (filename, blob) =>
+{
+  const element = document.createElement( 'a' )
+  const blobURI = URL.createObjectURL( blob )
+  element.setAttribute( 'href', blobURI )
+  element.setAttribute( 'download', filename )
+
+  element.style.display = 'none'
+  document.body.appendChild( element )
+
+  element.click()
+
+  document.body.removeChild( element )
+}
+
+
+export const middleware = store => next => async action => 
+{
+  if ( action.type === FILE_EXPORTED ) {
+    const { name, bytes } = action.payload
+    const blob = new Blob([bytes.subarray(1)]);
+    download( name, blob )
+  }
+  
+  return next( action )
+}

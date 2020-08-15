@@ -1,11 +1,11 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { actionTriggered } from '../bundles/vzomejava'
+import { exportTriggered } from '../bundles/vzomejava'
 
-let Exporter = ({ enabled, doAction }) => {
+let Exporter = ({ enabled, doExport }) => {
   return ( 
-    <button id="exporter" onClick={ () => doAction( "export.dae", "Exporting Collada (DAE)..." ) }
+    <button id="exporter" onClick={ () => doExport( "dae", "Exporting Collada (DAE)..." ) }
         title="Export as Collada (DAE)"
         style={{ cursor: enabled ? 'pointer' : 'default' }} >
         <img alt="Export a DAE file" className="Icon" src="/app/export.svg" />
@@ -18,7 +18,7 @@ const select = (state) => ({
 })
 
 const boundEventActions = {
-  doAction : actionTriggered
+  doExport : exportTriggered
 }
 
 export default connect( select, boundEventActions )( Exporter )
