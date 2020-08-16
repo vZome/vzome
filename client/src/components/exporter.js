@@ -42,11 +42,11 @@ const formats = [
   //   label: "Color Mesh JSON",
   //   description: "This is custom vZome format for basic geometry interchange, including colors."
   // },
-  // {
-  //   key: "shapes",
-  //   label: "vZome Shapes JSON",
-  //   description: "This is custom vZome format for complete capture, including ball and strut shapes and colors."
-  // }
+  {
+    key: "shapes",
+    label: "vZome Shapes JSON",
+    description: "This is custom vZome format for complete capture, including ball and strut shapes and colors."
+  }
 ]
 
 const Exporter = ({ enabled, doExport }) =>
