@@ -225,8 +225,7 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
             shim .applicationController .doFileAction( "open", new File( path ) );
 
             DocumentController documentController = shim .renderDocument( path );
-            documentController .doFileAction( "export.dae", new File( "/Users/vorth/Downloads/vZomeLogo.dae" ) );
-            documentController .doFileAction( "save", new File( "/Users/vorth/Downloads/vZomeLogo-saved.vZome" ) );
+            documentController .doFileAction( "export.cmesh", new File( "/Users/vorth/Downloads/vZomeLogo.cmesh.json" ) );
         } catch (Throwable t) {
             t .printStackTrace();
         }

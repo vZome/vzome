@@ -38,10 +38,9 @@ export const writeTextFile = ( path, text ) =>
 
 export const init = ( window, store ) =>
 {
-  // CheerpJ Global.jsCallS requires a global function to call
+  // CheerpJ Global.jsCallS requires global functions to call
   //   from Java back into Javascript.  The simplest way to
-  //   provide a global function that can dispatch is this,
-  //   attaching it to window.
+  //   provide global functions is to attach them to window.
   window.dispatchToRedux = (s) => {
     store.dispatch( JSON.parse( s ) )
   }
@@ -169,7 +168,7 @@ export const init = ( window, store ) =>
     "/lt/runtime/rt.jar.java.nio.js"
   ]
 
-  store.dispatch( startProgress( "Loading code..." ) )
+  store.dispatch( startProgress( "Loading vZome Online Viewer..." ) )
 
   window.cheerpjInit( {
     preloadResources: resourcesToPreload,

@@ -1,7 +1,9 @@
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import ModelCanvas from './components/modelcanvas-three.js';
+import Models from './components/models.js';
 import FileOpener from './components/fileopener.js';
 import Exporter from './components/exporter.js';
 import Spinner from './components/spinner.js';
@@ -10,9 +12,7 @@ function App() {
   return (
     <div>
       <ModelCanvas/>
-      <header className="App-header">
-        <h1>vZome Online Viewer (beta)</h1>
-      </header>
+      <Models/>
       <FileOpener/>
       <Exporter/>
       <Spinner/>

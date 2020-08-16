@@ -50,6 +50,12 @@ canvas {
   margin: auto;
 }
 
+#models {
+  position: fixed;
+  right: 9%;
+  top: 1%;
+}
+
 #fileopener {
   position: fixed;
   right: 5%;

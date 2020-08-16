@@ -103,7 +103,7 @@ public class ColoredMeshJson
             }
         }
 
-        JsonFactory factory = new JsonFactory();
+        JsonFactory factory = new JsonFactory() .disable( JsonGenerator.Feature.AUTO_CLOSE_TARGET );
         JsonGenerator generator = factory.createGenerator( writer );
         generator .useDefaultPrettyPrinter();
         generator .setCodec( mapper );
