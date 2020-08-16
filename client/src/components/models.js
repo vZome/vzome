@@ -48,7 +48,7 @@ const Models = ({ enabled, openModel }) =>
           <img alt="select model" className="Icon" src="/app/dodecFaces.svg" />
       </Button>
 
-      <Modal centered show={show} onHide={handleCancel}>
+      <Modal centered show={show} size='lg' onHide={handleCancel}>
         <Modal.Header closeButton>
           <Modal.Title>Built-in Models</Modal.Title>
         </Modal.Header>
