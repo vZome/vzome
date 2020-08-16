@@ -31,8 +31,8 @@ const models = [
 
 const Models = ({ enabled, openModel }) =>
 {
-  const [show, setShow] = useState( false );
-  const [model, setModel] = useState( models[0].key );
+  const [show, setShow] = useState( false )
+  const [model, setModel] = useState( models[0].key )
 
   const handleCancel = () =>{
     setShow( false )
@@ -41,7 +41,7 @@ const Models = ({ enabled, openModel }) =>
     setShow( false )
     openModel( `/app/models/${model}.vZome` )
   }
-  const handleShow = () => setShow(true);
+  const handleShow = () => setShow( true )
 
   return (
     <>

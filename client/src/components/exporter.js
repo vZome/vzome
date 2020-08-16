@@ -54,8 +54,8 @@ const formats = [
 
 const Exporter = ({ enabled, doExport }) =>
 {
-  const [show, setShow] = useState( false );
-  const [key, setFormat] = useState( formats[0].key );
+  const [show, setShow] = useState( false )
+  const [key, setFormat] = useState( formats[0].key )
 
   const handleCancel = () =>{
     setShow( false )
