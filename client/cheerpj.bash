@@ -18,47 +18,45 @@ pushd ..
 popd
 
 if [ "$1" == "" ]; then
-  rm public/*.jar public/*.jar.js
+  rm -rf unpacked public/*.jar public/*.jar.js
 fi
 
 banner 'extracting JAR files'
-unzip ../desktop/build/distributions/vZome-Linux-7.0.dev.zip -d . || exit $?
-mv vZome-Linux-7.0.dev/lib/cheerpj-dom.jar public || exit $?
-mv vZome-Linux-7.0.dev/lib/jackson-*.jar public || exit $?
-mv vZome-Linux-7.0.dev/lib/javax.json*.jar public || exit $?
-mv vZome-Linux-7.0.dev/lib/vecmath*.jar public || exit $?
-mv vZome-Linux-7.0.dev/lib/core*.jar public || exit $?
-mv vZome-Linux-7.0.dev/lib/desktop*.jar public || exit $?
-rm -rf vZome-Linux-7.0.dev/ || exit $?
+unzip -o ../desktop/build/distributions/vZome-Linux-*.dev.zip -d . || exit $?
 
-pushd public || exit $?
+JARS=$( ls vZome-Linux-*.dev/lib | grep -e jackson -e vecmath -e '^core' -e desktop -e javax.json -e cheerp ) || exit $?
+mkdir -p unpacked || exit $?
+for JAR in $JARS; do
+  mv vZome-Linux-*.dev/lib/$JAR unpacked || exit $?
+done
+rm -rf vZome-Linux-*.dev/ || exit $?
 
-if [ "$1" == "" ]; then
-  banner 'compiling cheerpj-dom'
-  /Applications/cheerpj/cheerpjfy.py cheerpj-dom.jar || exit $?
-  banner 'compiling vecmath'
-  /Applications/cheerpj/cheerpjfy.py vecmath-1.6.0-final.jar || exit $?
-  banner 'compiling jackson-annotations'
-  /Applications/cheerpj/cheerpjfy.py jackson-annotations-2.9.3.jar || exit $?
-  banner 'compiling jackson-core'
-  /Applications/cheerpj/cheerpjfy.py jackson-core-2.9.5.jar || exit $?
-  banner 'compiling javax.json'
-  /Applications/cheerpj/cheerpjfy.py javax.json-1.0.4.jar || exit $?
-  banner 'compiling jackson-databind'
-  /Applications/cheerpj/cheerpjfy.py \
-    --deps jackson-core-2.9.5.jar:jackson-annotations-2.9.3.jar \
-    jackson-databind-2.9.5.jar || exit $?
-fi
+DEPS=$( echo $JARS | sed 's/ /:/g' )
+echo DEPS: $DEPS
 
-banner 'compiling core'
-/Applications/cheerpj/cheerpjfy.py \
-  --deps jackson-core-2.9.5.jar:jackson-annotations-2.9.3.jar:jackson-databind-2.9.5.jar:javax.json-1.0.4.jar:vecmath-1.6.0-final.jar \
-  core-7.0.jar  || exit $?
+pushd unpacked || exit $?
 
-banner 'compiling desktop'
-/Applications/cheerpj/cheerpjfy.py \
-  --deps jackson-core-2.9.5.jar:jackson-annotations-2.9.3.jar:jackson-databind-2.9.5.jar:javax.json-1.0.4.jar:vecmath-1.6.0-final.jar:core-7.0.jar \
-  desktop-7.0.jar  || exit $?
+  if [ "$1" == "" ]; then
+    for JAR in $JARS; do
+      [ $JAR == core*.jar ] && continue
+      [ $JAR == desktop*.jar ] && continue
+      banner "compiling $JAR"
+      /Applications/cheerpj/cheerpjfy.py --deps $DEPS --pack-jar=../public/$JAR $JAR || exit $?
+    done
+  fi
+
+  JAR=core-7.0.jar
+  banner "compiling $JAR"
+  /Applications/cheerpj/cheerpjfy.py --deps $DEPS --pack-jar=../public/$JAR $JAR || exit $?
+
+  JAR=desktop-7.0.jar
+  banner "compiling $JAR"
+  /Applications/cheerpj/cheerpjfy.py --deps $DEPS --pack-jar=../public/$JAR $JAR || exit $?
+
+  mv *.jar.js ../public || exit $?
+
+popd
+rm -rf unpacked
 
 banner 'FINISHED!'
 banner 'Now run "python3 -m http.server 8080"'
