@@ -8,6 +8,8 @@ import Tab from 'react-bootstrap/Tab'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Nav from 'react-bootstrap/Nav'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Tooltip from 'react-bootstrap/Tooltip'
 
 const models = [
   {
@@ -29,8 +31,8 @@ const models = [
 
 const Models = ({ enabled, openModel }) =>
 {
-  const [show, setShow] = useState( false );
-  const [model, setModel] = useState( models[0].key );
+  const [show, setShow] = useState( false )
+  const [model, setModel] = useState( models[0].key )
 
   const handleCancel = () =>{
     setShow( false )
@@ -39,14 +41,16 @@ const Models = ({ enabled, openModel }) =>
     setShow( false )
     openModel( `/app/models/${model}.vZome` )
   }
-  const handleShow = () => setShow(true);
+  const handleShow = () => setShow( true )
 
   return (
     <>
-      <Button id="models" variant="link" onClick={handleShow}
+      <OverlayTrigger placement="bottom" overlay={<Tooltip>Built-in models</Tooltip>} >
+        <Button id="models" variant="link" onClick={handleShow}
           style={{ cursor: enabled ? 'pointer' : 'default' }} >
           <img alt="select model" className="Icon" src="/app/dodecFaces.svg" />
-      </Button>
+        </Button>
+      </OverlayTrigger>
 
       <Modal centered show={show} size='lg' onHide={handleCancel}>
         <Modal.Header closeButton>

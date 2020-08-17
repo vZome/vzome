@@ -1,12 +1,12 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import React from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './App.css'
 
-import ModelCanvas from './components/modelcanvas-three.js';
-import Models from './components/models.js';
-import FileOpener from './components/fileopener.js';
-import Exporter from './components/exporter.js';
-import Spinner from './components/spinner.js';
+import ModelCanvas from './components/modelcanvas-three.js'
+import Models from './components/models.js'
+import FileOpener from './components/fileopener.js'
+import Exporter from './components/exporter.js'
+import Spinner from './components/spinner.js'
 
 function App() {
   return (

@@ -8,6 +8,8 @@ import Tab from 'react-bootstrap/Tab'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Nav from 'react-bootstrap/Nav'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Tooltip from 'react-bootstrap/Tooltip'
 
 const formats = [
   {
@@ -45,14 +47,15 @@ const formats = [
   {
     key: "shapes",
     label: "vZome Shapes JSON",
-    description: "This is custom vZome format for complete capture, including ball and strut shapes and colors."
+    description: "This is custom vZome format for complete capture, including ball, strut, and panel shapes. " +
+      "The format does instancing, with each instance referring to an indexed shape."
   }
 ]
 
 const Exporter = ({ enabled, doExport }) =>
 {
-  const [show, setShow] = useState( false );
-  const [key, setFormat] = useState( formats[0].key );
+  const [show, setShow] = useState( false )
+  const [key, setFormat] = useState( formats[0].key )
 
   const handleCancel = () =>{
     setShow( false )
@@ -66,10 +69,12 @@ const Exporter = ({ enabled, doExport }) =>
 
   return (
     <>
-      <Button id="exporter" variant="link" onClick={handleShow}
+      <OverlayTrigger placement="bottom" overlay={<Tooltip>Export this model</Tooltip>} >
+        <Button id="exporter" variant="link" onClick={handleShow}
           style={{ cursor: enabled ? 'pointer' : 'default' }} >
           <img alt="export" className="Icon" src="/app/export.svg" />
-      </Button>
+        </Button>
+      </OverlayTrigger>
 
       <Modal centered show={show} size='lg' onHide={handleCancel}>
         <Modal.Header closeButton>
