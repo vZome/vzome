@@ -22,7 +22,7 @@ let FileOpener = ({ enabled, loadFile }) =>
                 loadFile( selected )
             } }
           accept=".vZome" disabled={!enabled} /> 
-        <img alt="Open your vZome file"  title="Open your vZome file" className="Icon" src="/app/folder-2.svg" />
+        <img alt="Open your vZome file" className="Icon" src="/app/folder-2.svg" />
       </Button>
     </OverlayTrigger>
   )
