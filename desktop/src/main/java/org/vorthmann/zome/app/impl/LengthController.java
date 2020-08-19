@@ -3,18 +3,15 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
 
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
-import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Direction;
 
 /**
@@ -42,7 +39,7 @@ public class LengthController extends DefaultController
         private static final int MAX_SCALE = 6, MIN_SCALE = -6;
 
         @Override
-        public void doAction( String action, ActionEvent e ) throws Exception
+        public void doAction( String action ) throws Exception
         {
             if ( "scaleUp" .equals( action ) )
                 setScale( this .scale + 1 );
@@ -53,7 +50,7 @@ public class LengthController extends DefaultController
 //            else if ( "zero" .equals( action ) )
 //                ; // TODO multiply this value into the lengthModel, and zero this value
             else
-            	super.doAction( action, e );
+            	super.doAction( action );
         }
 
         private int scale = 0;
@@ -179,11 +176,6 @@ public class LengthController extends DefaultController
         
     private final AlgebraicField field;
         
-    public LengthController( Direction orbit )
-    {
-        this( orbit .getSymmetry() .getField(), orbit .getUnitLength() );
-    }
-
     public LengthController( AlgebraicField field )
     {
         this( field, field .one() );
@@ -252,31 +244,6 @@ public class LengthController extends DefaultController
     {
         firePropertyChange( "length", true, false );
     }
-
-    public void getXml( Element lengthElem )
-    {
-        // backward-compatible, for now
-        //  TODO THIS IS BROKEN!  Does not deal with more than one multiplier!
-        DomUtils .addAttribute( lengthElem, "scale", Integer.toString( currentScales[ this .multiplier ] .getScale() + SCALE_OFFSET ) );
-        DomUtils .addAttribute( lengthElem, "taus", "0" );
-        DomUtils .addAttribute( lengthElem, "ones", "1" );
-        DomUtils .addAttribute( lengthElem, "divisor", half? "2" : "1" );
-    }
-
-    public void setXml( Element length )
-    {
-        String attrValue = length .getAttribute( "scale" );
-        // handling nulls since I used a non-published version to migrate internal models,
-        //   and it did not serialize any attributes at all
-        int scale = ( attrValue != null && ! attrValue .isEmpty() )? Integer .parseInt( attrValue ) : 4;        
-        //  TODO THIS IS BROKEN!  Does not deal with more than one multiplier!
-        this .currentScales[ this .multiplier ] .setScale( scale - SCALE_OFFSET );  // vZome files record the actual scale, not user scale
-        
-        // TODO handle other two attribute values!
-        
-        attrValue = length .getAttribute( "divisor" );
-        half = ( attrValue == null || attrValue .isEmpty() )? false : "2" .equals( attrValue );
-    }
     
     private void resetScales()
     {
@@ -286,7 +253,7 @@ public class LengthController extends DefaultController
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         switch ( action ) {
 
@@ -353,7 +320,7 @@ public class LengthController extends DefaultController
 
         case "scaleUp":
         case "scaleDown":
-            currentScales[ this .multiplier ] .doAction( action, e );
+            currentScales[ this .multiplier ] .doAction( action );
             return;
 
         case "newZeroScale":
@@ -373,7 +340,7 @@ public class LengthController extends DefaultController
 	            fireLengthChange();
 		    }
 		    else
-		        super.doAction( action, e );
+		        super.doAction( action );
 		}
         
 //        else if ( action .startsWith( "adjustScale." ) )

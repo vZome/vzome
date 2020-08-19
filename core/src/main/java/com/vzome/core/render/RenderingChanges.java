@@ -31,18 +31,9 @@ public interface RenderingChanges {
     void shapeChanged( RenderedManifestation manifestation );
 
     /**
-    * @deprecated As of 7/20/2016: Use controller property "showFrameLabels" instead.
-    */
-    @Deprecated
-    default void enableFrameLabels(){
-        throw new IllegalStateException( "enableFrameLabels is deprecated." );
-    }
-
-    /**
-    * @deprecated As of 7/20/2016: Use controller property "showFrameLabels" instead.
-    */
-    @Deprecated
-    default void disableFrameLabels(){
-        throw new IllegalStateException( "disableFrameLabels is deprecated." );
-    }
+     * Change shapes all at once, if supported.
+     * @param shapes
+     * @return true if the rendering mechanism can support this
+     */
+    boolean shapesChanged( Shapes shapes );
 }

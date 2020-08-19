@@ -6,7 +6,6 @@ import javax.vecmath.Vector3d;
 
 import com.vzome.core.viewing.Camera;
 import com.vzome.desktop.controller.CameraController;
-import com.vzome.desktop.controller.CameraController.Viewer;
 
 /**
  * A CameraController.Viewer that only changes rotations.
@@ -30,7 +29,7 @@ public class TrackballRenderingViewer implements CameraController.Viewer
 		Matrix4d matrix = new Matrix4d();
 		Camera defaultCamera = new Camera();
 		defaultCamera .setMagnification( 1.0f );
-		defaultCamera .getViewTransform( matrix, 0d );
+		defaultCamera .getViewTransform( matrix );
 		matrix .get( translation ); // save the default translation to apply on every update below
 
 		// set the perspective view just once
@@ -41,22 +40,17 @@ public class TrackballRenderingViewer implements CameraController.Viewer
 	}
 
 	@Override
-	public void setViewTransformation( Matrix4d trans, int eye )
+	public void setViewTransformation( Matrix4d trans )
 	{
-		if ( eye == Viewer .MONOCULAR ) {
-			Matrix3d justRotation3d = new Matrix3d();
-			trans .get( justRotation3d );
-			justRotation3d .invert(); // to match the invert() in the caller
-			Matrix4d finalTransform = new Matrix4d();
-			finalTransform .set( this .translation );
-			finalTransform .setRotation( justRotation3d );
-			finalTransform .invert(); // to match the invert() in the caller
-			this .delegate .setViewTransformation( finalTransform, Viewer .MONOCULAR );
-		}
+	    Matrix3d justRotation3d = new Matrix3d();
+	    trans .get( justRotation3d );
+	    justRotation3d .invert(); // to match the invert() in the caller
+	    Matrix4d finalTransform = new Matrix4d();
+	    finalTransform .set( this .translation );
+	    finalTransform .setRotation( justRotation3d );
+	    finalTransform .invert(); // to match the invert() in the caller
+	    this .delegate .setViewTransformation( finalTransform );
 	}
-
-	@Override
-	public void setEye(int eye) {}
 
 	@Override
 	public void setPerspective( double fov, double aspectRatio, double near, double far ) {}

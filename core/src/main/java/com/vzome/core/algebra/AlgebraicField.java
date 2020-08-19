@@ -3,15 +3,35 @@
 package com.vzome.core.algebra;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
+
+import com.vzome.core.math.RealVector;
 
 public abstract class AlgebraicField
 {
+    public interface Registry
+    {
+        AlgebraicField getField( String name );
+    }
+
     abstract BigRational[] multiply( BigRational[] v1, BigRational[] v2 );
 
     abstract double evaluateNumber( BigRational[] factors );
 
     abstract BigRational[] scaleBy( BigRational[] factors, int whichIrrational );
+    
+    /**
+     * The integers should be the same indices used by getUnitTerm().
+     * Subclasses must override to usefully participate in the generation
+     * of AlgebraicSeries.
+     * @param input
+     * @return
+     */
+    List<Integer> recurrence( List<Integer> input )
+    {
+        return input;
+    }
 
     void normalize( BigRational[] factors ) {}
 
@@ -52,6 +72,10 @@ public abstract class AlgebraicField
      * Negative powers of the irrationals.
      */
     private final ArrayList<AlgebraicNumber>[] negativePowers;
+    
+    private static final double SMALL_SERIES_THRESHOLD = 30d;
+
+    private AlgebraicSeries smallSeries;
 
     // Eclipse says that rawtypes is unnecessary here, but without it,
     // Netbeans and the gradle command line both generate the rawtypes warning 
@@ -71,6 +95,31 @@ public abstract class AlgebraicField
         one = this .createRational( BigRational.ONE );
         positivePowers = new ArrayList[ order-1 ];
         negativePowers = new ArrayList[ order-1 ];
+    }
+
+    // generateSeries() calls createPower() which can't be used in the ParameterizedField
+    // until the c'tor is fully executed. That means smallSeries can't be initialized
+    // in this base class c'tor, so this method generates it one time upon first use 
+    // rather than in the c'tor which also means smallSeries can't be final.
+    private void initSmallSeries() {
+        if(smallSeries == null) {
+            this .smallSeries = this .generateSeries( SMALL_SERIES_THRESHOLD );
+        }
+    }
+
+    public AlgebraicNumber nearestAlgebraicNumber( double target )
+    {
+        initSmallSeries(); // initialze smallSeries on first use;
+        return this .smallSeries .nearestAlgebraicNumber( target );
+    }
+    
+    public AlgebraicVector nearestAlgebraicVector( RealVector target )
+    {
+        initSmallSeries(); // initialze smallSeries on first use;
+        return new AlgebraicVector(
+                this .smallSeries .nearestAlgebraicNumber( target.x ),
+                this .smallSeries .nearestAlgebraicNumber( target.y ),
+                this .smallSeries .nearestAlgebraicNumber( target.z ) );
     }
 
     public String getName()
@@ -141,18 +190,80 @@ public abstract class AlgebraicField
         return true;
     }
 
+    /**
+     * The AlgebraicNumber constructor already validates the number of terms.
+     * It pads the array with ZEROs if it's too short,
+     * throws an exception if it's too long,
+     * and replaces all nulls with ZERO.
+     * No need to duplicate any of that here.
+     * This method is called by the AlgebraicNumber constructor. 
+     * It is primarily intended to allow subclasses to intercept
+     * a pair of terms from the golden field and remap them as needed for that field.
+     * Otherwise, the terms are returned unchanged.
+     * @param terms
+     * @return
+     */
+    protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
+        return terms;
+    }
+    
+    /**
+     * Generates an AlgebraicNumber with the specified {@code BigRational} factors.
+     * @param factors
+     * @return
+     */
     public final AlgebraicNumber createAlgebraicNumber( BigRational[] factors )
     {
         return new AlgebraicNumber( this, factors );
     }
 
-    public final AlgebraicNumber createAlgebraicNumber( int... factors )
+    /**
+     * Generates an AlgebraicNumber with integer terms (having only unit denominators).
+     * Use {@code createAlgebraicNumber( int[] numerators, int denominator )} 
+     * or {@code createAlgebraicNumber( BigRational[] factors )} 
+     * if denominators other than one are required.
+     * @param terms
+     * @return
+     */
+    public final AlgebraicNumber createAlgebraicNumber( int[] terms )
     {
-        BigRational[] brs = new BigRational[ factors .length ];
-        for ( int j = 0; j < factors.length; j++ ) {
-            brs[ j ] = new BigRational( factors[ j ] );
+        return createAlgebraicNumber( terms, 1 );
+    }
+
+    /**
+     * Generates an AlgebraicNumber from a "trailing divisor" int array representation.
+     * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
+     * @return
+     */
+    public final AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
+    {
+        int n = trailingDivisorForm .length;
+        int denominator = 1;
+        if ( n == this .order + 1 ) {
+            --n;
+            denominator = trailingDivisorForm[ n ];
         }
-        return new AlgebraicNumber( this, brs );
+        BigRational[] brs = new BigRational[ n ];
+        for ( int j = 0; j < n; j++ ) {
+            brs[ j ] = new BigRational( trailingDivisorForm[ j ], denominator );
+        }
+        return createAlgebraicNumber( brs );
+    }
+
+    /**
+     * Generates an AlgebraicNumber with the specified numerators,
+     * all having a common denominator as specified.
+     * @param numerators
+     * @param denominator is a common denominator for all numerators
+     * @return
+     */
+    public final AlgebraicNumber createAlgebraicNumber( int[] numerators, int denominator )
+    {
+        BigRational[] brs = new BigRational[ numerators .length ];
+        for ( int j = 0; j < numerators.length; j++ ) {
+            brs[ j ] = new BigRational( numerators[ j ], denominator );
+        }
+        return createAlgebraicNumber( brs );
     }
 
     public final AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
@@ -165,10 +276,25 @@ public abstract class AlgebraicField
         }
         if ( scalePower != 0 ) {
             AlgebraicNumber multiplier = this .createPower( scalePower );
-            return new AlgebraicNumber( this, factors ) .times( multiplier );
+            return createAlgebraicNumber(factors ) .times( multiplier );
         }
         else
-            return new AlgebraicNumber( this, factors );
+            return createAlgebraicNumber( factors );
+    }
+
+    /**
+     * The golden ratio (and thus icosahedral symmetry and related tools) 
+     * can be generated by some fields even though it's not one of their irrational coefficients. 
+     * For example, SqrtField(5) and PolygonField(10) can both generate the golden ratio 
+     * so they can support icosa symmetry and related tools.
+     * In some such cases, the resulting AlgebraicNumber 
+     * may have multiple terms and/or factors other than one. 
+     * 
+     * @return An AlgebraicNumber which evaluates to the golden ratio, or null if not possible in this field.
+     */
+    public AlgebraicNumber getGoldenRatio()
+    {
+        return null;
     }
 
     public final AlgebraicNumber createPower( int power )
@@ -455,9 +581,44 @@ public abstract class AlgebraicField
                 int denominator = nums[c][(f*2)+1];
                 factors[f] = new BigRational(numerator, denominator);
             }
-            coords[c] = new AlgebraicNumber(this, factors);
+            coords[c] = createAlgebraicNumber(factors);
         }
         return new AlgebraicVector( coords );
+    }
+    
+    /**
+     * Generates an AlgebraicVector with all AlgebraicNumber terms being integers (having unit denominators).
+     * Contrast this with {@code createVector(int[][] nums)} which requires all denominators to be specified.
+     * @param nums is a 2 dimensional integer array. The length of nums becomes the number of dimensions in the resulting AlgebraicVector.
+     * For example, {@code (new PentagonField()).createIntegerVector( new int[][]{ {0,-1}, {2,3}, {4,5} } ); } 
+     * generates the 3 dimensional vector (-φ, 2 +3φ, 4 +5φ) having all integer terms. 
+     * @return an AlgebraicVector
+     */
+    public AlgebraicVector createIntegerVector( int[][] nums )
+    {
+        final int dims = nums.length;
+        AlgebraicVector result = origin( dims );
+        for (int dim = 0; dim < dims; dim++) {
+            result .setComponent( dim, createAlgebraicNumber( nums[dim] ) );
+        }
+        return result;
+    }
+    
+    /**
+     * Generates an AlgebraicVector with all AlgebraicNumber terms in "trailing divisor" int array form.
+     * @param nums is a 2 dimensional integer array. The length of nums becomes the number of dimensions in the resulting AlgebraicVector.
+     * For example, {@code (new PentagonField()).createIntegerVectorFromTDs( new int[][]{ {0,-1,1}, {2,3,2}, {4,5,2} } ); } 
+     * generates the 3 dimensional vector (-φ, 1 +3φ/2, 2 +5φ/2). 
+     * @return an AlgebraicVector
+     */
+    public AlgebraicVector createIntegerVectorFromTDs( int[][] nums )
+    {
+        final int dims = nums.length;
+        AlgebraicVector result = origin( dims );
+        for (int dim = 0; dim < dims; dim++) {
+            result .setComponent( dim, createAlgebraicNumberFromTD( nums[dim] ) );
+        }
+        return result;
     }
 
     /**
@@ -579,7 +740,7 @@ public abstract class AlgebraicField
         for ( int i = 0; i < rats.length; i++ ) {
             rats[ i ] = new BigRational( tokenizer .nextToken() );
         }
-        return new AlgebraicNumber( this, rats );
+        return createAlgebraicNumber( rats );
     }
 
     public AlgebraicVector parseVector( String nums )
@@ -617,5 +778,17 @@ public abstract class AlgebraicField
     public int getNumMultipliers()
     {
         return this .getNumIrrationals(); // the right value for any order-2 field, and for some higher order fields, also
+    }
+
+    public AlgebraicSeries generateSeries( double threshold )
+    {
+        AlgebraicNumber multiplier = this .createPower( 1, this .getNumIrrationals() );
+        AlgebraicNumber cover = this .one();
+        int power = 0;
+        while ( cover .evaluate() < threshold ) {
+            cover = cover .times( multiplier );
+            ++ power;
+        }
+        return new AlgebraicSeries( this, power );
     }
 }

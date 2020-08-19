@@ -1,6 +1,6 @@
 package com.vzome.core.edits;
 
-import static com.vzome.core.math.DomUtils.addAttribute;
+import static com.vzome.xml.DomUtils.addAttribute;
 
 import java.util.Map;
 
@@ -14,8 +14,8 @@ import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.edits.ManifestationColorMappers.ManifestationColorMapper;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
 
 /**

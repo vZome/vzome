@@ -1,9 +1,8 @@
 
 package org.vorthmann.zome.ui;
 
+import java.awt.Desktop;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -12,9 +11,9 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +37,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.dap.DapAdapter;
 
 /**
  * Top-level UI class for vZome.
@@ -63,9 +62,11 @@ import com.vzome.desktop.controller.Controller3d;
  * @author vorth
  *
  */
-public final class ApplicationUI implements ActionListener, PropertyChangeListener
+public final class ApplicationUI implements ApplicationController.UI, PropertyChangeListener
 {
     private ApplicationController mController;
+
+    private DapAdapter debugger;
 
     private Controller.ErrorChannel errors;
 
@@ -98,7 +99,9 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         if (fh == null) {
             Path logsFolder = Platform.logsFolder();
             try {
-                Files .createDirectory( logsFolder );
+                if(! Files.exists(logsFolder)) {
+                    Files .createDirectory( logsFolder );
+                }
                 // If there is a log file naming conflict and no "%u" field has been specified, 
                 //  an incremental unique number will be added at the end of the filename after a dot.
                 // This behavior interferes with file associations based on the .log file extension.
@@ -109,8 +112,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
                 // 
                 // SV: I've reversed the %u and %g, so that sorting by name puts related logs together, in order.  The Finder / Explorer already
                 //   knows how to sort by date, so we don't need to support that.
-                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome60_%u_%g.log", 500000, 10);
-            } catch (FileAlreadyExistsException e1) {
+                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome7.0_%u_%g.log", 500000, 10);
             } catch (Exception e1) {
                 rootLogger.log(Level.WARNING, "unable to set up vZome file log handler", e1);
                 try {
@@ -124,6 +126,18 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
                 rootLogger.addHandler(fh);
             }
         }
+        // The following reflection code generates a warning in Java 11 so I'm omitting it, 
+        // but still leaving it here so it can be uncommented for debugging
+//        if(fh != null) {
+//            try {
+//                Field privateFilesField = fh.getClass().getDeclaredField("files");
+//                privateFilesField.setAccessible(true);
+//                File[] files = (File[]) privateFilesField.get(fh);
+//                System.out.println("Log file " + files[0].getCanonicalPath());
+//            } catch(Exception ex) {
+//                ex.printStackTrace();
+//            }
+//        }
     }
 
     private static ApplicationUI theUI;
@@ -170,7 +184,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
          */
 
         SplashScreen splash = null;
-        String splashImage = "org/vorthmann/zome/ui/vZome-6-splash.png";
+        String splashImage = "org/vorthmann/zome/ui/vZome-7-splash.png";
         splash = new SplashScreen( splashImage );
         splash .splash();
         logger .info( "splash screen displayed" );
@@ -295,6 +309,18 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
             if ( splash != null )
                 splash .dispose();
+            
+            String debugPortStr = ui .mController .getProperty( "debug.adapter.port" );
+            if ( debugPortStr != null ) {
+                try {
+                    ui .debugger = new DapAdapter(); // inert unless we start the server
+                    Integer debugPort = Integer .parseInt( debugPortStr );
+                    ui .debugger .startServer( debugPort, ui .mController );
+                } catch ( NumberFormatException e ) {
+                    if ( logger .isLoggable( Level .WARNING ) )
+                        logger .warning( "debug.adapter.port not an integer; debugger not listening" );
+                }
+            }
         }
     }
 
@@ -304,7 +330,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         switch ( evt .getPropertyName() ) {
 
         case "newDocument":
-            Controller3d controller = (Controller3d) evt. getNewValue();
+            Controller controller = (Controller) evt. getNewValue();
             DocumentFrame window = new DocumentFrame( controller, this .mController .getJ3dFactory() );
             window .setVisible( true );
             window .setAppUI( new PropertyChangeListener() {
@@ -324,10 +350,8 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
     }
 
     @Override
-    public void actionPerformed( ActionEvent event )
+    public void doAction( String action )
     {
-        String action = event. getActionCommand();
-
         switch ( action ) {
 
         case "showAbout":
@@ -338,7 +362,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             String str = JOptionPane .showInputDialog( null, "Enter the URL for an online .vZome file.", "Open URL",
                     JOptionPane.PLAIN_MESSAGE );
             if ( str != null )
-                mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "openURL-" + str ) );
+                mController .actionPerformed( this, "openURL-" + str );
             break;
 
         case "quit":
@@ -346,9 +370,25 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             break;
 
         default:
-            JOptionPane .showMessageDialog( null,
-                    "No handler for action: \"" + action + "\"",
-                    "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+            if ( action .startsWith( "browse-" ) )
+            {
+                String url = action .substring( "browse-" .length() );
+                if ( Desktop.isDesktopSupported() && Desktop.getDesktop() .isSupported( Desktop.Action.BROWSE ) ) {
+                    try {
+                        Desktop.getDesktop() .browse( new URI( url ) );
+                    } catch (IOException | URISyntaxException e) {
+                        e .printStackTrace();
+                        JOptionPane .showMessageDialog( null,
+                                "Sorry, I am unable to launch the browser.",
+                                "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+                    }
+                }
+            }
+            else {
+                JOptionPane .showMessageDialog( null,
+                        "No handler for action: \"" + action + "\"",
+                        "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+            }
         }
     }
 
@@ -485,6 +525,41 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         }
     }
 
+    public void runScript( String script, File file )
+    {
+        try {
+            Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
+                    null, file .getParentFile() );
+        } catch ( IOException e ) {
+            System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+            e .printStackTrace();
+        }
+    }
+
+    public void openApplication( File file )
+    {
+        try {
+            if ( Desktop .isDesktopSupported() ) {
+                // DH - The test for file.exists() shouldn't be needed if this method is invoked in the proper sequence
+                // so I think it should be omitted eventually so the exceptions will be thrown
+                // but I'm leaving it here for now as a debugging aid.
+                if( ! file .exists() ) {
+                    System .err .println( file .getAbsolutePath() + " does not exist." );
+                    //                    return;
+                }
+                Desktop desktop = Desktop .getDesktop();
+                System .err .println( "Opening app for  " + file .getAbsolutePath() + " in thread: " + Thread.currentThread() );
+                desktop .open( file );
+            }
+        } catch ( IOException | IllegalArgumentException e ) {
+            System .err .println( "Desktop.open() failed on " + file .getAbsolutePath() );
+            if ( ! file .exists() ) {
+                System .err .println( "File does not exist." );
+            }
+            e.printStackTrace();
+        }
+    }
+
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // These next three methods may be invoked by the mac Adapter.
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -505,21 +580,44 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
     public void about()
     {
-        String version = mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + ", build "
+        String version = mController.getProperty( "edition" ) + " " + mController.getProperty( "version" ) + "."
                 + mController .getProperty( "buildNumber" );
         if ( mController .userHasEntitlement( "developer.extras" ) )
             version += "\n\nGit commit: " + mController .getProperty( "gitCommit" )
             + "\n\nvzome-core: " + mController .getProperty( "coreVersion" );
         JOptionPane.showMessageDialog( null, version + "\n\n"
 
-                + "Contributors:\n\n" + "Scott Vorthmann\n" + "David Hall\n" + "\n"
+                + "Committers:\n\n" 
+                + "Scott Vorthmann\n" 
+                + "David Hall\n" + "\n"
 
-                + "Acknowledgements:\n\n" + "Paul Hildebrandt\n" + "Marc Pelletier\n"
-                + "David Richter\n" + "Brian Hall\n" + "Dan Duddy\n" + "Fabien Vienne\n" + "George Hart\n"
-                + "Edmund Harriss\n" + "Corrado Falcolini\n" + "Ezra Bradford\n" + "Chris Kling\n" + "Samuel Verbiese\n" + "Walt Venable\n"
-                + "Will Ackel\n" + "Tom Darrow\n" + "Sam Vandervelde\n" + "Henri Picciotto\n" + "Florelia Braschi\n"
+                + "Contributors:\n\n"
+                + "Paul Hildebrandt\n"
+                + "David Richter\n"
+                + "Brian Hall\n"
+                + "George Hart\n"
+                + "Edmund Harriss\n"
+                + "Corrado Falcolini\n"
+                + "Ezra Bradford\n"
+                + "Sam Vandervelde\n"
+                + "Jacob Rus\n"
+                + "Dan Duddy\n"
+                + "Walt Venable\n"
+                + "Will Ackel\n"
+                + "John and Jane Kostick\n"
+                + "Samuel Verbiese\n"
+                + "Tom Darrow\n"
+                + "Henri Picciotto\n"
+                + "Florelia Braschi\n"
 
-                + "\n" + "Dedicated to Everett Vorthmann,\n" + "who made me an engineer\n"
+                + "\n" + "In Memoriam:\n\n"
+                + "Marc Pelletier\n"
+                + "Fabien Vienne\n"
+                + "Chris Kling\n"
+
+                + "\n" + "Dedicated to Everett Vorthmann,\n"
+                + "inventor of the Hall effect chip,\n"
+                + "who made me an engineer\n"
                 + "\n",
                 "About vZome", JOptionPane.PLAIN_MESSAGE );
     }

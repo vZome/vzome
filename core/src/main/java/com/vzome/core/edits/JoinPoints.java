@@ -121,7 +121,7 @@ public class JoinPoints extends ChangeManifestations {
         
         for (Manifestation man : mSelection) {
             if (man instanceof Connector) {
-                inputs.add((Point) ((Connector) man).getConstructions().next());
+                inputs.add((Point) ((Connector) man).getFirstConstruction());
             }
             unselect(man);
         }

@@ -50,15 +50,15 @@ import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
-import com.vzome.core.exporters.VsonExporter;
 import com.vzome.core.exporters2d.Java2dExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.exporters2d.SnapshotExporter;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
+import com.vzome.core.model.Color;
+import com.vzome.core.model.ColoredMeshJson;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
@@ -68,12 +68,12 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.BookmarkTool;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
+import com.vzome.xml.DomUtils;
 
 public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 {
@@ -212,7 +212,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             symmetrySys .createToolFactories( this .tools );
         }
 
-        this .kind .registerToolFactories( this .toolFactories, this .tools );
+        kind .registerToolFactories( this .toolFactories, this .tools );
 
         this .bookmarkFactory = new BookmarkTool.Factory( tools );
         this .editorModel .addSelectionSummaryListener( this .bookmarkFactory );
@@ -351,10 +351,9 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         StringWriter out = new StringWriter();
         switch ( format ) {
 
-        case "vson":
-            VsonExporter vsonEx = new VsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
+        case "cmesh":
             try {
-                vsonEx .doExport( null, out, 0, 0 );
+                ColoredMeshJson .generate( this .editorModel .getSelection(), this .field, out );
             } catch (IOException e) {
                 // TODO fail better here
                 e.printStackTrace();
@@ -362,10 +361,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             break;
 
         case "shapes":
-            ShapesJsonExporter ojex = new ShapesJsonExporter( this .getCamera(), null, null, this .getRenderedModel() );
+            ShapesJsonExporter ojex = new ShapesJsonExporter();
             try {
-                ojex .doExport( null, out, 0, 0 );
-            } catch (IOException e) {
+                ojex .doExport( this, null, null, out, 0, 0 );
+            } catch (Exception e) {
                 // TODO fail better here
                 e.printStackTrace();
             }
@@ -535,7 +534,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
                 @Override
                 public QuaternionicSymmetry getQuaternionSet( String name )
                 {
-                    return kind .getQuaternionSymmetry( name);
+                    return kind .getQuaternionSymmetry( name );
                 }
             };
 
@@ -611,7 +610,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
                 }
             }
 
-            // This has to before any of the tools are defined, in mHistory .synchronize() below
+            // This has to be done before any of the tools are defined, in mHistory .synchronize() below
             Element toolsXml = (Element) mXML .getElementsByTagName( "Tools" ) .item( 0 );
             if ( toolsXml != null )
                 this .tools .loadFromXml( toolsXml );
@@ -735,7 +734,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         childElement = lesson .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
-        childElement = sceneLighting .getXml( doc );
+        childElement = getSceneLighting() .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
         childElement = doc .createElement( "Viewing" );
@@ -892,12 +891,14 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public SymmetrySystem getSymmetrySystem( String name )
     {
-        return this .symmetrySystems .get( name );
+        if ( name == null )
+            return this .getSymmetrySystem();
+        else
+            return this .symmetrySystems .get( name );
     }
 
-    public void setSymmetrySystem( String name )
+    public void setSymmetrySystem( SymmetrySystem system )
     {
-        SymmetrySystem system = this .symmetrySystems .get( name );
         this .editorModel .setSymmetrySystem( system );
     }
 
@@ -937,5 +938,10 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         try ( Writer out = new FileWriter( file ) ) {
             exporter .export( snapshot, out, doOutlines, monochrome );
         }
+    }
+
+    public Lights getSceneLighting()
+    {
+        return this.sceneLighting;
     }
 }

@@ -42,9 +42,9 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
 
     private Axis preferredAxis;
         
-    public PentagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
+    public PentagonalAntiprismSymmetry( AlgebraicField field, String frameColor )
 	{
-		super( 10, field, frameColor, defaultStyle, field .createMatrix( PRINCIPAL_REFLECTION ) );
+		super( 10, field, frameColor, field .createMatrix( PRINCIPAL_REFLECTION ) );
 		// calls createInitialPermutations, createFrameOrbit, createOtherOrbits
 	}
 
@@ -88,7 +88,7 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
     protected void createOtherOrbits() {}
 
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
         AlgebraicVector redVertex = this .mField .createVector( FIVEFOLD_AXIS );
         AlgebraicVector greenVertex = this .mField .createVector( TWOFOLD_AXIS );
@@ -110,7 +110,6 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
         unitLength = this .mField .createPower( 6 );
 		createZoneOrbit( "blue", 0, -1, this .mField .basisVector( 3, AlgebraicVector.X ), true, false, unitLength );
 
-		this .computeOrbitDots();
         return this;
     }
     

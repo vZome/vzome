@@ -3,7 +3,6 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -16,18 +15,19 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.api.Tool;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Color;
-import com.vzome.core.render.RenderedModel.OrbitSource;
+import com.vzome.core.model.Color;
+import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Shapes;
 import com.vzome.desktop.controller.CameraController;
 
-public class SymmetryController extends DefaultController// implements RenderedModel.OrbitSource
+public class SymmetryController extends DefaultController
 {
     @Override
     public String getProperty( String string )
@@ -72,6 +72,7 @@ public class SymmetryController extends DefaultController// implements RenderedM
     private final Map<String, Controller> symmetryToolFactories = new LinkedHashMap<>();
     private final Map<String, Controller> transformToolFactories = new LinkedHashMap<>();
     private final Map<String, Controller> linearMapToolFactories = new LinkedHashMap<>();
+    private final RenderedModel renderedModel;
 
     public Symmetry getSymmetry()
     {
@@ -83,27 +84,27 @@ public class SymmetryController extends DefaultController// implements RenderedM
         return snapper;
     }
 
-    public SymmetryController( Controller parent, SymmetrySystem model )
+    public SymmetryController( Controller parent, SymmetrySystem model, RenderedModel mRenderedModel )
     {
-        this.symmetrySystem = model;
+        this .symmetrySystem = model;
+        renderedModel = mRenderedModel;
         Symmetry symmetry = model .getSymmetry();
         availableOrbits = new OrbitSet( symmetry );
         snapOrbits = new OrbitSet( symmetry );
         buildOrbits = new OrbitSet( symmetry );
         renderOrbits = new OrbitSet( symmetry );
         snapper = new SymmetrySnapper( snapOrbits );
-        for (Direction dir : symmetry .getOrbitSet()) {
-            if ( dir .isStandard() )
+        for (Direction orbit : symmetry .getOrbitSet()) {
+            if ( model .orbitIsStandard( orbit ) )
             {
-                availableOrbits .add( dir );
-                snapOrbits .add( dir );
-                Axis zone = dir .getAxis( 0, 0 );
-                if ( zone .getRotationPermutation() != null )
+                availableOrbits .add( orbit );
+                snapOrbits .add( orbit );
+                if ( model .orbitIsBuildDefault( orbit ) )
                 {
-                    buildOrbits .add( dir );
+                    buildOrbits .add( orbit );
                 }
             }
-            renderOrbits .add( dir );
+            renderOrbits .add( orbit );
         }
         availableController = new OrbitSetController( availableOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         this .addSubController( "availableOrbits", availableController );
@@ -114,10 +115,11 @@ public class SymmetryController extends DefaultController// implements RenderedM
         renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         this .addSubController( "renderOrbits", renderController );
 
-        for ( Direction dir : this .symmetrySystem .getOrbits() ) {
-            LengthController lengthModel = new LengthController( dir );
-            buildController .addSubController( "length." + dir .getName(), lengthModel );
-            orbitLengths .put( dir, lengthModel );
+        for ( Direction orbit : this .symmetrySystem .getOrbits() ) {
+            AlgebraicNumber unitLength = this .symmetrySystem .getOrbitUnitLength( orbit );
+            LengthController lengthModel = new LengthController( symmetry .getField(), unitLength );
+            buildController .addSubController( "length." + orbit .getName(), lengthModel );
+            orbitLengths .put( orbit, lengthModel );
         }
         if ( parent .propertyIsTrue( "disable.known.directions" ) )
             this .symmetrySystem .disableKnownDirection();
@@ -235,37 +237,48 @@ public class SymmetryController extends DefaultController// implements RenderedM
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
-        if ( action .equals( "rZomeOrbits" )
-                || action .equals( "predefinedOrbits" )
-                || action .equals( "setAllDirections" ) )
-        {
-            availableController .doAction( action, e );
-        }
-        else if ( action .startsWith( "setStyle." ) )
-        {
-            String styleName =  action .substring( "setStyle." .length() );
-            this .symmetrySystem .setStyle( styleName );
-            super .doAction( action, e ); // falling through so that rendering gets adjusted
-        }
-        else {
-            boolean handled = this .symmetrySystem .doAction( action );
-            if ( ! handled )
-                super .doAction( action, e );
+        switch (action) {
+
+        case "rZomeOrbits":
+        case "predefinedOrbits":
+        case "setAllDirections":
+            availableController .doAction( action );
+            break;
+
+        case "ReplaceWithShape":
+            action += "/" + this .symmetrySystem .getName() + ":" + this .symmetrySystem .getStyle() .getName();
+            super .doAction( action );
+            break;
+
+        default:
+            if ( action .startsWith( "setStyle." ) )
+            {
+                String styleName =  action .substring( "setStyle." .length() );
+                this .symmetrySystem .setStyle( styleName );
+                this .renderedModel .setShapes( this .symmetrySystem .getShapes() );
+            }
+            else {
+                boolean handled = this .symmetrySystem .doAction( action );
+                if ( ! handled )
+                    super .doAction( action );
+            }
+            break;
         }
     }
 
-    private LengthController getLengthController( Direction dir )
+    private LengthController getLengthController( Direction orbit )
     {
-        LengthController result = orbitLengths .get( dir );
-        if ( result == null && dir != null )
+        LengthController result = orbitLengths .get( orbit );
+        if ( result == null && orbit != null )
         {
-            result = new LengthController( dir );
-            buildController .addSubController( "length." + dir .getName(), result );
-            orbitLengths .put( dir, result );
-            renderOrbits .add( dir );
-            availableOrbits .add( dir );
+            AlgebraicNumber unitLength = this .symmetrySystem .getOrbitUnitLength( orbit );
+            result = new LengthController( this .symmetrySystem .getSymmetry() .getField(), unitLength );
+            buildController .addSubController( "length." + orbit .getName(), result );
+            orbitLengths .put( orbit, result );
+            renderOrbits .add( orbit );
+            availableOrbits .add( orbit );
         }
         return result;
     }
@@ -275,7 +288,9 @@ public class SymmetryController extends DefaultController// implements RenderedM
         return this .symmetrySystem .getOrbits();
     }
 
-    public OrbitSource getOrbitSource()
+    // TODO: Can we get rid of this?  It is only needed by PreviewStrut.
+    //   We should be able to accomplish the sync with PropertyChangeListeners
+    public RenderedModel.OrbitSource getOrbitSource()
     {
         return this .symmetrySystem;
     }

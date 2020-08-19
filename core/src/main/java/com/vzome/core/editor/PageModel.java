@@ -6,8 +6,8 @@ package com.vzome.core.editor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.viewing.Camera;
+import com.vzome.xml.DomUtils;
 
 public class PageModel
 {

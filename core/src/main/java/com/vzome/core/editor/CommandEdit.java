@@ -33,8 +33,8 @@ import com.vzome.core.edits.SelectAll;
 import com.vzome.core.edits.SelectManifestation;
 import com.vzome.core.edits.SymmetryAxisChange;
 import com.vzome.core.edits.SymmetryCenterChange;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.model.Manifestation;
+import com.vzome.xml.DomUtils;
 
 
 

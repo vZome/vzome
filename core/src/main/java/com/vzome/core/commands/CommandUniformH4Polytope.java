@@ -22,11 +22,11 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
+import com.vzome.xml.DomUtils;
 
 /**
  * @author Scott Vorthmann
@@ -219,7 +219,7 @@ public class CommandUniformH4Polytope extends CommandTransform
     public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
-        	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );        
+            DomUtils .addAttribute( result, "quaternion", quaternionVector .toParsableString() );        
         super .getXml( result, attributes );
     }
 

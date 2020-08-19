@@ -5,8 +5,8 @@ package com.vzome.core.commands;
 
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.render.Color;
 
 public class CommandSetColor extends AbstractCommand
 {

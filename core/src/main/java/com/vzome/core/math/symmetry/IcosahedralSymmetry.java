@@ -8,7 +8,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 
 
 /**
@@ -24,13 +23,9 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 
 	private Axis preferredAxis;
     
-	public static void main(String[] args) {
-		new IcosahedralSymmetry( new PentagonField(), "" );
-	}
-	
-    public IcosahedralSymmetry( AlgebraicField field, String defaultStyle )
+    public IcosahedralSymmetry( AlgebraicField field )
     {
-        super( 60, field, "blue", defaultStyle );
+        super( 60, field, "blue" );
         
         for ( int i = 0; i < this.INCIDENCES.length; i++ ) {
             this .INCIDENCES[ i ][ 0 ] = getPermutation( i ) .mapIndex( 30 );
@@ -139,32 +134,13 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return "icosahedral";
     }
 
-    /**
-     * Make a rational vector with unit denominators from an integer vector.
-     * @param canonical
-     * @return
-     */
-    protected AlgebraicVector rationalVector( int[] integers )
-    {
-        AlgebraicVector result = mField .origin( 3 );
-        for (int i = 0; i < 3; i++)
-        {
-            int[] factors = new int[ integers.length / 3 ];
-            for (int j = 0; j < factors.length; j++) {
-				factors[ j ] = integers[ i * factors.length + j ];
-			}
-            result .setComponent( i, mField .createAlgebraicNumber( factors ) );
-        }
-        return result;
-    }
-    
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
-        AlgebraicNumber twice = this .getField() .createRational( 2 );
+        AlgebraicNumber twice = mField .createRational( 2 );
         AlgebraicVector blueVertex = this .getDirection( "blue" ) .getPrototype() .scale( twice );
         AlgebraicVector redVertex = this .getDirection( "red" ) .getPrototype();
-        AlgebraicNumber phiInv = this .getField() .createPower( -1 );
+        AlgebraicNumber phiInv = mField.getGoldenRatio().reciprocal();
         AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype() .scale( phiInv );
         return new AlgebraicVector[] { blueVertex, redVertex, yellowVertex };
     }
@@ -222,39 +198,50 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 		return this .preferredAxis;
 	}
 
+    /**
+     * @see com.vzome.core.math.symmetry.AbstractSymmetry#createOtherOrbits()
+     * 
+     * @see com.vzome.core.algebra.AlgebraicField#createVector()
+     * 
+     * @see com.vzome.core.math.symmetry.AbstractSymmetry#createZoneOrbit(String, int, int, AlgebraicVector, boolean, boolean, AlgebraicNumber)
+     *
+     */
     @Override
     protected void createOtherOrbits()
     {
-    	Direction dir;
-    	dir = createZoneOrbit( "red",      0, 3,           mField .createVector( new int[][]{ {0,1, 1,1}, {1,1, 0,1}, {0,1, 0,1} } ), true );
+        // Here, {a,b,c,d} results in an AlgebraicNumber = a/b + 𝜑 * c/d .
+        //  Since b=d=1 for everything here, that's a+c𝜑.
+
+        Direction dir;
+        dir = createZoneOrbit( "red",      0, 3,           mField .createVector( new int[][]{ {0,1, 1,1}, {1,1, 0,1}, {0,1, 0,1} } ), true );
         dir .setScaleNames( new String[]{ "r0", "r1", "r2", "r3" } );
-        
+
         this .preferredAxis = dir .getAxis( Symmetry.PLUS, 1 );
-        
+
         dir = createZoneOrbit( "yellow",   0, 27,          mField .createVector( new int[][]{ { 1,1, 1,1}, {0,1, 0,1}, {-1,1, 0,1} } ), true, false, mField .createPower( -1 ) );
         dir .setScaleNames( new String[]{ "y0", "y1", "y2", "y3" } );
 
         dir = createZoneOrbit( "green",    6, NO_ROTATION, mField .createVector( new int[][]{ { 1,1, 0,1}, {1,1, 0,1}, {0,1, 0,1} } ), true, true, mField .createRational( 2 ) );
         dir .setScaleNames( new String[]{ "g0", "g1", "g2", "g3" } );
-        
+
         createZoneOrbit( "orange",    6, NO_ROTATION, mField .createVector( new int[][]{ { 1,1, 0,1}, { 0,1, 1,1}, { 0,1, 0,1} } ) );
 
         createZoneOrbit( "purple",    0, NO_ROTATION, mField .createVector( new int[][]{ { 1,1, 1,1}, { 1,1, 0,1}, { 0,1, 0,1} } ), false, false, mField .createPower( -1 ) );
 
         createZoneOrbit( "black",     3, NO_ROTATION, mField .createVector( new int[][]{ { 0,1, 1,1}, { 1,1, 0,1}, { 1,1,-1,1} } ) );
-        
+
         createZoneOrbit( "lavender",  0, NO_ROTATION, mField .createVector( new int[][]{ { 2,1,-1,1}, { 0,1, 1,1}, { 2,1,-1,1} } ) ) .withCorrection();
-        
+
         createZoneOrbit( "olive",     0, NO_ROTATION, mField .createVector( new int[][]{ { 0,1, 1,1}, { 0,1, 1,1}, { 2,1,-1,1} } ) ) .withCorrection();
-        
+
         createZoneOrbit( "maroon",    0, NO_ROTATION, mField .createVector( new int[][]{ {-1,1, 1,1}, { 3,1,-1,1}, { 1,1,-1,1} } ) ) .withCorrection();
-        
+
         createZoneOrbit( "rose",      0, NO_ROTATION, mField .createVector( new int[][]{ { 2,1,-1,1}, {-1,1, 2,1}, { 0,1, 0,1} } ) ) .withCorrection();
-        
+
         createZoneOrbit( "navy",      0, NO_ROTATION, mField .createVector( new int[][]{ {-1,1, 2,1}, { 1,1, 1,1}, { 0,1, 0,1} } ), false, false, mField .createPower( -1 ) ) .withCorrection();
-        
+
         createZoneOrbit( "turquoise", 0, NO_ROTATION, mField .createVector( new int[][]{ { 2,1, 0,1}, { 2,1,-1,1}, {-3,1, 2,1} } ) ) .withCorrection();
-        
+
         createZoneOrbit( "coral",     0, NO_ROTATION, mField .createVector( new int[][]{ {-3,1, 3,1}, { 0,1, 0,1}, { 1,1, 0,1} } ) ) .withCorrection();
 
         createZoneOrbit( "sulfur",    0, NO_ROTATION, mField .createVector( new int[][]{ {-3,1, 3,1}, { 2,1,-1,1}, { 0,1, 0,1} } ) ) .withCorrection();
@@ -266,7 +253,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         createZoneOrbit( "cinnamon",  0, NO_ROTATION, mField .createVector( new int[][]{ { 5,1,-3,1}, { 2,1,-1,1}, { 2,1, 0,1} } ) ) .withCorrection();
 
         createZoneOrbit( "spruce",    0, NO_ROTATION, mField .createVector( new int[][]{ {-3,1, 2,1}, {-3,1, 2,1}, { 5,1,-2,1} } ) ) .withCorrection();
-        
+
         createZoneOrbit( "brown",     0, NO_ROTATION, mField .createVector( new int[][]{ {-1,1, 1,1}, {-1,1, 1,1}, {-2,1, 2,1} } ) ) .withCorrection();
     }
 

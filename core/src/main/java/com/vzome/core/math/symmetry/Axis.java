@@ -5,7 +5,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.math.DomUtils;
+import com.vzome.xml.DomUtils;
 
 
 /**

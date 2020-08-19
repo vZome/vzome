@@ -173,7 +173,7 @@ public class ScalingTool extends SymmetryTool
                     correct = false;
                     break;
                 }
-                center = (Point) ((Connector) man) .getConstructions() .next();
+                center = (Point) ((Connector) man) .getFirstConstruction();
             }
             else if ( man instanceof Strut )
             {
@@ -183,9 +183,9 @@ public class ScalingTool extends SymmetryTool
                     break;
                 }
                 if ( s1 == null )
-                    s1 = (Segment) ((Strut) man) .getConstructions() .next();
+                    s1 = (Segment) ((Strut) man) .getFirstConstruction();
                 else
-                    s2 = (Segment) ((Strut) man) .getConstructions() .next();
+                    s2 = (Segment) ((Strut) man) .getFirstConstruction();
             }
             else if ( man instanceof Panel )
                 hasPanels = true;

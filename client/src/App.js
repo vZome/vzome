@@ -1,27 +1,26 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import ModelUrlControl from './containers/modelurlcontrol.js';
-import ModelCanvas from './containers/modelcanvas-three.js';
-import EditButtons from './containers/editbuttons.js';
-import logo from './logo.svg';
-import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './App.css'
 
-let App = ({ enabled }) => (
-  <div className="App">
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo" />
-      <h1 className="App-title">Welcome to vZome-React</h1>
-    </header>
-    <ModelUrlControl/>
-		<ModelCanvas width={950} height={500} scale={5}/>
-    <EditButtons/>
-  </div>
-)
+import ModelCanvas from './components/modelcanvas-three.js'
+import Models from './components/models.js'
+import FileOpener from './components/fileopener.js'
+import Exporter from './components/exporter.js'
+import Spinner from './components/spinner.js'
 
-const mapStateToProps = (state) => ({
-  enabled: state.connectionLive
-})
+function App() {
+  return (
+    <div>
+      <ModelCanvas/>
+      <Models/>
+      <FileOpener/>
+      <Exporter/>
+      <Spinner/>
+      {/* <div>Export icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div> */}
+      {/* <a href="https://github.com/mhnpd/react-loader-spinner">react-loader-spinner</a> */}
+      {/* <a href="http://simpleicon.com/folder-2.html">folder icon</a> */}
+    </div>
+  );
+}
 
-App = connect(mapStateToProps)(App)
-
-export default App
+export default App;

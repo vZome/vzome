@@ -26,6 +26,8 @@ public abstract class ManifestationImpl implements GroupElement, Manifestation
 
     private int mId = NO_ID;
 
+    private Color color;
+
     private static final int NO_ID = -1;
 
     private static int NEXT_ID = 0;
@@ -72,10 +74,30 @@ public abstract class ManifestationImpl implements GroupElement, Manifestation
     {
         return mManifests .isEmpty();
     }
+    
+    public Color getColor()
+    {
+        if(this.color == null && mRendered != null) {
+            // TODO: The underlying color should really be a property 
+            // of either Manifestation or RenderedManifestation, not both, 
+            // although both classes could have getter and setter methods
+            // acting on which ever class contains the actual color value.
+            // In the mean time, this hack improves the situation.
+            this.color = mRendered.getColor(); 
+        }
+        return this.color;
+    }
+
+    public void setColor( Color color )
+    {
+        this.color = color;
+    }
 
     public void setRenderedObject( RenderedManifestation obj )
     {
         mRendered = obj;
+        if ( obj != null )
+            this .color = obj .getColor();
     }
 
     public RenderedManifestation getRenderedObject()

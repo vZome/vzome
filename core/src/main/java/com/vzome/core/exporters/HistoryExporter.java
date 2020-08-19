@@ -11,10 +11,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
+import com.vzome.xml.DomUtils;
 import com.vzome.core.viewing.Camera;
 
 public class HistoryExporter extends Exporter3d

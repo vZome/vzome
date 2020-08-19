@@ -81,7 +81,9 @@ public class SymmetryToolbarsPanel extends JPanel
         secondToolbar .add( button );
         button = makeEditButton( enabler, "hideball", "Hide selected objects" );
         secondToolbar .add( button );
-        
+        button = makeEditButton( enabler, "setItemColor", "Set color of selected objects" );
+        secondToolbar .add( button );
+  
         secondToolbar .addSeparator();
 
         button = makeEditButton( enabler, "JoinPoints/CLOSED_LOOP", "Connect balls in a loop" );
@@ -128,7 +130,7 @@ public class SymmetryToolbarsPanel extends JPanel
         String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
         JButton button = this .factory .makeIconButton( tooltip, iconPath );
 		button .setActionCommand( "apply" );
-		button .addActionListener( controller );
+		button .addActionListener( new ControllerActionListener(controller) );
 		button .addMouseListener( new MouseAdapter()
 		{
 			@Override
@@ -187,7 +189,7 @@ public class SymmetryToolbarsPanel extends JPanel
 					+ "</b><br><br>" + helpHtml + "</html>";
 		final JButton button = factory .makeIconButton( html, iconPath );
 		button .setActionCommand( "createTool" );
-		button .addActionListener( buttonController );
+		button .addActionListener( new ControllerActionListener(buttonController) );
 		button .setEnabled( buttonController != null && buttonController .propertyIsTrue( "enabled" ) );
 		buttonController .addPropertyListener( new PropertyChangeListener()
 		{

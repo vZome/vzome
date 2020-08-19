@@ -16,7 +16,7 @@ import org.w3c.dom.NodeList;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 
-public class Branch implements UndoableEdit
+public class Branch extends UndoableEdit
 {
 	private final Context context;
 	

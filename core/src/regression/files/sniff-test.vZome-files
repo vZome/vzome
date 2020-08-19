@@ -143,3 +143,15 @@ format-2.1.0-models.vZome-files
 
 # Copy and Paste with Offset
 2019/08-Aug/08-David-VefCopyAndPasteWithOffset/CopyAndPasteWithOffset.vZome
+
+# Panel-Panel Intersection
+2019/09-Sep/24-David-PanelPanelIntersection/PanelPanelIntersection.vZome
+
+# Two new SnubDodec directions
+2020/03-Mar/06-David-SnubDodec/SnubDodecFromConvexHull.vZome
+
+# Fix PlaneProjection when Panel is projected down to Segment or Segment is projected down to a Point
+2020/04-Apr/19-David-FixProjectionToPlane/FixProjectionToPlane.vZome
+
+# simple and colored mesh import
+2020/04-Apr/26-Scott-regression

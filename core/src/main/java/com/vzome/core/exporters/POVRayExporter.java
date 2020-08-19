@@ -24,7 +24,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
-import com.vzome.core.render.Color;
+import com.vzome.core.model.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
@@ -50,7 +50,7 @@ public class POVRayExporter extends Exporter3d
     public void mapViewToWorld( Camera view, Vector3f vector )
     {
         Matrix4d viewTrans = new Matrix4d();
-        view .getViewTransform( viewTrans, 0d );
+        view .getViewTransform( viewTrans );
         viewTrans .invert();
         viewTrans .transform( vector );
     }

@@ -15,6 +15,11 @@ public class Exporter
     {
         this .delegate = privateExp;
     }
+    
+    public boolean isValid()
+    {
+        return this.delegate != null;
+    }
 
     public void doExport( Document model, Writer out, int height, int width ) throws Exception
     {

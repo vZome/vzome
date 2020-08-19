@@ -16,15 +16,15 @@ import com.vzome.core.algebra.AlgebraicVectors;
 public abstract class Segment extends Construction
 {
     // state variables
-	private AlgebraicVector mStart, mOffset;
-    
+    private AlgebraicVector mStart, mOffset;
+
     private transient AlgebraicVector mEnd;
-    
+
     protected Segment( AlgebraicField field )
     {
         super( field );
     }
-    
+
     @Override
     public boolean is3d()
     {
@@ -41,8 +41,8 @@ public abstract class Segment extends Construction
             return true;
         }
         if ( offset .equals( mOffset )
-        && ! isImpossible()
-        &&   start .equals( mStart ) )
+                && ! isImpossible()
+                &&   start .equals( mStart ) )
             return false;
         mOffset = offset;
         mStart = start;
@@ -50,19 +50,19 @@ public abstract class Segment extends Construction
         setImpossible( false );
         return true;
     }
-    
+
     public AlgebraicVector getStart()
     {
         return mStart;
     }
-    
+
     public AlgebraicVector getEnd()
     {
         if ( mEnd == null )
             mEnd = mStart .plus( mOffset );
         return mEnd;
     }
-    
+
     public AlgebraicVector getOffset()
     {
         return mOffset;

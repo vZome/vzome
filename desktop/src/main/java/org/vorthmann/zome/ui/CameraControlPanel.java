@@ -3,6 +3,7 @@ package org.vorthmann.zome.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
@@ -18,10 +19,10 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.Controller;
 
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.desktop.controller.CameraController;
+import com.vzome.desktop.controller.RenderingViewer;
 
 /**
  * Description here.
@@ -63,7 +64,7 @@ public class CameraControlPanel extends JPanel {
 //    }
     
     
-	public CameraControlPanel( J3dComponentFactory factory3d, final Controller controller )
+    public CameraControlPanel( RenderingViewer viewer, final Controller controller )
 	{
         this .setBorder( BorderFactory .createTitledBorder( "viewing" ) );
         int nearTicks = magToTicks( MAX_MAG );
@@ -101,7 +102,9 @@ public class CameraControlPanel extends JPanel {
             add( zslider, BorderLayout .EAST );
 
         trackpad = new JPanel( new BorderLayout() );
-        Component trackballCanvas = factory3d .createRenderingComponent( false, false, ((Controller3d) controller) );
+        Component trackballCanvas = viewer .getCanvas();
+        ((CameraController) controller) .attachViewer( viewer, trackballCanvas );
+
         trackpad .add( trackballCanvas, BorderLayout.CENTER );
         trackpad .setAlignmentX( JLabel .CENTER_ALIGNMENT );
         trackpad .setBorder( BorderFactory .createTitledBorder( "rotation trackball" ) );
@@ -115,24 +118,26 @@ public class CameraControlPanel extends JPanel {
                 
         JPanel checkboxesPanel = new JPanel();
         topPanel .add( checkboxesPanel, BorderLayout.CENTER );
+        
+        ActionListener actionListener = new ControllerActionListener( controller );
 
         final JCheckBox perspectiveCheckbox = new JCheckBox( "perspective" );
         //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
-        perspectiveCheckbox .addActionListener( controller );
+        perspectiveCheckbox .addActionListener( actionListener );
         perspectiveCheckbox .setActionCommand( "togglePerspective" );
         perspectiveCheckbox .setSelected( "true" .equals( controller .getProperty( "perspective" ) ) );
         checkboxesPanel .add( perspectiveCheckbox );
 
         final JCheckBox snapperCheckbox = new JCheckBox( "snap" );
         //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
-        snapperCheckbox .addActionListener( controller );
+        snapperCheckbox .addActionListener( actionListener );
         snapperCheckbox .setActionCommand( "toggleSnap" );
         snapperCheckbox .setSelected( "true" .equals( controller .getProperty( "snap" ) ) );
         checkboxesPanel .add( snapperCheckbox );
 
         final JCheckBox outlinesCheckbox = new JCheckBox( "outlines" );
         //   checkbox .setHorizontalAlignment( SwingConstants.LEFT );
-        outlinesCheckbox .addActionListener( controller );
+        outlinesCheckbox .addActionListener( actionListener );
         outlinesCheckbox .setActionCommand( "toggleOutlines" );
         outlinesCheckbox .setSelected( "true" .equals( controller .getProperty( "docDrawOutlines" ) ) );
         checkboxesPanel .add( outlinesCheckbox );

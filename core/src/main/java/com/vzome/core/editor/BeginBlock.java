@@ -16,7 +16,7 @@ import com.vzome.core.commands.XmlSaveFormat;
  * @author Scott Vorthmann
  *
  */
-public class BeginBlock implements UndoableEdit
+public class BeginBlock extends UndoableEdit
 {
     public BeginBlock( EditorModel editor )
     {
@@ -44,7 +44,7 @@ public class BeginBlock implements UndoableEdit
     @Override
     public boolean isVisible()
     {
-    	return false;
+        return false;
     }
 
     @Override

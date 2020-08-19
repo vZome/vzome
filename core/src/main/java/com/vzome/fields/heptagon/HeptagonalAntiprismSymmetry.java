@@ -19,14 +19,14 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	private final boolean correctedOrbits;
     private Axis preferredAxis;
 
-    public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle )
+    public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor)
 	{
-		this( field, frameColor, defaultStyle, false);
+		this( field, frameColor, false);
 	}
 
-	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, String defaultStyle, boolean correctedOrbits )
+	public HeptagonalAntiprismSymmetry( AlgebraicField field, String frameColor, boolean correctedOrbits )
 	{
-		super( 14, field, frameColor, defaultStyle,
+		super( 14, field, frameColor,
 					correctedOrbits?
 							// reflection in Z (red) will yield the negative zones
 							new AlgebraicMatrix( field .basisVector( 3, AlgebraicVector.X ),
@@ -142,13 +142,23 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	public HeptagonalAntiprismSymmetry createStandardOrbits( String frameColor )
 	{
         Direction redOrbit = createZoneOrbit( "red", 0, 1, this .mField .basisVector( 3, AlgebraicVector.Z ), true );
-        redOrbit .setDotLocation( 1d, 0d );
         this .preferredAxis = redOrbit .getAxis( Symmetry.PLUS, 0 );
 
-        Direction blueOrbit = createZoneOrbit( frameColor, 0, 7, this .mField .basisVector( 3, AlgebraicVector.X ), true );
-        blueOrbit .setDotLocation( 0d, 1d );
-
-        this .computeOrbitDots();
+        AlgebraicVector blueFrameVector = this .mField .basisVector( 3, AlgebraicVector.X );
+        Direction blueOrbit = createZoneOrbit( frameColor, 0, 7, blueFrameVector, true );
+        
+        // Get the vector for 1/14 rotation of blue axis 0 vector (second arg to getAxis() is (7+1)/2)
+        AlgebraicVector blueRotatedVector = blueOrbit.getAxis(PLUS, (7+1)/2).normal();
+        // combine the two blue vectors to get the green vector 
+        // of the correct magnitude and direction so no scale param is needed
+        // I could hard code the green vector here, but I want to do the math here 
+        // so the deriviation is clear for when I generalize it in the PolygonField 
+        AlgebraicVector greenVector = blueFrameVector.minus(blueRotatedVector);
+        // TODO: I think that half sizes make sense for these green struts, 
+        // but using the c'tor with the half-sizes param doesn't seem to affect the UI.
+        // For now, I won't mess with that here. 
+        // The control of half-sizes probably belongs in the SymmetryPerspective anyway, but that's for another day.  
+        createZoneOrbit( "green", 0, 7, greenVector);
 
         return this;
     }
@@ -190,19 +200,29 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	}
     
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
-        HeptagonField hf = (HeptagonField) this .getField();
+        AlgebraicField field = this .getField();
+        final AlgebraicNumber zero = field .zero();
         
-        AlgebraicVector blueVertex = hf .basisVector( 3, AlgebraicVector.X );
-        AlgebraicVector redVertex = hf .basisVector( 3, AlgebraicVector.Z );
+        // I could hard code x here, but I want to show the derivation
+        // so I can more easily replicate the logic in the PolygonField
+        // x = ((-r/s) + (-s/s)) / 2 = (-r-s)/2s
+        AlgebraicNumber x = field .createAlgebraicNumber(new int[] { 0,-1,-1 })
+                .dividedBy( field .createAlgebraicNumber(new int[] { 0, 0, 2 }));
+        // orthoVertex is on the negative X axis.
+        AlgebraicVector orthoVertex = new AlgebraicVector( x, zero, zero );
+
+        AlgebraicVector sideVertex = field .basisVector( 3, AlgebraicVector.Z );
         
-        AlgebraicNumber s = hf .getAffineScalar().reciprocal(); // reciprocal of sigma
-        AlgebraicVector orthoVertex = hf .origin( 3 )
-                .setComponent( AlgebraicVector.X, hf .one() )
-                .setComponent( AlgebraicVector.Y, s .negate() );
-        
-        return new AlgebraicVector[] { blueVertex, redVertex, orthoVertex };
+        x = field .createRational(-1);
+        AlgebraicNumber y = field .createAlgebraicNumber(new int[] { 0,-1, 1 }); // y = 1/s
+        AlgebraicVector topVertex = new AlgebraicVector( x, y, zero );
+
+        // these variable names and their position in the array
+        // correspond to the positions where they will be shown in the orbit triangle
+        // rather than any specific colors
+        return new AlgebraicVector[] { orthoVertex, sideVertex, topVertex };
     }
 
 	@Override

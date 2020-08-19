@@ -14,6 +14,8 @@ public interface Manifestation extends GroupElement {
     AlgebraicVector getLocation();
 
     Iterator<Construction> getConstructions();
+    
+    Construction getFirstConstruction();
 
     Element getXml(Document doc);
 
@@ -36,4 +38,8 @@ public interface Manifestation extends GroupElement {
     void setHidden(boolean b);
 
     Group getContainer();
+    
+    Color getColor();
+    
+    void setColor( Color color );
 }

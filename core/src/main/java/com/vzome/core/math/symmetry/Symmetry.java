@@ -69,8 +69,6 @@ public interface Symmetry extends Iterable<Direction>, Embedding
     
     Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector vector );
 
-    String getDefaultStyle();
-
     public abstract int[] getIncidentOrientations( int orientation );
 
     public abstract Direction getSpecialOrbit( SpecialOrbit which );
@@ -83,6 +81,8 @@ public interface Symmetry extends Iterable<Direction>, Embedding
 	 * @return {@link AlgebraicMatrix}
 	 */
 	public abstract AlgebraicMatrix getPrincipalReflection();
+	
+	public AlgebraicVector[] getOrbitTriangle();
 	
 	/**
 	 * Compute the orbit triangle dots for all existing orbits,

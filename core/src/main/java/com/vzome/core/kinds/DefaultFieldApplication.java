@@ -15,7 +15,6 @@ import com.vzome.core.commands.CommandHide;
 import com.vzome.core.commands.CommandMidpoint;
 import com.vzome.core.commands.CommandMirrorSymmetry;
 import com.vzome.core.commands.CommandPolygon;
-import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.commands.CommandTranslate;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.ToolsModel;
@@ -33,6 +32,7 @@ import com.vzome.core.tools.MirrorTool;
 import com.vzome.core.tools.ModuleTool;
 import com.vzome.core.tools.OctahedralToolFactory;
 import com.vzome.core.tools.PlaneSelectionTool;
+import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
 import com.vzome.core.tools.TranslationTool;
@@ -51,12 +51,10 @@ public class DefaultFieldApplication implements FieldApplication
     private final Command hideball = new CommandHide();
     private final Command hide = new CommandHide();
     private final Command panel = new CommandPolygon();
-    private final Command tauDivide = new CommandTauDivision();
     private final Command midpoint = new CommandMidpoint();
 
 	public DefaultFieldApplication( AlgebraicField field )
 	{
-		super();
 		this .field = field;
 	}
 
@@ -109,13 +107,16 @@ public class DefaultFieldApplication implements FieldApplication
 	@Override
 	public void registerToolFactories( Map<String, Factory> toolFactories, ToolsModel tools )
 	{
-	    // Any SymmetryTool factory here is good enough
+	    // These symm parameters can be null since it will be overwritten by SymmetryTool.setXmlAttributes()
+        // Any SymmetryTool factory here is good enough
 	    toolFactories .put( "SymmetryTool", new OctahedralToolFactory( tools, null ) );
 	    toolFactories .put( "RotationTool", new RotationTool.Factory( tools, null ) );
 	    toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, null ) );
+	    
 	    toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
 	    toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
-	    toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
+        toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
+        toolFactories .put( "ProjectionTool", new ProjectionTool.Factory( tools ) );
 	    toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
 	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
 	
@@ -157,9 +158,9 @@ public class DefaultFieldApplication implements FieldApplication
 	}
 
 	@Override
-	public Command getLegacyCommand( String name )
+	public Command getLegacyCommand( String action )
 	{
-		switch ( name ) {
+		switch ( action ) {
 		case "pointsymm": return pointsymm;
 		case "mirrorsymm": return mirrorsymm;
 		case "translate": return translate;
@@ -167,8 +168,9 @@ public class DefaultFieldApplication implements FieldApplication
 		case "hideball": return hideball;
 		case "hide": return hide;
 		case "panel": return panel;
-		case "tauDivide": return tauDivide;
 		case "midpoint": return midpoint;
+		case "octasymm":
+		    return getDefaultSymmetryPerspective().getLegacyCommand(action);
 		default:
 			return null;
 		}

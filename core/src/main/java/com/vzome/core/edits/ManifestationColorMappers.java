@@ -17,16 +17,16 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.Manifestations.ManifestationIterator;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.edits.ColorMappers.ColorMapper;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
+import com.vzome.xml.DomUtils;
 
 /**
  * @author David Hall
@@ -93,6 +93,8 @@ public class ManifestationColorMappers {
             : mapperName.equals("SystemCentroidColorMap") ? new SystemCentroidColorMap(symm)
             : mapperName.equals("NearestSpecialOrbitColorMap") ? new NearestSpecialOrbitColorMap(symm)
             : mapperName.equals("CentroidNearestSpecialOrbitColorMap") ? new CentroidNearestSpecialOrbitColorMap(symm)
+            : mapperName.equals("NearestPredefinedOrbitColorMap") ? new NearestPredefinedOrbitColorMap(symm)
+            : mapperName.equals("CentroidNearestPredefinedOrbitColorMap") ? new CentroidNearestPredefinedOrbitColorMap(symm)
             : ManifestationColorMappers.getColorMapper(mapperName);
 
         if (colorMapper == null) {
@@ -246,13 +248,14 @@ public class ManifestationColorMappers {
         public void initialize(ManifestationIterator selection)
         throws Failure {
             if(color == null) { // if not already set by XML
+                Manifestation last = null;
                 for(Manifestation man : selection) {
                     if(man != null && man.isRendered()) {
-                        Color c = man.getRenderedObject().getColor();
-                        if(c != null) {
-                            this.color = c;
-                        }
+                        last = man;
                     }
+                }
+                if(last != null) {
+                    this.color = last.getColor();
                 }
             }
             if(color == null) {
@@ -646,7 +649,7 @@ public class ManifestationColorMappers {
      * Gets standard color of the nearest special orbit using the standard color basis
      */
     public static class NearestSpecialOrbitColorMap extends SystemColorMap {
-        protected final Set<Direction> specialOrbits = new LinkedHashSet<>(); // maintains insert order.
+        protected Set<Direction> specialOrbits = new LinkedHashSet<>(); // maintains insert order.
 
         protected NearestSpecialOrbitColorMap(SymmetrySystem symm) {
             super(symm);
@@ -667,7 +670,7 @@ public class ManifestationColorMappers {
 
         @Override
         protected Color applyTo(Panel panel, int alpha) {
-            return applyTo(panel.getNormal());
+            return applyTo(panel.getNormal()).getPastel();
         }
 
         @Override
@@ -702,8 +705,29 @@ public class ManifestationColorMappers {
 
         @Override
         protected Color applyTo(Panel panel, int alpha) {
-            return applyTo(panel.getCentroid());
+            return applyTo(panel.getCentroid()).getPastel();
         }
     }
 
+    /**
+     * Gets standard color of the nearest predefined orbit using the symmetry's standard color scheme
+     */
+    public static class NearestPredefinedOrbitColorMap extends NearestSpecialOrbitColorMap {
+        protected NearestPredefinedOrbitColorMap(SymmetrySystem symm) {
+            super(symm);
+            // setting specialOrbits to null will use the predefined orbits of the symmetery
+            specialOrbits = null;
+        }
+    }
+
+    /**
+     * Gets standard color of the nearest predefined orbit based on the centroid of each manifestation
+     */
+    public static class CentroidNearestPredefinedOrbitColorMap extends CentroidNearestSpecialOrbitColorMap {
+        protected CentroidNearestPredefinedOrbitColorMap(SymmetrySystem symm) {
+            super(symm);
+            // setting specialOrbits to null will use the predefined orbits of the symmetery
+            specialOrbits = null;
+        }
+    }
 }

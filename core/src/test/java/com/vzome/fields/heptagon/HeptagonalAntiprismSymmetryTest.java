@@ -1,6 +1,6 @@
 package com.vzome.fields.heptagon;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class HeptagonalAntiprismSymmetryTest {
 	public void testPermutations()
 	{
 		HeptagonField field = new HeptagonField();
-		Symmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", null );
+		Symmetry symm = new HeptagonalAntiprismSymmetry( field, "blue" );
 
 		Permutation perm7 = symm .getPermutation( 3 );
 		assertEquals( 7, perm7 .getOrder() );
@@ -41,7 +41,7 @@ public class HeptagonalAntiprismSymmetryTest {
 	public void testOrientations()
 	{
 		HeptagonField field = new HeptagonField();
-		HeptagonalAntiprismSymmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", null );
+		HeptagonalAntiprismSymmetry symm = new HeptagonalAntiprismSymmetry( field, "blue" );
 
 		AlgebraicMatrix m2 = symm .getMatrix( 2 );
 		AlgebraicMatrix m4 = symm .getMatrix( 4 );
@@ -54,7 +54,7 @@ public class HeptagonalAntiprismSymmetryTest {
     public void testGetAxisUncorrected()
     {
         HeptagonField field = new HeptagonField();
-        HeptagonalAntiprismSymmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism" );
+        HeptagonalAntiprismSymmetry symm = new HeptagonalAntiprismSymmetry( field, "blue" );
 		symm .createStandardOrbits( "blue" );
 
         RealVector v1 = new RealVector( 0.1, 0.1, 3.0 );
@@ -105,7 +105,7 @@ public class HeptagonalAntiprismSymmetryTest {
     public void testGetAxisCorrected()
     {
         HeptagonField field = new HeptagonField();
-        HeptagonalAntiprismSymmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", "heptagonal antiprism corrected", true );
+        HeptagonalAntiprismSymmetry symm = new HeptagonalAntiprismSymmetry( field, "blue", true );
 		symm .createStandardOrbits( "blue" );
 
         RealVector v1 = new RealVector( 0.5, 0.1, 0.1 );

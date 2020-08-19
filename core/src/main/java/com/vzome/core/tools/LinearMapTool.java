@@ -89,8 +89,8 @@ public class LinearMapTool extends TransformationTool
         boolean correct = true;
         Point center = null;
         for (Manifestation man : mSelection) {
-        	if ( prepareTool )
-        		unselect( man );
+            if ( prepareTool )
+                unselect( man );
             if ( man instanceof Connector )
             {
                 if ( center != null )
@@ -98,7 +98,7 @@ public class LinearMapTool extends TransformationTool
                     correct = false;
                     break;
                 }
-                center = (Point) ((Connector) man) .getConstructions() .next();
+                center = (Point) ((Connector) man) .getFirstConstruction();
             }
             else if ( man instanceof Strut )
             {
@@ -108,29 +108,29 @@ public class LinearMapTool extends TransformationTool
                 }
                 if ( index / 3 == 0 )
                 {
-                    oldBasis[ index % 3 ] = (Segment) man .getConstructions() .next();
+                    oldBasis[ index % 3 ] = (Segment) man .getFirstConstruction();
                 }
                 else
                 {
-                    newBasis[ index % 3 ] = (Segment) man .getConstructions() .next();
+                    newBasis[ index % 3 ] = (Segment) man .getFirstConstruction();
                 }
                 ++index;
             }
         }
-                
+
         correct = correct && ( ( index == 3) || ( index == 6 ) );
         if ( !correct )
             return "linear map tool requires three adjacent, non-parallel struts (or two sets of three) and a single (optional) center ball";
 
         if ( prepareTool ) {
-        	if ( center == null )
-        		center = this.originPoint;
-        	this .transforms = new Transformation[ 1 ];
-        	if ( index == 6 )
+            if ( center == null )
+                center = this.originPoint;
+            this .transforms = new Transformation[ 1 ];
+            if ( index == 6 )
                 // TODO validate linear independence of oldBasis
-        		transforms[ 0 ] = new ChangeOfBasis( oldBasis, newBasis, center );
-        	else
-        		transforms[ 0 ] = new ChangeOfBasis( oldBasis[ 0 ], oldBasis[ 1 ], oldBasis[ 2 ], center, originalScaling );
+                transforms[ 0 ] = new ChangeOfBasis( oldBasis, newBasis, center );
+            else
+                transforms[ 0 ] = new ChangeOfBasis( oldBasis[ 0 ], oldBasis[ 1 ], oldBasis[ 2 ], center, originalScaling );
         }
         return null;
     }

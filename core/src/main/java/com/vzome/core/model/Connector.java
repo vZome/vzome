@@ -14,7 +14,7 @@ public class Connector extends ManifestationImpl implements Comparable<Connector
 	public Connector( AlgebraicVector loc )
 	{
 		super();
-		
+		this.setColor(Color.WHITE);
 		m_center = loc;
 	}
 

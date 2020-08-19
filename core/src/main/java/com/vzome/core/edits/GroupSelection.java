@@ -13,9 +13,9 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.UndoableEdit;
-import com.vzome.core.math.DomUtils;
+import com.vzome.xml.DomUtils;
 
-public class GroupSelection implements UndoableEdit
+public class GroupSelection extends UndoableEdit
 {
     protected Selection mSelection;
     

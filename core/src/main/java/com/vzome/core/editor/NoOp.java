@@ -11,7 +11,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 
-public class NoOp implements UndoableEdit
+public class NoOp extends UndoableEdit
 {
     @Override
     public void perform() throws Failure

@@ -20,7 +20,7 @@ public class TransparentRendering implements RenderingChanges
     @Override
     public void manifestationAdded( RenderedManifestation manifestation )
     {
-        manifestation .setTransparency( 0.99f );
+        manifestation .setTransparency( 0.50f );
         manifestation .setPickable( false );
         mRealOne .manifestationAdded( manifestation );
     }
@@ -66,6 +66,12 @@ public class TransparentRendering implements RenderingChanges
             RenderedManifestation to )
     {
         throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean shapesChanged( Shapes shapes )
+    {
+        return this .mRealOne .shapesChanged( shapes );
     }
 
 }

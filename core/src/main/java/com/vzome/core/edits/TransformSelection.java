@@ -7,13 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vzome.core.construction.Construction;
-import com.vzome.core.construction.Point;
-import com.vzome.core.construction.Polygon;
-import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.construction.TransformedPoint;
-import com.vzome.core.construction.TransformedPolygon;
-import com.vzome.core.construction.TransformedSegment;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.Selection;
 import com.vzome.core.model.Manifestation;
@@ -43,17 +37,8 @@ public class TransformSelection extends ChangeManifestations
         for (Manifestation m : inputs) {
             if ( ! m .isRendered() )
                 continue;
-            Construction c = m .getConstructions() .next();
-            Construction result = null;
-            if ( c instanceof Point ) {
-                result = new TransformedPoint( transform, (Point) c );
-            } else if ( c instanceof Segment ) {
-                result = new TransformedSegment( transform, (Segment) c );
-            } else if ( c instanceof Polygon ) {
-                result = new TransformedPolygon( transform, (Polygon) c );
-            } else {
-                // TODO handle other constructions 
-            }
+            Construction c = m .getFirstConstruction();
+            Construction result = transform .transform( c );
             select( manifestConstruction( result ), true );
         }
         redo();

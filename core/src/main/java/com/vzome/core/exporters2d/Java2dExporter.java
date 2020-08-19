@@ -42,7 +42,7 @@ public class Java2dExporter
         Java2dSnapshot snapshot = new Java2dSnapshot();
 
         this .viewTransform = new Matrix4d();
-        view .getViewTransform( this .viewTransform, 0d );
+        view .getViewTransform( this .viewTransform );
         
         if ( ! view .isPerspective() ) {
             double edge = view .getWidth() / 2;
@@ -74,7 +74,7 @@ public class Java2dExporter
         List<Vector3f> mappedVertices = new ArrayList<>( 60 );
         for (RenderedManifestation rm : model) {
             Polyhedron shape = rm .getShape();
-            com.vzome.core.render.Color c = rm .getColor();
+            com.vzome.core.model.Color c = rm .getColor();
             Color color = (c == null)? Color.WHITE : new Color( c .getRGB() );
             
             if ( drawLines ) {
@@ -144,7 +144,7 @@ public class Java2dExporter
                     if ( doLighting ) {
                         AlgebraicVector faceNormal = partOrientation .timesColumn( face .getNormal() );
                         RealVector normal = model .renderVector( faceNormal ) .normalize();
-                        Vector3f normalV = new Vector3f( (float) normal.x, (float) normal.y, (float) normal.z );
+                        Vector3f normalV = new Vector3f( normal.x, normal.y, normal.z );
                         this .viewTransform .transform( normalV );
                         
                         path .applyLighting( normalV, lightDirs, lightColors, ambientLight );
@@ -247,7 +247,7 @@ public class Java2dExporter
     private Vector3f mapCoordinates( RealVector rv, int height, int width )
     {
         float xscale = width/2f;
-        Point3f vr = new Point3f( (float)rv.x, (float)rv.y, (float)rv.z );
+        Point3f vr = new Point3f( rv.x, rv.y, rv.z );
         // vr is still in world coordinates
         this .viewTransform .transform( vr );
         // vr is now in view coordinates

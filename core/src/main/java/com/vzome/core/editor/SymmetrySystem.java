@@ -23,16 +23,16 @@ import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.UndoableEdit.Context;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Color;
+import com.vzome.core.model.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel.OrbitSource;
+import com.vzome.xml.DomUtils;
 import com.vzome.core.render.Shapes;
 
 public class SymmetrySystem implements OrbitSource
@@ -63,11 +63,11 @@ public class SymmetrySystem implements OrbitSource
         orbits = new OrbitSet( symmetry );
         if ( symmXml == null ) 
         {
-            for (Direction dir : symmetry .getOrbitSet()) {
-                if ( dir .isStandard() || allowNonstandard )  // reader
-                    orbits .add( dir );
-                Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
-                orbitColors .put( dir, color );
+            for ( Direction orbit : symmetry .getOrbitSet() ) {
+                if ( symmetryPerspective .orbitIsStandard( orbit ) || allowNonstandard )  // reader
+                    orbits .add( orbit );
+                Color color = colors .getColor( Colors.DIRECTION + orbit .getName() );
+                orbitColors .put( orbit, color );
             }
         }
         else
@@ -305,8 +305,8 @@ public class SymmetrySystem implements OrbitSource
         }
         return result;
     }
-
-    public void setStyle( String styleName )
+    
+    public Shapes getStyle( String styleName )
     {
         Optional<Shapes> found = this .symmetryPerspective .getGeometries() .stream()
                 .filter( e -> styleName .equals( e .getName() )
@@ -314,7 +314,16 @@ public class SymmetrySystem implements OrbitSource
                         || styleName .equals( e .getPackage() ) )
                 .findFirst();
         if ( found .isPresent() )
-            this .shapes = found .get();
+            return found .get();
+        else
+            return null;
+    }
+
+    public void setStyle( String styleName )
+    {
+        Shapes result = this .getStyle( styleName );
+        if ( result != null )
+            this .shapes = result;
         else {
             logger .warning( "UNKNOWN STYLE NAME: " + styleName );
             this .shapes = this .symmetryPerspective .getDefaultGeometry();
@@ -341,8 +350,13 @@ public class SymmetrySystem implements OrbitSource
 
     public Polyhedron getShape( AlgebraicVector offset )
     {
+        return this .getShape( offset, this.shapes );
+    }
+
+    public Polyhedron getShape( AlgebraicVector offset, Shapes shapes )
+    {
         if ( offset == null )
-            return this .shapes .getConnectorShape();
+            return shapes .getConnectorShape();
         else {
             if ( offset .isOrigin() )
                 return null;
@@ -355,7 +369,7 @@ public class SymmetrySystem implements OrbitSource
 
             AlgebraicNumber len = axis .getLength( offset );
 
-            return this .shapes .getStrutShape( orbit, len );
+            return shapes .getStrutShape( orbit, len );
         }
     }
 
@@ -385,5 +399,20 @@ public class SymmetrySystem implements OrbitSource
     public String getModelResourcePath()
     {
         return this .symmetryPerspective .getModelResourcePath();
+    }
+
+    public boolean orbitIsStandard( Direction orbit )
+    {
+        return this .symmetryPerspective .orbitIsStandard( orbit );
+    }
+
+    public boolean orbitIsBuildDefault( Direction orbit )
+    {
+        return this .symmetryPerspective .orbitIsBuildDefault( orbit );
+    }
+
+    public AlgebraicNumber getOrbitUnitLength( Direction orbit )
+    {
+        return this .symmetryPerspective .getOrbitUnitLength( orbit );
     }
 }

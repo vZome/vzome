@@ -13,7 +13,7 @@ public class SegmentJoiningPoints extends Segment
 {
     // parameters
     private final Point mStart, mEnd;
-    
+
     public SegmentJoiningPoints( Point p1, Point p2 )
     {
         super( p1 .field );
@@ -31,8 +31,8 @@ public class SegmentJoiningPoints extends Segment
         AlgebraicVector endV = mEnd .getLocation();
         // if both 4d, keep the offset 4d, but never mix 4d and 3d when computing offset
         if ( startV .dimension() == 3 || endV .dimension() == 3 ) {
-        	startV = startV .projectTo3d( true );
-        	endV = endV .projectTo3d( true );
+            startV = startV .projectTo3d( true );
+            endV = endV .projectTo3d( true );
         }
         AlgebraicVector offset = endV .minus( startV );
         return setStateVariables( startV, offset, false );

@@ -56,7 +56,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
             @Override
             public void actionPerformed( ActionEvent evt )
             {
-            	enabledOrbits .actionPerformed( evt );
+                enabledOrbits .actionPerformed( evt .getSource(), evt .getActionCommand() );
             }
         };
 
@@ -77,7 +77,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
                     @Override
                     public void actionPerformed( ActionEvent evt )
                     {
-                    	indirection .actionPerformed( evt );
+                        indirection .actionPerformed( evt );
                         singleCheckbox .setSelected( false );
                     }
                 } ) );
@@ -152,45 +152,47 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
     }
 
 	public void orbitsChanged()
-    {
-		enabledOrbits .actionPerformed( new ActionEvent( orbitTriangle, 0, "refreshDots" ) );
-        
-        orbitCheckboxes .removeAll();
-        String[] dirNames = enabledOrbits .getCommandList( "allOrbits" );
-        for ( int j = 0; j < dirNames.length; j++ )
-        {
-            final String orbitName = dirNames[ j ];
-            JPanel panel = new JPanel();
-            panel .setMaximumSize( new Dimension( 600, 20 ) );
-            panel .setLayout( new BorderLayout() );
-            final JPanel colorSwatch = new JPanel()
-            {
-                @Override
-                public void paintComponent( Graphics graphics )
-                {
-                	enabledOrbits .repaintGraphics( "oneOrbit." + orbitName, graphics, getSize() );
-                }
-            };
-            colorSwatch .setMaximumSize( new Dimension( 60, 20 ) );
-            colorSwatch .setPreferredSize( new Dimension( 60, 20 ) );
-            colorSwatch .setMinimumSize( new Dimension( 60, 20 ) );
-            panel .add( colorSwatch, BorderLayout.WEST );
-            {
-                JCheckBox checkbox  = new JCheckBox();
-                checkbox .setText( orbitName );
-                checkbox .setVisible( true );
-                checkbox .setSelected( false );
-                checkbox .setActionCommand( "toggleDirection." + orbitName );
-                checkbox .addActionListener( enabledOrbits );
-                panel .add( checkbox, BorderLayout.CENTER );
-            }
-            orbitCheckboxes .add( panel );
-        }
-        enabledChanged();
-    }
+	{
+	    enabledOrbits .actionPerformed( orbitTriangle, "refreshDots" );
+
+	    orbitCheckboxes .removeAll();
+	    String[] dirNames = enabledOrbits .getCommandList( "allOrbits" );
+	    for ( int j = 0; j < dirNames.length; j++ )
+	    {
+	        final String orbitName = dirNames[ j ];
+	        JPanel panel = new JPanel();
+	        panel .setMaximumSize( new Dimension( 600, 20 ) );
+	        panel .setLayout( new BorderLayout() );
+	        final JPanel colorSwatch = new JPanel()
+	        {
+	            @Override
+	            public void paintComponent( Graphics graphics )
+	            {
+	                enabledOrbits .repaintGraphics( "oneOrbit." + orbitName, graphics, getSize() );
+	            }
+	        };
+	        colorSwatch .setMaximumSize( new Dimension( 60, 20 ) );
+	        colorSwatch .setPreferredSize( new Dimension( 60, 20 ) );
+	        colorSwatch .setMinimumSize( new Dimension( 60, 20 ) );
+	        panel .add( colorSwatch, BorderLayout.WEST );
+	        {
+	            JCheckBox checkbox  = new JCheckBox();
+	            checkbox .setText( orbitName );
+	            checkbox .setVisible( true );
+	            checkbox .setSelected( false );
+	            checkbox .setActionCommand( "toggleDirection." + orbitName );
+	            checkbox .addActionListener( new ControllerActionListener(enabledOrbits) );
+	            panel .add( checkbox, BorderLayout.CENTER );
+	        }
+	        orbitCheckboxes .add( panel );
+	    }
+	    enabledChanged();
+	}
     
     private void enabledChanged()
     {
+        this .singleCheckbox .setSelected( enabledOrbits .propertyIsTrue( "oneAtATime" ) );
+
         String[] dirNames = enabledOrbits .getCommandList( "orbits" );
         for ( int i = 0; i < orbitCheckboxes .getComponentCount(); i++ ) {
             JPanel row  = (JPanel) orbitCheckboxes .getComponent( i );
@@ -219,23 +221,23 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 	@Override
 	public void propertyChange( PropertyChangeEvent event )
 	{
-    	switch ( event .getPropertyName() ) {
+	    switch ( event .getPropertyName() ) {
 
-    	case "orbits":
-            orbitsChanged();
-			break;
+	    case "orbits":
+	        orbitsChanged();
+	        break;
 
-    	case "useGraphicalViews":
-            if ( Boolean.TRUE .equals( event .getNewValue() ) )
-                cardPanel .showCard( "graphical" );
-            else
-                cardPanel .showCard( "textual" );
-			break;
+	    case "useGraphicalViews":
+	        if ( Boolean.TRUE .equals( event .getNewValue() ) )
+	            cardPanel .showCard( "graphical" );
+	        else
+	            cardPanel .showCard( "textual" );
+	        break;
 
-		default:
-			break;
-		}
-    }
+	    default:
+	        break;
+	    }
+	}
 
     protected static JButton createButton( String buttonText, String actionCommand, ActionListener listener )
     {
