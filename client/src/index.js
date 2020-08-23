@@ -11,12 +11,14 @@ import './index.css';
 import App from './App';
 import * as jre from './bundles/jre'
 import * as files from './bundles/files'
+import * as alerts from './bundles/alerts'
 import * as vzomejava from './bundles/vzomejava'
 import * as camera from './bundles/camera'
 import * as lighting from './bundles/lighting'
 import * as progress from './bundles/progress'
 
 const rootReducer = combineReducers( {
+  alerts: alerts.reducer,
   jre: jre.reducer,
   vzomejava: vzomejava.reducer,
   lighting: lighting.reducer,
