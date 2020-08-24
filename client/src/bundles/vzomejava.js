@@ -125,7 +125,12 @@ export const reducer = ( state = initialState, action ) => {
 export const middleware = store => next => async action => 
 {
   if ( action.type === JAVA_CODE_LOADED ) {
-    store.dispatch( fetchModel( "/app/models/vZomeLogo.vZome" ) )
+    let url = "/app/models/vZomeLogo.vZome"
+    const urlParams = new URLSearchParams( window.location.search );
+    if ( urlParams.has( "url" ) ) {
+      url = decodeURI( urlParams.get( "url" ) )
+    }
+    store.dispatch( fetchModel( url ) )
   }
 
   if ( action.type === FILE_LOADED ) {
