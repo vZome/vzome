@@ -79,7 +79,7 @@ const Models = ({ enabled, openModel }) =>
           </Tab.Container>
         </Modal.Body>
         <Modal.Footer>
-        <Button variant="secondary" onClick={handleCancel}>
+          <Button variant="secondary" onClick={handleCancel}>
             Cancel
           </Button>
           <Button variant="primary" onClick={handleOpen}>

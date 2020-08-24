@@ -50,6 +50,12 @@ canvas {
   margin: auto;
 }
 
+#web {
+  position: fixed;
+  right: 13%;
+  top: 1%;
+}
+
 #models {
   position: fixed;
   right: 9%;

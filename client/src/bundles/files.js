@@ -1,7 +1,7 @@
 import { startProgress, stopProgress } from './progress'
 import { FILE_EXPORTED } from './jre'
+import { showAlert } from './alerts'
 
-export const FILE_FAILED = 'FILE_FAILED'
 export const FILE_LOADED = 'FILE_LOADED'
 
 export const fileSelected = selected => dispatch =>
@@ -21,7 +21,7 @@ export const fileSelected = selected => dispatch =>
   reader.onerror = () =>
   {
     dispatch( stopProgress() )
-    dispatch( { type: FILE_FAILED, payload: selected.name } )
+    dispatch( showAlert( `Unable to read file: ${selected.name}` ) )
   }
   reader.readAsText( selected )
 }
@@ -50,7 +50,7 @@ export const fetchModel = path => dispatch =>
     {
       console.error( 'There has been a problem with your fetch operation:', error );
       dispatch( stopProgress() )
-      dispatch( { type: FILE_FAILED, payload: path } )
+      dispatch( showAlert( `Unable to load URL: ${path}` ) )
     });
 }
 
