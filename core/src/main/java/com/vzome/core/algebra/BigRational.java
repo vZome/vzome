@@ -64,6 +64,10 @@ public class BigRational implements Comparable<BigRational>, Fields.BigRationalE
     }
 
     private static int signum(BigRational that) { 
+        if ( that.num == 0 )
+            return 0;
+        if ( that.num == 1 )
+            return 1;
         return that.bigNum == null 
                 ? Long.signum(that.num) 
                         : that.bigNum.signum(); 

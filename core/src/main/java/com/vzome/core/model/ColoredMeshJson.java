@@ -157,7 +157,7 @@ public class ColoredMeshJson
                 int[][] nums = new int[dimension][];
                 int i = 0;
                 for ( JsonNode numberNode : vectorNode ) {
-                    nums[ i++ ] = mapper .treeToValue( numberNode, int[].class );
+                    nums[ i++ ] = mapper .treeToValue( numberNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
                 }
                 AlgebraicVector vertex = field .createIntegerVectorFromTDs( nums );
                 if ( vertex .dimension() > 3 )
@@ -172,7 +172,7 @@ public class ColoredMeshJson
         if ( collection != null ) {
             try {
                 // Legacy format
-                int[] indices = mapper .treeToValue( collection, int[].class );
+                int[] indices = mapper .treeToValue( collection, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
                 Arrays .stream( indices )
                     .forEach( i -> events .constructionAdded( new FreePoint( vertices .get( i ) ), null ) );
             }
@@ -200,7 +200,7 @@ public class ColoredMeshJson
                 }
                 else {
                     JsonNode verticesNode = strutNode .get( "vertices" );
-                    int[] ends = mapper .treeToValue( verticesNode, int[].class );
+                    int[] ends = mapper .treeToValue( verticesNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
                     Point p1 = new FreePoint( vertices .get( ends[ 0 ] ) );
                     Point p2 = new FreePoint( vertices .get( ends[ 1 ] ) );
                     JsonNode colorNode = strutNode .get( "color" );
@@ -214,7 +214,7 @@ public class ColoredMeshJson
         if ( collection != null ) {
             for ( JsonNode panelNode : collection ) {
                 JsonNode verticesNode = panelNode .get( "vertices" );
-                int[] indices = mapper .treeToValue( verticesNode, int[].class );
+                int[] indices = mapper .treeToValue( verticesNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
                 List<Point> points = Arrays .stream( indices )
                         .mapToObj( i -> new FreePoint( vertices .get( i ) ) )
                         .collect( Collectors .toList() );

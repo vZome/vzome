@@ -148,7 +148,7 @@ public class SimpleMeshJson
                 int[][] nums = new int[dimension][];
                 int i = 0;
                 for ( JsonNode numberNode : vectorNode ) {
-                    nums[ i++ ] = mapper .treeToValue( numberNode, int[].class );
+                    nums[ i++ ] = mapper .treeToValue( numberNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
                 }
                 AlgebraicVector vertex = field .createIntegerVectorFromTDs( nums );
                 if ( vertex .dimension() > 3 )
@@ -161,7 +161,7 @@ public class SimpleMeshJson
         
         JsonNode collection = node .get( "edges" );
         for ( JsonNode strutNode : collection ) {
-            int[] ends = mapper .treeToValue( strutNode, int[].class );
+            int[] ends = mapper .treeToValue( strutNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
             Point p1 = new FreePoint( vertices .get( ends[ 0 ] ) );
             Point p2 = new FreePoint( vertices .get( ends[ 1 ] ) );
             events .constructionAdded( p1 );
@@ -171,7 +171,7 @@ public class SimpleMeshJson
         
         collection = node .get( "faces" );
         for ( JsonNode panelNode : collection ) {
-            int[] indices = mapper .treeToValue( panelNode, int[].class );
+            int[] indices = mapper .treeToValue( panelNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
             List<Point> points = Arrays .stream( indices )
                     .mapToObj( i -> new FreePoint( vertices .get( i ) ) )
                     .collect( Collectors .toList() );

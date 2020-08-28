@@ -146,7 +146,7 @@ public class CommandEdit extends ChangeManifestations
         Object[][] signature = mCommand .getParameterSignature();
         int actualsLen = constrsBefore .size();
         if ( ( signature.length == actualsLen )
-                || ( signature.length==1 && signature[0][0] .equals( Command.GENERIC_PARAM_NAME ) ) )
+                || ( signature.length==1 && signature[0][0] .equals( Command.GENERIC_PARAM_NAME ) ) ) {
             try {
                 // command specifically applies to a collection of constructions (like a Transformation)
                 selectionAfter = mCommand .apply( constrsBefore, mAttrs, news );
@@ -154,8 +154,10 @@ public class CommandEdit extends ChangeManifestations
                 undo();  // NEW SELECTION BUG: undo the redo above
                 throw f;
             }
-        else if ( signature.length > actualsLen )
+        }
+        else if ( signature.length > actualsLen ) {
             fail( "Too few objects in the selection." );
+        }
         else if ( signature.length == 1 ) {
             // parallel applications
             ConstructionList partial;
