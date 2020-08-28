@@ -2,11 +2,10 @@ package com.vzome.core.viewing;
 
 import java.util.Objects;
 
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Point3d;
-import javax.vecmath.Quat4d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3f;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import org.w3c.dom.Document;
@@ -20,26 +19,26 @@ public class Camera
     /**
      * The original frustum.
      */
-    public static final double ORIG_WIDTH = 18f, ORIG_DISTANCE = 40f;
+    public static final float ORIG_WIDTH = 18f, ORIG_DISTANCE = 40f;
 
-    protected static final double ORIG_NEAR = 0.1f, ORIG_FAR = 2 * ORIG_DISTANCE;
+    protected static final float ORIG_NEAR = 0.1f, ORIG_FAR = 2 * ORIG_DISTANCE;
 
-    protected static final Vector3d ORIG_LOOK = new Vector3d(0,0,-1);
+    protected static final Vector3f ORIG_LOOK = new Vector3f(0,0,-1);
 
-    protected static final Vector3d ORIG_UP = new Vector3d(0,1,0);
+    protected static final Vector3f ORIG_UP = new Vector3f(0,1,0);
 
 
-    private Point3d mLookAtPoint = new Point3d();
+    private Point3f mLookAtPoint = new Point3f();
 
-    private double mNear = ORIG_NEAR;
+    private float mNear = ORIG_NEAR;
 
-    private double mFar = ORIG_FAR;
+    private float mFar = ORIG_FAR;
 
-    private double mWidth = ORIG_WIDTH;
+    private float mWidth = ORIG_WIDTH;
 
-    private double mDistance = ORIG_DISTANCE;
+    private float mDistance = ORIG_DISTANCE;
 
-    private Vector3d mUpDirection = new Vector3d( ORIG_UP ), mLookDirection = new Vector3d( ORIG_LOOK );
+    private Vector3f mUpDirection = new Vector3f( ORIG_UP ), mLookDirection = new Vector3f( ORIG_LOOK );
 
     private boolean mOrthographic = false;
 
@@ -100,13 +99,13 @@ public class Camera
     {
         this();
 
-        this .mLookAtPoint = new Point3d( prototype .mLookAtPoint );
+        this .mLookAtPoint = new Point3f( prototype .mLookAtPoint );
         this .mNear = prototype .mNear;
         this .mFar = prototype .mFar;
         this .mWidth = prototype .mWidth;
         this .mDistance = prototype .mDistance;
-        this .mUpDirection = new Vector3d( prototype .mUpDirection );
-        this .mLookDirection = new Vector3d( prototype .mLookDirection );
+        this .mUpDirection = new Vector3f( prototype .mUpDirection );
+        this .mLookDirection = new Vector3f( prototype .mLookDirection );
         this .mOrthographic = prototype .mOrthographic;
         this .mStereoAngle = prototype .mStereoAngle;
     }
@@ -126,14 +125,14 @@ public class Camera
         mOrthographic = ! value;
     }
 
-    public void setStereoAngle( double value )
+    public void setStereoAngle( float value )
     {
         mStereoAngle = value;
         // now make sure the stereo/mono switch keeps effective object sizes the same
         if ( value == 0d )
-            mWidth = mWidth * 2d;
+            mWidth = mWidth * 2f;
         else
-            mWidth = mWidth / 2d;
+            mWidth = mWidth / 2f;
     }
 
     public float getFieldOfView()
@@ -146,7 +145,7 @@ public class Camera
         return (float) mDistance;
     }
 
-    public void getViewOrientation( Vector3d lookDir, Vector3d upDir )
+    public void getViewOrientation( Vector3f lookDir, Vector3f upDir )
     {
         lookDir .set( mLookDirection );
         upDir .set( mUpDirection );
@@ -168,23 +167,23 @@ public class Camera
      * @param center a point in the virtual world where the eye is looking
      * @param up an up vector specifying the frustum's up direction
      */
-    private static void lookAt( double[] mat, Point3d eye, Point3d center, Vector3d up)
+    private static void lookAt( float[] mat, Point3f eye, Point3f center, Vector3f up)
     {
-        double forwardx,forwardy,forwardz,invMag;
-        double upx,upy,upz;
-        double sidex,sidey,sidez;
+        float forwardx,forwardy,forwardz,invMag;
+        float upx,upy,upz;
+        float sidex,sidey,sidez;
 
         forwardx =  eye.x - center.x;
         forwardy =  eye.y - center.y;
         forwardz =  eye.z - center.z;
 
-        invMag = 1.0/Math.sqrt( forwardx*forwardx + forwardy*forwardy + forwardz*forwardz);
+        invMag = (float) (1.0/Math.sqrt( forwardx*forwardx + forwardy*forwardy + forwardz*forwardz));
         forwardx = forwardx*invMag;
         forwardy = forwardy*invMag;
         forwardz = forwardz*invMag;
 
 
-        invMag = 1.0/Math.sqrt( up.x*up.x + up.y*up.y + up.z*up.z);
+        invMag = (float) (1.0/Math.sqrt( up.x*up.x + up.y*up.y + up.z*up.z));
         upx = up.x*invMag;
         upy = up.y*invMag;
         upz = up.z*invMag;
@@ -194,7 +193,7 @@ public class Camera
         sidey = upz*forwardx-upx*forwardz;
         sidez = upx*forwardy-upy*forwardx;
 
-        invMag = 1.0/Math.sqrt( sidex*sidex + sidey*sidey + sidez*sidez);
+        invMag = (float) (1.0/Math.sqrt( sidex*sidex + sidey*sidey + sidez*sidez));
         sidex *= invMag;
         sidey *= invMag;
         sidez *= invMag;
@@ -231,30 +230,30 @@ public class Camera
      * Get the mapping from view to world coordinates
      * @param trans
      */
-    public void getViewTransform( Matrix4d matrix )
+    public void getViewTransform( Matrix4f matrix )
     {
-        Point3d eyePoint = getPosition();
+        Point3f eyePoint = getPosition();
 
-        double[] mat = new double[16];
+        float[] mat = new float[16];
         lookAt( mat, eyePoint, mLookAtPoint, mUpDirection );
         matrix .set( mat );
     }
 
-    public Point3d getPosition()
+    public Point3f getPosition()
     {
-        Point3d eyePoint = new Point3d( mLookAtPoint );
-        Vector3d dir = new Vector3d( mLookDirection );
+        Point3f eyePoint = new Point3f( mLookAtPoint );
+        Vector3f dir = new Vector3f( mLookDirection );
         dir .scale( -mDistance );
         eyePoint .add( dir );
         return eyePoint;
     }
     
-    public Point3d getLookAtPoint()
+    public Point3f getLookAtPoint()
     {
         return mLookAtPoint;
     }
 
-    public Vector3d getUpDirection()
+    public Vector3f getUpDirection()
     {
         return this .mUpDirection;
     }
@@ -277,15 +276,15 @@ public class Camera
     }
 
 
-    public void setLookAtPoint( Point3d lookAt )
+    public void setLookAtPoint( Point3f lookAt )
     {
         mLookAtPoint = lookAt;
     }
 
 
-    public void addViewpointRotation( Quat4d rotation )
+    public void addViewpointRotation( Quat4f rotation )
     {
-        Matrix3d m = new Matrix3d();
+        Matrix3f m = new Matrix3f();
         m .set( rotation );
         m .invert();
         m .transform( mLookDirection );
@@ -300,7 +299,7 @@ public class Camera
      */
     public void setViewpointDistance( float distance )
     {
-        double ratio = distance / mDistance;
+        float ratio = distance / mDistance;
         mDistance = distance;
         mNear = mNear * ratio;
         mFar = mFar * ratio;
@@ -317,17 +316,17 @@ public class Camera
         return mStereoAngle != 0d;
     }
 
-    public double getNearClipDistance()
+    public float getNearClipDistance()
     {
         return mNear;
     }
 
-    public double getFarClipDistance()
+    public float getFarClipDistance()
     {
         return mFar;
     }
 
-    public double getWidth()
+    public float getWidth()
     {
         return mWidth;
     }
@@ -371,46 +370,46 @@ public class Camera
         this();
 
         String str = viewElem .getAttribute( "near" );
-        this .mNear = Double .parseDouble( str );
+        this .mNear = Float .parseFloat( str );
         str = viewElem .getAttribute( "far" );
-        this .mFar = Double .parseDouble( str );
+        this .mFar = Float .parseFloat( str );
         str = viewElem .getAttribute( "width" );
-        this .mWidth = Double .parseDouble( str );
+        this .mWidth = Float .parseFloat( str );
         str = viewElem .getAttribute( "distance" );
-        this .mDistance = Double .parseDouble( str );
+        this .mDistance = Float .parseFloat( str );
         str = viewElem .getAttribute( "stereoAngle" );
-        this .mStereoAngle = Double .parseDouble( str );
+        this .mStereoAngle = Float .parseFloat( str );
         str = viewElem .getAttribute( "parallel" );
         this .mOrthographic = Boolean .valueOf( str );
         {
             Element child = (Element) viewElem .getElementsByTagName( "LookAtPoint" ) .item( 0 );
             str = child .getAttribute( "x" );
-            double x = Double .parseDouble( str );
+            float x = Float .parseFloat( str );
             str = child .getAttribute( "y" );
-            double y = Double .parseDouble( str );
+            float y = Float .parseFloat( str );
             str = child .getAttribute( "z" );
-            double z = Double .parseDouble( str );
-            mLookAtPoint = new Point3d( x, y, z );
+            float z = Float .parseFloat( str );
+            mLookAtPoint = new Point3f( x, y, z );
         }
         {
             Element child = (Element) viewElem .getElementsByTagName( "UpDirection" ) .item( 0 );
             str = child .getAttribute( "x" );
-            double x = Double .parseDouble( str );
+            float x = Float .parseFloat( str );
             str = child .getAttribute( "y" );
-            double y = Double .parseDouble( str );
+            float y = Float .parseFloat( str );
             str = child .getAttribute( "z" );
-            double z = Double .parseDouble( str );
-            mUpDirection = new Vector3d( x, y, z );
+            float z = Float .parseFloat( str );
+            mUpDirection = new Vector3f( x, y, z );
         }
         {
             Element child = (Element) viewElem .getElementsByTagName( "LookDirection" ) .item( 0 );
             str = child .getAttribute( "x" );
-            double x = Double .parseDouble( str );
+            float x = Float .parseFloat( str );
             str = child .getAttribute( "y" );
-            double y = Double .parseDouble( str );
+            float y = Float .parseFloat( str );
             str = child .getAttribute( "z" );
-            double z = Double .parseDouble( str );
-            mLookDirection = new Vector3d( x, y, z );
+            float z = Float .parseFloat( str );
+            mLookDirection = new Vector3f( x, y, z );
         }
     }
 }

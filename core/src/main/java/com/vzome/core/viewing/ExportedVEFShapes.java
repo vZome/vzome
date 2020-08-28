@@ -27,7 +27,6 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Color;
 import com.vzome.core.parts.StrutGeometry;
@@ -65,7 +64,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, boolean useZomic )
     {
-        this( prefsFolder, pkgName, name, null, symm, new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) );
+        this( prefsFolder, pkgName, name, null, symm, new OctahedralShapes( pkgName, name, symm ) );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )

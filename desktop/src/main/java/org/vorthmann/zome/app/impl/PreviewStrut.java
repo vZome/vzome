@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.vecmath.Quat4d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -197,7 +197,7 @@ public class PreviewStrut implements PropertyChangeListener
         return this .workingPlaneDual != null;
     }
 
-    public void trackballRolled( Quat4d roll )
+    public void trackballRolled( Quat4f roll )
     {
         if ( point != null && ! usingWorkingPlane() )
             zoneBall .trackballRolled( roll );  // some of these events will trigger the zone change
@@ -214,7 +214,7 @@ public class PreviewStrut implements PropertyChangeListener
             RealVector planeIntersection = this .intersectWorkingPlane( ray );
             RealVector vectorInPlane = planeIntersection .minus( this .point .getLocation() .toRealVector() );
 
-            Vector3d almostPlanarVector = new Vector3d();
+            Vector3f almostPlanarVector = new Vector3f();
             almostPlanarVector .set( vectorInPlane.x, vectorInPlane.y, vectorInPlane.z );
             zoneBall .setVector( almostPlanarVector );
         }

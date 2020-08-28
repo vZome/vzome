@@ -5,7 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
@@ -31,7 +31,7 @@ import com.vzome.core.viewing.Lights;
  */
 public class Java2dExporter
 {
-	private transient Matrix4d viewTransform, eyeTrans;
+	private transient Matrix4f viewTransform, eyeTrans;
         
     public Java2dSnapshot render2d( RenderedModel model, Camera view, Lights lights, int height, int width, boolean drawLines, boolean doLighting ) throws Exception
     {
@@ -41,15 +41,15 @@ public class Java2dExporter
         Color background;
         Java2dSnapshot snapshot = new Java2dSnapshot();
 
-        this .viewTransform = new Matrix4d();
+        this .viewTransform = new Matrix4f();
         view .getViewTransform( this .viewTransform );
         
         if ( ! view .isPerspective() ) {
-            double edge = view .getWidth() / 2;
+            float edge = view .getWidth() / 2;
             this .eyeTrans = ortho( -edge, edge, -edge, edge, view .getNearClipDistance(), view .getFarClipDistance() );
         }
         else
-            this .eyeTrans = perspective( view .getFieldOfView(), 1.0d, view .getNearClipDistance(), view .getFarClipDistance() );
+            this .eyeTrans = perspective( view .getFieldOfView(), 1.0f, view .getNearClipDistance(), view .getFarClipDistance() );
             // TODO - make aspect ratio track the screen window shape
 
         for ( int i = 0; i < lightDirs.length; i++ ) {
@@ -179,21 +179,21 @@ public class Java2dExporter
      * near clip plane).
      * @param zFar the distance to the frustum's far clipping plane
      */
-    public static Matrix4d perspective( double fovx, double aspect, double zNear, double zFar )
+    public static Matrix4f perspective( float fovx, float aspect, float zNear, float zFar )
     {
-        Matrix4d m = new Matrix4d();
-        double sine, cotangent, deltaZ;
-        double half_fov = fovx * 0.5;
+        Matrix4f m = new Matrix4f();
+        float sine, cotangent, deltaZ;
+        float half_fov = fovx * 0.5f;
 
         deltaZ = zFar - zNear;
-        sine = Math.sin(half_fov);
-        cotangent = Math.cos(half_fov) / sine;
+        sine = (float) Math.sin(half_fov);
+        cotangent = (float) (Math.cos(half_fov) / sine);
 
         m.m00 = cotangent;
         m.m11 = cotangent * aspect;
         m.m22 = (zFar + zNear) / deltaZ;
-        m.m23 = 2.0 * zNear * zFar / deltaZ;
-        m.m32 = -1.0;
+        m.m23 = 2.0f * zNear * zFar / deltaZ;
+        m.m32 = -1.0f;
         m.m01 = m.m02 = m.m03 = m.m10 = m.m12 = m.m13 = m.m20 =
                 m.m21 = m.m30 = m.m31 = m.m33 = 0;
 
@@ -223,19 +223,19 @@ public class Java2dExporter
      * (the value -near is the location of the near clip plane)
      * @param far the distance to the frustum's far clipping plane
      */
-    public static Matrix4d ortho( double left, double right, double bottom,
-                           double top, double near, double far )
+    public static Matrix4f ortho( float left, float right, float bottom,
+            float top, float near, float far )
     {
-        Matrix4d m = new Matrix4d();
-        double deltax = 1/(right - left);
-        double deltay = 1/(top - bottom);
-        double deltaz = 1/(far - near);
+        Matrix4f m = new Matrix4f();
+        float deltax = 1/(right - left);
+        float deltay = 1/(top - bottom);
+        float deltaz = 1/(far - near);
 
-        m.m00 = 2.0 * deltax;
+        m.m00 = 2.0f * deltax;
         m.m03 = -(right + left) * deltax;
-        m.m11 = 2.0 * deltay;
+        m.m11 = 2.0f * deltay;
         m.m13 = -(top + bottom) * deltay;
-        m.m22 = 2.0 * deltaz;
+        m.m22 = 2.0f * deltaz;
         m.m23 = (far + near) * deltaz;
         m.m01 = m.m02 = m.m10 = m.m12 = m.m20 =
             m.m21 = m.m30 = m.m31 = m.m32 = 0;

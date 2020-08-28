@@ -7,7 +7,7 @@ import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
 import com.jogamp.opengl.GL2;
@@ -163,9 +163,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     // These are RenderingViewer methods
     
     @Override
-    public void setViewTransformation( Matrix4d trans )
+    public void setViewTransformation( Matrix4f trans )
     {
-        Matrix4d copy = new Matrix4d();
+        Matrix4f copy = new Matrix4f();
         copy .invert( trans );
         int i = 0;
         // JOGL requires column-major order

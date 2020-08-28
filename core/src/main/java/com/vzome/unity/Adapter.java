@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Quat4d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -176,8 +176,8 @@ public class Adapter
 
                         // First, get the rotation as a matrix
                         JsonNode rotNode = node .get( "rotation" );
-                        Quat4d rot = this .objectMapper .treeToValue( rotNode, Quat4d.class );
-                        Matrix3d m = new Matrix3d();
+                        Quat4f rot = this .objectMapper .treeToValue( rotNode, Quat4f.class );
+                        Matrix3f m = new Matrix3f();
                         m .set( rot );
 
                         // The rotation is in terms of the shape we sent to Unity, so we need to get a
@@ -186,7 +186,7 @@ public class Adapter
                         //  See ExportedVEFShapes .createStrutGeometry()
                         RealVector axis0 = orbit .getAxis( Symmetry .PLUS, 0 ) .normal() .toRealVector();
                         
-                        Vector3d axis0_v3d = new Vector3d( axis0.x, axis0.y, axis0.z );
+                        Vector3f axis0_v3d = new Vector3f( axis0.x, axis0.y, axis0.z );
                         m .transform( axis0_v3d );
                         RealVector rotated = new RealVector( axis0_v3d .x, axis0_v3d .y, axis0_v3d .z );
                         

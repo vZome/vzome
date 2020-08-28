@@ -31,7 +31,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
@@ -608,13 +608,13 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 break;
     
             case "lookAtOrigin":
-                cameraController.setLookAtPoint( new Point3d( 0, 0, 0 ) );
+                cameraController.setLookAtPoint( new Point3f( 0, 0, 0 ) );
                 break;
     
             case "lookAtSymmetryCenter":
                 {
                     RealVector loc = documentModel .getParamLocation( "ball" );
-                    cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+                    cameraController .setLookAtPoint( new Point3f( loc.x, loc.y, loc.z ) );
                 }
                 break;
     
@@ -1451,7 +1451,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
 
         case "lookAtThis":
             RealVector loc = documentModel .getCentroid( pickedManifestation );
-            cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+            cameraController .setLookAtPoint( new Point3f( loc.x, loc.y, loc.z ) );
             break;
 
         default:
