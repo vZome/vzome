@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 @JsonSerialize( using = AlgebraicNumberImpl.Serializer.class )
 public class AlgebraicNumberImpl implements AlgebraicNumber
 {
-    private final AlgebraicField field;
+    private final AbstractAlgebraicField field;
     private final BigRational[] factors;
 
     private final boolean isOne;
@@ -42,7 +42,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      */
     AlgebraicNumberImpl( AlgebraicField field, BigRational units )
     {
-        this.field = field;
+        this.field = (AbstractAlgebraicField) field;
         factors = new BigRational[ field .getOrder() ];
         factors[ 0 ] = units;
         for ( int i = 1; i < factors.length; i++ ) {
@@ -56,8 +56,8 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     {
         if ( factors.length > field .getOrder() )
             throw new IllegalStateException( factors.length + " is too many factors for field \"" + field.getName() + "\"" );
-        this .field = field;
-        BigRational[] newFactors = field.prepareAlgebraicNumberTerms(factors);
+        this .field = (AbstractAlgebraicField) field;
+        BigRational[] newFactors = this .field .prepareAlgebraicNumberTerms(factors);
         this .factors = new BigRational[ field .getOrder() ];
         for ( int i = 0; i < newFactors.length; i++ ) {
             this .factors[ i ] = newFactors[ i ] == null 
@@ -67,7 +67,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         for ( int i = newFactors.length; i < this.factors.length; i++ ) {
             this .factors[ i ] = BigRational.ZERO;
         }
-        field.normalize(this.factors);
+        this .field .normalize(this.factors);
         isZero = isZero(this.factors);
         isOne = isOne(this.factors);
     }

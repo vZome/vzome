@@ -3,7 +3,7 @@
 
 package com.vzome.core.algebra;
 
-public class RootTwoField extends AlgebraicField
+public class RootTwoField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "rootTwo";
     

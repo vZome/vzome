@@ -8,13 +8,8 @@ import java.util.StringTokenizer;
 
 import com.vzome.core.math.RealVector;
 
-public abstract class AbstractAlgebraicField
+public abstract class AbstractAlgebraicField implements AlgebraicField
 {
-    public interface Registry
-    {
-        AlgebraicField getField( String name );
-    }
-
     abstract BigRational[] multiply( BigRational[] v1, BigRational[] v2 );
 
     abstract double evaluateNumber( BigRational[] factors );
@@ -28,14 +23,12 @@ public abstract class AbstractAlgebraicField
      * @param input
      * @return
      */
-    List<Integer> recurrence( List<Integer> input )
+    public List<Integer> recurrence( List<Integer> input )
     {
         return input;
     }
 
     void normalize( BigRational[] factors ) {}
-
-    public abstract void defineMultiplier( StringBuffer instances, int w );
 
     public final int getOrder() { return order; }
 
@@ -44,15 +37,11 @@ public abstract class AbstractAlgebraicField
         return order - 1;
     }
 
-    public abstract String getIrrational( int i, int format );
-
     public String getIrrational( int which )
     {
         return this .getIrrational( which, DEFAULT_FORMAT );
     }
     
-    public abstract double[] getCoefficients();
-
     protected final String name;
 
     private final int order;

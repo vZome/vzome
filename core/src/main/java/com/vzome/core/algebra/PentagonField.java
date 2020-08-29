@@ -6,7 +6,7 @@ package com.vzome.core.algebra;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class PentagonField extends AlgebraicField
+public final class PentagonField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "golden";
 
@@ -104,7 +104,7 @@ public final class PentagonField extends AlgebraicField
         }
     }
 
-    List<Integer> recurrence( List<Integer> input )
+    public List<Integer> recurrence( List<Integer> input )
     {        
         ArrayList<Integer> output = new ArrayList<>();
         for ( int item : input )
