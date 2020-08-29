@@ -32,6 +32,10 @@ subprojects {
     mavenLocal()
     mavenCentral()
     
+    // This is for the JSweet compiler
+    maven { url "http://repository.jsweet.org/artifactory/libs-release-local" }
+    maven { url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
+
     // this one is for javax.media.jai
     maven { url 'http://repository.springsource.com/maven/bundles/external' }
 
@@ -68,4 +72,3 @@ project(':server') {
         compile project(':desktop')
     }
 }
-

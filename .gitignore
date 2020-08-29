@@ -2,6 +2,7 @@
 node_modules
 .gradle/
 .idea/
+.jsweet/
 .nb-gradle/
 .settings/
 bin/
