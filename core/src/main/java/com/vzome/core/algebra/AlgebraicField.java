@@ -27,7 +27,7 @@ public interface AlgebraicField
     String getName();
     
     /**
-     * Generates an AlgebraicNumber with integer terms (having only unit denominators).
+     * Generates an AlgebraicNumber with integer terms (having only unit denominators). 
      * Use {@code createAlgebraicNumber( int[] numerators, int denominator )} 
      * if denominators other than one are required.
      * @param terms
