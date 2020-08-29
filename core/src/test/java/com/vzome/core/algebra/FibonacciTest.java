@@ -153,7 +153,7 @@ public class FibonacciTest {
         	String fieldType = field.getClass().getSimpleName() + ": ";
             List<AlgebraicNumber> list = new ArrayList<>();
             for (int i = 0; i < field.getOrder(); i++) {
-            	BigRational[] factors = field.createRational(0).getFactors();
+            	BigRational[] factors = ((AlgebraicNumberImpl) field.createRational(0)) .getFactors();
                 factors[i] = new BigRational(1);
                 list.add(field.createAlgebraicNumber(factors));
             }
@@ -168,7 +168,7 @@ public class FibonacciTest {
             int reps = 200;
             for (int r = 1; r <= reps; r++) {
                 AlgebraicNumber[] array = list.toArray(new AlgebraicNumber[list.size()]);
-                AlgebraicNumber fib = varableFibonacci(r, array);
+                AlgebraicNumberImpl fib = (AlgebraicNumberImpl) varableFibonacci(r, array);
                 for (BigRational factor : fib.getFactors()) {
                 	String msg = fieldType + r;
                     assertFalse(msg, factor.isNegative());

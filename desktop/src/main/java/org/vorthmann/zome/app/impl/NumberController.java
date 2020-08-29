@@ -3,14 +3,12 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.math.BigInteger;
 import java.util.StringTokenizer;
 
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.BigRational;
 
 public class NumberController extends DefaultController
 {

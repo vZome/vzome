@@ -139,16 +139,16 @@ public class AlgebraicNumberTest
                     assertEquals("Expected divide by zero exception.", 0, numerator);
                 }
                 // then with BigRational
-                r = field.createRational(br);
-                assertEquals("add big", n. plus(r), n. plus(br));
-                assertEquals("sub big", n.minus(r), n.minus(br));
-                assertEquals("mul big", n.times(r), n.times(br));
-                try {
-                    assertEquals("div big", n.dividedBy(r), n.dividedBy(br));
-                    assertNotEquals("Expected no divide by zero exception.", 0, numerator);
-                } catch( IllegalArgumentException ex) {
-                    assertEquals("Expected divide by zero exception.", 0, numerator);
-                }
+//                r = field.createRational(br);
+//                assertEquals("add big", n. plus(r), n. plus(br));
+//                assertEquals("sub big", n.minus(r), n.minus(br));
+//                assertEquals("mul big", n.times(r), n.times(br));
+//                try {
+//                    assertEquals("div big", n.dividedBy(r), n.dividedBy(br));
+//                    assertNotEquals("Expected no divide by zero exception.", 0, numerator);
+//                } catch( IllegalArgumentException ex) {
+//                    assertEquals("Expected divide by zero exception.", 0, numerator);
+//                }
                 // and again with integers
                 r = field.createRational(numerator);
                 assertEquals("add int", n. plus(r), n. plus(numerator));
@@ -209,9 +209,9 @@ public class AlgebraicNumberTest
         final PentagonField goldenField = new PentagonField();
         final int ones = -37, phis = 42; // these can have any non-zero value
         final int denom = 1, scalePower = 0; // these must be as stated
-        final AlgebraicNumber goldenNumber = goldenField.createAlgebraicNumber(ones, phis, denom, scalePower);
+        final AlgebraicNumberImpl goldenNumber = (AlgebraicNumberImpl) goldenField.createAlgebraicNumber(ones, phis, denom, scalePower);
         System.out.println(goldenField.getName() + ": " + goldenNumber + "\n");
-        final BigRational[] goldenTerms = goldenNumber.getFactors();
+        final BigRational[] goldenTerms = goldenNumber .getFactors();
         final double goldenEvaluate = goldenNumber.evaluate();
         final double delta = 0.0d;
         
@@ -278,7 +278,7 @@ public class AlgebraicNumberTest
             final BigRational[] inputFactors = {BigRational.ONE};
             assertEquals( inputFactors.length, 1 );
 
-            AlgebraicNumber value = new AlgebraicNumberImpl(field, inputFactors);
+            AlgebraicNumberImpl value = new AlgebraicNumberImpl(field, inputFactors);
 
             BigRational[] factors = value.getFactors();
             assertEquals( factors.length, 2 );
@@ -298,7 +298,7 @@ public class AlgebraicNumberTest
             assertNotNull( inputFactors[0]);
             assertNull( inputFactors[1]);
 
-            AlgebraicNumber value = new AlgebraicNumberImpl(field, inputFactors);
+            AlgebraicNumberImpl value = new AlgebraicNumberImpl(field, inputFactors);
 
             // although we provided a null element in inputFactor,
             // the c'tor should zero-fill its factors so it never contains nulls

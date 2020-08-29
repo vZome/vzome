@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.BigRational;
 import com.vzome.core.algebra.HeptagonField;
@@ -248,7 +249,7 @@ public class VefToModelTest
                     assertEquals( expected[i], v1 ); // the expected value was parsed
                     // now be sure the irrational elements are all zero and not null
                     for(int dim = 0; dim < v1.dimension(); dim++) {
-                        AlgebraicNumber n1 = v1.getComponent(dim);
+                        AlgebraicNumberImpl n1 = (AlgebraicNumberImpl) v1.getComponent(dim);
                         BigRational[] factors = n1.getFactors();
                         assertEquals( factors.length, field.getOrder() );
                         for( int f = 1; f < factors.length; f++ ) {
@@ -313,7 +314,7 @@ public class VefToModelTest
                     assertEquals( expected[i], v1 ); // the expected value was parsed
                     // now be sure the irrational elements are not null
                     for(int dim = 0; dim < v1.dimension(); dim++) {
-                        AlgebraicNumber n1 = v1.getComponent(dim);
+                        AlgebraicNumberImpl n1 = (AlgebraicNumberImpl) v1.getComponent(dim);
                         BigRational[] factors = n1.getFactors();
                         assertEquals( factors.length, field.getOrder() );
                         for( int f = 0; f < factors.length; f++ ) {

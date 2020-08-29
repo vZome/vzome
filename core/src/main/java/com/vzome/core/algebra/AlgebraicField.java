@@ -404,50 +404,9 @@ public abstract class AlgebraicField
         }
         // This is safe since AlgebraicNumber is immutable 
         // and getFactors() returns a copy of its factors rather than the actual array
-        BigRational[] factors = zero.getFactors();
+        BigRational[] factors = ((AlgebraicNumberImpl) zero) .getFactors();
         factors[n] = BigRational.ONE;
         return createAlgebraicNumber(factors);
-    }
-
-    public BigRational[] negate( BigRational[] array )
-    {
-        BigRational[] result = new BigRational[ array.length ];
-        for (int i = 0; i < array.length; i++) {
-            result[ i ] = array[ i ] .negate();
-        }
-        return result;
-    }
-
-    public boolean isZero( BigRational[] array )
-    {
-        for (BigRational element : array) {
-            if (!element.isZero()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public BigRational[] add( BigRational[] v1, BigRational[] v2 )
-    {
-        if ( v1.length != v2.length )
-            throw new IllegalArgumentException( "arguments don't match" );
-        BigRational[] result = new BigRational[ v1.length ];
-        for (int i = 0; i < result.length; i++) {
-            result[ i ] = v1[ i ] .plus( v2[ i ] );
-        }
-        return result;
-    }
-
-    public BigRational[] subtract( BigRational[] v1, BigRational[] v2 )
-    {
-        if ( v1.length != v2.length )
-            throw new IllegalArgumentException( "arguments don't match" );
-        BigRational[] result = new BigRational[ v1.length ];
-        for (int i = 0; i < result.length; i++) {
-            result[ i ] = v1[ i ] .minus( v2[ i ] );
-        }
-        return result;
     }
 
     /**

@@ -27,8 +27,6 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
 
     public AlgebraicField getField();
     
-    public BigRational[] getFactors();
-
     /**
      * 
      * @param n is the value to be added
@@ -43,13 +41,6 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @return this + (num / den)
      */
     public AlgebraicNumber plus( int num, int den );
-
-    /**
-     * 
-     * @param n is the value to be added
-     * @return this + n
-     */
-    public AlgebraicNumber plus( BigRational n );
 
     /**
      * 
@@ -74,13 +65,6 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      */
     public AlgebraicNumber times( int num, int den );
 
-    /**
-     * 
-     * @param n is the value to be multiplied
-     * @return this * n
-     */
-    public AlgebraicNumber times( BigRational n );
-
     @Override
     public AlgebraicNumber times( AlgebraicNumber that );
 
@@ -98,13 +82,6 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @return this - (num / den)
      */
     public AlgebraicNumber minus( int num, int den );
-
-    /**
-     * 
-     * @param n is the value to be subtracted
-     * @return this - n
-     */
-    public AlgebraicNumber minus( BigRational n );
 
     /**
      * 
@@ -128,13 +105,6 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @return this / (num / den)
      */
     public AlgebraicNumber dividedBy( int num, int den );
-
-    /**
-     * 
-     * @param divisor
-     * @return this / divisor
-     */
-    public AlgebraicNumber dividedBy( BigRational divisor );
 
     public AlgebraicNumber dividedBy( AlgebraicNumber that );
 

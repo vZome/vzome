@@ -201,16 +201,6 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
 
     /**
      * 
-     * @param n is the value to be added
-     * @return this + n
-     */
-    public AlgebraicNumber plus( BigRational n )
-    {
-        return this.plus(field.createRational(n));
-    }
-
-    /**
-     * 
      * @param that is the value to be added
      * @return this + n
      */
@@ -259,16 +249,6 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         return this.times(field.createRational(num, den));
     }
 
-    /**
-     * 
-     * @param n is the value to be multiplied
-     * @return this * n
-     */
-    public AlgebraicNumber times( BigRational n )
-    {
-        return this.times(field.createRational(n));
-    }
-
     @Override
     public AlgebraicNumber times( AlgebraicNumber that )
     {
@@ -304,16 +284,6 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
 
     /**
      * 
-     * @param n is the value to be subtracted
-     * @return this - n
-     */
-    public AlgebraicNumber minus( BigRational n )
-    {
-        return this.minus(field.createRational(n));
-    }
-
-    /**
-     * 
      * @param that is the value to be subtracted
      * @return this - n
      */
@@ -345,16 +315,6 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     public AlgebraicNumber dividedBy( int num, int den )
     {
         return this.dividedBy(field.createRational(num, den));
-    }
-
-    /**
-     * 
-     * @param divisor
-     * @return this / divisor
-     */
-    public AlgebraicNumber dividedBy( BigRational divisor )
-    {
-        return this.dividedBy(field.createRational(divisor));
     }
 
     public AlgebraicNumber dividedBy( AlgebraicNumber that )
