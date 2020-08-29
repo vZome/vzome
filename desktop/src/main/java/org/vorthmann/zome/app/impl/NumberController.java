@@ -41,12 +41,10 @@ public class NumberController extends DefaultController
             return result;
 
         case "values":
-            BigInteger divisor = value .getDivisor();
-            result = new String[ order + 1 ];
-            result[ order ] = divisor .toString();
-            BigRational[] factors = value .getFactors();
+            int[] td = value .toTrailingDivisor();
+            result = new String[ td .length ];
             for( int i = 0; i < order; i++ )
-                result[ i ] = factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .toString();
+                result[ i ] = Integer .toString( td[ i ] );
             return result;
 
 		default:

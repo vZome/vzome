@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  *
  */
 @JsonSerialize( using = AlgebraicNumberImpl.Serializer.class )
-public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>, Comparable<AlgebraicNumberImpl>
+public class AlgebraicNumberImpl implements AlgebraicNumber
 {
     private final AlgebraicField field;
     private final BigRational[] factors;
@@ -32,13 +32,6 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
     private final String[] toString = new String[AlgebraicField .VEF_FORMAT + 1]; // cache various String representations
 
     private Integer hashCode;	// initialized on first use
-
-    // for JSON serialization
-    public static class Views {
-        public interface TrailingDivisor {}
-        public interface Rational {}
-        public interface Real {}
-    }
 
     /**
      * This non-varargs constructor does not call normalize(), 
@@ -132,24 +125,24 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
         return Arrays.equals( factors, other.factors );
     }
     
-    public boolean greaterThan(AlgebraicNumberImpl other) {
+    public boolean greaterThan(AlgebraicNumber other) {
         return compareTo(other) > 0;
     }
 
-    public boolean lessThan(AlgebraicNumberImpl other) {
+    public boolean lessThan(AlgebraicNumber other) {
         return compareTo(other) < 0;
     }
 
-    public boolean greaterThanOrEqualTo(AlgebraicNumberImpl other) {
+    public boolean greaterThanOrEqualTo(AlgebraicNumber other) {
         return compareTo(other) >= 0;
     }
 
-    public boolean lessThanOrEqualTo(AlgebraicNumberImpl other) {
+    public boolean lessThanOrEqualTo(AlgebraicNumber other) {
         return compareTo(other) <= 0;
     }
 
     @Override
-    public int compareTo(AlgebraicNumberImpl other) {
+    public int compareTo(AlgebraicNumber other) {
         if (this == other) {
             return 0;
         }
@@ -172,11 +165,11 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
         return d1.compareTo(d2);
     }
     
-    public static AlgebraicNumberImpl max(AlgebraicNumberImpl a, AlgebraicNumberImpl b) {
+    public static AlgebraicNumber max(AlgebraicNumber a, AlgebraicNumber b) {
         return a.greaterThanOrEqualTo(b) ? a : b;
     }
 
-    public static AlgebraicNumberImpl min(AlgebraicNumberImpl a, AlgebraicNumberImpl b) {
+    public static AlgebraicNumber min(AlgebraicNumber a, AlgebraicNumber b) {
         return a.lessThanOrEqualTo(b) ? a : b;
     }
 
@@ -190,7 +183,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param n is the value to be added
      * @return this + n
      */
-    public AlgebraicNumberImpl plus( int n )
+    public AlgebraicNumber plus( int n )
     {
         return n == 0 ? this : this.plus(field.createRational(n));
     }
@@ -201,7 +194,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param den is the denominator of the rational value to be added
      * @return this + (num / den)
      */
-    public AlgebraicNumberImpl plus( int num, int den )
+    public AlgebraicNumber plus( int num, int den )
     {
         return this.plus(field.createRational(num, den));
     }
@@ -211,7 +204,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param n is the value to be added
      * @return this + n
      */
-    public AlgebraicNumberImpl plus( BigRational n )
+    public AlgebraicNumber plus( BigRational n )
     {
         return this.plus(field.createRational(n));
     }
@@ -222,7 +215,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @return this + n
      */
     @Override
-    public AlgebraicNumberImpl plus( AlgebraicNumberImpl that )
+    public AlgebraicNumber plus( AlgebraicNumber that )
     {
         if ( this .isZero() )
             return that;
@@ -231,7 +224,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
         int order = this .factors .length;
         BigRational[] sum = new BigRational[ order ];
         for ( int i = 0; i < order; i++ ) {
-            sum[ i ] = this .factors[ i ] .plus( that .factors[ i ] );
+            sum[ i ] = this .factors[ i ] .plus( ((AlgebraicNumberImpl) that) .factors[ i ] );
         }
         return new AlgebraicNumberImpl( this .field, sum );
     }
@@ -241,7 +234,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param n is the value to be multiplied
      * @return this * n
      */
-    public AlgebraicNumberImpl times( int n )
+    public AlgebraicNumber times( int n )
     {
         switch(n) {
         case 0:
@@ -261,7 +254,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param den is the denominator of the rational value to be multiplied
      * @return this * (num / den)
      */
-    public AlgebraicNumberImpl times( int num, int den )
+    public AlgebraicNumber times( int num, int den )
     {
         return this.times(field.createRational(num, den));
     }
@@ -271,13 +264,13 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param n is the value to be multiplied
      * @return this * n
      */
-    public AlgebraicNumberImpl times( BigRational n )
+    public AlgebraicNumber times( BigRational n )
     {
         return this.times(field.createRational(n));
     }
 
     @Override
-    public AlgebraicNumberImpl times( AlgebraicNumberImpl that )
+    public AlgebraicNumber times( AlgebraicNumber that )
     {
         if ( this.isZero() || that .isZero() )
             return this .field .zero();
@@ -285,7 +278,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
             return that;
         if ( that .isOne() )
             return this;
-        return new AlgebraicNumberImpl( this .field, this .field .multiply( this .factors, that .factors ) );
+        return new AlgebraicNumberImpl( this .field, this .field .multiply( this .factors, ((AlgebraicNumberImpl) that) .factors ) );
     }
 
     /**
@@ -293,7 +286,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param n is the value to be subtracted
      * @return this - n
      */
-    public AlgebraicNumberImpl minus( int n )
+    public AlgebraicNumber minus( int n )
     {
         return n == 0 ? this : this.minus(field.createRational(n));
     }
@@ -304,7 +297,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param den is the denominator of the rational value to be subtracted
      * @return this - (num / den)
      */
-    public AlgebraicNumberImpl minus( int num, int den )
+    public AlgebraicNumber minus( int num, int den )
     {
         return this.minus(field.createRational(num, den));
     }
@@ -314,7 +307,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param n is the value to be subtracted
      * @return this - n
      */
-    public AlgebraicNumberImpl minus( BigRational n )
+    public AlgebraicNumber minus( BigRational n )
     {
         return this.minus(field.createRational(n));
     }
@@ -325,7 +318,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @return this - n
      */
     @Override
-    public AlgebraicNumberImpl minus( AlgebraicNumberImpl that )
+    public AlgebraicNumber minus( AlgebraicNumber that )
     {
         // Subtraction is not commutative so don't be tempted to optimize for the case when this.isZero()
         if ( that .isZero() )
@@ -338,7 +331,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param divisor
      * @return this / divisor
      */
-    public AlgebraicNumberImpl dividedBy( int divisor )
+    public AlgebraicNumber dividedBy( int divisor )
     {
         return divisor == 1 ? this : this.dividedBy(field.createRational(divisor));
     }
@@ -349,7 +342,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param den is the denominator of the divisor
      * @return this / (num / den)
      */
-    public AlgebraicNumberImpl dividedBy( int num, int den )
+    public AlgebraicNumber dividedBy( int num, int den )
     {
         return this.dividedBy(field.createRational(num, den));
     }
@@ -359,12 +352,12 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
      * @param divisor
      * @return this / divisor
      */
-    public AlgebraicNumberImpl dividedBy( BigRational divisor )
+    public AlgebraicNumber dividedBy( BigRational divisor )
     {
         return this.dividedBy(field.createRational(divisor));
     }
 
-    public AlgebraicNumberImpl dividedBy( AlgebraicNumberImpl that )
+    public AlgebraicNumber dividedBy( AlgebraicNumber that )
     {
         // Division is not commutative so don't be tempted to optimize for the case when this.isOne()
         if ( that .isOne() )
@@ -426,7 +419,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
     }
     
     @Override
-    public AlgebraicNumberImpl negate()
+    public AlgebraicNumber negate()
     {
         BigRational[] result = new BigRational[ factors .length ];
         for ( int i = 0; i < result.length; i++ ) {
@@ -436,7 +429,7 @@ public class AlgebraicNumberImpl implements Fields.Element<AlgebraicNumberImpl>,
     }
 
     @Override
-    public AlgebraicNumberImpl reciprocal()
+    public AlgebraicNumber reciprocal()
     {
         return new AlgebraicNumberImpl( field, field .reciprocal( factors ) );
     }

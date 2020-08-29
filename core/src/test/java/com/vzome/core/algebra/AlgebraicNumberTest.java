@@ -220,7 +220,7 @@ public class AlgebraicNumberTest
             assertNotNull(field.getGoldenRatio());
             { // Using new AlgebraicNumber( AlgebraicField field, BigRational[] newFactors )
              // this test originally failed
-                AlgebraicNumber test = new AlgebraicNumber(field, goldenTerms);
+                AlgebraicNumber test = new AlgebraicNumberImpl(field, goldenTerms);
                 System.out.println(test);
                 assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
             }
@@ -278,7 +278,7 @@ public class AlgebraicNumberTest
             final BigRational[] inputFactors = {BigRational.ONE};
             assertEquals( inputFactors.length, 1 );
 
-            AlgebraicNumber value = new AlgebraicNumber(field, inputFactors);
+            AlgebraicNumber value = new AlgebraicNumberImpl(field, inputFactors);
 
             BigRational[] factors = value.getFactors();
             assertEquals( factors.length, 2 );
@@ -298,7 +298,7 @@ public class AlgebraicNumberTest
             assertNotNull( inputFactors[0]);
             assertNull( inputFactors[1]);
 
-            AlgebraicNumber value = new AlgebraicNumber(field, inputFactors);
+            AlgebraicNumber value = new AlgebraicNumberImpl(field, inputFactors);
 
             // although we provided a null element in inputFactor,
             // the c'tor should zero-fill its factors so it never contains nulls
@@ -548,13 +548,13 @@ public class AlgebraicNumberTest
         BigRational r67 = new BigRational(6, 7); 
         BigRational r89 = new BigRational(8, 9); 
         BigRational r1011 = new BigRational(10,11); 
-        AlgebraicNumber n = field.createAlgebraicNumber( new BigRational[] { r01, r23, r45} ); 
+        AlgebraicNumberImpl n = (AlgebraicNumberImpl) field.createAlgebraicNumber( new BigRational[] { r01, r23, r45} ); 
         assertEquals( BigInteger.valueOf(3 * 5), n.getDivisor() );
         
-        n = field.createAlgebraicNumber( new BigRational[] { r1011, r89, r67} );
+        n = (AlgebraicNumberImpl) field.createAlgebraicNumber( new BigRational[] { r1011, r89, r67} );
         assertEquals( BigInteger.valueOf(11 * 9 * 7), n.getDivisor() );
 
-        n = field .createRational( 42 );
+        n = (AlgebraicNumberImpl) field .createRational( 42 );
         assertEquals( BigInteger.ONE, n.getDivisor() );
     }
 

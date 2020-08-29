@@ -214,7 +214,7 @@ public abstract class AlgebraicField
      */
     public final AlgebraicNumber createAlgebraicNumber( BigRational[] factors )
     {
-        return new AlgebraicNumber( this, factors );
+        return new AlgebraicNumberImpl( this, factors );
     }
 
     /**
@@ -377,7 +377,7 @@ public abstract class AlgebraicField
      */
     public final AlgebraicNumber createRational( BigRational rationalNumber )
     {
-        return new AlgebraicNumber( this, rationalNumber );
+        return new AlgebraicNumberImpl( this, rationalNumber );
     }
     
     /**
