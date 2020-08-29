@@ -42,7 +42,10 @@ sourceSets {
         }
     }
     regression {
-        java.srcDir file('src/regression/java')
+        java.srcDir file( 'src/regression/java' )
+    } 
+    main {
+        java.srcDir file( 'src/jsweet/java' )
     } 
 }
 
@@ -70,8 +73,8 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
 
-	compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '2.3.7'
-	compile group: 'org.jsweet', name: 'jsweet-core', version: "6.2.0"
+    compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '2.3.7'
+    compile group: 'org.jsweet', name: 'jsweet-core', version: "6.2.0"
     compile group: 'org.jsweet', name: 'j4ts', version: '0.7.0-SNAPSHOT'
 
     runtime     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
@@ -432,8 +435,15 @@ jsweet {
 	veryVerbose = true
 	encoding = 'UTF-8'
 	sourceMap = true
-	outDir = new File('../client/public/jsweet/js')
-	tsOut = new File('../client/public/jsweet/ts')
+    //  WHY?  If I enable these, I get weird errors from JSweet:
+    //    cannot find module '@babel/types' at ../../../node_modules/@types/babel__core/index.d.ts(14)
+    //  So I'll let the output go to "target" as usual.
+	// outDir = new File('client/public/jsweet/js')
+	// tsOut = new File('client/public/jsweet/ts')
 	targetVersion = 'ES6'
-	includes = ['**/com/vzome/core/math/RealVector.java', 'def/**/*.java']
+	includes = [
+        '**/java/nio/*.java',
+        '**/java/text/*.java',
+        '**/com/vzome/core/math/RealVector.java'
+    ]
 }
