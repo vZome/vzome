@@ -434,13 +434,12 @@ compileJava {
 jsweet {
 	veryVerbose = true
 	encoding = 'UTF-8'
-	sourceMap = true
-    //  WHY?  If I enable these, I get weird errors from JSweet:
-    //    cannot find module '@babel/types' at ../../../node_modules/@types/babel__core/index.d.ts(14)
-    //  So I'll let the output go to "target" as usual.
-	// outDir = new File('client/public/jsweet/js')
-	// tsOut = new File('client/public/jsweet/ts')
+	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.
+
+	outDir = new File('client/public/jsweet')
+
 	targetVersion = 'ES6'
+    tsOnly = false
 	includes = [
         '**/java/nio/*.java',
         '**/java/text/*.java',
