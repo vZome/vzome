@@ -16,6 +16,8 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
 
     abstract BigRational[] scaleBy( BigRational[] factors, int whichIrrational );
     
+    public abstract double[] getCoefficients();
+
     /**
      * The integers should be the same indices used by getUnitTerm().
      * Subclasses must override to usefully participate in the generation
@@ -41,7 +43,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     {
         return this .getIrrational( which, DEFAULT_FORMAT );
     }
-    
+
     protected final String name;
 
     private final int order;

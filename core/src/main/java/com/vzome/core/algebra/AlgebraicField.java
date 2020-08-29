@@ -18,29 +18,17 @@ public interface AlgebraicField
 
     int getNumIrrationals();
 
-    abstract String getIrrational( int i, int format );
+    String getIrrational( int i, int format );
 
     String getIrrational( int which );
-    
-    abstract double[] getCoefficients();
-
-    AlgebraicNumber nearestAlgebraicNumber( double target );
     
     AlgebraicVector nearestAlgebraicVector( RealVector target );
 
     String getName();
     
     /**
-     * Generates an AlgebraicNumber with the specified {@code BigRational} factors.
-     * @param factors
-     * @return
-     */
-    AlgebraicNumber createAlgebraicNumber( BigRational[] factors );
-
-    /**
      * Generates an AlgebraicNumber with integer terms (having only unit denominators).
      * Use {@code createAlgebraicNumber( int[] numerators, int denominator )} 
-     * or {@code createAlgebraicNumber( BigRational[] factors )} 
      * if denominators other than one are required.
      * @param terms
      * @return

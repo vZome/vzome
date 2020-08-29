@@ -31,7 +31,7 @@ public class OffExporter extends Exporter3d
 	public OffExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    super( scene, colors, lights, model );
-		FORMAT .setMaximumFractionDigits( 16 );
+		FORMAT .setMaximumFractionDigits( 7 );
 	}
 
     @Override

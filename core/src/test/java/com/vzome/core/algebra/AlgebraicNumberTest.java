@@ -125,7 +125,7 @@ public class AlgebraicNumberTest
 
         final int denominator = 5;
         for(int numerator = -3; numerator <= 3; numerator++) {
-            BigRational br = new BigRational(numerator, denominator);
+//            BigRational br = new BigRational(numerator, denominator);
             for(AlgebraicNumber n : numbers) {
                 // first, test with fractions as numerator and denominator args
                 AlgebraicNumber r = field.createRational(numerator, denominator);
@@ -220,13 +220,7 @@ public class AlgebraicNumberTest
             assertNotNull(field.getGoldenRatio());
             { // Using new AlgebraicNumber( AlgebraicField field, BigRational[] newFactors )
              // this test originally failed
-                AlgebraicNumber test = new AlgebraicNumberImpl(field, goldenTerms);
-                System.out.println(test);
-                assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
-            }
-            { // Using field.createAlgebraicNumber( BigRational[] factors )
-              // this test originally failed
-                AlgebraicNumber test = field.createAlgebraicNumber(goldenTerms);
+                AlgebraicNumber test = new AlgebraicNumberImpl( field, goldenTerms );
                 System.out.println(test);
                 assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
             }
@@ -548,10 +542,10 @@ public class AlgebraicNumberTest
         BigRational r67 = new BigRational(6, 7); 
         BigRational r89 = new BigRational(8, 9); 
         BigRational r1011 = new BigRational(10,11); 
-        AlgebraicNumberImpl n = (AlgebraicNumberImpl) field.createAlgebraicNumber( new BigRational[] { r01, r23, r45} ); 
+        AlgebraicNumberImpl n = new AlgebraicNumberImpl( field, new BigRational[] { r01, r23, r45} ); 
         assertEquals( BigInteger.valueOf(3 * 5), n.getDivisor() );
         
-        n = (AlgebraicNumberImpl) field.createAlgebraicNumber( new BigRational[] { r1011, r89, r67} );
+        n = new AlgebraicNumberImpl( field, new BigRational[] { r1011, r89, r67} );
         assertEquals( BigInteger.valueOf(11 * 9 * 7), n.getDivisor() );
 
         n = (AlgebraicNumberImpl) field .createRational( 42 );
@@ -595,8 +589,8 @@ public class AlgebraicNumberTest
         BigRational r23 = new BigRational(2, 3); 
         BigRational r45 = new BigRational(4, 5); 
         BigRational r67 = new BigRational(6, 7); 
-        AlgebraicNumber j = field.createAlgebraicNumber( new BigRational[] { r01, r23 } ); 
-        AlgebraicNumber k = field.createAlgebraicNumber( new BigRational[] { r45, r67} );
+        AlgebraicNumber j = new AlgebraicNumberImpl( field, new BigRational[] { r01, r23 } ); 
+        AlgebraicNumber k = new AlgebraicNumberImpl( field, new BigRational[] { r45, r67} );
         assertNotEquals( 0, j.compareTo(k) );
         assertNotEquals( j.compareTo(k), k.compareTo(j) );
         // Because of the rounding errors when converting to a double,
@@ -610,7 +604,6 @@ public class AlgebraicNumberTest
     public void testHaveSameInitialCoefficients() {
     	AlgebraicField pent = new PentagonField();
     	AlgebraicField snub = new SnubDodecField();
-    	AlgebraicField root = new RootTwoField();
     	
 	    assertEquals(
 	    	pent.createAlgebraicNumber( new int[]{2, 3} ).evaluate(),

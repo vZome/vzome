@@ -20,7 +20,7 @@ public class FibonacciTest {
     @SafeVarargs
     @SuppressWarnings("varargs")
     public final <T extends Fields.Element<T>> T varableFibonacci(int reps, T... args) {
-        List<T> fibs = varableFibonacci(T::plus, reps, args);
+        List<T> fibs = variableFibonacci(T::plus, reps, args);
         assertEquals(args.length, fibs.size());
         // return the last element in the list
         return fibs.get(fibs.size()-1);
@@ -32,7 +32,7 @@ public class FibonacciTest {
     // The list will contain the same number of elements as the number of seed values provided
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public final <T extends Fields.Element<T>> List<T> varableFibonacci(BinaryOperator<T> op, int reps, T... args) {
+    public final <T extends Fields.Element<T>> List<T> variableFibonacci(BinaryOperator<T> op, int reps, T... args) {
         int nArgs = args.length;
         List<T> terms = Arrays.asList(args);
         List<T> seriesTail = new ArrayList<>(terms);
@@ -70,14 +70,14 @@ public class FibonacciTest {
         assertTrue(second.negate().compareTo(second) <= 0); // not negative
         assertTrue(first.compareTo(second) <= 0);
 
-        List<T> fibs = varableFibonacci(T::plus, reps, first, second);
+        List<T> fibs = variableFibonacci(T::plus, reps, first, second);
         Collections.reverse(fibs);
         @SuppressWarnings("unchecked")
 		T[] checked = (T[]) Array.newInstance(clazz, fibs.size());
 		T[] reversed = checked;
         fibs.toArray(reversed);
         System.out.println("reversed...");
-        fibs = varableFibonacci(T::minus, reps, reversed);
+        fibs = variableFibonacci(T::minus, reps, reversed);
         assertEquals(first, fibs.get(fibs.size()-1));
     }
 
@@ -116,10 +116,10 @@ public class FibonacciTest {
         }
         {
             // TODO: Try various operators
-            varableFibonacci(BigRational::dividedBy, 12, new BigRational("23/-31"), new BigRational("-51/-7"), new BigRational("-11/13"), new BigRational("17/19"));
-            varableFibonacci(BigRational::times, 12, new BigRational("23/-31"), new BigRational("-51/-7"), new BigRational("-11/13"), new BigRational("17/19"));
-            varableFibonacci(BigRational::plus, 12, new BigRational("23/-31"), new BigRational("-51/-7"), new BigRational("-11/13"), new BigRational("17/19"));
-            varableFibonacci(BigRational::minus, 12, new BigRational("23/-31"), new BigRational("-51/-7"), new BigRational("-11/13"), new BigRational("17/19"));
+            variableFibonacci(BigRational::dividedBy, 12, new BigRational("23/-31"), new BigRational("-51/-7"), new BigRational("-11/13"), new BigRational("17/19"));
+            variableFibonacci(BigRational::times, 12, new BigRational("23/-31"), new BigRational("-51/-7"), new BigRational("-11/13"), new BigRational("17/19"));
+            variableFibonacci(BigRational::plus, 12, new BigRational("23/-31"), new BigRational("-51/-7"), new BigRational("-11/13"), new BigRational("17/19"));
+            variableFibonacci(BigRational::minus, 12, new BigRational("23/-31"), new BigRational("-51/-7"), new BigRational("-11/13"), new BigRational("17/19"));
         }
         {
             // 100000th Tribonacci number throws OutOfMemoryError
@@ -150,12 +150,12 @@ public class FibonacciTest {
         };
 
         for (AlgebraicField field : fields) {
-        	String fieldType = field.getClass().getSimpleName() + ": ";
+            String fieldType = field.getClass().getSimpleName() + ": ";
             List<AlgebraicNumber> list = new ArrayList<>();
             for (int i = 0; i < field.getOrder(); i++) {
-            	BigRational[] factors = ((AlgebraicNumberImpl) field.createRational(0)) .getFactors();
+                BigRational[] factors = ((AlgebraicNumberImpl) field.createRational(0)) .getFactors();
                 factors[i] = new BigRational(1);
-                list.add(field.createAlgebraicNumber(factors));
+                list.add( new AlgebraicNumberImpl( field, factors ) );
             }
 
             // Using the original BigRational class...
@@ -170,7 +170,7 @@ public class FibonacciTest {
                 AlgebraicNumber[] array = list.toArray(new AlgebraicNumber[list.size()]);
                 AlgebraicNumberImpl fib = (AlgebraicNumberImpl) varableFibonacci(r, array);
                 for (BigRational factor : fib.getFactors()) {
-                	String msg = fieldType + r;
+                    String msg = fieldType + r;
                     assertFalse(msg, factor.isNegative());
                 }
             }

@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicFields;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.BigRational;
 
@@ -396,14 +397,14 @@ public abstract class VefParser
             while(! stack.empty() ) {
                factors[i++] = stack.pop();
             }
-            return this.field.createAlgebraicNumber(factors);
+            return new AlgebraicNumberImpl( this.field, factors );
         } else {
             // format >= 7 supports the rational numeric format which expects no irrational factors,
             // so there are no parentheses or commas, but still allows the optional "/" if a denominator is specified.
             factors[0] = parseRationalNumber( string );
             // count on createAlgebraicNumber to set all of the null irrational factors to zero
         }
-        return this.field.createAlgebraicNumber(factors);
+        return new AlgebraicNumberImpl( this.field, factors );
     }
 
     private BigRational parseRationalNumber( String coord )

@@ -52,7 +52,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         isOne = isOne(this.factors);
     }
 
-    AlgebraicNumberImpl( AlgebraicField field, BigRational[] factors )
+    public AlgebraicNumberImpl( AlgebraicField field, BigRational[] factors )
     {
         if ( factors.length > field .getOrder() )
             throw new IllegalStateException( factors.length + " is too many factors for field \"" + field.getName() + "\"" );
