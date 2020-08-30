@@ -205,8 +205,4 @@ public interface AlgebraicField
      * multiplier, since the other irrational is just the square of that one.
      */
     int getNumMultipliers();
-
-    AlgebraicSeries generateSeries( double threshold );
-
-    List<Integer> recurrence( List<Integer> input );
 }

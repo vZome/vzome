@@ -436,7 +436,7 @@ jsweet {
 	encoding = 'UTF-8'
 	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.
 
-    module = 'es2015'
+    // module = 'es2015'
 
 	outDir = new File('client/src/jsweet')
 
@@ -446,6 +446,24 @@ jsweet {
         '**/java/nio/*.java',
         '**/java/text/*.java',
         '**/java/util/*.java',
-        '**/com/vzome/core/math/RealVector.java'
+        '**/com/vzome/core/math/RealVector.java',
+        '**/com/vzome/core/algebra/AlgebraicField.java',
+        '**/com/vzome/core/algebra/AlgebraicNumber.java',
+        '**/com/vzome/core/algebra/Fields.java',
+        '**/com/vzome/core/algebra/AlgebraicVector.java',
+        '**/com/vzome/core/algebra/AlgebraicMatrix.java',
+
+        '**/com/vzome/core/model/Color.java',
+        '**/com/vzome/core/construction/Point.java',
+        '**/com/vzome/core/construction/Construction.java',
+        '**/com/vzome/core/construction/CentroidPoint.java',
+
+        '**/com/vzome/core/model/Connector.java',
+        '**/com/vzome/core/model/Manifestation.java',
+        '**/com/vzome/core/edits/NewCentroid.java'
     ]
 }
+
+// jsweet.doFirst {
+//     println '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Remember to clean up errors in RealVector.js'
+// }

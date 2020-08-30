@@ -4,8 +4,6 @@ package com.vzome.core.model;
 
 import java.util.StringTokenizer;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
 /**
  * @author Scott Vorthmann
  */
@@ -113,7 +111,6 @@ public class Color
         return red + "," + green + "," + blue + ( (alpha<0xFF)? "," + alpha : "" );
     }
 
-    @JsonValue
     public String toWebString()
     {
         return String.format( "#%02X%02X%02X", red, green, blue );

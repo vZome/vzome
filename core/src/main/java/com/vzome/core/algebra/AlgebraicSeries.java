@@ -7,7 +7,7 @@ public class AlgebraicSeries
 {
     public AlgebraicNumber[] series;
     
-    public AlgebraicSeries( AlgebraicField field, int power )
+    public AlgebraicSeries( AbstractAlgebraicField field, int power )
     {
         List<Integer> sequence = new ArrayList<>();
         sequence .add( 0 ); // always seed the sequence with the unit, the 0th irrational
@@ -72,7 +72,7 @@ public class AlgebraicSeries
     
     public static void main( String[] args )
     {
-        AlgebraicField field = new PentagonField();
+        PentagonField field = new PentagonField();
         AlgebraicSeries series = field .generateSeries( 30d );
         System.out.println( series );
         AlgebraicNumber best = series .nearestAlgebraicNumber( 13.14159d );
