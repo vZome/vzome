@@ -85,7 +85,7 @@ public abstract class ChangeManifestations extends ChangeSelection
         }
         else {
             // already manifested, just make sure it shows
-            if ( m .getRenderedObject() == null )
+            if ( ! m .isRendered() )
                 plan( new RenderManifestation( m, true ) );
         }
         return m;

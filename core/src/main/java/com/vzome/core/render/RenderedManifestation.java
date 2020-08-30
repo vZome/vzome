@@ -21,13 +21,14 @@ import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
+import com.vzome.core.model.RenderedObject;
 import com.vzome.core.model.Strut;
 
 /**
  * @author Scott Vorthmann
  *
  */
-public class RenderedManifestation
+public class RenderedManifestation implements RenderedObject
 {
     private final Manifestation mManifestation;
 

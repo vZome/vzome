@@ -51,7 +51,7 @@ public class AffineTransformAll extends ChangeManifestations
 
         // now apply it to all objects
         for (Manifestation m : mManifestations) {
-            if ( m .getRenderedObject() == null )
+            if ( ! m .isRendered() )
                 continue;
             Construction c = m .getFirstConstruction();
             Construction result = transform .transform( c );

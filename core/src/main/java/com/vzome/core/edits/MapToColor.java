@@ -16,7 +16,6 @@ import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.edits.ManifestationColorMappers.ManifestationColorMapper;
 import com.vzome.core.model.Color;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.render.RenderedManifestation;
 
 /**
  * @author David Hall
@@ -95,12 +94,7 @@ public class MapToColor extends ChangeManifestations {
         {
             mManifestation = manifestation;
             this .newColor = color;
-            RenderedManifestation rm = manifestation .getRenderedObject();
-            if ( rm != null ) {
-            	oldColor = rm .getColor();
-            }
-            else
-            	oldColor = Color .GREY_TRANSPARENT; // TODO: Be sure this can't happen then remove this line
+            	oldColor = manifestation .getColor();
         }
 
         @Override

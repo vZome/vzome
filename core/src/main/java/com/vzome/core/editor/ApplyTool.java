@@ -137,7 +137,7 @@ public class ApplyTool extends ChangeManifestations
     public Manifestation manifestConstruction( Construction c )
     {
         Manifestation m = getManifestation( c );
-        boolean preExistsNotHidden = ( m != null && m .getRenderedObject() != null );
+        boolean preExistsNotHidden = ( m != null && m .isRendered() );
         if ( justSelect )
         {
             // Pre-existing manifestation, NOT considered an output.
@@ -164,7 +164,7 @@ public class ApplyTool extends ChangeManifestations
         if ( this .tool .needsInput() )
             throw new UnsupportedOperationException( "select is not supported within Tool.performEdit" );
 
-        if ( m .getRenderedObject() == null )
+        if ( ! m .isRendered() )
             super .showManifestation( m );
         super .select( m, true /* safe to ignore groups, they won't exist */ );
     }

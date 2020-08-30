@@ -15,7 +15,6 @@ import com.vzome.core.editor.Selection;
 import com.vzome.core.model.Color;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
-import com.vzome.core.render.RenderedManifestation;
 
 public class ColorManifestations extends ChangeManifestations
 {
@@ -40,8 +39,7 @@ public class ColorManifestations extends ChangeManifestations
 
         // TODO: this behavior should move to perform()
         for (Manifestation m : mSelection) {
-            RenderedManifestation rm = m .getRenderedObject();
-            if ( rm != null )
+            if ( m .isRendered() )
                 // This test is probably unnecessary now that we store color in Manifestation,
                 //  but I don't want to risk a subtle bug by removing the test.
                 colorManifestation( m, color );

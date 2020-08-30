@@ -7,7 +7,6 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.render.RenderedManifestation;
 
 public interface Manifestation extends GroupElement {
 
@@ -27,8 +26,8 @@ public interface Manifestation extends GroupElement {
 
     AlgebraicVector getCentroid();
 
-    RenderedManifestation getRenderedObject();
-
+    RenderedObject getRenderedObject();
+    
     boolean isUnnecessary();
 
     void addConstruction(Construction mConstruction);

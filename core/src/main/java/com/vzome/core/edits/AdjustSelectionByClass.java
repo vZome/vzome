@@ -85,7 +85,7 @@ public class AdjustSelectionByClass extends ChangeSelection
                 : mSelection;
 
         for (Manifestation man : whichManifestationSet) {
-            if ( man .getRenderedObject() != null ) {
+            if ( man .isRendered() ) {
                 if (man instanceof Connector) {
                     adjustSelection(man, ballAction);
                 } else if (man instanceof Strut) {

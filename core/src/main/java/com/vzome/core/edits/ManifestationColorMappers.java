@@ -25,7 +25,6 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.RenderedManifestation;
 import com.vzome.xml.DomUtils;
 
 /**
@@ -125,16 +124,16 @@ public class ManifestationColorMappers {
         {}
 
         @Override
-        public Color apply(Manifestation man) {
+        public Color apply( Manifestation man ) {
             return (man == null || !man.isRendered())
                     ? null
-                    : applyTo( man.getRenderedObject() );
+                    : applyTo( man );
         }
         
-        protected Color applyTo(RenderedManifestation rendered )
+        protected Color applyTo( Manifestation manifestation )
         {
-            Color color = rendered.getColor();
-            if(color == null && Connector.class.equals(rendered.getManifestation().getClass()) ) {
+            Color color = manifestation.getColor();
+            if(color == null && Connector.class.equals( manifestation.getClass() ) ) {
                 color = Color.WHITE; // provide default ball color so it can be manipulated
             }
             return color;
@@ -158,7 +157,7 @@ public class ManifestationColorMappers {
      */
     public static class Identity extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return rendered.getColor();
         }
     }
@@ -168,7 +167,7 @@ public class ManifestationColorMappers {
      */
     public static class ColorComplementor extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return Color.getComplement(super.applyTo(rendered) );
         }
     }
@@ -178,7 +177,7 @@ public class ManifestationColorMappers {
      */
     public static class ColorInverter extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return Color.getInverted( super.applyTo(rendered) );
         }
     }
@@ -188,7 +187,7 @@ public class ManifestationColorMappers {
      */
     public static class ColorMaximizer extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return Color.getMaximum( super.applyTo(rendered) );
         }
     }
@@ -198,7 +197,7 @@ public class ManifestationColorMappers {
      */
     public static class ColorSoftener extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return Color.getPastel( super.applyTo(rendered) );
         }
     }
@@ -230,7 +229,7 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             Color color = super.applyTo(rendered);
             return new Color(color.getRed(), color.getGreen(), color.getBlue(), this.alpha);
         }
@@ -284,7 +283,7 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return color;
         }
     }
@@ -358,12 +357,12 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        public Color applyTo(RenderedManifestation rendered) {
+        public Color applyTo(Manifestation rendered) {
             Color color = rendered.getColor();
             int alpha = color == null
                     ? 0xFF 
                     : color.getAlpha();
-            return applyTo( rendered.getManifestation().getCentroid(), alpha );
+            return applyTo( rendered.getCentroid(), alpha );
         }
 
         protected abstract Color applyTo(AlgebraicVector centroid, int alpha);
@@ -382,7 +381,7 @@ public class ManifestationColorMappers {
     }
 
     /**
-     * Scales the intensity of the current color of each RenderedManifestation 
+     * Scales the intensity of the current color of each Manifestation 
      * based on the distance of its centroid from the origin.
      * A position ranging from the origin to the fullScale vector position
      * adjusts the intensity of the current color from darkest to lightest.
@@ -420,8 +419,8 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
-            AlgebraicVector centroid = rendered.getManifestation().getCentroid();
+        protected Color applyTo(Manifestation rendered) {
+            AlgebraicVector centroid = rendered.getCentroid();
             Color initialColor = super.applyTo(rendered);
             return mapToMagnitude( centroid, offset, fullScaleSquared, initialColor );
         }
@@ -554,12 +553,11 @@ public class ManifestationColorMappers {
     public static abstract class ManifestationSubclassColorMapper extends ManifestationColorMapper {
 
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
-            Color color = rendered.getColor();
+        protected Color applyTo(Manifestation man) {
+            Color color = man.getColor();
             int alpha = color == null
                     ? 0xFF
                     : color.getAlpha();
-            Manifestation man = rendered.getManifestation();
             if (Connector.class.equals(man.getClass())) {
                 return applyTo( Connector.class.cast(man), alpha );
             } else if (Strut.class.isAssignableFrom(man.getClass())) {

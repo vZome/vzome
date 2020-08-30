@@ -106,7 +106,7 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
                 : mSelection;
 
         for (Manifestation man : whichManifestationSet) {
-            if (man.getRenderedObject() != null) {
+            if ( man.isRendered() ) {
                 if (man instanceof Strut) {
                     AlgebraicVector offset = ((Strut) man).getOffset();
                     Axis zone = symmetry.getAxis(offset);

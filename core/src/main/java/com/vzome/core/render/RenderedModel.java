@@ -199,7 +199,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 			return;
 		}
 		
-	    RenderedManifestation rendered = m .getRenderedObject();
+	    RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
 	    if ( rendered == null )
 	        return; // there was no way to render the shape
 	    
@@ -222,7 +222,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
 	public void setManifestationGlow( Manifestation m, boolean on )
 	{
-        RenderedManifestation rendered = m .getRenderedObject();
+        RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setGlow( on? mSelectionGlow : 0f );
@@ -236,7 +236,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     public void setManifestationColor( Manifestation m, Color color )
     {
-        RenderedManifestation rendered = m .getRenderedObject();
+        RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setColor( color );
@@ -250,7 +250,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     public void setManifestationTransparency( Manifestation m, boolean on )
     {
-        RenderedManifestation rendered = m .getRenderedObject();
+        RenderedManifestation rendered = (RenderedManifestation) m .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setTransparency( on? mSelectionGlow : 0f );

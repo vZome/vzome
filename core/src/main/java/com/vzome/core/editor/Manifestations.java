@@ -1,13 +1,13 @@
 package com.vzome.core.editor;
 
-import com.vzome.core.generic.SubClassIterator;
+import java.util.function.Predicate;
+
 import com.vzome.core.generic.FilteredIterator;
+import com.vzome.core.generic.SubClassIterator;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.RenderedManifestation;
-import java.util.function.Predicate;
 
 /**
  * @author David Hall
@@ -34,28 +34,6 @@ public class Manifestations {
         }
     }
     
-    // RenderedManifestations
-    public static RenderedManifestationIterator getRenderedManifestations(Iterable<Manifestation> manifestations) {
-        // Either this preTest or this postTest would do the job in this case.
-        // Using both doesn't help or hurt. It just documents the options.
-        return new RenderedManifestationIterator(Filters::isRendered, manifestations, FilteredIterator.Filters::resultNotNull);
-    }
-    public static RenderedManifestationIterator getRenderedManifestations(Predicate<Manifestation> preTest, Iterable<Manifestation> manifestations) {
-        return new RenderedManifestationIterator(preTest, manifestations, FilteredIterator.Filters::resultNotNull);
-    }
-    public static RenderedManifestationIterator getRenderedManifestations(Iterable<Manifestation> manifestations, Predicate<RenderedManifestation> postTest) {
-        return new RenderedManifestationIterator(Filters::isRendered, manifestations, postTest);
-    }
-    public static class RenderedManifestationIterator extends FilteredIterator<Manifestation, RenderedManifestation> {
-        public RenderedManifestationIterator(Predicate<Manifestation> preTest, Iterable<Manifestation> manifestations, Predicate<RenderedManifestation> postTest) {
-            super(preTest, manifestations, postTest);
-        }
-        @Override
-        protected RenderedManifestation apply(Manifestation element) {
-            return element.getRenderedObject();
-        }
-    }
-
     // Connectors        
     public static ConnectorIterator getConnectors(Iterable<Manifestation> manifestations) {
         return new ConnectorIterator(null, manifestations, null);

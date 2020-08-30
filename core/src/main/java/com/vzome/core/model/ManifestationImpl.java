@@ -100,7 +100,7 @@ public abstract class ManifestationImpl implements GroupElement, Manifestation
             this .color = obj .getColor();
     }
 
-    public RenderedManifestation getRenderedObject()
+    public RenderedObject getRenderedObject()
     {
         return mRendered;
     }

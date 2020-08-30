@@ -32,6 +32,7 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Color;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
+import com.vzome.core.model.RenderedObject;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
@@ -51,19 +52,19 @@ public class ReplaceWithShape extends ChangeManifestations
 
     private EditorModel editor;
 
-    private void replace( Manifestation man, RenderedManifestation rm, Polyhedron shape )
+    private void replace( Manifestation man, RenderedObject renderedObject, Polyhedron shape )
     {
         if ( man instanceof Panel )
             return;
-        if (rm != null) {
-            AlgebraicMatrix orientation = rm .getOrientation();
+        if (renderedObject != null) {
+            AlgebraicMatrix orientation = renderedObject .getOrientation();
             List<AlgebraicVector> vertexList = shape .getVertexList();
             for (Polyhedron.Face face : shape .getFaceSet()) {
                 Point[] vertices = new Point[ face .size() ];
                 for ( int i = 0; i < vertices.length; i++ ) {
                     int vertexIndex = face .getVertex( i );
                     AlgebraicVector vertex = vertexList .get( vertexIndex );
-                    vertices[ i ] = transformVertex( vertex, rm .getLocationAV(), orientation );
+                    vertices[ i ] = transformVertex( vertex, renderedObject .getLocationAV(), orientation );
                 }
                 Polygon polygon = new PolygonFromVertices( vertices );
                 Manifestation panel = this .manifestConstruction( polygon );

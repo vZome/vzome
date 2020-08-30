@@ -23,7 +23,7 @@ public class InvertSelection extends ChangeSelection
     public void perform()
     {
         for (Manifestation m : mManifestations) {
-            if ( m .getRenderedObject() != null )
+            if ( m .isRendered() )
             {
                 if ( mSelection .manifestationSelected( m ) )
                     unselect( m );
