@@ -451,12 +451,11 @@ jsweet {
         '**/com/vzome/core/math/*.java',
         '**/com/vzome/core/math/symmetry/*.java',
         '**/com/vzome/core/algebra/*.java',
+
         '**/com/vzome/core/construction/*.java',
 
-        // '**/com/vzome/core/commands/AttributeMap.java',
-        // '**/com/vzome/core/commands/Command.java',
+        '**/com/vzome/core/commands/*.java',
 
-        // '**/com/vzome/core/model/Color.java',
         // '**/com/vzome/core/model/Group.java',
         // '**/com/vzome/core/model/GroupElement.java',
         // '**/com/vzome/core/model/Manifestation.java',
@@ -469,6 +468,11 @@ jsweet {
         // '**/com/vzome/core/editor/ChangeManifestations.java',
 
         // '**/com/vzome/core/edits/NewCentroid.java'
+    ]
+    excludes = [
+        '**/com/vzome/core/commands/ZomicVirtualMachine.java',
+        '**/com/vzome/core/commands/CommandExecuteZomicScript.java',
+        '**/com/vzome/core/commands/CommandExecutePythonScript.java'
     ]
 }
 
