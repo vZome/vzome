@@ -445,35 +445,36 @@ jsweet {
         '**/java/nio/*.java',
         '**/java/text/*.java',
         '**/java/util/*.java',
-        '**/com/vzome/core/math/RealVector.java',
-        '**/com/vzome/core/algebra/AlgebraicField.java',
-        '**/com/vzome/core/algebra/AlgebraicNumber.java',
-        '**/com/vzome/core/algebra/Fields.java',
-        '**/com/vzome/core/algebra/AlgebraicVector.java',
-        '**/com/vzome/core/algebra/AlgebraicMatrix.java',
 
-        '**/com/vzome/core/construction/Point.java',
-        '**/com/vzome/core/construction/FreePoint.java',
-        '**/com/vzome/core/construction/Construction.java',
-        '**/com/vzome/core/construction/ConstructionList.java',
-        '**/com/vzome/core/construction/CentroidPoint.java',
-        '**/com/vzome/core/construction/ConstructionChanges.java',
+        '**/com/vzome/xml/*.java',
+        '**/com/vzome/core/generic/*.java',
+        '**/com/vzome/core/math/*.java',
+        '**/com/vzome/core/math/symmetry/*.java',
+        '**/com/vzome/core/algebra/*.java',
 
-        '**/com/vzome/core/commands/AttributeMap.java',
-        '**/com/vzome/core/commands/Command.java',
+        // '**/com/vzome/core/construction/Point.java',
+        // '**/com/vzome/core/construction/FreePoint.java',
+        // '**/com/vzome/core/construction/Construction.java',
+        // '**/com/vzome/core/construction/ConstructionList.java',
+        // '**/com/vzome/core/construction/CentroidPoint.java',
+        // '**/com/vzome/core/construction/ConstructionChanges.java',
 
-        '**/com/vzome/core/model/Color.java',
-        '**/com/vzome/core/model/Group.java',
-        '**/com/vzome/core/model/GroupElement.java',
-        '**/com/vzome/core/model/Manifestation.java',
-        '**/com/vzome/core/model/RealizedModel.java',
+        // '**/com/vzome/core/commands/AttributeMap.java',
+        // '**/com/vzome/core/commands/Command.java',
 
-        '**/com/vzome/core/editor/Selection.java',
-        '**/com/vzome/core/editor/UndoableEdit.java',
-        '**/com/vzome/core/editor/SideEffects.java',
-        '**/com/vzome/core/editor/ChangeManifestations.java',
+        // '**/com/vzome/core/model/Color.java',
+        // '**/com/vzome/core/model/Group.java',
+        // '**/com/vzome/core/model/GroupElement.java',
+        // '**/com/vzome/core/model/Manifestation.java',
+        // '**/com/vzome/core/model/RenderedObject.java',
+        // '**/com/vzome/core/model/RealizedModel.java',
 
-        '**/com/vzome/core/edits/NewCentroid.java'
+        // '**/com/vzome/core/editor/Selection.java',
+        // '**/com/vzome/core/editor/UndoableEdit.java',
+        // '**/com/vzome/core/editor/SideEffects.java',
+        // '**/com/vzome/core/editor/ChangeManifestations.java',
+
+        // '**/com/vzome/core/edits/NewCentroid.java'
     ]
 }
 

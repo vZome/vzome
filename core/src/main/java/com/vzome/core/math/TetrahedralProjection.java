@@ -5,7 +5,6 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.commands.XmlSaveFormat;
 
 /**
  * @author David Hall
@@ -52,7 +51,7 @@ public class TetrahedralProjection implements Projection
     public void getXmlAttributes( Element element ) {}
 
     @Override
-    public void setXmlAttributes( Element xml, XmlSaveFormat format ) {}
+    public void setXmlAttributes( Element xml ) {}
 
     @Override
     public String getProjectionName() {

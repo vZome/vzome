@@ -11,6 +11,7 @@ import org.w3c.dom.Node;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.VefVectorExporter;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
@@ -33,7 +34,6 @@ import com.vzome.core.model.Color;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RenderedObject;
-import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Shapes;
@@ -181,7 +181,7 @@ public class ReplaceWithShape extends ChangeManifestations
         if ( this .shape != null ) {
             // legacy format, which fails to use correct orientations after a symmetry change
             if ( this .vef == null ) {
-                this .vef = VefModelExporter .exportPolyhedron( this .shape );
+                this .vef = VefVectorExporter .exportPolyhedron( this .shape );
             }
             Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( this .vef ) );
             element .appendChild( textNode );

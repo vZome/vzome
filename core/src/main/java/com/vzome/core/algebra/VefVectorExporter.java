@@ -11,9 +11,9 @@ import java.util.TreeSet;
 import com.vzome.core.generic.ArrayComparator;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
-import com.vzome.core.model.Exporter;
-import com.vzome.core.model.Panel;
-import com.vzome.core.model.VefModelExporter;
+//import com.vzome.core.model.Exporter;
+//import com.vzome.core.model.Panel;
+//import com.vzome.core.model.VefModelExporter;
 
 public class VefVectorExporter {
 
@@ -104,7 +104,7 @@ public class VefVectorExporter {
 
     public static String exportPolyhedron(Polyhedron polyhedron) {
         StringWriter out = new StringWriter();
-        Exporter exporter = new VefModelExporter( out, polyhedron .getField() );
+        VefVectorExporter exporter = new VefVectorExporter( out, polyhedron .getField() );
         List<AlgebraicVector> vertexList = polyhedron .getVertexList();
         for (Polyhedron.Face face : polyhedron .getFaceSet()) {
             List<AlgebraicVector> vertices = new ArrayList<>( face .size() );
@@ -112,9 +112,9 @@ public class VefVectorExporter {
                 int vertexIndex = face .getVertex( i );
                 vertices.add( vertexList .get( vertexIndex ) );
             }
-            exporter .exportManifestation( new Panel( vertices ) );
+            exporter .exportPolygon( vertices );
         }
-        exporter .finish();
+        exporter .finishExport();
         return out .toString();
     }
 

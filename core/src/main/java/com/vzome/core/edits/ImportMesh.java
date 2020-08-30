@@ -120,7 +120,7 @@ public abstract class ImportMesh extends ChangeManifestations
             setProjection( projectionName, field );
         }
         if( projection != null ) {
-            projection.setXmlAttributes(xml, format);
+            projection.setXmlAttributes(xml);
         }
     }
     
