@@ -436,13 +436,16 @@ jsweet {
 	encoding = 'UTF-8'
 	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.
 
-	outDir = new File('client/public/jsweet')
+    module = 'es2015'
+
+	outDir = new File('client/src')
 
 	targetVersion = 'ES6'
     tsOnly = false
 	includes = [
         '**/java/nio/*.java',
         '**/java/text/*.java',
+        '**/java/util/*.java',
         '**/com/vzome/core/math/RealVector.java'
     ]
 }

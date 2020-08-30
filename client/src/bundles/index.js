@@ -8,8 +8,9 @@ import * as vzomejava from './vzomejava'
 import * as camera from './camera'
 import * as lighting from './lighting'
 import * as progress from './progress'
+import * as jsweet from './jsweet'
 
-const bundles = { jre, files, alerts, vzomejava, camera, lighting, progress }
+const bundles = { jre, files, alerts, vzomejava, camera, lighting, progress, jsweet }
 
 
 export default ( middleware ) =>
