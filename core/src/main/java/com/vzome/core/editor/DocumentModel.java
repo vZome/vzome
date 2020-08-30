@@ -63,8 +63,9 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.ManifestationImpl;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Colors;
@@ -76,7 +77,7 @@ import com.vzome.xml.DomUtils;
 
 public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 {
-    private final RealizedModel mRealizedModel;
+    private final RealizedModelImpl mRealizedModel;
 
     private final Point originPoint;
 
@@ -171,7 +172,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
      // TODO: vvv - most of this can be moved into EditorModel initialization
         
-        this .mRealizedModel = new RealizedModel( this .field, new Projection.Default( this .field ) );
+        this .mRealizedModel = new RealizedModelImpl( this .field, new Projection.Default( this .field ) );
 
         if ( xml != null ) {
             NodeList nl = xml .getElementsByTagName( "SymmetrySystem" );
@@ -297,7 +298,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .mRealizedModel .addListener( renderedModel );
 
         // "re-render" the origin
-        Manifestation m = this .mRealizedModel .findConstruction( originPoint );
+        ManifestationImpl m = (ManifestationImpl) this .mRealizedModel .findConstruction( originPoint );
         m .setRenderedObject( null );
         this .mRealizedModel .show( m );
     }
@@ -757,7 +758,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void addSelectionListener( ManifestationChanges listener )
     {
-        this .editorModel .getSelection() .addListener( listener );
+        ((SelectionImpl) this .editorModel .getSelection()) .addListener( listener );
     }
 
     private AbstractToolFactory bookmarkFactory;

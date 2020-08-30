@@ -45,37 +45,32 @@ public abstract class ChangeSelection extends SideEffects
     }
 
     public void setOrderedSelection( boolean orderedSelection )
-    {
-        this.orderedSelection = orderedSelection;
-    }
+	{
+		this.orderedSelection = orderedSelection;
+	}
 
-    @Override
-    public void undo()
-    {
-        if ( this .isNoOp() )
-            // When the undo is part of a failure, and there is nothing to undo,
-            //   it is simpler to avoid the ordered selection logic entirely
-            return;
+	@Override
+	public void undo()
+	{
+		if ( this .orderedSelection ) {
 
-        if ( this .orderedSelection ) {
-
-            Deque<SideEffect> stack = new ArrayDeque<SideEffect>();
-            this .selectionEffects = stack;
-            // selectionEffects must be set, so that selection-affecting side effects get pushed
-            super.undo();
-
-            mSelection.clearForOrderedUndo();  // This seems unsafe!
-
-            // to let the SideEffects undo correctly, selectionEffects must be cleared
-            this .selectionEffects = null;
-            while ( ! stack .isEmpty() ) {
-                SideEffect se = stack .pop();
-                se .undo();
-            }
-        }
-        else
-            super.undo();
-    }
+			Deque<SideEffect> stack = new ArrayDeque<SideEffect>();
+			this .selectionEffects = stack;
+			// selectionEffects must be set, so that selection-affecting side effects get pushed
+			super.undo();
+						
+			mSelection .clear();
+			
+			// to let the SideEffects undo correctly, selectionEffects must be cleared
+			this .selectionEffects = null;
+			while ( ! stack .isEmpty() ) {
+				SideEffect se = stack .pop();
+				se .undo();
+			}
+		}
+		else
+			super.undo();
+	}
 
     protected void getXmlAttributes( Element element ) {}
 

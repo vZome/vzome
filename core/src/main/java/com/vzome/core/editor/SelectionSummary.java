@@ -21,7 +21,6 @@ public class SelectionSummary implements ManifestationChanges
 	public SelectionSummary( Selection selection )
 	{
 		this .selection = selection;
-		selection .addListener( this );
 	}
 	
 	public void notifyListeners()

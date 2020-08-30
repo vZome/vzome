@@ -11,7 +11,7 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 /**
  * @author Scott Vorthmann
  */
-public class Strut extends Manifestation implements Comparable<Strut>
+public class Strut extends ManifestationImpl implements Comparable<Strut>
 {
 	private final AlgebraicVector m_end1, m_end2;
 	private AlgebraicVector zoneVector;

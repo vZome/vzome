@@ -23,6 +23,7 @@ import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.ManifestationImpl;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
@@ -167,9 +168,10 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     @Override
 	public void manifestationAdded( Manifestation m )
 	{
+        ManifestationImpl mi = (ManifestationImpl) m;
 		if ( ! this .enabled )
 		{
-			m .setRenderedObject( new RenderedManifestation( m ) );
+		    mi .setRenderedObject( new RenderedManifestation( m ) );
 			return;
 		}
 		
@@ -177,7 +179,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         Polyhedron poly = rm .getShape();
 	    if ( poly == null )
 	        return; // no direction for this strut
-	    m .setRenderedObject( rm );
+	    mi .setRenderedObject( rm );
         
 	    mRendered .add( rm );
 	    this .byID .put( rm .getGuid(), rm );
@@ -191,8 +193,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     @Override
 	public void manifestationRemoved( Manifestation m )
 	{
+        ManifestationImpl mi = (ManifestationImpl) m;
 		if ( ! this .enabled ) {
-			m .setRenderedObject( null );
+			mi .setRenderedObject( null );
 			return;
 		}
 		
@@ -209,7 +212,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	        throw new IllegalStateException( "unable to remove RenderedManifestation" );
 	    
         this .byID .remove( rendered .getGuid() );
-        m .setRenderedObject( null );
+        mi .setRenderedObject( null );
 	}
     
     public RenderedManifestation getRenderedManifestation( String guid )

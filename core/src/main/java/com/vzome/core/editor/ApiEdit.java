@@ -73,7 +73,7 @@ public class ApiEdit extends ChangeManifestations
 		@Override
 		public Selection getInputs()
 		{
-			Selection inputsUnselected = new Selection();
+			Selection inputsUnselected = new SelectionImpl();
 	        for ( Manifestation man : this .edit .getSelection() ) {
             	inputsUnselected .select( man );
 			}

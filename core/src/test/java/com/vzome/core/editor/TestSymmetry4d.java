@@ -13,16 +13,16 @@ import com.vzome.core.edits.Symmetry4d;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.RealizedModelImpl;
 
 public class TestSymmetry4d {
 
 	@Test
 	public void test()
 	{
-		Selection selection = new Selection();
+		Selection selection = new SelectionImpl();
 		AlgebraicField golden = new PentagonField();
-		RealizedModel realized = new RealizedModel( golden, new Projection.Default( golden  ) );
+		RealizedModelImpl realized = new RealizedModelImpl( golden, new Projection.Default( golden  ) );
 		
 		AlgebraicVector location = golden .createVector( new int[][]{ {0,1, 0,1}, {2,1, 0,1}, {2,1, 0,1}, {0,1, 0,1} } );
 		Construction pt = new FreePoint( location );

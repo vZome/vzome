@@ -24,7 +24,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.PlaneOrbitSet;
-import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.render.TransparentRendering;
@@ -33,7 +33,7 @@ import com.vzome.desktop.controller.ZoneVectorBall;
 
 public class PreviewStrut implements PropertyChangeListener
 {
-    private final RealizedModel model;
+    private final RealizedModelImpl model;
 
     private final RenderedModel rendering;
 
@@ -58,7 +58,7 @@ public class PreviewStrut implements PropertyChangeListener
         rendering = new RenderedModel( field, true );
         TransparentRendering transp = new TransparentRendering( mainScene );
         rendering .addListener( transp );
-        model = new RealizedModel( field, new Projection.Default( field ) );
+        model = new RealizedModelImpl( field, new Projection.Default( field ) );
         model .addListener( rendering );
 
         zoneBall = new ZoneVectorBall( cameraController )
