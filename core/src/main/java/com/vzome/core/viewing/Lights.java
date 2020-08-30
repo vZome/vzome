@@ -17,7 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.vzome.core.model.Color;
+import com.vzome.core.construction.Color;
 import com.vzome.xml.DomUtils;
 
 /**

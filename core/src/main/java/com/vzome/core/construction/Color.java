@@ -1,6 +1,6 @@
 
 
-package com.vzome.core.model;
+package com.vzome.core.construction;
 
 import java.util.StringTokenizer;
 

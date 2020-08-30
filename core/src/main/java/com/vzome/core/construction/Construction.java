@@ -6,7 +6,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.model.Color;
 
   
 

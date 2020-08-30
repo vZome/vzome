@@ -9,12 +9,12 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.construction.Color;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.edits.ManifestationColorMappers.ManifestationColorMapper;
-import com.vzome.core.model.Color;
 import com.vzome.core.model.Manifestation;
 
 /**

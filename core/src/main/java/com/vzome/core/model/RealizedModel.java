@@ -1,6 +1,7 @@
 package com.vzome.core.model;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 
 public interface RealizedModel extends Iterable<Manifestation>

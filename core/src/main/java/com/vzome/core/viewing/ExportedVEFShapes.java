@@ -22,13 +22,13 @@ import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
 import com.vzome.core.editor.Application;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.Color;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.render.Colors;
 

@@ -451,13 +451,7 @@ jsweet {
         '**/com/vzome/core/math/*.java',
         '**/com/vzome/core/math/symmetry/*.java',
         '**/com/vzome/core/algebra/*.java',
-
-        // '**/com/vzome/core/construction/Point.java',
-        // '**/com/vzome/core/construction/FreePoint.java',
-        // '**/com/vzome/core/construction/Construction.java',
-        // '**/com/vzome/core/construction/ConstructionList.java',
-        // '**/com/vzome/core/construction/CentroidPoint.java',
-        // '**/com/vzome/core/construction/ConstructionChanges.java',
+        '**/com/vzome/core/construction/*.java',
 
         // '**/com/vzome/core/commands/AttributeMap.java',
         // '**/com/vzome/core/commands/Command.java',
@@ -478,6 +472,3 @@ jsweet {
     ]
 }
 
-// jsweet.doFirst {
-//     println '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Remember to clean up errors in RealVector.js'
-// }
