@@ -1629,8 +1629,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
 
         case "objectColor":
             if ( pickedManifestation != null ) {
-                RenderedManifestation rm = pickedManifestation .getRenderedObject();
-                String colorStr = rm .getColor() .toString();
+                String colorStr = pickedManifestation .getColor() .toString();
                 pickedManifestation = null;
                 return colorStr;
             }

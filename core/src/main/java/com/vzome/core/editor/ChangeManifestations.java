@@ -18,7 +18,6 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.RenderedManifestation;
 import com.vzome.xml.DomUtils;
 
 public abstract class ChangeManifestations extends ChangeSelection
@@ -355,12 +354,7 @@ public abstract class ChangeManifestations extends ChangeSelection
         {
             mManifestation = manifestation;
             this .newColor = color;
-            RenderedManifestation rm = manifestation .getRenderedObject();
-            if ( rm != null ) {
-                oldColor = rm .getColor();
-            }
-            else
-                oldColor = Color .GREY_TRANSPARENT; // TODO fix this case
+            oldColor = manifestation .getColor();
         }
 
         @Override
@@ -428,5 +422,4 @@ public abstract class ChangeManifestations extends ChangeSelection
     protected Manifestations.PanelIterator getVisiblePanels(Predicate<Panel> postFilter) {
         return Manifestations.getVisiblePanels(mManifestations, postFilter);
     }
-
 }

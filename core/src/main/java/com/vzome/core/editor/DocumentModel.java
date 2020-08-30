@@ -495,7 +495,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         for (Manifestation man : editorModel .getSelection() ) {
             last = man;
         }
-        return last == null ? null : last .getRenderedObject() .getColor();
+        return last == null ? null : last .getColor();
     }
 
     public void finishLoading( boolean openUndone, boolean asTemplate ) throws Command.Failure
