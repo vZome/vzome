@@ -1,4 +1,4 @@
-package com.vzome.core.render;
+package com.vzome.core.editor.api;
 
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.construction.Color;
@@ -6,10 +6,8 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
 
-public interface Shapes{
-    
-//    void setSceneGraphFactory( Factory factory );
-    
+public interface Shapes
+{
     String getName();
 
     String getAlias();
@@ -18,17 +16,6 @@ public interface Shapes{
 
     Polyhedron getStrutShape( Direction dir, AlgebraicNumber length );
         
-	void addListener( Changes change );
-	
-	void removeListener( Changes changes );
-	
-	public interface Changes
-	{
-	    void strutShapeChanged( Direction dir );
-	    
-	    void connectorShapeChanged( Polyhedron shape );
-	}
-
     Symmetry getSymmetry();
 
     String getPackage();

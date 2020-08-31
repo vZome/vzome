@@ -449,6 +449,7 @@ jsweet {
         '**/com/vzome/xml/*.java',
         '**/com/vzome/core/generic/*.java',
         '**/com/vzome/core/math/*.java',
+        '**/com/vzome/core/math/convexhull/*.java',
         '**/com/vzome/core/math/symmetry/*.java',
         '**/com/vzome/core/algebra/*.java',
 
@@ -458,18 +459,28 @@ jsweet {
 
         '**/com/vzome/core/model/*.java',
 
-        // '**/com/vzome/core/editor/Selection.java',
-        // '**/com/vzome/core/editor/UndoableEdit.java',
-        // '**/com/vzome/core/editor/SideEffects.java',
-        // '**/com/vzome/core/editor/ChangeManifestations.java',
+        '**/com/vzome/core/editor/Selection.java',
+        '**/com/vzome/core/editor/UndoableEdit.java',
+        '**/com/vzome/core/editor/SideEffects.java',
+        '**/com/vzome/core/editor/ChangeSelection.java',
+        '**/com/vzome/core/editor/ManifestConstructions.java',
+        '**/com/vzome/core/editor/Manifestations.java',
+        '**/com/vzome/core/editor/ChangeManifestations.java',
+        '**/com/vzome/core/editor/OrbitSource.java',
+        '**/com/vzome/core/editor/EditorModel.java',
 
-        // '**/com/vzome/core/edits/NewCentroid.java'
+        '**/com/vzome/core/editor/api/*.java',
+
+        '**/com/vzome/core/edits/*.java'
     ]
     excludes = [
         '**/com/vzome/core/commands/ZomicVirtualMachine.java',
         '**/com/vzome/core/commands/CommandExecuteZomicScript.java',
         '**/com/vzome/core/commands/CommandExecutePythonScript.java',
-        '**/com/vzome/core/model/*Impl.java'
+        '**/com/vzome/core/model/*Impl.java',
+        '**/com/vzome/core/edits/Run*Script.java',
+        '**/com/vzome/core/edits/Validate2Manifold.java',
+        '**/com/vzome/core/edits/ReplaceWithShape.java'
     ]
 }
 

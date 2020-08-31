@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.parts.FastDefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
-import com.vzome.core.render.Shapes;
 
 
 public abstract class AbstractShapes implements Shapes
@@ -168,14 +168,6 @@ public abstract class AbstractShapes implements Shapes
     }
 
     // no changes are ever generated
-
-    @Override
-    public void addListener( Changes changes )
-    {}
-
-    @Override
-    public void removeListener( Changes changes )
-    {}
 
     @Override
     @JsonIgnore

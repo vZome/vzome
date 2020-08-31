@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.viewing.Lights;
 import com.vzome.opengl.Renderer;
 

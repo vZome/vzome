@@ -26,6 +26,7 @@ import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefToPolyhedron;
 import com.vzome.core.math.symmetry.Axis;
@@ -37,7 +38,6 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.RenderedObject;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.Shapes;
 
 public class ReplaceWithShape extends ChangeManifestations
 {
