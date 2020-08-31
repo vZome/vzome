@@ -46,8 +46,8 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
 
     private static final Object[][] PARAM_SIGNATURE = new Object[][]{ { "start", Point.class } };
 
-    private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { AXIS_ATTR, Axis.class },
-            														{ LENGTH_ATTR, int[].class } };
+//    private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { AXIS_ATTR, Axis.class },
+//            														{ LENGTH_ATTR, int[].class } };
 
     @Override
     public Object[][] getParameterSignature()
@@ -58,7 +58,7 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
     @Override
     public Object[][] getAttributeSignature()
     {
-        return ATTR_SIGNATURE;
+        return null;
     }
     
     @Override
