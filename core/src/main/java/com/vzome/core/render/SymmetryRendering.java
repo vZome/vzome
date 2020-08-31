@@ -7,7 +7,7 @@ import java.util.Map;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.OrbitSource;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;

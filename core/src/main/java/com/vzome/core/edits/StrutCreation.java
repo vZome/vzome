@@ -15,8 +15,8 @@ import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentEndPoint;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.model.RealizedModel;
 

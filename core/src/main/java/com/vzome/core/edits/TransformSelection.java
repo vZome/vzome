@@ -8,8 +8,8 @@ import java.util.List;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 

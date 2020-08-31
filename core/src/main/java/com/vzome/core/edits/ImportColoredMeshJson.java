@@ -3,9 +3,9 @@ package com.vzome.core.edits;
 import java.io.IOException;
 
 import com.vzome.core.algebra.AlgebraicField.Registry;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ManifestConstructions;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.ManifestConstructions;
 import com.vzome.core.model.ColoredMeshJson;
 
 public class ImportColoredMeshJson extends ImportMesh

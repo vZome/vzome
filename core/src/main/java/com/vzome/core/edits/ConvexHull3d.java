@@ -14,7 +14,7 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.math.convexhull.QuickHull3D;
 
 public class ConvexHull3d extends ConvexHull {

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
-import com.vzome.core.editor.OrbitSource;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;

@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;

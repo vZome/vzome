@@ -8,7 +8,7 @@ import org.vorthmann.ui.DefaultController;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
-import com.vzome.core.editor.OrbitSource;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;

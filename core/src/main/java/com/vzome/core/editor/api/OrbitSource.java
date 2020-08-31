@@ -1,8 +1,7 @@
-package com.vzome.core.editor;
+package com.vzome.core.editor.api;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
-import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;

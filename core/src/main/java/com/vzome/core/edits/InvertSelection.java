@@ -4,8 +4,8 @@
 package com.vzome.core.edits;
 
 
-import com.vzome.core.editor.ChangeSelection;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeSelection;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 

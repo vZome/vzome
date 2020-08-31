@@ -8,6 +8,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.edits.Delete;
 import com.vzome.core.math.Projection;
 import com.vzome.core.model.Connector;

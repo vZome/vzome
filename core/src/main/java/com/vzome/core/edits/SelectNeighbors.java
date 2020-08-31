@@ -8,8 +8,8 @@ import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.editor.ChangeSelection;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.ChangeSelection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;

@@ -11,8 +11,8 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.CentroidPoint;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 

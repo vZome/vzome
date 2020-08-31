@@ -1,4 +1,4 @@
-package com.vzome.core.editor;
+package com.vzome.core.editor.api;
 
 import java.util.List;
 

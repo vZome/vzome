@@ -21,7 +21,7 @@ import com.vzome.core.algebra.VefVectorExporter;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.OrbitSource;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.WythoffConstruction;

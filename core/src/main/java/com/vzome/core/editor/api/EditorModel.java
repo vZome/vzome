@@ -1,8 +1,11 @@
-package com.vzome.core.editor;
+package com.vzome.core.editor.api;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.editor.FieldApplication;
+import com.vzome.core.editor.SelectionSummary;
+import com.vzome.core.editor.SelectionSummary.Listener;
 import com.vzome.core.model.RealizedModel;
 
 public interface EditorModel

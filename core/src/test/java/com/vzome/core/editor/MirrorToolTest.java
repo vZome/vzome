@@ -18,6 +18,7 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.math.Projection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.ConnectorImpl;

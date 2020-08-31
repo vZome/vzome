@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Group;
 import com.vzome.core.model.GroupElement;
 import com.vzome.core.model.Manifestation;

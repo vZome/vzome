@@ -13,8 +13,8 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.UndoableEdit;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.model.Manifestation;
 
 public class SymmetryAxisChange extends UndoableEdit

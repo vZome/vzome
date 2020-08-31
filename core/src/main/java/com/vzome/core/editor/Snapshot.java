@@ -9,6 +9,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.xml.DomUtils;

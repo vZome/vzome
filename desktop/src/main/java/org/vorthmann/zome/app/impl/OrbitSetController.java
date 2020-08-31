@@ -23,7 +23,7 @@ import org.vorthmann.ui.LeftMouseDragAdapter;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
-import com.vzome.core.editor.OrbitSource;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;

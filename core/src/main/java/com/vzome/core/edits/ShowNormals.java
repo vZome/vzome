@@ -11,9 +11,9 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Manifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.Manifestations;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 
