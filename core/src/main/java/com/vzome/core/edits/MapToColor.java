@@ -9,11 +9,11 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.construction.Color;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.construction.Color;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.edits.ManifestationColorMappers.ManifestationColorMapper;
 import com.vzome.core.model.Manifestation;
 
@@ -35,7 +35,7 @@ public class MapToColor extends ChangeManifestations {
     public void configure( Map<String,Object> props ) 
     {
         String colorMapperName = (String) props .get( "mode" );
-        SymmetrySystem symmetry = this.editor .getSymmetrySystem();
+        OrbitSource symmetry = this.editor .getSymmetrySystem();
         if ( colorMapperName != null )
             this .colorMapper = ManifestationColorMappers .getColorMapper( colorMapperName, symmetry );
     }
@@ -69,7 +69,7 @@ public class MapToColor extends ChangeManifestations {
     @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Command.Failure
     {
-        SymmetrySystem symmetry = this .editor .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
+        OrbitSource symmetry = this .editor .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
         String colorMapperName = xml .getAttribute( COLORMAPPER_ATTR_NAME );
         this .colorMapper = ManifestationColorMappers .getColorMapper( colorMapperName, symmetry );
 

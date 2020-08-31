@@ -53,6 +53,7 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.exporters.Exporter3d;
@@ -71,7 +72,6 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
@@ -285,7 +285,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
         for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
         {
             String name = symper .getName();
-            SymmetryController symmController = new SymmetryController( strutBuilder, this .documentModel .getSymmetrySystem( name ), mRenderedModel );
+            SymmetryController symmController = new SymmetryController( strutBuilder, (SymmetrySystem) this .documentModel .getSymmetrySystem( name ), mRenderedModel );
             strutBuilder .addSubController( "symmetry." + name, symmController );
             this .symmetries .put( name, symmController );
         }
@@ -445,7 +445,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
      */
     private void setSymmetrySystem( String symmetryName )
     {
-        SymmetrySystem symmetrySystem = this .documentModel .getSymmetrySystem( symmetryName );
+        SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getSymmetrySystem( symmetryName );
         symmetryName = symmetrySystem .getName(); // in case it was null before
         this .documentModel .setSymmetrySystem( symmetrySystem );
         

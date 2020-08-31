@@ -24,6 +24,7 @@ import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefToPolyhedron;
@@ -80,9 +81,9 @@ public class ReplaceWithShape extends ChangeManifestations
         if ( this .symmetryShapes != null ) {
             // selection-based
             String[] tokens = this .symmetryShapes .split( ":" );
-            SymmetrySystem symmetrySystem = this .editor .getSymmetrySystem( tokens[ 0 ] );
-            Shapes shapes = symmetrySystem .getStyle( tokens[1] );
-            RenderedModel model = new RenderedModel( symmetrySystem .getSymmetry() .getField(), new RenderedModel.OrbitSource() {
+            OrbitSource symmetrySystem = this .editor .getSymmetrySystem( tokens[ 0 ] );
+            Shapes shapes = ((SymmetrySystem) symmetrySystem) .getStyle( tokens[1] );
+            RenderedModel model = new RenderedModel( symmetrySystem .getSymmetry() .getField(), new OrbitSource() {
                 
                 @Override
                 public Symmetry getSymmetry() {
@@ -109,6 +110,17 @@ public class ReplaceWithShape extends ChangeManifestations
                 @Override
                 public Axis getAxis( AlgebraicVector vector ) {
                     return symmetrySystem .getAxis( vector );
+                }
+
+                @Override
+                public String getName() {
+                    return symmetrySystem .getName();
+                }
+
+                @Override
+                public Color getVectorColor( AlgebraicVector vector )
+                {
+                    return symmetrySystem .getVectorColor( vector );
                 }
             } );
             if ( this .ballOrStrut != null ) {

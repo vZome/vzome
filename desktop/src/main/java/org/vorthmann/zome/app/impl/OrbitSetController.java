@@ -23,6 +23,7 @@ import org.vorthmann.ui.LeftMouseDragAdapter;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
+import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -30,7 +31,6 @@ import com.vzome.core.math.symmetry.DodecagonalSymmetry;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.RenderedModel.OrbitSource;
 
 public class OrbitSetController extends DefaultController implements PropertyChangeListener
 {

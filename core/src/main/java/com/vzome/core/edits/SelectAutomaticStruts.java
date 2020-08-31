@@ -6,7 +6,7 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.model.Strut;
 import com.vzome.xml.DomUtils;
 
@@ -15,7 +15,7 @@ import com.vzome.xml.DomUtils;
  */
 public class SelectAutomaticStruts extends ChangeManifestations {
 
-	protected SymmetrySystem symmetry;
+	protected OrbitSource symmetry;
     private final EditorModel editor;
 	
 	public SelectAutomaticStruts( EditorModel editor )

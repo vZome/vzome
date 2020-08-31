@@ -81,7 +81,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     private final Point originPoint;
 
-    private final EditorModel editorModel;
+    private final EditorModelImpl editorModel;
 
     private final EditHistory mHistory;
 
@@ -121,7 +121,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
 
-    private final Map<String,SymmetrySystem> symmetrySystems = new HashMap<>();
+    private final Map<String,OrbitSource> symmetrySystems = new HashMap<>();
 
     private final Lights sceneLighting;
 
@@ -204,12 +204,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
         // the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
-        this .editorModel = new EditorModel( this .mRealizedModel, originPoint, kind, symmetrySystem, this .symmetrySystems );
+        this .editorModel = new EditorModelImpl( this .mRealizedModel, originPoint, kind, symmetrySystem, this .symmetrySystems );
         this .tools .setEditorModel( this .editorModel );
 
         // cannot be done in the constructors
-        for ( SymmetrySystem symmetrySys : this .symmetrySystems .values()) {
-            symmetrySys .createToolFactories( this .tools );
+        for ( OrbitSource symmetrySys : this .symmetrySystems .values()) {
+            ((SymmetrySystem) symmetrySys) .createToolFactories( this .tools );
         }
 
         kind .registerToolFactories( this .toolFactories, this .tools );
@@ -527,7 +527,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
                 @Override
                 public OrbitSet getGroup( String name )
                 {
-                    SymmetrySystem system = symmetrySystems .get( name );
+                    OrbitSource system = symmetrySystems .get( name );
                     return system .getOrbits();
                 }
 
@@ -742,7 +742,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         childElement .appendChild( viewXml );
         vZomeRoot .appendChild( childElement );
 
-        childElement = this .editorModel .getSymmetrySystem() .getXml( doc );
+        childElement = ((SymmetrySystem) this .editorModel .getSymmetrySystem()) .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
         childElement = this .tools .getXml( doc );
@@ -884,12 +884,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         return this .tools;
     }
 
-    public SymmetrySystem getSymmetrySystem()
+    public OrbitSource getSymmetrySystem()
     {
         return this .editorModel .getSymmetrySystem();
     }
 
-    public SymmetrySystem getSymmetrySystem( String name )
+    public OrbitSource getSymmetrySystem( String name )
     {
         if ( name == null )
             return this .getSymmetrySystem();

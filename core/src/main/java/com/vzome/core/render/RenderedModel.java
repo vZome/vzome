@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
+import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -91,21 +92,20 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         {
             return symmetry;
         }
+
+        @Override
+        public Color getVectorColor( AlgebraicVector vector )
+        {
+            return null;
+        }
+
+        @Override
+        public String getName()
+        {
+            return null;
+        }
     }
 
-    public interface OrbitSource
-    {
-        Symmetry getSymmetry();
-    	    	
-        Axis getAxis( AlgebraicVector vector );
-        
-        Color getColor( Direction orbit );
-
-		OrbitSet getOrbits();
-		
-		Shapes getShapes();
-    }
-        
     public RenderedModel( final AlgebraicField field, final OrbitSource orbitSource )
     {
         super();

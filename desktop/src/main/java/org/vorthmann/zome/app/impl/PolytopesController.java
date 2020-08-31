@@ -21,7 +21,7 @@ import com.vzome.core.algebra.VefVectorExporter;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.WythoffConstruction;
@@ -80,7 +80,7 @@ public class PolytopesController extends DefaultController
             Segment strut = model .getSelectedSegment();
             if ( strut != null ) {
                 AlgebraicVector vector = strut .getOffset();
-                SymmetrySystem symm = model .getSymmetrySystem();
+                OrbitSource symm = model .getSymmetrySystem();
                 Axis zone = symm .getAxis( vector );
                 AlgebraicNumber len = zone .getLength( vector );
                 len = zone .getOrbit() .getLengthInUnits( len );

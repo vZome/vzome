@@ -18,6 +18,7 @@ import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
+import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -290,7 +291,7 @@ public class SymmetryController extends DefaultController
 
     // TODO: Can we get rid of this?  It is only needed by PreviewStrut.
     //   We should be able to accomplish the sync with PropertyChangeListeners
-    public RenderedModel.OrbitSource getOrbitSource()
+    public OrbitSource getOrbitSource()
     {
         return this .symmetrySystem;
     }

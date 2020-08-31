@@ -58,7 +58,7 @@ public class CommandEdit extends ChangeManifestations
 
 	public CommandEdit( AbstractCommand cmd, EditorModel editor )
     {
-        super( editor .mSelection, editor .getRealizedModel() );
+        super( editor .getSelection(), editor .getRealizedModel() );
         mEditorModel = editor;  // only needed to set symmetry axis/center
         mCommand = cmd;
     }

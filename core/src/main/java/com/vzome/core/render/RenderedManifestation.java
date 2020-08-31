@@ -12,6 +12,7 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
+import com.vzome.core.editor.OrbitSource;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -334,7 +335,7 @@ public class RenderedManifestation implements RenderedObject
         return symmetrySystem .getName() + ":" + symmetrySystem .getStyle() .getName();
     }
 
-    public void resetAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
+    public void resetAttributes( OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
     {
         if ( this .mManifestation instanceof Panel ) {
             resetPanelAttributes( orbitSource, shapes, oneSidedPanels, colorPanels );
@@ -353,7 +354,7 @@ public class RenderedManifestation implements RenderedObject
             throw new UnsupportedOperationException( "only strut, ball, and panel shapes currently supported" );
     }
 
-    private void resetPanelAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
+    private void resetPanelAttributes( OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
     {
         Panel panel = (Panel) this .mManifestation;
         Polyhedron shape = makePanelPolyhedron( panel, oneSidedPanels );
@@ -395,7 +396,7 @@ public class RenderedManifestation implements RenderedObject
         }
     }
 
-    protected void resetStrutAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, Strut strut )
+    protected void resetStrutAttributes( OrbitSource orbitSource, Shapes shapes, Strut strut )
     {
         AlgebraicVector offset = strut .getOffset();
         if ( offset .isOrigin() )
@@ -456,7 +457,7 @@ public class RenderedManifestation implements RenderedObject
         this .setColor( color );
     }
 
-    protected void resetConnectorAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, Connector m )
+    protected void resetConnectorAttributes( OrbitSource orbitSource, Shapes shapes, Connector m )
     {
         this .mShape = shapes .getConnectorShape();
         Color color = this .getManifestation() .getColor();
