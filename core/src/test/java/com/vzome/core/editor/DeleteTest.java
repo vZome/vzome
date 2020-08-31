@@ -11,6 +11,7 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.edits.Delete;
 import com.vzome.core.math.Projection;
 import com.vzome.core.model.Connector;
+import com.vzome.core.model.ConnectorImpl;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.RealizedModelImpl;
 
@@ -25,7 +26,7 @@ public class DeleteTest {
 		assertEquals( 0, realized .size() );
 
 		AlgebraicVector loc = field .basisVector( 3, 2 );
-		Connector ball = new Connector( loc );
+		Connector ball = new ConnectorImpl( loc );
 		realized .add( ball );
 		selection .select( ball );
 		assertEquals( 1, realized .size() );
@@ -51,7 +52,7 @@ public class DeleteTest {
 		assertTrue( selection .size() == 0 );
 
 		AlgebraicVector loc = field .basisVector( 3, 2 );
-		Connector ball = new Connector( loc );
+		Connector ball = new ConnectorImpl( loc );
 		realized .add( ball );
 		assertEquals( 1, realized .size() );
 		assertTrue( selection .size() == 0 );

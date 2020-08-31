@@ -20,9 +20,12 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.math.Projection;
 import com.vzome.core.model.Connector;
+import com.vzome.core.model.ConnectorImpl;
 import com.vzome.core.model.Panel;
+import com.vzome.core.model.PanelImpl;
 import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
+import com.vzome.core.model.StrutImpl;
 import com.vzome.core.tools.MirrorTool;
 
 public class MirrorToolTest
@@ -50,14 +53,14 @@ public class MirrorToolTest
 		vertices .add( origin );
 		vertices .add( x );
 		vertices .add( y );
-		Panel panel1 = new Panel( vertices );
+		Panel panel1 = new PanelImpl( vertices );
 		panel1 .addConstruction( polygon1 );
 		
 		vertices = new ArrayList<>();
 		vertices .add( origin );
 		vertices .add( x );
 		vertices .add( z );
-		Panel panel2 = new Panel( vertices );
+		Panel panel2 = new PanelImpl( vertices );
 		panel2 .addConstruction( polygon2 );
 		
 		EditorModel editor = createEditor( originPoint );
@@ -75,15 +78,15 @@ public class MirrorToolTest
 		tool = createTool( editor, originPoint );
 		assertNotNull( "(two panels selected)", tool .checkSelection( false ) );
 
-		Connector ball1 = new Connector( origin );
+		Connector ball1 = new ConnectorImpl( origin );
 		ball1 .addConstruction( originPoint );  // TODO remove this requirement
-		Connector ball2 = new Connector( x );
+		Connector ball2 = new ConnectorImpl( x );
 		ball2 .addConstruction( xpoint );
 		Segment segment1 = new SegmentJoiningPoints( originPoint, xpoint );
-		Strut strut = new Strut( origin, x );
+		Strut strut = new StrutImpl( origin, x );
 		strut .addConstruction( segment1 );
 		Segment segment2 = new SegmentJoiningPoints( originPoint, ypoint );
-		Strut strut2 = new Strut( origin, y );
+		Strut strut2 = new StrutImpl( origin, y );
 		strut2 .addConstruction( segment2 );
 		
 		editor = createEditor( originPoint );

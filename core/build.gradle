@@ -456,11 +456,7 @@ jsweet {
 
         '**/com/vzome/core/commands/*.java',
 
-        // '**/com/vzome/core/model/Group.java',
-        // '**/com/vzome/core/model/GroupElement.java',
-        // '**/com/vzome/core/model/Manifestation.java',
-        // '**/com/vzome/core/model/RenderedObject.java',
-        // '**/com/vzome/core/model/RealizedModel.java',
+        '**/com/vzome/core/model/*.java',
 
         // '**/com/vzome/core/editor/Selection.java',
         // '**/com/vzome/core/editor/UndoableEdit.java',
@@ -472,7 +468,8 @@ jsweet {
     excludes = [
         '**/com/vzome/core/commands/ZomicVirtualMachine.java',
         '**/com/vzome/core/commands/CommandExecuteZomicScript.java',
-        '**/com/vzome/core/commands/CommandExecutePythonScript.java'
+        '**/com/vzome/core/commands/CommandExecutePythonScript.java',
+        '**/com/vzome/core/model/*Impl.java'
     ]
 }
 

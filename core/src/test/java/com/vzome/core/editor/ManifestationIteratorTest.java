@@ -12,9 +12,12 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.model.Connector;
+import com.vzome.core.model.ConnectorImpl;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
+import com.vzome.core.model.PanelImpl;
 import com.vzome.core.model.Strut;
+import com.vzome.core.model.StrutImpl;
 
 /**
  * @author David Hall
@@ -37,16 +40,16 @@ public class ManifestationIteratorTest {
             AlgebraicNumber y = field .createRational( 1 );
             AlgebraicNumber z = field .createRational( 0 );
 
-            Connector a = new Connector( new AlgebraicVector(w, x, y) );
-            Connector b = new Connector( new AlgebraicVector(z, w, x) );
-            Connector c = new Connector( new AlgebraicVector(y, z, w) );
-            Connector d = new Connector( new AlgebraicVector(x, y, z) );
+            Connector a = new ConnectorImpl( new AlgebraicVector(w, x, y) );
+            Connector b = new ConnectorImpl( new AlgebraicVector(z, w, x) );
+            Connector c = new ConnectorImpl( new AlgebraicVector(y, z, w) );
+            Connector d = new ConnectorImpl( new AlgebraicVector(x, y, z) );
 
-            Connector e = new Connector( new AlgebraicVector(s, t, u) );
-            Connector f = new Connector( new AlgebraicVector(v, s, t) );
-            Connector g = new Connector( new AlgebraicVector(u, v, s) );
-            Connector h = new Connector( new AlgebraicVector(t, u, v) );
-            Connector i = new Connector( new AlgebraicVector(t, u, u) );
+            Connector e = new ConnectorImpl( new AlgebraicVector(s, t, u) );
+            Connector f = new ConnectorImpl( new AlgebraicVector(v, s, t) );
+            Connector g = new ConnectorImpl( new AlgebraicVector(u, v, s) );
+            Connector h = new ConnectorImpl( new AlgebraicVector(t, u, v) );
+            Connector i = new ConnectorImpl( new AlgebraicVector(t, u, u) );
             cList .add( a );
             cList .add( b );
             cList .add( c );
@@ -103,7 +106,7 @@ public class ManifestationIteratorTest {
             avList.add(ORIGIN);
             avList.add(PLUS_X);
             avList.add(PLUS_Y);
-            pList.add( new Panel(avList));
+            pList.add( new PanelImpl(avList));
             avList.clear();
 
             // TODO: Add a test that a panel with points in reverse order is still equal
@@ -131,44 +134,44 @@ public class ManifestationIteratorTest {
             avList.add(ORIGIN);
             avList.add(PLUS_Y);
             avList.add(PLUS_Z);
-            pList.add( new Panel(avList));
+            pList.add( new PanelImpl(avList));
             avList.clear();
 
             avList.add(PLUS_Z);
             avList.add(a);
             avList.add(b);
-            pList.add( new Panel(avList));
+            pList.add( new PanelImpl(avList));
             avList.clear();
 
             avList.add(c);
             avList.add(d);
             avList.add(e);
-            pList.add( new Panel(avList));
+            pList.add( new PanelImpl(avList));
             avList.clear();
 
             avList.add(f);
             avList.add(g);
             avList.add(h);
             avList.add(i);
-            pList.add( new Panel(avList));
+            pList.add( new PanelImpl(avList));
             avList.clear();
             
             pList.get(0).setHidden(true);
 
-            Strut sa = new Strut(ORIGIN, a);
-            Strut sb = new Strut(ORIGIN, b);
-            Strut sc = new Strut(ORIGIN, c);
-            Strut sd = new Strut(ORIGIN, d);
+            Strut sa = new StrutImpl(ORIGIN, a);
+            Strut sb = new StrutImpl(ORIGIN, b);
+            Strut sc = new StrutImpl(ORIGIN, c);
+            Strut sd = new StrutImpl(ORIGIN, d);
 
-            Strut se = new Strut(e, ORIGIN);
-            Strut sf = new Strut(f, ORIGIN);
-            Strut sg = new Strut(g, ORIGIN);
-            Strut sh = new Strut(h, ORIGIN);
-            Strut si = new Strut(i, ORIGIN);
+            Strut se = new StrutImpl(e, ORIGIN);
+            Strut sf = new StrutImpl(f, ORIGIN);
+            Strut sg = new StrutImpl(g, ORIGIN);
+            Strut sh = new StrutImpl(h, ORIGIN);
+            Strut si = new StrutImpl(i, ORIGIN);
 
-            Strut X_AXIS = new Strut(ORIGIN, PLUS_X);
-            Strut Y_AXIS = new Strut(ORIGIN, PLUS_Y);
-            Strut Z_AXIS = new Strut(ORIGIN, PLUS_Z);
+            Strut X_AXIS = new StrutImpl(ORIGIN, PLUS_X);
+            Strut Y_AXIS = new StrutImpl(ORIGIN, PLUS_Y);
+            Strut Z_AXIS = new StrutImpl(ORIGIN, PLUS_Z);
             
             X_AXIS.setHidden(true);
             Y_AXIS.setHidden(true);
@@ -206,7 +209,7 @@ public class ManifestationIteratorTest {
 
         int nc = 0;
         for(Connector connector : Manifestations.getConnectors(selection)) {
-            assertEquals("Connectors: ", connector.getClass(), Connector.class);
+            assertEquals("Connectors: ", connector.getClass(), ConnectorImpl.class);
             nc++;
         }
         assertTrue(expC > 0);
@@ -222,7 +225,7 @@ public class ManifestationIteratorTest {
         
         int ns = 0;
         for(Strut strut : Manifestations.getStruts(selection)) {
-            assertEquals("Struts: ", strut.getClass(), Strut.class);
+            assertEquals("Struts: ", strut.getClass(), StrutImpl.class);
             ns++;
         }
         assertTrue(expS > 0);
@@ -230,7 +233,7 @@ public class ManifestationIteratorTest {
         
         int np = 0;
         for(Panel panel : Manifestations.getPanels(selection)) {
-            assertEquals("Panels: ", panel.getClass(), Panel.class);
+            assertEquals("Panels: ", panel.getClass(), PanelImpl.class);
             np++;
         }
         assertTrue(expP > 0);

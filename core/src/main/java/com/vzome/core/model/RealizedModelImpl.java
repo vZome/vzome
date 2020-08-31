@@ -86,7 +86,7 @@ public class RealizedModelImpl implements RealizedModel
         if ( c instanceof Point )
         {
             Point p = (Point) c;
-            m = new Connector( mProjection .projectImage( p .getLocation(), true ) );
+            m = new ConnectorImpl( mProjection .projectImage( p .getLocation(), true ) );
         }
         else if ( c instanceof Segment )
         {
@@ -95,7 +95,7 @@ public class RealizedModelImpl implements RealizedModel
             AlgebraicVector end = mProjection .projectImage( s .getEnd(), true );
             if ( ! start .equals( end ) )
             {
-                m = new Strut( start, end );
+                m = new StrutImpl( start, end );
             }
         }
         else if ( c instanceof Polygon )
@@ -105,7 +105,7 @@ public class RealizedModelImpl implements RealizedModel
             for (int i = 0; i < p.getVertexCount(); i++) {
                 vertices .add( mProjection .projectImage( p.getVertex( i ), true ) );
             }
-            m = new Panel( vertices );
+            m = new PanelImpl( vertices );
         }
         return m;
     }

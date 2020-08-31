@@ -9,7 +9,7 @@ import com.vzome.core.construction.FreePoint;
 /**
  * @author Scott Vorthmann
  */
-public class ConnectorImpl extends ManifestationImpl implements Comparable<ConnectorImpl>
+public class ConnectorImpl extends ManifestationImpl implements Connector
 {
 
 	public ConnectorImpl( AlgebraicVector loc )
@@ -64,7 +64,7 @@ public class ConnectorImpl extends ManifestationImpl implements Comparable<Conne
 	}
 
 	@Override
-	public int compareTo(ConnectorImpl other) {
+	public int compareTo( Connector other ) {
         if ( this == other ) {
             return 0;
         }

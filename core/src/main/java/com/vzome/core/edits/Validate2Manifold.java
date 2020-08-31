@@ -22,6 +22,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
+import com.vzome.core.model.StrutImpl;
 
 public class Validate2Manifold extends ChangeManifestations
 {
@@ -77,12 +78,12 @@ public class Validate2Manifold extends ChangeManifestations
 	            else {
 	                // We are using Strut rather than Segment because of the equality,
 	                //  which ignores orientation.
-	                Strut strut = new Strut( prev, vertex );
+	                Strut strut = new StrutImpl( prev, vertex );
 	                edges .addStrut( strut, panel );
 	                prev = vertex;
 	            }
 	        }
-            Strut strut = new Strut( prev, v0 );
+            Strut strut = new StrutImpl( prev, v0 );
             edges .addStrut( strut, panel );
 	    }
 	    

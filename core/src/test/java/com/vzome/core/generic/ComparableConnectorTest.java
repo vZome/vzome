@@ -5,6 +5,8 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.model.Connector;
+import com.vzome.core.model.ConnectorImpl;
+
 import java.util.ArrayList;
 import org.junit.Test;
 
@@ -29,16 +31,16 @@ public class ComparableConnectorTest extends ComparableTest<Connector> {
         AlgebraicNumber y = field .createRational( 1 );
         AlgebraicNumber z = field .createRational( 0 );
 		
-        Connector a = new Connector( new AlgebraicVector(w, x, y) );
-        Connector b = new Connector( new AlgebraicVector(z, w, x) );
-        Connector c = new Connector( new AlgebraicVector(y, z, w) );
-        Connector d = new Connector( new AlgebraicVector(x, y, z) );
+        Connector a = new ConnectorImpl( new AlgebraicVector(w, x, y) );
+        Connector b = new ConnectorImpl( new AlgebraicVector(z, w, x) );
+        Connector c = new ConnectorImpl( new AlgebraicVector(y, z, w) );
+        Connector d = new ConnectorImpl( new AlgebraicVector(x, y, z) );
 		
-        Connector e = new Connector( new AlgebraicVector(s, t, u) );
-        Connector f = new Connector( new AlgebraicVector(v, s, t) );
-        Connector g = new Connector( new AlgebraicVector(u, v, s) );
-        Connector h = new Connector( new AlgebraicVector(t, u, v) );
-        Connector i = new Connector( new AlgebraicVector(t, u, u) );
+        Connector e = new ConnectorImpl( new AlgebraicVector(s, t, u) );
+        Connector f = new ConnectorImpl( new AlgebraicVector(v, s, t) );
+        Connector g = new ConnectorImpl( new AlgebraicVector(u, v, s) );
+        Connector h = new ConnectorImpl( new AlgebraicVector(t, u, v) );
+        Connector i = new ConnectorImpl( new AlgebraicVector(t, u, u) );
         list .add( a );
         list .add( b );
         list .add( c );

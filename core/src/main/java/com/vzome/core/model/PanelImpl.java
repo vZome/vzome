@@ -17,7 +17,7 @@ import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 
-public class PanelImpl extends ManifestationImpl implements Iterable<AlgebraicVector>
+public class PanelImpl extends ManifestationImpl implements Panel
 {
     private final List<AlgebraicVector> mVertices;
     private AlgebraicVector zoneVector;
