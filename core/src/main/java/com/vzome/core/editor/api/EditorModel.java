@@ -3,9 +3,7 @@ package com.vzome.core.editor.api;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.SelectionSummary;
-import com.vzome.core.editor.SelectionSummary.Listener;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.RealizedModel;
 
 public interface EditorModel
@@ -32,11 +30,7 @@ public interface EditorModel
 
     OrbitSource getSymmetrySystem();
 
-    void setSymmetrySystem( OrbitSource system );
-
     OrbitSource getSymmetrySystem( String name );
-
-    FieldApplication getKind();
-
-    void addSelectionSummaryListener( SelectionSummary.Listener listener );
+    
+    Symmetries4D get4dSymmetries();
 }

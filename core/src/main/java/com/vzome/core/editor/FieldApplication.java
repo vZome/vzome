@@ -10,11 +10,10 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.Command;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.QuaternionicSymmetry;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.math.symmetry.WythoffConstruction;
 
-public interface FieldApplication
+public interface FieldApplication extends Symmetries4D
 {
 	public interface SymmetryPerspective
 	{
@@ -49,15 +48,11 @@ public interface FieldApplication
 	
 	AlgebraicField getField();
 	
-	void constructPolytope( String groupName, int index, int edgesToRender, AlgebraicNumber[] edgeScales, WythoffConstruction.Listener listener );
-
 	Collection<SymmetryPerspective> getSymmetryPerspectives();
 
 	SymmetryPerspective getDefaultSymmetryPerspective();
 
 	SymmetryPerspective getSymmetryPerspective( String name );
-
-	QuaternionicSymmetry getQuaternionSymmetry( String name );
 
 	String getName();
 

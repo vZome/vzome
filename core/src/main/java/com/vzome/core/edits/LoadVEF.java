@@ -25,7 +25,7 @@ public class LoadVEF extends ImportMesh {
             throws IOException
     {
         VefToModel v2m = new VefToModel( projection, events, scale, offset );
-        v2m .parseVEF( this .meshData, this .editor .getKind() .getField() );
+        v2m .parseVEF( this .meshData, this .editor .getSymmetrySystem() .getField() );
     }
 
     @Override

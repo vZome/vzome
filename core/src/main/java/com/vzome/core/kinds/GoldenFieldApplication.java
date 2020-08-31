@@ -15,7 +15,7 @@ import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
+import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.IcosahedralToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
@@ -122,7 +122,7 @@ public class GoldenFieldApplication extends DefaultFieldApplication
     private CommandUniformH4Polytope h4Builder = null;
     
     @Override
-    public void constructPolytope( String groupName, int index, int edgesToRender, AlgebraicNumber[] edgeScales, Listener listener )
+    public void constructPolytope( String groupName, int index, int edgesToRender, AlgebraicNumber[] edgeScales, WythoffConstruction.Listener listener )
     {
         switch ( groupName ) {
 

@@ -20,10 +20,10 @@ import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.algebra.VefVectorExporter;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 
 public class PolytopesController extends DefaultController
@@ -39,7 +39,7 @@ public class PolytopesController extends DefaultController
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private final AlgebraicField field;
     private final AlgebraicNumber defaultScaleFactor;
-    private final FieldApplication fieldApp;
+    private final Symmetries4D fieldApp;
 
     public PolytopesController( DocumentModel document )
     {

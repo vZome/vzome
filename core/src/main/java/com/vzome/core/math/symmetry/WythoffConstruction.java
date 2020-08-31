@@ -13,7 +13,6 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 
-
 public class WythoffConstruction
 {
     public interface Listener

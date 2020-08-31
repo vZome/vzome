@@ -46,7 +46,7 @@ public class Symmetry4d extends ChangeManifestations
     public Symmetry4d( EditorModel editor )
     {
         super( editor .getSelection(), editor .getRealizedModel() );
-        this .left = editor .getKind() .getQuaternionSymmetry( "H_4" );
+        this .left = editor .get4dSymmetries() .getQuaternionSymmetry( "H_4" );
         this .right = this .left;
     }
 

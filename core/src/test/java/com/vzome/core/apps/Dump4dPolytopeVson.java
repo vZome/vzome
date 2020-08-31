@@ -15,8 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.Application;
-import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 
 public class Dump4dPolytopeVson
@@ -135,7 +135,7 @@ public class Dump4dPolytopeVson
         // Note that arguments are processed here in reverse order.
 
         String field = ( args.length > 2 )? args[2] : "golden";          // optional third argument
-		FieldApplication fieldApp = app .getDocumentKind( field );
+		Symmetries4D fieldApp = app .getDocumentKind( field );
 
         String groupName = ( args.length > 1 )? args[1] : "H4";          // optional second argument
 

@@ -1,8 +1,6 @@
 
 package com.vzome.core.algebra;
 
-import java.util.List;
-
 import com.vzome.core.math.RealVector;
 
 public interface AlgebraicField

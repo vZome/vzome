@@ -149,7 +149,7 @@ public class SymmetrySystem implements OrbitSource
             // toolFactoryLists manifest to the Controller automatically
             this .toolFactoryLists .put( kind, list );
             for ( Tool.Factory factory : list ) {
-                tools .getEditorModel() .addSelectionSummaryListener( (SelectionSummary.Listener) factory );
+                ((EditorModelImpl) tools .getEditorModel()) .addSelectionSummaryListener( (SelectionSummary.Listener) factory );
             }
 
             List<Tool> toolList = this .symmetryPerspective .predefineTools( kind, tools );
@@ -416,5 +416,11 @@ public class SymmetrySystem implements OrbitSource
     public AlgebraicNumber getOrbitUnitLength( Direction orbit )
     {
         return this .symmetryPerspective .getOrbitUnitLength( orbit );
+    }
+
+    @Override
+    public AlgebraicField getField()
+    {
+        return this .symmetryPerspective .getSymmetry() .getField();
     }
 }

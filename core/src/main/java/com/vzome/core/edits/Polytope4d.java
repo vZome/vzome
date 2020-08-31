@@ -17,12 +17,12 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.xml.DomUtils;
@@ -39,17 +39,17 @@ public class Polytope4d extends ChangeManifestations
     private int edgesToRender = 0xF;
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private String renderGroupName;
-    private final FieldApplication fieldApp;
+    private Symmetries4D symmetries;
 
     private Polytope4d( Selection selection, RealizedModel realized,
-            FieldApplication fieldApp,
+            Symmetries4D symmetries,
             AlgebraicVector quaternion, int index, String groupName,
             int edgesToRender, AlgebraicNumber[] edgeScales,
             String renderGroupName )
     {
         super( selection, realized );
-        this.fieldApp = fieldApp;
-        this.field = fieldApp .getField();
+        this.symmetries = symmetries;
+        this.field = realized .getField();
 
         this.index = index;
         this.quaternion = quaternion;
@@ -68,14 +68,13 @@ public class Polytope4d extends ChangeManifestations
     
     public Polytope4d( EditorModel editor )
     {
-        this( editor .getSelection(), editor .getRealizedModel(), editor .getKind(), null, 0, null );
+        this( editor .getSelection(), editor .getRealizedModel(), editor .get4dSymmetries(), null, 0, null );
     }
 
-    public Polytope4d( Selection selection, RealizedModel realized,
-            FieldApplication fieldApp,
+    public Polytope4d( Selection selection, RealizedModel realized, Symmetries4D symmetries,
             Segment symmAxis, int index, String groupName )
     {
-        this( selection, realized, fieldApp,
+        this( selection, realized, symmetries,
                 ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d(),
                         index, groupName, index, null, groupName );
     }
@@ -161,7 +160,7 @@ public class Polytope4d extends ChangeManifestations
             this.proj = new Projection .Default( field );
         else
             this.proj = new QuaternionProjection( field, null, quaternion .scale( field .createPower( -5 ) ) );
-        this .fieldApp .constructPolytope( groupName, this.index, this .edgesToRender, this .edgeScales, new WythoffListener() );
+        this .symmetries .constructPolytope( groupName, this.index, this .edgesToRender, this .edgeScales, new WythoffListener() );
         redo();
     }
 

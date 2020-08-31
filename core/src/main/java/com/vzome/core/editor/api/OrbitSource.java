@@ -1,5 +1,6 @@
 package com.vzome.core.editor.api;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
 import com.vzome.core.math.symmetry.Axis;
@@ -22,4 +23,6 @@ public interface OrbitSource
 	Shapes getShapes();
 
     String getName();
+
+    AlgebraicField getField();
 }

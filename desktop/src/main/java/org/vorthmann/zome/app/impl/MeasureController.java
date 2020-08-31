@@ -11,6 +11,7 @@ import org.vorthmann.ui.DefaultController;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
+import com.vzome.core.editor.EditorModelImpl;
 import com.vzome.core.editor.SelectionSummary;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.Manifestations;
@@ -39,7 +40,7 @@ public class MeasureController extends DefaultController implements SelectionSum
 	    this .renderedModel = renderedModel;
 	    this .selection = model .getSelection();
 	    this .editorModel = model; // allow run time access to the current editorModel.symmetrySystem
-	    model .addSelectionSummaryListener( this );
+	    ((EditorModelImpl) model) .addSelectionSummaryListener( this );
         this .twoPlaces .setMaximumFractionDigits( 2 );
         this .fourPlaces .setMaximumFractionDigits( 4 );
 	}

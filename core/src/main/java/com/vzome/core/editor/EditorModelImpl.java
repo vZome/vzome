@@ -13,6 +13,7 @@ import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.editor.api.UndoableEdit;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -21,7 +22,7 @@ import com.vzome.core.model.Strut;
 
 public class EditorModelImpl implements EditorModel
 {
-    public EditorModelImpl( RealizedModelImpl realized, Point originPoint, FieldApplication kind, OrbitSource symmetrySystem, Map<String, OrbitSource> symmetrySystems )
+    public EditorModelImpl( RealizedModelImpl realized, Point originPoint, Symmetries4D kind, OrbitSource symmetrySystem, Map<String, OrbitSource> symmetrySystems )
     {
         mRealized = realized;
         mSelection = new SelectionImpl();
@@ -144,7 +145,7 @@ public class EditorModelImpl implements EditorModel
 
     private Segment mSymmetryAxis;
 
-    private final FieldApplication kind;
+    private final Symmetries4D kind;
 
     private OrbitSource symmetrySystem;
 
@@ -202,8 +203,9 @@ public class EditorModelImpl implements EditorModel
         return this .symmetrySystems .get( name );
     }
 
-    public FieldApplication getKind()
+    @Override
+    public Symmetries4D get4dSymmetries()
     {
-        return kind;
+        return this .kind;
     }
 }

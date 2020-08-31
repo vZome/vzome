@@ -45,7 +45,7 @@ public abstract class ImportMesh extends ChangeManifestations
     @Override
     public void configure( Map<String, Object> params )
     {
-        AlgebraicField field = editor .getKind() .getField();
+        AlgebraicField field = editor .getSymmetrySystem() .getField();
         meshData = (String) params .get( "vef" );
         projection = (Projection) params .get( "projection" );
         scale = (AlgebraicNumber) params .get( "scale" );

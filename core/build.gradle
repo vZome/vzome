@@ -444,7 +444,6 @@ jsweet {
 	includes = [
         '**/java/nio/*.java',
         '**/java/text/*.java',
-        '**/java/util/*.java',
 
         '**/com/vzome/xml/*.java',
         '**/com/vzome/core/generic/*.java',
