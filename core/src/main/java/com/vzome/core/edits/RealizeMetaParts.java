@@ -17,6 +17,7 @@ import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.model.HasRenderedObject;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.RenderedObject;
@@ -31,7 +32,7 @@ public class RealizeMetaParts extends ChangeManifestations
     	AlgebraicNumber scale = null;
         for (Manifestation man : mSelection) {
             unselect( man );
-            RenderedObject rm = man .getRenderedObject();
+            RenderedObject rm = ((HasRenderedObject) man) .getRenderedObject();
             if (rm != null) {
                 Polyhedron shape = rm .getShape();
                 if ( scale == null ) {

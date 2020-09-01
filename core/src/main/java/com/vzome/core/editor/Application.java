@@ -19,8 +19,8 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.construction.Color;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.construction.Color;
 import com.vzome.core.exporters.ColoredMeshJsonExporter;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
@@ -54,7 +54,7 @@ import com.vzome.core.kinds.SnubDodecFieldApplication;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
-import com.vzome.xml.DomUtils;
+import com.vzome.xml.DomParser;
 
 public class Application implements AlgebraicField.Registry
 {
@@ -140,7 +140,7 @@ public class Application implements AlgebraicField.Registry
         String noLineNums = this .properties .getProperty( "no.line.numbers" );
         boolean captureLineNumbers = noLineNums == null || noLineNums .equals( "false" );
 
-        Element element = DomUtils .parseXml( bytes, captureLineNumbers );
+        Element element = DomParser .parseXml( bytes, captureLineNumbers );
         String tns = element .getNamespaceURI();
         XmlSaveFormat format = XmlSaveFormat .getFormat( tns );
 

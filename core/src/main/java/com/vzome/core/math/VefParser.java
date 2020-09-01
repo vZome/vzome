@@ -7,7 +7,6 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicFields;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 
@@ -100,8 +99,11 @@ public abstract class VefParser
         // most common, so check this first
         if (fieldName.equals(field .getName()) )
             return true;
-        if (AlgebraicFields.haveSameInitialCoefficients(field, fieldName) )
-            return true;
+        
+        //  I'm disabling this as unimportant, and very hard to work around.
+//        if (AlgebraicFields.haveSameInitialCoefficients(field, fieldName) )
+//            return true;
+
         // any field that returns a non-null goldenRatio is expected to be able 
         // to map a pair of golden field terms to the coresponding terms in that field
         // by overriding prepareAlgebraicNumberTerms().

@@ -26,8 +26,6 @@ public interface Manifestation extends GroupElement {
     Construction toConstruction();
 
     AlgebraicVector getCentroid();
-
-    RenderedObject getRenderedObject();
     
     boolean isUnnecessary();
 

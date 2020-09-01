@@ -17,7 +17,7 @@ import com.vzome.core.render.RenderedManifestation;
 /**
  * @author Scott Vorthmann
  */
-public abstract class ManifestationImpl implements GroupElement, Manifestation
+public abstract class ManifestationImpl implements GroupElement, Manifestation, HasRenderedObject
 {
     protected final Set<Construction> mManifests = new HashSet<>(5);
 

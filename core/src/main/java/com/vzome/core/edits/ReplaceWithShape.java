@@ -34,6 +34,7 @@ import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.model.HasRenderedObject;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RenderedObject;
@@ -152,7 +153,7 @@ public class ReplaceWithShape extends ChangeManifestations
                 unselect( man );
             }
             redo();
-            this .replace( this .ballOrStrut, this .ballOrStrut .getRenderedObject(), this .shape );
+            this .replace( this .ballOrStrut, ((HasRenderedObject) this .ballOrStrut) .getRenderedObject(), this .shape );
         }
         super .perform();
     }
@@ -178,7 +179,7 @@ public class ReplaceWithShape extends ChangeManifestations
         Manifestation m = (Manifestation) props .get( "picked" );
         if ( m != null ) {
             // pick-based edit
-            this .symmetryShapes = m .getRenderedObject() .getSymmetryShapes();
+            this .symmetryShapes = ((HasRenderedObject) m) .getRenderedObject() .getSymmetryShapes();
             this .ballOrStrut = m;
         }
         else

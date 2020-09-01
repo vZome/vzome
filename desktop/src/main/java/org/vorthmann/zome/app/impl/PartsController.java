@@ -16,6 +16,7 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
+import com.vzome.core.model.StrutImpl;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
 
@@ -126,7 +127,7 @@ public class PartsController extends DefaultController implements RenderingChang
 
         private PartInfo(Strut strut, OrbitSource orbits, AlgebraicNumber length) {
             // Don't maintain any reference to the strut.
-            Direction orbit = ((RenderedManifestation) strut.getRenderedObject()) .getStrutOrbit();
+            Direction orbit = ((RenderedManifestation) ((StrutImpl) strut).getRenderedObject()) .getStrutOrbit();
             orbitStr = orbit.getName();
             rgbColor = orbits.getColor( orbit ).getRGB();
             StringBuffer buf = new StringBuffer();

@@ -120,9 +120,9 @@ public class AlgebraicMatrix
 
         int rank = Fields .gaussJordanReduction( this .matrix, result .matrix );
         if(rank != matrix.length) {
-            // TODO: What should we do here?
-            System.err.println((new Throwable()).getStackTrace()[0].getMethodName() 
-                    + " expects matrix rank to be " + matrix.length + ", but it is " + rank + "."); 
+            String message = "AlgebraicMatrix inverse expects matrix rank to be " + matrix.length + ", but it is " + rank + ".";
+            System.err.println( message );
+            throw new RuntimeException( message );
         }
         return result;
 	}
@@ -254,7 +254,7 @@ public class AlgebraicMatrix
             AlgebraicNumber sign = matrix[0][0].getField().one();
             for(int i = 0; i < matrix.length; i++) {
                 if(!matrix[0][i].isZero()) {
-                    AlgebraicNumber[][] aux = (AlgebraicNumber[][]) Array.newInstance(AlgebraicNumber.class, auxLength, auxLength);
+                    AlgebraicNumber[][] aux = new AlgebraicNumber[auxLength][auxLength];
                     int iAux = 0;
                     int jAux = 0;
                     for(int row = 1; row < matrix.length; row++){

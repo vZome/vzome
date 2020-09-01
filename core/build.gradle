@@ -445,20 +445,44 @@ jsweet {
         'java/nio/*.java',
         'java/text/*.java',
 
-        'com/vzome/xml/*.java',
-        'com/vzome/core/generic/*.java',
-        'com/vzome/core/math/*.java',
-        'com/vzome/core/math/convexhull/*.java',
-        'com/vzome/core/math/symmetry/*.java',
-        'com/vzome/core/algebra/*.java',
+        'com/vzome/xml/DomUtils.java',
 
-        'com/vzome/core/construction/*.java',
+        // 'com/vzome/core/generic/*.java',
 
-        'com/vzome/core/commands/*.java',
+        'com/vzome/core/math/RealVector.java',
 
-        'com/vzome/core/model/*.java',
+        'com/vzome/core/math/symmetry/Embedding.java',
 
-        'com/vzome/core/editor/api/*.java',
+        'com/vzome/core/algebra/Fields.java',
+        'com/vzome/core/algebra/AlgebraicNumber.java',
+        'com/vzome/core/algebra/AlgebraicVector.java',
+        'com/vzome/core/algebra/AlgebraicMatrix.java',
+        'com/vzome/core/algebra/AlgebraicField.java',
+
+        'com/vzome/core/construction/Color.java',
+        'com/vzome/core/construction/Construction.java',
+        'com/vzome/core/construction/Point.java',
+        'com/vzome/core/construction/CentroidPoint.java',
+        'com/vzome/core/construction/ConstructionChanges.java',
+        'com/vzome/core/construction/ConstructionList.java',
+
+        'com/vzome/core/commands/AttributeMap.java',
+        'com/vzome/core/commands/Command.java',
+        // 'com/vzome/core/commands/XmlSaveFormat.java',
+
+        'com/vzome/core/model/Group.java',
+        'com/vzome/core/model/GroupElement.java',
+        'com/vzome/core/model/Manifestation.java',
+        'com/vzome/core/model/Connector.java',
+        'com/vzome/core/model/Strut.java',
+        'com/vzome/core/model/Panel.java',
+        'com/vzome/core/model/RealizedModel.java',
+
+        'com/vzome/core/editor/api/UndoableEdit.java',
+        'com/vzome/core/editor/api/SideEffects.java',
+        'com/vzome/core/editor/api/ChangeSelection.java',
+        'com/vzome/core/editor/api/ChangeManifestations.java',
+        'com/vzome/core/editor/api/Selection.java',
 
         'com/vzome/core/edits/NewCentroid.java'
     ]
@@ -466,6 +490,7 @@ jsweet {
         'com/vzome/core/math/symmetry/F4Group.java',
         'com/vzome/core/math/symmetry/B4Group.java',
         'com/vzome/core/math/symmetry/OctahedralSymmetry.java',
+        'com/vzome/core/math/symmetry/QuaternionicSymmetry.java',
         
         'com/vzome/core/algebra/BigRational.java',
         'com/vzome/core/algebra/RootThreeField.java',
@@ -477,6 +502,7 @@ jsweet {
         'com/vzome/core/algebra/HeptagonField.java',
         'com/vzome/core/algebra/AlgebraicSeries.java',
         'com/vzome/core/algebra/*Impl.java',
+        'com/vzome/core/algebra/AlgebraicFields.java',
 
         'com/vzome/core/commands/ZomicVirtualMachine.java',
         'com/vzome/core/commands/CommandExecuteZomicScript.java',
