@@ -26,12 +26,12 @@ public class CommandQuaternionSymmetry extends CommandTransform
         super.setFixedAttributes( attributes, format );
         if ( ! attributes .containsKey( LEFT_SYMMETRY_GROUP_ATTR_NAME ) )
         {
-            mLeft = format .getQuaternionicSymmetry( "H_4" );
+            mLeft = ((XmlSymmetryFormat) format) .getQuaternionicSymmetry( "H_4" );
             attributes .put( LEFT_SYMMETRY_GROUP_ATTR_NAME, mLeft );
         }
         if ( ! attributes .containsKey( RIGHT_SYMMETRY_GROUP_ATTR_NAME ) )
         {
-            mRight = format .getQuaternionicSymmetry( "H_4" );
+            mRight = ((XmlSymmetryFormat) format) .getQuaternionicSymmetry( "H_4" );
             attributes .put( RIGHT_SYMMETRY_GROUP_ATTR_NAME, mRight );
         }
     }

@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.AttributeMap;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -63,7 +64,7 @@ public class StrutCreation extends ChangeManifestations
     protected void getXmlAttributes( Element xml )
     {
         XmlSaveFormat .serializePoint( xml, "anchor", mAnchor );
-        XmlSaveFormat .serializeAxis( xml, "symm", "dir", "index", "sense", mAxis );
+        XmlSymmetryFormat .serializeAxis( xml, "symm", "dir", "index", "sense", mAxis );
         XmlSaveFormat .serializeNumber( xml, "len", mLength );
     }
 
@@ -73,7 +74,7 @@ public class StrutCreation extends ChangeManifestations
         if ( format .rationalVectors() )
         {
             mAnchor = format .parsePoint( xml, "anchor" );
-            mAxis = format .parseAxis( xml, "symm", "dir", "index", "sense" );
+            mAxis = ((XmlSymmetryFormat) format) .parseAxis( xml, "symm", "dir", "index", "sense" );
             mLength = format .parseNumber( xml, "len" );
         }
         else

@@ -20,6 +20,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.construction.Color;
 import com.vzome.core.exporters.ColoredMeshJsonExporter;
 import com.vzome.core.exporters.DaeExporter;
@@ -142,7 +143,7 @@ public class Application implements AlgebraicField.Registry
 
         Element element = DomParser .parseXml( bytes, captureLineNumbers );
         String tns = element .getNamespaceURI();
-        XmlSaveFormat format = XmlSaveFormat .getFormat( tns );
+        XmlSymmetryFormat format = XmlSymmetryFormat .getFormat( tns );
 
         if ( format == null )
         {

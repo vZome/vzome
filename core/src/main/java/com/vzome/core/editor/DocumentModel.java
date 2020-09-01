@@ -39,6 +39,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
@@ -516,7 +517,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             //   (Adjust that if $Version.edition == $file.edition, to avoid confusion.)
 
             String tns = mXML .getNamespaceURI();
-            XmlSaveFormat format = XmlSaveFormat.getFormat( tns );
+            XmlSymmetryFormat format = XmlSymmetryFormat.getFormat( tns );
             if ( format == null )
                 return; // already checked and reported version compatibility,
             // up in the constructor

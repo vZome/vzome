@@ -447,7 +447,7 @@ jsweet {
 
         'com/vzome/xml/DomUtils.java',
 
-        // 'com/vzome/core/generic/*.java',
+        'com/vzome/core/generic/*.java',
 
         'com/vzome/core/math/RealVector.java',
 
@@ -456,19 +456,25 @@ jsweet {
         'com/vzome/core/algebra/Fields.java',
         'com/vzome/core/algebra/AlgebraicNumber.java',
         'com/vzome/core/algebra/AlgebraicVector.java',
+        'com/vzome/core/algebra/AlgebraicVectors.java',
         'com/vzome/core/algebra/AlgebraicMatrix.java',
         'com/vzome/core/algebra/AlgebraicField.java',
 
         'com/vzome/core/construction/Color.java',
         'com/vzome/core/construction/Construction.java',
         'com/vzome/core/construction/Point.java',
+        'com/vzome/core/construction/FreePoint.java',
+        'com/vzome/core/construction/Polygon.java',
+        'com/vzome/core/construction/PolygonFromVertices.java',
+        'com/vzome/core/construction/Segment.java',
+        'com/vzome/core/construction/SegmentJoiningPoints.java',
         'com/vzome/core/construction/CentroidPoint.java',
         'com/vzome/core/construction/ConstructionChanges.java',
         'com/vzome/core/construction/ConstructionList.java',
 
         'com/vzome/core/commands/AttributeMap.java',
         'com/vzome/core/commands/Command.java',
-        // 'com/vzome/core/commands/XmlSaveFormat.java',
+        'com/vzome/core/commands/XmlSaveFormat.java',
 
         'com/vzome/core/model/Group.java',
         'com/vzome/core/model/GroupElement.java',
@@ -478,6 +484,7 @@ jsweet {
         'com/vzome/core/model/Panel.java',
         'com/vzome/core/model/RealizedModel.java',
 
+        'com/vzome/core/editor/api/Manifestations.java',
         'com/vzome/core/editor/api/UndoableEdit.java',
         'com/vzome/core/editor/api/SideEffects.java',
         'com/vzome/core/editor/api/ChangeSelection.java',
@@ -486,34 +493,34 @@ jsweet {
 
         'com/vzome/core/edits/NewCentroid.java'
     ]
-    excludes = [
-        'com/vzome/core/math/symmetry/F4Group.java',
-        'com/vzome/core/math/symmetry/B4Group.java',
-        'com/vzome/core/math/symmetry/OctahedralSymmetry.java',
-        'com/vzome/core/math/symmetry/QuaternionicSymmetry.java',
+    // excludes = [
+    //     'com/vzome/core/math/symmetry/F4Group.java',
+    //     'com/vzome/core/math/symmetry/B4Group.java',
+    //     'com/vzome/core/math/symmetry/OctahedralSymmetry.java',
+    //     'com/vzome/core/math/symmetry/QuaternionicSymmetry.java',
         
-        'com/vzome/core/algebra/BigRational.java',
-        'com/vzome/core/algebra/RootThreeField.java',
-        'com/vzome/core/algebra/AbstractAlgebraicField.java',
-        'com/vzome/core/algebra/RootTwoField.java',
-        'com/vzome/core/algebra/SnubDodecField.java',
-        'com/vzome/core/algebra/PentagonField.java',
-        'com/vzome/core/algebra/ParameterizedField.java',
-        'com/vzome/core/algebra/HeptagonField.java',
-        'com/vzome/core/algebra/AlgebraicSeries.java',
-        'com/vzome/core/algebra/*Impl.java',
-        'com/vzome/core/algebra/AlgebraicFields.java',
+    //     'com/vzome/core/algebra/BigRational.java',
+    //     'com/vzome/core/algebra/RootThreeField.java',
+    //     'com/vzome/core/algebra/AbstractAlgebraicField.java',
+    //     'com/vzome/core/algebra/RootTwoField.java',
+    //     'com/vzome/core/algebra/SnubDodecField.java',
+    //     'com/vzome/core/algebra/PentagonField.java',
+    //     'com/vzome/core/algebra/ParameterizedField.java',
+    //     'com/vzome/core/algebra/HeptagonField.java',
+    //     'com/vzome/core/algebra/AlgebraicSeries.java',
+    //     'com/vzome/core/algebra/*Impl.java',
+    //     'com/vzome/core/algebra/AlgebraicFields.java',
 
-        'com/vzome/core/commands/ZomicVirtualMachine.java',
-        'com/vzome/core/commands/CommandExecuteZomicScript.java',
-        'com/vzome/core/commands/CommandExecutePythonScript.java',
-        'com/vzome/core/commands/CommandVanOss600Cell.java',
+    //     'com/vzome/core/commands/ZomicVirtualMachine.java',
+    //     'com/vzome/core/commands/CommandExecuteZomicScript.java',
+    //     'com/vzome/core/commands/CommandExecutePythonScript.java',
+    //     'com/vzome/core/commands/CommandVanOss600Cell.java',
 
-        'com/vzome/core/model/*Impl.java',
+    //     'com/vzome/core/model/*Impl.java',
 
-        'com/vzome/core/edits/Run*Script.java',
-        'com/vzome/core/edits/Validate2Manifold.java',
-        'com/vzome/core/edits/ReplaceWithShape.java'
-    ]
+    //     'com/vzome/core/edits/Run*Script.java',
+    //     'com/vzome/core/edits/Validate2Manifold.java',
+    //     'com/vzome/core/edits/ReplaceWithShape.java'
+    // ]
 }
 

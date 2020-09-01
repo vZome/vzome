@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.commands.ZomicVirtualMachine;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.api.ChangeManifestations;
@@ -62,7 +63,7 @@ public class RunZomicScript extends ChangeManifestations
             throws Failure
     {
         programText = xml .getTextContent();
-        this .symm = (IcosahedralSymmetry) format .parseSymmetry( "icosahedral" );
+        this .symm = (IcosahedralSymmetry) ((XmlSymmetryFormat) format) .parseSymmetry( "icosahedral" );
         zomicProgram = parseScript( programText );
     }
     

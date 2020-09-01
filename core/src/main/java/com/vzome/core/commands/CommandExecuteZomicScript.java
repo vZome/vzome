@@ -28,7 +28,7 @@ public class CommandExecuteZomicScript extends AbstractCommand
 
         symmetry = (IcosahedralSymmetry) attributes .get( CommandTransform .SYMMETRY_GROUP_ATTR_NAME );
         if ( symmetry == null )
-            symmetry = (IcosahedralSymmetry) format .parseSymmetry( "icosahedral" );
+            symmetry = (IcosahedralSymmetry) ((XmlSymmetryFormat) format) .parseSymmetry( "icosahedral" );
     }
 
     public CommandExecuteZomicScript( IcosahedralSymmetry symmetry )

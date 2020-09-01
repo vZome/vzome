@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.construction.MatrixTransformation;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.SymmetryTransformation;
@@ -285,7 +286,7 @@ public class SymmetryTool extends TransformationTool
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         String symmName = element .getAttribute( "symmetry" );
-        this.symmetry = format .parseSymmetry( symmName );
+        this.symmetry = ((XmlSymmetryFormat) format) .parseSymmetry( symmName );
         super .setXmlAttributes( element, format );
     }
 }

@@ -22,7 +22,7 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
     @Override
     public void getXml( Element xml, AttributeMap attributes )
     {
-        XmlSaveFormat .serializeAxis( xml, "symm", "dir", "index", "sense", (Axis) attributes .get( "axis" ) );
+        XmlSymmetryFormat .serializeAxis( xml, "symm", "dir", "index", "sense", (Axis) attributes .get( "axis" ) );
         XmlSaveFormat .serializeNumber( xml, "len", (AlgebraicNumber) attributes .get( "length" ) );
     }
 
@@ -34,7 +34,7 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
         if ( format .commandEditsCompacted() )
         {
             // attrs will be empty but for fixed attributes
-            attrs .put( "axis", format .parseAxis( xml, "symm", "dir", "index", "sense" ) );
+            attrs .put( "axis", ((XmlSymmetryFormat) format) .parseAxis( xml, "symm", "dir", "index", "sense" ) );
             attrs .put( "length", format .parseNumber( xml, "len" ) );
         }
         return attrs;

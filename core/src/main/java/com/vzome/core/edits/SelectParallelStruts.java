@@ -10,6 +10,7 @@ import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Strut;
@@ -102,7 +103,7 @@ public class SelectParallelStruts extends ChangeManifestations
         if ( orbit != null )
             DomUtils .addAttribute( element, "orbit", orbit .getName() );
         if ( axis != null )
-            XmlSaveFormat .serializeAxis( element, "symm", "dir", "index", "sense", axis );
+            XmlSymmetryFormat .serializeAxis( element, "symm", "dir", "index", "sense", axis );
     }
 
     @Override
@@ -111,6 +112,6 @@ public class SelectParallelStruts extends ChangeManifestations
     {
         this.symmetry = this .editor .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
         orbit = this.symmetry .getOrbits() .getDirection( xml .getAttribute( "orbit" ) );
-        axis = format .parseAxis( xml, "symm", "dir", "index", "sense" );
+        axis = ((XmlSymmetryFormat) format) .parseAxis( xml, "symm", "dir", "index", "sense" );
     }
 }
