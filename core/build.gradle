@@ -442,7 +442,9 @@ jsweet {
 
     // module = 'es2015'
 
-	outDir = new File('client/src/jsweet')
+    bundle = true
+
+	outDir = new File('client/public/jsweet')
 
 	targetVersion = 'ES6'
     tsOnly = false
