@@ -4,6 +4,7 @@ package com.vzome.core.algebra;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import com.vzome.core.math.RealVector;
@@ -671,6 +672,44 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     public AlgebraicNumber parseLegacyNumber( String val )
     {
         throw new IllegalStateException( "This field does not support vZome 2.x files." );
+    }
+    
+    public AlgebraicNumber parseVefNumber( String string, boolean isRational )
+    {
+        BigRational[] factors = new BigRational[ this.order ];
+        // if the field is declared as rational, then we won't allow the irrational syntax using parenthesis
+        // if the field is NOT declared as rational, then we will still allow the rational format as shorthand with no parenthesis
+        // or we will allow any order N string representation where N <= field.getOrder().
+        if( (!isRational) &&  string.startsWith("(") && string.endsWith(")") ) {
+            // strip "(" and ")", tokenize on ","
+            StringTokenizer tokens = new StringTokenizer(string.substring(1, string.length() - 1), ",");
+            // The tokens get pushed into the factors array in reverse order 
+            // from the string representation so the last token becomes the 0th factor.
+            // For example, with an order 2 field, the factors for "(3,-2)" are parsed to a 2 element array as {-2, 3}
+            // With an order 6 field such as the snubDodec, the factors for "(0,0,0,0,3,-2)" are parsed to a 6 element array: {-2, 3, 0, 0, 0, 0}
+            // When a field needs more factors than are supplied, the factors that are provided must still be parsed into the begining of the array:
+            // With an order 6 field, if only 2 factors are provided, "(3,-2)" must still be parsed into a 6 element array as {-2, 3, 0, 0, 0, 0}
+            // Since VEF version 7 no longer requires that all factors be provided, we need to push the factors onto a stack
+            // and pop them off to reverse the order as they are inserted into the begining of the factors array.
+            Stack<BigRational> stack = new Stack<>();
+            while(tokens.hasMoreElements()) {
+                if(stack.size() >= this .getOrder()) {
+                    throw new RuntimeException( "VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field" );
+                }
+                stack.push( new BigRational( tokens.nextToken() ) );
+            }
+            int i = 0;
+            while(! stack.empty() ) {
+               factors[i++] = stack.pop();
+            }
+            return new AlgebraicNumberImpl( this, factors );
+        } else {
+            // format >= 7 supports the rational numeric format which expects no irrational factors,
+            // so there are no parentheses or commas, but still allows the optional "/" if a denominator is specified.
+            factors[0] = new BigRational( string );
+            // count on createAlgebraicNumber to set all of the null irrational factors to zero
+        }
+        return new AlgebraicNumberImpl( this, factors );
     }
 
     public AlgebraicNumber parseNumber( String nums )

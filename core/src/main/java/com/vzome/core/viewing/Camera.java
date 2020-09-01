@@ -142,7 +142,7 @@ public class Camera
 
     public float getViewDistance()
     {
-        return (float) mDistance;
+        return mDistance;
     }
 
     public void getViewOrientation( Vector3f lookDir, Vector3f upDir )

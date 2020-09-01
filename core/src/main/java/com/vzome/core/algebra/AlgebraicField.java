@@ -203,4 +203,6 @@ public interface AlgebraicField
      * multiplier, since the other irrational is just the square of that one.
      */
     int getNumMultipliers();
+
+    AlgebraicNumber parseVefNumber( String string, boolean isRational );
 }
