@@ -38,6 +38,10 @@ configurations {
 sourceSets {
     main {
         java {
+            //  Uncomment these for the jsweet target
+            // srcDir file( 'src/main/java' )
+            // srcDir file( 'src/jsweet/java' )
+            
             exclude 'com/vzome/opengl/FancyRenderer.java'
         }
     }
@@ -426,6 +430,7 @@ buildscript {
 
 apply plugin: 'org.jsweet.jsweet-gradle-plugin'
 
+//  Uncomment this for the jsweet target
 // compileJava {
 // 	enabled = false
 // }
@@ -444,6 +449,8 @@ jsweet {
 	includes = [
         'java/nio/*.java',
         'java/text/*.java',
+        'java/util/*.java',
+        'org/w3c/dom/*.java',
 
         'com/vzome/xml/DomUtils.java',
 
