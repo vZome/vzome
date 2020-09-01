@@ -77,7 +77,7 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.BookmarkTool;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
-import com.vzome.xml.DomUtils;
+import com.vzome.xml.DomSerializer;
 
 public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 {
@@ -249,7 +249,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             @Override
             public void showCommand( Element xml, int editNumber )
             {
-                String str = editNumber + ": " + DomUtils .toString( xml );
+                String str = editNumber + ": " + DomSerializer .toString( xml );
                 DocumentModel.this .firePropertyChange( "current.edit.xml", null, str );
             }
 
@@ -752,7 +752,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         childElement = this .tools .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
-        DomUtils .serialize( doc, out );
+        DomSerializer .serialize( doc, out );
     }
 
     public AlgebraicField getField()

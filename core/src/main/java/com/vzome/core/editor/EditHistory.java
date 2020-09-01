@@ -22,6 +22,7 @@ import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.editor.api.UndoableEdit.Context;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.model.Manifestation;
+import com.vzome.xml.DomSerializer;
 import com.vzome.xml.DomUtils;
 import com.vzome.xml.LocationData;
 
@@ -350,7 +351,7 @@ public class EditHistory implements Iterable<UndoableEdit>
             ++ edits;
             DomUtils .addAttribute( edit, "editNumber", Integer.toString( edits ) );
             if ( logger .isLoggable( Level.FINEST ) )
-                logger .finest( "side-effect: " + DomUtils .getXmlString( edit ) );
+                logger .finest( "side-effect: " + DomSerializer .getXmlString( edit ) );
             result .appendChild( edit );
             if ( undoable .isSticky() )
                 lastStickyEdit = edits;
@@ -602,7 +603,7 @@ public class EditHistory implements Iterable<UndoableEdit>
             mEdits .remove( --mEditNumber );
 
             if ( logger.isLoggable( Level.FINE ) ) // see the logger declaration to enable FINE
-                logger.fine( "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + num + ": " + DomUtils .getXmlString( xml ) );
+                logger.fine( "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + num + ": " + DomSerializer .getXmlString( xml ) );
 
             UndoableEdit realized = null;
             String cmdName = xml.getLocalName();
@@ -631,7 +632,7 @@ public class EditHistory implements Iterable<UndoableEdit>
 //                            System.out.println( DomUtils .getXmlString( details ) );
                             if ( logger .isLoggable( Level.FINEST ) ) {
                                 Element details = edit .getDetailXml( xml .getOwnerDocument() );
-                                logger .finest( "side-effect: " + DomUtils .getXmlString( details ) );
+                                logger .finest( "side-effect: " + DomSerializer .getXmlString( details ) );
                             }
                         } catch (Failure e) {
                             // really hacky tunneling
@@ -653,7 +654,7 @@ public class EditHistory implements Iterable<UndoableEdit>
                 // no longer doing redo() and mHistory.replace() here, so each UndoableEdit may
                 // either migrate itself, or determine whether it requires a redo() after deserialization.
             } catch ( RuntimeException e ) {
-                logger.warning( "failure during initial edit replay:\n" + DomUtils .getXmlString( xml ) );
+                logger.warning( "failure during initial edit replay:\n" + DomSerializer .getXmlString( xml ) );
                 // errors will be reported by caller!
                 // mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
                 throw e; // interrupt the redoing
