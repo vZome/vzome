@@ -454,6 +454,8 @@ jsweet {
         'java/util/*.java',
         'org/w3c/dom/*.java',
 
+        'com/vzome/jsweet/*.java',
+
         'com/vzome/xml/DomUtils.java',
 
         'com/vzome/core/generic/*.java',

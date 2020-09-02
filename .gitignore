@@ -46,4 +46,5 @@ oculus/.vscode
 client/app.tgz
 client/app
 client/src/jsweet
+client/public/jsweet
 

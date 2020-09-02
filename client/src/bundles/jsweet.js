@@ -8,5 +8,9 @@
 
 export const init = ( window, store ) =>
 {
-  console.log( "Created a NewCentroid: " + new window.com.vzome.core.edits.NewCentroid(null,null) )
+  const num = [ 1, 2, 3 ]
+  const field = new window.com.vzome.jsweet.JsAlgebraicField()
+  const anum = field.createAlgebraicNumberFromTD( num )
+  const vector = new window.com.vzome.core.algebra.AlgebraicVector( [ anum, anum, anum ] )
+  console.log( "AlgebraicVector value: " + vector.toRealVector() )
 }
