@@ -8,7 +8,9 @@
 
 export const init = ( window, store ) =>
 {
-  const field = new window.com.vzome.jsweet.JsAlgebraicField()
+  const delegate = {}
+
+  const field = new window.com.vzome.jsweet.JsAlgebraicField( delegate )
   const zero = field.createAlgebraicNumberFromTD( [0,0,1] )
   const two = field.createAlgebraicNumberFromTD( [2,0,1] )
 

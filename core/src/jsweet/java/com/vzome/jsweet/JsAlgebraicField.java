@@ -1,52 +1,53 @@
 package com.vzome.jsweet;
 
+import static jsweet.util.Lang.any;
+
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 
+import def.js.Function;
+import def.js.Object;
+
 public class JsAlgebraicField implements AlgebraicField
 {
-    public JsAlgebraicField()
+    private Object delegate;
+
+    public JsAlgebraicField( Object delegate )
     {
-        // TODO Take a JS object as a parameter, to make this class wrap JS AFs
+        this.delegate = delegate;
     }
 
     @Override
     public String getName()
     {
-        return "golden";
+        return this.delegate .$get( "name" );
     }
 
     @Override
     public int getOrder()
     {
-        return DIVISOR;
+        return this.delegate .$get( "order" );
     }
-
-    public static final float PHI_VALUE = (float) (( 1.0 + Math.sqrt( 5.0 ) ) / 2.0);
-
-    private static final int ONES_PLACE = 0, PHIS_PLACE = 1, DIVISOR = 2;
 
     @Override
     public int getNumIrrationals()
     {
-        return 1;
+        return getOrder() - 1;
     }
 
     int[] multiply( int[] v1, int[] v2 )
     {
-        // TODO support rationals
-        int phis = v1[PHIS_PLACE] * v2[ONES_PLACE] + v1[ONES_PLACE] * v2[PHIS_PLACE] + v1[PHIS_PLACE] * v2[PHIS_PLACE];
-        int ones = v1[ONES_PLACE] * v2[ONES_PLACE] + v1[PHIS_PLACE] * v2[PHIS_PLACE];
-
-        return new int[]{ ones, phis, 1 };
+        Function f = (Function) this.delegate .$get( "times" );
+        return (int[]) f.$apply( any( v1 ), any( v2 ) );
     }
 
     float evaluateNumber( int[] factors )
     {
-        return ( factors[ ONES_PLACE ] + PHI_VALUE * factors[ PHIS_PLACE ] ) / factors[ DIVISOR ] ;
+        Function f = (Function) this.delegate .$get( "embed" );
+        return (float) f.$apply( any( factors ) );
     }
 
     @Override
@@ -55,25 +56,33 @@ public class JsAlgebraicField implements AlgebraicField
         return new JsAlgebraicNumber( this, trailingDivisorForm );
     }
 
-    int[] scaleBy( int[] factors, int whichIrrational )
+    @Override
+    public AlgebraicNumber createRational( long numerator, long denominator )
     {
-        return null;
+        Function f = (Function) this.delegate .$get( "createRational" );
+        int[] frac = f.$apply( any( numerator ), any( denominator ) );
+        return new JsAlgebraicNumber( this, frac );
     }
-
-    private final static int[] ZERO = { 0, 0, 1 };
-
-    private final static int[] ONE = { 1, 0, 1 };
 
     @Override
     public AlgebraicNumber zero()
     {
-        return new JsAlgebraicNumber( this, ZERO );
+        return this.delegate .$get( "zero" );
     }
 
     @Override
     public AlgebraicNumber one()
     {
-        return new JsAlgebraicNumber( this, ONE );
+        return this.delegate .$get( "one" );
+    }
+
+    
+    
+    
+    
+    int[] scaleBy( int[] factors, int whichIrrational )
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
@@ -146,12 +155,6 @@ public class JsAlgebraicField implements AlgebraicField
     public AlgebraicNumber createRational(long wholeNumber)
     {
         throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber createRational( long numerator, long denominator )
-    {
-        return new JsAlgebraicNumber( this, new int[] { (int) numerator, 0, (int) denominator } );
     }
 
     @Override
