@@ -6,94 +6,95 @@ import java.util.List;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Manifestation;
 
-public class JsSelection implements Selection {
-
-    public JsSelection() {
+public class JsSelection implements Selection
+{
+    public JsSelection()
+    {
         // TODO Auto-generated constructor stub
     }
 
     @Override
-    public Iterator<Manifestation> iterator() {
-        // TODO Auto-generated method stub
-        return null;
+    public Iterator<Manifestation> iterator()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void clear() {
-        // TODO Auto-generated method stub
-
+    public void clear()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public boolean manifestationSelected(Manifestation man) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean manifestationSelected(Manifestation man)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void selectWithGrouping(Manifestation mMan) {
-        // TODO Auto-generated method stub
-
+    public void selectWithGrouping(Manifestation mMan)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void unselectWithGrouping(Manifestation mMan) {
-        // TODO Auto-generated method stub
-
+    public void unselectWithGrouping(Manifestation mMan)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void select(Manifestation mMan) {
-        // TODO Auto-generated method stub
-
+    public void select(Manifestation mMan)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void unselect(Manifestation mMan) {
-        // TODO Auto-generated method stub
-
+    public void unselect(Manifestation mMan)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void gatherGroup() {
-        // TODO Auto-generated method stub
-
+    public void gatherGroup()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void gatherGroup211() {
-        // TODO Auto-generated method stub
-
+    public void gatherGroup211()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void scatterGroup() {
-        // TODO Auto-generated method stub
-
+    public void scatterGroup()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void scatterGroup211() {
-        // TODO Auto-generated method stub
-
+    public void scatterGroup211()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public boolean isSelectionAGroup() {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean isSelectionAGroup()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public int size() {
-        // TODO Auto-generated method stub
-        return 0;
+    public int size()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void copy(List<Manifestation> bookmarkedSelection) {
-        // TODO Auto-generated method stub
-
+    public void copy(List<Manifestation> bookmarkedSelection)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
 }

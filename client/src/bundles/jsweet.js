@@ -8,9 +8,25 @@
 
 export const init = ( window, store ) =>
 {
-  const num = [ 1, 2, 3 ]
   const field = new window.com.vzome.jsweet.JsAlgebraicField()
-  const anum = field.createAlgebraicNumberFromTD( num )
-  const vector = new window.com.vzome.core.algebra.AlgebraicVector( [ anum, anum, anum ] )
-  console.log( "AlgebraicVector value: " + vector.toRealVector() )
+  const zero = field.createAlgebraicNumberFromTD( [0,0,1] )
+  const two = field.createAlgebraicNumberFromTD( [2,0,1] )
+
+  const origin = new window.com.vzome.core.algebra.AlgebraicVector( [ zero, zero, zero ] )
+  const unitX = new window.com.vzome.core.algebra.AlgebraicVector( [ two, zero, zero ] )
+
+  const model = new window.com.vzome.jsweet.JsRealizedModel()
+  const selection = new window.com.vzome.core.editor.SelectionImpl()
+
+  const ball1 = new window.com.vzome.jsweet.JsBall( origin )
+  selection.select( ball1 )
+  const ball2 = new window.com.vzome.jsweet.JsBall( unitX )
+  selection.select( ball2 )
+
+  const editClass = window.com.vzome.core.edits[ "NewCentroid" ]
+  const edit = new editClass( selection, model )
+
+  edit.perform()
+
+  console.log( "JSweet-compiled Java code COMPLETED" )
 }

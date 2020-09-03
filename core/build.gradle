@@ -454,7 +454,10 @@ jsweet {
         'java/util/*.java',
         'org/w3c/dom/*.java',
 
-        'com/vzome/jsweet/*.java',
+        'com/vzome/jsweet/JsAlgebraicNumber.java',
+        'com/vzome/jsweet/JsAlgebraicField.java',
+        'com/vzome/jsweet/JsRealizedModel.java',
+        'com/vzome/jsweet/JsBall.java',
 
         'com/vzome/xml/DomUtils.java',
 
@@ -490,6 +493,7 @@ jsweet {
         'com/vzome/core/model/Group.java',
         'com/vzome/core/model/GroupElement.java',
         'com/vzome/core/model/Manifestation.java',
+        'com/vzome/core/model/ManifestationChanges.java',
         'com/vzome/core/model/Connector.java',
         'com/vzome/core/model/Strut.java',
         'com/vzome/core/model/Panel.java',
@@ -501,6 +505,8 @@ jsweet {
         'com/vzome/core/editor/api/ChangeSelection.java',
         'com/vzome/core/editor/api/ChangeManifestations.java',
         'com/vzome/core/editor/api/Selection.java',
+
+        'com/vzome/core/editor/SelectionImpl.java',
 
         'com/vzome/core/edits/NewCentroid.java'
     ]

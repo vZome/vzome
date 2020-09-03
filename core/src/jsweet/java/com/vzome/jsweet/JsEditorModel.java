@@ -12,86 +12,87 @@ import com.vzome.core.model.RealizedModel;
 
 public class JsEditorModel implements EditorModel
 {
-    public JsEditorModel() {
+    public JsEditorModel()
+    {
         // TODO Auto-generated constructor stub
     }
 
     @Override
-    public RealizedModel getRealizedModel() {
-        // TODO Auto-generated method stub
-        return null;
+    public RealizedModel getRealizedModel()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public Point getCenterPoint() {
-        // TODO Auto-generated method stub
-        return null;
+    public Point getCenterPoint()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void setCenterPoint(Construction point) {
-        // TODO Auto-generated method stub
-
+    public void setCenterPoint(Construction point)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public Segment getSymmetrySegment() {
-        // TODO Auto-generated method stub
-        return null;
+    public Segment getSymmetrySegment()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void setSymmetrySegment(Segment segment) {
-        // TODO Auto-generated method stub
-
+    public void setSymmetrySegment(Segment segment)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public UndoableEdit createEdit(String name) {
-        // TODO Auto-generated method stub
-        return null;
+    public UndoableEdit createEdit(String name)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public Construction getSelectedConstruction(Class<? extends Construction> kind) {
-        // TODO Auto-generated method stub
-        return null;
+    public Construction getSelectedConstruction(Class<? extends Construction> kind)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public void addFailedConstruction(Construction cons) {
-        // TODO Auto-generated method stub
-
+    public void addFailedConstruction(Construction cons)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public boolean hasFailedConstruction(Construction cons) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean hasFailedConstruction(Construction cons)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public Selection getSelection() {
-        // TODO Auto-generated method stub
-        return null;
+    public Selection getSelection()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public OrbitSource getSymmetrySystem() {
-        // TODO Auto-generated method stub
-        return null;
+    public OrbitSource getSymmetrySystem()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public OrbitSource getSymmetrySystem(String name) {
-        // TODO Auto-generated method stub
-        return null;
+    public OrbitSource getSymmetrySystem(String name)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
-    public Symmetries4D get4dSymmetries() {
-        // TODO Auto-generated method stub
-        return null;
+    public Symmetries4D get4dSymmetries()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
 }
