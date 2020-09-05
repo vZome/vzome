@@ -25,6 +25,36 @@ function simplify3( v0, v1, v2 )
   return [s0*v0/g, s1*v1/g, v2/g]
 }
 
+// from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+function getRandomInt( min, max )
+{
+  min = Math.ceil( min );
+  max = Math.floor( max );
+  return Math.floor( Math.random() * (max - min) + min ); //The maximum is exclusive and the minimum is inclusive
+}
+
+function times( a, b )
+{
+  const [ a0=0, a1=0, ad=1] = a, [b0=0, b1=0, bd=1 ] = b
+  return simplify3( a0*b0 + a1*b1, a0*b1 + a1*b0 + a1*b1, ad*bd )
+}
+
+function plus( a, b )
+{
+  const [ a0=0, a1=0, ad=1] = a, [b0=0, b1=0, bd=1 ] = b
+  return simplify3( a0*bd + b0*ad, a1*bd + b1*ad, ad*bd )
+}
+
+function scalarmul( s, v )
+{
+  return [ ...v.values() ].map( ( vi=[0] ) => times( s, vi ) )
+}
+
+function vectoradd( u, v )
+{
+  return [ ...u.values() ].map( ( ui=[0], i ) => plus( ui, v[i] || [0] ) )
+}
+
 export default {
 
   name: 'golden',
@@ -34,11 +64,7 @@ export default {
   zero: [ 0, 0, 1 ],
   one: [ 1, 0, 1 ],
 
-  times: (a, b) =>
-  {
-    const [ a0=0, a1=0, ad=1] = a, [b0=0, b1=0, bd=1 ] = b
-    return simplify3( a0*b0 + a1*b1, a0*b1 + a1*b0 + a1*b1, ad*bd )
-  },
+  plus, times, scalarmul, vectoradd,
 
   embed: ( a ) =>
   {
@@ -49,5 +75,13 @@ export default {
   createRational: ( n, d ) =>
   {
     return simplify3( n, 0, d )
+  },
+
+  randomVector: () =>
+  {
+    const x = [ getRandomInt( -3, 3 ), 0, 1 ]
+    const y = [ getRandomInt( -3, 3 ), 0, 1 ]
+    const z = [ getRandomInt( -3, 3 ), 0, 1 ]
+    return [ x, y, z ]
   }
 }
