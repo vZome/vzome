@@ -3,7 +3,7 @@ import React, { useRef, useMemo } from 'react'
 import { connect } from 'react-redux'
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
-import { PerspectiveCamera } from 'drei'
+import { PerspectiveCamera, Dodecahedron } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 
 extend({ TrackballControls })
@@ -79,7 +79,7 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, instances, shapes, camera } ) => {
+const ModelCanvas = ( { lighting, instances, shapes, camera, balls } ) => {
   const { fov, position, up, lookAt } = camera
   return(
     <>
@@ -90,14 +90,22 @@ const ModelCanvas = ( { lighting, instances, shapes, camera } ) => {
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         { instances.map( ( { id, position, color, rotation, shape } ) => 
             <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
+        { balls.map( ( { id, position } ) =>
+          <mesh key={id} position={position}>
+            <Dodecahedron>
+              <meshLambertMaterial attach="material" color={"#ff4400"} />
+            </Dodecahedron>
+          </mesh>
+          )}
       </Canvas>
     </>
   )
 }
 
-const select = ( { camera, lighting, vzomejava } ) => ({
+const select = ( { camera, lighting, vzomejava, mesh } ) => ({
   camera,
   lighting,
+  balls: Array.from( mesh.selected ).map( ( [id, vector] ) => ( { id, position: mesh.field.embedv( vector ) } ) ),
   shapes: vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
   instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
 })

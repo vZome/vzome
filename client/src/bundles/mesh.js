@@ -78,5 +78,4 @@ export const init = ( window, store ) =>
   store.dispatch( createRandom() )
   store.dispatch( createRandom() )
   store.dispatch( createRandom() )
-  store.dispatch( commandTriggered( "centroid" ) )
 }

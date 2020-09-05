@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { fetchModel } from '../bundles/files'
-import { triggerEdit } from '../bundles/jsweet'
+import { commandTriggered } from '../bundles/mesh'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import Tab from 'react-bootstrap/Tab'
@@ -40,7 +40,7 @@ const Models = ({ enabled, openModel, doEdit }) =>
   }
   const handleOpen = () =>{
     setShow( false )
-    doEdit( 'NewCentroid' )  // just temporary, to test JSweet
+    doEdit( 'centroid' )  // just temporary, to test JSweet
     openModel( `/app/models/${model}.vZome` )
   }
   const handleShow = () => setShow( true )
@@ -99,7 +99,7 @@ const select = (state) => ({
 
 const boundEventActions = {
   openModel : fetchModel,
-  doEdit : triggerEdit
+  doEdit : commandTriggered
 }
 
 export default connect( select, boundEventActions )( Models )

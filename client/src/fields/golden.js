@@ -55,6 +55,12 @@ function vectoradd( u, v )
   return [ ...u.values() ].map( ( ui=[0], i ) => plus( ui, v[i] || [0] ) )
 }
 
+function embed( a )
+{
+  const [ a0=0, a1=0, ad=1 ] = a
+  return ( a0 + PHI * a1 ) / ad
+}
+
 export default {
 
   name: 'golden',
@@ -64,13 +70,9 @@ export default {
   zero: [ 0, 0, 1 ],
   one: [ 1, 0, 1 ],
 
-  plus, times, scalarmul, vectoradd,
+  plus, times, scalarmul, vectoradd, embed,
 
-  embed: ( a ) =>
-  {
-    const [ a0=0, a1=0, ad=1 ] = a
-    return ( a0 + PHI * a1 ) / ad
-  },
+  embedv: (v) => v.map( embed ),
 
   createRational: ( n, d ) =>
   {
