@@ -31,7 +31,7 @@ export default ( middleware ) =>
   const allMiddleware = names.reduce( ( arr, key ) => {
     const newMiddleware = bundles[key].middleware
     if ( newMiddleware ) {
-      console.log( JSON.stringify( `bundle middleware: ${key}` ) )
+      console.log( `bundle middleware: ${key}` )
       arr.push( newMiddleware )
     }
     return arr
@@ -42,7 +42,7 @@ export default ( middleware ) =>
   names.map( key => {
     const init = bundles[key].init
     if ( init ) {
-      console.log( JSON.stringify( `bundle init: ${key}` ) )
+      console.log( `bundle init: ${key}` )
       init( window, store )
     }
     return null

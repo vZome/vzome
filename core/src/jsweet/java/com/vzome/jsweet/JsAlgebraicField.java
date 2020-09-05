@@ -67,13 +67,13 @@ public class JsAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicNumber zero()
     {
-        return this.delegate .$get( "zero" );
+        return new JsAlgebraicNumber( this, this.delegate .$get( "zero" ) );
     }
 
     @Override
     public AlgebraicNumber one()
     {
-        return this.delegate .$get( "one" );
+        return new JsAlgebraicNumber( this, this.delegate .$get( "one" ) );
     }
 
     
