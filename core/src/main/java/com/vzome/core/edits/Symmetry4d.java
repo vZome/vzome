@@ -23,6 +23,7 @@ import com.vzome.core.construction.SegmentRotated4D;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
@@ -46,7 +47,7 @@ public class Symmetry4d extends ChangeManifestations
     public Symmetry4d( EditorModel editor )
     {
         super( editor .getSelection(), editor .getRealizedModel() );
-        this .left = editor .get4dSymmetries() .getQuaternionSymmetry( "H_4" );
+        this .left = ((SymmetryAware) editor) .get4dSymmetries() .getQuaternionSymmetry( "H_4" );
         this .right = this .left;
     }
 

@@ -14,16 +14,17 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 
 public class ShowPoint extends ChangeManifestations
 {
     private Point point;
-    private final EditorModel editor;
+    private final ImplicitSymmetryParameters parameters;
     
     public ShowPoint( EditorModel editor )
     {
         super( editor .getSelection(), editor .getRealizedModel() );
-        this.editor = editor;
+        this.parameters = (ImplicitSymmetryParameters) editor;
     }
     
     @Override
@@ -32,12 +33,12 @@ public class ShowPoint extends ChangeManifestations
         switch ( (String) props .get( "mode" ) ) {
 
         case "origin":
-            AlgebraicVector origin = this.editor .getSymmetrySystem() .getSymmetry() .getField() .origin( 3 );
+            AlgebraicVector origin = this.mManifestations .getField() .origin( 3 );
             this.point = new FreePoint( origin );
             break;
 
         case "symmCenter":
-            this.point = this.editor .getCenterPoint();
+            this.point = this.parameters .getCenterPoint();
             break;
         }
     }

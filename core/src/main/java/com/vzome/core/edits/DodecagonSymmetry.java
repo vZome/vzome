@@ -10,6 +10,8 @@ import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Manifestation;
 
@@ -22,8 +24,8 @@ public class DodecagonSymmetry extends ChangeManifestations
     public DodecagonSymmetry( EditorModel editor )
     {
         super( editor .getSelection(), editor .getRealizedModel() );
-        this.center = editor .getCenterPoint();
-        this.symmetry = editor .getSymmetrySystem() .getSymmetry();
+        this.center = ((ImplicitSymmetryParameters) editor) .getCenterPoint();
+        this.symmetry = ((SymmetryAware) editor) .getSymmetrySystem() .getSymmetry();
     }
     
     @Override

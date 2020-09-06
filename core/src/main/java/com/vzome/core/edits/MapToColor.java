@@ -14,6 +14,7 @@ import com.vzome.core.construction.Color;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.edits.ManifestationColorMappers.ManifestationColorMapper;
 import com.vzome.core.model.Manifestation;
 
@@ -35,7 +36,7 @@ public class MapToColor extends ChangeManifestations {
     public void configure( Map<String,Object> props ) 
     {
         String colorMapperName = (String) props .get( "mode" );
-        OrbitSource symmetry = this.editor .getSymmetrySystem();
+        OrbitSource symmetry = ((SymmetryAware) this.editor) .getSymmetrySystem();
         if ( colorMapperName != null )
             this .colorMapper = ManifestationColorMappers .getColorMapper( colorMapperName, symmetry );
     }
@@ -69,7 +70,7 @@ public class MapToColor extends ChangeManifestations {
     @Override
     public void setXmlAttributes( Element xml, XmlSaveFormat format ) throws Command.Failure
     {
-        OrbitSource symmetry = this .editor .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
+        OrbitSource symmetry = ((SymmetryAware) this .editor) .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
         String colorMapperName = xml .getAttribute( COLORMAPPER_ATTR_NAME );
         this .colorMapper = ManifestationColorMappers .getColorMapper( colorMapperName, symmetry );
 

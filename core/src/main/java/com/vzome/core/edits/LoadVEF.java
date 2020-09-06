@@ -7,6 +7,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.VefToModel;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.ManifestConstructions;
+import com.vzome.core.editor.api.SymmetryAware;
 
 public class LoadVEF extends ImportMesh {
 
@@ -25,7 +26,7 @@ public class LoadVEF extends ImportMesh {
             throws IOException
     {
         VefToModel v2m = new VefToModel( projection, events, scale, offset );
-        v2m .parseVEF( this .meshData, this .editor .getSymmetrySystem() .getField() );
+        v2m .parseVEF( this .meshData, ((SymmetryAware) this .editor) .getSymmetrySystem() .getField() );
     }
 
     @Override

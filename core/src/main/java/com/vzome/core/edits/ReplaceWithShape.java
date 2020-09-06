@@ -28,6 +28,7 @@ import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Shapes;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefToPolyhedron;
 import com.vzome.core.math.symmetry.Axis;
@@ -83,7 +84,7 @@ public class ReplaceWithShape extends ChangeManifestations
         if ( this .symmetryShapes != null ) {
             // selection-based
             String[] tokens = this .symmetryShapes .split( ":" );
-            OrbitSource symmetrySystem = this .editor .getSymmetrySystem( tokens[ 0 ] );
+            OrbitSource symmetrySystem = ((SymmetryAware) this .editor) .getSymmetrySystem( tokens[ 0 ] );
             Shapes shapes = ((SymmetrySystem) symmetrySystem) .getStyle( tokens[1] );
             RenderedModel model = new RenderedModel( symmetrySystem .getSymmetry() .getField(), new OrbitSource() {
                 

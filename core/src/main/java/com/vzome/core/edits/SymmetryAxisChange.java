@@ -13,16 +13,16 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.model.Manifestation;
 
 public class SymmetryAxisChange extends UndoableEdit
 {
     private Segment mOldAxis, mNewAxis;
-    private final EditorModel mEditor;
+    private final ImplicitSymmetryParameters mEditor;
 
-    public SymmetryAxisChange( EditorModel editor )
+    public SymmetryAxisChange( ImplicitSymmetryParameters editor )
     {
         this( editor, null );
     }
@@ -32,7 +32,7 @@ public class SymmetryAxisChange extends UndoableEdit
      * @param editor
      * @param m
      */
-    public SymmetryAxisChange( EditorModel editor, Segment newAxis )
+    public SymmetryAxisChange( ImplicitSymmetryParameters editor, Segment newAxis )
     {
         mOldAxis = editor .getSymmetrySegment();
         mNewAxis = newAxis;

@@ -20,6 +20,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.ManifestConstructions;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.PerspectiveProjection;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
@@ -45,7 +46,7 @@ public abstract class ImportMesh extends ChangeManifestations
     @Override
     public void configure( Map<String, Object> params )
     {
-        AlgebraicField field = editor .getSymmetrySystem() .getField();
+        AlgebraicField field = ((SymmetryAware) editor) .getSymmetrySystem() .getField();
         meshData = (String) params .get( "vef" );
         projection = (Projection) params .get( "projection" );
         scale = (AlgebraicNumber) params .get( "scale" );

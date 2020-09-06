@@ -15,7 +15,9 @@ import com.vzome.core.commands.ZomicVirtualMachine;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.ManifestConstructions;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -36,8 +38,8 @@ public class RunZomicScript extends ChangeManifestations
     public RunZomicScript( EditorModel editor )
     {
         super( editor .getSelection(), editor .getRealizedModel() );
-        this.origin = editor .getCenterPoint();
-		this.symm = (IcosahedralSymmetry) editor .getSymmetrySystem() .getSymmetry();
+        this.origin = ((ImplicitSymmetryParameters) editor) .getCenterPoint();
+		this.symm = (IcosahedralSymmetry) ((SymmetryAware) editor) .getSymmetrySystem() .getSymmetry();
     }
     
     @Override

@@ -157,7 +157,7 @@ public class MeasureController extends DefaultController implements SelectionSum
 	{
         AlgebraicVector v1 = s1.getOffset();
         AlgebraicVector v2 = s2.getOffset();
-        OrbitSource ss = editorModel.getSymmetrySystem();
+        OrbitSource ss = ((EditorModelImpl) editorModel).getSymmetrySystem();
         Axis axis1 = ss .getAxis( v1 );
         Axis axis2 = ss .getAxis( v2 );
         boolean sameOrbit = axis1 .getDirection().equals(axis2 .getDirection());

@@ -31,6 +31,7 @@ import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.ChangeSelection;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.UndoableEdit;
+import com.vzome.core.editor.api.LegacyEditorModel;
 import com.vzome.core.edits.AffinePentagon;
 import com.vzome.core.edits.DeselectAll;
 import com.vzome.core.edits.SelectAll;
@@ -136,10 +137,10 @@ public class CommandEdit extends ChangeManifestations
 
         if ( mAttrs == null )
             mAttrs = new AttributeMap();
-        Segment symmAxis = mEditorModel .getSymmetrySegment();
+        Segment symmAxis = ((LegacyEditorModel) mEditorModel) .getSymmetrySegment();
         if ( symmAxis != null )
             mAttrs .put( CommandTransform .SYMMETRY_AXIS_ATTR_NAME, symmAxis );
-        mAttrs .put( CommandTransform .SYMMETRY_CENTER_ATTR_NAME, mEditorModel .getCenterPoint() );
+        mAttrs .put( CommandTransform .SYMMETRY_CENTER_ATTR_NAME, ((LegacyEditorModel) mEditorModel) .getCenterPoint() );
         mAttrs .put( Command.FIELD_ATTR_NAME, this .mManifestations .getField() );
 
         // TODO do we really need to do it this way?  Or can we use the other NewConstructions() class?
@@ -189,7 +190,7 @@ public class CommandEdit extends ChangeManifestations
             if ( cons .failed() )
             {
                 logBugAccommodation( "failed construction" );
-                mEditorModel .addFailedConstruction( cons );
+                ((LegacyEditorModel) mEditorModel) .addFailedConstruction( cons );
                 continue;
             }
             Manifestation man = manifestConstruction( cons );
@@ -263,11 +264,11 @@ public class CommandEdit extends ChangeManifestations
                         if ( attrName .equals( CommandTransform .SYMMETRY_CENTER_ATTR_NAME ) )
                         {
                             Point c = new FreePoint( ((Point) value) .getLocation() .projectTo3d( true ) );
-                            context .performAndRecord( new SymmetryCenterChange( mEditorModel, c ) );
+                            context .performAndRecord( new SymmetryCenterChange( (LegacyEditorModel) mEditorModel, c ) );
                         }
                         else if ( attrName .equals( CommandTransform .SYMMETRY_AXIS_ATTR_NAME ) )
                         {
-                            context .performAndRecord( new SymmetryAxisChange( mEditorModel, (Segment) value ) );
+                            context .performAndRecord( new SymmetryAxisChange( (LegacyEditorModel) mEditorModel, (Segment) value ) );
                             if ( ! mCommand .attributeIs3D( attrName ) )
                             {
                                 AlgebraicVector vector = ((Segment) value) .getOffset();
@@ -292,7 +293,7 @@ public class CommandEdit extends ChangeManifestations
                         //  see below for the actual creation
                         if ( c != null ) {
                             
-                            if ( mEditorModel .hasFailedConstruction( c ) )
+                            if ( ((LegacyEditorModel) mEditorModel) .hasFailedConstruction( c ) )
                             {
                                 logBugAccommodation( "skip selecting a failed construction" );
                                 continue;

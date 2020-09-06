@@ -20,6 +20,7 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.symmetry.Symmetries4D;
@@ -68,7 +69,7 @@ public class Polytope4d extends ChangeManifestations
     
     public Polytope4d( EditorModel editor )
     {
-        this( editor .getSelection(), editor .getRealizedModel(), editor .get4dSymmetries(), null, 0, null );
+        this( editor .getSelection(), editor .getRealizedModel(), ((SymmetryAware) editor) .get4dSymmetries(), null, 0, null );
     }
 
     public Polytope4d( Selection selection, RealizedModel realized, Symmetries4D symmetries,

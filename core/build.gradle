@@ -35,17 +35,17 @@ configurations {
 }
 
 //  Uncomment this for the jsweet target, and adjust the sourceSet below
-// compileJava {
-// 	enabled = false
-// }
+compileJava {
+	enabled = false
+}
 
 // Support for decoupled "regression" task
 sourceSets {
     main {
         java {
             //  Uncomment these for the jsweet target, and adjust compileJava above
-            // srcDir file( 'src/main/java' )
-            // srcDir file( 'src/jsweet/java' )
+            srcDir file( 'src/main/java' )
+            srcDir file( 'src/jsweet/java' )
             
             exclude 'com/vzome/opengl/FancyRenderer.java'
         }
@@ -507,8 +507,11 @@ jsweet {
         'com/vzome/core/editor/api/ChangeSelection.java',
         'com/vzome/core/editor/api/ChangeManifestations.java',
         'com/vzome/core/editor/api/Selection.java',
+        'com/vzome/core/editor/api/EditorModel.java',
+        'com/vzome/core/editor/api/ImplicitSymmetryParameters.java',
 
-        'com/vzome/core/edits/NewCentroid.java'
+        'com/vzome/core/edits/NewCentroid.java',
+        'com/vzome/core/edits/ShowPoint.java'
     ]
     // excludes = [
     //     'com/vzome/core/math/symmetry/F4Group.java',

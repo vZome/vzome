@@ -12,6 +12,7 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
 
@@ -22,7 +23,7 @@ public class AffineTransformAll extends ChangeManifestations
     public AffineTransformAll( EditorModel editor )
     {
         super( editor .getSelection(), editor .getRealizedModel() );
-        this.center = editor .getCenterPoint();
+        this.center = ((ImplicitSymmetryParameters) editor) .getCenterPoint();
     }
     
     @Override

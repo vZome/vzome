@@ -10,8 +10,10 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.LegacyEditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.Connector;
@@ -20,7 +22,7 @@ import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 
-public class EditorModelImpl implements EditorModel
+public class EditorModelImpl implements LegacyEditorModel, SymmetryAware
 {
     public EditorModelImpl( RealizedModelImpl realized, Point originPoint, Symmetries4D kind, OrbitSource symmetrySystem, Map<String, OrbitSource> symmetrySystems )
     {
