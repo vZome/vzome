@@ -95,4 +95,8 @@ public abstract class Polygon extends Construction
         return AlgebraicVectors.getCentroid( mVertices );
     }
 
+    public AlgebraicVector[] getVertices()
+    {
+        return Arrays .copyOf( this.mVertices, this.mVertices.length );
+    }
 }

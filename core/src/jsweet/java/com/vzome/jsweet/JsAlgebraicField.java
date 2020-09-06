@@ -13,7 +13,7 @@ import def.js.Object;
 
 public class JsAlgebraicField implements AlgebraicField
 {
-    private Object delegate;
+    private final Object delegate;
 
     public JsAlgebraicField( Object delegate )
     {
@@ -74,6 +74,15 @@ public class JsAlgebraicField implements AlgebraicField
     public AlgebraicNumber one()
     {
         return new JsAlgebraicNumber( this, this.delegate .$get( "one" ) );
+    }
+
+    @Override
+    public AlgebraicVector createVector( int[][] nums )
+    {
+        AlgebraicNumber x = this .createAlgebraicNumberFromTD( nums[0] );
+        AlgebraicNumber y = this .createAlgebraicNumberFromTD( nums[1] );
+        AlgebraicNumber z = this .createAlgebraicNumberFromTD( nums[2] );
+        return new AlgebraicVector( x, y, z );
     }
 
     
@@ -177,12 +186,6 @@ public class JsAlgebraicField implements AlgebraicField
 
     @Override
     public AlgebraicVector basisVector(int dims, int axis)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicVector createVector(int[][] nums)
     {
         throw new RuntimeException( "unimplemented" );
     }

@@ -1,5 +1,4 @@
 
-import goldenField from '../fields/golden'
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
 // I can't use the ES6 module approach until I figure out how to use J4TS that way.
@@ -7,50 +6,105 @@ import goldenField from '../fields/golden'
 //
 // I should be able to use require() and a commonjs module, but it has the same J4TS build problem.
 
-const EDIT_TRIGGERED = 'EDIT_TRIGGERED'
-
-export const triggerEdit = ( edit ) =>
-{
-  return { type: EDIT_TRIGGERED, payload: edit }
-}
-
 var vzome = undefined
-var model = undefined
-var selection = undefined
 
 export const init = ( window, store ) =>
 {
   vzome = window.com.vzome
-
-  const field = new vzome.jsweet.JsAlgebraicField( goldenField )
-  const zero = field.createAlgebraicNumberFromTD( [0,0,1] )
-  const two = field.createAlgebraicNumberFromTD( [2,0,1] )
-
-  const origin = new vzome.core.algebra.AlgebraicVector( [ zero, zero, zero ] )
-  const unitX = new vzome.core.algebra.AlgebraicVector( [ two, zero, zero ] )
-
-  model = new vzome.jsweet.JsRealizedModel()
-  selection = new vzome.core.editor.SelectionImpl()
-
-  const ball1 = new vzome.jsweet.JsBall( origin )
-  selection.select( ball1 )
-  const ball2 = new vzome.jsweet.JsBall( unitX )
-  selection.select( ball2 )
-
-  console.log( "JSweet-compiled Java init COMPLETED" )
 }
 
-export const middleware = store => next => async action => 
+function canonicalKey( vectors )
 {
-  if ( action.type === EDIT_TRIGGERED ) {
+  return JSON.stringify( vectors ) // TODO: canonically order the elements
+}
 
-    const editClass = vzome.core.edits[ action.payload ]
-    const edit = new editClass( selection, model )
-  
-    edit.perform()
-    
-    console.log( "JSweet-compiled Java edit COMPLETED" )
+class Adapter
+{
+  constructor( shown, hidden, selected )
+  {
+    this.shown = shown
+    this.hidden = hidden
+    this.selected = selected
   }
-  
-  return next( action )
+
+  selectAll()
+  {
+    const temp = this.selected
+    this.selected = this.shown
+    this.shown = temp
+  }
+
+  clearSelection()
+  {
+    const temp = this.shown
+    this.shown = this.selected
+    this.selected = temp
+  }
+
+  select( vectors )
+  {
+    const key = canonicalKey( vectors )
+    this.shown.delete( key )
+    this.selected.set( key, vectors )
+  }
+
+  unselect( vectors )
+  {
+    const key = canonicalKey( vectors )
+    this.selected.delete( key )
+    this.shown.set( key, vectors )
+  }
+
+  selectionSize()
+  {
+    return this.selected.size
+  }
+
+  selectedIterator()
+  {
+    return this.selected.values()
+  }
+
+  manifestationSelected( vectors )
+  {
+    const key = canonicalKey( vectors )
+    return this.selected.has( key )
+  }
+
+  findOrAddManifestation( vectors )
+  {
+    const key = canonicalKey( vectors )
+    const existing = this.shown.get( key ) || this.hidden.get( key ) || this.selected.get( key )
+    if ( existing )
+      return existing;
+    // TODO avoid creating zero-length struts, to match Java semantics of RMI.findConstruction
+    this.shown.set( key, vectors )
+    return vectors
+  }
+
+  shownIterator()
+  {
+    return this.shown.values()
+  }
+}
+
+export const legacyCommand = editName => state =>
+{
+  const shown = new Map( state.shown )
+  const hidden = new Map( state.hidden )
+  const selected = new Map( state.selected )
+  const adapter = new Adapter( shown, hidden, selected )
+
+  const field = new vzome.jsweet.JsAlgebraicField( state.field )
+  const realizedModel = new vzome.jsweet.JsRealizedModel( field, adapter )
+  const selection = new vzome.jsweet.JsSelection( field, adapter )
+
+  const editClass = vzome.core.edits[ editName ]
+  const edit = new editClass( selection, realizedModel )
+
+  edit.perform()  // side-effects will appear in shown, hidden, and selected maps
+
+  return {
+    ...state, shown, selected, hidden
+  }
 }

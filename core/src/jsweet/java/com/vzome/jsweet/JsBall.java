@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
@@ -12,13 +13,11 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Group;
 
-public class JsBall implements Connector
+public class JsBall extends JsManifestation implements Connector
 {
-    private AlgebraicVector location;
-
-    public JsBall( AlgebraicVector location )
+    public JsBall( AlgebraicField field, int[][][] coords )
     {
-        this.location = location;
+        super( field, coords );
     }
 
     @Override
@@ -30,13 +29,13 @@ public class JsBall implements Connector
     @Override
     public AlgebraicVector getLocation()
     {
-        return this.location;
+        return this .field .createVector( this .vectors[ 0 ] );
     }
 
     @Override
     public Construction toConstruction()
     {
-        return new FreePoint( location );
+        return new FreePoint( getLocation() );
     }
 
     @Override

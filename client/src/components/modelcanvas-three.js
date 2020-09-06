@@ -105,7 +105,7 @@ const ModelCanvas = ( { lighting, instances, shapes, camera, balls } ) => {
 const select = ( { camera, lighting, vzomejava, mesh } ) => ({
   camera,
   lighting,
-  balls: Array.from( mesh.selected ).map( ( [id, vector] ) => ( { id, position: mesh.field.embedv( vector ) } ) ),
+  balls: Array.from( mesh.selected ).map( ( [id, vector] ) => ( { id, position: mesh.field.embedv( vector[0] ) } ) ),
   shapes: vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
   instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
 })

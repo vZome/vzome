@@ -1,6 +1,7 @@
 
 import goldenField from '../fields/golden'
 import commands from '../commands'
+import { legacyCommand } from './jsweet'
 
 const OBJECT_PICKED = 'OBJECT_PICKED'
 const COMMAND_TRIGGERED = 'COMMAND_TRIGGERED'
@@ -34,14 +35,14 @@ export const reducer = ( state = initialState, action ) =>
 
     case CREATE_RANDOM: {
       const location = state.field.randomVector()
-      const id = JSON.stringify( location )
+      const id = JSON.stringify( [ location ] )
       if ( state.selected.has( id ) || state.shown.has( id ) || state.hidden.has( id ) ) {
         return state
       }
       console.log( `random ball created at ${id}` )
       return {
         ...state,
-        selected: new Map( state.selected ).set( id, location ),
+        selected: new Map( state.selected ).set( id, [ location ] ),
       }
     }
 
@@ -59,7 +60,8 @@ export const reducer = ( state = initialState, action ) =>
     }
 
     case COMMAND_TRIGGERED: {
-      return commands[ action.payload ]( state )
+      let command = commands[ action.payload ] || legacyCommand( action.payload )
+      return command( state )
     }
 
     default:

@@ -40,8 +40,8 @@ const Models = ({ enabled, openModel, doEdit }) =>
   }
   const handleOpen = () =>{
     setShow( false )
-    doEdit( 'centroid' )  // just temporary, to test JSweet
-    openModel( `/app/models/${model}.vZome` )
+    doEdit( 'NewCentroid' )  // just temporary, to test JSweet
+    // openModel( `/app/models/${model}.vZome` )
   }
   const handleShow = () => setShow( true )
 

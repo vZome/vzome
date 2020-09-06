@@ -27,33 +27,9 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     }
 
     @Override
-    public int compareTo(AlgebraicNumber o)
+    public int[] toTrailingDivisor()
     {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public boolean greaterThan(AlgebraicNumber other)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public boolean lessThan(AlgebraicNumber other)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public boolean greaterThanOrEqualTo(AlgebraicNumber other)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public boolean lessThanOrEqualTo(AlgebraicNumber other)
-    {
-        throw new RuntimeException( "unimplemented" );
+        return this .factors;
     }
 
     /**
@@ -97,18 +73,6 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     }
 
     @Override
-    public AlgebraicNumber times(int n)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber times(int num, int den)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public AlgebraicNumber times( AlgebraicNumber that )
     {
         if ( this.isZero() || that .isZero() )
@@ -118,6 +82,74 @@ public class JsAlgebraicNumber implements AlgebraicNumber
         if ( that .isOne() )
             return this;
         return new JsAlgebraicNumber( this .field, this .field .multiply( this .factors, ((JsAlgebraicNumber) that) .factors ) );
+    }
+
+    @Override
+    public boolean isZero()
+    {
+        for ( int i = 0; i < factors.length-1; i++ ) {
+            if ( factors[ i ] != 0 )
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isOne()
+    {
+        if ( factors[ 0 ] != 1 )
+            return false;
+        if ( factors[ factors.length-1 ] != 1 )
+            return false;
+        for ( int i = 1; i < factors.length-1; i++ ) {
+            if ( factors[ i ] != 0 )
+                return false;
+        }
+        return true;
+    }
+    
+    
+    
+    @Override
+    public int compareTo(AlgebraicNumber o)
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public boolean greaterThan(AlgebraicNumber other)
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public boolean lessThan(AlgebraicNumber other)
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public boolean greaterThanOrEqualTo(AlgebraicNumber other)
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public boolean lessThanOrEqualTo(AlgebraicNumber other)
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public AlgebraicNumber times(int n)
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public AlgebraicNumber times(int num, int den)
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 
     @Override
@@ -163,30 +195,6 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     }
 
     @Override
-    public boolean isZero()
-    {
-        for ( int i = 0; i < factors.length-1; i++ ) {
-            if ( factors[ i ] != 0 )
-                return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean isOne()
-    {
-        if ( factors[ 0 ] != 1 )
-            return false;
-        if ( factors[ factors.length-1 ] != 1 )
-            return false;
-        for ( int i = 1; i < factors.length-1; i++ ) {
-            if ( factors[ i ] != 0 )
-                return false;
-        }
-        return true;
-    }
-
-    @Override
     public int signum()
     {
         throw new RuntimeException( "unimplemented" );
@@ -215,11 +223,4 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     {
         throw new RuntimeException( "unimplemented" );
     }
-
-    @Override
-    public int[] toTrailingDivisor()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
 }

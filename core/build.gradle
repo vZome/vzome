@@ -34,11 +34,16 @@ configurations {
     all*.exclude group: 'org.abego.treelayout', module: 'org.abego.treelayout.core'
 }
 
+//  Uncomment this for the jsweet target, and adjust the sourceSet below
+// compileJava {
+// 	enabled = false
+// }
+
 // Support for decoupled "regression" task
 sourceSets {
     main {
         java {
-            //  Uncomment these for the jsweet target
+            //  Uncomment these for the jsweet target, and adjust compileJava above
             // srcDir file( 'src/main/java' )
             // srcDir file( 'src/jsweet/java' )
             
@@ -430,11 +435,6 @@ buildscript {
 
 apply plugin: 'org.jsweet.jsweet-gradle-plugin'
 
-//  Uncomment this for the jsweet target
-// compileJava {
-// 	enabled = false
-// }
-
 jsweet {
 	veryVerbose = true
 	encoding = 'UTF-8'
@@ -457,6 +457,8 @@ jsweet {
         'com/vzome/jsweet/JsAlgebraicNumber.java',
         'com/vzome/jsweet/JsAlgebraicField.java',
         'com/vzome/jsweet/JsRealizedModel.java',
+        'com/vzome/jsweet/JsSelection.java',
+        'com/vzome/jsweet/JsManifestation.java',
         'com/vzome/jsweet/JsBall.java',
 
         'com/vzome/xml/DomUtils.java',
@@ -505,8 +507,6 @@ jsweet {
         'com/vzome/core/editor/api/ChangeSelection.java',
         'com/vzome/core/editor/api/ChangeManifestations.java',
         'com/vzome/core/editor/api/Selection.java',
-
-        'com/vzome/core/editor/SelectionImpl.java',
 
         'com/vzome/core/edits/NewCentroid.java'
     ]
