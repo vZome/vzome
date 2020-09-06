@@ -9,10 +9,10 @@ export default ( state ) =>
   for ( let [key, value] of selected ) {
     shown.set( key, value )
     if ( sum ) {
-      sum = field.vectoradd( sum, value )
+      sum = field.vectoradd( sum, value[0] )
     }
     else {
-      sum = value
+      sum = value[0]
     }
   }
   const centroid = field.scalarmul( scale, sum )
@@ -22,6 +22,6 @@ export default ( state ) =>
   return {
     ...state,
     shown,
-    selected : new Map().set( id, centroid )
+    selected : new Map().set( id, [centroid] )
   }
 }

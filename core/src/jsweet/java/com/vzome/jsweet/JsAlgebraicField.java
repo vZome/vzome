@@ -38,6 +38,12 @@ public class JsAlgebraicField implements AlgebraicField
         return getOrder() - 1;
     }
 
+    int[] add( int[] v1, int[] v2 )
+    {
+        Function f = (Function) this.delegate .$get( "plus" );
+        return (int[]) f.$apply( any( v1 ), any( v2 ) );
+    }
+
     int[] multiply( int[] v1, int[] v2 )
     {
         Function f = (Function) this.delegate .$get( "times" );

@@ -50,38 +50,21 @@ public class JsAlgebraicNumber implements AlgebraicNumber
      */
     public AlgebraicNumber plus( int num, int den )
     {
-        return this.plus( field.createRational(num, den) );
+        return this.plus( field.createRational( num, den ) );
     }
 
     @Override
-    public AlgebraicNumber plus(AlgebraicNumber that)
+    public AlgebraicNumber plus( AlgebraicNumber that )
     {
-        if ( this .isZero() )
-            return that;
-        if ( that .isZero() )
-            return this;
-        int order = this .factors .length;
-        int[] sum = new int[ order+1 ];
-        for ( int i = 0; i < order; i++ ) {
-            sum[ i ] = this .factors[ i ] + ((JsAlgebraicNumber) that) .factors[ i ];
-        }
-        
-        // TODO handle rational numbers!
-        sum[ order ] = 1;
-        
-        return new JsAlgebraicNumber( this .field, sum );
+        int[] factors = this.field .add( this.factors, ((JsAlgebraicNumber) that) .factors );
+        return new JsAlgebraicNumber( this .field, factors );
     }
 
     @Override
     public AlgebraicNumber times( AlgebraicNumber that )
     {
-        if ( this.isZero() || that .isZero() )
-            return this .field .zero();
-        if ( this .isOne() )
-            return that;
-        if ( that .isOne() )
-            return this;
-        return new JsAlgebraicNumber( this .field, this .field .multiply( this .factors, ((JsAlgebraicNumber) that) .factors ) );
+        int[] factors = this.field .multiply( this.factors, ((JsAlgebraicNumber) that) .factors );
+        return new JsAlgebraicNumber( this .field, factors );
     }
 
     @Override
