@@ -8,6 +8,7 @@ import Models from './components/models.js'
 import FileOpener from './components/fileopener.js'
 import Exporter from './components/exporter.js'
 import ErrorAlert from './components/alert.js'
+import EditMenu from './components/editmenu.js'
 import Spinner from './components/spinner.js'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <FileOpener/>
       <Exporter/>
       <ErrorAlert/>
+      <EditMenu/>
       <Spinner/>
       {/* <div>Export icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div> */}
       {/* <a href="https://github.com/mhnpd/react-loader-spinner">react-loader-spinner</a> */}

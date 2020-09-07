@@ -7,6 +7,8 @@ const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
 const COMMAND_TRIGGERED = 'COMMAND_TRIGGERED'
 const CREATE_RANDOM = 'CREATE_RANDOM'
+const ALL_SELECTED = 'ALL_SELECTED'
+const ALL_DESELECTED = 'ALL_DESELECTED'
 
 export const objectSelected = ( id ) =>
 {
@@ -18,9 +20,32 @@ export const objectDeselected = ( id ) =>
   return { type: OBJECT_DESELECTED, payload: id }
 }
 
+export const allSelected = () =>
+{
+  return { type: ALL_SELECTED }
+}
+
+export const allDeselected = () =>
+{
+  return { type: ALL_DESELECTED }
+}
+
 export const commandTriggered = ( cmd, config={} ) =>
 {
-  return { type: COMMAND_TRIGGERED, payload: { cmd, config } }
+  switch ( cmd ) {
+
+    case 'random':
+      return createRandom()
+  
+    case 'allSelected':
+      return allSelected()
+  
+      case 'allDeselected':
+        return allDeselected()
+    
+    default:
+      return { type: COMMAND_TRIGGERED, payload: { cmd, config } }
+  }
 }
 
 export const createRandom = () =>
@@ -86,6 +111,22 @@ export const reducer = ( state = initialState, action ) =>
       return command( state )
     }
 
+    case ALL_SELECTED: {
+      return {
+        ...state,
+        shown: new Map(),
+        selected: new Map( [ ...state.selected, ...state.shown ] )
+      }
+    }
+
+    case ALL_DESELECTED: {
+      return {
+        ...state,
+        selected: new Map(),
+        shown: new Map( [ ...state.selected, ...state.shown ] )
+      }
+    }
+
     default:
       return state
   }
@@ -94,12 +135,4 @@ export const reducer = ( state = initialState, action ) =>
 export const middleware = store => next => async action => 
 {
   return next( action )
-}
-
-export const init = ( window, store ) =>
-{
-  store.dispatch( createRandom() )
-  store.dispatch( createRandom() )
-  store.dispatch( createRandom() )
-  store.dispatch( createRandom() )
 }

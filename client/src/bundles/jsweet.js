@@ -114,11 +114,13 @@ export const legacyCommand = ( editName, config ) => state =>
   const editor = new vzome.jsweet.JsEditorModel( realizedModel, selection )
 
   const editClass = vzome.core.edits[ editName ]
-  const edit = new editClass( editor )
+  if ( editClass ) {
+    const edit = new editClass( editor )
 
-  edit.configure( new Properties( config ) )
-
-  edit.perform()  // side-effects will appear in shown, hidden, and selected maps
+    edit.configure( new Properties( config ) )
+  
+    edit.perform()  // side-effects will appear in shown, hidden, and selected maps
+  }
 
   return {
     ...state, shown, selected, hidden
