@@ -205,4 +205,8 @@ public interface AlgebraicField
     int getNumMultipliers();
 
     AlgebraicNumber parseVefNumber( String string, boolean isRational );
+    
+    boolean scale4dRoots();
+    
+    boolean doubleFrameVectors();
 }

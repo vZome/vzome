@@ -37,6 +37,12 @@ public final class PentagonField extends AbstractAlgebraicField
     public static final double B1_LENGTH = 2d * PHI_VALUE * PHI_VALUE * PHI_VALUE;
 
     private static final int ONES_PLACE = 0, PHIS_PLACE = 1;
+    
+    @Override
+    public boolean doubleFrameVectors()
+    {
+        return true;
+    }
 
     @Override
     double evaluateNumber( BigRational[] factors )

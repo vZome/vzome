@@ -26,6 +26,12 @@ public class RootTwoField extends AbstractAlgebraicField
     {
         super( FIELD_NAME, 2 );
     };
+    
+    @Override
+    public boolean scale4dRoots()
+    {
+        return true;
+    }
 
     @Override
     public void defineMultiplier( StringBuffer buf, int which )

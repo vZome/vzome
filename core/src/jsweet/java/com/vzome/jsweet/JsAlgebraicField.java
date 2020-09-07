@@ -98,6 +98,18 @@ public class JsAlgebraicField implements AlgebraicField
         return new AlgebraicVector( zero, zero, zero );
     }
 
+    @Override
+    public boolean scale4dRoots()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean doubleFrameVectors()
+    {
+        return false;
+    }
+
     
     
     

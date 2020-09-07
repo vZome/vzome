@@ -39,6 +39,16 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     {
         return order - 1;
     }
+    
+    public boolean scale4dRoots()
+    {
+        return false;
+    }
+    
+    public boolean doubleFrameVectors()
+    {
+        return false;
+    }
 
     public String getIrrational( int which )
     {

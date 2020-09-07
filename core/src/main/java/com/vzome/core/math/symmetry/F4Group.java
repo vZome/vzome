@@ -7,7 +7,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.RootTwoField;
 
 public class F4Group extends B4Group
 {
@@ -59,7 +58,7 @@ public class F4Group extends B4Group
         WEIGHTS[ 3 ] = field .basisVector( 4, AlgebraicVector.W4 ); // ( 0, 0, 0, 2 );
         WEIGHTS[ 3 ] .setComponent( AlgebraicVector.W4, two );        
 
-        if ( field instanceof RootTwoField ) {
+        if ( field .scale4dRoots() ) {
             AlgebraicNumber scale = field .createPower( 1 );
             ROOTS[ 2 ] = ROOTS[ 2 ] .scale( scale );
             WEIGHTS[ 2 ] = WEIGHTS[ 2 ] .scale( scale );
