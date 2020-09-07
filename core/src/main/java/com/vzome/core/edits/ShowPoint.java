@@ -23,7 +23,7 @@ public class ShowPoint extends ChangeManifestations
     
     public ShowPoint( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this.parameters = (ImplicitSymmetryParameters) editor;
     }
     

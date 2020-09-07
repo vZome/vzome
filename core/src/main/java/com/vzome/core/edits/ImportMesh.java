@@ -38,7 +38,7 @@ public abstract class ImportMesh extends ChangeManifestations
 
     public ImportMesh( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this.editor = editor;
     }
 

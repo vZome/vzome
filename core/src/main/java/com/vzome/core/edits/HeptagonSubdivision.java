@@ -12,6 +12,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -54,9 +55,9 @@ public class HeptagonSubdivision extends ChangeManifestations
         redo();
     }
 
-    public HeptagonSubdivision( Selection selection, RealizedModel realized )
+    public HeptagonSubdivision( EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
     }
 
     @Override

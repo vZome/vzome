@@ -20,10 +20,10 @@ public class AffineTransformAll extends ChangeManifestations
 {
     private Point center;
     
-    public AffineTransformAll( EditorModel editor )
+    public AffineTransformAll( EditorModel editorModel )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
-        this.center = ((ImplicitSymmetryParameters) editor) .getCenterPoint();
+        super( editorModel );
+        this.center = ((ImplicitSymmetryParameters) editorModel) .getCenterPoint();
     }
     
     @Override

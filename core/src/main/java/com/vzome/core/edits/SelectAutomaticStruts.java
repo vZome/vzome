@@ -3,11 +3,11 @@ package com.vzome.core.edits;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.SymmetryAware;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.model.Strut;
 import com.vzome.xml.DomUtils;
 
@@ -20,8 +20,8 @@ public class SelectAutomaticStruts extends ChangeManifestations {
     private final EditorModel editor;
 	
 	public SelectAutomaticStruts( EditorModel editor )
-	{
-		super( editor .getSelection(), editor .getRealizedModel() );
+    {
+        super( editor );
         this.editor = editor;
 		this.symmetry = ((SymmetryAware) editor) .getSymmetrySystem();
 	}

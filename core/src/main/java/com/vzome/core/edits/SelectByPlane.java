@@ -26,7 +26,7 @@ public class SelectByPlane extends SelectByBoundary
 
     public SelectByPlane( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
     }
 
     @Override

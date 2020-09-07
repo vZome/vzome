@@ -37,7 +37,7 @@ public class PolarZonohedron extends ChangeManifestations
     
     public PolarZonohedron( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this .editor = editor;
         this .symmetry = ((SymmetryAware) editor) .getSymmetrySystem();
     }

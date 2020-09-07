@@ -24,9 +24,9 @@ public class ConvexHull3d extends ConvexHull {
     private boolean generateStruts = true; 
     private boolean generatePanels = true; 
 
-    public ConvexHull3d( EditorModel editor )
+    public ConvexHull3d( EditorModel editorModel )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editorModel );
     }
     
     @Override

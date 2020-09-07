@@ -79,7 +79,7 @@ public class ApplyTool extends ChangeManifestations
 
     public ApplyTool( ToolsModel tools, Tool tool, EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction, boolean redundantOutputs )
     {
-        super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel() );
+        super( tools .getEditorModel() );
         this.tools = tools;
 
         this .tool = tool;

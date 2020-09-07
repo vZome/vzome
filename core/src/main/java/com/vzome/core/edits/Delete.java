@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class Delete extends ChangeManifestations
 {
@@ -27,9 +26,9 @@ public class Delete extends ChangeManifestations
         super .perform();
 	}
 
-	public Delete( Selection selection, RealizedModel realized )
-	{
-		super( selection, realized );
+	public Delete( EditorModel editorModel )
+    {
+        super( editorModel );
 	}
 
 	@Override

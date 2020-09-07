@@ -17,6 +17,8 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.edits.StrutCreation;
 import com.vzome.core.math.Line;
 import com.vzome.core.math.Projection;
@@ -24,6 +26,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.PlaneOrbitSet;
+import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
@@ -34,6 +37,7 @@ import com.vzome.desktop.controller.ZoneVectorBall;
 public class PreviewStrut implements PropertyChangeListener
 {
     private final RealizedModelImpl model;
+    private final EditorModel editorModel;
 
     private final RenderedModel rendering;
 
@@ -60,6 +64,14 @@ public class PreviewStrut implements PropertyChangeListener
         rendering .addListener( transp );
         model = new RealizedModelImpl( field, new Projection.Default( field ) );
         model .addListener( rendering );
+        editorModel = new EditorModel()
+        {
+            @Override
+            public RealizedModel getRealizedModel() { return model; }
+
+            @Override
+            public Selection getSelection() { return null; }
+        };
 
         zoneBall = new ZoneVectorBall( cameraController )
         {
@@ -174,7 +186,7 @@ public class PreviewStrut implements PropertyChangeListener
             return;
         if ( logger .isLoggable( Level.FINER ) )
             logger .finer( "preview now " + zone );
-        strut = new StrutCreation( point, zone, length .getValue(), model );
+        strut = new StrutCreation( point, zone, length .getValue(), editorModel );
         strut .perform();
     }
 

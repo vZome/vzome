@@ -7,10 +7,9 @@ package com.vzome.core.edits;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 
 
 /**
@@ -38,9 +37,9 @@ public class ReversePanel extends ChangeManifestations
 
     private final Panel panel;
         
-    public ReversePanel( Manifestation singlePanel, Selection selection, RealizedModel realized )
+    public ReversePanel( Manifestation singlePanel, EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
         if ( singlePanel != null )
             this .panel = (Panel) singlePanel;
         else

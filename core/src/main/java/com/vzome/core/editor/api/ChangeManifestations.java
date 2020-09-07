@@ -24,11 +24,11 @@ public abstract class ChangeManifestations extends ChangeSelection
 {
     protected final RealizedModel mManifestations;
 
-    public ChangeManifestations( Selection selection, RealizedModel realized )
+    public ChangeManifestations( EditorModel editorModel )
     {
-        super( selection );
+        super( editorModel .getSelection() );
 
-        mManifestations = realized;
+        mManifestations = editorModel .getRealizedModel();
         // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
         mManifestedNow = new HashMap<>();
     }

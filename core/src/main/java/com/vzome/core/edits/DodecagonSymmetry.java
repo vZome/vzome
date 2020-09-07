@@ -23,7 +23,7 @@ public class DodecagonSymmetry extends ChangeManifestations
     
     public DodecagonSymmetry( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this.center = ((ImplicitSymmetryParameters) editor) .getCenterPoint();
         this.symmetry = ((SymmetryAware) editor) .getSymmetrySystem() .getSymmetry();
     }

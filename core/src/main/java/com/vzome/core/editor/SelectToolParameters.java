@@ -18,7 +18,7 @@ public class SelectToolParameters extends ChangeManifestations
 
 	SelectToolParameters( ToolsModel tools, Tool tool )
 	{
-		super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel() );
+		super( tools .getEditorModel() );
 		this.tools = tools;
 		this .tool = tool;
 	}

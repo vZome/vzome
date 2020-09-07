@@ -28,7 +28,7 @@ public class MapToColor extends ChangeManifestations {
 
     public MapToColor( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this.editor = editor;
     }
     

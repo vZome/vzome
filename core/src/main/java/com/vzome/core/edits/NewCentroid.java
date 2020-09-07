@@ -12,9 +12,8 @@ import com.vzome.core.construction.CentroidPoint;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class NewCentroid extends ChangeManifestations
 {
@@ -41,9 +40,9 @@ public class NewCentroid extends ChangeManifestations
         redo();
     }
 
-    public NewCentroid( Selection selection, RealizedModel realized )
+    public NewCentroid( EditorModel editorModel )
     {
-        super( selection, realized );
+        super( editorModel );
     }
     
     @Override

@@ -27,7 +27,7 @@ public class ApiEdit extends ChangeManifestations
 {
 	public ApiEdit( EditorModel editor )
 	{
-		super( editor .getSelection(), editor .getRealizedModel() );
+		super( editor );
 	}
 	
 	private Selection getSelection()

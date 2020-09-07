@@ -15,9 +15,9 @@ import com.vzome.core.math.convexhull.GrahamScan2D;
 public class ConvexHull2d extends ConvexHull {
     public static final String NAME = "ConvexHull2d";
 
-    public ConvexHull2d( EditorModel editor )
+    public ConvexHull2d( EditorModel editorModel )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editorModel );
     }
     
     @Override

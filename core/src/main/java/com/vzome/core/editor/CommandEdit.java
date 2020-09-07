@@ -30,8 +30,8 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.ChangeSelection;
 import com.vzome.core.editor.api.EditorModel;
-import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.editor.api.LegacyEditorModel;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.edits.AffinePentagon;
 import com.vzome.core.edits.DeselectAll;
 import com.vzome.core.edits.SelectAll;
@@ -63,7 +63,7 @@ public class CommandEdit extends ChangeManifestations
 
 	public CommandEdit( AbstractCommand cmd, EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         mEditorModel = editor;  // only needed to set symmetry axis/center
         mCommand = cmd;
     }
@@ -343,7 +343,7 @@ public class CommandEdit extends ChangeManifestations
             // TODO work out a more generic migration technique
             if ( mCommand instanceof CommandObliquePentagon )
             {
-                UndoableEdit edit = new AffinePentagon( mSelection, mManifestations );
+                UndoableEdit edit = new AffinePentagon( mEditorModel );
                 context .performAndRecord( edit );
                 return;
             }

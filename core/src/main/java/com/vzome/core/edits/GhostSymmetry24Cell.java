@@ -29,7 +29,7 @@ public class GhostSymmetry24Cell extends ChangeManifestations
 
     public GhostSymmetry24Cell( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this.symm = ((SymmetryAware) editor) .getSymmetrySystem() .getSymmetry();
         this.field = this .symm .getField();
         this.symmAxis = ((ImplicitSymmetryParameters) editor) .getSymmetrySegment();

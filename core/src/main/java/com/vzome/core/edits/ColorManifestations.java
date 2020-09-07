@@ -9,20 +9,19 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Color;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
-import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class ColorManifestations extends ChangeManifestations
 {
     private Color color;
     
-    public ColorManifestations( Selection selection, RealizedModel realized )
+    public ColorManifestations( EditorModel editorModel )
     {
-        super( selection, realized );
+        super( editorModel );
     }
     
     @Override

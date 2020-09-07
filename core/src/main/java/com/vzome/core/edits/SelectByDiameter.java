@@ -23,7 +23,7 @@ public class SelectByDiameter extends SelectByBoundary {
     
     public SelectByDiameter( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
     }
 
     @Override

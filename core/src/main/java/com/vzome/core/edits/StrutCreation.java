@@ -19,7 +19,6 @@ import com.vzome.core.construction.SegmentEndPoint;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.math.symmetry.Axis;
-import com.vzome.core.model.RealizedModel;
 
 public class StrutCreation extends ChangeManifestations
 {
@@ -29,7 +28,7 @@ public class StrutCreation extends ChangeManifestations
     
     public StrutCreation( EditorModel editor )
     {
-        this( null, null, null, editor .getRealizedModel() );
+        this( null, null, null, editor );
     }
     
     @Override
@@ -40,9 +39,9 @@ public class StrutCreation extends ChangeManifestations
         this.mLength = (AlgebraicNumber) params .get( "length" );
     }
 
-    public StrutCreation( Point anchor, Axis axis, AlgebraicNumber len, RealizedModel realized )
+    public StrutCreation( Point anchor, Axis axis, AlgebraicNumber len, EditorModel editor )
     {
-        super( null, realized );
+        super( editor );
         
         mAnchor = anchor;
         mAxis = axis;

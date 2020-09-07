@@ -37,7 +37,7 @@ public class RunZomicScript extends ChangeManifestations
 
     public RunZomicScript( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this.origin = ((ImplicitSymmetryParameters) editor) .getCenterPoint();
 		this.symm = (IcosahedralSymmetry) ((SymmetryAware) editor) .getSymmetrySystem() .getSymmetry();
     }

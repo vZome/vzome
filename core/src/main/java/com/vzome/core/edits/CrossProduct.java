@@ -11,10 +11,9 @@ import com.vzome.core.construction.SegmentCrossProduct;
 import com.vzome.core.construction.SegmentEndPoint;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class CrossProduct extends ChangeManifestations
 {
@@ -66,9 +65,9 @@ public class CrossProduct extends ChangeManifestations
         redo();
     }
 
-    public CrossProduct( Selection selection, RealizedModel realized )
+    public CrossProduct( EditorModel editorModel )
     {
-        super( selection, realized );
+        super( editorModel );
     }
 
     @Override

@@ -163,7 +163,7 @@ public class ReplaceWithShape extends ChangeManifestations
 
     public ReplaceWithShape( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this.editor = editor;
     }
 

@@ -10,10 +10,9 @@ import com.vzome.core.construction.PolygonVertex;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentEndPoint;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 
@@ -50,9 +49,9 @@ public class ShowVertices extends ChangeManifestations
         redo();
     }
     
-    public ShowVertices( Selection selection, RealizedModel realized )
+    public ShowVertices( EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
     }
 
     @Override

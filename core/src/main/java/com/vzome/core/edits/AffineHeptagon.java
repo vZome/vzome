@@ -12,10 +12,9 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.TransformedPoint;
 import com.vzome.core.construction.Translation;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 /**
@@ -172,9 +171,9 @@ public class AffineHeptagon extends ChangeManifestations
         redo();
     }
 
-    public AffineHeptagon( Selection selection, RealizedModel realized )
+    public AffineHeptagon( EditorModel editorModel )
     {
-        super( selection, realized );
+        super( editorModel );
     }
 
     @Override

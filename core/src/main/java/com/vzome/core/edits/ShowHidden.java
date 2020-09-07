@@ -5,16 +5,15 @@ package com.vzome.core.edits;
 
 
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class ShowHidden extends ChangeManifestations
 {
 
-    public ShowHidden( Selection selection, RealizedModel realized )
+    public ShowHidden( EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
     }
     
     @Override

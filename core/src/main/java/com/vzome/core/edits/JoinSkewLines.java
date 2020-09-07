@@ -7,16 +7,16 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class JoinSkewLines extends ChangeManifestations {
     public static final String NAME = "JoinSkewLines";
 
-    public JoinSkewLines(Selection selection, RealizedModel realized) {
-        super(selection, realized);
+    public JoinSkewLines( EditorModel editor )
+    {
+        super( editor );
     }
     
     @Override

@@ -19,13 +19,11 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
-import com.vzome.core.editor.api.Selection;
 import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.math.symmetry.WythoffConstruction;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.xml.DomUtils;
 
 public class Polytope4d extends ChangeManifestations
@@ -42,15 +40,15 @@ public class Polytope4d extends ChangeManifestations
     private String renderGroupName;
     private Symmetries4D symmetries;
 
-    private Polytope4d( Selection selection, RealizedModel realized,
+    private Polytope4d( EditorModel editor,
             Symmetries4D symmetries,
             AlgebraicVector quaternion, int index, String groupName,
             int edgesToRender, AlgebraicNumber[] edgeScales,
             String renderGroupName )
     {
-        super( selection, realized );
+        super( editor );
         this.symmetries = symmetries;
-        this.field = realized .getField();
+        this.field = editor .getRealizedModel() .getField();
 
         this.index = index;
         this.quaternion = quaternion;
@@ -69,13 +67,13 @@ public class Polytope4d extends ChangeManifestations
     
     public Polytope4d( EditorModel editor )
     {
-        this( editor .getSelection(), editor .getRealizedModel(), ((SymmetryAware) editor) .get4dSymmetries(), null, 0, null );
+        this( editor, ((SymmetryAware) editor) .get4dSymmetries(), null, 0, null );
     }
 
-    public Polytope4d( Selection selection, RealizedModel realized, Symmetries4D symmetries,
+    public Polytope4d( EditorModel editor, Symmetries4D symmetries,
             Segment symmAxis, int index, String groupName )
     {
-        this( selection, realized, symmetries,
+        this( editor, symmetries,
                 ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d(),
                         index, groupName, index, null, groupName );
     }
