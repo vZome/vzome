@@ -40,7 +40,7 @@ const Models = ({ enabled, openModel, doEdit }) =>
   }
   const handleOpen = () =>{
     setShow( false )
-    doEdit( 'ShowPoint', { mode: "origin" } )  // just temporary, to test JSweet
+    doEdit( 'centroid', {} )  // just temporary, to test JSweet
     // openModel( `/app/models/${model}.vZome` )
   }
   const handleShow = () => setShow( true )

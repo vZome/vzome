@@ -3,8 +3,9 @@ import React, { useRef, useMemo } from 'react'
 import { connect } from 'react-redux'
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
-import { PerspectiveCamera, Dodecahedron } from 'drei'
+import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
+import { objectSelected, objectDeselected } from '../bundles/mesh'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -83,7 +84,7 @@ const selectedMaterial = new THREE.MeshLambertMaterial( { color: 0xff4400 } )
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, instances, shapes, camera, shown, selected } ) => {
+const ModelCanvas = ( { lighting, instances, shapes, camera, shown, selected, selectId, deselectId } ) => {
   const { fov, position, up, lookAt } = camera
   return(
     <>
@@ -95,9 +96,9 @@ const ModelCanvas = ( { lighting, instances, shapes, camera, shown, selected } )
         { instances.map( ( { id, position, color, rotation, shape } ) => 
           <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
         { shown.map( ( { id, position } ) =>
-          <mesh key={id} position={position} geometry={dodecGeom} material={shownMaterial} /> ) }
+          <mesh key={id} position={position} geometry={dodecGeom} material={shownMaterial} onClick={(e) => {e.stopPropagation(); selectId(id)} } /> ) }
         { selected.map( ( { id, position } ) =>
-          <mesh key={id} position={position} geometry={dodecGeom} material={selectedMaterial} /> ) }
+          <mesh key={id} position={position} geometry={dodecGeom} material={selectedMaterial} onClick={(e) => {e.stopPropagation(); deselectId(id)} } /> ) }
       </Canvas>
     </>
   )
@@ -112,4 +113,9 @@ const select = ( { camera, lighting, vzomejava, mesh } ) => ({
   instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
 })
 
-export default connect( select )( ModelCanvas )
+const boundEventActions = {
+  selectId : objectSelected,
+  deselectId : objectDeselected
+}
+
+export default connect( select, boundEventActions )( ModelCanvas )

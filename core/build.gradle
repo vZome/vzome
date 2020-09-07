@@ -470,6 +470,8 @@ jsweet {
 
         'com/vzome/core/math/symmetry/*.java',
 
+        'com/vzome/core/math/convexhull/*.java',
+
         'com/vzome/core/algebra/*.java',
 
         'com/vzome/core/construction/*.java',
@@ -487,18 +489,9 @@ jsweet {
         'com/vzome/core/model/SimpleMeshJson.java',
         'com/vzome/core/model/ColoredMeshJson.java',
 
-        'com/vzome/core/editor/api/Manifestations.java',
-        'com/vzome/core/editor/api/UndoableEdit.java',
-        'com/vzome/core/editor/api/SideEffects.java',
-        'com/vzome/core/editor/api/ChangeSelection.java',
-        'com/vzome/core/editor/api/ChangeManifestations.java',
-        'com/vzome/core/editor/api/Selection.java',
-        'com/vzome/core/editor/api/EditorModel.java',
-        'com/vzome/core/editor/api/ImplicitSymmetryParameters.java',
-        'com/vzome/core/editor/api/ManifestConstructions.java',
+        'com/vzome/core/editor/api/*.java',
 
-        'com/vzome/core/edits/NewCentroid.java',
-        'com/vzome/core/edits/ShowPoint.java'
+        'com/vzome/core/edits/*.java'
     ]
     excludes = [
         
@@ -521,15 +514,17 @@ jsweet {
 
     //     'com/vzome/core/model/*Impl.java',
 
-        'core/src/main/java/com/vzome/core/edits/AdjustSelectionByOrbitLength.java',
-        'core/src/main/java/com/vzome/core/edits/DodecagonSymmetry.java',
-        'core/src/main/java/com/vzome/core/edits/GhostSymmetry24Cell.java',
-        'core/src/main/java/com/vzome/core/edits/Polytope4d.java',
-        'core/src/main/java/com/vzome/core/edits/SelectAutomaticStruts.java',
-        'core/src/main/java/com/vzome/core/edits/SelectParallelStruts.java',
-        'core/src/main/java/com/vzome/core/edits/Symmetry4d.java',
-        'core/src/main/java/com/vzome/core/edits/MapToColor.java',
-        'core/src/main/java/com/vzome/core/edits/PolarZonohedron.java',
+        'com/vzome/core/edits/Affine*tagon.java',
+        'com/vzome/core/edits/HeptagonSubdivision.java',
+        'com/vzome/core/edits/AdjustSelectionByOrbitLength.java',
+        'com/vzome/core/edits/DodecagonSymmetry.java',
+        'com/vzome/core/edits/GhostSymmetry24Cell.java',
+        'com/vzome/core/edits/Polytope4d.java',
+        'com/vzome/core/edits/SelectAutomaticStruts.java',
+        'com/vzome/core/edits/SelectParallelStruts.java',
+        'com/vzome/core/edits/Symmetry4d.java',
+        'com/vzome/core/edits/MapToColor.java',
+        'com/vzome/core/edits/PolarZonohedron.java',
         'com/vzome/core/edits/Run*Script.java',
         'com/vzome/core/edits/Validate2Manifold.java',
         'com/vzome/core/edits/RealizeMetaParts.java',

@@ -3,13 +3,19 @@ import goldenField from '../fields/golden'
 import commands from '../commands'
 import { legacyCommand } from './jsweet'
 
-const OBJECT_PICKED = 'OBJECT_PICKED'
+const OBJECT_SELECTED = 'OBJECT_SELECTED'
+const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
 const COMMAND_TRIGGERED = 'COMMAND_TRIGGERED'
 const CREATE_RANDOM = 'CREATE_RANDOM'
 
-export const objectPicked = ( id ) =>
+export const objectSelected = ( id ) =>
 {
-  return { type: OBJECT_PICKED, payload: id }
+  return { type: OBJECT_SELECTED, payload: id }
+}
+
+export const objectDeselected = ( id ) =>
+{
+  return { type: OBJECT_DESELECTED, payload: id }
 }
 
 export const commandTriggered = ( cmd, config={} ) =>
@@ -46,16 +52,31 @@ export const reducer = ( state = initialState, action ) =>
       }
     }
 
-    case OBJECT_PICKED: {
+    case OBJECT_SELECTED: {
       const id = action.payload
       const obj = state.shown.get( id )
       if ( typeof obj === "undefined" ) {
         throw new Error( "something went wrong" )
       }
+      const shown = new Map( state.shown )
+      shown.delete( id )
       return {
-        ...state,
-        shown: new Map( state.shown ).delete( id ),
+        ...state, shown,
         selected: new Map( state.selected ).set( id, obj ),
+      }
+    }
+
+    case OBJECT_DESELECTED: {
+      const id = action.payload
+      const obj = state.selected.get( id )
+      if ( typeof obj === "undefined" ) {
+        throw new Error( "something went wrong" )
+      }
+      const selected = new Map( state.selected )
+      selected.delete( id )
+      return {
+        ...state, selected,
+        shown: new Map( state.shown ).set( id, obj ),
       }
     }
 
