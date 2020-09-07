@@ -12,9 +12,9 @@ export const objectPicked = ( id ) =>
   return { type: OBJECT_PICKED, payload: id }
 }
 
-export const commandTriggered = ( cmd ) =>
+export const commandTriggered = ( cmd, config={} ) =>
 {
-  return { type: COMMAND_TRIGGERED, payload: cmd }
+  return { type: COMMAND_TRIGGERED, payload: { cmd, config } }
 }
 
 export const createRandom = () =>
@@ -60,7 +60,8 @@ export const reducer = ( state = initialState, action ) =>
     }
 
     case COMMAND_TRIGGERED: {
-      let command = commands[ action.payload ] || legacyCommand( action.payload )
+      const { cmd, config } = action.payload
+      const command = commands[ cmd ] || legacyCommand( cmd, config )
       return command( state )
     }
 

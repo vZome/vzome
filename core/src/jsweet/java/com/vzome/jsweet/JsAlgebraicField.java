@@ -91,17 +91,18 @@ public class JsAlgebraicField implements AlgebraicField
         return new AlgebraicVector( x, y, z );
     }
 
+    @Override
+    public AlgebraicVector origin( int dims )
+    {
+        AlgebraicNumber zero = this .zero();
+        return new AlgebraicVector( zero, zero, zero );
+    }
+
     
     
     
     
     int[] scaleBy( int[] factors, int whichIrrational )
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicVector origin(int dims)
     {
         throw new RuntimeException( "unimplemented" );
     }

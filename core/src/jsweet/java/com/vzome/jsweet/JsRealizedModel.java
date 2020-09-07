@@ -59,6 +59,8 @@ public class JsRealizedModel implements RealizedModel {
     @Override
     public Manifestation findConstruction( Construction c )
     {
+        if ( c == null )
+            return null;
         int[][][] vectors = JsManifestation.canonicalizeConstruction( c );
         vectors = (int[][][]) ( (Function) this.adapter .$get( "findOrAddManifestation" ) ).apply( this.adapter, $array( vectors ) );
         if ( vectors == null )

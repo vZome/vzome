@@ -88,7 +88,20 @@ class Adapter
   }
 }
 
-export const legacyCommand = editName => state =>
+class Properties
+{
+  constructor( config )
+  {
+    this.config = config
+  }
+
+  get( key )
+  {
+    return this.config[ key ]
+  }
+}
+
+export const legacyCommand = ( editName, config ) => state =>
 {
   const shown = new Map( state.shown )
   const hidden = new Map( state.hidden )
@@ -98,9 +111,12 @@ export const legacyCommand = editName => state =>
   const field = new vzome.jsweet.JsAlgebraicField( state.field )
   const realizedModel = new vzome.jsweet.JsRealizedModel( field, adapter )
   const selection = new vzome.jsweet.JsSelection( field, adapter )
+  const editor = new vzome.jsweet.JsEditorModel( realizedModel, selection )
 
   const editClass = vzome.core.edits[ editName ]
-  const edit = new editClass( selection, realizedModel )
+  const edit = new editClass( editor )
+
+  edit.configure( new Properties( config ) )
 
   edit.perform()  // side-effects will appear in shown, hidden, and selected maps
 
