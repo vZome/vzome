@@ -9,7 +9,6 @@ import java.util.Map;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.VefVectorExporter;
@@ -124,12 +123,6 @@ public class ReplaceWithShape extends ChangeManifestations
                 public Color getVectorColor( AlgebraicVector vector )
                 {
                     return symmetrySystem .getVectorColor( vector );
-                }
-
-                @Override
-                public AlgebraicField getField()
-                {
-                    return symmetrySystem .getField();
                 }
             } );
             if ( this .ballOrStrut != null ) {

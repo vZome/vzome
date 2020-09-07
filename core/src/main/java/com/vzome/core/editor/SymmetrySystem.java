@@ -417,10 +417,4 @@ public class SymmetrySystem implements OrbitSource
     {
         return this .symmetryPerspective .getOrbitUnitLength( orbit );
     }
-
-    @Override
-    public AlgebraicField getField()
-    {
-        return this .symmetryPerspective .getSymmetry() .getField();
-    }
 }

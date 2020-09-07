@@ -1,6 +1,5 @@
 package com.vzome.core.editor.api;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
 import com.vzome.core.math.symmetry.Axis;
@@ -14,7 +13,7 @@ public interface OrbitSource
 	    	
     Axis getAxis( AlgebraicVector vector );
     
-    Color getColor( Direction orbit );
+    Color getColor( Direction orbit );  // used only in rendering
 
     Color getVectorColor( AlgebraicVector vector );
 
@@ -22,7 +21,5 @@ public interface OrbitSource
 	
 	Shapes getShapes();
 
-    String getName();
-
-    AlgebraicField getField();
+    String getName();  // used in serializing edits, and in rendering
 }

@@ -106,12 +106,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         {
             return null;
         }
-
-        @Override
-        public AlgebraicField getField()
-        {
-            return symmetry .getField();
-        }
     }
 
     public RenderedModel( final AlgebraicField field, final OrbitSource orbitSource )
