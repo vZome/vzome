@@ -466,9 +466,9 @@ jsweet {
 
         'com/vzome/core/generic/*.java',
 
-        'com/vzome/core/math/RealVector.java',
+        'com/vzome/core/math/*.java',
 
-        'com/vzome/core/math/symmetry/Embedding.java',
+        'com/vzome/core/math/symmetry/*.java',
 
         'com/vzome/core/algebra/Fields.java',
         'com/vzome/core/algebra/AlgebraicNumber.java',
@@ -476,6 +476,8 @@ jsweet {
         'com/vzome/core/algebra/AlgebraicVectors.java',
         'com/vzome/core/algebra/AlgebraicMatrix.java',
         'com/vzome/core/algebra/AlgebraicField.java',
+        'com/vzome/core/algebra/Quaternion.java',
+        'com/vzome/core/algebra/VefVectorExporter.java',
 
         'com/vzome/core/construction/Color.java',
         'com/vzome/core/construction/Construction.java',
@@ -501,6 +503,8 @@ jsweet {
         'com/vzome/core/model/Strut.java',
         'com/vzome/core/model/Panel.java',
         'com/vzome/core/model/RealizedModel.java',
+        'com/vzome/core/model/SimpleMeshJson.java',
+        'com/vzome/core/model/ColoredMeshJson.java',
 
         'com/vzome/core/editor/api/Manifestations.java',
         'com/vzome/core/editor/api/UndoableEdit.java',
@@ -510,27 +514,28 @@ jsweet {
         'com/vzome/core/editor/api/Selection.java',
         'com/vzome/core/editor/api/EditorModel.java',
         'com/vzome/core/editor/api/ImplicitSymmetryParameters.java',
+        'com/vzome/core/editor/api/ManifestConstructions.java',
 
         'com/vzome/core/edits/NewCentroid.java',
         'com/vzome/core/edits/ShowPoint.java'
     ]
-    // excludes = [
-    //     'com/vzome/core/math/symmetry/F4Group.java',
-    //     'com/vzome/core/math/symmetry/B4Group.java',
-    //     'com/vzome/core/math/symmetry/OctahedralSymmetry.java',
-    //     'com/vzome/core/math/symmetry/QuaternionicSymmetry.java',
+    excludes = [
+        'com/vzome/core/math/symmetry/F4Group.java',
+        'com/vzome/core/math/symmetry/B4Group.java',
+        'com/vzome/core/math/symmetry/OctahedralSymmetry.java',
+        'com/vzome/core/math/symmetry/Symmetries4D.java',
         
-    //     'com/vzome/core/algebra/BigRational.java',
-    //     'com/vzome/core/algebra/RootThreeField.java',
-    //     'com/vzome/core/algebra/AbstractAlgebraicField.java',
-    //     'com/vzome/core/algebra/RootTwoField.java',
-    //     'com/vzome/core/algebra/SnubDodecField.java',
-    //     'com/vzome/core/algebra/PentagonField.java',
-    //     'com/vzome/core/algebra/ParameterizedField.java',
-    //     'com/vzome/core/algebra/HeptagonField.java',
-    //     'com/vzome/core/algebra/AlgebraicSeries.java',
-    //     'com/vzome/core/algebra/*Impl.java',
-    //     'com/vzome/core/algebra/AlgebraicFields.java',
+        'com/vzome/core/algebra/BigRational.java',
+        'com/vzome/core/algebra/RootThreeField.java',
+        'com/vzome/core/algebra/AbstractAlgebraicField.java',
+        'com/vzome/core/algebra/RootTwoField.java',
+        'com/vzome/core/algebra/SnubDodecField.java',
+        'com/vzome/core/algebra/PentagonField.java',
+        'com/vzome/core/algebra/ParameterizedField.java',
+        'com/vzome/core/algebra/HeptagonField.java',
+        'com/vzome/core/algebra/AlgebraicSeries.java',
+        'com/vzome/core/algebra/*Impl.java',
+        'com/vzome/core/algebra/AlgebraicFields.java',
 
     //     'com/vzome/core/commands/ZomicVirtualMachine.java',
     //     'com/vzome/core/commands/CommandExecuteZomicScript.java',
@@ -539,9 +544,19 @@ jsweet {
 
     //     'com/vzome/core/model/*Impl.java',
 
-    //     'com/vzome/core/edits/Run*Script.java',
-    //     'com/vzome/core/edits/Validate2Manifold.java',
-    //     'com/vzome/core/edits/ReplaceWithShape.java'
-    // ]
+        '/core/src/main/java/com/vzome/core/edits/AdjustSelectionByOrbitLength.java',
+        '/core/src/main/java/com/vzome/core/edits/DodecagonSymmetry.java',
+        '/core/src/main/java/com/vzome/core/edits/GhostSymmetry24Cell.java',
+        '/core/src/main/java/com/vzome/core/edits/Polytope4d.java',
+        '/core/src/main/java/com/vzome/core/edits/SelectAutomaticStruts.java',
+        '/core/src/main/java/com/vzome/core/edits/SelectParallelStruts.java',
+        '/core/src/main/java/com/vzome/core/edits/Symmetry4d.java',
+        '/core/src/main/java/com/vzome/core/edits/MapToColor.java',
+        '/core/src/main/java/com/vzome/core/edits/PolarZonohedron.java',
+        'com/vzome/core/edits/Run*Script.java',
+        'com/vzome/core/edits/Validate2Manifold.java',
+        'com/vzome/core/edits/RealizeMetaParts.java',
+        'com/vzome/core/edits/ReplaceWithShape.java'
+    ]
 }
 

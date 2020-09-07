@@ -76,6 +76,10 @@ TODO:
   4. geometry cache
 */
 
+const dodecGeom = new THREE.DodecahedronBufferGeometry()
+const shownMaterial = new THREE.MeshLambertMaterial( { color: 0x0088aa } )
+const selectedMaterial = new THREE.MeshLambertMaterial( { color: 0xff4400 } )
+
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
@@ -89,21 +93,11 @@ const ModelCanvas = ( { lighting, instances, shapes, camera, shown, selected } )
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         { instances.map( ( { id, position, color, rotation, shape } ) => 
-            <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
+          <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
         { shown.map( ( { id, position } ) =>
-          <mesh key={id} position={position}>
-            <Dodecahedron>
-              <meshLambertMaterial attach="material" color={"#0088aa"} />
-            </Dodecahedron>
-          </mesh>
-          )}
+          <mesh key={id} position={position} geometry={dodecGeom} material={shownMaterial} /> ) }
         { selected.map( ( { id, position } ) =>
-          <mesh key={id} position={position}>
-            <Dodecahedron>
-              <meshLambertMaterial attach="material" color={"#ff4400"} />
-            </Dodecahedron>
-          </mesh>
-          )}
+          <mesh key={id} position={position} geometry={dodecGeom} material={selectedMaterial} /> ) }
       </Canvas>
     </>
   )

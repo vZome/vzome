@@ -65,10 +65,8 @@ public class XmlSymmetryFormat extends XmlSaveFormat
         }
         else if ( valName .equals( "QuaternionicSymmetry" ) ) {
             String name = val .getAttribute( "name" );
-            return symmetries .getQuaternionSet( name );
+            return getQuaternionicSymmetry( name );
         }
-        else if ( valName .equals( "String" ) )
-            return val .getTextContent();
         else if ( valName .equals( "Axis" ) )
             return parseAxis( val, "symm", "dir", "index", "sense" );
         else {
