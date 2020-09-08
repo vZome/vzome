@@ -15,13 +15,13 @@ export default ( state ) =>
       sum = value[0]
     }
   }
-  const centroid = field.scalarmul( scale, sum )
+  const centroid = [ field.scalarmul( scale, sum ) ] // canonically, all mesh objects are arrays of vectors
   const id = JSON.stringify( centroid )
   console.log( "%%%%%%%%%%%%%% centroid %%%%%%%%%%%%")
 
   return {
     ...state,
     shown,
-    selected : new Map().set( id, [centroid] )
+    selected : new Map().set( id, centroid )
   }
 }

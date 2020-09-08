@@ -69,9 +69,22 @@ public class JsRealizedModel implements RealizedModel {
     }
 
     @Override
+    public void remove( Manifestation man )
+    {
+        int[][][] vectors = ((JsManifestation) man) .getVectors();
+        ( (Function) this.adapter .$get( "delete" ) ).apply( this.adapter, $array( vectors ) );
+    }
+
+    @Override
     public void show( Manifestation mManifestation )
     {
         System.out.println( "show ball at: " + mManifestation .getLocation() .toRealVector() );
+    }
+
+    @Override
+    public void hide( Manifestation mManifestation )
+    {
+        System.out.println( "hide ball at: " + mManifestation .getLocation() .toRealVector() );
     }
 
     
@@ -95,19 +108,7 @@ public class JsRealizedModel implements RealizedModel {
     }
 
     @Override
-    public void hide(Manifestation mManifestation)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public void add(Manifestation m)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void remove(Manifestation mManifestation)
     {
         throw new RuntimeException( "unimplemented" );
     }

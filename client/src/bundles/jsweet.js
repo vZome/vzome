@@ -41,6 +41,13 @@ class Adapter
     this.selected = temp
   }
 
+  delete( vectors )
+  {
+    const key = canonicalKey( vectors )
+    this.shown.delete( key )
+    this.selected.delete( key )
+  }
+
   select( vectors )
   {
     const key = canonicalKey( vectors )
