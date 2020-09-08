@@ -24,20 +24,34 @@ const computeNormal = ( vertices, face ) => {
   return new THREE.Vector3().crossVectors( e1, e2 )
 }
 
-const Shape = ( { vertices, faces } ) => (
-  <geometry attach="geometry"
-    vertices={ vertices.map( v => new THREE.Vector3( v.x, v.y, v.z ) ) }
-    faces={ faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], computeNormal( vertices, f ) ) ) }
-    onUpdate={ self => (self.verticesNeedUpdate = true) }
-  />
-)
+const shapes = {}
+
+const createGeometry = ( { vertices, faces } ) =>
+{
+  var geometry = new THREE.Geometry();
+  geometry.vertices = vertices.map( v => new THREE.Vector3( v.x, v.y, v.z ) )
+  geometry.faces = faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], computeNormal( vertices, f ) ) )
+  geometry.computeBoundingSphere();
+  return geometry
+}
+
+const updateShapes = ( stateShapes ) =>
+{
+  for ( let shape of stateShapes )
+  {
+    const key = shape.id
+    if ( ! shapes[ key ] )
+      // must have a new shape
+      shapes[ key ] = createGeometry( shape )
+  }
+  return shapes
+}
 
 const Instance = ( { position, rotation, shape, color } ) => {
   const quaternion = rotation? [ rotation.x, rotation.y, rotation.z, rotation.w ] : [1,0,0,0];
   return (
     <group position={ [ position.x, position.y, position.z ] } quaternion={ quaternion }>
-      <mesh>
-        <Shape vertices={shape.vertices} faces={shape.faces} />
+      <mesh geometry={shapes[ shape ]}>
         <meshLambertMaterial attach="material" color={color} />
       </mesh>
     </group>
@@ -84,7 +98,7 @@ const selectedMaterial = new THREE.MeshLambertMaterial( { color: 0xff4400 } )
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, instances, shapes, camera, shown, selected, selectId, deselectId } ) => {
+const ModelCanvas = ( { lighting, instances, camera, shown, selected, selectId, deselectId } ) => {
   const { fov, position, up, lookAt } = camera
   return(
     <>
@@ -94,7 +108,7 @@ const ModelCanvas = ( { lighting, instances, shapes, camera, shown, selected, se
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         { instances.map( ( { id, position, color, rotation, shape } ) => 
-          <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
+          <Instance key={id} position={position} color={color} rotation={rotation} shape={shape} /> ) }
         { shown.map( ( { id, position } ) =>
           <mesh key={id} position={position} geometry={dodecGeom} material={shownMaterial} onClick={(e) => {e.stopPropagation(); selectId(id)} } /> ) }
         { selected.map( ( { id, position } ) =>
@@ -109,7 +123,7 @@ const select = ( { camera, lighting, vzomejava, mesh } ) => ({
   lighting,
   shown: Array.from( mesh.shown ).map( ( [id, vector] ) => ( { id, position: mesh.field.embedv( vector[0] ) } ) ),
   selected: Array.from( mesh.selected ).map( ( [id, vector] ) => ( { id, position: mesh.field.embedv( vector[0] ) } ) ),
-  shapes: vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
+  shapes: updateShapes( vzomejava.shapes ), // not used as a property, just updating as a side-effect
   instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
 })
 
