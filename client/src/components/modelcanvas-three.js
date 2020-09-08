@@ -47,11 +47,11 @@ const updateShapes = ( stateShapes ) =>
   return shapes
 }
 
-const Instance = ( { position, rotation, shape, color } ) => {
+const Instance = ( { position, rotation, shape, color, onClick } ) => {
   const quaternion = rotation? [ rotation.x, rotation.y, rotation.z, rotation.w ] : [1,0,0,0];
   return (
-    <group position={ [ position.x, position.y, position.z ] } quaternion={ quaternion }>
-      <mesh geometry={shapes[ shape ]}>
+    <group position={ position } quaternion={ quaternion }>
+      <mesh geometry={shapes[ shape ]} onClick={onClick}>
         <meshLambertMaterial attach="material" color={color} />
       </mesh>
     </group>
@@ -108,21 +108,28 @@ const ModelCanvas = ( { lighting, instances, camera, shown, selected, selectId, 
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         { instances.map( ( { id, position, color, rotation, shape } ) => 
-          <Instance key={id} position={position} color={color} rotation={rotation} shape={shape} /> ) }
+          <Instance key={id} position={[ position.x, position.y, position.z ]} color={color} rotation={rotation} shape={shape} /> ) }
         { shown.map( ( { id, position } ) =>
           <mesh key={id} position={position} geometry={dodecGeom} material={shownMaterial} onClick={(e) => {e.stopPropagation(); selectId(id)} } /> ) }
-        { selected.map( ( { id, position } ) =>
-          <mesh key={id} position={position} geometry={dodecGeom} material={selectedMaterial} onClick={(e) => {e.stopPropagation(); deselectId(id)} } /> ) }
+        { selected.map( ( { id, position, shape } ) =>
+          <Instance key={id} position={position} color={"#ff4400"} shape={shape} onClick={(e) => {e.stopPropagation(); deselectId(id)} } /> ) }
       </Canvas>
     </>
   )
 }
 
+const assignShape = ( id, vector ) =>
+{
+  const shapeIds = Object.getOwnPropertyNames( shapes )
+  const shape = shapeIds[ 0 ]
+  return { id, shape, position: vector }
+}
+
 const select = ( { camera, lighting, vzomejava, mesh } ) => ({
   camera,
   lighting,
-  shown: Array.from( mesh.shown ).map( ( [id, vector] ) => ( { id, position: mesh.field.embedv( vector[0] ) } ) ),
-  selected: Array.from( mesh.selected ).map( ( [id, vector] ) => ( { id, position: mesh.field.embedv( vector[0] ) } ) ),
+  shown: Array.from( mesh.shown ).map( ( [id, vector] ) => assignShape( id, mesh.field.embedv( vector[0] ) ) ),
+  selected: Array.from( mesh.selected ).map( ( [id, vector] ) => assignShape( id, mesh.field.embedv( vector[0] ) ) ),
   shapes: updateShapes( vzomejava.shapes ), // not used as a property, just updating as a side-effect
   instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
 })
