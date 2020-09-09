@@ -1,5 +1,5 @@
 
-import { FILE_LOADED, fetchModel } from './files'
+import { FILE_LOADED } from './files'
 import DEFAULT_MODEL from '../models/logo'
 import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile, JAVA_CODE_LOADED } from './jre'
 import { startProgress, stopProgress } from './progress'
@@ -124,15 +124,6 @@ export const reducer = ( state = initialState, action ) => {
 
 export const middleware = store => next => async action => 
 {
-  if ( action.type === JAVA_CODE_LOADED ) {
-    let url = "/app/models/vZomeLogo.vZome"
-    const urlParams = new URLSearchParams( window.location.search );
-    if ( urlParams.has( "url" ) ) {
-      url = decodeURI( urlParams.get( "url" ) )
-    }
-    store.dispatch( fetchModel( url ) )
-  }
-
   if ( action.type === FILE_LOADED ) {
     store.dispatch( startProgress( "Parsing vZome model..." ) )
     const path = "/str/" + action.payload.name

@@ -40,6 +40,7 @@ const updateShapes = ( stateShapes ) =>
   for ( let shape of stateShapes )
   {
     const key = shape.id
+    // doing our own bit of reconciliation, here
     if ( ! shapes[ key ] )
       // must have a new shape
       shapes[ key ] = createGeometry( shape )
@@ -47,11 +48,11 @@ const updateShapes = ( stateShapes ) =>
   return shapes
 }
 
-const Instance = ( { position, rotation, shape, color, onClick } ) => {
+const Instance = ( { position, rotation, shapeId, color, onClick } ) => {
   const quaternion = rotation? [ rotation.x, rotation.y, rotation.z, rotation.w ] : [1,0,0,0];
   return (
     <group position={ position } quaternion={ quaternion }>
-      <mesh geometry={shapes[ shape ]} onClick={onClick}>
+      <mesh geometry={shapes[ shapeId ]} onClick={onClick}>
         <meshLambertMaterial attach="material" color={color} />
       </mesh>
     </group>
@@ -91,10 +92,6 @@ TODO:
   4. geometry cache
 */
 
-const dodecGeom = new THREE.DodecahedronBufferGeometry()
-const shownMaterial = new THREE.MeshLambertMaterial( { color: 0x0088aa } )
-const selectedMaterial = new THREE.MeshLambertMaterial( { color: 0xff4400 } )
-
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
@@ -108,11 +105,11 @@ const ModelCanvas = ( { lighting, instances, camera, shown, selected, selectId, 
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         { instances.map( ( { id, position, color, rotation, shape } ) => 
-          <Instance key={id} position={[ position.x, position.y, position.z ]} color={color} rotation={rotation} shape={shape} /> ) }
-        { shown.map( ( { id, position } ) =>
-          <mesh key={id} position={position} geometry={dodecGeom} material={shownMaterial} onClick={(e) => {e.stopPropagation(); selectId(id)} } /> ) }
-        { selected.map( ( { id, position, shape } ) =>
-          <Instance key={id} position={position} color={"#ff4400"} shape={shape} onClick={(e) => {e.stopPropagation(); deselectId(id)} } /> ) }
+          <Instance key={id} position={[ position.x, position.y, position.z ]} color={color} rotation={rotation} shapeId={shape} /> ) }
+        { shown.map( ( { id, position, shapeId } ) =>
+          <Instance key={id} position={position} color={"#0088aa"} shapeId={shapeId} onClick={(e) => {e.stopPropagation(); selectId(id)} } /> ) }
+        { selected.map( ( { id, position, shapeId } ) =>
+          <Instance key={id} position={position} color={"#ff4400"} shapeId={shapeId} onClick={(e) => {e.stopPropagation(); deselectId(id)} } /> ) }
       </Canvas>
     </>
   )
@@ -121,8 +118,8 @@ const ModelCanvas = ( { lighting, instances, camera, shown, selected, selectId, 
 const assignShape = ( id, vector ) =>
 {
   const shapeIds = Object.getOwnPropertyNames( shapes )
-  const shape = shapeIds[ 0 ]
-  return { id, shape, position: vector }
+  const shapeId = shapeIds[ 0 ]
+  return { id, shapeId, position: vector }
 }
 
 const select = ( { camera, lighting, vzomejava, mesh } ) => ({
