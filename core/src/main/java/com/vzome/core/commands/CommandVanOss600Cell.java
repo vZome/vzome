@@ -10,7 +10,6 @@ import java.io.InputStream;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -39,7 +38,11 @@ public class CommandVanOss600Cell extends CommandImportVEFData
             String vefData = new String( out .toByteArray() );
 
             ConstructionList result = new ConstructionList();
-            AlgebraicField field = new PentagonField();
+            
+            // Was hardcoded to PentagonField... not sure this will work
+            AlgebraicField field = (AlgebraicField) attributes .get( CommandImportVEFData .FIELD_ATTR_NAME );
+            if ( field == null )
+                field = (AlgebraicField) attributes .get( Command.FIELD_ATTR_NAME );
             
             new VefToModel( null, effects ) .parseVEF( vefData, field );
             

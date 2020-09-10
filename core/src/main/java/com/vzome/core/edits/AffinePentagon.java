@@ -5,10 +5,8 @@ package com.vzome.core.edits;
 
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicFields;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -52,9 +50,9 @@ public class AffinePentagon extends ChangeManifestations
         // I'm not going to enable it in the menu yet.
         // TODO: I plan to replace this command with a more generalized AffinePolygon command 
         // and I'll add the new command to the menu at that time 
-        if (! AlgebraicFields.haveSameInitialCoefficients(field, PentagonField.FIELD_NAME) ) {
-            fail("Affine pentagon command requires a Pentagon field or subField.");
-        }
+//        if (! AlgebraicFields.haveSameInitialCoefficients(field, "golden" ) ) {
+//            fail("Affine pentagon command requires a Pentagon field or subField.");
+//        }
 
         // Before we start, be sure the balls at the ends of each strut have not been deleted or hidden.
         // Restore them just in case. No need to test if they already exist.

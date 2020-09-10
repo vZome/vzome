@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
-import com.vzome.core.editor.Application;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
@@ -85,7 +84,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
         String colorProps = MODEL_PREFIX + pkgName + "/colors.properties";
         try {
-            ClassLoader cl = Application.class .getClassLoader();
+            ClassLoader cl = this .getClass() .getClassLoader(); // NOTE: this may break Oculus
             InputStream in = cl .getResourceAsStream( colorProps );
             if ( in != null )
                 this .colors .load( in );

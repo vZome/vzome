@@ -491,7 +491,33 @@ jsweet {
 
         'com/vzome/core/editor/api/*.java',
 
-        'com/vzome/core/edits/*.java'
+        'com/vzome/core/edits/*.java',
+
+        'com/vzome/api/Tool.java',
+        'com/vzome/core/tools/*.java',
+        'com/vzome/core/editor/Duplicator.java',
+        'com/vzome/core/editor/AbstractToolFactory.java',
+        'com/vzome/core/editor/CommandEdit.java',
+        'com/vzome/core/editor/Tool.java',
+        'com/vzome/core/editor/ToolsModel.java',
+        'com/vzome/core/editor/BeginBlock.java',
+        'com/vzome/core/editor/EndBlock.java',
+        'com/vzome/core/editor/ApplyTool.java',
+        'com/vzome/core/editor/SelectToolParameters.java',
+        'com/vzome/core/editor/FieldApplication.java',
+        'com/vzome/core/editor/SymmetrySystem.java',
+        'com/vzome/core/editor/SelectionSummary.java',
+        'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
+        'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
+        'com/vzome/core/render/Colors.java',
+        'com/vzome/core/viewing/AbstractShapes.java',
+        'com/vzome/core/viewing/OctahedralShapes.java',
+        'com/vzome/core/viewing/ExportedVEFShapes.java',
+        'com/vzome/core/viewing/ExportedVEFStrutGeometry.java',
+        'com/vzome/core/parts/StrutGeometry.java',
+        'com/vzome/core/parts/FastDefaultStrutGeometry.java',
+        'com/vzome/core/model/RenderedObject.java',
+        'com/vzome/core/model/RenderedManifestation.java'
     ]
     excludes = [
         
@@ -510,11 +536,10 @@ jsweet {
         'com/vzome/core/commands/ZomicVirtualMachine.java',
         'com/vzome/core/commands/CommandExecuteZomicScript.java',
         'com/vzome/core/commands/CommandExecutePythonScript.java',
-        'com/vzome/core/commands/CommandVanOss600Cell.java',
 
     //     'com/vzome/core/model/*Impl.java',
 
-        'com/vzome/core/edits/Affine*tagon.java',
+        'com/vzome/core/edits/AffineHeptagon.java',
         'com/vzome/core/edits/HeptagonSubdivision.java',
         'com/vzome/core/edits/AdjustSelectionByOrbitLength.java',
         'com/vzome/core/edits/DodecagonSymmetry.java',

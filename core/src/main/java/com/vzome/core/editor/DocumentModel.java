@@ -214,6 +214,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         // cannot be done in the constructors
         for ( OrbitSource symmetrySys : this .symmetrySystems .values()) {
             ((SymmetrySystem) symmetrySys) .createToolFactories( this .tools );
+            for ( Tool.Kind toolkind : Tool.Kind.values() )
+            {
+                List<Tool.Factory> list = ((SymmetrySystem) symmetrySys) .getToolFactories( toolkind );
+                for ( Tool.Factory factory : list ) {
+                    this .editorModel .addSelectionSummaryListener( (SelectionSummary.Listener) factory );
+                }
+            }
         }
 
         kind .registerToolFactories( this .toolFactories, this .tools );

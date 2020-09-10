@@ -148,10 +148,6 @@ public class SymmetrySystem implements OrbitSource
             List<Tool.Factory> list = this .symmetryPerspective .createToolFactories( kind, tools );
             // toolFactoryLists manifest to the Controller automatically
             this .toolFactoryLists .put( kind, list );
-            for ( Tool.Factory factory : list ) {
-                ((EditorModelImpl) tools .getEditorModel()) .addSelectionSummaryListener( (SelectionSummary.Listener) factory );
-            }
-
             List<Tool> toolList = this .symmetryPerspective .predefineTools( kind, tools );
             this .toolLists .put( kind, toolList );
         }

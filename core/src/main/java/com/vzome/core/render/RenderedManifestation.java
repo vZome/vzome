@@ -12,7 +12,6 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
-import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
@@ -332,8 +331,8 @@ public class RenderedManifestation implements RenderedObject
     @JsonIgnore
     public String getSymmetryShapes()
     {
-        SymmetrySystem symmetrySystem = (SymmetrySystem) this .model .getOrbitSource();
-        return symmetrySystem .getName() + ":" + symmetrySystem .getStyle() .getName();
+        OrbitSource orbitSource = this .model .getOrbitSource();
+        return orbitSource .getName() + ":" + orbitSource .getShapes() .getName();
     }
 
     public void resetAttributes( OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
