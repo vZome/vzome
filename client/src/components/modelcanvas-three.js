@@ -24,7 +24,7 @@ const computeNormal = ( vertices, face ) => {
   return new THREE.Vector3().crossVectors( e1, e2 )
 }
 
-const shapes = {}
+const shapes = { unknown: new THREE.DodecahedronBufferGeometry() }
 
 const createGeometry = ( { vertices, faces } ) =>
 {
@@ -37,6 +37,8 @@ const createGeometry = ( { vertices, faces } ) =>
 
 const updateShapes = ( stateShapes ) =>
 {
+  if ( ! stateShapes || Object.getOwnPropertyNames( stateShapes ).length === 0 )
+    return shapes
   for ( let shape of stateShapes )
   {
     const key = shape.id
@@ -48,11 +50,21 @@ const updateShapes = ( stateShapes ) =>
   return shapes
 }
 
-const Instance = ( { position, rotation, shapeId, color, onClick } ) => {
+const Instance = ( { position, rotation, shapeId, color, clickable, selected, id, selectId, deselectId } ) => {
   const quaternion = rotation? [ rotation.x, rotation.y, rotation.z, rotation.w ] : [1,0,0,0];
+  const handleClick = ( e ) =>
+  {
+    if ( clickable ) {
+      e.stopPropagation()
+      if ( selected )
+        deselectId( id )
+      else
+        selectId( id )
+    }
+  }
   return (
     <group position={ position } quaternion={ quaternion }>
-      <mesh geometry={shapes[ shapeId ]} onClick={onClick}>
+      <mesh geometry={shapes[ shapeId ]} onClick={handleClick}>
         <meshLambertMaterial attach="material" color={color} />
       </mesh>
     </group>
@@ -86,16 +98,13 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
 
 /*
 TODO:
-  2. lighting component extract (Redux context tunneling)
-  3. auto-load real logo model, internal
-  3. UI overlay
-  4. geometry cache
+  - lighting component extract (Redux context tunneling)
 */
 
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, instances, camera, shown, selected, selectId, deselectId } ) => {
+const ModelCanvas = ( { lighting, instances, camera, selectId, deselectId } ) => {
   const { fov, position, up, lookAt } = camera
   return(
     <>
@@ -104,32 +113,24 @@ const ModelCanvas = ( { lighting, instances, camera, shown, selected, selectId, 
           <Lighting {...lighting} />
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-        { instances.map( ( { id, position, color, rotation, shape } ) => 
-          <Instance key={id} position={[ position.x, position.y, position.z ]} color={color} rotation={rotation} shapeId={shape} /> ) }
-        { shown.map( ( { id, position, shapeId } ) =>
-          <Instance key={id} position={position} color={"#0088aa"} shapeId={shapeId} onClick={(e) => {e.stopPropagation(); selectId(id)} } /> ) }
-        { selected.map( ( { id, position, shapeId } ) =>
-          <Instance key={id} position={position} color={"#ff4400"} shapeId={shapeId} onClick={(e) => {e.stopPropagation(); deselectId(id)} } /> ) }
+        { instances.map( instance => 
+          <Instance key={instance.id} {...instance} {...{ selectId, deselectId }} /> ) }
       </Canvas>
     </>
   )
 }
 
-const assignShape = ( id, vector ) =>
+const select = ( state ) =>
 {
-  const shapeIds = Object.getOwnPropertyNames( shapes )
-  const shapeId = shapeIds[ 0 ]
-  return { id, shapeId, position: vector }
+  const { camera, lighting, implementations } = state
+  const { shapes, instances } = implementations.instanceSelector( state )
+  updateShapes( shapes )
+  return {
+    camera,
+    lighting,
+    instances,
+  }
 }
-
-const select = ( { camera, lighting, vzomejava, mesh } ) => ({
-  camera,
-  lighting,
-  shown: Array.from( mesh.shown ).map( ( [id, vector] ) => assignShape( id, mesh.field.embedv( vector[0] ) ) ),
-  selected: Array.from( mesh.selected ).map( ( [id, vector] ) => assignShape( id, mesh.field.embedv( vector[0] ) ) ),
-  shapes: updateShapes( vzomejava.shapes ), // not used as a property, just updating as a side-effect
-  instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
-})
 
 const boundEventActions = {
   selectId : objectSelected,

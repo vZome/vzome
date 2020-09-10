@@ -10,8 +10,9 @@ import * as lighting from './lighting'
 import * as progress from './progress'
 import * as jsweet from './jsweet'
 import * as mesh from './mesh'
+import * as implementations from './implementations'
 
-const bundles = { jre, files, alerts, vzomejava, camera, lighting, progress, jsweet, mesh }
+const bundles = { jre, files, alerts, vzomejava, camera, lighting, progress, jsweet, mesh, implementations }
 
 
 export default ( middleware ) =>

@@ -1,7 +1,7 @@
 
 import { FILE_LOADED } from './files'
 import DEFAULT_MODEL from '../models/logo'
-import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile, JAVA_CODE_LOADED } from './jre'
+import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile } from './jre'
 import { startProgress, stopProgress } from './progress'
 
 // These are dispatched from Java
@@ -26,13 +26,19 @@ export const exportTriggered = ( extension, message ) => async (dispatch, getSta
   })
 }
 
+const normalize = ( instance ) =>
+{
+  const pos = instance.position
+  return { ...instance, shapeId: instance.shape, position: [ pos.x, pos.y, pos.z ] }
+}
+
 const initialState = {
   renderingOn: true,
   controller: undefined,
   fileName: undefined,
   shapes: DEFAULT_MODEL.shapes,
-  instances: DEFAULT_MODEL.instances,
-  previous: DEFAULT_MODEL.instances,
+  instances: DEFAULT_MODEL.instances.map( normalize ),
+  previous: DEFAULT_MODEL.instances.map( normalize )
 }
 
 export const reducer = ( state = initialState, action ) => {
@@ -63,7 +69,7 @@ export const reducer = ( state = initialState, action ) => {
         ...state,
         instances: [
           ...state.instances,
-          action.payload
+          normalize( action.payload )
         ]
       }
 
@@ -140,4 +146,11 @@ export const middleware = store => next => async action =>
   }
   
   return next( action )
+}
+
+export const supportsEdits = false
+
+export const instanceSelector = ( { vzomejava } ) =>
+{
+  return { instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous, shapes: vzomejava.shapes }
 }
