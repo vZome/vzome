@@ -1,5 +1,5 @@
 
-import { createInstance } from '../bundles/mesh'
+import * as mesh from '../bundles/mesh'
 
 export default ( state ) =>
 {
@@ -18,7 +18,7 @@ export default ( state ) =>
     }
   }
   const vectors = [ field.scalarmul( scale, sum ) ] // canonically, all mesh objects are arrays of vectors
-  const newBall = createInstance( vectors )
+  const newBall = mesh.createInstance( vectors )
 
   return {
     ...state,

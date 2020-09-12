@@ -6,29 +6,22 @@ import { legacyCommand } from './jsweet'
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
 const COMMAND_TRIGGERED = 'COMMAND_TRIGGERED'
+const COMMANDS_DEFINED = 'COMMANDS_DEFINED'
 const CREATE_RANDOM = 'CREATE_RANDOM'
 const ALL_SELECTED = 'ALL_SELECTED'
 const ALL_DESELECTED = 'ALL_DESELECTED'
 
-export const objectSelected = ( id ) =>
-{
-  return { type: OBJECT_SELECTED, payload: id }
-}
+export const objectSelected = ( id ) => ({ type: OBJECT_SELECTED, payload: id })
 
-export const objectDeselected = ( id ) =>
-{
-  return { type: OBJECT_DESELECTED, payload: id }
-}
+export const objectDeselected = ( id ) => ({ type: OBJECT_DESELECTED, payload: id })
 
-export const allSelected = () =>
-{
-  return { type: ALL_SELECTED }
-}
+export const allSelected = () => ({ type: ALL_SELECTED })
 
-export const allDeselected = () =>
-{
-  return { type: ALL_DESELECTED }
-}
+export const allDeselected = () => ({ type: ALL_DESELECTED })
+
+export const createRandom = () => ({ type: CREATE_RANDOM })
+
+export const commandsDefined = ( commands ) => ({ type: COMMANDS_DEFINED, payload: commands })
 
 export const commandTriggered = ( cmd, config={} ) =>
 {
@@ -40,24 +33,20 @@ export const commandTriggered = ( cmd, config={} ) =>
     case 'allSelected':
       return allSelected()
   
-      case 'allDeselected':
-        return allDeselected()
+    case 'allDeselected':
+      return allDeselected()
     
     default:
       return { type: COMMAND_TRIGGERED, payload: { cmd, config } }
   }
 }
 
-export const createRandom = () =>
-{
-  return { type: CREATE_RANDOM }
-}
-
 const initialState = {
   field: goldenField,
   shown: new Map(),
   selected: new Map(),
-  hidden: new Map()
+  hidden: new Map(),
+  commands: {}
 }
 
 const canonicalize = ( vectors ) =>
@@ -133,12 +122,6 @@ export const reducer = ( state = initialState, action ) =>
       }
     }
 
-    case COMMAND_TRIGGERED: {
-      const { cmd, config } = action.payload
-      const command = commands[ cmd ] || legacyCommand( cmd, config )
-      return command( state )
-    }
-
     case ALL_SELECTED: {
       return {
         ...state,
@@ -153,6 +136,20 @@ export const reducer = ( state = initialState, action ) =>
         selected: new Map(),
         shown: new Map( [ ...state.selected, ...state.shown ] )
       }
+    }
+
+    case COMMANDS_DEFINED: {
+      const newCommands = action.payload
+      return {
+        ...state,
+        commands: { ...state.commands, ...newCommands }
+      }
+    }
+
+    case COMMAND_TRIGGERED: {
+      const { cmd, config } = action.payload
+      const command = state.commands[ cmd ]
+      return command( state, config )
     }
 
     default:

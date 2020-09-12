@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { commandTriggered } from '../bundles/mesh'
 import Dropdown from 'react-bootstrap/Dropdown'
 
-const EditMenu = ({ visible, doEdit }) =>
+const EditMenu = ({ visible, edits, doEdit }) =>
 {
   if ( visible )
     return (
@@ -18,11 +18,12 @@ const EditMenu = ({ visible, doEdit }) =>
           <Dropdown.Item onClick={ e => doEdit( 'allSelected' ) }>Select All</Dropdown.Item>
           <Dropdown.Item onClick={ e => doEdit( 'allDeselected' ) }>Deselect All</Dropdown.Item>
           <Dropdown.Item onClick={ e => doEdit( 'centroid' ) }>Centroid 1</Dropdown.Item>
-          <Dropdown.Item onClick={ e => doEdit( 'NewCentroid' ) }>Centroid 2</Dropdown.Item>
           <Dropdown.Item onClick={ e => doEdit( 'ShowPoint', { mode: 'origin' } ) }>Show Origin</Dropdown.Item>
-          <Dropdown.Item onClick={ e => doEdit( 'Hide' ) }>Hide</Dropdown.Item>
-          <Dropdown.Item onClick={ e => doEdit( 'ShowHidden' ) }>Show Hidden</Dropdown.Item>
           <Dropdown.Item onClick={ e => doEdit( 'Delete' ) }>Delete</Dropdown.Item>
+          <Dropdown.Divider />
+          { edits.map( edit =>
+            <Dropdown.Item onClick={ e => doEdit( edit ) }>{edit}</Dropdown.Item>
+          ) }
         </Dropdown.Menu>
       </Dropdown>
     )
@@ -30,8 +31,9 @@ const EditMenu = ({ visible, doEdit }) =>
     return null
 } 
 
-const select = ( { jre, implementations } ) => ({
+const select = ( { jre, implementations, mesh } ) => ({
   visible: jre.javaReady && implementations.supportsEdits,
+  edits: Object.getOwnPropertyNames( mesh.commands )
 })
 
 const boundEventActions = {
