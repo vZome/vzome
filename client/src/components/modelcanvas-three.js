@@ -50,16 +50,13 @@ const updateShapes = ( stateShapes ) =>
   return shapes
 }
 
-const Instance = ( { position, rotation, shapeId, color, clickable, selected, id, selectId, deselectId } ) => {
+const Instance = ( { position, rotation, shapeId, color, id, toggleSelected } ) => {
   const quaternion = rotation? [ rotation.x, rotation.y, rotation.z, rotation.w ] : [1,0,0,0];
   const handleClick = ( e ) =>
   {
-    if ( clickable ) {
+    if ( toggleSelected ) { // toggleSelected is undefined when the model is not editable
       e.stopPropagation()
-      if ( selected )
-        deselectId( id )
-      else
-        selectId( id )
+      toggleSelected()
     }
   }
   return (
@@ -104,8 +101,13 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, instances, camera, selectId, deselectId } ) => {
+const ModelCanvas = ( { lighting, instances, camera, clickable, selectId, deselectId } ) => {
   const { fov, position, up, lookAt } = camera
+  const getToggler = ( { id, selected } ) =>
+    // three possibilities
+    !clickable?  undefined
+    : selected?  () => deselectId( id )
+    :            () => selectId( id )
   return(
     <>
       <Canvas gl={{ antialias: true, alpha: false }} >
@@ -114,7 +116,7 @@ const ModelCanvas = ( { lighting, instances, camera, selectId, deselectId } ) =>
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         { instances.map( instance => 
-          <Instance key={instance.id} {...instance} {...{ selectId, deselectId }} /> ) }
+          <Instance key={instance.id} {...instance} toggleSelected={ getToggler( instance ) } /> ) }
       </Canvas>
     </>
   )
@@ -129,6 +131,7 @@ const select = ( state ) =>
     camera,
     lighting,
     instances,
+    clickable: implementations.supportsEdits
   }
 }
 

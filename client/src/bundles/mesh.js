@@ -147,16 +147,14 @@ export const instanceSelector = ( { mesh } ) =>
     position: mesh.field.embedv( vectorList[0] ),
     shapeId: "unknown",
     color: "#0088aa",
-    selected: false,
-    clickable: true
+    selected: false
   } ) )
   const selectedInstances = Array.from( mesh.selected ).map( ( [id, vectorList] ) => ({
     id,
     position: mesh.field.embedv( vectorList[0] ),
     shapeId: "unknown",
     color: "#ff4400",
-    selected: true,
-    clickable: true
+    selected: true
   } ) )
   return { shapes: [], instances: [ ...shownInstances, ...selectedInstances ] }
 }
