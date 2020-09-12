@@ -1,4 +1,6 @@
 
+import { createInstance } from './mesh'
+
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
 // I can't use the ES6 module approach until I figure out how to use J4TS that way.
@@ -11,11 +13,6 @@ var vzome = undefined
 export const init = ( window, store ) =>
 {
   vzome = window.com.vzome
-}
-
-function canonicalKey( vectors )
-{
-  return JSON.stringify( vectors ) // TODO: canonically order the elements
 }
 
 class Adapter
@@ -43,23 +40,25 @@ class Adapter
 
   delete( vectors )
   {
-    const key = canonicalKey( vectors )
-    this.shown.delete( key )
-    this.selected.delete( key )
+    const { id } = createInstance( vectors )
+    this.shown.delete( id )
+    this.selected.delete( id )
   }
 
   select( vectors )
   {
-    const key = canonicalKey( vectors )
-    this.shown.delete( key )
-    this.selected.set( key, vectors )
+    const { id } = createInstance( vectors )
+    const instance = this.shown.get( id )
+    this.shown.delete( id )
+    this.selected.set( id, instance )
   }
 
   unselect( vectors )
   {
-    const key = canonicalKey( vectors )
-    this.selected.delete( key )
-    this.shown.set( key, vectors )
+    const { id } = createInstance( vectors )
+    const instance = this.selected.get( id )
+    this.selected.delete( id )
+    this.shown.set( id, instance )
   }
 
   selectionSize()
@@ -69,23 +68,24 @@ class Adapter
 
   selectedIterator()
   {
-    return this.selected.values()
+    return Array.from( this.selected.values() ).map( instance => instance.vectors ).values()
   }
 
   manifestationSelected( vectors )
   {
-    const key = canonicalKey( vectors )
-    return this.selected.has( key )
+    const { id } = createInstance( vectors )
+    return this.selected.has( id )
   }
 
   findOrAddManifestation( vectors )
   {
-    const key = canonicalKey( vectors )
-    const existing = this.shown.get( key ) || this.hidden.get( key ) || this.selected.get( key )
+    const created = createInstance( vectors )
+    const { id } = created
+    const existing = this.shown.get( id ) || this.hidden.get( id ) || this.selected.get( id )
     if ( existing )
       return existing;
     // TODO avoid creating zero-length struts, to match Java semantics of RMI.findConstruction
-    this.shown.set( key, vectors )
+    this.shown.set( id, created )
     return vectors
   }
 
@@ -127,9 +127,11 @@ export const legacyCommand = ( editName, config ) => state =>
     edit.configure( new Properties( config ) )
   
     edit.perform()  // side-effects will appear in shown, hidden, and selected maps
-  }
 
-  return {
-    ...state, shown, selected, hidden
+    return {
+      ...state, shown, selected, hidden
+    }
   }
+  else
+    return state
 }

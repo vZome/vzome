@@ -60,20 +60,48 @@ const initialState = {
   hidden: new Map()
 }
 
+const canonicalize = ( vectors ) =>
+{
+  if ( vectors.length === 1 )
+    return vectors
+
+  const strings = vectors.map( n => JSON.stringify( n ) )
+  let min = strings[ 0 ]
+  let minIndex = 0
+  for ( let i = 1; i < strings.length; i++ ) {
+    if ( strings[ i ].localeCompare( min ) < 0 ) {
+      minIndex = i
+      min = strings[ i ]
+    }
+  }
+  const sorted = []
+  for ( let j = 0; j < vectors.length; j++ ) {
+    sorted.push( vectors[ ( minIndex + j ) % vectors.length ] )
+  }
+  return sorted
+}
+
+export const createInstance = ( vectors ) =>
+{
+  const sorted = canonicalize( vectors )
+  return { id: JSON.stringify( sorted ), vectors: sorted }
+}
+
 export const reducer = ( state = initialState, action ) =>
 {
   switch (action.type) {
 
     case CREATE_RANDOM: {
       const location = state.field.randomVector()
-      const id = JSON.stringify( [ location ] )
+      const instance = createInstance( [ location ] )
+      const { id } = instance
       if ( state.selected.has( id ) || state.shown.has( id ) || state.hidden.has( id ) ) {
         return state
       }
       console.log( `random ball created at ${id}` )
       return {
         ...state,
-        selected: new Map( state.selected ).set( id, [ location ] ),
+        selected: new Map( state.selected ).set( id, instance ),
       }
     }
 
@@ -132,29 +160,35 @@ export const reducer = ( state = initialState, action ) =>
   }
 }
 
-export const middleware = store => next => async action => 
+const resolveShape = ( instance ) =>
 {
-  return next( action )
+  if ( instance.shapeId )
+    return;
+  // TODO: make this work for more than balls
+  instance.shapeId = "unknown"
+  instance.color = "#0088aa"
+}
+
+const renderableInstance = ( instance, selected, field ) =>
+{
+  resolveShape( instance ) // not pure
+  const result = {
+    ...instance,
+    position: field.embedv( instance.vectors[0] ),
+    selected
+  }
+  delete result.vectors
+  if ( selected )
+    result.color = "#ff4400"
+  return result
 }
 
 export const supportsEdits = true
 
 export const instanceSelector = ( { mesh } ) =>
 {
-  // TODO: make this work for more than balls
-  const shownInstances = Array.from( mesh.shown ).map( ( [id, vectorList] ) => ({
-    id,
-    position: mesh.field.embedv( vectorList[0] ),
-    shapeId: "unknown",
-    color: "#0088aa",
-    selected: false
-  } ) )
-  const selectedInstances = Array.from( mesh.selected ).map( ( [id, vectorList] ) => ({
-    id,
-    position: mesh.field.embedv( vectorList[0] ),
-    shapeId: "unknown",
-    color: "#ff4400",
-    selected: true
-  } ) )
-  return { shapes: [], instances: [ ...shownInstances, ...selectedInstances ] }
+  const instances = []
+  Array.from( mesh.shown    ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, false, mesh.field ) ) } )
+  Array.from( mesh.selected ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, true,  mesh.field ) ) } )
+  return { shapes: [], instances }
 }

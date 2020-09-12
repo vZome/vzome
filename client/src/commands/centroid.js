@@ -1,4 +1,6 @@
 
+import { createInstance } from '../bundles/mesh'
+
 export default ( state ) =>
 {
   const { field, selected } = state
@@ -6,22 +8,21 @@ export default ( state ) =>
 
   const scale = field.createRational( 1, selected.size )
   let sum = undefined
-  for ( let [key, value] of selected ) {
-    shown.set( key, value )
+  for ( let [id, instance] of selected ) {
+    shown.set( id, instance )
     if ( sum ) {
-      sum = field.vectoradd( sum, value[0] )
+      sum = field.vectoradd( sum, instance.vectors[0] )
     }
     else {
-      sum = value[0]
+      sum = instance.vectors[0]
     }
   }
-  const centroid = [ field.scalarmul( scale, sum ) ] // canonically, all mesh objects are arrays of vectors
-  const id = JSON.stringify( centroid )
-  console.log( "%%%%%%%%%%%%%% centroid %%%%%%%%%%%%")
+  const vectors = [ field.scalarmul( scale, sum ) ] // canonically, all mesh objects are arrays of vectors
+  const newBall = createInstance( vectors )
 
   return {
     ...state,
     shown,
-    selected : new Map().set( id, centroid )
+    selected : new Map().set( newBall.id, newBall )
   }
 }
