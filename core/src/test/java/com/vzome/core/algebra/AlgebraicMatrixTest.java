@@ -18,7 +18,7 @@ public class AlgebraicMatrixTest {
         AlgebraicField field = new PentagonField();
 
         AlgebraicVector c0 = new AlgebraicVector( field.createRational( -17 ) );
-        AlgebraicMatrix m = new AlgebraicMatrix( c0 );
+        AlgebraicMatrix m = new AlgebraicMatrix( new AlgebraicVector[]{ c0 } );
 //        print(m);
         
         assertTrue("require a square matrix", m.isSquare());
@@ -104,7 +104,7 @@ public class AlgebraicMatrixTest {
         AlgebraicVector c2 = new AlgebraicVector( field.createRational( -8 ), field.createRational( 2 ), field.createRational( -22 ), field.createRational( 25 ), field.createRational( 13 ) );
         AlgebraicVector c3 = new AlgebraicVector( field.createRational( -9 ), field.createRational( 4 ), field.createRational(  23 ), field.createRational( 36 ), field.createRational(-11 ) );
         AlgebraicVector c4 = new AlgebraicVector( field.createRational(-10 ), field.createRational( 5 ), field.createRational(  24 ), field.createRational( 49 ), field.createRational( 42 ) );
-        AlgebraicMatrix m = new AlgebraicMatrix( c0, c1, c2, c3, c4 );
+        AlgebraicMatrix m = new AlgebraicMatrix( new AlgebraicVector[]{ c0, c1, c2, c3, c4 } );
 //        print(m);
         
         assertTrue("require a square matrix", m.isSquare());
@@ -135,7 +135,7 @@ public class AlgebraicMatrixTest {
         assertEquals("vector rows", nRows, c3.dimension());
         assertEquals("vector rows", nRows, c4.dimension());
         
-        final AlgebraicMatrix m = new AlgebraicMatrix( c0, c1, c2, c3, c4 );
+        final AlgebraicMatrix m = new AlgebraicMatrix( new AlgebraicVector[]{ c0, c1, c2, c3, c4 } );
 //        print(m);
         
         assertFalse("require a non-square matrix", m.isSquare());

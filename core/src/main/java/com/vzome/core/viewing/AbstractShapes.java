@@ -43,11 +43,6 @@ public abstract class AbstractShapes implements Shapes
         mSymmetry = symm;
     }
 
-    public AbstractShapes( String pkgName, String name, Symmetry symm )
-    {
-        this( pkgName, name, null, symm );
-    }
-
     @Override
     public Color getColor( Direction dir )
     {

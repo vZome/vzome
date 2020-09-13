@@ -29,7 +29,7 @@ public class JsBall extends JsManifestation implements Connector
     @Override
     public AlgebraicVector getLocation()
     {
-        return this .field .createVector( this .vectors[ 0 ] );
+        return ((JsAlgebraicField) this .field) .createVectorFromTDs( this .vectors[ 0 ] );
     }
 
     @Override

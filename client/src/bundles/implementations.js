@@ -1,10 +1,10 @@
 
 import * as vzomejava from './vzomejava'
-import * as mesh from './mesh'
+import * as jsweet from './jsweet'
 
-const implementations = { mesh, vzomejava }
+const implementations = { jsweet, vzomejava }
 
-const currentImplementation = vzomejava
+const currentImplementation = jsweet
 
 const IMPLEMENTATION_CHOSEN = 'IMPLEMENTATION_CHOSEN'
 
@@ -17,8 +17,13 @@ export const reducer = ( state = initialState, action ) =>
 {
   switch (action.type) {
 
-    case IMPLEMENTATION_CHOSEN: {
-      return { instanceSelector: implementations[ action.payload ].instanceSelector }
+    case IMPLEMENTATION_CHOSEN:
+    {
+      const impl = implementations[ action.payload ]
+      return {
+        instanceSelector: impl.instanceSelector,
+        supportsEdits: impl.supportsEdits,
+      }
     }
 
     default:

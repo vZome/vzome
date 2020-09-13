@@ -1,7 +1,5 @@
 
 import goldenField from '../fields/golden'
-import commands from '../commands'
-import { legacyCommand } from './jsweet'
 
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
@@ -155,37 +153,4 @@ export const reducer = ( state = initialState, action ) =>
     default:
       return state
   }
-}
-
-const resolveShape = ( instance ) =>
-{
-  if ( instance.shapeId )
-    return;
-  // TODO: make this work for more than balls
-  instance.shapeId = "unknown"
-  instance.color = "#0088aa"
-}
-
-const renderableInstance = ( instance, selected, field ) =>
-{
-  resolveShape( instance ) // not pure
-  const result = {
-    ...instance,
-    position: field.embedv( instance.vectors[0] ),
-    selected
-  }
-  delete result.vectors
-  if ( selected )
-    result.color = "#ff4400"
-  return result
-}
-
-export const supportsEdits = true
-
-export const instanceSelector = ( { mesh } ) =>
-{
-  const instances = []
-  Array.from( mesh.shown    ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, false, mesh.field ) ) } )
-  Array.from( mesh.selected ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, true,  mesh.field ) ) } )
-  return { shapes: [], instances }
 }

@@ -1,5 +1,7 @@
 package com.vzome.jsweet;
 
+import java.util.Arrays;
+
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 
@@ -11,7 +13,8 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     public JsAlgebraicNumber( JsAlgebraicField field, int[] factors )
     {
         this .field = field;
-        this .factors = factors;
+        this .factors = new int[ factors.length ];
+        System .arraycopy( factors, 0, this .factors, 0, factors.length ); 
     }
 
     @Override
@@ -29,7 +32,9 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     @Override
     public int[] toTrailingDivisor()
     {
-        return this .factors;
+        int[] result = new int[ this.factors.length ];
+        System .arraycopy( this .factors, 0, result, 0, this.factors.length ); 
+        return result;
     }
 
     /**
@@ -61,9 +66,60 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     }
 
     @Override
+    public AlgebraicNumber minus( int n )
+    {
+        return n == 0 ? this : this.minus( field.createRational(n) );
+    }
+
+    @Override
+    public AlgebraicNumber minus( int num, int den )
+    {
+        return this.minus( field.createRational( num, den ) );
+    }
+
+    @Override
+    public AlgebraicNumber minus(AlgebraicNumber that)
+    {
+        int[] factors = this.field .subtract( this.factors, ((JsAlgebraicNumber) that) .factors );
+        return new JsAlgebraicNumber( this .field, factors );
+    }
+
+    @Override
     public AlgebraicNumber times( AlgebraicNumber that )
     {
         int[] factors = this.field .multiply( this.factors, ((JsAlgebraicNumber) that) .factors );
+        return new JsAlgebraicNumber( this .field, factors );
+    }
+
+    @Override
+    public AlgebraicNumber dividedBy( int divisor )
+    {
+        return divisor == 1 ? this : this.times( field.createRational( 1, divisor ) );
+    }
+
+    @Override
+    public AlgebraicNumber dividedBy( int num, int den )
+    {
+        return this.times( field.createRational( den, num ) );
+    }
+
+    @Override
+    public AlgebraicNumber dividedBy( AlgebraicNumber that )
+    {
+        int[] recip = this.field .reciprocal( ((JsAlgebraicNumber) that) .factors );
+        int[] factors = this.field .multiply( this.factors, recip );
+        return new JsAlgebraicNumber( this .field, factors );
+    }
+
+    public boolean equals( AlgebraicNumber that )
+    {
+        return Arrays.equals( this.factors, ((JsAlgebraicNumber) that ) .factors );
+    }
+
+    @Override
+    public AlgebraicNumber negate()
+    {
+        int[] factors = this.field .negate( this.factors );
         return new JsAlgebraicNumber( this .field, factors );
     }
 
@@ -90,6 +146,43 @@ public class JsAlgebraicNumber implements AlgebraicNumber
         }
         return true;
     }
+
+    @Override
+    public AlgebraicNumber reciprocal()
+    {
+        return new JsAlgebraicNumber( field, ((JsAlgebraicField) field) .reciprocal( factors ) );
+    }
+
+    /**
+     * @param buf
+     * @param format must be one of the following values.
+     * The result is formatted as follows:
+     * <br>
+     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br>
+     * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
+     * {@code ZOMIC_FORMAT      // 4 3}<br>
+     * {@code VEF_FORMAT        // (3,4)}<br>
+     */
+    public void getNumberExpression( StringBuffer buf, int format )
+    {
+        buf .append( this .toString( format ) );
+    }
+
+    /**
+     * @param format must be one of the following values.
+     * The result is formatted as follows:
+     * <br>
+     * {@code DEFAULT_FORMAT    // 4 + 3φ}<br>
+     * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
+     * {@code ZOMIC_FORMAT      // 4 3}<br>
+     * {@code VEF_FORMAT        // (3,4)}
+     * @return 
+     */
+    public String toString( int format )
+    {
+        return Arrays .toString( this .factors );
+    }
+
     
     
     
@@ -136,42 +229,6 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     }
 
     @Override
-    public AlgebraicNumber minus(int n)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber minus(int num, int den)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber minus(AlgebraicNumber that)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber dividedBy(int divisor)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber dividedBy(int num, int den)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber dividedBy(AlgebraicNumber that)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public boolean isRational()
     {
         throw new RuntimeException( "unimplemented" );
@@ -179,30 +236,6 @@ public class JsAlgebraicNumber implements AlgebraicNumber
 
     @Override
     public int signum()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber negate()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber reciprocal()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void getNumberExpression(StringBuffer buf, int format)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public String toString(int format)
     {
         throw new RuntimeException( "unimplemented" );
     }

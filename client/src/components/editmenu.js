@@ -22,7 +22,7 @@ const EditMenu = ({ visible, edits, doEdit }) =>
           <Dropdown.Item onClick={ e => doEdit( 'Delete' ) }>Delete</Dropdown.Item>
           <Dropdown.Divider />
           { edits.map( edit =>
-            <Dropdown.Item onClick={ e => doEdit( edit ) }>{edit}</Dropdown.Item>
+            <Dropdown.Item key={edit} onClick={ e => doEdit( edit ) }>{edit}</Dropdown.Item>
           ) }
         </Dropdown.Menu>
       </Dropdown>

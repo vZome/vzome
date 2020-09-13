@@ -449,6 +449,7 @@ jsweet {
 	targetVersion = 'ES6'
     tsOnly = false
 	includes = [
+        'java/io/*.java',
         'java/nio/*.java',
         'java/text/*.java',
         'java/util/*.java',
@@ -461,6 +462,7 @@ jsweet {
         'com/vzome/jsweet/JsManifestation.java',
         'com/vzome/jsweet/JsBall.java',
         'com/vzome/jsweet/JsEditorModel.java',
+        'com/vzome/jsweet/JsEditContext.java',
 
         'com/vzome/xml/DomUtils.java',
 

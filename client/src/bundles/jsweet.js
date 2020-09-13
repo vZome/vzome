@@ -1,5 +1,6 @@
 
 import * as mesh from './mesh'
+import goldenField from '../fields/golden'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
@@ -15,6 +16,12 @@ export const init = ( window, store ) =>
   for ( const [ name, editClass ] of Object.entries( vzome.core.edits ) )
     commands[ name ] = legacyCommand( vzome.jsweet, editClass )
   store.dispatch( mesh.commandsDefined( commands ) )
+
+  const context = new vzome.jsweet.JsEditContext()
+  const field = new vzome.jsweet.JsAlgebraicField( goldenField )
+  const symmPer = new vzome.core.kinds.IcosahedralSymmetryPerspective( field )
+  const colors = new vzome.core.render.Colors( new Properties( {} ) )
+  const orbitSource = new vzome.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
 }
 
 class Adapter
@@ -104,6 +111,11 @@ class Properties
     this.config = config
   }
 
+  getProperty( key )
+  {
+    return this.config[ key ]
+  }
+
   get( key )
   {
     return this.config[ key ]
@@ -131,4 +143,37 @@ export const legacyCommand = ( pkg, editClass ) => ( state, config ) =>
   return {
     ...state, shown, selected, hidden
   }
+}
+
+const resolveShape = ( instance ) =>
+{
+  if ( instance.shapeId )
+    return;
+  // TODO: make this work for more than balls
+  instance.shapeId = "unknown"
+  instance.color = "#0088aa"
+}
+
+const renderableInstance = ( instance, selected, field ) =>
+{
+  resolveShape( instance ) // not pure
+  const result = {
+    ...instance,
+    position: field.embedv( instance.vectors[0] ),
+    selected
+  }
+  delete result.vectors
+  if ( selected )
+    result.color = "#ff4400"
+  return result
+}
+
+export const supportsEdits = true
+
+export const instanceSelector = ( { mesh } ) =>
+{
+  const instances = []
+  Array.from( mesh.shown    ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, false, mesh.field ) ) } )
+  Array.from( mesh.selected ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, true,  mesh.field ) ) } )
+  return { shapes: [], instances }
 }

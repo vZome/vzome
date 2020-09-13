@@ -25,6 +25,12 @@ function simplify3( v0, v1, v2 )
   return [s0*v0/g, s1*v1/g, v2/g]
 }
 
+function reciprocal( a )
+{
+  const [a0=0, a1=0, ad=1] = a;
+  return simplify3( (a0 + a1)*ad, 0 - a1*ad, a0*a0 + a0*a1 - a1*a1 )
+}
+
 // from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 function getRandomInt( min, max )
 {
@@ -45,9 +51,21 @@ function plus( a, b )
   return simplify3( a0*bd + b0*ad, a1*bd + b1*ad, ad*bd )
 }
 
+function minus( a, b )
+{
+  const [ a0=0, a1=0, ad=1] = a, [b0=0, b1=0, bd=1 ] = b
+  return simplify3( a0*bd - b0*ad, a1*bd - b1*ad, ad*bd )
+}
+
 function scalarmul( s, v )
 {
   return [ ...v.values() ].map( ( vi=[0] ) => times( s, vi ) )
+}
+
+function negate( a )
+{
+  const [ a0=0, a1=0, ad=1 ] = a
+  return [ 0 - a0, 0 - a1, ad ]
 }
 
 function vectoradd( u, v )
@@ -61,6 +79,12 @@ function embed( a )
   return ( a0 + PHI * a1 ) / ad
 }
 
+function createRationalFromPairs( pairs )
+{
+  const [ a0=0, d0=1, a1=0, d1=1 ] = pairs
+  return simplify3( a0*d1, a1*d0, d0*d1 )
+}
+
 export default {
 
   name: 'golden',
@@ -69,8 +93,9 @@ export default {
 
   zero: [ 0, 0, 1 ],
   one: [ 1, 0, 1 ],
+  goldenRatio: [ 0, 1, 1 ],
 
-  plus, times, scalarmul, vectoradd, embed,
+  plus, minus, times, scalarmul, vectoradd, embed, reciprocal, negate, createRationalFromPairs,
 
   embedv: (v) => v.map( embed ),
 
@@ -86,4 +111,20 @@ export default {
     const z = [ getRandomInt( -3, 3 ), 0, 1 ]
     return [ x, y, z ]
   }
+}
+
+function foo(a,b)
+{
+  return (a === b)
+  || (a != null &&
+      ((o1, o2) =>
+      {
+        if (o1 && o1.equals) {
+          return o1.equals(o2);
+        }
+        else {
+            return o1 === o2;
+        }
+      })(a, b));
+
 }

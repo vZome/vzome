@@ -3,7 +3,6 @@
 
 package com.vzome.core.algebra;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -73,7 +72,24 @@ public class AlgebraicMatrix
         }
     }
     
-    public AlgebraicMatrix( AlgebraicVector... columns )
+    // NOTE: I'm removing the varargs constructor, since it trips up runtime for JSweet-transpiled code
+    
+    public AlgebraicMatrix( AlgebraicVector x, AlgebraicVector y )
+    {
+        this( new AlgebraicVector[] { x, y } );
+    }
+    
+    public AlgebraicMatrix( AlgebraicVector x, AlgebraicVector y, AlgebraicVector z )
+    {
+        this( new AlgebraicVector[] { x, y, z } );
+    }
+    
+    public AlgebraicMatrix( AlgebraicVector x, AlgebraicVector y, AlgebraicVector z, AlgebraicVector w )
+    {
+        this( new AlgebraicVector[] { x, y, z, w } );
+    }
+    
+    public AlgebraicMatrix( AlgebraicVector[] columns )
     {
         final int rows = columns[ 0 ] .dimension(); // all vectors must be of this same dimension
         final int cols = columns .length;

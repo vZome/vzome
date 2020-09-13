@@ -540,7 +540,7 @@ public abstract class AbstractSymmetry implements Symmetry
         for ( Direction orbit : mDirectionList ) {
             dotLocator .locateOrbitDot( orbit );
         }
-        return dotLocator .getDebuggerOutput(); // stop logging new orbits
+        return null; // dotLocator .getDebuggerOutput(); // stop logging new orbits
     }
 
     @Override
