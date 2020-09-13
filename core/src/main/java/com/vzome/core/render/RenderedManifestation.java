@@ -35,8 +35,6 @@ public class RenderedManifestation implements RenderedObject
 
     private Polyhedron mShape;
 
-    private RenderedModel model;
-
     private Color color = null;
 
     private AlgebraicMatrix mOrientation;
@@ -65,9 +63,12 @@ public class RenderedManifestation implements RenderedObject
     
     private static final Logger logger = Logger.getLogger( "com.vzome.core.render.RenderedManifestation" );
 
-    public RenderedManifestation( Manifestation m )
+    private OrbitSource orbitSource;
+
+    public RenderedManifestation( Manifestation m, OrbitSource orbitSource )
     {
         mManifestation = m;
+        this.orbitSource = orbitSource;
         if ( m != null )
             location = m .getLocation();
         this .fixedLocation = location;
@@ -87,17 +88,6 @@ public class RenderedManifestation implements RenderedObject
         return guid;
     }
 
-    public void setModel( RenderedModel model )
-    {
-        this .model = model;
-    }
-
-    @JsonIgnore
-    public RenderedModel getModel()
-    {
-        return this .model;
-    }
-
     public void setGraphicsObject( Object go )
     {
         mGraphicsObject = go;
@@ -109,7 +99,6 @@ public class RenderedManifestation implements RenderedObject
         return mGraphicsObject;
     }
 
-
     public void setGlow( float glow )
     {
         mGlow = glow;
@@ -120,7 +109,6 @@ public class RenderedManifestation implements RenderedObject
     {
         return mGlow;
     }
-
 
     public void setTransparency( float trans )
     {
@@ -201,7 +189,7 @@ public class RenderedManifestation implements RenderedObject
     @JsonGetter( "position" )
     public RealVector getLocation()
     {
-        return this .model .renderVector( this .location );
+        return getEmbedding() .embedInR3( this .location );
     }
 
     @JsonIgnore
@@ -213,7 +201,7 @@ public class RenderedManifestation implements RenderedObject
     @JsonIgnore
     public Embedding getEmbedding()
     {
-        return this .model .getEmbedding();
+        return this .orbitSource .getSymmetry();
     }
 
     @Override
@@ -266,7 +254,7 @@ public class RenderedManifestation implements RenderedObject
 
     public RenderedManifestation copy()
     {
-        RenderedManifestation copy = new RenderedManifestation( null );
+        RenderedManifestation copy = new RenderedManifestation( null, this .orbitSource );
         copy .location = this .location;
         copy .fixedLocation = this .fixedLocation;
         copy .color = this .color;
@@ -331,30 +319,29 @@ public class RenderedManifestation implements RenderedObject
     @JsonIgnore
     public String getSymmetryShapes()
     {
-        OrbitSource orbitSource = this .model .getOrbitSource();
-        return orbitSource .getName() + ":" + orbitSource .getShapes() .getName();
+        return this .orbitSource .getName() + ":" + this .orbitSource .getShapes() .getName();
     }
 
-    public void resetAttributes( OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
+    public void resetAttributes( boolean oneSidedPanels, boolean colorPanels )
     {
         if ( this .mManifestation instanceof Panel ) {
-            resetPanelAttributes( orbitSource, shapes, oneSidedPanels, colorPanels );
+            resetPanelAttributes( oneSidedPanels, colorPanels );
         }
-        else if ( shapes == null ) {
+        else if ( this .orbitSource .getShapes() == null ) {
             return; // rendering a symmetry model with panels only
         }
         else if ( this .mManifestation instanceof Connector ) {
-            this .resetConnectorAttributes( orbitSource, shapes, (Connector) this .mManifestation );
+            this .resetConnectorAttributes( (Connector) this .mManifestation );
         }
         else if ( this .mManifestation instanceof Strut ) {
             Strut strut = (Strut) this .mManifestation;
-            this .resetStrutAttributes( orbitSource, shapes, strut );
+            this .resetStrutAttributes( strut );
         }
         else 
             throw new UnsupportedOperationException( "only strut, ball, and panel shapes currently supported" );
     }
 
-    private void resetPanelAttributes( OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
+    private void resetPanelAttributes( boolean oneSidedPanels, boolean colorPanels )
     {
         Panel panel = (Panel) this .mManifestation;
         Polyhedron shape = makePanelPolyhedron( panel, oneSidedPanels );
@@ -383,9 +370,7 @@ public class RenderedManifestation implements RenderedObject
 
             Color color = this .mManifestation .getColor();
             if ( color == null ) {
-                color = shapes .getColor( orbit );
-                if ( color == null )
-                    color = orbitSource .getColor( orbit );
+                color = orbitSource .getColor( orbit );
                 if ( color != null )
                     color = color .getPastel();
             }
@@ -396,8 +381,9 @@ public class RenderedManifestation implements RenderedObject
         }
     }
 
-    protected void resetStrutAttributes( OrbitSource orbitSource, Shapes shapes, Strut strut )
+    protected void resetStrutAttributes( Strut strut )
     {
+        Shapes shapes = orbitSource .getShapes();
         AlgebraicVector offset = strut .getOffset();
         if ( offset .isOrigin() )
             return; // should catch this earlier
@@ -457,8 +443,9 @@ public class RenderedManifestation implements RenderedObject
         this .setColor( color );
     }
 
-    protected void resetConnectorAttributes( OrbitSource orbitSource, Shapes shapes, Connector m )
+    protected void resetConnectorAttributes( Connector m )
     {
+        Shapes shapes = orbitSource .getShapes();
         this .mShape = shapes .getConnectorShape();
         Color color = this .getManifestation() .getColor();
         if ( color == null )
@@ -491,5 +478,15 @@ public class RenderedManifestation implements RenderedObject
         if ( ! oneSided )
             poly .addFace( back );
         return poly;
+    }
+
+    public void setOrbitSource( OrbitSource orbitSource )
+    {
+        this.orbitSource = orbitSource;
+    }
+
+    public OrbitSource getOrbitSource()
+    {
+        return this.orbitSource;
     }
 }

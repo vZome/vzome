@@ -519,7 +519,7 @@ jsweet {
         'com/vzome/core/parts/StrutGeometry.java',
         'com/vzome/core/parts/FastDefaultStrutGeometry.java',
         'com/vzome/core/model/RenderedObject.java',
-        'com/vzome/core/model/RenderedManifestation.java'
+        'com/vzome/core/render/RenderedManifestation.java'
     ]
     excludes = [
         

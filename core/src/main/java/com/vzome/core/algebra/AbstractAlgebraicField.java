@@ -546,7 +546,16 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         }
         return new AlgebraicVector( coords );
     }
-    
+
+    @Override
+    public AlgebraicVector createVectorFromTDs( int[][] nums )
+    {
+        AlgebraicNumber x = this .createAlgebraicNumberFromTD( nums[0] );
+        AlgebraicNumber y = this .createAlgebraicNumberFromTD( nums[1] );
+        AlgebraicNumber z = this .createAlgebraicNumberFromTD( nums[2] );
+        return new AlgebraicVector( x, y, z );
+    }
+
     /**
      * Generates an AlgebraicVector with all AlgebraicNumber terms being integers (having unit denominators).
      * Contrast this with {@code createVector(int[][] nums)} which requires all denominators to be specified.

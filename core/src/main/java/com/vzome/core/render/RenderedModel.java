@@ -161,9 +161,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     public RenderedManifestation render( Manifestation manifestation )
     {
-        RenderedManifestation rm = new RenderedManifestation( manifestation );
-        rm .setModel( this );
-        rm .resetAttributes( this .orbitSource, this .mPolyhedra, this .oneSidedPanels, this .colorPanels );
+        RenderedManifestation rm = new RenderedManifestation( manifestation, this .orbitSource );
+        rm .resetAttributes( this .oneSidedPanels, this .colorPanels );
         return rm;
     }
 
@@ -173,7 +172,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         ManifestationImpl mi = (ManifestationImpl) m;
 		if ( ! this .enabled )
 		{
-		    mi .setRenderedObject( new RenderedManifestation( m ) );
+		    mi .setRenderedObject( new RenderedManifestation( m, this .orbitSource ) );
 			return;
 		}
 		
@@ -317,7 +316,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                     }
                 }
               
-                rendered .resetAttributes( orbitSource, mPolyhedra, this .oneSidedPanels, this .colorPanels );
+                rendered .setOrbitSource( this .orbitSource );
+                rendered .resetAttributes( this .oneSidedPanels, this .colorPanels );
                 newSet .add( rendered );  // must re-hash, since shape has changed
 
                 float glow = rendered .getGlow();
@@ -357,7 +357,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         RenderedModel snapshot = new RenderedModel( this .orbitSource .getSymmetry(), false );
         for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
-            copy .setModel( this );
             snapshot .mRendered .add( copy );
         }
         return snapshot;

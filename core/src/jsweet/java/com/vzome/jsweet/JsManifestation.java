@@ -5,6 +5,7 @@ import java.util.Arrays;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
@@ -15,6 +16,7 @@ public abstract class JsManifestation implements Manifestation
 {
     protected int[][][] vectors;
     protected AlgebraicField field;
+    private Color color;
 
     public JsManifestation( AlgebraicField field, int[][][] vectors )
     {
@@ -26,7 +28,19 @@ public abstract class JsManifestation implements Manifestation
     {
         return this.vectors;
     }
-    
+
+    @Override
+    public Color getColor()
+    {
+        return this.color;
+    }
+
+    @Override
+    public void setColor( Color color )
+    {
+        this.color = color;
+    }
+
     public static int[][] canonicalizeNumbers( AlgebraicNumber... ns )
     {
         return (int[][]) Arrays.stream( ns ) .map( n -> n .toTrailingDivisor() ) .toArray();

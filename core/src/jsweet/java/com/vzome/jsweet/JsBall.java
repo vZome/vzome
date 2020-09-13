@@ -97,18 +97,6 @@ public class JsBall extends JsManifestation implements Connector
     {}
 
     @Override
-    public Color getColor()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void setColor(Color color)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public void setContainer(Group container)
     {
         throw new RuntimeException( "unimplemented" );

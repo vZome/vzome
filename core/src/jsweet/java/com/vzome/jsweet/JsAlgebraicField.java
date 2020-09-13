@@ -3,6 +3,8 @@ package com.vzome.jsweet;
 import static jsweet.util.Lang.any;
 
 import java.util.ArrayList;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
@@ -131,6 +133,7 @@ public class JsAlgebraicField implements AlgebraicField
         return new AlgebraicVector( x, y, z );
     }
 
+    @Override
     public AlgebraicVector createVectorFromTDs( int[][] nums )
     {
         AlgebraicNumber x = this .createAlgebraicNumberFromTD( nums[0] );
@@ -278,6 +281,84 @@ public class JsAlgebraicField implements AlgebraicField
         return new JsAlgebraicNumber( this, value );
     }
 
+    @Override
+    public AlgebraicMatrix identityMatrix( int dims )
+    {
+        AlgebraicVector[] columns = new AlgebraicVector[ dims ];
+        for ( int i = 0; i < columns.length; i++ ) {
+            columns[ i ] = this .basisVector( dims, i );
+        }
+        return new AlgebraicMatrix( columns );
+    }
+
+    /**
+     * Modeled after AbstractAlgebraicField, with a switch from BigRationals to int[]s.
+     */
+    @Override
+    public AlgebraicNumber parseVefNumber( String string, boolean isRational )
+    {
+        int[] pairs = new int[ this .getOrder() + 1 ];
+        // if the field is declared as rational, then we won't allow the irrational syntax using parenthesis
+        // if the field is NOT declared as rational, then we will still allow the rational format as shorthand with no parenthesis
+        // or we will allow any order N string representation where N <= field.getOrder().
+        if( (!isRational) &&  string.startsWith("(") && string.endsWith(")") ) {
+            // strip "(" and ")", tokenize on ","
+            StringTokenizer tokens = new StringTokenizer( string.substring( 1, string.length() - 1 ), "," );
+            // The tokens get pushed into the factors array in reverse order 
+            // from the string representation so the last token becomes the 0th factor.
+            // For example, with an order 2 field, the factors for "(3,-2)" are parsed to a 2 element array as {-2, 3}
+            // With an order 6 field such as the snubDodec, the factors for "(0,0,0,0,3,-2)" are parsed to a 6 element array: {-2, 3, 0, 0, 0, 0}
+            // When a field needs more factors than are supplied, the factors that are provided must still be parsed into the begining of the array:
+            // With an order 6 field, if only 2 factors are provided, "(3,-2)" must still be parsed into a 6 element array as {-2, 3, 0, 0, 0, 0}
+            // Since VEF version 7 no longer requires that all factors be provided, we need to push the factors onto a stack
+            // and pop them off to reverse the order as they are inserted into the begining of the factors array.
+            Stack<Integer> numStack = new Stack<>();
+            Stack<Integer> denomStack = new Stack<>();
+            while( tokens .hasMoreTokens() ) {
+                if( numStack.size() >= this .getOrder() ) {
+                    throw new RuntimeException( "VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field" );
+                }
+                String[] parts = tokens .nextToken() .split( "/" );
+                numStack   .push( Integer .parseInt( parts[ 0 ] ) );
+                denomStack .push( (parts.length > 1)? Integer .parseInt( parts[ 1 ] ) : 1 );
+            }
+            int i = 0;
+            while( ! numStack.empty() ) {
+                pairs[ i++ ] = numStack   .pop();
+                pairs[ i++ ] = denomStack .pop();
+            }
+        }
+        else {
+            // format >= 7 supports the rational numeric format which expects no irrational factors,
+            // so there are no parentheses or commas, but still allows the optional "/" if a denominator is specified.
+            String[] parts = string .split( "/" );
+            pairs[ 0 ] = Integer .parseInt( parts[ 0 ] );
+            pairs[ 1 ] = (parts.length > 1)? Integer .parseInt( parts[ 1 ] ) : 1;
+        }
+        return this .createAlgebraicNumberFromPairs( pairs );
+    }
+
+    /**
+     * Drop one coordinate from the 4D vector. If wFirst (the usual), then drop
+     * the first coordinate, taking the "imaginary part" of the vector. If
+     * !wFirst (for old VEF import, etc.), drop the last coordinate.
+     *
+     * @param source
+     * @param wFirst
+     * @return
+     */
+    public final AlgebraicVector projectTo3d( AlgebraicVector source, boolean wFirst )
+    {
+        if ( source .dimension() == 3 )
+            return source;
+        else {
+            AlgebraicVector result = this .origin( 3 );
+            for ( int i = 0; i < 3; i++ )
+                result .setComponent( i, source .getComponent( wFirst? i+1 : i ) );
+            return result;
+        }
+    }
+
     
     
     
@@ -324,12 +405,6 @@ public class JsAlgebraicField implements AlgebraicField
     }
 
     @Override
-    public AlgebraicVector projectTo3d(AlgebraicVector source, boolean wFirst)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public AlgebraicVector createIntegerVector(int[][] nums)
     {
         throw new RuntimeException( "unimplemented" );
@@ -366,19 +441,7 @@ public class JsAlgebraicField implements AlgebraicField
     }
 
     @Override
-    public AlgebraicMatrix identityMatrix(int dims)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public int getNumMultipliers()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber parseVefNumber(String string, boolean isRational)
     {
         throw new RuntimeException( "unimplemented" );
     }

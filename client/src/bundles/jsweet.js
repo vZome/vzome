@@ -9,19 +9,81 @@ import goldenField from '../fields/golden'
 //
 // I should be able to use require() and a commonjs module, but it has the same J4TS build problem.
 
+const ORBITS_INITIALIZED = 'ORBITS_INITIALIZED'
+const SHAPE_LOADED = 'SHAPE_LOADED'
+
+const initialState = {
+  pkg: undefined,
+  orbitSource: undefined,
+}
+
+export const reducer = ( state = initialState, action ) =>
+{
+  switch ( action.type ) {
+
+    case ORBITS_INITIALIZED: {
+      const { pkg, orbitSource } = action.payload
+      return { pkg, orbitSource }
+    }
+
+    default:
+      return state
+  }
+}
+
+export const middleware = store => next => async action => 
+{
+  if ( action.type === SHAPE_LOADED ) {
+    const { pkg, shape, text } = action.payload
+    const vzome = store.getState().jsweet.pkg
+    vzome.core.viewing.ExportedVEFShapes.injectShapeVEF( `${pkg}-${shape}`, text )
+  }
+  
+  return next( action )
+}
+
 export const init = ( window, store ) =>
 {
   const vzome = window.com.vzome
+
+  // Discover all the legacy edit classes and register as commands
   const commands = {}
   for ( const [ name, editClass ] of Object.entries( vzome.core.edits ) )
     commands[ name ] = legacyCommand( vzome.jsweet, editClass )
   store.dispatch( mesh.commandsDefined( commands ) )
 
+  // Prepare the orbitSource for resolveShapes
   const context = new vzome.jsweet.JsEditContext()
   const field = new vzome.jsweet.JsAlgebraicField( goldenField )
   const symmPer = new vzome.core.kinds.IcosahedralSymmetryPerspective( field )
   const colors = new vzome.core.render.Colors( new Properties( {} ) )
   const orbitSource = new vzome.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
+
+  store.dispatch( { type: ORBITS_INITIALIZED, payload: { pkg: vzome, orbitSource } } )
+
+  // Inject the shape data
+  const pkg = "default"
+  const shape = "connector"
+  const path = `/app/shapes/${pkg}/${shape}.vef`
+  fetch( path )
+    .then( response =>
+    {
+      if ( ! response.ok ) {
+        throw new Error( 'Network response was not ok' );
+      }
+      return response.text()
+    })
+    .then( (text) => {
+      store.dispatch( {
+        type: SHAPE_LOADED,
+        payload: { pkg, shape, text }
+      } )
+    })
+    .catch( error =>
+    {
+      console.error( `Unable to fetch ${path}: ${error}` );
+    });
+
 }
 
 class Adapter
@@ -122,14 +184,14 @@ class Properties
   }
 }
 
-export const legacyCommand = ( pkg, editClass ) => ( state, config ) =>
+export const legacyCommand = ( pkg, editClass ) => ( mesh, config ) =>
 {
-  const shown = new Map( state.shown )
-  const hidden = new Map( state.hidden )
-  const selected = new Map( state.selected )
+  const shown = new Map( mesh.shown )
+  const hidden = new Map( mesh.hidden )
+  const selected = new Map( mesh.selected )
   const adapter = new Adapter( shown, hidden, selected )
 
-  const field = new pkg.JsAlgebraicField( state.field )
+  const field = new pkg.JsAlgebraicField( mesh.field )
   const realizedModel = new pkg.JsRealizedModel( field, adapter )
   const selection = new pkg.JsSelection( field, adapter )
   const editor = new pkg.JsEditorModel( realizedModel, selection )
@@ -141,22 +203,29 @@ export const legacyCommand = ( pkg, editClass ) => ( state, config ) =>
   edit.perform()  // side-effects will appear in shown, hidden, and selected maps
 
   return {
-    ...state, shown, selected, hidden
+    ...mesh, shown, selected, hidden
   }
 }
 
-const resolveShape = ( instance ) =>
+const resolveShape = ( instance, field, state ) =>
 {
   if ( instance.shapeId )
     return;
-  // TODO: make this work for more than balls
   instance.shapeId = "unknown"
   instance.color = "#0088aa"
+
+  const { pkg, orbitSource } = state
+  const jsAF = new pkg.jsweet.JsAlgebraicField( field )
+  const man = pkg.jsweet.JsManifestation.manifest( instance.vectors, jsAF )
+  const rm = new pkg.core.render.RenderedManifestation( man, orbitSource )
+  rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true );
+  // get shape, orientation, color from rm
+  console.log( "RM shape: " + rm.getShapeId().toString() )
 }
 
-const renderableInstance = ( instance, selected, field ) =>
+const renderableInstance = ( instance, selected, field, state ) =>
 {
-  resolveShape( instance ) // not pure
+  resolveShape( instance, field, state ) // not pure
   const result = {
     ...instance,
     position: field.embedv( instance.vectors[0] ),
@@ -170,10 +239,10 @@ const renderableInstance = ( instance, selected, field ) =>
 
 export const supportsEdits = true
 
-export const instanceSelector = ( { mesh } ) =>
+export const instanceSelector = ( { mesh, jsweet } ) =>
 {
   const instances = []
-  Array.from( mesh.shown    ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, false, mesh.field ) ) } )
-  Array.from( mesh.selected ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, true,  mesh.field ) ) } )
+  Array.from( mesh.shown    ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, false, mesh.field, jsweet ) ) } )
+  Array.from( mesh.selected ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, true,  mesh.field, jsweet ) ) } )
   return { shapes: [], instances }
 }

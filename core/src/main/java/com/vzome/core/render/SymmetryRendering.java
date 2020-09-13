@@ -112,7 +112,7 @@ public class SymmetryRendering implements RenderingChanges
             Collection<RenderedManifestation> instances = shapesAndInstances .getInstances();
             Polyhedron shape = null;
             for ( RenderedManifestation rm : instances ) {
-                rm .resetAttributes( this .orbits, shapes, false, true );
+                rm .resetAttributes( false, true );
                 shape = rm .getShape(); // they are all the same shape!
             }
             ShapeAndInstances newShapesAndInstances = this .getShapeAndInstances( shape );

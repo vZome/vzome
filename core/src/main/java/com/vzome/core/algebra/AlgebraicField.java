@@ -155,6 +155,16 @@ public interface AlgebraicField
     AlgebraicVector createVector( int[][] nums );
     
     /**
+     * 
+     * @param nums nums is an array of integer arrays: One array of coordinate terms per dimension.
+     * Each inner array is in "trailing divisor" form, to represent a rational AlgebraicNumber.
+     * If the order of the field is N, each inner array will be of length N+1, with the last
+     * element being the divisor.
+     * @return
+     */
+    AlgebraicVector createVectorFromTDs( int[][] nums );
+    
+    /**
      * Generates an AlgebraicVector with all AlgebraicNumber terms being integers (having unit denominators).
      * Contrast this with {@code createVector(int[][] nums)} which requires all denominators to be specified.
      * @param nums is a 2 dimensional integer array. The length of nums becomes the number of dimensions in the resulting AlgebraicVector.
