@@ -15,6 +15,7 @@ const SHAPE_LOADED = 'SHAPE_LOADED'
 const initialState = {
   pkg: undefined,
   orbitSource: undefined,
+  shapes: new Map(),
 }
 
 export const reducer = ( state = initialState, action ) =>
@@ -23,23 +24,21 @@ export const reducer = ( state = initialState, action ) =>
 
     case ORBITS_INITIALIZED: {
       const { pkg, orbitSource } = action.payload
-      return { pkg, orbitSource }
+      return { ...state, pkg, orbitSource }
+    }
+
+    case SHAPE_LOADED: {
+      const shape = action.payload
+      const { id } = shape
+      return {
+        ...state,
+        shapes: new Map( state.shapes ).set( id, shape ),
+      }
     }
 
     default:
       return state
   }
-}
-
-export const middleware = store => next => async action => 
-{
-  if ( action.type === SHAPE_LOADED ) {
-    const { pkg, shape, text } = action.payload
-    const vzome = store.getState().jsweet.pkg
-    vzome.core.viewing.ExportedVEFShapes.injectShapeVEF( `${pkg}-${shape}`, text )
-  }
-  
-  return next( action )
 }
 
 export const init = ( window, store ) =>
@@ -62,9 +61,9 @@ export const init = ( window, store ) =>
   store.dispatch( { type: ORBITS_INITIALIZED, payload: { pkg: vzome, orbitSource } } )
 
   // Inject the shape data
-  const pkg = "default"
-  const shape = "connector"
-  const path = `/app/shapes/${pkg}/${shape}.vef`
+  const shapePkg = "default"
+  const shapeName = "connector"
+  const path = `/app/shapes/${shapePkg}/${shapeName}.vef`
   fetch( path )
     .then( response =>
     {
@@ -74,16 +73,20 @@ export const init = ( window, store ) =>
       return response.text()
     })
     .then( (text) => {
-      store.dispatch( {
-        type: SHAPE_LOADED,
-        payload: { pkg, shape, text }
-      } )
+      vzome.core.viewing.ExportedVEFShapes.injectShapeVEF( `${shapePkg}-${shapeName}`, text )
+      const shape = orbitSource.getShapes().getConnectorShape()
+      const vertices = shape.getVertexList().toArray().map( av => {
+        const { x, y, z } = av.toRealVector()
+        return { x, y, z }
+      })
+      const faces = shape.getTriangleFaces().toArray()
+      const id = shape.getGuid().toString()
+      store.dispatch( { type: SHAPE_LOADED, payload: { id, vertices, faces } } )
     })
     .catch( error =>
     {
       console.error( `Unable to fetch ${path}: ${error}` );
     });
-
 }
 
 class Adapter
@@ -211,8 +214,6 @@ const resolveShape = ( instance, field, state ) =>
 {
   if ( instance.shapeId )
     return;
-  instance.shapeId = "unknown"
-  instance.color = "#0088aa"
 
   const { pkg, orbitSource } = state
   const jsAF = new pkg.jsweet.JsAlgebraicField( field )
@@ -220,7 +221,8 @@ const resolveShape = ( instance, field, state ) =>
   const rm = new pkg.core.render.RenderedManifestation( man, orbitSource )
   rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true );
   // get shape, orientation, color from rm
-  console.log( "RM shape: " + rm.getShapeId().toString() )
+  instance.shapeId = rm.getShapeId().toString()
+  instance.color = rm.getColor().toWebString()
 }
 
 const renderableInstance = ( instance, selected, field, state ) =>
@@ -244,5 +246,5 @@ export const instanceSelector = ( { mesh, jsweet } ) =>
   const instances = []
   Array.from( mesh.shown    ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, false, mesh.field, jsweet ) ) } )
   Array.from( mesh.selected ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, true,  mesh.field, jsweet ) ) } )
-  return { shapes: [], instances }
+  return { shapes: Array.from( jsweet.shapes.values() ), instances }
 }

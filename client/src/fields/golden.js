@@ -106,9 +106,9 @@ export default {
 
   randomVector: () =>
   {
-    const x = [ getRandomInt( -3, 3 ), 0, 1 ]
-    const y = [ getRandomInt( -3, 3 ), 0, 1 ]
-    const z = [ getRandomInt( -3, 3 ), 0, 1 ]
+    const x = [ getRandomInt( -12, 12 ), 0, 1 ]
+    const y = [ getRandomInt( -12, 12 ), 0, 1 ]
+    const z = [ getRandomInt( -12, 12 ), 0, 1 ]
     return [ x, y, z ]
   }
 }
