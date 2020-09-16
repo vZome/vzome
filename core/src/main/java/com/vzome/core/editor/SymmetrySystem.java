@@ -257,6 +257,8 @@ public class SymmetrySystem implements OrbitSource
         Color shapeColor = this .shapes .getColor( orbit ); // usually null, but see ExportedVEFShapes
         if ( shapeColor == null ) // the usual case
             shapeColor = orbitColors .get( orbit );
+        if ( shapeColor == null )
+            shapeColor = Color.WHITE;
         return shapeColor;
     }
 
