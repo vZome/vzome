@@ -29,7 +29,9 @@ export const exportTriggered = ( extension, message ) => async (dispatch, getSta
 const normalize = ( instance ) =>
 {
   const pos = instance.position
-  return { ...instance, shapeId: instance.shape, position: [ pos.x, pos.y, pos.z ] }
+  const quat = instance.rotation
+  const rotation = quat? [ quat.x, quat.y, quat.z, quat.w ] : [ 1, 0, 0, 0 ]
+  return { ...instance, shapeId: instance.shape, position: [ pos.x, pos.y, pos.z ], rotation }
 }
 
 const initialState = {

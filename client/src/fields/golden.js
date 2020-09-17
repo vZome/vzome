@@ -3,6 +3,12 @@
 
 const PHI = 0.5 * (Math.sqrt(5) + 1)
 
+function grsign( a )
+{
+  const [a0=0, a1=0, ad=1] = a, float = a0 + PHI * a1
+  return ((ad>0)-(ad<0)) * ((float>0)-(float<0))
+}
+
 function gcd( a, b )
 {
   a = Math.abs(a)
@@ -85,6 +91,32 @@ function createRationalFromPairs( pairs )
   return simplify3( a0*d1, a1*d0, d0*d1 )
 }
 
+function quatmul( u, v )
+{
+  const x = times, a = plus, s = minus,
+    [u0=[0], u1=[0], u2=[0], u3=[0]] = u,
+    [v0=[0], v1=[0], v2=[0], v3=[0]] = v
+  return [
+    s(x(u0, v0), a(a(x(u1, v1), x(u2, v2)), x(u3, v3))),
+    a(a(x(u0, v1), x(u1, v0)), s(x(u2, v3), x(u3, v2))),
+    a(a(x(u0, v2), x(u2, v0)), s(x(u3, v1), x(u1, v3))),
+    a(a(x(u0, v3), x(u3, v0)), s(x(u1, v2), x(u2, v1)))]
+}
+
+function quatnormalize(q)
+{
+  return scalarmul( [ q.map( grsign ).reduce( (a, b) => a || b ) || 1 ], q )
+}
+
+const one = [[1],,,], h = [1,,2], blue = [one, [,[1],,], [,,,[1]], [,,[1],]],
+  yellow = [one, [h, h, h, h], [[-1,,2], h, h, h]], red = [one, [[,1,2], h, [-1,1,2],]]
+for ( let i = 2; i < 5; i++ )
+  red[i] = quatmul( red[i-1], red[1] )
+const vZomeIcosahedralQuaternions = []; let b, r, y
+for (b of blue) for (r of red) for (y of yellow)
+  vZomeIcosahedralQuaternions.push( quatnormalize( quatmul( b, quatmul( y, r ) ) ).map( n => embed( n ) ) )
+
+
 export default {
 
   name: 'golden',
@@ -94,6 +126,8 @@ export default {
   zero: [ 0, 0, 1 ],
   one: [ 1, 0, 1 ],
   goldenRatio: [ 0, 1, 1 ],
+
+  vZomeIcosahedralQuaternions,
 
   plus, minus, times, scalarmul, vectoradd, embed, reciprocal, negate, createRationalFromPairs,
 
@@ -111,20 +145,4 @@ export default {
     const z = [ getRandomInt( -12, 12 ), 0, 1 ]
     return [ x, y, z ]
   }
-}
-
-function foo(a,b)
-{
-  return (a === b)
-  || (a != null &&
-      ((o1, o2) =>
-      {
-        if (o1 && o1.equals) {
-          return o1.equals(o2);
-        }
-        else {
-            return o1 === o2;
-        }
-      })(a, b));
-
 }

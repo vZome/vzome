@@ -461,6 +461,7 @@ jsweet {
         'com/vzome/jsweet/JsSelection.java',
         'com/vzome/jsweet/JsManifestation.java',
         'com/vzome/jsweet/JsBall.java',
+        'com/vzome/jsweet/JsStrut.java',
         'com/vzome/jsweet/JsEditorModel.java',
         'com/vzome/jsweet/JsEditContext.java',
 

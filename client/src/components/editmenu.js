@@ -18,6 +18,7 @@ const EditMenu = ({ visible, edits, doEdit }) =>
           <Dropdown.Item onClick={ e => doEdit( 'allSelected' ) }>Select All</Dropdown.Item>
           <Dropdown.Item onClick={ e => doEdit( 'allDeselected' ) }>Deselect All</Dropdown.Item>
           <Dropdown.Item onClick={ e => doEdit( 'centroid' ) }>Centroid 1</Dropdown.Item>
+          <Dropdown.Item onClick={ e => doEdit( 'shortred' ) }>Short Red 0</Dropdown.Item>
           <Dropdown.Item onClick={ e => doEdit( 'ShowPoint', { mode: 'origin' } ) }>Show Origin</Dropdown.Item>
           <Dropdown.Item onClick={ e => doEdit( 'Delete' ) }>Delete</Dropdown.Item>
           <Dropdown.Divider />

@@ -83,8 +83,7 @@ public abstract class JsManifestation implements Manifestation
             return new JsBall( field, vectors );
 
         case 2:
-            // TODO JsStrut
-            return null;
+            return new JsStrut( field, vectors );
 
         default:
             // TODO JsPanel

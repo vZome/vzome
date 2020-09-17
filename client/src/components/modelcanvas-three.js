@@ -50,8 +50,8 @@ const updateShapes = ( stateShapes ) =>
   return shapes
 }
 
-const Instance = ( { position, rotation, shapeId, color, selected, toggleSelected } ) => {
-  const quaternion = rotation? [ rotation.x, rotation.y, rotation.z, rotation.w ] : [1,0,0,0];
+const Instance = ( { position, rotation, shapeId, color, selected, toggleSelected } ) =>
+{
   const handleClick = ( e ) =>
   {
     if ( toggleSelected ) { // toggleSelected is undefined when the model is not editable
@@ -60,7 +60,7 @@ const Instance = ( { position, rotation, shapeId, color, selected, toggleSelecte
     }
   }
   return (
-    <group position={ position } quaternion={ quaternion }>
+    <group position={ position } quaternion={ rotation || [1,0,0,0] }>
       <mesh geometry={shapes[ shapeId ]} onClick={handleClick}>
         <meshLambertMaterial attach="material" color={color} emissive={selected? "#808080" : "black"} />
       </mesh>

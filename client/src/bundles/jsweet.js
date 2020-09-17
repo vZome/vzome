@@ -67,7 +67,7 @@ const setupIcosahedralSymmetry = () => ( dispatch, getState ) =>
   const context = new vzomePkg.jsweet.JsEditContext()
   const field = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
   const symmPer = new vzomePkg.core.kinds.IcosahedralSymmetryPerspective( field )
-  const colors = new vzomePkg.core.render.Colors( new Properties( {} ) )
+  const colors = new vzomePkg.core.render.Colors( new Properties( { "color.red": "255,0,0" } ) )
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
 
   dispatch( { type: ORBITS_INITIALIZED, payload: orbitSource } )
@@ -103,15 +103,8 @@ const loadShape = ( shapePkg, shapeName, text ) => ( dispatch, getState ) =>
   // For connectors, we can actually parse the shape
   if ( shapeName === "connector" )
   {
-    const shape = orbitSource.getShapes().getConnectorShape()
-    const vertices = shape.getVertexList().toArray().map( av => {
-      const { x, y, z } = av.toRealVector()
-      return { x, y, z }
-    })
-    const faces = shape.getTriangleFaces().toArray()
-    const id = shape.getGuid().toString()
-  
-    dispatch( { type: SHAPE_LOADED, payload: { id, vertices, faces } } )  
+    const shape = orbitSource.getShapes().getConnectorShape()  
+    dispatch( { type: SHAPE_LOADED, payload: makeShape( shape ) } )  
   }
 }
 
@@ -127,6 +120,7 @@ export const init = ( window, store ) =>
 
   // TODO: fetch all shape VEFs in a ZIP, then loadShape for each
   store.dispatch( fetchShape( "default", "connector" ) )
+  store.dispatch( fetchShape( "default", "red" ) )
 }
 
 class Adapter
@@ -250,7 +244,18 @@ export const legacyCommand = ( pkg, editClass ) => ( mesh, config ) =>
   }
 }
 
-const resolveShape = ( instance, field, state ) =>
+const makeShape = ( shape ) =>
+{
+  const vertices = shape.getVertexList().toArray().map( av => {
+    const { x, y, z } = av.toRealVector()
+    return { x, y, z }
+  })
+  const faces = shape.getTriangleFaces().toArray()
+  const id = shape.getGuid().toString()
+  return { id, vertices, faces }
+}
+
+const resolveShape = ( instance, field, state, shapes ) =>
 {
   if ( instance.shapeId )
     return;
@@ -259,15 +264,20 @@ const resolveShape = ( instance, field, state ) =>
   const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
   const man = vzomePkg.jsweet.JsManifestation.manifest( instance.vectors, jsAF )
   const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
-  rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true );
+  rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
   // get shape, orientation, color from rm
-  instance.shapeId = rm.getShapeId().toString()
-  instance.color = rm.getColor().toWebString()
+  const quatIndex = rm.getStrutZone()
+  instance.rotation = field.vZomeIcosahedralQuaternions[ quatIndex ]
+  const shapeId = rm.getShapeId().toString()
+  instance.shapeId = shapeId   // ANTI-PATTERN: mutating a state object
+  instance.color = rm.getColor().getRGB()   // ANTI-PATTERN: mutating a state object
+  if ( ! shapes[ shapeId ] )
+    shapes[ shapeId ] = makeShape( rm.getShape() )
 }
 
-const renderableInstance = ( instance, selected, field, state ) =>
+const renderableInstance = ( instance, selected, field, state, shapes ) =>
 {
-  resolveShape( instance, field, state ) // not pure
+  resolveShape( instance, field, state, shapes ) // not pure
   const result = {
     ...instance,
     position: field.embedv( instance.vectors[0] ),
@@ -282,7 +292,8 @@ export const supportsEdits = true
 export const instanceSelector = ( { mesh, jsweet } ) =>
 {
   const instances = []
-  Array.from( mesh.shown    ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, false, mesh.field, jsweet ) ) } )
-  Array.from( mesh.selected ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, true,  mesh.field, jsweet ) ) } )
-  return { shapes: Array.from( jsweet.shapes.values() ), instances }
+  const shapes = {}
+  Array.from( mesh.shown    ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, false, mesh.field, jsweet, shapes ) ) } )
+  Array.from( mesh.selected ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, true,  mesh.field, jsweet, shapes ) ) } )
+  return { shapes: Object.values( shapes ), instances }
 }
