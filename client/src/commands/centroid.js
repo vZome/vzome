@@ -18,7 +18,14 @@ export default ( state ) =>
     }
   }
   const vectors = [ field.scalarmul( scale, sum ) ] // canonically, all mesh objects are arrays of vectors
-  const newBall = mesh.createInstance( vectors )
+  let newBall = mesh.createInstance( vectors )
+
+  // Avoid creating a duplicate... make this reusable
+  const existing = shown.get( newBall.id )
+  if ( existing ) {
+    shown.delete( newBall.id )
+    newBall = existing
+  }
 
   return {
     ...state,

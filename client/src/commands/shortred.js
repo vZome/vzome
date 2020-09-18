@@ -11,12 +11,20 @@ export default ( state ) =>
   for ( let [id, instance] of selected ) {
     shown.set( id, instance )
     if ( ! start ) {
-      start = instance.vectors[0]
+      start = instance.vectors[0]  // ball, strut, whatever
     }
   }
+  // shown now has all the previously selected mesh objects
   const end = field.vectoradd( start, red )
   const vectors = [ start, end ] // canonically, all mesh objects are arrays of vectors
-  const newStrut = mesh.createInstance( vectors )
+  let newStrut = mesh.createInstance( vectors )
+
+  // Avoid creating a duplicate... make this reusable
+  const existing = shown.get( newStrut.id )
+  if ( existing ) {
+    shown.delete( newStrut.id )
+    newStrut = existing
+  }
 
   return {
     ...state,
