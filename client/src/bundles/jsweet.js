@@ -11,12 +11,10 @@ import goldenField from '../fields/golden'
 
 const PACKAGE_INJECTED = 'PACKAGE_INJECTED'
 const ORBITS_INITIALIZED = 'ORBITS_INITIALIZED'
-const SHAPE_LOADED = 'SHAPE_LOADED'
 
 const initialState = {
   vzomePkg: undefined,            // ANTI-PATTERN, not a plain Object
   orbitSource: undefined,    // ANTI-PATTERN, not a plain Object
-  shapes: new Map(),
 }
 
 export const reducer = ( state = initialState, action ) =>
@@ -31,15 +29,6 @@ export const reducer = ( state = initialState, action ) =>
     case ORBITS_INITIALIZED: {
       const orbitSource = action.payload
       return { ...state, orbitSource }
-    }
-
-    case SHAPE_LOADED: {
-      const shape = action.payload
-      const { id } = shape
-      return {
-        ...state,
-        shapes: new Map( state.shapes ).set( id, shape ),
-      }
     }
 
     default:
@@ -95,17 +84,9 @@ const fetchShape = ( shapePkg, shapeName ) => ( dispatch ) =>
 
 const loadShape = ( shapePkg, shapeName, text ) => ( dispatch, getState ) =>
 {
-  const { vzomePkg, orbitSource } = getState().jsweet
-
+  const { vzomePkg } = getState().jsweet
   // Inject the VEF into a static map on ExportedVEFShapes
   vzomePkg.core.viewing.ExportedVEFShapes.injectShapeVEF( `${shapePkg}-${shapeName}`, text )
-
-  // For connectors, we can actually parse the shape
-  if ( shapeName === "connector" )
-  {
-    const shape = orbitSource.getShapes().getConnectorShape()  
-    dispatch( { type: SHAPE_LOADED, payload: makeShape( shape ) } )  
-  }
 }
 
 // Initialization
@@ -257,9 +238,6 @@ const makeShape = ( shape ) =>
 
 const resolveShape = ( instance, field, state, shapes ) =>
 {
-  if ( instance.shapeId )
-    return;
-
   const { vzomePkg, orbitSource } = state
   const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
   const man = vzomePkg.jsweet.JsManifestation.manifest( instance.vectors, jsAF )
@@ -271,6 +249,7 @@ const resolveShape = ( instance, field, state, shapes ) =>
   const shapeId = rm.getShapeId().toString()
   instance.shapeId = shapeId   // ANTI-PATTERN: mutating a state object
   instance.color = rm.getColor().getRGB()   // ANTI-PATTERN: mutating a state object
+
   if ( ! shapes[ shapeId ] )
     shapes[ shapeId ] = makeShape( rm.getShape() )
 }

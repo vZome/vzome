@@ -13,6 +13,8 @@ export const objectSelected = ( id ) => ({ type: OBJECT_SELECTED, payload: id })
 
 export const objectDeselected = ( id ) => ({ type: OBJECT_DESELECTED, payload: id })
 
+export const selectionToggled = ( id, selected ) => selected? objectDeselected( id ) : objectSelected( id )
+
 export const allSelected = () => ({ type: ALL_SELECTED })
 
 export const allDeselected = () => ({ type: ALL_DESELECTED })

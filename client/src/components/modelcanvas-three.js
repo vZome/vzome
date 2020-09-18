@@ -5,7 +5,7 @@ import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
-import { objectSelected, objectDeselected } from '../bundles/mesh'
+import { selectionToggled } from '../bundles/mesh'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -24,8 +24,6 @@ const computeNormal = ( vertices, face ) => {
   return new THREE.Vector3().crossVectors( e1, e2 )
 }
 
-const shapes = { unknown: new THREE.DodecahedronBufferGeometry() }
-
 const createGeometry = ( { vertices, faces } ) =>
 {
   var geometry = new THREE.Geometry();
@@ -35,36 +33,32 @@ const createGeometry = ( { vertices, faces } ) =>
   return geometry
 }
 
-const updateShapes = ( stateShapes ) =>
-{
-  if ( ! stateShapes || Object.getOwnPropertyNames( stateShapes ).length === 0 )
-    return shapes
-  for ( let shape of stateShapes )
-  {
-    const key = shape.id
-    // doing our own bit of reconciliation, here
-    if ( ! shapes[ key ] )
-      // must have a new shape
-      shapes[ key ] = createGeometry( shape )
-  }
-  return shapes
-}
-
-const Instance = ( { position, rotation, shapeId, color, selected, toggleSelected } ) =>
+const Instance = ( { id, position, rotation, geometry, color, selected, toggleSelected } ) =>
 {
   const handleClick = ( e ) =>
   {
     if ( toggleSelected ) { // toggleSelected is undefined when the model is not editable
       e.stopPropagation()
-      toggleSelected()
+      toggleSelected( id, selected )
     }
   }
   return (
     <group position={ position } quaternion={ rotation || [1,0,0,0] }>
-      <mesh geometry={shapes[ shapeId ]} onClick={handleClick}>
+      <mesh geometry={geometry} onClick={handleClick}>
         <meshLambertMaterial attach="material" color={color} emissive={selected? "#808080" : "black"} />
       </mesh>
     </group>
+  )
+}
+
+const InstancedShape = ( { instances, shape, toggleSelected } ) =>
+{
+  const geometry = useMemo( () => createGeometry( shape ), [ shape ] )
+  return (
+    <>
+      { instances.map( instance => 
+        <Instance key={instance.id} {...instance} geometry={geometry} toggleSelected={toggleSelected} /> ) }
+    </>
   )
 }
 
@@ -101,13 +95,9 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, instances, camera, clickable, selectId, deselectId } ) => {
+const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } ) => {
   const { fov, position, up, lookAt } = camera
-  const getToggler = ( { id, selected } ) =>
-    // three possibilities
-    !clickable?  undefined
-    : selected?  () => deselectId( id )
-    :            () => selectId( id )
+  const toggleSelected = clickable && selectionToggler
   return(
     <>
       <Canvas gl={{ antialias: true, alpha: false }} >
@@ -115,29 +105,36 @@ const ModelCanvas = ( { lighting, instances, camera, clickable, selectId, desele
           <Lighting {...lighting} />
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-        { instances.map( instance => 
-          <Instance key={instance.id} {...instance} toggleSelected={ getToggler( instance ) } /> ) }
+        {/* { instances.map( instance => 
+          <Instance key={instance.id} {...instance} geometry={shapes[ instance.shapeId ]} toggleSelected={selectionToggler} /> ) } */}
+        { shapes.map( ( { shape, instances } ) =>
+          <InstancedShape key={shape.id} shape={shape} instances={instances} toggleSelected={toggleSelected} />
+        ) }
       </Canvas>
     </>
   )
+}
+
+const filterInstances = ( shape, instances ) =>
+{
+  return instances.filter( instance => instance.shapeId === shape.id )
 }
 
 const select = ( state ) =>
 {
   const { camera, lighting, implementations } = state
   const { shapes, instances } = implementations.instanceSelector( state )
-  updateShapes( shapes )
+  const sortedShapes = shapes.map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
   return {
     camera,
     lighting,
-    instances,
+    shapes: sortedShapes,
     clickable: implementations.supportsEdits
   }
 }
 
 const boundEventActions = {
-  selectId : objectSelected,
-  deselectId : objectDeselected
+  selectionToggler : selectionToggled
 }
 
 export default connect( select, boundEventActions )( ModelCanvas )
