@@ -25,6 +25,9 @@ export default ( state ) =>
     shown.delete( newStrut.id )
     newStrut = existing
   }
+  else {
+    // must resolve the orbit, rotation, and length
+  }
 
   return {
     ...state,

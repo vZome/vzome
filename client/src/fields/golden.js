@@ -1,4 +1,11 @@
 
+import * as mesh from '../bundles/mesh'
+
+export const init = ( window, store ) =>
+{
+  store.dispatch( mesh.fieldDefined( field ) )
+}
+
 // Most of this code is from Jacob Rus: https://observablehq.com/@jrus/zome-arithmetic
 
 const PHI = 0.5 * (Math.sqrt(5) + 1)
@@ -117,7 +124,7 @@ for (b of blue) for (r of red) for (y of yellow)
   vZomeIcosahedralQuaternions.push( quatnormalize( quatmul( b, quatmul( y, r ) ) ).map( n => embed( n ) ) )
 
 
-export default {
+export const field = {
 
   name: 'golden',
 

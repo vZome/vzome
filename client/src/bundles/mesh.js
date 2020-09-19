@@ -1,10 +1,10 @@
 
-import goldenField from '../fields/golden'
 
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
 const COMMAND_TRIGGERED = 'COMMAND_TRIGGERED'
 const COMMANDS_DEFINED = 'COMMANDS_DEFINED'
+const FIELD_DEFINED = 'FIELD_DEFINED'
 const CREATE_RANDOM = 'CREATE_RANDOM'
 const ALL_SELECTED = 'ALL_SELECTED'
 const ALL_DESELECTED = 'ALL_DESELECTED'
@@ -20,6 +20,8 @@ export const allSelected = () => ({ type: ALL_SELECTED })
 export const allDeselected = () => ({ type: ALL_DESELECTED })
 
 export const createRandom = () => ({ type: CREATE_RANDOM })
+
+export const fieldDefined = ( field ) => ({ type: FIELD_DEFINED, payload: field })
 
 export const commandsDefined = ( commands ) => ({ type: COMMANDS_DEFINED, payload: commands })
 
@@ -42,11 +44,12 @@ export const commandTriggered = ( cmd, config={} ) =>
 }
 
 const initialState = {
-  field: goldenField,
   shown: new Map(),
-  selected: new Map(),
+  selected: new Map(), // This Map is especially important, so we iterate in insertion order
   hidden: new Map(),
-  commands: {}
+  fields: {},
+  field: undefined,
+  commands: {},
 }
 
 const canonicalizedId = ( vectors ) =>
@@ -133,6 +136,15 @@ export const reducer = ( state = initialState, action ) =>
         ...state,
         selected: new Map(),
         shown: new Map( [ ...state.selected, ...state.shown ] )
+      }
+    }
+
+    case FIELD_DEFINED: {
+      const newField = action.payload
+      return {
+        ...state,
+        field: newField, // TODO use a different action to set this
+        fields: { ...state.fields, [newField.name]: newField }
       }
     }
 

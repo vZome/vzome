@@ -1,6 +1,6 @@
 
 import * as mesh from './mesh'
-import goldenField from '../fields/golden'
+import { field as goldenField } from '../fields/golden'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 

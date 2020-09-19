@@ -12,8 +12,9 @@ import * as jsweet from './jsweet'
 import * as mesh from './mesh'
 import * as implementations from './implementations'
 import * as commands from '../commands'
+import * as goldenField from '../fields/golden'
 
-const bundles = { jre, files, alerts, vzomejava, camera, lighting, progress, jsweet, mesh, implementations, commands }
+const bundles = { jre, files, alerts, vzomejava, camera, lighting, progress, jsweet, mesh, implementations, commands, goldenField }
 
 
 export default ( middleware ) =>
