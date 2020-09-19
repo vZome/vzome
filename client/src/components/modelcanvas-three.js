@@ -105,8 +105,6 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } 
           <Lighting {...lighting} />
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-        {/* { instances.map( instance => 
-          <Instance key={instance.id} {...instance} geometry={shapes[ instance.shapeId ]} toggleSelected={selectionToggler} /> ) } */}
         { shapes.map( ( { shape, instances } ) =>
           <InstancedShape key={shape.id} shape={shape} instances={instances} toggleSelected={toggleSelected} />
         ) }

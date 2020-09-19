@@ -49,11 +49,8 @@ const initialState = {
   commands: {}
 }
 
-const canonicalize = ( vectors ) =>
+const canonicalizedId = ( vectors ) =>
 {
-  if ( vectors.length === 1 )
-    return vectors
-
   const strings = vectors.map( n => JSON.stringify( n ) )
   let min = strings[ 0 ]
   let minIndex = 0
@@ -63,17 +60,18 @@ const canonicalize = ( vectors ) =>
       min = strings[ i ]
     }
   }
-  const sorted = []
-  for ( let j = 0; j < vectors.length; j++ ) {
-    sorted.push( vectors[ ( minIndex + j ) % vectors.length ] )
+  let sorted = ""
+  for ( let j = 0; j < strings.length; j++ ) {
+    sorted += strings[ ( minIndex + j ) % strings.length ]
   }
   return sorted
 }
 
 export const createInstance = ( vectors ) =>
 {
-  const sorted = canonicalize( vectors )
-  return { id: JSON.stringify( sorted ), vectors: sorted }
+  const id = canonicalizedId( vectors )
+  // We cannot rearrange vectors, as that would break strut semantics for some legacy commands
+  return { id, vectors }
 }
 
 export const reducer = ( state = initialState, action ) =>
