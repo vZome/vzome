@@ -1,10 +1,10 @@
 
 import * as mesh from '../bundles/mesh'
 
-export default ( state ) =>
+export default () => ( dispatch, getState ) =>
 {
-  const { field, selected } = state
-  const shown = new Map( state.shown )
+  let { field, selected, shown, hidden, resolver } = getState().mesh
+  shown = new Map( shown )
 
   const scale = field.createRational( 1, selected.size )
   let sum = undefined
@@ -19,17 +19,13 @@ export default ( state ) =>
   }
   const vectors = [ field.scalarmul( scale, sum ) ] // canonically, all mesh objects are arrays of vectors
   let newBall = mesh.createInstance( vectors )
+  const { id } = newBall
 
   // Avoid creating a duplicate... make this reusable
-  const existing = shown.get( newBall.id )
-  if ( existing ) {
-    shown.delete( newBall.id )
-    newBall = existing
-  }
+  newBall = shown.get( id ) || selected.get( id ) || hidden.get( id ) || newBall
+  shown.delete( id ) || selected.delete( id ) || hidden.delete( id )
 
-  return {
-    ...state,
-    shown,
-    selected : new Map().set( newBall.id, newBall )
-  }
+  selected = new Map().set( newBall.id, newBall )
+  dispatch( mesh.meshChanged( shown, selected, hidden ) )
+  dispatch( resolver.resolve( [ newBall ] ) )
 }

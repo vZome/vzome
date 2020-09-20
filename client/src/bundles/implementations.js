@@ -9,7 +9,7 @@ const currentImplementation = jsweet
 const IMPLEMENTATION_CHOSEN = 'IMPLEMENTATION_CHOSEN'
 
 const initialState = {
-  instanceSelector: currentImplementation.instanceSelector,
+  sortedShapes: currentImplementation.sortedShapes,
   supportsEdits: currentImplementation.supportsEdits
 }
 
@@ -21,7 +21,7 @@ export const reducer = ( state = initialState, action ) =>
     {
       const impl = implementations[ action.payload ]
       return {
-        instanceSelector: impl.instanceSelector,
+        sortedShapes: impl.sortedShapes,
         supportsEdits: impl.supportsEdits,
       }
     }

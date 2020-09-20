@@ -152,7 +152,13 @@ export const middleware = store => next => async action =>
 
 export const supportsEdits = false
 
-export const instanceSelector = ( { vzomejava } ) =>
+const filterInstances = ( shape, instances ) =>
 {
-  return { instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous, shapes: vzomejava.shapes }
+  return instances.filter( instance => instance.shapeId === shape.id )
+}
+
+export const sortedShapes = ( { vzomejava } ) =>
+{
+  const instances = vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
+  return vzomejava.shapes.map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
 }

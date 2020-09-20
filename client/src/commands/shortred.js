@@ -1,10 +1,10 @@
 
 import * as mesh from '../bundles/mesh'
 
-export default ( state ) =>
+export default () => ( dispatch, getState ) =>
 {
-  const { field, selected } = state
-  const shown = new Map( state.shown )
+  let { field, shown, selected, hidden, resolver } = getState().mesh
+  shown = new Map( shown )
 
   const red = [ [ 2, 3, 1 ], [ 1, 2, 1 ], [ 0, 0, 1 ] ]
   let start = undefined
@@ -20,18 +20,10 @@ export default ( state ) =>
   let newStrut = mesh.createInstance( vectors )
 
   // Avoid creating a duplicate... make this reusable
-  const existing = shown.get( newStrut.id )
-  if ( existing ) {
-    shown.delete( newStrut.id )
-    newStrut = existing
-  }
-  else {
-    // must resolve the orbit, rotation, and length
-  }
-
-  return {
-    ...state,
-    shown,
-    selected : new Map().set( newStrut.id, newStrut )
-  }
+  const { id } = newStrut
+  newStrut = shown.get( id ) || selected.get( id ) || hidden.get( id ) || newStrut
+  shown.delete( id ) || selected.delete( id ) || hidden.delete( id )
+  selected = new Map().set( newStrut.id, newStrut )
+  dispatch( mesh.meshChanged( shown, selected, hidden ) )
+  dispatch( resolver.resolve( [ newStrut ] ) )
 }

@@ -2,12 +2,12 @@
 
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
-const COMMAND_TRIGGERED = 'COMMAND_TRIGGERED'
 const COMMANDS_DEFINED = 'COMMANDS_DEFINED'
 const FIELD_DEFINED = 'FIELD_DEFINED'
-const CREATE_RANDOM = 'CREATE_RANDOM'
+const RESOLVER_DEFINED = 'RESOLVER_DEFINED'
 const ALL_SELECTED = 'ALL_SELECTED'
 const ALL_DESELECTED = 'ALL_DESELECTED'
+const MESH_CHANGED = 'MESH_CHANGED'
 
 export const objectSelected = ( id ) => ({ type: OBJECT_SELECTED, payload: id })
 
@@ -19,27 +19,53 @@ export const allSelected = () => ({ type: ALL_SELECTED })
 
 export const allDeselected = () => ({ type: ALL_DESELECTED })
 
-export const createRandom = () => ({ type: CREATE_RANDOM })
+export const meshChanged = ( shown, selected, hidden ) => ({ type: MESH_CHANGED, payload: { shown, selected, hidden } })
+
+export const createRandom = () => ( dispatch, getState ) =>
+{
+  let { shown, selected, hidden, field, resolver } = getState().mesh
+  shown = new Map( shown )
+  selected = new Map( selected )
+  hidden = new Map( hidden )
+
+  const location = field.randomVector()
+  let instance = createInstance( [ location ] )
+  const { id } = instance
+
+  instance = shown.get( id ) || selected.get( id ) || hidden.get( id ) || instance
+  shown.delete( id ) || selected.delete( id ) || hidden.delete( id )
+  selected = selected.set( id, instance )
+
+  dispatch( meshChanged( shown, selected, hidden ) )
+  dispatch( resolver.resolve( [ instance ] ) )
+}
 
 export const fieldDefined = ( field ) => ({ type: FIELD_DEFINED, payload: field })
 
+export const resolverDefined = ( resolver ) => ({ type: RESOLVER_DEFINED, payload: resolver })
+
 export const commandsDefined = ( commands ) => ({ type: COMMANDS_DEFINED, payload: commands })
 
-export const commandTriggered = ( cmd, config={} ) =>
+export const commandTriggered = ( cmd, config={} ) => ( dispatch, getState ) =>
 {
   switch ( cmd ) {
 
     case 'random':
-      return createRandom()
+      dispatch( createRandom() )
+      break;
   
     case 'allSelected':
-      return allSelected()
+      dispatch( allSelected() )
+      break;
   
     case 'allDeselected':
-      return allDeselected()
-    
+      dispatch( allDeselected() )
+      break;
+
     default:
-      return { type: COMMAND_TRIGGERED, payload: { cmd, config } }
+      const state = getState().mesh
+      const command = state.commands[ cmd ]
+      dispatch( command( config ) )
   }
 }
 
@@ -49,6 +75,7 @@ const initialState = {
   hidden: new Map(),
   fields: {},
   field: undefined,
+  resolver: undefined,
   commands: {},
 }
 
@@ -81,18 +108,8 @@ export const reducer = ( state = initialState, action ) =>
 {
   switch (action.type) {
 
-    case CREATE_RANDOM: {
-      const location = state.field.randomVector()
-      const instance = createInstance( [ location ] )
-      const { id } = instance
-      if ( state.selected.has( id ) || state.shown.has( id ) || state.hidden.has( id ) ) {
-        return state
-      }
-      console.log( `random ball created at ${id}` )
-      return {
-        ...state,
-        selected: new Map( state.selected ).set( id, instance ),
-      }
+    case MESH_CHANGED: {
+      return { ...state, ...action.payload } // replace shown, selected, hidden
     }
 
     case OBJECT_SELECTED: {
@@ -148,18 +165,17 @@ export const reducer = ( state = initialState, action ) =>
       }
     }
 
+    case RESOLVER_DEFINED: {
+      const resolver = action.payload
+      return { ...state, resolver }
+    }
+
     case COMMANDS_DEFINED: {
       const newCommands = action.payload
       return {
         ...state,
         commands: { ...state.commands, ...newCommands }
       }
-    }
-
-    case COMMAND_TRIGGERED: {
-      const { cmd, config } = action.payload
-      const command = state.commands[ cmd ]
-      return command( state, config )
     }
 
     default:

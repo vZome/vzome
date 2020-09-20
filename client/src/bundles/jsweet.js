@@ -11,10 +11,14 @@ import { field as goldenField } from '../fields/golden'
 
 const PACKAGE_INJECTED = 'PACKAGE_INJECTED'
 const ORBITS_INITIALIZED = 'ORBITS_INITIALIZED'
+const SHAPE_DEFINED = 'SHAPE_DEFINED'
+const INSTANCE_SHAPED = 'INSTANCE_SHAPED'
 
 const initialState = {
-  vzomePkg: undefined,            // ANTI-PATTERN, not a plain Object
+  vzomePkg: undefined,       // ANTI-PATTERN, not a plain Object
   orbitSource: undefined,    // ANTI-PATTERN, not a plain Object
+  shapes: {},
+  shapedInstances : {},  // where we store shape and orientation, outside of the mesh
 }
 
 export const reducer = ( state = initialState, action ) =>
@@ -29,6 +33,18 @@ export const reducer = ( state = initialState, action ) =>
     case ORBITS_INITIALIZED: {
       const orbitSource = action.payload
       return { ...state, orbitSource }
+    }
+
+    case INSTANCE_SHAPED: {
+      const { id } = action.payload
+      const shapedInstances = { ...state.shapedInstances, [id]: action.payload }
+      return { ...state, shapedInstances }
+    }
+
+    case SHAPE_DEFINED: {
+      const shape = action.payload
+      const shapes = { ...state.shapes, [shape.id]: shape }
+      return { ...state, shapes }
     }
 
     default:
@@ -60,6 +76,7 @@ const setupIcosahedralSymmetry = () => ( dispatch, getState ) =>
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
 
   dispatch( { type: ORBITS_INITIALIZED, payload: orbitSource } )
+  dispatch( mesh.resolverDefined( { resolve } ) )
 }
 
 const fetchShape = ( shapePkg, shapeName ) => ( dispatch ) =>
@@ -87,6 +104,50 @@ const loadShape = ( shapePkg, shapeName, text ) => ( dispatch, getState ) =>
   const { vzomePkg } = getState().jsweet
   // Inject the VEF into a static map on ExportedVEFShapes
   vzomePkg.core.viewing.ExportedVEFShapes.injectShapeVEF( `${shapePkg}-${shapeName}`, text )
+}
+
+const makeShape = ( shape ) =>
+{
+  const vertices = shape.getVertexList().toArray().map( av => {
+    const { x, y, z } = av.toRealVector()
+    return { x, y, z }
+  })
+  const faces = shape.getTriangleFaces().toArray()
+  const id = shape.getGuid().toString()
+  return { id, vertices, faces }
+}
+
+// This thunk gets hooked up as the resolver for the mesh
+const resolve = ( instances ) => ( dispatch, getState ) =>
+{
+  const { vzomePkg, orbitSource, shapes, shapedInstances } = getState().jsweet
+  const { field } = getState().mesh
+  const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
+  instances.map( ({ id, vectors }) =>
+  {
+    // first, is the instance already resolved?
+    if ( shapedInstances[ id ] )
+      return;
+
+    // Not resolved, so use the orbitSource
+    const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF )
+    const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
+    rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
+
+    // is the shape new?
+    const shapeId = rm.getShapeId().toString()
+    if ( ! shapes[ shapeId ] ) {
+      const shape = makeShape( rm.getShape() )
+      dispatch( { type: SHAPE_DEFINED, payload: shape } )
+    }
+
+    // get shape, orientation, color from rm
+    const quatIndex = rm.getStrutZone()
+    const rotation = ( quatIndex && (quatIndex >= 0) && field.embedv( field.vZomeIcosahedralQuaternions[ quatIndex ] ) ) || [1,0,0,0]
+    const color = rm.getColor().getRGB()
+  
+    dispatch( { type: INSTANCE_SHAPED, payload: { id, shapeId, rotation, color } } )
+  } )
 }
 
 // Initialization
@@ -202,14 +263,15 @@ class Properties
   }
 }
 
-export const legacyCommand = ( pkg, editClass ) => ( mesh, config ) =>
+export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, getState ) =>
 {
-  const shown = new Map( mesh.shown )
-  const hidden = new Map( mesh.hidden )
-  const selected = new Map( mesh.selected )
+  let { shown, hidden, selected, field, resolver } = getState().mesh
+  shown = new Map( shown )
+  hidden = new Map( hidden )
+  selected = new Map( selected )
   const adapter = new Adapter( shown, hidden, selected )
 
-  const field = new pkg.JsAlgebraicField( mesh.field )
+  field = new pkg.JsAlgebraicField( field )
   const realizedModel = new pkg.JsRealizedModel( field, adapter )
   const selection = new pkg.JsSelection( field, adapter )
   const editor = new pkg.JsEditorModel( realizedModel, selection )
@@ -220,59 +282,30 @@ export const legacyCommand = ( pkg, editClass ) => ( mesh, config ) =>
 
   edit.perform()  // side-effects will appear in shown, hidden, and selected maps
 
-  return {
-    ...mesh, shown, selected, hidden
-  }
-}
-
-const makeShape = ( shape ) =>
-{
-  const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector()
-    return { x, y, z }
-  })
-  const faces = shape.getTriangleFaces().toArray()
-  const id = shape.getGuid().toString()
-  return { id, vertices, faces }
-}
-
-const resolveShape = ( instance, field, state, shapes ) =>
-{
-  const { vzomePkg, orbitSource } = state
-  const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
-  const man = vzomePkg.jsweet.JsManifestation.manifest( instance.vectors, jsAF )
-  const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
-  rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
-  // get shape, orientation, color from rm
-  const quatIndex = rm.getStrutZone()
-  instance.rotation = field.vZomeIcosahedralQuaternions[ quatIndex ]
-  const shapeId = rm.getShapeId().toString()
-  instance.shapeId = shapeId   // ANTI-PATTERN: mutating a state object
-  instance.color = rm.getColor().getRGB()   // ANTI-PATTERN: mutating a state object
-
-  if ( ! shapes[ shapeId ] )
-    shapes[ shapeId ] = makeShape( rm.getShape() )
-}
-
-const renderableInstance = ( instance, selected, field, state, shapes ) =>
-{
-  resolveShape( instance, field, state, shapes ) // not pure
-  const result = {
-    ...instance,
-    position: field.embedv( instance.vectors[0] ),
-    selected
-  }
-  delete result.vectors
-  return result
+  dispatch( mesh.meshChanged( shown, selected, hidden ) )
+  // shape any new mesh objects
+  dispatch( resolver.resolve( Array.from( shown.values() ) ) )     // overkill, but hard to optimize
+  dispatch( resolver.resolve( Array.from( selected.values() ) ) )  // overkill, but hard to optimize
 }
 
 export const supportsEdits = true
 
-export const instanceSelector = ( { mesh, jsweet } ) =>
+const renderableInstance = ( instance, selected, field, shapedInstances ) =>
 {
-  const instances = []
-  const shapes = {}
-  Array.from( mesh.shown    ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, false, mesh.field, jsweet, shapes ) ) } )
-  Array.from( mesh.selected ).map( ( [id, instance] ) => { instances.push( renderableInstance( instance, true,  mesh.field, jsweet, shapes ) ) } )
-  return { shapes: Object.values( shapes ), instances }
+  const { id, vectors } = instance
+  const position = field.embedv( vectors[0] )
+  return { ...shapedInstances[ id ], position, selected }
+}
+
+const filterInstances = ( shape, instances ) =>
+{
+  return instances.filter( instance => instance.shapeId === shape.id )
+}
+
+export const sortedShapes = ( { mesh, jsweet } ) =>
+{
+  const shown = Array.from( mesh.shown ).map( ( [id, instance] ) => renderableInstance( instance, false, mesh.field, jsweet.shapedInstances ) )
+  const slctd = Array.from( mesh.selected ).map( ( [id, instance] ) => renderableInstance( instance, true,  mesh.field, jsweet.shapedInstances ) )
+  const instances = [ ...shown, ...slctd ]
+  return Object.values( jsweet.shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
 }

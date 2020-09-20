@@ -113,20 +113,13 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } 
   )
 }
 
-const filterInstances = ( shape, instances ) =>
-{
-  return instances.filter( instance => instance.shapeId === shape.id )
-}
-
 const select = ( state ) =>
 {
   const { camera, lighting, implementations } = state
-  const { shapes, instances } = implementations.instanceSelector( state )
-  const sortedShapes = shapes.map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
   return {
     camera,
     lighting,
-    shapes: sortedShapes,
+    shapes: implementations.sortedShapes( state ),
     clickable: implementations.supportsEdits
   }
 }
