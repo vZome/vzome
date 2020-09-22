@@ -41,7 +41,7 @@ public class JsSelection implements Selection
             @Override
             public Manifestation next()
             {
-                Manifestation result = JsManifestation .manifest( peek .value, field );
+                Manifestation result = JsManifestation .manifest( peek .value, field, adapter );
                 this .peek = jSiterator .next();
                 return result;
             }

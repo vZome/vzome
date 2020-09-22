@@ -221,6 +221,12 @@ class Adapter
     return Array.from( this.selected.values() ).map( instance => instance.vectors ).values()
   }
 
+  manifestationRendered( vectors )
+  {
+    const { id } = mesh.createInstance( vectors )
+    return this.shown.has( id ) || this.selected.has( id )
+  }
+
   manifestationSelected( vectors )
   {
     const { id } = mesh.createInstance( vectors )
@@ -239,9 +245,13 @@ class Adapter
     return vectors
   }
 
-  shownIterator()
+  allIterator()
   {
-    return this.shown.values()
+    const shownArray = Array.from( this.shown.values() )
+    const selectedArray = Array.from( this.selected.values() )
+    const hiddenArray = Array.from( this.hidden.values() )
+    const all = [ ...shownArray, ...selectedArray, ...hiddenArray ]
+    return all.map( instance => instance.vectors ).values()
   }
 }
 
@@ -302,6 +312,7 @@ const filterInstances = ( shape, instances ) =>
   return instances.filter( instance => instance.shapeId === shape.id )
 }
 
+// This is a selector, called when updating the ModelCanvas component
 export const sortedShapes = ( { mesh, jsweet } ) =>
 {
   const shown = Array.from( mesh.shown ).map( ( [id, instance] ) => renderableInstance( instance, false, mesh.field, jsweet.shapedInstances ) )

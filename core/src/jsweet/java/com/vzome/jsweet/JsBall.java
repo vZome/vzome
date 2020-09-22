@@ -7,17 +7,18 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Group;
 
+import def.js.Object;
+
 public class JsBall extends JsManifestation implements Connector
 {
-    public JsBall( AlgebraicField field, int[][][] coords )
+    public JsBall( AlgebraicField field, Object adapter, int[][][] coords )
     {
-        super( field, coords );
+        super( field, adapter, coords );
     }
 
     @Override
@@ -66,12 +67,6 @@ public class JsBall extends JsManifestation implements Connector
     public boolean isHidden()
     {
         throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public boolean isRendered()
-    {
-        return false;
     }
 
     @Override

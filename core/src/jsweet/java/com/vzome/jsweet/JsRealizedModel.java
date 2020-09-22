@@ -28,7 +28,7 @@ public class JsRealizedModel implements RealizedModel {
     @Override
     public Iterator<Manifestation> iterator()
     {
-        Function f = (Function) this.adapter .$get( "shownIterator" );
+        Function f = (Function) this.adapter .$get( "allIterator" );
         final def.js.Iterator<int[][][]> jSiterator = (def.js.Iterator<int[][][]>) f.apply( this.adapter );
         return new Iterator<Manifestation>()
         {
@@ -43,7 +43,7 @@ public class JsRealizedModel implements RealizedModel {
             @Override
             public Manifestation next()
             {
-                Manifestation result = JsManifestation .manifest( peek .value, field );
+                Manifestation result = JsManifestation .manifest( peek .value, field, adapter );
                 this .peek = jSiterator .next();
                 return result;
             }
@@ -65,7 +65,7 @@ public class JsRealizedModel implements RealizedModel {
         vectors = (int[][][]) ( (Function) this.adapter .$get( "findOrAddManifestation" ) ).apply( this.adapter, $array( vectors ) );
         if ( vectors == null )
             return null;
-        return JsManifestation .manifest( vectors, this.field );
+        return JsManifestation .manifest( vectors, this.field, this.adapter );
     }
 
     @Override

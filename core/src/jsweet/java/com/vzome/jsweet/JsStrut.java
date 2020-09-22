@@ -13,11 +13,13 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.model.Group;
 import com.vzome.core.model.Strut;
 
+import def.js.Object;
+
 public class JsStrut extends JsManifestation implements Strut
 {
-    public JsStrut( AlgebraicField field, int[][][] coords )
+    public JsStrut( AlgebraicField field, Object adapter, int[][][] coords )
     {
-        super( field, coords );
+        super( field, adapter, coords );
     }
 
     @Override
@@ -89,12 +91,6 @@ public class JsStrut extends JsManifestation implements Strut
     public boolean isHidden()
     {
         throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public boolean isRendered()
-    {
-        return false;
     }
 
     @Override

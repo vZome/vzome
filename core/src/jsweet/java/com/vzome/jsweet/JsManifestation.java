@@ -1,5 +1,7 @@
 package com.vzome.jsweet;
 
+import static jsweet.util.Lang.$array;
+
 import java.util.Arrays;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -12,15 +14,20 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.model.Manifestation;
 
+import def.js.Function;
+import def.js.Object;
+
 public abstract class JsManifestation implements Manifestation
 {
-    protected int[][][] vectors;
-    protected AlgebraicField field;
+    protected final int[][][] vectors;
+    protected final AlgebraicField field;
     private Color color;
+    protected final Object adapter;
 
-    public JsManifestation( AlgebraicField field, int[][][] vectors )
+    public JsManifestation( AlgebraicField field, Object adapter, int[][][] vectors )
     {
         this.field = field;
+        this.adapter = adapter;
         this.vectors = vectors;
     }
     
@@ -39,6 +46,12 @@ public abstract class JsManifestation implements Manifestation
     public void setColor( Color color )
     {
         this.color = color;
+    }
+
+    @Override
+    public boolean isRendered()
+    {
+        return (boolean) ( (Function) this.adapter .$get( "manifestationRendered" ) ).apply( this.adapter, $array( vectors ) );
     }
 
     public static int[][] canonicalizeNumbers( AlgebraicNumber... ns )
@@ -75,15 +88,15 @@ public abstract class JsManifestation implements Manifestation
         return null;
     }
 
-    public static Manifestation manifest( int[][][] vectors, AlgebraicField field )
+    public static Manifestation manifest( int[][][] vectors, AlgebraicField field, Object adapter )
     {
         switch ( vectors.length ) {
 
         case 1:
-            return new JsBall( field, vectors );
+            return new JsBall( field, adapter, vectors );
 
         case 2:
-            return new JsStrut( field, vectors );
+            return new JsStrut( field, adapter, vectors );
 
         default:
             // TODO JsPanel
