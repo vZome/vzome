@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.vzome.api.Tool.Factory;
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.commands.CommandUniformH4Polytope;
@@ -34,9 +34,9 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 {        
     private final IcosahedralSymmetryPerspective icosahedralPerspective;
 
-    public GoldenFieldApplication()
+    public GoldenFieldApplication( AlgebraicField field )
     {
-        super( new PentagonField() );
+        super( field );
 
         this.icosahedralPerspective = new IcosahedralSymmetryPerspective(this.getField());
         

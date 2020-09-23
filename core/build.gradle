@@ -496,6 +496,9 @@ jsweet {
 
         'com/vzome/core/edits/*.java',
 
+        'com/vzome/core/kinds/DefaultFieldApplication.java',
+        'com/vzome/core/kinds/GoldenFieldApplication.java',
+
         'com/vzome/api/Tool.java',
         'com/vzome/core/tools/*.java',
         'com/vzome/core/editor/Duplicator.java',
@@ -511,6 +514,7 @@ jsweet {
         'com/vzome/core/editor/SymmetrySystem.java',
         'com/vzome/core/editor/SelectionSummary.java',
         'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
+        'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
         'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
         'com/vzome/core/render/Colors.java',
         'com/vzome/core/viewing/AbstractShapes.java',
@@ -547,7 +551,6 @@ jsweet {
         'com/vzome/core/edits/AdjustSelectionByOrbitLength.java',
         'com/vzome/core/edits/DodecagonSymmetry.java',
         'com/vzome/core/edits/GhostSymmetry24Cell.java',
-        'com/vzome/core/edits/Polytope4d.java',
         'com/vzome/core/edits/SelectAutomaticStruts.java',
         'com/vzome/core/edits/SelectParallelStruts.java',
         'com/vzome/core/edits/Symmetry4d.java',

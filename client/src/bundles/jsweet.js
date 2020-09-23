@@ -17,6 +17,7 @@ const INSTANCE_SHAPED = 'INSTANCE_SHAPED'
 const initialState = {
   vzomePkg: undefined,       // ANTI-PATTERN, not a plain Object
   orbitSource: undefined,    // ANTI-PATTERN, not a plain Object
+  fieldApp: undefined,       // ANTI-PATTERN, not a plain Object
   shapes: {},
   shapedInstances : {},  // where we store shape and orientation, outside of the mesh
 }
@@ -31,8 +32,8 @@ export const reducer = ( state = initialState, action ) =>
     }
 
     case ORBITS_INITIALIZED: {
-      const orbitSource = action.payload
-      return { ...state, orbitSource }
+      const { fieldApp, orbitSource } = action.payload
+      return { ...state, orbitSource, fieldApp }
     }
 
     case INSTANCE_SHAPED: {
@@ -71,12 +72,34 @@ const setupIcosahedralSymmetry = () => ( dispatch, getState ) =>
   const { vzomePkg } = getState().jsweet
   const context = new vzomePkg.jsweet.JsEditContext()
   const field = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
-  const symmPer = new vzomePkg.core.kinds.IcosahedralSymmetryPerspective( field )
-  const colors = new vzomePkg.core.render.Colors( new Properties( { "color.red": "255,0,0" } ) )
+  const fieldApp = new vzomePkg.core.kinds.GoldenFieldApplication( field )
+  const symmPer = fieldApp.getSymmetryPerspective( "icosahedral" )
+  const colors = new vzomePkg.core.render.Colors( new Properties( { "color.red": "175,0,0", "color.yellow": "240,160,0", "color.blue": "0,118,149" } ) )
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
 
-  dispatch( { type: ORBITS_INITIALIZED, payload: orbitSource } )
+  dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, orbitSource } } )
   dispatch( mesh.resolverDefined( { resolve } ) )
+}
+
+const loadH4Quaternions = () => ( dispatch, getState ) =>
+{
+  const { vzomePkg } = getState().jsweet
+  const path = `/app/shapes/H4roots.vef`
+  fetch( path )
+    .then( response =>
+    {
+      if ( ! response.ok ) {
+        throw new Error( 'Network response was not ok' );
+      }
+      return response.text()
+    })
+    .then( (text) => {
+      vzomePkg.core.math.symmetry.QuaternionicSymmetry.injectRoots( "H_4", text )
+    })
+    .catch( error =>
+    {
+      console.error( `Unable to fetch ${path}: ${error}` );
+    });
 }
 
 const fetchShape = ( shapePkg, shapeName ) => ( dispatch ) =>
@@ -127,13 +150,17 @@ const resolve = ( instances ) => ( dispatch, getState ) =>
   {
     // first, is the instance already resolved?
     if ( shapedInstances[ id ] )
-      return;
+      return
 
     // Not resolved, so use the orbitSource
     const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF )
     const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
     rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
 
+    // may be a zero-length strut, no shape
+    if ( !rm.getShape() )
+      return
+    
     // is the shape new?
     const shapeId = rm.getShapeId().toString()
     if ( ! shapes[ shapeId ] ) {
@@ -143,7 +170,7 @@ const resolve = ( instances ) => ( dispatch, getState ) =>
 
     // get shape, orientation, color from rm
     const quatIndex = rm.getStrutZone()
-    const rotation = ( quatIndex && (quatIndex >= 0) && field.embedv( field.vZomeIcosahedralQuaternions[ quatIndex ] ) ) || [1,0,0,0]
+    const rotation = ( quatIndex && (quatIndex >= 0) && field.vZomeIcosahedralQuaternions[ quatIndex ] ) || [1,0,0,0]
     const color = rm.getColor().getRGB()
   
     dispatch( { type: INSTANCE_SHAPED, payload: { id, shapeId, rotation, color } } )
@@ -163,6 +190,10 @@ export const init = ( window, store ) =>
   // TODO: fetch all shape VEFs in a ZIP, then loadShape for each
   store.dispatch( fetchShape( "default", "connector" ) )
   store.dispatch( fetchShape( "default", "red" ) )
+  store.dispatch( fetchShape( "default", "yellow" ) )
+  store.dispatch( fetchShape( "default", "blue" ) )
+
+  store.dispatch( loadH4Quaternions() )
 }
 
 class Adapter
@@ -275,16 +306,17 @@ class Properties
 
 export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { shown, hidden, selected, field, resolver } = getState().mesh
+  let { shown, hidden, selected, resolver } = getState().mesh
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, hidden, selected )
 
-  field = new pkg.JsAlgebraicField( field )
+  const { fieldApp } = getState().jsweet
+  const field = fieldApp.getField()
   const realizedModel = new pkg.JsRealizedModel( field, adapter )
   const selection = new pkg.JsSelection( field, adapter )
-  const editor = new pkg.JsEditorModel( realizedModel, selection )
+  const editor = new pkg.JsEditorModel( realizedModel, selection, fieldApp )
 
   const edit = new editClass( editor )
 

@@ -6,6 +6,8 @@ package com.vzome.core.math.symmetry;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -37,18 +39,28 @@ public class QuaternionicSymmetry
     
     private final String mName;
     
+    private static final Map<String, String> INJECTED_VEFS = new HashMap<>();
+    
+    public static void injectRoots( String name, String vefData )
+    {
+        INJECTED_VEFS .put( name, vefData );
+    }
+    
     public QuaternionicSymmetry( String name, String rootsResource, AlgebraicField field )
     {
         mName = name;
+        String vefData = INJECTED_VEFS.get( name );
         try {
-            InputStream input =
-                getClass() .getClassLoader() .getResourceAsStream( rootsResource );
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            int num;
-            while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-                out .write( buf, 0, num );
-            String vefData = new String( out .toByteArray() );
+            if ( vefData == null ) {
+                InputStream input =
+                        getClass() .getClassLoader() .getResourceAsStream( rootsResource );
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                byte[] buf = new byte[1024];
+                int num;
+                while ( ( num = input .read( buf, 0, 1024 )) > 0 )
+                    out .write( buf, 0, num );
+                vefData = new String( out .toByteArray() );
+            }
             RootParser parser = new RootParser( field );
             parser .parseVEF( vefData, field );
             mRoots = parser .getQuaternions();

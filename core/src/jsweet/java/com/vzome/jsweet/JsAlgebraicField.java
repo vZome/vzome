@@ -146,7 +146,27 @@ public class JsAlgebraicField implements AlgebraicField
     public AlgebraicVector origin( int dims )
     {
         AlgebraicNumber zero = this .zero();
-        return new AlgebraicVector( zero, zero, zero );
+        switch ( dims ) {
+
+        case 1:
+            return new AlgebraicVector( zero );
+
+        case 2:
+            return new AlgebraicVector( zero, zero );
+
+        case 3:
+            return new AlgebraicVector( zero, zero, zero );
+
+        case 4:
+            return new AlgebraicVector( zero, zero, zero, zero );
+
+        case 5:
+            return new AlgebraicVector( zero, zero, zero, zero, zero );
+
+        default:
+            // TODO fix this
+            return null;
+        }
     }
 
     @Override
@@ -359,6 +379,18 @@ public class JsAlgebraicField implements AlgebraicField
         }
     }
 
+    @Override
+    public AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
+    {
+        AlgebraicNumber result = this .createAlgebraicNumberFromTD( new int[]{ ones, irrat, denominator } );
+        if ( scalePower != 0 ) {
+            AlgebraicNumber multiplier = this .createPower( scalePower );
+            return result .times( multiplier );
+        }
+        else
+            return result;
+    }
+
     
     
     
@@ -388,12 +420,6 @@ public class JsAlgebraicField implements AlgebraicField
 
     @Override
     public AlgebraicVector nearestAlgebraicVector(RealVector target)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber createAlgebraicNumber(int ones, int irrat, int denominator, int scalePower)
     {
         throw new RuntimeException( "unimplemented" );
     }

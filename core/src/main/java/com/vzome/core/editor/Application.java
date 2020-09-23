@@ -17,6 +17,7 @@ import javax.vecmath.Vector3f;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
@@ -127,7 +128,7 @@ public class Application implements AlgebraicField.Registry
         this .exporters2d .put( "ps",  PostScriptExporter::new );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        this.fieldAppSuppliers.put("golden", GoldenFieldApplication::new);
+        this.fieldAppSuppliers.put("golden", () -> new GoldenFieldApplication( new PentagonField() ) );
         this.fieldAppSuppliers.put("rootTwo", RootTwoFieldApplication::new);
         this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new);
         this.fieldAppSuppliers.put("dodecagon", RootThreeFieldApplication::new);
