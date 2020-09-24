@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -24,7 +25,7 @@ public class Polytope4dTest
 	@Test
 	public void testOldestConstructor()
 	{
-		FieldApplication app = new GoldenFieldApplication();
+		FieldApplication app = new GoldenFieldApplication( new PentagonField() );
 		AlgebraicField field = app .getField();
 		AlgebraicVector x = field .basisVector( 3, 0 );
 		AlgebraicVector y = field .basisVector( 3, 1 );
