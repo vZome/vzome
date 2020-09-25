@@ -170,7 +170,7 @@ const resolve = ( instances ) => ( dispatch, getState ) =>
 
     // get shape, orientation, color from rm
     const quatIndex = rm.getStrutZone()
-    const rotation = ( quatIndex && (quatIndex >= 0) && field.vZomeIcosahedralQuaternions[ quatIndex ] ) || [1,0,0,0]
+    const rotation = ( quatIndex && (quatIndex >= 0) && field.vZomeIcosahedralQuaternions[ quatIndex ] ) || [0,0,0,1]
     const color = rm.getColor().getRGB()
   
     dispatch( { type: INSTANCE_SHAPED, payload: { id, shapeId, rotation, color } } )
