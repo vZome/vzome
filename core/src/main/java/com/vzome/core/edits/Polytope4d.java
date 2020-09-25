@@ -167,7 +167,7 @@ public class Polytope4d extends ChangeManifestations
     private class WythoffListener implements WythoffConstruction.Listener
     {
         private int numVertices = 0;
-        Map<AlgebraicVector, Point> vertices = new HashMap<>();
+        Map<String, Point> vertices = new HashMap<>();
 
         @Override
         public Object addEdge( Object p1, Object p2 )
@@ -186,7 +186,7 @@ public class Polytope4d extends ChangeManifestations
         @Override
         public Object addVertex( AlgebraicVector vertex )
         {
-            Point p = vertices .get( vertex );
+            Point p = vertices .get( vertex.toString() );
             if ( p == null )
             {
                 AlgebraicVector projected = vertex;
@@ -198,7 +198,7 @@ public class Polytope4d extends ChangeManifestations
                 p = new FreePoint( projected );
                 p .setIndex( numVertices++ );
                 manifestConstruction( p );
-                vertices .put( vertex, p );
+                vertices .put( vertex.toString(), p );
             }
             return p;
         }

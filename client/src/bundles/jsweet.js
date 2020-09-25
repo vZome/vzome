@@ -13,6 +13,8 @@ const PACKAGE_INJECTED = 'PACKAGE_INJECTED'
 const ORBITS_INITIALIZED = 'ORBITS_INITIALIZED'
 const SHAPE_DEFINED = 'SHAPE_DEFINED'
 const INSTANCE_SHAPED = 'INSTANCE_SHAPED'
+const WORK_STARTED = 'WORK_STARTED'
+const WORK_FINISHED = 'WORK_FINISHED'
 
 const initialState = {
   vzomePkg: undefined,       // ANTI-PATTERN, not a plain Object
@@ -20,6 +22,7 @@ const initialState = {
   fieldApp: undefined,       // ANTI-PATTERN, not a plain Object
   shapes: {},
   shapedInstances : {},  // where we store shape and orientation, outside of the mesh
+  working: false,
 }
 
 export const reducer = ( state = initialState, action ) =>
@@ -46,6 +49,14 @@ export const reducer = ( state = initialState, action ) =>
       const shape = action.payload
       const shapes = { ...state.shapes, [shape.id]: shape }
       return { ...state, shapes }
+    }
+
+    case WORK_STARTED: {
+      return { ...state, working: true }
+    }
+
+    case WORK_FINISHED: {
+      return { ...state, working: false }
     }
 
     default:
@@ -324,10 +335,12 @@ export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, get
 
   edit.perform()  // side-effects will appear in shown, hidden, and selected maps
 
+  dispatch( { type: WORK_STARTED } )
   dispatch( mesh.meshChanged( shown, selected, hidden ) )
   // shape any new mesh objects
   dispatch( resolver.resolve( Array.from( shown.values() ) ) )     // overkill, but hard to optimize
   dispatch( resolver.resolve( Array.from( selected.values() ) ) )  // overkill, but hard to optimize
+  dispatch( { type: WORK_FINISHED } )
 }
 
 export const supportsEdits = true
@@ -347,8 +360,15 @@ const filterInstances = ( shape, instances ) =>
 // This is a selector, called when updating the ModelCanvas component
 export const sortedShapes = ( { mesh, jsweet } ) =>
 {
-  const shown = Array.from( mesh.shown ).map( ( [id, instance] ) => renderableInstance( instance, false, mesh.field, jsweet.shapedInstances ) )
-  const slctd = Array.from( mesh.selected ).map( ( [id, instance] ) => renderableInstance( instance, true,  mesh.field, jsweet.shapedInstances ) )
-  const instances = [ ...shown, ...slctd ]
+  if ( jsweet.working )
+    return []
+  
+  const instances = []
+  mesh.shown.forEach( ( instance, id ) => {
+    instances.push( renderableInstance( instance, false, mesh.field, jsweet.shapedInstances ) )
+  })
+  mesh.selected.forEach( ( instance, id ) => {
+    instances.push( renderableInstance( instance, true, mesh.field, jsweet.shapedInstances ) )
+  })
   return Object.values( jsweet.shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
 }

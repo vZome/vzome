@@ -10,7 +10,7 @@ const IMPLEMENTATION_CHOSEN = 'IMPLEMENTATION_CHOSEN'
 
 const initialState = {
   sortedShapes: currentImplementation.sortedShapes,
-  supportsEdits: currentImplementation.supportsEdits
+  supportsEdits: currentImplementation.supportsEdits,
 }
 
 export const reducer = ( state = initialState, action ) =>

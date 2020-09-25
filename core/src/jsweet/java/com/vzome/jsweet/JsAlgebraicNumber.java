@@ -1,5 +1,8 @@
 package com.vzome.jsweet;
 
+import static jsweet.util.Lang.any;
+import static jsweet.util.Lang.array;
+
 import java.util.Arrays;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -13,8 +16,7 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     public JsAlgebraicNumber( JsAlgebraicField field, int[] factors )
     {
         this .field = field;
-        this .factors = new int[ factors.length ];
-        System .arraycopy( factors, 0, this .factors, 0, factors.length ); 
+        this .factors = any(array(factors).slice());
     }
 
     @Override
@@ -32,9 +34,7 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     @Override
     public int[] toTrailingDivisor()
     {
-        int[] result = new int[ this.factors.length ];
-        System .arraycopy( this .factors, 0, result, 0, this.factors.length ); 
-        return result;
+        return any(array(factors).slice());
     }
 
     /**
