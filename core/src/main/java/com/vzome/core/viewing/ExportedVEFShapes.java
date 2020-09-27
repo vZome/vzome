@@ -85,9 +85,9 @@ public class ExportedVEFShapes extends AbstractShapes
         String colorProps = MODEL_PREFIX + pkgName + "/colors.properties";
         try {
             ClassLoader cl = this .getClass() .getClassLoader(); // NOTE: this may break Oculus
-            InputStream in = cl .getResourceAsStream( colorProps );
-            if ( in != null )
-                this .colors .load( in );
+            InputStream inputStream = cl .getResourceAsStream( colorProps );
+            if ( inputStream != null )
+                this .colors .load( inputStream );
         } catch ( IOException ioe ) {
             if ( logger .isLoggable( Level.FINE ) )
                 logger .fine( "problem with shape color properties: " + colorProps );

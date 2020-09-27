@@ -54,6 +54,14 @@ public abstract class JsManifestation implements Manifestation
         return (boolean) ( (Function) this.adapter .$get( "manifestationRendered" ) ).apply( this.adapter, $array( vectors ) );
     }
 
+    @Override
+    public Construction getFirstConstruction()
+    {
+        return toConstruction();
+    }
+
+    
+    
     public static int[][] canonicalizeNumbers( AlgebraicNumber... ns )
     {
         return (int[][]) Arrays.stream( ns ) .map( n -> n .toTrailingDivisor() ) .toArray();

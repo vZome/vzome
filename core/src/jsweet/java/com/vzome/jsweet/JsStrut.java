@@ -76,12 +76,6 @@ public class JsStrut extends JsManifestation implements Strut
     }
 
     @Override
-    public Construction getFirstConstruction()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public Element getXml(Document doc)
     {
         throw new RuntimeException( "unimplemented" );

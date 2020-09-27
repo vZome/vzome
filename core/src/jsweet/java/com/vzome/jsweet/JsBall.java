@@ -45,14 +45,12 @@ public class JsBall extends JsManifestation implements Connector
         return null;
     }
 
+    
+    
+    
+    
     @Override
     public Iterator<Construction> getConstructions()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public Construction getFirstConstruction()
     {
         throw new RuntimeException( "unimplemented" );
     }
