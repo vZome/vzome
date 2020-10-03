@@ -466,6 +466,7 @@ jsweet {
         'com/vzome/jsweet/JsEditContext.java',
 
         'com/vzome/xml/DomUtils.java',
+        'com/vzome/xml/ResourceLoader.java',
 
         'com/vzome/core/generic/*.java',
 

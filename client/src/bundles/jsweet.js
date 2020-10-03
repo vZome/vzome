@@ -64,80 +64,68 @@ export const reducer = ( state = initialState, action ) =>
   }
 }
 
-// Async actions
+// Initialization
 
-const indexLegacyEdits = () => ( dispatch, getState ) =>
+export const init = async ( window, store ) =>
 {
+  const vzomePkg = window.com.vzome
+  store.dispatch( { type: PACKAGE_INJECTED, payload: vzomePkg } )
+
+  const injectResource = async ( path ) =>
+  {
+    const fullPath = `/app/resources/${path}`
+    const response = await fetch( fullPath )
+    if ( ! response.ok ) {
+      throw new Error( 'Network response was not ok' );
+    }
+    const text = await response.text()
+    // Inject the VEF into a static map on ExportedVEFShapes
+    vzomePkg.xml.ResourceLoader.injectResource( path, text )
+    console.log( `injected resource ${path}` )
+  }
+
+  const fetchShape = async ( shapePkg, shapeName ) =>
+  {
+    const path = `/app/resources/com/vzome/core/parts/${shapePkg}/${shapeName}.vef`
+    const response = await fetch( path )
+    if ( ! response.ok ) {
+      throw new Error( 'Network response was not ok' );
+    }
+    const text = await response.text()
+    // Inject the VEF into a static map on ExportedVEFShapes
+    vzomePkg.core.viewing.ExportedVEFShapes.injectShapeVEF( `${shapePkg}-${shapeName}`, text )
+    console.log( `injected shape ${shapePkg}/${shapeName}` )
+  }
+
   // Discover all the legacy edit classes and register as commands
-  const { vzomePkg } = getState().jsweet
   const commands = {}
   for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
     commands[ name ] = legacyCommand( vzomePkg.jsweet, editClass )
+  store.dispatch( mesh.commandsDefined( commands ) )
 
-  dispatch( mesh.commandsDefined( commands ) )
-}
-
-const setupIcosahedralSymmetry = () => ( dispatch, getState ) =>
-{
-  // Prepare the orbitSource for resolveShapes
-  const { vzomePkg } = getState().jsweet
+  // Initialize the field application
+  await Promise.all( [
+    injectResource( 'com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef' ),
+    injectResource( 'com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef' ),
+    injectResource( 'com/vzome/core/math/symmetry/H4roots.vef' ),
+  ] )
   const context = new vzomePkg.jsweet.JsEditContext()
   const field = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
   const fieldApp = new vzomePkg.core.kinds.GoldenFieldApplication( field )
+
+  // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApp.getSymmetryPerspective( "icosahedral" )
   const colors = new vzomePkg.core.render.Colors( new Properties( { "color.red": "175,0,0", "color.yellow": "240,160,0", "color.blue": "0,118,149" } ) )
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
 
-  dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, orbitSource } } )
-  dispatch( mesh.resolverDefined( { resolve } ) )
-}
+  store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, orbitSource } } )
+  store.dispatch( mesh.resolverDefined( { resolve } ) )
 
-const loadH4Quaternions = () => ( dispatch, getState ) =>
-{
-  const { vzomePkg } = getState().jsweet
-  const path = `/app/shapes/H4roots.vef`
-  fetch( path )
-    .then( response =>
-    {
-      if ( ! response.ok ) {
-        throw new Error( 'Network response was not ok' );
-      }
-      return response.text()
-    })
-    .then( (text) => {
-      vzomePkg.core.math.symmetry.QuaternionicSymmetry.injectRoots( "H_4", text )
-    })
-    .catch( error =>
-    {
-      console.error( `Unable to fetch ${path}: ${error}` );
-    });
-}
-
-const fetchShape = ( shapePkg, shapeName ) => ( dispatch ) =>
-{
-  const path = `/app/shapes/${shapePkg}/${shapeName}.vef`
-  fetch( path )
-    .then( response =>
-    {
-      if ( ! response.ok ) {
-        throw new Error( 'Network response was not ok' );
-      }
-      return response.text()
-    })
-    .then( (text) => {
-      dispatch( loadShape( shapePkg, shapeName, text ) )
-    })
-    .catch( error =>
-    {
-      console.error( `Unable to fetch ${path}: ${error}` );
-    });
-}
-
-const loadShape = ( shapePkg, shapeName, text ) => ( dispatch, getState ) =>
-{
-  const { vzomePkg } = getState().jsweet
-  // Inject the VEF into a static map on ExportedVEFShapes
-  vzomePkg.core.viewing.ExportedVEFShapes.injectShapeVEF( `${shapePkg}-${shapeName}`, text )
+  // TODO: fetch all shape VEFs in a ZIP, then inject each
+  fetchShape( "default", "connector" )
+  fetchShape( "default", "red" )
+  fetchShape( "default", "yellow" )
+  fetchShape( "default", "blue" )
 }
 
 const makeShape = ( shape ) =>
@@ -186,25 +174,6 @@ const resolve = ( instances ) => ( dispatch, getState ) =>
   
     dispatch( { type: INSTANCE_SHAPED, payload: { id, shapeId, rotation, color } } )
   } )
-}
-
-// Initialization
-
-export const init = ( window, store ) =>
-{
-  store.dispatch( { type: PACKAGE_INJECTED, payload: window.com.vzome } )
-
-  store.dispatch( indexLegacyEdits() )
-
-  store.dispatch( setupIcosahedralSymmetry() )
-
-  // TODO: fetch all shape VEFs in a ZIP, then loadShape for each
-  store.dispatch( fetchShape( "default", "connector" ) )
-  store.dispatch( fetchShape( "default", "red" ) )
-  store.dispatch( fetchShape( "default", "yellow" ) )
-  store.dispatch( fetchShape( "default", "blue" ) )
-
-  store.dispatch( loadH4Quaternions() )
 }
 
 class Adapter
