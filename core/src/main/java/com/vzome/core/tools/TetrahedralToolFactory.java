@@ -41,6 +41,8 @@ public class TetrahedralToolFactory extends OctahedralToolFactory
 	@Override
 	public Tool createToolInternal( String id )
 	{
+	    if ( ! id .startsWith( "tetrahedral" ) )
+	        id = "tetrahedral." + id;
 		return new SymmetryTool( id, getSymmetry(), getToolsModel() );
 	}
 }
