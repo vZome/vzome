@@ -323,7 +323,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             return edit;
 
         String toolId = xml .getAttribute( "name" );
-        if ( toolId != null )
+        if ( toolId != null && ! "" .equals( toolId ) )
         {
             AbstractToolFactory factory = (AbstractToolFactory) this .toolFactories .get( name );
             if ( factory != null )
