@@ -30,6 +30,7 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.render.Colors;
+import com.vzome.xml.ResourceLoader;
 
 /**
  * @author vorth
@@ -130,6 +131,10 @@ public class ExportedVEFShapes extends AbstractShapes
             return INJECTED .get( mPkgName + "-" + name );
         
         String script = mPkgName + "/" + name + ".vef";
+        
+        if ( ResourceLoader.hasInjectedResource( MODEL_PREFIX + script ) )
+            return ResourceLoader.getInjectedResource( MODEL_PREFIX + script );
+
         File shapeFile = new File( this .prefsFolder, "Shapes/" + script );
         InputStream stream = null;
         try {

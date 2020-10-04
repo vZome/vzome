@@ -122,10 +122,10 @@ export const init = async ( window, store ) =>
   store.dispatch( mesh.resolverDefined( { resolve } ) )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
-  fetchShape( "default", "connector" )
-  fetchShape( "default", "red" )
-  fetchShape( "default", "yellow" )
-  fetchShape( "default", "blue" )
+  injectResource( "com/vzome/core/parts/default/connector.vef" )
+  injectResource( "com/vzome/core/parts/default/red.vef" )
+  injectResource( "com/vzome/core/parts/default/yellow.vef" )
+  injectResource( "com/vzome/core/parts/default/blue.vef" )
 }
 
 const makeShape = ( shape ) =>
