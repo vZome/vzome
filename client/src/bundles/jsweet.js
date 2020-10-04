@@ -64,6 +64,83 @@ export const reducer = ( state = initialState, action ) =>
   }
 }
 
+// Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
+const defaults = {
+
+  "color.red": "175,0,0",
+  "color.yellow": "240,160,0",
+  "color.blue": "0,118,149",
+  "color.green": "0,141,54",
+  "color.orange": "220,76,0",
+  "color.purple": "108,0,198",
+  "color.black": "30,30,30",
+  "color.white": "225,225,225",
+  "color.olive": "100,113,0",
+  "color.lavender": "175,135,255",
+  "color.maroon": "117,0,50",
+  "color.rose": "255,51,143",
+  "color.navy": "0,0,153",
+  "color.brown": "107,53,26",
+  "color.apple": "116,195,0",
+  "color.sand": "154,117,74",
+  "color.turquoise": "18,205,148",
+  "color.coral": "255,126,106",
+  "color.sulfur": "230,245,62",
+  "color.cinnamon": "136,37,0",
+  "color.spruce": "18,73,48",
+  "color.magenta": "255,41,183",
+  "color.snubPentagon": "187,57,48",
+  "color.snubTriangle": "87,188,48",
+  "color.snubDiagonal": "228,225,199",
+  "color.snubFaceNormal": "216,216,208",
+  "color.snubVertex": "204,204,0",
+  "color.slate": "108, 126, 142",
+  "color.mauve": "137, 104, 112",
+  "color.ivory": "228,225,199",
+  "color.panels": "225,225,225",
+  "color.background": "175,200,220",
+  "color.highlight": "195,195,195",
+  "color.highlight.mac ": "153,255,0",
+  "color.light.directional.1": "235, 235, 228",
+  "color.light.directional.2": "228, 228, 235",
+  "color.light.directional.3": "30, 30, 30",
+  "color.light.ambient": "41, 41, 41",
+
+  // direction values are given as "x,y,z", a vector of real numbers.
+  // The X axis points to the right of your screen, the Y axis points to
+  // the top of the screen, and the Z axis points out of the screen toward you.
+  "direction.light.1": "1.0,-1.0,-1.0",
+  "direction.light.2": "-1.0,0.0,0.0",
+  "direction.light.3": "0.0,0.0,-1.0",
+}
+
+const knownOrbitNames = [
+  "apple",
+  "black",
+  "blue",
+  "brown",
+  "cinnamon",
+  "connector",
+  "coral",
+  "green",
+  "lavender",
+  "maroon",
+  "navy",
+  "olive",
+  "orange",
+  "purple",
+  "red",
+  "rose",
+  "sand",
+  "snubDiagonal",
+  "snubPentagon",
+  "snubTriangle",
+  "spruce",
+  "sulfur",
+  "turquoise",
+  "yellow",
+]
+
 // Initialization
 
 export const init = async ( window, store ) =>
@@ -84,19 +161,6 @@ export const init = async ( window, store ) =>
     console.log( `injected resource ${path}` )
   }
 
-  const fetchShape = async ( shapePkg, shapeName ) =>
-  {
-    const path = `/app/resources/com/vzome/core/parts/${shapePkg}/${shapeName}.vef`
-    const response = await fetch( path )
-    if ( ! response.ok ) {
-      throw new Error( 'Network response was not ok' );
-    }
-    const text = await response.text()
-    // Inject the VEF into a static map on ExportedVEFShapes
-    vzomePkg.core.viewing.ExportedVEFShapes.injectShapeVEF( `${shapePkg}-${shapeName}`, text )
-    console.log( `injected shape ${shapePkg}/${shapeName}` )
-  }
-
   // Discover all the legacy edit classes and register as commands
   const commands = {}
   for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
@@ -115,17 +179,14 @@ export const init = async ( window, store ) =>
 
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApp.getSymmetryPerspective( "icosahedral" )
-  const colors = new vzomePkg.core.render.Colors( new Properties( { "color.red": "175,0,0", "color.yellow": "240,160,0", "color.blue": "0,118,149" } ) )
+  const colors = new vzomePkg.core.render.Colors( new Properties( defaults ) )
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
 
   store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, orbitSource } } )
   store.dispatch( mesh.resolverDefined( { resolve } ) )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
-  injectResource( "com/vzome/core/parts/default/connector.vef" )
-  injectResource( "com/vzome/core/parts/default/red.vef" )
-  injectResource( "com/vzome/core/parts/default/yellow.vef" )
-  injectResource( "com/vzome/core/parts/default/blue.vef" )
+  knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) )
 }
 
 const makeShape = ( shape ) =>
